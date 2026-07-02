@@ -1,0 +1,72 @@
+{
+    "powerOfWater_1": {
+        "key": "powerOfWater_1",
+        "abilityInfoId": "waterMage_buff",
+        "attackMultiplier": 0.03,
+        "units": "Mage",
+        "group": "ally"
+    },
+    "powerOfWater_2": {
+        "key": "powerOfWater_2",
+        "abilityInfoId": "waterMage_buff",
+        "attackMultiplier": 0.06,
+        "units": "Mage",
+        "group": "ally"
+    },
+    "powerOfWater_3": {
+        "key": "powerOfWater_3",
+        "abilityInfoId": "waterMage_buff",
+        "attackMultiplier": 0.09,
+        "units": "Mage",
+        "group": "ally"
+    },
+    "powerOfWater_4": {
+        "key": "powerOfWater_4",
+        "abilityInfoId": "waterMage_buff",
+        "attackMultiplier": 0.12,
+        "units": "Mage",
+        "group": "ally"
+    },
+    "powerOfWater_5": {
+        "key": "powerOfWater_5",
+        "abilityInfoId": "waterMage_buff",
+        "attackMultiplier": 0.15,
+        "units": "Mage",
+        "group": "ally"
+    },
+    "powerOfWater_6": {
+        "key": "powerOfWater_6",
+        "abilityInfoId": "waterMage_buff",
+        "attackMultiplier": 0.19,
+        "units": "Mage",
+        "group": "ally"
+    },
+    "powerOfWater_7": {
+        "key": "powerOfWater_7",
+        "abilityInfoId": "waterMage_buff",
+        "attackMultiplier": 0.23,
+        "units": "Mage",
+        "group": "ally"
+    },
+    "powerOfWater_8": {
+        "key": "powerOfWater_8",
+        "abilityInfoId": "waterMage_buff",
+        "attackMultiplier": 0.27,
+        "units": "Mage",
+        "group": "ally"
+    },
+    "powerOfWater_9": {
+        "key": "powerOfWater_9",
+        "abilityInfoId": "waterMage_buff",
+        "attackMultiplier": 0.31,
+        "units": "Mage",
+        "group": "ally"
+    },
+    "powerOfWater_10": {
+        "key": "powerOfWater_10",
+        "abilityInfoId": "waterMage_buff",
+        "attackMultiplier": 0.35,
+        "units": "Mage",
+        "group": "ally"
+    }
+}

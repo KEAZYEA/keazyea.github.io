@@ -1,0 +1,112 @@
+{
+    "accurateMerida_Powershot_1": {
+        "key": "accurateMerida_Powershot_1",
+        "abilityInfoId": "merida_Powershot",
+        "aspd": 1.7,
+        "aoeRadius": 1.7,
+        "attack": 150,
+        "projectileSpeed": 60,
+        "blinkDistance": 9,
+        "cooldown": 11,
+        "attackType": "Range"
+    },
+    "accurateMerida_Powershot_2": {
+        "key": "accurateMerida_Powershot_2",
+        "abilityInfoId": "merida_Powershot",
+        "aspd": 1.7,
+        "aoeRadius": 1.7,
+        "attack": 180,
+        "projectileSpeed": 60,
+        "blinkDistance": 9,
+        "cooldown": 11,
+        "attackType": "Range"
+    },
+    "accurateMerida_Powershot_3": {
+        "key": "accurateMerida_Powershot_3",
+        "abilityInfoId": "merida_Powershot",
+        "aspd": 1.7,
+        "aoeRadius": 1.7,
+        "attack": 210,
+        "projectileSpeed": 60,
+        "blinkDistance": 9,
+        "cooldown": 11,
+        "attackType": "Range"
+    },
+    "accurateMerida_Powershot_4": {
+        "key": "accurateMerida_Powershot_4",
+        "abilityInfoId": "merida_Powershot",
+        "aspd": 1.7,
+        "aoeRadius": 1.7,
+        "attack": 240,
+        "projectileSpeed": 60,
+        "blinkDistance": 9,
+        "cooldown": 10,
+        "attackType": "Range"
+    },
+    "accurateMerida_Powershot_5": {
+        "key": "accurateMerida_Powershot_5",
+        "abilityInfoId": "merida_Powershot",
+        "aspd": 1.7,
+        "aoeRadius": 1.7,
+        "attack": 270,
+        "projectileSpeed": 60,
+        "blinkDistance": 9,
+        "cooldown": 10,
+        "attackType": "Range"
+    },
+    "accurateMerida_Powershot_6": {
+        "key": "accurateMerida_Powershot_6",
+        "abilityInfoId": "merida_Powershot",
+        "aspd": 1.7,
+        "aoeRadius": 1.7,
+        "attack": 300,
+        "projectileSpeed": 60,
+        "blinkDistance": 9,
+        "cooldown": 10,
+        "attackType": "Range"
+    },
+    "accurateMerida_Powershot_7": {
+        "key": "accurateMerida_Powershot_7",
+        "abilityInfoId": "merida_Powershot",
+        "aspd": 1.7,
+        "aoeRadius": 1.7,
+        "attack": 330,
+        "projectileSpeed": 60,
+        "blinkDistance": 9,
+        "cooldown": 10,
+        "attackType": "Range"
+    },
+    "accurateMerida_Powershot_8": {
+        "key": "accurateMerida_Powershot_8",
+        "abilityInfoId": "merida_Powershot",
+        "aspd": 1.7,
+        "aoeRadius": 1.7,
+        "attack": 360,
+        "projectileSpeed": 60,
+        "blinkDistance": 9,
+        "cooldown": 9,
+        "attackType": "Range"
+    },
+    "accurateMerida_Powershot_9": {
+        "key": "accurateMerida_Powershot_9",
+        "abilityInfoId": "merida_Powershot",
+        "aspd": 1.7,
+        "aoeRadius": 1.7,
+        "attack": 390,
+        "projectileSpeed": 60,
+        "blinkDistance": 9,
+        "cooldown": 9,
+        "attackType": "Range"
+    },
+    "accurateMerida_Powershot_10": {
+        "key": "accurateMerida_Powershot_10",
+        "abilityInfoId": "merida_Powershot",
+        "aspd": 1.7,
+        "aoeRadius": 1.7,
+        "attack": 420,
+        "projectileSpeed": 60,
+        "blinkDistance": 9,
+        "cooldown": 9,
+        "attackType": "Range"
+    }
+}

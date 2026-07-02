@@ -1,0 +1,82 @@
+{
+    "undeadGunner_nightmare_1": {
+        "key": "undeadGunner_nightmare_1",
+        "abilityInfoId": "undeadGunner_nightmare",
+        "aspdMultiplier": 0.55,
+        "damageMultiplier": 0.1,
+        "duration": 5,
+        "cooldown": 17
+    },
+    "undeadGunner_nightmare_2": {
+        "key": "undeadGunner_nightmare_2",
+        "abilityInfoId": "undeadGunner_nightmare",
+        "aspdMultiplier": 0.5,
+        "damageMultiplier": 0.2,
+        "duration": 6,
+        "cooldown": 17
+    },
+    "undeadGunner_nightmare_3": {
+        "key": "undeadGunner_nightmare_3",
+        "abilityInfoId": "undeadGunner_nightmare",
+        "aspdMultiplier": 0.45,
+        "damageMultiplier": 0.3,
+        "duration": 6,
+        "cooldown": 17
+    },
+    "undeadGunner_nightmare_4": {
+        "key": "undeadGunner_nightmare_4",
+        "abilityInfoId": "undeadGunner_nightmare",
+        "aspdMultiplier": 0.4,
+        "damageMultiplier": 0.4,
+        "duration": 6,
+        "cooldown": 17
+    },
+    "undeadGunner_nightmare_5": {
+        "key": "undeadGunner_nightmare_5",
+        "abilityInfoId": "undeadGunner_nightmare",
+        "aspdMultiplier": 0.35,
+        "damageMultiplier": 0.5,
+        "duration": 6,
+        "cooldown": 16
+    },
+    "undeadGunner_nightmare_6": {
+        "key": "undeadGunner_nightmare_6",
+        "abilityInfoId": "undeadGunner_nightmare",
+        "aspdMultiplier": 0.3,
+        "damageMultiplier": 0.6,
+        "duration": 6,
+        "cooldown": 16
+    },
+    "undeadGunner_nightmare_7": {
+        "key": "undeadGunner_nightmare_7",
+        "abilityInfoId": "undeadGunner_nightmare",
+        "aspdMultiplier": 0.25,
+        "damageMultiplier": 0.7,
+        "duration": 7,
+        "cooldown": 16
+    },
+    "undeadGunner_nightmare_8": {
+        "key": "undeadGunner_nightmare_8",
+        "abilityInfoId": "undeadGunner_nightmare",
+        "aspdMultiplier": 0.2,
+        "damageMultiplier": 0.8,
+        "duration": 7,
+        "cooldown": 15
+    },
+    "undeadGunner_nightmare_9": {
+        "key": "undeadGunner_nightmare_9",
+        "abilityInfoId": "undeadGunner_nightmare",
+        "aspdMultiplier": 0.15,
+        "damageMultiplier": 0.9,
+        "duration": 7,
+        "cooldown": 15
+    },
+    "undeadGunner_nightmare_10": {
+        "key": "undeadGunner_nightmare_10",
+        "abilityInfoId": "undeadGunner_nightmare",
+        "aspdMultiplier": 0.1,
+        "damageMultiplier": 1,
+        "duration": 8,
+        "cooldown": 15
+    }
+}

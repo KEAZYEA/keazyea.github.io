@@ -1,0 +1,26 @@
+{
+    "trickster_Role": {
+        "key": "trickster_Role",
+        "name": "troopsRole_Trickster",
+        "icon": "trickster_RoleIcon",
+        "troopsSetId": "Trickster"
+    },
+    "ranger_Role": {
+        "key": "ranger_Role",
+        "name": "troopsRole_Ranger",
+        "icon": "ranger_RoleIcon",
+        "troopsSetId": "Ranger"
+    },
+    "support_Role": {
+        "key": "support_Role",
+        "name": "troopsRole_Support",
+        "icon": "support_RoleIcon",
+        "troopsSetId": "Support"
+    },
+    "tank_Role": {
+        "key": "tank_Role",
+        "name": "troopsRole_Tank",
+        "icon": "tank_RoleIcon",
+        "troopsSetId": "Tank"
+    }
+}

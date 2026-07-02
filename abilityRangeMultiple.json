@@ -1,0 +1,122 @@
+{
+    "demonMage_fireballs_1": {
+        "key": "demonMage_fireballs_1",
+        "abilityInfoId": "demonMage_fireballs",
+        "attack": 700,
+        "minAttackDistance": 10,
+        "aoeRadius": 3,
+        "attackCooldown": 1,
+        "aspd": 2,
+        "attackType": "Range",
+        "numShots": 2,
+        "delayBetweenShots": 0.5
+    },
+    "demonMage_fireballs_2": {
+        "key": "demonMage_fireballs_2",
+        "abilityInfoId": "demonMage_fireballs",
+        "attack": 740,
+        "minAttackDistance": 10,
+        "aoeRadius": 3,
+        "attackCooldown": 1,
+        "aspd": 2,
+        "attackType": "Range",
+        "numShots": 2,
+        "delayBetweenShots": 0.5
+    },
+    "demonMage_fireballs_3": {
+        "key": "demonMage_fireballs_3",
+        "abilityInfoId": "demonMage_fireballs",
+        "attack": 780,
+        "minAttackDistance": 10,
+        "aoeRadius": 3,
+        "attackCooldown": 1,
+        "aspd": 2,
+        "attackType": "Range",
+        "numShots": 2,
+        "delayBetweenShots": 0.5
+    },
+    "demonMage_fireballs_4": {
+        "key": "demonMage_fireballs_4",
+        "abilityInfoId": "demonMage_fireballs",
+        "attack": 820,
+        "minAttackDistance": 10,
+        "aoeRadius": 3,
+        "attackCooldown": 1,
+        "aspd": 2,
+        "attackType": "Range",
+        "numShots": 2,
+        "delayBetweenShots": 0.5
+    },
+    "demonMage_fireballs_5": {
+        "key": "demonMage_fireballs_5",
+        "abilityInfoId": "demonMage_fireballs",
+        "attack": 860,
+        "minAttackDistance": 10,
+        "aoeRadius": 3,
+        "attackCooldown": 1,
+        "aspd": 2,
+        "attackType": "Range",
+        "numShots": 2,
+        "delayBetweenShots": 0.5
+    },
+    "demonMage_fireballs_6": {
+        "key": "demonMage_fireballs_6",
+        "abilityInfoId": "demonMage_fireballs",
+        "attack": 900,
+        "minAttackDistance": 10,
+        "aoeRadius": 3,
+        "attackCooldown": 1,
+        "aspd": 2,
+        "attackType": "Range",
+        "numShots": 2,
+        "delayBetweenShots": 0.5
+    },
+    "demonMage_fireballs_7": {
+        "key": "demonMage_fireballs_7",
+        "abilityInfoId": "demonMage_fireballs",
+        "attack": 950,
+        "minAttackDistance": 10,
+        "aoeRadius": 3,
+        "attackCooldown": 1,
+        "aspd": 2,
+        "attackType": "Range",
+        "numShots": 2,
+        "delayBetweenShots": 0.5
+    },
+    "demonMage_fireballs_8": {
+        "key": "demonMage_fireballs_8",
+        "abilityInfoId": "demonMage_fireballs",
+        "attack": 1000,
+        "minAttackDistance": 10,
+        "aoeRadius": 3,
+        "attackCooldown": 1,
+        "aspd": 2,
+        "attackType": "Range",
+        "numShots": 2,
+        "delayBetweenShots": 0.5
+    },
+    "demonMage_fireballs_9": {
+        "key": "demonMage_fireballs_9",
+        "abilityInfoId": "demonMage_fireballs",
+        "attack": 1050,
+        "minAttackDistance": 10,
+        "aoeRadius": 3,
+        "attackCooldown": 1,
+        "aspd": 2,
+        "attackType": "Range",
+        "numShots": 2,
+        "delayBetweenShots": 0.5
+    },
+    "demonMage_fireballs_10": {
+        "key": "demonMage_fireballs_10",
+        "abilityInfoId": "demonMage_fireballs",
+        "attack": 1100,
+        "minAttackDistance": 10,
+        "aoeRadius": 3,
+        "attackCooldown": 1,
+        "aspd": 2,
+        "attackType": "Range",
+        "numShots": 2,
+        "delayBetweenShots": 0.5
+    }
+}

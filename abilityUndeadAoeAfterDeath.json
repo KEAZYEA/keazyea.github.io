@@ -1,0 +1,112 @@
+{
+    "undeadRat_poisonCloud_1": {
+        "key": "undeadRat_poisonCloud_1",
+        "abilityInfoId": "undeadRat_poisonCloud",
+        "aoeRadius": 2,
+        "aoeDuration": 2,
+        "poisonDamage": 650,
+        "poisonDamageInterval": 1,
+        "poisonDamageCount": 3,
+        "cooldownReduction": 1,
+        "attackType": "Melee"
+    },
+    "undeadRat_poisonCloud_2": {
+        "key": "undeadRat_poisonCloud_2",
+        "abilityInfoId": "undeadRat_poisonCloud",
+        "aoeRadius": 2,
+        "aoeDuration": 2,
+        "poisonDamage": 700,
+        "poisonDamageInterval": 1,
+        "poisonDamageCount": 3,
+        "cooldownReduction": 1,
+        "attackType": "Melee"
+    },
+    "undeadRat_poisonCloud_3": {
+        "key": "undeadRat_poisonCloud_3",
+        "abilityInfoId": "undeadRat_poisonCloud",
+        "aoeRadius": 3,
+        "aoeDuration": 2,
+        "poisonDamage": 750,
+        "poisonDamageInterval": 1,
+        "poisonDamageCount": 3,
+        "cooldownReduction": 2,
+        "attackType": "Melee"
+    },
+    "undeadRat_poisonCloud_4": {
+        "key": "undeadRat_poisonCloud_4",
+        "abilityInfoId": "undeadRat_poisonCloud",
+        "aoeRadius": 3,
+        "aoeDuration": 2,
+        "poisonDamage": 800,
+        "poisonDamageInterval": 1,
+        "poisonDamageCount": 4,
+        "cooldownReduction": 2,
+        "attackType": "Melee"
+    },
+    "undeadRat_poisonCloud_5": {
+        "key": "undeadRat_poisonCloud_5",
+        "abilityInfoId": "undeadRat_poisonCloud",
+        "aoeRadius": 3,
+        "aoeDuration": 2,
+        "poisonDamage": 850,
+        "poisonDamageInterval": 1,
+        "poisonDamageCount": 4,
+        "cooldownReduction": 3,
+        "attackType": "Melee"
+    },
+    "undeadRat_poisonCloud_6": {
+        "key": "undeadRat_poisonCloud_6",
+        "abilityInfoId": "undeadRat_poisonCloud",
+        "aoeRadius": 4,
+        "aoeDuration": 2,
+        "poisonDamage": 900,
+        "poisonDamageInterval": 1,
+        "poisonDamageCount": 4,
+        "cooldownReduction": 3,
+        "attackType": "Melee"
+    },
+    "undeadRat_poisonCloud_7": {
+        "key": "undeadRat_poisonCloud_7",
+        "abilityInfoId": "undeadRat_poisonCloud",
+        "aoeRadius": 4,
+        "aoeDuration": 2,
+        "poisonDamage": 1000,
+        "poisonDamageInterval": 1,
+        "poisonDamageCount": 5,
+        "cooldownReduction": 4,
+        "attackType": "Melee"
+    },
+    "undeadRat_poisonCloud_8": {
+        "key": "undeadRat_poisonCloud_8",
+        "abilityInfoId": "undeadRat_poisonCloud",
+        "aoeRadius": 4,
+        "aoeDuration": 2,
+        "poisonDamage": 1100,
+        "poisonDamageInterval": 1,
+        "poisonDamageCount": 5,
+        "cooldownReduction": 4,
+        "attackType": "Melee"
+    },
+    "undeadRat_poisonCloud_9": {
+        "key": "undeadRat_poisonCloud_9",
+        "abilityInfoId": "undeadRat_poisonCloud",
+        "aoeRadius": 7,
+        "aoeDuration": 2,
+        "poisonDamage": 1200,
+        "poisonDamageInterval": 1,
+        "poisonDamageCount": 5,
+        "cooldownReduction": 5,
+        "attackType": "Melee"
+    },
+    "undeadRat_poisonCloud_10": {
+        "key": "undeadRat_poisonCloud_10",
+        "abilityInfoId": "undeadRat_poisonCloud",
+        "aoeRadius": 7,
+        "aoeDuration": 2,
+        "poisonDamage": 1600,
+        "poisonDamageInterval": 1,
+        "poisonDamageCount": 6,
+        "cooldownReduction": 5,
+        "attackType": "Melee"
+    }
+}

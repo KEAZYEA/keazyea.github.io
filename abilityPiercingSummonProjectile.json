@@ -1,0 +1,122 @@
+{
+    "stoneGolem_bowlder_1": {
+        "key": "stoneGolem_bowlder_1",
+        "abilityInfoId": "stoneGolem_bowlder",
+        "aspd": 2,
+        "aoeRadius": 1,
+        "attack": 350,
+        "projectileSpeed": 7,
+        "summonedTroopId": "miniStoneGolem",
+        "triggerNumber": 4,
+        "distance": 12,
+        "attackType": "Range"
+    },
+    "stoneGolem_bowlder_2": {
+        "key": "stoneGolem_bowlder_2",
+        "abilityInfoId": "stoneGolem_bowlder",
+        "aspd": 2,
+        "aoeRadius": 1,
+        "attack": 400,
+        "projectileSpeed": 7,
+        "summonedTroopId": "miniStoneGolem",
+        "triggerNumber": 4,
+        "distance": 12,
+        "attackType": "Range"
+    },
+    "stoneGolem_bowlder_3": {
+        "key": "stoneGolem_bowlder_3",
+        "abilityInfoId": "stoneGolem_bowlder",
+        "aspd": 2,
+        "aoeRadius": 1,
+        "attack": 450,
+        "projectileSpeed": 7,
+        "summonedTroopId": "miniStoneGolem",
+        "triggerNumber": 4,
+        "distance": 12,
+        "attackType": "Range"
+    },
+    "stoneGolem_bowlder_4": {
+        "key": "stoneGolem_bowlder_4",
+        "abilityInfoId": "stoneGolem_bowlder",
+        "aspd": 2,
+        "aoeRadius": 1,
+        "attack": 500,
+        "projectileSpeed": 7,
+        "summonedTroopId": "miniStoneGolem",
+        "triggerNumber": 4,
+        "distance": 12,
+        "attackType": "Range"
+    },
+    "stoneGolem_bowlder_5": {
+        "key": "stoneGolem_bowlder_5",
+        "abilityInfoId": "stoneGolem_bowlder",
+        "aspd": 2,
+        "aoeRadius": 1,
+        "attack": 550,
+        "projectileSpeed": 7,
+        "summonedTroopId": "miniStoneGolem",
+        "triggerNumber": 4,
+        "distance": 12,
+        "attackType": "Range"
+    },
+    "stoneGolem_bowlder_6": {
+        "key": "stoneGolem_bowlder_6",
+        "abilityInfoId": "stoneGolem_bowlder",
+        "aspd": 2,
+        "aoeRadius": 1,
+        "attack": 600,
+        "projectileSpeed": 7,
+        "summonedTroopId": "miniStoneGolem",
+        "triggerNumber": 4,
+        "distance": 12,
+        "attackType": "Range"
+    },
+    "stoneGolem_bowlder_7": {
+        "key": "stoneGolem_bowlder_7",
+        "abilityInfoId": "stoneGolem_bowlder",
+        "aspd": 2,
+        "aoeRadius": 1,
+        "attack": 650,
+        "projectileSpeed": 7,
+        "summonedTroopId": "miniStoneGolem",
+        "triggerNumber": 4,
+        "distance": 12,
+        "attackType": "Range"
+    },
+    "stoneGolem_bowlder_8": {
+        "key": "stoneGolem_bowlder_8",
+        "abilityInfoId": "stoneGolem_bowlder",
+        "aspd": 2,
+        "aoeRadius": 1,
+        "attack": 700,
+        "projectileSpeed": 7,
+        "summonedTroopId": "miniStoneGolem",
+        "triggerNumber": 4,
+        "distance": 12,
+        "attackType": "Range"
+    },
+    "stoneGolem_bowlder_9": {
+        "key": "stoneGolem_bowlder_9",
+        "abilityInfoId": "stoneGolem_bowlder",
+        "aspd": 2,
+        "aoeRadius": 1,
+        "attack": 750,
+        "projectileSpeed": 7,
+        "summonedTroopId": "miniStoneGolem",
+        "triggerNumber": 4,
+        "distance": 12,
+        "attackType": "Range"
+    },
+    "stoneGolem_bowlder_10": {
+        "key": "stoneGolem_bowlder_10",
+        "abilityInfoId": "stoneGolem_bowlder",
+        "aspd": 2,
+        "aoeRadius": 1,
+        "attack": 800,
+        "projectileSpeed": 7,
+        "summonedTroopId": "miniStoneGolem",
+        "triggerNumber": 4,
+        "distance": 12,
+        "attackType": "Range"
+    }
+}

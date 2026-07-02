@@ -1,0 +1,402 @@
+{
+    "charmer_revengeOfTheFallen_1": {
+        "key": "charmer_revengeOfTheFallen_1",
+        "abilityInfoId": "talentAbility_revengeOfTheFallen",
+        "addAbilityId": "revengeOfTheFallen_1",
+        "units": "Mage",
+        "group": "ally",
+        "keepWhenSourceKilled": false
+    },
+    "charmer_revengeOfTheFallen_2": {
+        "key": "charmer_revengeOfTheFallen_2",
+        "abilityInfoId": "talentAbility_revengeOfTheFallen",
+        "addAbilityId": "revengeOfTheFallen_2",
+        "units": "Mage",
+        "group": "ally",
+        "keepWhenSourceKilled": false
+    },
+    "charmer_revengeOfTheFallen_3": {
+        "key": "charmer_revengeOfTheFallen_3",
+        "abilityInfoId": "talentAbility_revengeOfTheFallen",
+        "addAbilityId": "revengeOfTheFallen_3",
+        "units": "Mage",
+        "group": "ally",
+        "keepWhenSourceKilled": false
+    },
+    "charmer_revengeOfTheFallen_4": {
+        "key": "charmer_revengeOfTheFallen_4",
+        "abilityInfoId": "talentAbility_revengeOfTheFallen",
+        "addAbilityId": "revengeOfTheFallen_4",
+        "units": "Mage",
+        "group": "ally",
+        "keepWhenSourceKilled": false
+    },
+    "charmer_revengeOfTheFallen_5": {
+        "key": "charmer_revengeOfTheFallen_5",
+        "abilityInfoId": "talentAbility_revengeOfTheFallen",
+        "addAbilityId": "revengeOfTheFallen_5",
+        "units": "Mage",
+        "group": "ally",
+        "keepWhenSourceKilled": false
+    },
+    "charmer_revengeOfTheFallen_6": {
+        "key": "charmer_revengeOfTheFallen_6",
+        "abilityInfoId": "talentAbility_revengeOfTheFallen",
+        "addAbilityId": "revengeOfTheFallen_6",
+        "units": "Mage",
+        "group": "ally",
+        "keepWhenSourceKilled": false
+    },
+    "charmer_revengeOfTheFallen_7": {
+        "key": "charmer_revengeOfTheFallen_7",
+        "abilityInfoId": "talentAbility_revengeOfTheFallen",
+        "addAbilityId": "revengeOfTheFallen_7",
+        "units": "Mage",
+        "group": "ally",
+        "keepWhenSourceKilled": false
+    },
+    "charmer_revengeOfTheFallen_8": {
+        "key": "charmer_revengeOfTheFallen_8",
+        "abilityInfoId": "talentAbility_revengeOfTheFallen",
+        "addAbilityId": "revengeOfTheFallen_8",
+        "units": "Mage",
+        "group": "ally",
+        "keepWhenSourceKilled": false
+    },
+    "charmer_revengeOfTheFallen_9": {
+        "key": "charmer_revengeOfTheFallen_9",
+        "abilityInfoId": "talentAbility_revengeOfTheFallen",
+        "addAbilityId": "revengeOfTheFallen_9",
+        "units": "Mage",
+        "group": "ally",
+        "keepWhenSourceKilled": false
+    },
+    "charmer_revengeOfTheFallen_10": {
+        "key": "charmer_revengeOfTheFallen_10",
+        "abilityInfoId": "talentAbility_revengeOfTheFallen",
+        "addAbilityId": "revengeOfTheFallen_10",
+        "units": "Mage",
+        "group": "ally",
+        "keepWhenSourceKilled": false
+    },
+    "undeadPirate_boardingParty_1": {
+        "key": "undeadPirate_boardingParty_1",
+        "abilityInfoId": "talentAbility_boardingParty",
+        "addAbilityId": "boardingParty_1",
+        "units": "Undead",
+        "group": "ally",
+        "keepWhenSourceKilled": false
+    },
+    "undeadPirate_boardingParty_2": {
+        "key": "undeadPirate_boardingParty_2",
+        "abilityInfoId": "talentAbility_boardingParty",
+        "addAbilityId": "boardingParty_2",
+        "units": "Undead",
+        "group": "ally",
+        "keepWhenSourceKilled": false
+    },
+    "undeadPirate_boardingParty_3": {
+        "key": "undeadPirate_boardingParty_3",
+        "abilityInfoId": "talentAbility_boardingParty",
+        "addAbilityId": "boardingParty_3",
+        "units": "Undead",
+        "group": "ally",
+        "keepWhenSourceKilled": false
+    },
+    "undeadPirate_boardingParty_4": {
+        "key": "undeadPirate_boardingParty_4",
+        "abilityInfoId": "talentAbility_boardingParty",
+        "addAbilityId": "boardingParty_4",
+        "units": "Undead",
+        "group": "ally",
+        "keepWhenSourceKilled": false
+    },
+    "undeadPirate_boardingParty_5": {
+        "key": "undeadPirate_boardingParty_5",
+        "abilityInfoId": "talentAbility_boardingParty",
+        "addAbilityId": "boardingParty_5",
+        "units": "Undead",
+        "group": "ally",
+        "keepWhenSourceKilled": false
+    },
+    "undeadPirate_boardingParty_6": {
+        "key": "undeadPirate_boardingParty_6",
+        "abilityInfoId": "talentAbility_boardingParty",
+        "addAbilityId": "boardingParty_6",
+        "units": "Undead",
+        "group": "ally",
+        "keepWhenSourceKilled": false
+    },
+    "undeadPirate_boardingParty_7": {
+        "key": "undeadPirate_boardingParty_7",
+        "abilityInfoId": "talentAbility_boardingParty",
+        "addAbilityId": "boardingParty_7",
+        "units": "Undead",
+        "group": "ally",
+        "keepWhenSourceKilled": false
+    },
+    "undeadPirate_boardingParty_8": {
+        "key": "undeadPirate_boardingParty_8",
+        "abilityInfoId": "talentAbility_boardingParty",
+        "addAbilityId": "boardingParty_8",
+        "units": "Undead",
+        "group": "ally",
+        "keepWhenSourceKilled": false
+    },
+    "undeadPirate_boardingParty_9": {
+        "key": "undeadPirate_boardingParty_9",
+        "abilityInfoId": "talentAbility_boardingParty",
+        "addAbilityId": "boardingParty_9",
+        "units": "Undead",
+        "group": "ally",
+        "keepWhenSourceKilled": false
+    },
+    "undeadPirate_boardingParty_10": {
+        "key": "undeadPirate_boardingParty_10",
+        "abilityInfoId": "talentAbility_boardingParty",
+        "addAbilityId": "boardingParty_10",
+        "units": "Undead",
+        "group": "ally",
+        "keepWhenSourceKilled": false
+    },
+    "waterMage_powerOfWater_1": {
+        "key": "waterMage_powerOfWater_1",
+        "abilityInfoId": "talentAbility_powerOfWater",
+        "addAbilityId": "powerOfWater_1",
+        "units": "Mage",
+        "group": "ally",
+        "keepWhenSourceKilled": false
+    },
+    "waterMage_powerOfWater_2": {
+        "key": "waterMage_powerOfWater_2",
+        "abilityInfoId": "talentAbility_powerOfWater",
+        "addAbilityId": "powerOfWater_2",
+        "units": "Mage",
+        "group": "ally",
+        "keepWhenSourceKilled": false
+    },
+    "waterMage_powerOfWater_3": {
+        "key": "waterMage_powerOfWater_3",
+        "abilityInfoId": "talentAbility_powerOfWater",
+        "addAbilityId": "powerOfWater_3",
+        "units": "Mage",
+        "group": "ally",
+        "keepWhenSourceKilled": false
+    },
+    "waterMage_powerOfWater_4": {
+        "key": "waterMage_powerOfWater_4",
+        "abilityInfoId": "talentAbility_powerOfWater",
+        "addAbilityId": "powerOfWater_4",
+        "units": "Mage",
+        "group": "ally",
+        "keepWhenSourceKilled": false
+    },
+    "waterMage_powerOfWater_5": {
+        "key": "waterMage_powerOfWater_5",
+        "abilityInfoId": "talentAbility_powerOfWater",
+        "addAbilityId": "powerOfWater_5",
+        "units": "Mage",
+        "group": "ally",
+        "keepWhenSourceKilled": false
+    },
+    "waterMage_powerOfWater_6": {
+        "key": "waterMage_powerOfWater_6",
+        "abilityInfoId": "talentAbility_powerOfWater",
+        "addAbilityId": "powerOfWater_6",
+        "units": "Mage",
+        "group": "ally",
+        "keepWhenSourceKilled": false
+    },
+    "waterMage_powerOfWater_7": {
+        "key": "waterMage_powerOfWater_7",
+        "abilityInfoId": "talentAbility_powerOfWater",
+        "addAbilityId": "powerOfWater_7",
+        "units": "Mage",
+        "group": "ally",
+        "keepWhenSourceKilled": false
+    },
+    "waterMage_powerOfWater_8": {
+        "key": "waterMage_powerOfWater_8",
+        "abilityInfoId": "talentAbility_powerOfWater",
+        "addAbilityId": "powerOfWater_8",
+        "units": "Mage",
+        "group": "ally",
+        "keepWhenSourceKilled": false
+    },
+    "waterMage_powerOfWater_9": {
+        "key": "waterMage_powerOfWater_9",
+        "abilityInfoId": "talentAbility_powerOfWater",
+        "addAbilityId": "powerOfWater_9",
+        "units": "Mage",
+        "group": "ally",
+        "keepWhenSourceKilled": false
+    },
+    "waterMage_powerOfWater_10": {
+        "key": "waterMage_powerOfWater_10",
+        "abilityInfoId": "talentAbility_powerOfWater",
+        "addAbilityId": "powerOfWater_10",
+        "units": "Mage",
+        "group": "ally",
+        "keepWhenSourceKilled": false
+    },
+    "elevateArcher_weakSpot_1": {
+        "key": "elevateArcher_weakSpot_1",
+        "abilityInfoId": "talentAbility_weakSpot",
+        "addAbilityId": "weakSpot_1",
+        "units": null,
+        "group": "enemy",
+        "keepWhenSourceKilled": true
+    },
+    "elevateArcher_weakSpot_2": {
+        "key": "elevateArcher_weakSpot_2",
+        "abilityInfoId": "talentAbility_weakSpot",
+        "addAbilityId": "weakSpot_2",
+        "units": null,
+        "group": "enemy",
+        "keepWhenSourceKilled": true
+    },
+    "elevateArcher_weakSpot_3": {
+        "key": "elevateArcher_weakSpot_3",
+        "abilityInfoId": "talentAbility_weakSpot",
+        "addAbilityId": "weakSpot_3",
+        "units": null,
+        "group": "enemy",
+        "keepWhenSourceKilled": true
+    },
+    "elevateArcher_weakSpot_4": {
+        "key": "elevateArcher_weakSpot_4",
+        "abilityInfoId": "talentAbility_weakSpot",
+        "addAbilityId": "weakSpot_4",
+        "units": null,
+        "group": "enemy",
+        "keepWhenSourceKilled": true
+    },
+    "elevateArcher_weakSpot_5": {
+        "key": "elevateArcher_weakSpot_5",
+        "abilityInfoId": "talentAbility_weakSpot",
+        "addAbilityId": "weakSpot_5",
+        "units": null,
+        "group": "enemy",
+        "keepWhenSourceKilled": true
+    },
+    "elevateArcher_weakSpot_6": {
+        "key": "elevateArcher_weakSpot_6",
+        "abilityInfoId": "talentAbility_weakSpot",
+        "addAbilityId": "weakSpot_6",
+        "units": null,
+        "group": "enemy",
+        "keepWhenSourceKilled": true
+    },
+    "elevateArcher_weakSpot_7": {
+        "key": "elevateArcher_weakSpot_7",
+        "abilityInfoId": "talentAbility_weakSpot",
+        "addAbilityId": "weakSpot_7",
+        "units": null,
+        "group": "enemy",
+        "keepWhenSourceKilled": true
+    },
+    "elevateArcher_weakSpot_8": {
+        "key": "elevateArcher_weakSpot_8",
+        "abilityInfoId": "talentAbility_weakSpot",
+        "addAbilityId": "weakSpot_8",
+        "units": null,
+        "group": "enemy",
+        "keepWhenSourceKilled": true
+    },
+    "elevateArcher_weakSpot_9": {
+        "key": "elevateArcher_weakSpot_9",
+        "abilityInfoId": "talentAbility_weakSpot",
+        "addAbilityId": "weakSpot_9",
+        "units": null,
+        "group": "enemy",
+        "keepWhenSourceKilled": true
+    },
+    "elevateArcher_weakSpot_10": {
+        "key": "elevateArcher_weakSpot_10",
+        "abilityInfoId": "talentAbility_weakSpot",
+        "addAbilityId": "weakSpot_10",
+        "units": null,
+        "group": "enemy",
+        "keepWhenSourceKilled": true
+    },
+    "elevateSupport_giftOfLight_1": {
+        "key": "elevateSupport_giftOfLight_1",
+        "abilityInfoId": "talentAbility_giftOfLight",
+        "addAbilityId": "giftOfLight_1",
+        "units": null,
+        "group": "ally",
+        "keepWhenSourceKilled": true
+    },
+    "elevateSupport_giftOfLight_2": {
+        "key": "elevateSupport_giftOfLight_2",
+        "abilityInfoId": "talentAbility_giftOfLight",
+        "addAbilityId": "giftOfLight_2",
+        "units": null,
+        "group": "ally",
+        "keepWhenSourceKilled": true
+    },
+    "elevateSupport_giftOfLight_3": {
+        "key": "elevateSupport_giftOfLight_3",
+        "abilityInfoId": "talentAbility_giftOfLight",
+        "addAbilityId": "giftOfLight_3",
+        "units": null,
+        "group": "ally",
+        "keepWhenSourceKilled": true
+    },
+    "elevateSupport_giftOfLight_4": {
+        "key": "elevateSupport_giftOfLight_4",
+        "abilityInfoId": "talentAbility_giftOfLight",
+        "addAbilityId": "giftOfLight_4",
+        "units": null,
+        "group": "ally",
+        "keepWhenSourceKilled": true
+    },
+    "elevateSupport_giftOfLight_5": {
+        "key": "elevateSupport_giftOfLight_5",
+        "abilityInfoId": "talentAbility_giftOfLight",
+        "addAbilityId": "giftOfLight_5",
+        "units": null,
+        "group": "ally",
+        "keepWhenSourceKilled": true
+    },
+    "elevateSupport_giftOfLight_6": {
+        "key": "elevateSupport_giftOfLight_6",
+        "abilityInfoId": "talentAbility_giftOfLight",
+        "addAbilityId": "giftOfLight_6",
+        "units": null,
+        "group": "ally",
+        "keepWhenSourceKilled": true
+    },
+    "elevateSupport_giftOfLight_7": {
+        "key": "elevateSupport_giftOfLight_7",
+        "abilityInfoId": "talentAbility_giftOfLight",
+        "addAbilityId": "giftOfLight_7",
+        "units": null,
+        "group": "ally",
+        "keepWhenSourceKilled": true
+    },
+    "elevateSupport_giftOfLight_8": {
+        "key": "elevateSupport_giftOfLight_8",
+        "abilityInfoId": "talentAbility_giftOfLight",
+        "addAbilityId": "giftOfLight_8",
+        "units": null,
+        "group": "ally",
+        "keepWhenSourceKilled": true
+    },
+    "elevateSupport_giftOfLight_9": {
+        "key": "elevateSupport_giftOfLight_9",
+        "abilityInfoId": "talentAbility_giftOfLight",
+        "addAbilityId": "giftOfLight_9",
+        "units": null,
+        "group": "ally",
+        "keepWhenSourceKilled": true
+    },
+    "elevateSupport_giftOfLight_10": {
+        "key": "elevateSupport_giftOfLight_10",
+        "abilityInfoId": "talentAbility_giftOfLight",
+        "addAbilityId": "giftOfLight_10",
+        "units": null,
+        "group": "ally",
+        "keepWhenSourceKilled": true
+    }
+}

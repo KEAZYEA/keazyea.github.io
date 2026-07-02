@@ -1,0 +1,92 @@
+{
+    "bardHero_courageSong_1": {
+        "key": "bardHero_courageSong_1",
+        "abilityInfoId": "bardHero_courageSong",
+        "modifier": "bardHero_buff_1",
+        "radius": 8,
+        "auraDuration": 4,
+        "modifierDuration": 4,
+        "cooldown": 17
+    },
+    "bardHero_courageSong_2": {
+        "key": "bardHero_courageSong_2",
+        "abilityInfoId": "bardHero_courageSong",
+        "modifier": "bardHero_buff_2",
+        "radius": 8,
+        "auraDuration": 4,
+        "modifierDuration": 4,
+        "cooldown": 17
+    },
+    "bardHero_courageSong_3": {
+        "key": "bardHero_courageSong_3",
+        "abilityInfoId": "bardHero_courageSong",
+        "modifier": "bardHero_buff_3",
+        "radius": 10,
+        "auraDuration": 4,
+        "modifierDuration": 4,
+        "cooldown": 17
+    },
+    "bardHero_courageSong_4": {
+        "key": "bardHero_courageSong_4",
+        "abilityInfoId": "bardHero_courageSong",
+        "modifier": "bardHero_buff_4",
+        "radius": 10,
+        "auraDuration": 5,
+        "modifierDuration": 5,
+        "cooldown": 16
+    },
+    "bardHero_courageSong_5": {
+        "key": "bardHero_courageSong_5",
+        "abilityInfoId": "bardHero_courageSong",
+        "modifier": "bardHero_buff_5",
+        "radius": 10,
+        "auraDuration": 5,
+        "modifierDuration": 5,
+        "cooldown": 16
+    },
+    "bardHero_courageSong_6": {
+        "key": "bardHero_courageSong_6",
+        "abilityInfoId": "bardHero_courageSong",
+        "modifier": "bardHero_buff_6",
+        "radius": 12,
+        "auraDuration": 5,
+        "modifierDuration": 5,
+        "cooldown": 16
+    },
+    "bardHero_courageSong_7": {
+        "key": "bardHero_courageSong_7",
+        "abilityInfoId": "bardHero_courageSong",
+        "modifier": "bardHero_buff_7",
+        "radius": 12,
+        "auraDuration": 6,
+        "modifierDuration": 6,
+        "cooldown": 15
+    },
+    "bardHero_courageSong_8": {
+        "key": "bardHero_courageSong_8",
+        "abilityInfoId": "bardHero_courageSong",
+        "modifier": "bardHero_buff_8",
+        "radius": 12,
+        "auraDuration": 6,
+        "modifierDuration": 6,
+        "cooldown": 15
+    },
+    "bardHero_courageSong_9": {
+        "key": "bardHero_courageSong_9",
+        "abilityInfoId": "bardHero_courageSong",
+        "modifier": "bardHero_buff_9",
+        "radius": 14,
+        "auraDuration": 6,
+        "modifierDuration": 6,
+        "cooldown": 14
+    },
+    "bardHero_courageSong_10": {
+        "key": "bardHero_courageSong_10",
+        "abilityInfoId": "bardHero_courageSong",
+        "modifier": "bardHero_buff_10",
+        "radius": 16,
+        "auraDuration": 7,
+        "modifierDuration": 7,
+        "cooldown": 14
+    }
+}

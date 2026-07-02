@@ -1,0 +1,82 @@
+{
+    "alchemist_AoEHeal_1": {
+        "key": "alchemist_AoEHeal_1",
+        "abilityInfoId": "alchemist_heal",
+        "aspd": 2.5,
+        "aoeRadius": 5,
+        "healAmount": 150,
+        "triggerNumber": 4
+    },
+    "alchemist_AoEHeal_2": {
+        "key": "alchemist_AoEHeal_2",
+        "abilityInfoId": "alchemist_heal",
+        "aspd": 2.5,
+        "aoeRadius": 5,
+        "healAmount": 175,
+        "triggerNumber": 4
+    },
+    "alchemist_AoEHeal_3": {
+        "key": "alchemist_AoEHeal_3",
+        "abilityInfoId": "alchemist_heal",
+        "aspd": 2.5,
+        "aoeRadius": 5,
+        "healAmount": 200,
+        "triggerNumber": 4
+    },
+    "alchemist_AoEHeal_4": {
+        "key": "alchemist_AoEHeal_4",
+        "abilityInfoId": "alchemist_heal",
+        "aspd": 2.5,
+        "aoeRadius": 5,
+        "healAmount": 225,
+        "triggerNumber": 4
+    },
+    "alchemist_AoEHeal_5": {
+        "key": "alchemist_AoEHeal_5",
+        "abilityInfoId": "alchemist_heal",
+        "aspd": 2.5,
+        "aoeRadius": 5,
+        "healAmount": 250,
+        "triggerNumber": 4
+    },
+    "alchemist_AoEHeal_6": {
+        "key": "alchemist_AoEHeal_6",
+        "abilityInfoId": "alchemist_heal",
+        "aspd": 2.5,
+        "aoeRadius": 5,
+        "healAmount": 275,
+        "triggerNumber": 4
+    },
+    "alchemist_AoEHeal_7": {
+        "key": "alchemist_AoEHeal_7",
+        "abilityInfoId": "alchemist_heal",
+        "aspd": 2.5,
+        "aoeRadius": 5,
+        "healAmount": 300,
+        "triggerNumber": 4
+    },
+    "alchemist_AoEHeal_8": {
+        "key": "alchemist_AoEHeal_8",
+        "abilityInfoId": "alchemist_heal",
+        "aspd": 2.5,
+        "aoeRadius": 5,
+        "healAmount": 325,
+        "triggerNumber": 4
+    },
+    "alchemist_AoEHeal_9": {
+        "key": "alchemist_AoEHeal_9",
+        "abilityInfoId": "alchemist_heal",
+        "aspd": 2.5,
+        "aoeRadius": 5,
+        "healAmount": 350,
+        "triggerNumber": 4
+    },
+    "alchemist_AoEHeal_10": {
+        "key": "alchemist_AoEHeal_10",
+        "abilityInfoId": "alchemist_heal",
+        "aspd": 2.5,
+        "aoeRadius": 5,
+        "healAmount": 400,
+        "triggerNumber": 4
+    }
+}

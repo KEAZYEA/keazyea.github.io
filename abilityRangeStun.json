@@ -1,0 +1,102 @@
+{
+    "iceMage_rangeStun_1": {
+        "key": "iceMage_rangeStun_1",
+        "abilityInfoId": "iceMage_rangeStun",
+        "attack": 800,
+        "minAttackDistance": 10,
+        "aspd": 1.6,
+        "stunTime": 1,
+        "cooldown": 1,
+        "attackType": "Range"
+    },
+    "iceMage_rangeStun_2": {
+        "key": "iceMage_rangeStun_2",
+        "abilityInfoId": "iceMage_rangeStun",
+        "attack": 840,
+        "minAttackDistance": 10,
+        "aspd": 1.6,
+        "stunTime": 1,
+        "cooldown": 1,
+        "attackType": "Range"
+    },
+    "iceMage_rangeStun_3": {
+        "key": "iceMage_rangeStun_3",
+        "abilityInfoId": "iceMage_rangeStun",
+        "attack": 880,
+        "minAttackDistance": 10,
+        "aspd": 1.6,
+        "stunTime": 1,
+        "cooldown": 1,
+        "attackType": "Range"
+    },
+    "iceMage_rangeStun_4": {
+        "key": "iceMage_rangeStun_4",
+        "abilityInfoId": "iceMage_rangeStun",
+        "attack": 920,
+        "minAttackDistance": 10,
+        "aspd": 1.6,
+        "stunTime": 1,
+        "cooldown": 1,
+        "attackType": "Range"
+    },
+    "iceMage_rangeStun_5": {
+        "key": "iceMage_rangeStun_5",
+        "abilityInfoId": "iceMage_rangeStun",
+        "attack": 960,
+        "minAttackDistance": 10,
+        "aspd": 1.6,
+        "stunTime": 1,
+        "cooldown": 1,
+        "attackType": "Range"
+    },
+    "iceMage_rangeStun_6": {
+        "key": "iceMage_rangeStun_6",
+        "abilityInfoId": "iceMage_rangeStun",
+        "attack": 1000,
+        "minAttackDistance": 10,
+        "aspd": 1.6,
+        "stunTime": 1,
+        "cooldown": 1,
+        "attackType": "Range"
+    },
+    "iceMage_rangeStun_7": {
+        "key": "iceMage_rangeStun_7",
+        "abilityInfoId": "iceMage_rangeStun",
+        "attack": 1040,
+        "minAttackDistance": 10,
+        "aspd": 1.6,
+        "stunTime": 1,
+        "cooldown": 1,
+        "attackType": "Range"
+    },
+    "iceMage_rangeStun_8": {
+        "key": "iceMage_rangeStun_8",
+        "abilityInfoId": "iceMage_rangeStun",
+        "attack": 1080,
+        "minAttackDistance": 10,
+        "aspd": 1.6,
+        "stunTime": 1,
+        "cooldown": 1,
+        "attackType": "Range"
+    },
+    "iceMage_rangeStun_9": {
+        "key": "iceMage_rangeStun_9",
+        "abilityInfoId": "iceMage_rangeStun",
+        "attack": 1120,
+        "minAttackDistance": 10,
+        "aspd": 1.6,
+        "stunTime": 1,
+        "cooldown": 1,
+        "attackType": "Range"
+    },
+    "iceMage_rangeStun_10": {
+        "key": "iceMage_rangeStun_10",
+        "abilityInfoId": "iceMage_rangeStun",
+        "attack": 1160,
+        "minAttackDistance": 10,
+        "aspd": 1.6,
+        "stunTime": 1,
+        "cooldown": 1,
+        "attackType": "Range"
+    }
+}

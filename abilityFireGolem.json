@@ -1,0 +1,112 @@
+{
+    "vulkanGolem_fury_1": {
+        "key": "vulkanGolem_fury_1",
+        "abilityInfoId": "vulkanGolem_fury",
+        "fireGolemHealthThresholdCoefficient": 0.5,
+        "attackSpeedMultiplier": 0.8,
+        "moveSpeedMultiplier": 1.4,
+        "aspd": 1,
+        "deathAoeRadius": 4.5,
+        "deathAoeAttack": 300,
+        "deathAttackType": "Melee"
+    },
+    "vulkanGolem_fury_2": {
+        "key": "vulkanGolem_fury_2",
+        "abilityInfoId": "vulkanGolem_fury",
+        "fireGolemHealthThresholdCoefficient": 0.5,
+        "attackSpeedMultiplier": 0.7,
+        "moveSpeedMultiplier": 1.5,
+        "aspd": 1,
+        "deathAoeRadius": 4.5,
+        "deathAoeAttack": 400,
+        "deathAttackType": "Melee"
+    },
+    "vulkanGolem_fury_3": {
+        "key": "vulkanGolem_fury_3",
+        "abilityInfoId": "vulkanGolem_fury",
+        "fireGolemHealthThresholdCoefficient": 0.5,
+        "attackSpeedMultiplier": 0.7,
+        "moveSpeedMultiplier": 1.5,
+        "aspd": 1,
+        "deathAoeRadius": 4.5,
+        "deathAoeAttack": 500,
+        "deathAttackType": "Melee"
+    },
+    "vulkanGolem_fury_4": {
+        "key": "vulkanGolem_fury_4",
+        "abilityInfoId": "vulkanGolem_fury",
+        "fireGolemHealthThresholdCoefficient": 0.5,
+        "attackSpeedMultiplier": 0.7,
+        "moveSpeedMultiplier": 1.6,
+        "aspd": 1,
+        "deathAoeRadius": 4.5,
+        "deathAoeAttack": 600,
+        "deathAttackType": "Melee"
+    },
+    "vulkanGolem_fury_5": {
+        "key": "vulkanGolem_fury_5",
+        "abilityInfoId": "vulkanGolem_fury",
+        "fireGolemHealthThresholdCoefficient": 0.5,
+        "attackSpeedMultiplier": 0.6,
+        "moveSpeedMultiplier": 1.6,
+        "aspd": 1,
+        "deathAoeRadius": 4.5,
+        "deathAoeAttack": 700,
+        "deathAttackType": "Melee"
+    },
+    "vulkanGolem_fury_6": {
+        "key": "vulkanGolem_fury_6",
+        "abilityInfoId": "vulkanGolem_fury",
+        "fireGolemHealthThresholdCoefficient": 0.5,
+        "attackSpeedMultiplier": 0.6,
+        "moveSpeedMultiplier": 1.7,
+        "aspd": 1,
+        "deathAoeRadius": 4.5,
+        "deathAoeAttack": 800,
+        "deathAttackType": "Melee"
+    },
+    "vulkanGolem_fury_7": {
+        "key": "vulkanGolem_fury_7",
+        "abilityInfoId": "vulkanGolem_fury",
+        "fireGolemHealthThresholdCoefficient": 0.5,
+        "attackSpeedMultiplier": 0.6,
+        "moveSpeedMultiplier": 1.7,
+        "aspd": 1,
+        "deathAoeRadius": 4.5,
+        "deathAoeAttack": 900,
+        "deathAttackType": "Melee"
+    },
+    "vulkanGolem_fury_8": {
+        "key": "vulkanGolem_fury_8",
+        "abilityInfoId": "vulkanGolem_fury",
+        "fireGolemHealthThresholdCoefficient": 0.5,
+        "attackSpeedMultiplier": 0.5,
+        "moveSpeedMultiplier": 1.8,
+        "aspd": 1,
+        "deathAoeRadius": 4.5,
+        "deathAoeAttack": 1000,
+        "deathAttackType": "Melee"
+    },
+    "vulkanGolem_fury_9": {
+        "key": "vulkanGolem_fury_9",
+        "abilityInfoId": "vulkanGolem_fury",
+        "fireGolemHealthThresholdCoefficient": 0.5,
+        "attackSpeedMultiplier": 0.5,
+        "moveSpeedMultiplier": 1.8,
+        "aspd": 1,
+        "deathAoeRadius": 4.5,
+        "deathAoeAttack": 1100,
+        "deathAttackType": "Melee"
+    },
+    "vulkanGolem_fury_10": {
+        "key": "vulkanGolem_fury_10",
+        "abilityInfoId": "vulkanGolem_fury",
+        "fireGolemHealthThresholdCoefficient": 0.5,
+        "attackSpeedMultiplier": 0.4,
+        "moveSpeedMultiplier": 1.9,
+        "aspd": 1,
+        "deathAoeRadius": 4.5,
+        "deathAoeAttack": 1200,
+        "deathAttackType": "Melee"
+    }
+}

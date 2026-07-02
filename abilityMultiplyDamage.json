@@ -1,0 +1,44 @@
+{
+    "bossDragon_ability_passive_melee": {
+        "key": "bossDragon_ability_passive_melee",
+        "abilityInfoId": "bossDragon_passive_melee",
+        "meleeDamageMultiplier": 0.7,
+        "rangeDamageMultiplier": 1
+    },
+    "bossDragon_ability_passive_range": {
+        "key": "bossDragon_ability_passive_range",
+        "abilityInfoId": "bossDragon_passive_range",
+        "meleeDamageMultiplier": 1,
+        "rangeDamageMultiplier": 0.7
+    },
+    "bossSpiderQueen_ability_passive_melee": {
+        "key": "bossSpiderQueen_ability_passive_melee",
+        "abilityInfoId": "bossSpiderQueen_passive_melee",
+        "meleeDamageMultiplier": 0.7,
+        "rangeDamageMultiplier": 1
+    },
+    "bossSpiderQueen_ability_passive_range": {
+        "key": "bossSpiderQueen_ability_passive_range",
+        "abilityInfoId": "bossSpiderQueen_passive_range",
+        "meleeDamageMultiplier": 1,
+        "rangeDamageMultiplier": 0.7
+    },
+    "bossKraken_ability_passive_melee": {
+        "key": "bossKraken_ability_passive_melee",
+        "abilityInfoId": "bossKraken_ability_passive_melee",
+        "meleeDamageMultiplier": 0.7,
+        "rangeDamageMultiplier": 1
+    },
+    "bossKraken_ability_passive_range": {
+        "key": "bossKraken_ability_passive_range",
+        "abilityInfoId": "bossKraken_ability_passive_range",
+        "meleeDamageMultiplier": 1,
+        "rangeDamageMultiplier": 0.7
+    },
+    "bossSand_ability_passive_range": {
+        "key": "bossSand_ability_passive_range",
+        "abilityInfoId": "bossSand_ability_passive_range",
+        "meleeDamageMultiplier": 1,
+        "rangeDamageMultiplier": 0.7
+    }
+}

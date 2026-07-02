@@ -1,0 +1,191 @@
+{
+    "necromancer_summon_1": {
+        "key": "necromancer_summon_1",
+        "abilityInfoId": "necromancer_summon",
+        "aspd": 1.3,
+        "summonedTroopId": "skeleton",
+        "triggerNumber": 5,
+        "cooldown": 0,
+        "summonDelay": 1.2
+    },
+    "undeadWarrior_cursedArmy_1": {
+        "key": "undeadWarrior_cursedArmy_1",
+        "abilityInfoId": "undeadWarrior_cursedArmy",
+        "aspd": 5,
+        "summonedTroopId": "undeadSkeleton",
+        "triggerNumber": 0,
+        "cooldown": 15,
+        "summonDelay": 3.4
+    },
+    "undeadWarrior_cursedArmy_2": {
+        "key": "undeadWarrior_cursedArmy_2",
+        "abilityInfoId": "undeadWarrior_cursedArmy",
+        "aspd": 5,
+        "summonedTroopId": "undeadSkeleton",
+        "triggerNumber": 0,
+        "cooldown": 15,
+        "summonDelay": 3.4
+    },
+    "undeadWarrior_cursedArmy_3": {
+        "key": "undeadWarrior_cursedArmy_3",
+        "abilityInfoId": "undeadWarrior_cursedArmy",
+        "aspd": 5,
+        "summonedTroopId": "undeadSkeleton",
+        "triggerNumber": 0,
+        "cooldown": 15,
+        "summonDelay": 3.4
+    },
+    "undeadWarrior_cursedArmy_4": {
+        "key": "undeadWarrior_cursedArmy_4",
+        "abilityInfoId": "undeadWarrior_cursedArmy",
+        "aspd": 5,
+        "summonedTroopId": "undeadSkeleton",
+        "triggerNumber": 0,
+        "cooldown": 14,
+        "summonDelay": 3.4
+    },
+    "undeadWarrior_cursedArmy_5": {
+        "key": "undeadWarrior_cursedArmy_5",
+        "abilityInfoId": "undeadWarrior_cursedArmy",
+        "aspd": 5,
+        "summonedTroopId": "undeadSkeleton",
+        "triggerNumber": 0,
+        "cooldown": 14,
+        "summonDelay": 3.4
+    },
+    "undeadWarrior_cursedArmy_6": {
+        "key": "undeadWarrior_cursedArmy_6",
+        "abilityInfoId": "undeadWarrior_cursedArmy",
+        "aspd": 5,
+        "summonedTroopId": "undeadSkeleton",
+        "triggerNumber": 0,
+        "cooldown": 14,
+        "summonDelay": 3.4
+    },
+    "undeadWarrior_cursedArmy_7": {
+        "key": "undeadWarrior_cursedArmy_7",
+        "abilityInfoId": "undeadWarrior_cursedArmy",
+        "aspd": 5,
+        "summonedTroopId": "undeadSkeleton",
+        "triggerNumber": 0,
+        "cooldown": 14,
+        "summonDelay": 3.4
+    },
+    "undeadWarrior_cursedArmy_8": {
+        "key": "undeadWarrior_cursedArmy_8",
+        "abilityInfoId": "undeadWarrior_cursedArmy",
+        "aspd": 5,
+        "summonedTroopId": "undeadSkeleton",
+        "triggerNumber": 0,
+        "cooldown": 13,
+        "summonDelay": 3.4
+    },
+    "undeadWarrior_cursedArmy_9": {
+        "key": "undeadWarrior_cursedArmy_9",
+        "abilityInfoId": "undeadWarrior_cursedArmy",
+        "aspd": 5,
+        "summonedTroopId": "undeadSkeleton",
+        "triggerNumber": 0,
+        "cooldown": 13,
+        "summonDelay": 3.4
+    },
+    "undeadWarrior_cursedArmy_10": {
+        "key": "undeadWarrior_cursedArmy_10",
+        "abilityInfoId": "undeadWarrior_cursedArmy",
+        "aspd": 5,
+        "summonedTroopId": "undeadSkeleton",
+        "triggerNumber": 0,
+        "cooldown": 13,
+        "summonDelay": 3.4
+    },
+    "undeadPestilence_undeadRat_1": {
+        "key": "undeadPestilence_undeadRat_1",
+        "abilityInfoId": "undeadPestilence_undeadRat",
+        "aspd": 1.2,
+        "summonedTroopId": "undeadRat",
+        "triggerNumber": 5,
+        "cooldown": 16,
+        "summonDelay": 1.2
+    },
+    "undeadPestilence_undeadRat_2": {
+        "key": "undeadPestilence_undeadRat_2",
+        "abilityInfoId": "undeadPestilence_undeadRat",
+        "aspd": 1.2,
+        "summonedTroopId": "undeadRat",
+        "triggerNumber": 5,
+        "cooldown": 16,
+        "summonDelay": 1.2
+    },
+    "undeadPestilence_undeadRat_3": {
+        "key": "undeadPestilence_undeadRat_3",
+        "abilityInfoId": "undeadPestilence_undeadRat",
+        "aspd": 1.2,
+        "summonedTroopId": "undeadRat",
+        "triggerNumber": 5,
+        "cooldown": 16,
+        "summonDelay": 1.2
+    },
+    "undeadPestilence_undeadRat_4": {
+        "key": "undeadPestilence_undeadRat_4",
+        "abilityInfoId": "undeadPestilence_undeadRat",
+        "aspd": 1.2,
+        "summonedTroopId": "undeadRat",
+        "triggerNumber": 5,
+        "cooldown": 16,
+        "summonDelay": 1.2
+    },
+    "undeadPestilence_undeadRat_5": {
+        "key": "undeadPestilence_undeadRat_5",
+        "abilityInfoId": "undeadPestilence_undeadRat",
+        "aspd": 1.2,
+        "summonedTroopId": "undeadRat",
+        "triggerNumber": 5,
+        "cooldown": 15,
+        "summonDelay": 1.2
+    },
+    "undeadPestilence_undeadRat_6": {
+        "key": "undeadPestilence_undeadRat_6",
+        "abilityInfoId": "undeadPestilence_undeadRat",
+        "aspd": 1.2,
+        "summonedTroopId": "undeadRat",
+        "triggerNumber": 5,
+        "cooldown": 15,
+        "summonDelay": 1.2
+    },
+    "undeadPestilence_undeadRat_7": {
+        "key": "undeadPestilence_undeadRat_7",
+        "abilityInfoId": "undeadPestilence_undeadRat",
+        "aspd": 1.2,
+        "summonedTroopId": "undeadRat",
+        "triggerNumber": 5,
+        "cooldown": 15,
+        "summonDelay": 1.2
+    },
+    "undeadPestilence_undeadRat_8": {
+        "key": "undeadPestilence_undeadRat_8",
+        "abilityInfoId": "undeadPestilence_undeadRat",
+        "aspd": 1.2,
+        "summonedTroopId": "undeadRat",
+        "triggerNumber": 5,
+        "cooldown": 14,
+        "summonDelay": 1.2
+    },
+    "undeadPestilence_undeadRat_9": {
+        "key": "undeadPestilence_undeadRat_9",
+        "abilityInfoId": "undeadPestilence_undeadRat",
+        "aspd": 1.2,
+        "summonedTroopId": "undeadRat",
+        "triggerNumber": 5,
+        "cooldown": 14,
+        "summonDelay": 1.2
+    },
+    "undeadPestilence_undeadRat_10": {
+        "key": "undeadPestilence_undeadRat_10",
+        "abilityInfoId": "undeadPestilence_undeadRat",
+        "aspd": 1.2,
+        "summonedTroopId": "undeadRat",
+        "triggerNumber": 5,
+        "cooldown": 12,
+        "summonDelay": 1.2
+    }
+}

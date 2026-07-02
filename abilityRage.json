@@ -1,0 +1,202 @@
+{
+    "mountainsChampion_abilityRage_1": {
+        "key": "mountainsChampion_abilityRage_1",
+        "abilityInfoId": "abilityRage",
+        "modelScaleDelta": 0.15,
+        "attackMultiplier": 0.5,
+        "attackMultiplierDelta": 0.1,
+        "maxCount": 5,
+        "aspd": 1.433,
+        "triggerNumber": 3
+    },
+    "mountainsChampion_abilityRage_2": {
+        "key": "mountainsChampion_abilityRage_2",
+        "abilityInfoId": "abilityRage",
+        "modelScaleDelta": 0.15,
+        "attackMultiplier": 0.5,
+        "attackMultiplierDelta": 0.1,
+        "maxCount": 5,
+        "aspd": 1.433,
+        "triggerNumber": 3
+    },
+    "mountainsChampion_abilityRage_3": {
+        "key": "mountainsChampion_abilityRage_3",
+        "abilityInfoId": "abilityRage",
+        "modelScaleDelta": 0.15,
+        "attackMultiplier": 0.5,
+        "attackMultiplierDelta": 0.1,
+        "maxCount": 5,
+        "aspd": 1.433,
+        "triggerNumber": 3
+    },
+    "mountainsChampion_abilityRage_4": {
+        "key": "mountainsChampion_abilityRage_4",
+        "abilityInfoId": "abilityRage",
+        "modelScaleDelta": 0.15,
+        "attackMultiplier": 0.5,
+        "attackMultiplierDelta": 0.1,
+        "maxCount": 5,
+        "aspd": 1.433,
+        "triggerNumber": 3
+    },
+    "mountainsChampion_abilityRage_5": {
+        "key": "mountainsChampion_abilityRage_5",
+        "abilityInfoId": "abilityRage",
+        "modelScaleDelta": 0.15,
+        "attackMultiplier": 0.5,
+        "attackMultiplierDelta": 0.1,
+        "maxCount": 5,
+        "aspd": 1.433,
+        "triggerNumber": 3
+    },
+    "mountainsChampion_abilityRage_6": {
+        "key": "mountainsChampion_abilityRage_6",
+        "abilityInfoId": "abilityRage",
+        "modelScaleDelta": 0.15,
+        "attackMultiplier": 0.5,
+        "attackMultiplierDelta": 0.1,
+        "maxCount": 5,
+        "aspd": 1.433,
+        "triggerNumber": 3
+    },
+    "mountainsChampion_abilityRage_7": {
+        "key": "mountainsChampion_abilityRage_7",
+        "abilityInfoId": "abilityRage",
+        "modelScaleDelta": 0.15,
+        "attackMultiplier": 0.5,
+        "attackMultiplierDelta": 0.1,
+        "maxCount": 5,
+        "aspd": 1.433,
+        "triggerNumber": 3
+    },
+    "mountainsChampion_abilityRage_8": {
+        "key": "mountainsChampion_abilityRage_8",
+        "abilityInfoId": "abilityRage",
+        "modelScaleDelta": 0.15,
+        "attackMultiplier": 0.5,
+        "attackMultiplierDelta": 0.1,
+        "maxCount": 5,
+        "aspd": 1.433,
+        "triggerNumber": 3
+    },
+    "mountainsChampion_abilityRage_9": {
+        "key": "mountainsChampion_abilityRage_9",
+        "abilityInfoId": "abilityRage",
+        "modelScaleDelta": 0.15,
+        "attackMultiplier": 0.5,
+        "attackMultiplierDelta": 0.1,
+        "maxCount": 5,
+        "aspd": 1.433,
+        "triggerNumber": 3
+    },
+    "mountainsChampion_abilityRage_10": {
+        "key": "mountainsChampion_abilityRage_10",
+        "abilityInfoId": "abilityRage",
+        "modelScaleDelta": 0.15,
+        "attackMultiplier": 0.5,
+        "attackMultiplierDelta": 0.1,
+        "maxCount": 5,
+        "aspd": 1.433,
+        "triggerNumber": 3
+    },
+    "axeThrowers_abilityRage_1": {
+        "key": "axeThrowers_abilityRage_1",
+        "abilityInfoId": "axeThrowers_Rage",
+        "modelScaleDelta": 0.15,
+        "attackMultiplier": 0.3,
+        "attackMultiplierDelta": 0.1,
+        "maxCount": 5,
+        "aspd": 1,
+        "triggerNumber": 3
+    },
+    "axeThrowers_abilityRage_2": {
+        "key": "axeThrowers_abilityRage_2",
+        "abilityInfoId": "axeThrowers_Rage",
+        "modelScaleDelta": 0.15,
+        "attackMultiplier": 0.3,
+        "attackMultiplierDelta": 0.1,
+        "maxCount": 5,
+        "aspd": 1,
+        "triggerNumber": 3
+    },
+    "axeThrowers_abilityRage_3": {
+        "key": "axeThrowers_abilityRage_3",
+        "abilityInfoId": "axeThrowers_Rage",
+        "modelScaleDelta": 0.15,
+        "attackMultiplier": 0.3,
+        "attackMultiplierDelta": 0.1,
+        "maxCount": 5,
+        "aspd": 1,
+        "triggerNumber": 3
+    },
+    "axeThrowers_abilityRage_4": {
+        "key": "axeThrowers_abilityRage_4",
+        "abilityInfoId": "axeThrowers_Rage",
+        "modelScaleDelta": 0.15,
+        "attackMultiplier": 0.3,
+        "attackMultiplierDelta": 0.1,
+        "maxCount": 5,
+        "aspd": 1,
+        "triggerNumber": 3
+    },
+    "axeThrowers_abilityRage_5": {
+        "key": "axeThrowers_abilityRage_5",
+        "abilityInfoId": "axeThrowers_Rage",
+        "modelScaleDelta": 0.15,
+        "attackMultiplier": 0.3,
+        "attackMultiplierDelta": 0.1,
+        "maxCount": 5,
+        "aspd": 1,
+        "triggerNumber": 3
+    },
+    "axeThrowers_abilityRage_6": {
+        "key": "axeThrowers_abilityRage_6",
+        "abilityInfoId": "axeThrowers_Rage",
+        "modelScaleDelta": 0.15,
+        "attackMultiplier": 0.3,
+        "attackMultiplierDelta": 0.1,
+        "maxCount": 5,
+        "aspd": 1,
+        "triggerNumber": 3
+    },
+    "axeThrowers_abilityRage_7": {
+        "key": "axeThrowers_abilityRage_7",
+        "abilityInfoId": "axeThrowers_Rage",
+        "modelScaleDelta": 0.15,
+        "attackMultiplier": 0.3,
+        "attackMultiplierDelta": 0.1,
+        "maxCount": 5,
+        "aspd": 1,
+        "triggerNumber": 3
+    },
+    "axeThrowers_abilityRage_8": {
+        "key": "axeThrowers_abilityRage_8",
+        "abilityInfoId": "axeThrowers_Rage",
+        "modelScaleDelta": 0.15,
+        "attackMultiplier": 0.3,
+        "attackMultiplierDelta": 0.1,
+        "maxCount": 5,
+        "aspd": 1,
+        "triggerNumber": 3
+    },
+    "axeThrowers_abilityRage_9": {
+        "key": "axeThrowers_abilityRage_9",
+        "abilityInfoId": "axeThrowers_Rage",
+        "modelScaleDelta": 0.15,
+        "attackMultiplier": 0.3,
+        "attackMultiplierDelta": 0.1,
+        "maxCount": 5,
+        "aspd": 1,
+        "triggerNumber": 3
+    },
+    "axeThrowers_abilityRage_10": {
+        "key": "axeThrowers_abilityRage_10",
+        "abilityInfoId": "axeThrowers_Rage",
+        "modelScaleDelta": 0.15,
+        "attackMultiplier": 0.3,
+        "attackMultiplierDelta": 0.1,
+        "maxCount": 5,
+        "aspd": 1,
+        "triggerNumber": 3
+    }
+}

@@ -1,0 +1,102 @@
+{
+    "storm_teleport_1": {
+        "key": "storm_teleport_1",
+        "abilityInfoId": "storm_teleport",
+        "attack": 120,
+        "aspd": 1,
+        "aspdTeleportIn": 0.233,
+        "aspdTeleportOut": 0.333,
+        "minAttackDistance": 1.2,
+        "attackType": "Range"
+    },
+    "storm_teleport_2": {
+        "key": "storm_teleport_2",
+        "abilityInfoId": "storm_teleport",
+        "attack": 160,
+        "aspd": 1,
+        "aspdTeleportIn": 0.233,
+        "aspdTeleportOut": 0.333,
+        "minAttackDistance": 1.2,
+        "attackType": "Range"
+    },
+    "storm_teleport_3": {
+        "key": "storm_teleport_3",
+        "abilityInfoId": "storm_teleport",
+        "attack": 240,
+        "aspd": 1,
+        "aspdTeleportIn": 0.233,
+        "aspdTeleportOut": 0.333,
+        "minAttackDistance": 1.2,
+        "attackType": "Range"
+    },
+    "storm_teleport_4": {
+        "key": "storm_teleport_4",
+        "abilityInfoId": "storm_teleport",
+        "attack": 300,
+        "aspd": 1,
+        "aspdTeleportIn": 0.233,
+        "aspdTeleportOut": 0.333,
+        "minAttackDistance": 1.2,
+        "attackType": "Range"
+    },
+    "storm_teleport_5": {
+        "key": "storm_teleport_5",
+        "abilityInfoId": "storm_teleport",
+        "attack": 360,
+        "aspd": 1,
+        "aspdTeleportIn": 0.233,
+        "aspdTeleportOut": 0.333,
+        "minAttackDistance": 1.2,
+        "attackType": "Range"
+    },
+    "storm_teleport_6": {
+        "key": "storm_teleport_6",
+        "abilityInfoId": "storm_teleport",
+        "attack": 420,
+        "aspd": 1,
+        "aspdTeleportIn": 0.233,
+        "aspdTeleportOut": 0.333,
+        "minAttackDistance": 1.2,
+        "attackType": "Range"
+    },
+    "storm_teleport_7": {
+        "key": "storm_teleport_7",
+        "abilityInfoId": "storm_teleport",
+        "attack": 480,
+        "aspd": 1,
+        "aspdTeleportIn": 0.233,
+        "aspdTeleportOut": 0.333,
+        "minAttackDistance": 1.2,
+        "attackType": "Range"
+    },
+    "storm_teleport_8": {
+        "key": "storm_teleport_8",
+        "abilityInfoId": "storm_teleport",
+        "attack": 540,
+        "aspd": 1,
+        "aspdTeleportIn": 0.233,
+        "aspdTeleportOut": 0.333,
+        "minAttackDistance": 1.2,
+        "attackType": "Range"
+    },
+    "storm_teleport_9": {
+        "key": "storm_teleport_9",
+        "abilityInfoId": "storm_teleport",
+        "attack": 920,
+        "aspd": 1,
+        "aspdTeleportIn": 0.233,
+        "aspdTeleportOut": 0.333,
+        "minAttackDistance": 1.2,
+        "attackType": "Range"
+    },
+    "storm_teleport_10": {
+        "key": "storm_teleport_10",
+        "abilityInfoId": "storm_teleport",
+        "attack": 1090,
+        "aspd": 1,
+        "aspdTeleportIn": 0.233,
+        "aspdTeleportOut": 0.333,
+        "minAttackDistance": 1.2,
+        "attackType": "Range"
+    }
+}

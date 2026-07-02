@@ -1,0 +1,102 @@
+{
+    "phoenix_rebirthLimited_1": {
+        "key": "phoenix_rebirthLimited_1",
+        "abilityInfoId": "phoenix_rebirthLimited",
+        "attack": 300,
+        "aoeRadius": 3,
+        "regenerationDelay": 4,
+        "numRebirths": 1,
+        "rebirthEffect": "rebirthOnDeath",
+        "attackType": "Range"
+    },
+    "phoenix_rebirthLimited_2": {
+        "key": "phoenix_rebirthLimited_2",
+        "abilityInfoId": "phoenix_rebirthLimited",
+        "attack": 350,
+        "aoeRadius": 3,
+        "regenerationDelay": 3.5,
+        "numRebirths": 1,
+        "rebirthEffect": "rebirthOnDeath",
+        "attackType": "Range"
+    },
+    "phoenix_rebirthLimited_3": {
+        "key": "phoenix_rebirthLimited_3",
+        "abilityInfoId": "phoenix_rebirthLimited",
+        "attack": 350,
+        "aoeRadius": 3.5,
+        "regenerationDelay": 3.5,
+        "numRebirths": 1,
+        "rebirthEffect": "rebirthOnDeath",
+        "attackType": "Range"
+    },
+    "phoenix_rebirthLimited_4": {
+        "key": "phoenix_rebirthLimited_4",
+        "abilityInfoId": "phoenix_rebirthLimited",
+        "attack": 400,
+        "aoeRadius": 3.5,
+        "regenerationDelay": 3.5,
+        "numRebirths": 1,
+        "rebirthEffect": "rebirthOnDeath",
+        "attackType": "Range"
+    },
+    "phoenix_rebirthLimited_5": {
+        "key": "phoenix_rebirthLimited_5",
+        "abilityInfoId": "phoenix_rebirthLimited",
+        "attack": 450,
+        "aoeRadius": 3.5,
+        "regenerationDelay": 3,
+        "numRebirths": 2,
+        "rebirthEffect": "rebirthOnDeath",
+        "attackType": "Range"
+    },
+    "phoenix_rebirthLimited_6": {
+        "key": "phoenix_rebirthLimited_6",
+        "abilityInfoId": "phoenix_rebirthLimited",
+        "attack": 450,
+        "aoeRadius": 4,
+        "regenerationDelay": 3,
+        "numRebirths": 2,
+        "rebirthEffect": "rebirthOnDeath",
+        "attackType": "Range"
+    },
+    "phoenix_rebirthLimited_7": {
+        "key": "phoenix_rebirthLimited_7",
+        "abilityInfoId": "phoenix_rebirthLimited",
+        "attack": 500,
+        "aoeRadius": 4,
+        "regenerationDelay": 3,
+        "numRebirths": 2,
+        "rebirthEffect": "rebirthOnDeath",
+        "attackType": "Range"
+    },
+    "phoenix_rebirthLimited_8": {
+        "key": "phoenix_rebirthLimited_8",
+        "abilityInfoId": "phoenix_rebirthLimited",
+        "attack": 500,
+        "aoeRadius": 4,
+        "regenerationDelay": 2.5,
+        "numRebirths": 3,
+        "rebirthEffect": "rebirthOnDeath",
+        "attackType": "Range"
+    },
+    "phoenix_rebirthLimited_9": {
+        "key": "phoenix_rebirthLimited_9",
+        "abilityInfoId": "phoenix_rebirthLimited",
+        "attack": 500,
+        "aoeRadius": 4.5,
+        "regenerationDelay": 2.5,
+        "numRebirths": 3,
+        "rebirthEffect": "rebirthOnDeath",
+        "attackType": "Range"
+    },
+    "phoenix_rebirthLimited_10": {
+        "key": "phoenix_rebirthLimited_10",
+        "abilityInfoId": "phoenix_rebirthLimited",
+        "attack": 600,
+        "aoeRadius": 5,
+        "regenerationDelay": 2,
+        "numRebirths": 3,
+        "rebirthEffect": "rebirthOnDeath",
+        "attackType": "Range"
+    }
+}

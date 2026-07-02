@@ -1,0 +1,3102 @@
+{
+    "bossDragon_piercingFire_1": {
+        "key": "bossDragon_piercingFire_1",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 6000,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragon_piercingFire_2": {
+        "key": "bossDragon_piercingFire_2",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 9000,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragon_piercingFire_3": {
+        "key": "bossDragon_piercingFire_3",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 13000,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragon_piercingFire_4": {
+        "key": "bossDragon_piercingFire_4",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 18000,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragon_piercingFire_5": {
+        "key": "bossDragon_piercingFire_5",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 24000,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragon_piercingFire_6": {
+        "key": "bossDragon_piercingFire_6",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 29000,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragon_piercingFire_7": {
+        "key": "bossDragon_piercingFire_7",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 35000,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragon_piercingFire_8": {
+        "key": "bossDragon_piercingFire_8",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 42000,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragon_piercingFire_9": {
+        "key": "bossDragon_piercingFire_9",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 50000,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragon_piercingFire_10": {
+        "key": "bossDragon_piercingFire_10",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 60000,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_1": {
+        "key": "bossDragonNew_piercingFire_1",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 6000,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_2": {
+        "key": "bossDragonNew_piercingFire_2",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 6060,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_3": {
+        "key": "bossDragonNew_piercingFire_3",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 6121,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_4": {
+        "key": "bossDragonNew_piercingFire_4",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 6182,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_5": {
+        "key": "bossDragonNew_piercingFire_5",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 6244,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_6": {
+        "key": "bossDragonNew_piercingFire_6",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 6306,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_7": {
+        "key": "bossDragonNew_piercingFire_7",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 6369,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_8": {
+        "key": "bossDragonNew_piercingFire_8",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 6433,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_9": {
+        "key": "bossDragonNew_piercingFire_9",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 6497,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_10": {
+        "key": "bossDragonNew_piercingFire_10",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 6562,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_11": {
+        "key": "bossDragonNew_piercingFire_11",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 6628,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_12": {
+        "key": "bossDragonNew_piercingFire_12",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 6694,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_13": {
+        "key": "bossDragonNew_piercingFire_13",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 6761,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_14": {
+        "key": "bossDragonNew_piercingFire_14",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 6829,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_15": {
+        "key": "bossDragonNew_piercingFire_15",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 6897,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_16": {
+        "key": "bossDragonNew_piercingFire_16",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 6966,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_17": {
+        "key": "bossDragonNew_piercingFire_17",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 7035,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_18": {
+        "key": "bossDragonNew_piercingFire_18",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 7106,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_19": {
+        "key": "bossDragonNew_piercingFire_19",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 7177,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_20": {
+        "key": "bossDragonNew_piercingFire_20",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 7249,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_21": {
+        "key": "bossDragonNew_piercingFire_21",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 7321,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_22": {
+        "key": "bossDragonNew_piercingFire_22",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 7394,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_23": {
+        "key": "bossDragonNew_piercingFire_23",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 7468,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_24": {
+        "key": "bossDragonNew_piercingFire_24",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 7543,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_25": {
+        "key": "bossDragonNew_piercingFire_25",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 7618,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_26": {
+        "key": "bossDragonNew_piercingFire_26",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 7695,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_27": {
+        "key": "bossDragonNew_piercingFire_27",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 7772,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_28": {
+        "key": "bossDragonNew_piercingFire_28",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 7849,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_29": {
+        "key": "bossDragonNew_piercingFire_29",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 7928,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_30": {
+        "key": "bossDragonNew_piercingFire_30",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 8007,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_31": {
+        "key": "bossDragonNew_piercingFire_31",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 8087,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_32": {
+        "key": "bossDragonNew_piercingFire_32",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 8168,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_33": {
+        "key": "bossDragonNew_piercingFire_33",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 8250,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_34": {
+        "key": "bossDragonNew_piercingFire_34",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 8332,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_35": {
+        "key": "bossDragonNew_piercingFire_35",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 8415,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_36": {
+        "key": "bossDragonNew_piercingFire_36",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 8500,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_37": {
+        "key": "bossDragonNew_piercingFire_37",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 8585,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_38": {
+        "key": "bossDragonNew_piercingFire_38",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 8670,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_39": {
+        "key": "bossDragonNew_piercingFire_39",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 8757,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_40": {
+        "key": "bossDragonNew_piercingFire_40",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 8845,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_41": {
+        "key": "bossDragonNew_piercingFire_41",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 8933,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_42": {
+        "key": "bossDragonNew_piercingFire_42",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 9023,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_43": {
+        "key": "bossDragonNew_piercingFire_43",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 9113,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_44": {
+        "key": "bossDragonNew_piercingFire_44",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 9204,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_45": {
+        "key": "bossDragonNew_piercingFire_45",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 9296,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_46": {
+        "key": "bossDragonNew_piercingFire_46",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 9389,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_47": {
+        "key": "bossDragonNew_piercingFire_47",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 9483,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_48": {
+        "key": "bossDragonNew_piercingFire_48",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 9578,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_49": {
+        "key": "bossDragonNew_piercingFire_49",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 9673,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_50": {
+        "key": "bossDragonNew_piercingFire_50",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 9770,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_51": {
+        "key": "bossDragonNew_piercingFire_51",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 9868,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_52": {
+        "key": "bossDragonNew_piercingFire_52",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 9966,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_53": {
+        "key": "bossDragonNew_piercingFire_53",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 10066,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_54": {
+        "key": "bossDragonNew_piercingFire_54",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 10167,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_55": {
+        "key": "bossDragonNew_piercingFire_55",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 10268,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_56": {
+        "key": "bossDragonNew_piercingFire_56",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 10371,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_57": {
+        "key": "bossDragonNew_piercingFire_57",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 10475,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_58": {
+        "key": "bossDragonNew_piercingFire_58",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 10580,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_59": {
+        "key": "bossDragonNew_piercingFire_59",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 10685,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_60": {
+        "key": "bossDragonNew_piercingFire_60",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 10792,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_61": {
+        "key": "bossDragonNew_piercingFire_61",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 10900,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_62": {
+        "key": "bossDragonNew_piercingFire_62",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 11009,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_63": {
+        "key": "bossDragonNew_piercingFire_63",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 11119,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_64": {
+        "key": "bossDragonNew_piercingFire_64",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 11230,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_65": {
+        "key": "bossDragonNew_piercingFire_65",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 11343,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_66": {
+        "key": "bossDragonNew_piercingFire_66",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 11456,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_67": {
+        "key": "bossDragonNew_piercingFire_67",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 11571,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_68": {
+        "key": "bossDragonNew_piercingFire_68",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 11686,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_69": {
+        "key": "bossDragonNew_piercingFire_69",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 11803,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_70": {
+        "key": "bossDragonNew_piercingFire_70",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 11921,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_71": {
+        "key": "bossDragonNew_piercingFire_71",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 12041,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_72": {
+        "key": "bossDragonNew_piercingFire_72",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 12161,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_73": {
+        "key": "bossDragonNew_piercingFire_73",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 12283,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_74": {
+        "key": "bossDragonNew_piercingFire_74",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 12405,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_75": {
+        "key": "bossDragonNew_piercingFire_75",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 12529,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_76": {
+        "key": "bossDragonNew_piercingFire_76",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 12655,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_77": {
+        "key": "bossDragonNew_piercingFire_77",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 12781,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_78": {
+        "key": "bossDragonNew_piercingFire_78",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 12909,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_79": {
+        "key": "bossDragonNew_piercingFire_79",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 13038,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_80": {
+        "key": "bossDragonNew_piercingFire_80",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 13169,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_81": {
+        "key": "bossDragonNew_piercingFire_81",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 13300,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_82": {
+        "key": "bossDragonNew_piercingFire_82",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 13433,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_83": {
+        "key": "bossDragonNew_piercingFire_83",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 13568,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_84": {
+        "key": "bossDragonNew_piercingFire_84",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 13703,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_85": {
+        "key": "bossDragonNew_piercingFire_85",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 13840,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_86": {
+        "key": "bossDragonNew_piercingFire_86",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 13979,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_87": {
+        "key": "bossDragonNew_piercingFire_87",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 14119,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_88": {
+        "key": "bossDragonNew_piercingFire_88",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 14260,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_89": {
+        "key": "bossDragonNew_piercingFire_89",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 14402,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_90": {
+        "key": "bossDragonNew_piercingFire_90",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 14546,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_91": {
+        "key": "bossDragonNew_piercingFire_91",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 14692,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_92": {
+        "key": "bossDragonNew_piercingFire_92",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 14839,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_93": {
+        "key": "bossDragonNew_piercingFire_93",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 14987,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_94": {
+        "key": "bossDragonNew_piercingFire_94",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 15137,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_95": {
+        "key": "bossDragonNew_piercingFire_95",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 15288,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_96": {
+        "key": "bossDragonNew_piercingFire_96",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 15441,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_97": {
+        "key": "bossDragonNew_piercingFire_97",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 15596,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_98": {
+        "key": "bossDragonNew_piercingFire_98",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 15752,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_99": {
+        "key": "bossDragonNew_piercingFire_99",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 15909,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_100": {
+        "key": "bossDragonNew_piercingFire_100",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 16068,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_101": {
+        "key": "bossDragonNew_piercingFire_101",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 16229,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_102": {
+        "key": "bossDragonNew_piercingFire_102",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 16391,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_103": {
+        "key": "bossDragonNew_piercingFire_103",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 16555,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_104": {
+        "key": "bossDragonNew_piercingFire_104",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 16721,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_105": {
+        "key": "bossDragonNew_piercingFire_105",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 16888,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_106": {
+        "key": "bossDragonNew_piercingFire_106",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 17057,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_107": {
+        "key": "bossDragonNew_piercingFire_107",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 17227,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_108": {
+        "key": "bossDragonNew_piercingFire_108",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 17400,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_109": {
+        "key": "bossDragonNew_piercingFire_109",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 17574,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_110": {
+        "key": "bossDragonNew_piercingFire_110",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 17749,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_111": {
+        "key": "bossDragonNew_piercingFire_111",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 17927,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_112": {
+        "key": "bossDragonNew_piercingFire_112",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 18106,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_113": {
+        "key": "bossDragonNew_piercingFire_113",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 18287,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_114": {
+        "key": "bossDragonNew_piercingFire_114",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 18470,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_115": {
+        "key": "bossDragonNew_piercingFire_115",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 18655,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_116": {
+        "key": "bossDragonNew_piercingFire_116",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 18841,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_117": {
+        "key": "bossDragonNew_piercingFire_117",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 19030,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_118": {
+        "key": "bossDragonNew_piercingFire_118",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 19220,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_119": {
+        "key": "bossDragonNew_piercingFire_119",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 19412,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_120": {
+        "key": "bossDragonNew_piercingFire_120",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 19606,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_121": {
+        "key": "bossDragonNew_piercingFire_121",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 19802,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_122": {
+        "key": "bossDragonNew_piercingFire_122",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 20000,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_123": {
+        "key": "bossDragonNew_piercingFire_123",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 20200,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_124": {
+        "key": "bossDragonNew_piercingFire_124",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 20402,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_125": {
+        "key": "bossDragonNew_piercingFire_125",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 20606,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_126": {
+        "key": "bossDragonNew_piercingFire_126",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 20812,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_127": {
+        "key": "bossDragonNew_piercingFire_127",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 21021,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_128": {
+        "key": "bossDragonNew_piercingFire_128",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 21231,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_129": {
+        "key": "bossDragonNew_piercingFire_129",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 21443,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_130": {
+        "key": "bossDragonNew_piercingFire_130",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 21658,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_131": {
+        "key": "bossDragonNew_piercingFire_131",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 21874,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_132": {
+        "key": "bossDragonNew_piercingFire_132",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 22093,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_133": {
+        "key": "bossDragonNew_piercingFire_133",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 22314,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_134": {
+        "key": "bossDragonNew_piercingFire_134",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 22537,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_135": {
+        "key": "bossDragonNew_piercingFire_135",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 22762,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_136": {
+        "key": "bossDragonNew_piercingFire_136",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 22990,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_137": {
+        "key": "bossDragonNew_piercingFire_137",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 23220,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_138": {
+        "key": "bossDragonNew_piercingFire_138",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 23452,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_139": {
+        "key": "bossDragonNew_piercingFire_139",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 23686,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_140": {
+        "key": "bossDragonNew_piercingFire_140",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 23923,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_141": {
+        "key": "bossDragonNew_piercingFire_141",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 24163,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_142": {
+        "key": "bossDragonNew_piercingFire_142",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 24404,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_143": {
+        "key": "bossDragonNew_piercingFire_143",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 24648,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_144": {
+        "key": "bossDragonNew_piercingFire_144",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 24895,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_145": {
+        "key": "bossDragonNew_piercingFire_145",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 25144,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_146": {
+        "key": "bossDragonNew_piercingFire_146",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 25395,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_147": {
+        "key": "bossDragonNew_piercingFire_147",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 25649,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_148": {
+        "key": "bossDragonNew_piercingFire_148",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 25906,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_149": {
+        "key": "bossDragonNew_piercingFire_149",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 26165,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_150": {
+        "key": "bossDragonNew_piercingFire_150",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 26426,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_151": {
+        "key": "bossDragonNew_piercingFire_151",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 26691,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_152": {
+        "key": "bossDragonNew_piercingFire_152",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 26957,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_153": {
+        "key": "bossDragonNew_piercingFire_153",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 27227,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_154": {
+        "key": "bossDragonNew_piercingFire_154",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 27499,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_155": {
+        "key": "bossDragonNew_piercingFire_155",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 27774,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_156": {
+        "key": "bossDragonNew_piercingFire_156",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 28052,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_157": {
+        "key": "bossDragonNew_piercingFire_157",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 28333,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_158": {
+        "key": "bossDragonNew_piercingFire_158",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 28616,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_159": {
+        "key": "bossDragonNew_piercingFire_159",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 28902,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_160": {
+        "key": "bossDragonNew_piercingFire_160",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 29191,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_161": {
+        "key": "bossDragonNew_piercingFire_161",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 29483,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_162": {
+        "key": "bossDragonNew_piercingFire_162",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 29778,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_163": {
+        "key": "bossDragonNew_piercingFire_163",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 30076,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_164": {
+        "key": "bossDragonNew_piercingFire_164",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 30376,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_165": {
+        "key": "bossDragonNew_piercingFire_165",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 30680,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_166": {
+        "key": "bossDragonNew_piercingFire_166",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 30987,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_167": {
+        "key": "bossDragonNew_piercingFire_167",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 31297,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_168": {
+        "key": "bossDragonNew_piercingFire_168",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 31610,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_169": {
+        "key": "bossDragonNew_piercingFire_169",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 31926,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_170": {
+        "key": "bossDragonNew_piercingFire_170",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 32245,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_171": {
+        "key": "bossDragonNew_piercingFire_171",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 32568,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_172": {
+        "key": "bossDragonNew_piercingFire_172",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 32893,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_173": {
+        "key": "bossDragonNew_piercingFire_173",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 33222,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_174": {
+        "key": "bossDragonNew_piercingFire_174",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 33554,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_175": {
+        "key": "bossDragonNew_piercingFire_175",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 33890,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_176": {
+        "key": "bossDragonNew_piercingFire_176",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 34229,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_177": {
+        "key": "bossDragonNew_piercingFire_177",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 34571,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_178": {
+        "key": "bossDragonNew_piercingFire_178",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 34917,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_179": {
+        "key": "bossDragonNew_piercingFire_179",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 35266,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_180": {
+        "key": "bossDragonNew_piercingFire_180",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 35619,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_181": {
+        "key": "bossDragonNew_piercingFire_181",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 35975,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_182": {
+        "key": "bossDragonNew_piercingFire_182",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 36335,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_183": {
+        "key": "bossDragonNew_piercingFire_183",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 36698,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_184": {
+        "key": "bossDragonNew_piercingFire_184",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 37065,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_185": {
+        "key": "bossDragonNew_piercingFire_185",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 37436,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_186": {
+        "key": "bossDragonNew_piercingFire_186",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 37810,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_187": {
+        "key": "bossDragonNew_piercingFire_187",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 38188,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_188": {
+        "key": "bossDragonNew_piercingFire_188",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 38570,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_189": {
+        "key": "bossDragonNew_piercingFire_189",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 38956,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_190": {
+        "key": "bossDragonNew_piercingFire_190",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 39345,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_191": {
+        "key": "bossDragonNew_piercingFire_191",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 39739,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_192": {
+        "key": "bossDragonNew_piercingFire_192",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 40136,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_193": {
+        "key": "bossDragonNew_piercingFire_193",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 40537,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_194": {
+        "key": "bossDragonNew_piercingFire_194",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 40943,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_195": {
+        "key": "bossDragonNew_piercingFire_195",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 41352,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_196": {
+        "key": "bossDragonNew_piercingFire_196",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 41766,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_197": {
+        "key": "bossDragonNew_piercingFire_197",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 42183,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_198": {
+        "key": "bossDragonNew_piercingFire_198",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 42605,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_199": {
+        "key": "bossDragonNew_piercingFire_199",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 43031,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_200": {
+        "key": "bossDragonNew_piercingFire_200",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 43461,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_201": {
+        "key": "bossDragonNew_piercingFire_201",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 43896,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_202": {
+        "key": "bossDragonNew_piercingFire_202",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 44335,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_203": {
+        "key": "bossDragonNew_piercingFire_203",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 44778,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_204": {
+        "key": "bossDragonNew_piercingFire_204",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 45226,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_205": {
+        "key": "bossDragonNew_piercingFire_205",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 45678,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_206": {
+        "key": "bossDragonNew_piercingFire_206",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 46135,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_207": {
+        "key": "bossDragonNew_piercingFire_207",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 46597,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_208": {
+        "key": "bossDragonNew_piercingFire_208",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 47063,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_209": {
+        "key": "bossDragonNew_piercingFire_209",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 47533,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_210": {
+        "key": "bossDragonNew_piercingFire_210",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 48009,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_211": {
+        "key": "bossDragonNew_piercingFire_211",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 48489,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_212": {
+        "key": "bossDragonNew_piercingFire_212",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 48973,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_213": {
+        "key": "bossDragonNew_piercingFire_213",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 49463,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_214": {
+        "key": "bossDragonNew_piercingFire_214",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 49958,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_215": {
+        "key": "bossDragonNew_piercingFire_215",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 50457,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_216": {
+        "key": "bossDragonNew_piercingFire_216",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 50962,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_217": {
+        "key": "bossDragonNew_piercingFire_217",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 51472,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_218": {
+        "key": "bossDragonNew_piercingFire_218",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 51986,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_219": {
+        "key": "bossDragonNew_piercingFire_219",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 52506,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_220": {
+        "key": "bossDragonNew_piercingFire_220",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 53031,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_221": {
+        "key": "bossDragonNew_piercingFire_221",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 53562,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_222": {
+        "key": "bossDragonNew_piercingFire_222",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 54097,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_223": {
+        "key": "bossDragonNew_piercingFire_223",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 54638,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_224": {
+        "key": "bossDragonNew_piercingFire_224",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 55185,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_225": {
+        "key": "bossDragonNew_piercingFire_225",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 55736,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_226": {
+        "key": "bossDragonNew_piercingFire_226",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 56294,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_227": {
+        "key": "bossDragonNew_piercingFire_227",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 56857,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_228": {
+        "key": "bossDragonNew_piercingFire_228",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 57425,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_229": {
+        "key": "bossDragonNew_piercingFire_229",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 58000,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_230": {
+        "key": "bossDragonNew_piercingFire_230",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 58580,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_231": {
+        "key": "bossDragonNew_piercingFire_231",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 59165,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_232": {
+        "key": "bossDragonNew_piercingFire_232",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 59757,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_233": {
+        "key": "bossDragonNew_piercingFire_233",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 60355,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_234": {
+        "key": "bossDragonNew_piercingFire_234",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 60958,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_235": {
+        "key": "bossDragonNew_piercingFire_235",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 61568,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_236": {
+        "key": "bossDragonNew_piercingFire_236",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 62183,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_237": {
+        "key": "bossDragonNew_piercingFire_237",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 62805,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_238": {
+        "key": "bossDragonNew_piercingFire_238",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 63433,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_239": {
+        "key": "bossDragonNew_piercingFire_239",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 64068,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_240": {
+        "key": "bossDragonNew_piercingFire_240",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 64708,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_241": {
+        "key": "bossDragonNew_piercingFire_241",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 65355,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_242": {
+        "key": "bossDragonNew_piercingFire_242",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 66009,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_243": {
+        "key": "bossDragonNew_piercingFire_243",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 66669,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_244": {
+        "key": "bossDragonNew_piercingFire_244",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 67336,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_245": {
+        "key": "bossDragonNew_piercingFire_245",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 68009,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_246": {
+        "key": "bossDragonNew_piercingFire_246",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 68689,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_247": {
+        "key": "bossDragonNew_piercingFire_247",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 69376,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_248": {
+        "key": "bossDragonNew_piercingFire_248",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 70070,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_249": {
+        "key": "bossDragonNew_piercingFire_249",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 70770,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_250": {
+        "key": "bossDragonNew_piercingFire_250",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 71478,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_251": {
+        "key": "bossDragonNew_piercingFire_251",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 72193,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_252": {
+        "key": "bossDragonNew_piercingFire_252",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 72915,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_253": {
+        "key": "bossDragonNew_piercingFire_253",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 73644,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_254": {
+        "key": "bossDragonNew_piercingFire_254",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 74380,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_255": {
+        "key": "bossDragonNew_piercingFire_255",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 75124,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_256": {
+        "key": "bossDragonNew_piercingFire_256",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 75875,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_257": {
+        "key": "bossDragonNew_piercingFire_257",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 76634,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_258": {
+        "key": "bossDragonNew_piercingFire_258",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 77401,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_259": {
+        "key": "bossDragonNew_piercingFire_259",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 78175,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_260": {
+        "key": "bossDragonNew_piercingFire_260",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 78956,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_261": {
+        "key": "bossDragonNew_piercingFire_261",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 79746,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_262": {
+        "key": "bossDragonNew_piercingFire_262",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 80543,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_263": {
+        "key": "bossDragonNew_piercingFire_263",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 81349,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_264": {
+        "key": "bossDragonNew_piercingFire_264",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 82162,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_265": {
+        "key": "bossDragonNew_piercingFire_265",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 82984,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_266": {
+        "key": "bossDragonNew_piercingFire_266",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 83814,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_267": {
+        "key": "bossDragonNew_piercingFire_267",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 84652,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_268": {
+        "key": "bossDragonNew_piercingFire_268",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 85498,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_269": {
+        "key": "bossDragonNew_piercingFire_269",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 86353,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_270": {
+        "key": "bossDragonNew_piercingFire_270",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 87217,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_271": {
+        "key": "bossDragonNew_piercingFire_271",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 88089,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_272": {
+        "key": "bossDragonNew_piercingFire_272",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 88970,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_273": {
+        "key": "bossDragonNew_piercingFire_273",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 89860,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_274": {
+        "key": "bossDragonNew_piercingFire_274",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 90758,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_275": {
+        "key": "bossDragonNew_piercingFire_275",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 91666,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_276": {
+        "key": "bossDragonNew_piercingFire_276",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 92583,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_277": {
+        "key": "bossDragonNew_piercingFire_277",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 93508,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_278": {
+        "key": "bossDragonNew_piercingFire_278",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 94443,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_279": {
+        "key": "bossDragonNew_piercingFire_279",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 95388,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_280": {
+        "key": "bossDragonNew_piercingFire_280",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 96342,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_281": {
+        "key": "bossDragonNew_piercingFire_281",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 97305,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_282": {
+        "key": "bossDragonNew_piercingFire_282",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 98278,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_283": {
+        "key": "bossDragonNew_piercingFire_283",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 99261,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_284": {
+        "key": "bossDragonNew_piercingFire_284",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 100254,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_285": {
+        "key": "bossDragonNew_piercingFire_285",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 101256,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_286": {
+        "key": "bossDragonNew_piercingFire_286",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 102269,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_287": {
+        "key": "bossDragonNew_piercingFire_287",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 103291,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_288": {
+        "key": "bossDragonNew_piercingFire_288",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 104324,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_289": {
+        "key": "bossDragonNew_piercingFire_289",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 105368,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_290": {
+        "key": "bossDragonNew_piercingFire_290",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 106421,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_291": {
+        "key": "bossDragonNew_piercingFire_291",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 107485,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_292": {
+        "key": "bossDragonNew_piercingFire_292",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 108560,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_293": {
+        "key": "bossDragonNew_piercingFire_293",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 109646,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_294": {
+        "key": "bossDragonNew_piercingFire_294",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 110742,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_295": {
+        "key": "bossDragonNew_piercingFire_295",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 111850,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_296": {
+        "key": "bossDragonNew_piercingFire_296",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 112968,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_297": {
+        "key": "bossDragonNew_piercingFire_297",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 114098,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_298": {
+        "key": "bossDragonNew_piercingFire_298",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 115239,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_299": {
+        "key": "bossDragonNew_piercingFire_299",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 116391,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    },
+    "bossDragonNew_piercingFire_300": {
+        "key": "bossDragonNew_piercingFire_300",
+        "abilityInfoId": "bossDragon_piercingFire",
+        "aspd": 7.1,
+        "aoeRadius": 7,
+        "attack": 117555,
+        "projectileSpeed": 20,
+        "cooldown": 30,
+        "attackType": "Range"
+    }
+}

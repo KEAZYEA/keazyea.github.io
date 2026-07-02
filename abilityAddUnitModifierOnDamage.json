@@ -1,0 +1,62 @@
+{
+    "weakSpot_1": {
+        "key": "weakSpot_1",
+        "abilityInfoId": "elevateArcher_buff",
+        "modifier": "elevateArcher_buff_1",
+        "applyOnDamageProbability": 0.2
+    },
+    "weakSpot_2": {
+        "key": "weakSpot_2",
+        "abilityInfoId": "elevateArcher_buff",
+        "modifier": "elevateArcher_buff_2",
+        "applyOnDamageProbability": 0.22
+    },
+    "weakSpot_3": {
+        "key": "weakSpot_3",
+        "abilityInfoId": "elevateArcher_buff",
+        "modifier": "elevateArcher_buff_3",
+        "applyOnDamageProbability": 0.22
+    },
+    "weakSpot_4": {
+        "key": "weakSpot_4",
+        "abilityInfoId": "elevateArcher_buff",
+        "modifier": "elevateArcher_buff_4",
+        "applyOnDamageProbability": 0.24
+    },
+    "weakSpot_5": {
+        "key": "weakSpot_5",
+        "abilityInfoId": "elevateArcher_buff",
+        "modifier": "elevateArcher_buff_5",
+        "applyOnDamageProbability": 0.24
+    },
+    "weakSpot_6": {
+        "key": "weakSpot_6",
+        "abilityInfoId": "elevateArcher_buff",
+        "modifier": "elevateArcher_buff_6",
+        "applyOnDamageProbability": 0.26
+    },
+    "weakSpot_7": {
+        "key": "weakSpot_7",
+        "abilityInfoId": "elevateArcher_buff",
+        "modifier": "elevateArcher_buff_7",
+        "applyOnDamageProbability": 0.26
+    },
+    "weakSpot_8": {
+        "key": "weakSpot_8",
+        "abilityInfoId": "elevateArcher_buff",
+        "modifier": "elevateArcher_buff_8",
+        "applyOnDamageProbability": 0.28
+    },
+    "weakSpot_9": {
+        "key": "weakSpot_9",
+        "abilityInfoId": "elevateArcher_buff",
+        "modifier": "elevateArcher_buff_9",
+        "applyOnDamageProbability": 0.28
+    },
+    "weakSpot_10": {
+        "key": "weakSpot_10",
+        "abilityInfoId": "elevateArcher_buff",
+        "modifier": "elevateArcher_buff_10",
+        "applyOnDamageProbability": 0.3
+    }
+}

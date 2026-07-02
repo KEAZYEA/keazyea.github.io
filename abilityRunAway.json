@@ -1,0 +1,10 @@
+{
+    "bossDragon_runAway_1": {
+        "key": "bossDragon_runAway_1",
+        "abilityInfoId": "bossDragon_runAway",
+        "cooldown": 18,
+        "duration": 4,
+        "moveSpeed": 6,
+        "unitActivationRestrictionId": "runAwayImmune"
+    }
+}

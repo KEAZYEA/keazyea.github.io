@@ -1,0 +1,82 @@
+{
+    "baronBenua_goldAbility_1": {
+        "key": "baronBenua_goldAbility_1",
+        "abilityInfoId": "baronBenua_goldAbility",
+        "aspd": 3,
+        "aoeRadius": 12,
+        "cooldown": 9,
+        "goldMultiplier": 1.2
+    },
+    "baronBenua_goldAbility_2": {
+        "key": "baronBenua_goldAbility_2",
+        "abilityInfoId": "baronBenua_goldAbility",
+        "aspd": 3,
+        "aoeRadius": 12,
+        "cooldown": 8,
+        "goldMultiplier": 1.2
+    },
+    "baronBenua_goldAbility_3": {
+        "key": "baronBenua_goldAbility_3",
+        "abilityInfoId": "baronBenua_goldAbility",
+        "aspd": 3,
+        "aoeRadius": 13,
+        "cooldown": 8,
+        "goldMultiplier": 1.2
+    },
+    "baronBenua_goldAbility_4": {
+        "key": "baronBenua_goldAbility_4",
+        "abilityInfoId": "baronBenua_goldAbility",
+        "aspd": 3,
+        "aoeRadius": 13,
+        "cooldown": 8,
+        "goldMultiplier": 1.3
+    },
+    "baronBenua_goldAbility_5": {
+        "key": "baronBenua_goldAbility_5",
+        "abilityInfoId": "baronBenua_goldAbility",
+        "aspd": 3,
+        "aoeRadius": 13,
+        "cooldown": 7,
+        "goldMultiplier": 1.3
+    },
+    "baronBenua_goldAbility_6": {
+        "key": "baronBenua_goldAbility_6",
+        "abilityInfoId": "baronBenua_goldAbility",
+        "aspd": 3,
+        "aoeRadius": 14,
+        "cooldown": 7,
+        "goldMultiplier": 1.3
+    },
+    "baronBenua_goldAbility_7": {
+        "key": "baronBenua_goldAbility_7",
+        "abilityInfoId": "baronBenua_goldAbility",
+        "aspd": 3,
+        "aoeRadius": 14,
+        "cooldown": 7,
+        "goldMultiplier": 1.4
+    },
+    "baronBenua_goldAbility_8": {
+        "key": "baronBenua_goldAbility_8",
+        "abilityInfoId": "baronBenua_goldAbility",
+        "aspd": 3,
+        "aoeRadius": 14,
+        "cooldown": 6,
+        "goldMultiplier": 1.4
+    },
+    "baronBenua_goldAbility_9": {
+        "key": "baronBenua_goldAbility_9",
+        "abilityInfoId": "baronBenua_goldAbility",
+        "aspd": 3,
+        "aoeRadius": 15,
+        "cooldown": 6,
+        "goldMultiplier": 1.4
+    },
+    "baronBenua_goldAbility_10": {
+        "key": "baronBenua_goldAbility_10",
+        "abilityInfoId": "baronBenua_goldAbility",
+        "aspd": 3,
+        "aoeRadius": 15,
+        "cooldown": 6,
+        "goldMultiplier": 1.5
+    }
+}

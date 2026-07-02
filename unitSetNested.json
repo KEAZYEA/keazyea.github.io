@@ -1,0 +1,1187 @@
+{
+    "Alchemist": {
+        "key": "Alchemist",
+        "unitSetId": "Human",
+        "unit": "alchemist"
+    },
+    "Archer": {
+        "key": "Archer",
+        "unitSetId": "Human",
+        "unit": "archer"
+    },
+    "Assasin": {
+        "key": "Assasin",
+        "unitSetId": "Human",
+        "unit": "assasin"
+    },
+    "Beast": {
+        "key": "Beast",
+        "unitSetId": "Human",
+        "unit": "beast"
+    },
+    "Bomber": {
+        "key": "Bomber",
+        "unitSetId": "Human",
+        "unit": "bomber"
+    },
+    "Butcher": {
+        "key": "Butcher",
+        "unitSetId": "Human",
+        "unit": "butcher"
+    },
+    "Catapult": {
+        "key": "Catapult",
+        "unitSetId": "Human",
+        "unit": "catapult"
+    },
+    "EliteWarrior": {
+        "key": "EliteWarrior",
+        "unitSetId": "Human",
+        "unit": "eliteWarrior"
+    },
+    "Hunter": {
+        "key": "Hunter",
+        "unitSetId": "Human",
+        "unit": "hunter"
+    },
+    "Infantry": {
+        "key": "Infantry",
+        "unitSetId": "Human",
+        "unit": "infantry"
+    },
+    "IronGuards": {
+        "key": "IronGuards",
+        "unitSetId": "Human",
+        "unit": "ironGuards"
+    },
+    "MountainsChampion": {
+        "key": "MountainsChampion",
+        "unitSetId": "Human",
+        "unit": "mountainsChampion"
+    },
+    "Monk": {
+        "key": "Monk",
+        "unitSetId": "Human",
+        "unit": "monk"
+    },
+    "GolemInfantry": {
+        "key": "GolemInfantry",
+        "unitSetId": "Mage",
+        "unit": "golemInfantry"
+    },
+    "Lancer": {
+        "key": "Lancer",
+        "unitSetId": "Human",
+        "unit": "lancer"
+    },
+    "MageStudent": {
+        "key": "MageStudent",
+        "unitSetId": "Mage",
+        "unit": "mageStudent"
+    },
+    "MagicArcher": {
+        "key": "MagicArcher",
+        "unitSetId": "Mage",
+        "unit": "magicArcher"
+    },
+    "Shaman": {
+        "key": "Shaman",
+        "unitSetId": "Mage",
+        "unit": "shaman"
+    },
+    "Paladin": {
+        "key": "Paladin",
+        "unitSetId": "Human",
+        "unit": "paladin"
+    },
+    "StoneGolem": {
+        "key": "StoneGolem",
+        "unitSetId": "Mage",
+        "unit": "stoneGolem"
+    },
+    "StormSpearman": {
+        "key": "StormSpearman",
+        "unitSetId": "Mage",
+        "unit": "stormSpearman"
+    },
+    "VulkanGolem": {
+        "key": "VulkanGolem",
+        "unitSetId": "Mage",
+        "unit": "vulkanGolem"
+    },
+    "CatapultSkeleton": {
+        "key": "CatapultSkeleton",
+        "unitSetId": "Undead",
+        "unit": "catapultSkeleton"
+    },
+    "DamnCatapult": {
+        "key": "DamnCatapult",
+        "unitSetId": "Undead",
+        "unit": "damnCatapult"
+    },
+    "GraveDigger": {
+        "key": "GraveDigger",
+        "unitSetId": "Undead",
+        "unit": "gravedigger"
+    },
+    "Imp": {
+        "key": "Imp",
+        "unitSetId": "Undead",
+        "unit": "imp"
+    },
+    "Necromancer": {
+        "key": "Necromancer",
+        "unitSetId": "Undead",
+        "unit": "necromancer"
+    },
+    "SkeletonWarrior": {
+        "key": "SkeletonWarrior",
+        "unitSetId": "Undead",
+        "unit": "skeletonWarrior"
+    },
+    "Pyrotechnician": {
+        "key": "Pyrotechnician",
+        "unitSetId": "Human",
+        "unit": "pyrotechnician"
+    },
+    "TombSkeleton": {
+        "key": "TombSkeleton",
+        "unitSetId": "Undead",
+        "unit": "tombSkeleton"
+    },
+    "Skeleton": {
+        "key": "Skeleton",
+        "unitSetId": "Undead",
+        "unit": "skeleton"
+    },
+    "UndeadMage": {
+        "key": "UndeadMage",
+        "unitSetId": "Undead",
+        "unit": "undeadMage"
+    },
+    "UndeadHeadless": {
+        "key": "UndeadHeadless",
+        "unitSetId": "Undead",
+        "unit": "undeadHeadless"
+    },
+    "UndeadInfantry": {
+        "key": "UndeadInfantry",
+        "unitSetId": "Undead",
+        "unit": "undeadInfantry"
+    },
+    "UndeadJavelin": {
+        "key": "UndeadJavelin",
+        "unitSetId": "Undead",
+        "unit": "undeadJavelin"
+    },
+    "FlyingMonster": {
+        "key": "FlyingMonster",
+        "unitSetId": "Undead",
+        "unit": "flyingMonster"
+    },
+    "SpiderBlast": {
+        "key": "SpiderBlast",
+        "unitSetId": "Undead",
+        "unit": "spiderBlast"
+    },
+    "UndeadSkeleton": {
+        "key": "UndeadSkeleton",
+        "unitSetId": "Undead",
+        "unit": "undeadSkeleton"
+    },
+    "Tomb": {
+        "key": "Tomb",
+        "unitSetId": "Undead",
+        "unit": "tomb"
+    },
+    "DarknessMageSkeleton": {
+        "key": "DarknessMageSkeleton",
+        "unitSetId": "Undead",
+        "unit": "darknessMageSkeleton"
+    },
+    "MiniStoneGolem": {
+        "key": "MiniStoneGolem",
+        "unitSetId": "Mage",
+        "unit": "miniStoneGolem"
+    },
+    "WindElemental": {
+        "key": "WindElemental",
+        "unitSetId": "Mage",
+        "unit": "windElemental"
+    },
+    "Alchemist_Range": {
+        "key": "Alchemist_Range",
+        "unitSetId": "Range",
+        "unit": "alchemist"
+    },
+    "Archer_Range": {
+        "key": "Archer_Range",
+        "unitSetId": "Range",
+        "unit": "archer"
+    },
+    "Bomber_Range": {
+        "key": "Bomber_Range",
+        "unitSetId": "Range",
+        "unit": "bomber"
+    },
+    "Catapult_Range": {
+        "key": "Catapult_Range",
+        "unitSetId": "Range",
+        "unit": "catapult"
+    },
+    "Hunter_Range": {
+        "key": "Hunter_Range",
+        "unitSetId": "Range",
+        "unit": "hunter"
+    },
+    "MageStudent_Range": {
+        "key": "MageStudent_Range",
+        "unitSetId": "Range",
+        "unit": "mageStudent"
+    },
+    "MagicArcher_Range": {
+        "key": "MagicArcher_Range",
+        "unitSetId": "Range",
+        "unit": "magicArcher"
+    },
+    "Shaman_Range": {
+        "key": "Shaman_Range",
+        "unitSetId": "Range",
+        "unit": "shaman"
+    },
+    "StormSpearman_Range": {
+        "key": "StormSpearman_Range",
+        "unitSetId": "Range",
+        "unit": "stormSpearman"
+    },
+    "DamnCatapult_Range": {
+        "key": "DamnCatapult_Range",
+        "unitSetId": "Range",
+        "unit": "damnCatapult"
+    },
+    "Imp_Range": {
+        "key": "Imp_Range",
+        "unitSetId": "Range",
+        "unit": "imp"
+    },
+    "Pyrotechnician_Range": {
+        "key": "Pyrotechnician_Range",
+        "unitSetId": "Range",
+        "unit": "pyrotechnician"
+    },
+    "UndeadMage_Range": {
+        "key": "UndeadMage_Range",
+        "unitSetId": "Range",
+        "unit": "undeadMage"
+    },
+    "Necromancer_Range": {
+        "key": "Necromancer_Range",
+        "unitSetId": "Range",
+        "unit": "necromancer"
+    },
+    "UndeadJavelin_Range": {
+        "key": "UndeadJavelin_Range",
+        "unitSetId": "Range",
+        "unit": "undeadJavelin"
+    },
+    "Skeleton_Summon": {
+        "key": "Skeleton_Summon",
+        "unitSetId": "Skeleton",
+        "unit": "skeleton"
+    },
+    "UndeadSkeleton_Summon": {
+        "key": "UndeadSkeleton_Summon",
+        "unitSetId": "Skeleton",
+        "unit": "undeadSkeleton"
+    },
+    "DarknessMageSkeleton_Summon": {
+        "key": "DarknessMageSkeleton_Summon",
+        "unitSetId": "Skeleton",
+        "unit": "darknessMageSkeleton"
+    },
+    "Assasin_Melee": {
+        "key": "Assasin_Melee",
+        "unitSetId": "Melee",
+        "unit": "assasin"
+    },
+    "Beast_Melee": {
+        "key": "Beast_Melee",
+        "unitSetId": "Melee",
+        "unit": "beast"
+    },
+    "Butcher_Melee": {
+        "key": "Butcher_Melee",
+        "unitSetId": "Melee",
+        "unit": "butcher"
+    },
+    "EliteWarrior_Melee": {
+        "key": "EliteWarrior_Melee",
+        "unitSetId": "Melee",
+        "unit": "eliteWarrior"
+    },
+    "Infantry_Melee": {
+        "key": "Infantry_Melee",
+        "unitSetId": "Melee",
+        "unit": "infantry"
+    },
+    "IronGuards_Melee": {
+        "key": "IronGuards_Melee",
+        "unitSetId": "Melee",
+        "unit": "ironGuards"
+    },
+    "MountainsChampion_Melee": {
+        "key": "MountainsChampion_Melee",
+        "unitSetId": "Melee",
+        "unit": "mountainsChampion"
+    },
+    "Monk_Melee": {
+        "key": "Monk_Melee",
+        "unitSetId": "Melee",
+        "unit": "monk"
+    },
+    "GolemInfantry_Melee": {
+        "key": "GolemInfantry_Melee",
+        "unitSetId": "Melee",
+        "unit": "golemInfantry"
+    },
+    "Lancer_Melee": {
+        "key": "Lancer_Melee",
+        "unitSetId": "Melee",
+        "unit": "lancer"
+    },
+    "Paladin_Melee": {
+        "key": "Paladin_Melee",
+        "unitSetId": "Melee",
+        "unit": "paladin"
+    },
+    "StoneGolem_Melee": {
+        "key": "StoneGolem_Melee",
+        "unitSetId": "Melee",
+        "unit": "stoneGolem"
+    },
+    "VulkanGolem_Melee": {
+        "key": "VulkanGolem_Melee",
+        "unitSetId": "Melee",
+        "unit": "vulkanGolem"
+    },
+    "GraveDigger_Melee": {
+        "key": "GraveDigger_Melee",
+        "unitSetId": "Melee",
+        "unit": "gravedigger"
+    },
+    "SkeletonWarrior_Melee": {
+        "key": "SkeletonWarrior_Melee",
+        "unitSetId": "Melee",
+        "unit": "skeletonWarrior"
+    },
+    "TombSkeleton_Melee": {
+        "key": "TombSkeleton_Melee",
+        "unitSetId": "Melee",
+        "unit": "tombSkeleton"
+    },
+    "Skeleton_Melee": {
+        "key": "Skeleton_Melee",
+        "unitSetId": "Melee",
+        "unit": "skeleton"
+    },
+    "UndeadHeadless_Melee": {
+        "key": "UndeadHeadless_Melee",
+        "unitSetId": "Melee",
+        "unit": "undeadHeadless"
+    },
+    "UndeadInfantry_Melee": {
+        "key": "UndeadInfantry_Melee",
+        "unitSetId": "Melee",
+        "unit": "undeadInfantry"
+    },
+    "UndeadSkeleton_Melee": {
+        "key": "UndeadSkeleton_Melee",
+        "unitSetId": "Melee",
+        "unit": "undeadSkeleton"
+    },
+    "DarknessMageSkeleton_Melee": {
+        "key": "DarknessMageSkeleton_Melee",
+        "unitSetId": "Melee",
+        "unit": "darknessMageSkeleton"
+    },
+    "MiniStoneGolem_Melee": {
+        "key": "MiniStoneGolem_Melee",
+        "unitSetId": "Melee",
+        "unit": "miniStoneGolem"
+    },
+    "MonkGhost": {
+        "key": "MonkGhost",
+        "unitSetId": "Human",
+        "unit": "monkGhost"
+    },
+    "MonkGhost_Melee": {
+        "key": "MonkGhost_Melee",
+        "unitSetId": "Melee",
+        "unit": "monkGhost"
+    },
+    "Merida": {
+        "key": "Merida",
+        "unitSetId": "Human",
+        "unit": "accurateMerida"
+    },
+    "Merida_Range": {
+        "key": "Merida_Range",
+        "unitSetId": "Range",
+        "unit": "accurateMerida"
+    },
+    "AirMage": {
+        "key": "AirMage",
+        "unitSetId": "Mage",
+        "unit": "airMage"
+    },
+    "AirMage_Range": {
+        "key": "AirMage_Range",
+        "unitSetId": "Range",
+        "unit": "airMage"
+    },
+    "BaronBenua": {
+        "key": "BaronBenua",
+        "unitSetId": "Human",
+        "unit": "baronBenua"
+    },
+    "BaronBenua_Melee": {
+        "key": "BaronBenua_Melee",
+        "unitSetId": "Melee",
+        "unit": "baronBenua"
+    },
+    "BoneDragon": {
+        "key": "BoneDragon",
+        "unitSetId": "Undead",
+        "unit": "boneDragon"
+    },
+    "BoneDragon_Range": {
+        "key": "BoneDragon_Range",
+        "unitSetId": "Range",
+        "unit": "boneDragon"
+    },
+    "Charmer": {
+        "key": "Charmer",
+        "unitSetId": "Mage",
+        "unit": "charmer"
+    },
+    "Charmer_Range": {
+        "key": "Charmer_Range",
+        "unitSetId": "Range",
+        "unit": "charmer"
+    },
+    "Cleric": {
+        "key": "Cleric",
+        "unitSetId": "Human",
+        "unit": "clericHero"
+    },
+    "Cleric_Range": {
+        "key": "Cleric_Range",
+        "unitSetId": "Range",
+        "unit": "clericHero"
+    },
+    "CursedGiant": {
+        "key": "CursedGiant",
+        "unitSetId": "Undead",
+        "unit": "cursedGiant"
+    },
+    "CursedGiant_Melee": {
+        "key": "CursedGiant_Melee",
+        "unitSetId": "Melee",
+        "unit": "cursedGiant"
+    },
+    "DarkKnight": {
+        "key": "DarkKnight",
+        "unitSetId": "Undead",
+        "unit": "darkKnight"
+    },
+    "DarkKnight_Melee": {
+        "key": "DarkKnight_Melee",
+        "unitSetId": "Melee",
+        "unit": "darkKnight"
+    },
+    "DarknessMage": {
+        "key": "DarknessMage",
+        "unitSetId": "Undead",
+        "unit": "darknessMage"
+    },
+    "DarknessMage_Range": {
+        "key": "DarknessMage_Range",
+        "unitSetId": "Range",
+        "unit": "darknessMage"
+    },
+    "DebafferOnMaunt": {
+        "key": "DebafferOnMaunt",
+        "unitSetId": "Undead",
+        "unit": "debafferOnMaunt"
+    },
+    "DebafferOnMaunt_Range": {
+        "key": "DebafferOnMaunt_Range",
+        "unitSetId": "Range",
+        "unit": "debafferOnMaunt"
+    },
+    "DoubleShield": {
+        "key": "DoubleShield",
+        "unitSetId": "Human",
+        "unit": "doubleShield"
+    },
+    "DoubleShield_Melee": {
+        "key": "DoubleShield_Melee",
+        "unitSetId": "Melee",
+        "unit": "doubleShield"
+    },
+    "DragonRider": {
+        "key": "DragonRider",
+        "unitSetId": "Human",
+        "unit": "dragonRider"
+    },
+    "DragonRider_Range": {
+        "key": "DragonRider_Range",
+        "unitSetId": "Range",
+        "unit": "dragonRider"
+    },
+    "Druid": {
+        "key": "Druid",
+        "unitSetId": "Mage",
+        "unit": "druid"
+    },
+    "Druid_Melee": {
+        "key": "Druid_Melee",
+        "unitSetId": "Melee",
+        "unit": "druid"
+    },
+    "FireMage": {
+        "key": "FireMage",
+        "unitSetId": "Mage",
+        "unit": "fireMage"
+    },
+    "FireMage_Range": {
+        "key": "FireMage_Range",
+        "unitSetId": "Range",
+        "unit": "fireMage"
+    },
+    "ForestQueen": {
+        "key": "ForestQueen",
+        "unitSetId": "Mage",
+        "unit": "forestQueen"
+    },
+    "ForestQueen_Range": {
+        "key": "ForestQueen_Range",
+        "unitSetId": "Range",
+        "unit": "forestQueen"
+    },
+    "General": {
+        "key": "General",
+        "unitSetId": "Human",
+        "unit": "general"
+    },
+    "General_Melee": {
+        "key": "General_Melee",
+        "unitSetId": "Melee",
+        "unit": "general"
+    },
+    "IceMage": {
+        "key": "IceMage",
+        "unitSetId": "Mage",
+        "unit": "iceMage"
+    },
+    "IceMage_Range": {
+        "key": "IceMage_Range",
+        "unitSetId": "Range",
+        "unit": "iceMage"
+    },
+    "LightningElemental": {
+        "key": "LightningElemental",
+        "unitSetId": "Mage",
+        "unit": "lightningElemental"
+    },
+    "LightningElemental_Range": {
+        "key": "LightningElemental_Range",
+        "unitSetId": "Range",
+        "unit": "lightningElemental"
+    },
+    "Ringleader": {
+        "key": "Ringleader",
+        "unitSetId": "Human",
+        "unit": "ringleaderHero"
+    },
+    "Ringleader_Melee": {
+        "key": "Ringleader_Melee",
+        "unitSetId": "Melee",
+        "unit": "ringleaderHero"
+    },
+    "SandMage": {
+        "key": "SandMage",
+        "unitSetId": "Mage",
+        "unit": "sandMage"
+    },
+    "SandMage_Range": {
+        "key": "SandMage_Range",
+        "unitSetId": "Range",
+        "unit": "sandMage"
+    },
+    "Swordmaster": {
+        "key": "Swordmaster",
+        "unitSetId": "Human",
+        "unit": "swordmasterHero"
+    },
+    "Swordmaster_Melee": {
+        "key": "Swordmaster_Melee",
+        "unitSetId": "Melee",
+        "unit": "swordmasterHero"
+    },
+    "UndeadGunner": {
+        "key": "UndeadGunner",
+        "unitSetId": "Undead",
+        "unit": "undeadGunner"
+    },
+    "UndeadGunner_Range": {
+        "key": "UndeadGunner_Range",
+        "unitSetId": "Range",
+        "unit": "undeadGunner"
+    },
+    "UndeadPirate": {
+        "key": "UndeadPirate",
+        "unitSetId": "Undead",
+        "unit": "undeadPirate"
+    },
+    "UndeadPirate_Melee": {
+        "key": "UndeadPirate_Melee",
+        "unitSetId": "Melee",
+        "unit": "undeadPirate"
+    },
+    "WaterMage": {
+        "key": "WaterMage",
+        "unitSetId": "Mage",
+        "unit": "waterMage"
+    },
+    "WaterMage_Range": {
+        "key": "WaterMage_Range",
+        "unitSetId": "Range",
+        "unit": "waterMage"
+    },
+    "WindElemental_Melee": {
+        "key": "WindElemental_Melee",
+        "unitSetId": "Melee",
+        "unit": "windElemental"
+    },
+    "FlyingMonster_Melee": {
+        "key": "FlyingMonster_Melee",
+        "unitSetId": "Melee",
+        "unit": "flyingMonster"
+    },
+    "Nun": {
+        "key": "Nun",
+        "unitSetId": "Human",
+        "unit": "nun"
+    },
+    "Nun_Melee": {
+        "key": "Nun_Melee",
+        "unitSetId": "Melee",
+        "unit": "nun"
+    },
+    "undeadWarrior": {
+        "key": "undeadWarrior",
+        "unitSetId": "Undead",
+        "unit": "undeadWarrior"
+    },
+    "undeadWarrior_Melee": {
+        "key": "undeadWarrior_Melee",
+        "unitSetId": "Melee",
+        "unit": "undeadWarrior"
+    },
+    "CatapultSkeleton_Summon": {
+        "key": "CatapultSkeleton_Summon",
+        "unitSetId": "Skeleton",
+        "unit": "catapultSkeleton"
+    },
+    "TombSkeleton_Summon": {
+        "key": "TombSkeleton_Summon",
+        "unitSetId": "Skeleton",
+        "unit": "tombSkeleton"
+    },
+    "stunToad": {
+        "key": "stunToad",
+        "unitSetId": "Mage",
+        "unit": "stunToad"
+    },
+    "stunToad_Melee": {
+        "key": "stunToad_Melee",
+        "unitSetId": "Melee",
+        "unit": "stunToad"
+    },
+    "phoenix": {
+        "key": "phoenix",
+        "unitSetId": "Mage",
+        "unit": "phoenix"
+    },
+    "phoenix_Range": {
+        "key": "phoenix_Range",
+        "unitSetId": "Range",
+        "unit": "phoenix"
+    },
+    "stunToad_BannedFromFuse": {
+        "key": "stunToad_BannedFromFuse",
+        "unitSetId": "BannedFromFuse",
+        "unit": "stunToad"
+    },
+    "phoenix_BannedFromFuse": {
+        "key": "phoenix_BannedFromFuse",
+        "unitSetId": "BannedFromFuse",
+        "unit": "phoenix"
+    },
+    "Tank_vulkanGolem": {
+        "key": "Tank_vulkanGolem",
+        "unitSetId": "Tank",
+        "unit": "vulkanGolem"
+    },
+    "Assasin_Trickster": {
+        "key": "Assasin_Trickster",
+        "unitSetId": "Trickster",
+        "unit": "assasin"
+    },
+    "Butcher_Tank": {
+        "key": "Butcher_Tank",
+        "unitSetId": "Tank",
+        "unit": "butcher"
+    },
+    "EliteWarrior_Trickster": {
+        "key": "EliteWarrior_Trickster",
+        "unitSetId": "Trickster",
+        "unit": "eliteWarrior"
+    },
+    "IronGuards_Tank": {
+        "key": "IronGuards_Tank",
+        "unitSetId": "Tank",
+        "unit": "ironGuards"
+    },
+    "MountainsChampion_Trickster": {
+        "key": "MountainsChampion_Trickster",
+        "unitSetId": "Trickster",
+        "unit": "mountainsChampion"
+    },
+    "MountainsChampion_Tank": {
+        "key": "MountainsChampion_Tank",
+        "unitSetId": "Tank",
+        "unit": "mountainsChampion"
+    },
+    "Monk_Tank": {
+        "key": "Monk_Tank",
+        "unitSetId": "Tank",
+        "unit": "monk"
+    },
+    "Lancer_Trickster": {
+        "key": "Lancer_Trickster",
+        "unitSetId": "Trickster",
+        "unit": "lancer"
+    },
+    "axeThrowers": {
+        "key": "axeThrowers",
+        "unitSetId": "Human",
+        "unit": "axeThrowers"
+    },
+    "axeThrowers_Range": {
+        "key": "axeThrowers_Range",
+        "unitSetId": "Range",
+        "unit": "axeThrowers"
+    },
+    "axeThrowers_Trickster": {
+        "key": "axeThrowers_Trickster",
+        "unitSetId": "Trickster",
+        "unit": "axeThrowers"
+    },
+    "CatapultSkeleton_Melee": {
+        "key": "CatapultSkeleton_Melee",
+        "unitSetId": "Melee",
+        "unit": "catapultSkeleton"
+    },
+    "GraveDigger_Trickster": {
+        "key": "GraveDigger_Trickster",
+        "unitSetId": "Trickster",
+        "unit": "gravedigger"
+    },
+    "SkeletonWarrior_Tank": {
+        "key": "SkeletonWarrior_Tank",
+        "unitSetId": "Tank",
+        "unit": "skeletonWarrior"
+    },
+    "UndeadHeadless_Tank": {
+        "key": "UndeadHeadless_Tank",
+        "unitSetId": "Tank",
+        "unit": "undeadHeadless"
+    },
+    "FlyingMonster_Trickster": {
+        "key": "FlyingMonster_Trickster",
+        "unitSetId": "Trickster",
+        "unit": "flyingMonster"
+    },
+    "SpiderBlast_Melee": {
+        "key": "SpiderBlast_Melee",
+        "unitSetId": "Melee",
+        "unit": "spiderBlast"
+    },
+    "spiderMelee_Melee": {
+        "key": "spiderMelee_Melee",
+        "unitSetId": "Melee",
+        "unit": "spiderMelee"
+    },
+    "spiderBang_Melee": {
+        "key": "spiderBang_Melee",
+        "unitSetId": "Melee",
+        "unit": "spiderBang"
+    },
+    "Tomb_Melee": {
+        "key": "Tomb_Melee",
+        "unitSetId": "Melee",
+        "unit": "tomb"
+    },
+    "WindElemental_Trickster": {
+        "key": "WindElemental_Trickster",
+        "unitSetId": "Trickster",
+        "unit": "windElemental"
+    },
+    "StoneGolem_Tank": {
+        "key": "StoneGolem_Tank",
+        "unitSetId": "Tank",
+        "unit": "stoneGolem"
+    },
+    "StormSpearman_Trickster": {
+        "key": "StormSpearman_Trickster",
+        "unitSetId": "Trickster",
+        "unit": "stormSpearman"
+    },
+    "stunToad_Trickster": {
+        "key": "stunToad_Trickster",
+        "unitSetId": "Trickster",
+        "unit": "stunToad"
+    },
+    "phoenix_Tank": {
+        "key": "phoenix_Tank",
+        "unitSetId": "Tank",
+        "unit": "phoenix"
+    },
+    "undeadRat": {
+        "key": "undeadRat",
+        "unitSetId": "Undead",
+        "unit": "undeadRat"
+    },
+    "undeadRat_Melee": {
+        "key": "undeadRat_Melee",
+        "unitSetId": "Melee",
+        "unit": "undeadRat"
+    },
+    "demonMageGolem_Melee": {
+        "key": "demonMageGolem_Melee",
+        "unitSetId": "Melee",
+        "unit": "demonMageGolem"
+    },
+    "demonMageGolem_Tank": {
+        "key": "demonMageGolem_Tank",
+        "unitSetId": "Tank",
+        "unit": "demonMageGolem"
+    },
+    "undeadPestilence": {
+        "key": "undeadPestilence",
+        "unitSetId": "Undead",
+        "unit": "undeadPestilence"
+    },
+    "undeadPestilence_Melee": {
+        "key": "undeadPestilence_Melee",
+        "unitSetId": "Melee",
+        "unit": "undeadPestilence"
+    },
+    "lordInquisitor": {
+        "key": "lordInquisitor",
+        "unitSetId": "Human",
+        "unit": "lordInquisitor"
+    },
+    "lordInquisitor_Melee": {
+        "key": "lordInquisitor_Melee",
+        "unitSetId": "Melee",
+        "unit": "lordInquisitor"
+    },
+    "drunkTank": {
+        "key": "drunkTank",
+        "unitSetId": "Human",
+        "unit": "drunkTank"
+    },
+    "drunkTank_Melee": {
+        "key": "drunkTank_Melee",
+        "unitSetId": "Melee",
+        "unit": "drunkTank"
+    },
+    "drunkTank_Tank": {
+        "key": "drunkTank_Tank",
+        "unitSetId": "Tank",
+        "unit": "drunkTank"
+    },
+    "bardHero": {
+        "key": "bardHero",
+        "unitSetId": "Mage",
+        "unit": "bardHero"
+    },
+    "bardHero_Melee": {
+        "key": "bardHero_Melee",
+        "unitSetId": "Melee",
+        "unit": "bardHero"
+    },
+    "elevateTank_Melee": {
+        "key": "elevateTank_Melee",
+        "unitSetId": "Melee",
+        "unit": "elevateTank"
+    },
+    "elevateArcher_Range": {
+        "key": "elevateArcher_Range",
+        "unitSetId": "Range",
+        "unit": "elevateArcher"
+    },
+    "elevateSupport_Range": {
+        "key": "elevateSupport_Range",
+        "unitSetId": "Range",
+        "unit": "elevateSupport"
+    },
+    "demonFat_Range": {
+        "key": "demonFat_Range",
+        "unitSetId": "Range",
+        "unit": "demonFat"
+    },
+    "demonTank_Melee": {
+        "key": "demonTank_Melee",
+        "unitSetId": "Melee",
+        "unit": "demonTank"
+    },
+    "demonMage_Range": {
+        "key": "demonMage_Range",
+        "unitSetId": "Range",
+        "unit": "demonMage"
+    },
+    "TombLibrary": {
+        "key": "TombLibrary",
+        "unitSetId": "Undead",
+        "unit": "tombLibrary"
+    },
+    "TombLibrary_Melee": {
+        "key": "TombLibrary_Melee",
+        "unitSetId": "Melee",
+        "unit": "tombLibrary"
+    },
+    "Assassin_Assassin": {
+        "key": "Assassin_Assassin",
+        "unitSetId": "Assassin",
+        "unit": "assasin"
+    },
+    "Assassin_Gravedigger": {
+        "key": "Assassin_Gravedigger",
+        "unitSetId": "Assassin",
+        "unit": "gravedigger"
+    },
+    "Hero_general": {
+        "key": "Hero_general",
+        "unitSetId": "Hero",
+        "unit": "general"
+    },
+    "Hero_darkKnight": {
+        "key": "Hero_darkKnight",
+        "unitSetId": "Hero",
+        "unit": "darkKnight"
+    },
+    "Hero_dragonRider": {
+        "key": "Hero_dragonRider",
+        "unitSetId": "Hero",
+        "unit": "dragonRider"
+    },
+    "Hero_accurateMerida": {
+        "key": "Hero_accurateMerida",
+        "unitSetId": "Hero",
+        "unit": "accurateMerida"
+    },
+    "Hero_baronBenua": {
+        "key": "Hero_baronBenua",
+        "unitSetId": "Hero",
+        "unit": "baronBenua"
+    },
+    "Hero_swordmasterHero": {
+        "key": "Hero_swordmasterHero",
+        "unitSetId": "Hero",
+        "unit": "swordmasterHero"
+    },
+    "Hero_clericHero": {
+        "key": "Hero_clericHero",
+        "unitSetId": "Hero",
+        "unit": "clericHero"
+    },
+    "Hero_ringleaderHero": {
+        "key": "Hero_ringleaderHero",
+        "unitSetId": "Hero",
+        "unit": "ringleaderHero"
+    },
+    "Hero_charmer": {
+        "key": "Hero_charmer",
+        "unitSetId": "Hero",
+        "unit": "charmer"
+    },
+    "Hero_boneDragon": {
+        "key": "Hero_boneDragon",
+        "unitSetId": "Hero",
+        "unit": "boneDragon"
+    },
+    "Hero_forestQueen": {
+        "key": "Hero_forestQueen",
+        "unitSetId": "Hero",
+        "unit": "forestQueen"
+    },
+    "Hero_nun": {
+        "key": "Hero_nun",
+        "unitSetId": "Hero",
+        "unit": "nun"
+    },
+    "Hero_undeadWarrior": {
+        "key": "Hero_undeadWarrior",
+        "unitSetId": "Hero",
+        "unit": "undeadWarrior"
+    },
+    "Hero_undeadGunner": {
+        "key": "Hero_undeadGunner",
+        "unitSetId": "Hero",
+        "unit": "undeadGunner"
+    },
+    "Hero_darknessMage": {
+        "key": "Hero_darknessMage",
+        "unitSetId": "Hero",
+        "unit": "darknessMage"
+    },
+    "Hero_iceMage": {
+        "key": "Hero_iceMage",
+        "unitSetId": "Hero",
+        "unit": "iceMage"
+    },
+    "Hero_airMage": {
+        "key": "Hero_airMage",
+        "unitSetId": "Hero",
+        "unit": "airMage"
+    },
+    "Hero_druid": {
+        "key": "Hero_druid",
+        "unitSetId": "Hero",
+        "unit": "druid"
+    },
+    "Hero_fireMage": {
+        "key": "Hero_fireMage",
+        "unitSetId": "Hero",
+        "unit": "fireMage"
+    },
+    "Hero_lightningElemental": {
+        "key": "Hero_lightningElemental",
+        "unitSetId": "Hero",
+        "unit": "lightningElemental"
+    },
+    "Hero_waterMage": {
+        "key": "Hero_waterMage",
+        "unitSetId": "Hero",
+        "unit": "waterMage"
+    },
+    "Hero_undeadPirate": {
+        "key": "Hero_undeadPirate",
+        "unitSetId": "Hero",
+        "unit": "undeadPirate"
+    },
+    "Hero_sandMage": {
+        "key": "Hero_sandMage",
+        "unitSetId": "Hero",
+        "unit": "sandMage"
+    },
+    "Hero_cursedGiant": {
+        "key": "Hero_cursedGiant",
+        "unitSetId": "Hero",
+        "unit": "cursedGiant"
+    },
+    "Hero_doubleShield": {
+        "key": "Hero_doubleShield",
+        "unitSetId": "Hero",
+        "unit": "doubleShield"
+    },
+    "Hero_debafferOnMaunt": {
+        "key": "Hero_debafferOnMaunt",
+        "unitSetId": "Hero",
+        "unit": "debafferOnMaunt"
+    },
+    "Hero_undeadPestilence": {
+        "key": "Hero_undeadPestilence",
+        "unitSetId": "Hero",
+        "unit": "undeadPestilence"
+    },
+    "Hero_lordInquisitor": {
+        "key": "Hero_lordInquisitor",
+        "unitSetId": "Hero",
+        "unit": "lordInquisitor"
+    },
+    "Hero_drunkTank": {
+        "key": "Hero_drunkTank",
+        "unitSetId": "Hero",
+        "unit": "drunkTank"
+    },
+    "Hero_bardHero": {
+        "key": "Hero_bardHero",
+        "unitSetId": "Hero",
+        "unit": "bardHero"
+    },
+    "Hero_elevateTank": {
+        "key": "Hero_elevateTank",
+        "unitSetId": "Hero",
+        "unit": "elevateTank"
+    },
+    "Hero_elevateArcher": {
+        "key": "Hero_elevateArcher",
+        "unitSetId": "Hero",
+        "unit": "elevateArcher"
+    },
+    "Hero_elevateSupport": {
+        "key": "Hero_elevateSupport",
+        "unitSetId": "Hero",
+        "unit": "elevateSupport"
+    },
+    "Hero_demonFat": {
+        "key": "Hero_demonFat",
+        "unitSetId": "Hero",
+        "unit": "demonFat"
+    },
+    "Hero_demonTank": {
+        "key": "Hero_demonTank",
+        "unitSetId": "Hero",
+        "unit": "demonTank"
+    },
+    "Hero_demonMage": {
+        "key": "Hero_demonMage",
+        "unitSetId": "Hero",
+        "unit": "demonMage"
+    },
+    "Hero_darknessMageSquadEvent": {
+        "key": "Hero_darknessMageSquadEvent",
+        "unitSetId": "Hero",
+        "unit": "darknessMageSquadEvent"
+    },
+    "axeThrowers_BannedFromFuse": {
+        "key": "axeThrowers_BannedFromFuse",
+        "unitSetId": "BannedFromFuse",
+        "unit": "axeThrowers"
+    },
+    "Cactus": {
+        "key": "Cactus",
+        "unitSetId": "Undead",
+        "unit": "cactus"
+    },
+    "Cactus_Melee": {
+        "key": "Cactus_Melee",
+        "unitSetId": "Melee",
+        "unit": "cactus"
+    },
+    "Cactus_Tank": {
+        "key": "Cactus_Tank",
+        "unitSetId": "Tank",
+        "unit": "cactus"
+    },
+    "Cactus_BannedFromFuse": {
+        "key": "Cactus_BannedFromFuse",
+        "unitSetId": "BannedFromFuse",
+        "unit": "cactus"
+    }
+}

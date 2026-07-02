@@ -1,0 +1,86 @@
+{
+    "aiDisabled": {
+        "key": "aiDisabled"
+    },
+    "canNotMove": {
+        "key": "canNotMove"
+    },
+    "canNotAttack": {
+        "key": "canNotAttack"
+    },
+    "canNotSpecialAttack": {
+        "key": "canNotSpecialAttack"
+    },
+    "unTargetable": {
+        "key": "unTargetable"
+    },
+    "canNotBeMindcontrolled": {
+        "key": "canNotBeMindcontrolled"
+    },
+    "castImmune": {
+        "key": "castImmune"
+    },
+    "isNotBossAndNotHero": {
+        "key": "isNotBossAndNotHero"
+    },
+    "canNotBeRooted": {
+        "key": "canNotBeRooted"
+    },
+    "attackReductionAndPaladinBuffDisabled": {
+        "key": "attackReductionAndPaladinBuffDisabled"
+    },
+    "isNotMindControlled": {
+        "key": "isNotMindControlled"
+    },
+    "fearImmune": {
+        "key": "fearImmune"
+    },
+    "castImmuneUnit": {
+        "key": "castImmuneUnit"
+    },
+    "aggressionImmune": {
+        "key": "aggressionImmune"
+    },
+    "sleepCancel": {
+        "key": "sleepCancel"
+    },
+    "shieldDashImmune": {
+        "key": "shieldDashImmune"
+    },
+    "poisonDebuffPuddleImmune": {
+        "key": "poisonDebuffPuddleImmune"
+    },
+    "runAwayImmune": {
+        "key": "runAwayImmune"
+    },
+    "pullImmune": {
+        "key": "pullImmune"
+    },
+    "tentacleImmune": {
+        "key": "tentacleImmune"
+    },
+    "paladinShieldImmune": {
+        "key": "paladinShieldImmune"
+    },
+    "undeadPestilenceRestriction": {
+        "key": "undeadPestilenceRestriction"
+    },
+    "canNotAuraDefence": {
+        "key": "canNotAuraDefence"
+    },
+    "healImmune": {
+        "key": "healImmune"
+    },
+    "fireImmuneUnit": {
+        "key": "fireImmuneUnit"
+    },
+    "mindControlInterrupt": {
+        "key": "mindControlInterrupt"
+    },
+    "poisonAreaImmune": {
+        "key": "poisonAreaImmune"
+    },
+    "throwImmune": {
+        "key": "throwImmune"
+    }
+}

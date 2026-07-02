@@ -1,0 +1,82 @@
+{
+    "tomb_summon_1": {
+        "key": "tomb_summon_1",
+        "abilityInfoId": "tomb_summon",
+        "summonedTroopId": "tombSkeleton",
+        "duration": 2,
+        "summonedEffectId": "chargeDarkness",
+        "attackType": "Melee"
+    },
+    "tomb_summon_2": {
+        "key": "tomb_summon_2",
+        "abilityInfoId": "tomb_summon",
+        "summonedTroopId": "tombSkeleton",
+        "duration": 2,
+        "summonedEffectId": "chargeDarkness",
+        "attackType": "Melee"
+    },
+    "tomb_summon_3": {
+        "key": "tomb_summon_3",
+        "abilityInfoId": "tomb_summon",
+        "summonedTroopId": "tombSkeleton",
+        "duration": 2,
+        "summonedEffectId": "chargeDarkness",
+        "attackType": "Melee"
+    },
+    "tomb_summon_4": {
+        "key": "tomb_summon_4",
+        "abilityInfoId": "tomb_summon",
+        "summonedTroopId": "tombSkeleton",
+        "duration": 2.5,
+        "summonedEffectId": "chargeDarkness",
+        "attackType": "Melee"
+    },
+    "tomb_summon_5": {
+        "key": "tomb_summon_5",
+        "abilityInfoId": "tomb_summon",
+        "summonedTroopId": "tombSkeleton",
+        "duration": 2.5,
+        "summonedEffectId": "chargeDarkness",
+        "attackType": "Melee"
+    },
+    "tomb_summon_6": {
+        "key": "tomb_summon_6",
+        "abilityInfoId": "tomb_summon",
+        "summonedTroopId": "tombSkeleton",
+        "duration": 2.5,
+        "summonedEffectId": "chargeDarkness",
+        "attackType": "Melee"
+    },
+    "tomb_summon_7": {
+        "key": "tomb_summon_7",
+        "abilityInfoId": "tomb_summon",
+        "summonedTroopId": "tombSkeleton",
+        "duration": 3,
+        "summonedEffectId": "chargeDarkness",
+        "attackType": "Melee"
+    },
+    "tomb_summon_8": {
+        "key": "tomb_summon_8",
+        "abilityInfoId": "tomb_summon",
+        "summonedTroopId": "tombSkeleton",
+        "duration": 3,
+        "summonedEffectId": "chargeDarkness",
+        "attackType": "Melee"
+    },
+    "tomb_summon_9": {
+        "key": "tomb_summon_9",
+        "abilityInfoId": "tomb_summon",
+        "summonedTroopId": "tombSkeleton",
+        "duration": 3,
+        "summonedEffectId": "chargeDarkness",
+        "attackType": "Melee"
+    },
+    "tomb_summon_10": {
+        "key": "tomb_summon_10",
+        "abilityInfoId": "tomb_summon",
+        "summonedTroopId": "tombSkeleton",
+        "duration": 3.5,
+        "summonedEffectId": "chargeDarkness",
+        "attackType": "Melee"
+    }
+}

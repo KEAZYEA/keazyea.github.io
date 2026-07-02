@@ -1,0 +1,14 @@
+{
+    "assasin_teleport_1": {
+        "key": "assasin_teleport_1",
+        "aspd": 2,
+        "teleportDelay": 0.8,
+        "abilityInfoId": "assasin_teleport"
+    },
+    "gravedigger_undermine_1": {
+        "key": "gravedigger_undermine_1",
+        "aspd": 0.633,
+        "teleportDelay": 2,
+        "abilityInfoId": "gravedigger_undermine"
+    }
+}

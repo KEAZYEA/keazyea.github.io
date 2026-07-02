@@ -1,0 +1,102 @@
+{
+    "lancer_AoEDash_1": {
+        "key": "lancer_AoEDash_1",
+        "abilityInfoId": "lancer_charge",
+        "aspd": 0.467,
+        "chargeSpeed": 12,
+        "attack": 550,
+        "minChargeRange": 10,
+        "targetApproachRestrictionId": "unTargetable",
+        "attackType": "Melee"
+    },
+    "lancer_AoEDash_2": {
+        "key": "lancer_AoEDash_2",
+        "abilityInfoId": "lancer_charge",
+        "aspd": 0.467,
+        "chargeSpeed": 12,
+        "attack": 663,
+        "minChargeRange": 10,
+        "targetApproachRestrictionId": "unTargetable",
+        "attackType": "Melee"
+    },
+    "lancer_AoEDash_3": {
+        "key": "lancer_AoEDash_3",
+        "abilityInfoId": "lancer_charge",
+        "aspd": 0.467,
+        "chargeSpeed": 12,
+        "attack": 775,
+        "minChargeRange": 10,
+        "targetApproachRestrictionId": "unTargetable",
+        "attackType": "Melee"
+    },
+    "lancer_AoEDash_4": {
+        "key": "lancer_AoEDash_4",
+        "abilityInfoId": "lancer_charge",
+        "aspd": 0.467,
+        "chargeSpeed": 12,
+        "attack": 875,
+        "minChargeRange": 10,
+        "targetApproachRestrictionId": "unTargetable",
+        "attackType": "Melee"
+    },
+    "lancer_AoEDash_5": {
+        "key": "lancer_AoEDash_5",
+        "abilityInfoId": "lancer_charge",
+        "aspd": 0.467,
+        "chargeSpeed": 12,
+        "attack": 1000,
+        "minChargeRange": 10,
+        "targetApproachRestrictionId": "unTargetable",
+        "attackType": "Melee"
+    },
+    "lancer_AoEDash_6": {
+        "key": "lancer_AoEDash_6",
+        "abilityInfoId": "lancer_charge",
+        "aspd": 0.467,
+        "chargeSpeed": 12,
+        "attack": 1100,
+        "minChargeRange": 10,
+        "targetApproachRestrictionId": "unTargetable",
+        "attackType": "Melee"
+    },
+    "lancer_AoEDash_7": {
+        "key": "lancer_AoEDash_7",
+        "abilityInfoId": "lancer_charge",
+        "aspd": 0.467,
+        "chargeSpeed": 12,
+        "attack": 1213,
+        "minChargeRange": 10,
+        "targetApproachRestrictionId": "unTargetable",
+        "attackType": "Melee"
+    },
+    "lancer_AoEDash_8": {
+        "key": "lancer_AoEDash_8",
+        "abilityInfoId": "lancer_charge",
+        "aspd": 0.467,
+        "chargeSpeed": 12,
+        "attack": 1325,
+        "minChargeRange": 10,
+        "targetApproachRestrictionId": "unTargetable",
+        "attackType": "Melee"
+    },
+    "lancer_AoEDash_9": {
+        "key": "lancer_AoEDash_9",
+        "abilityInfoId": "lancer_charge",
+        "aspd": 0.467,
+        "chargeSpeed": 12,
+        "attack": 2313,
+        "minChargeRange": 10,
+        "targetApproachRestrictionId": "unTargetable",
+        "attackType": "Melee"
+    },
+    "lancer_AoEDash_10": {
+        "key": "lancer_AoEDash_10",
+        "abilityInfoId": "lancer_charge",
+        "aspd": 0.467,
+        "chargeSpeed": 12,
+        "attack": 3300,
+        "minChargeRange": 10,
+        "targetApproachRestrictionId": "unTargetable",
+        "attackType": "Melee"
+    }
+}

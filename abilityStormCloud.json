@@ -1,0 +1,122 @@
+{
+    "lightningElemental_stormCloud_1": {
+        "key": "lightningElemental_stormCloud_1",
+        "abilityInfoId": "lightningElemental_stormCloud",
+        "aspd": 1.22,
+        "stormCloudRadius": 3,
+        "lightningAoeRadius": 1,
+        "lightningCount": 10,
+        "lightningDelay": 0.4,
+        "lightningAttack": 175,
+        "cooldown": 16,
+        "attackType": "Range"
+    },
+    "lightningElemental_stormCloud_2": {
+        "key": "lightningElemental_stormCloud_2",
+        "abilityInfoId": "lightningElemental_stormCloud",
+        "aspd": 1.22,
+        "stormCloudRadius": 3,
+        "lightningAoeRadius": 1,
+        "lightningCount": 12,
+        "lightningDelay": 0.33,
+        "lightningAttack": 200,
+        "cooldown": 16,
+        "attackType": "Range"
+    },
+    "lightningElemental_stormCloud_3": {
+        "key": "lightningElemental_stormCloud_3",
+        "abilityInfoId": "lightningElemental_stormCloud",
+        "aspd": 1.22,
+        "stormCloudRadius": 3,
+        "lightningAoeRadius": 1,
+        "lightningCount": 14,
+        "lightningDelay": 0.29,
+        "lightningAttack": 225,
+        "cooldown": 15,
+        "attackType": "Range"
+    },
+    "lightningElemental_stormCloud_4": {
+        "key": "lightningElemental_stormCloud_4",
+        "abilityInfoId": "lightningElemental_stormCloud",
+        "aspd": 1.22,
+        "stormCloudRadius": 4,
+        "lightningAoeRadius": 1,
+        "lightningCount": 16,
+        "lightningDelay": 0.25,
+        "lightningAttack": 250,
+        "cooldown": 15,
+        "attackType": "Range"
+    },
+    "lightningElemental_stormCloud_5": {
+        "key": "lightningElemental_stormCloud_5",
+        "abilityInfoId": "lightningElemental_stormCloud",
+        "aspd": 1.22,
+        "stormCloudRadius": 4,
+        "lightningAoeRadius": 1,
+        "lightningCount": 18,
+        "lightningDelay": 0.22,
+        "lightningAttack": 275,
+        "cooldown": 14,
+        "attackType": "Range"
+    },
+    "lightningElemental_stormCloud_6": {
+        "key": "lightningElemental_stormCloud_6",
+        "abilityInfoId": "lightningElemental_stormCloud",
+        "aspd": 1.22,
+        "stormCloudRadius": 4,
+        "lightningAoeRadius": 1,
+        "lightningCount": 20,
+        "lightningDelay": 0.2,
+        "lightningAttack": 300,
+        "cooldown": 14,
+        "attackType": "Range"
+    },
+    "lightningElemental_stormCloud_7": {
+        "key": "lightningElemental_stormCloud_7",
+        "abilityInfoId": "lightningElemental_stormCloud",
+        "aspd": 1.22,
+        "stormCloudRadius": 5,
+        "lightningAoeRadius": 1,
+        "lightningCount": 22,
+        "lightningDelay": 0.18,
+        "lightningAttack": 325,
+        "cooldown": 14,
+        "attackType": "Range"
+    },
+    "lightningElemental_stormCloud_8": {
+        "key": "lightningElemental_stormCloud_8",
+        "abilityInfoId": "lightningElemental_stormCloud",
+        "aspd": 1.22,
+        "stormCloudRadius": 5,
+        "lightningAoeRadius": 1,
+        "lightningCount": 24,
+        "lightningDelay": 0.17,
+        "lightningAttack": 350,
+        "cooldown": 13,
+        "attackType": "Range"
+    },
+    "lightningElemental_stormCloud_9": {
+        "key": "lightningElemental_stormCloud_9",
+        "abilityInfoId": "lightningElemental_stormCloud",
+        "aspd": 1.22,
+        "stormCloudRadius": 5,
+        "lightningAoeRadius": 1,
+        "lightningCount": 26,
+        "lightningDelay": 0.15,
+        "lightningAttack": 375,
+        "cooldown": 13,
+        "attackType": "Range"
+    },
+    "lightningElemental_stormCloud_10": {
+        "key": "lightningElemental_stormCloud_10",
+        "abilityInfoId": "lightningElemental_stormCloud",
+        "aspd": 1.22,
+        "stormCloudRadius": 6,
+        "lightningAoeRadius": 1,
+        "lightningCount": 28,
+        "lightningDelay": 0.14,
+        "lightningAttack": 400,
+        "cooldown": 13,
+        "attackType": "Range"
+    }
+}

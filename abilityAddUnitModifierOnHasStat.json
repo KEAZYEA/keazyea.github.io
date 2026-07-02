@@ -1,0 +1,92 @@
+{
+    "easyPrey_1": {
+        "key": "easyPrey_1",
+        "abilityInfoId": "demonTank_buff",
+        "modifier": "demonTank_buff_1",
+        "units": null,
+        "group": "enemy",
+        "stat": "fear",
+        "keepWhenSourceKilled": true
+    },
+    "easyPrey_2": {
+        "key": "easyPrey_2",
+        "abilityInfoId": "demonTank_buff",
+        "modifier": "demonTank_buff_2",
+        "units": null,
+        "group": "enemy",
+        "stat": "fear",
+        "keepWhenSourceKilled": true
+    },
+    "easyPrey_3": {
+        "key": "easyPrey_3",
+        "abilityInfoId": "demonTank_buff",
+        "modifier": "demonTank_buff_3",
+        "units": null,
+        "group": "enemy",
+        "stat": "fear",
+        "keepWhenSourceKilled": true
+    },
+    "easyPrey_4": {
+        "key": "easyPrey_4",
+        "abilityInfoId": "demonTank_buff",
+        "modifier": "demonTank_buff_4",
+        "units": null,
+        "group": "enemy",
+        "stat": "fear",
+        "keepWhenSourceKilled": true
+    },
+    "easyPrey_5": {
+        "key": "easyPrey_5",
+        "abilityInfoId": "demonTank_buff",
+        "modifier": "demonTank_buff_5",
+        "units": null,
+        "group": "enemy",
+        "stat": "fear",
+        "keepWhenSourceKilled": true
+    },
+    "easyPrey_6": {
+        "key": "easyPrey_6",
+        "abilityInfoId": "demonTank_buff",
+        "modifier": "demonTank_buff_6",
+        "units": null,
+        "group": "enemy",
+        "stat": "fear",
+        "keepWhenSourceKilled": true
+    },
+    "easyPrey_7": {
+        "key": "easyPrey_7",
+        "abilityInfoId": "demonTank_buff",
+        "modifier": "demonTank_buff_7",
+        "units": null,
+        "group": "enemy",
+        "stat": "fear",
+        "keepWhenSourceKilled": true
+    },
+    "easyPrey_8": {
+        "key": "easyPrey_8",
+        "abilityInfoId": "demonTank_buff",
+        "modifier": "demonTank_buff_8",
+        "units": null,
+        "group": "enemy",
+        "stat": "fear",
+        "keepWhenSourceKilled": true
+    },
+    "easyPrey_9": {
+        "key": "easyPrey_9",
+        "abilityInfoId": "demonTank_buff",
+        "modifier": "demonTank_buff_9",
+        "units": null,
+        "group": "enemy",
+        "stat": "fear",
+        "keepWhenSourceKilled": true
+    },
+    "easyPrey_10": {
+        "key": "easyPrey_10",
+        "abilityInfoId": "demonTank_buff",
+        "modifier": "demonTank_buff_10",
+        "units": null,
+        "group": "enemy",
+        "stat": "fear",
+        "keepWhenSourceKilled": true
+    }
+}

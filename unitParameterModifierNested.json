@@ -1,0 +1,3954 @@
+{
+    "aerialSupport_1": {
+        "key": "aerialSupport_1",
+        "modifierKey": "dragonRider_buff_1",
+        "type": "attackMultiplier",
+        "value": 0.02,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "aerialSupport_2": {
+        "key": "aerialSupport_2",
+        "modifierKey": "dragonRider_buff_2",
+        "type": "attackMultiplier",
+        "value": 0.04,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "aerialSupport_3": {
+        "key": "aerialSupport_3",
+        "modifierKey": "dragonRider_buff_3",
+        "type": "attackMultiplier",
+        "value": 0.06,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "aerialSupport_4": {
+        "key": "aerialSupport_4",
+        "modifierKey": "dragonRider_buff_4",
+        "type": "attackMultiplier",
+        "value": 0.08,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "aerialSupport_5": {
+        "key": "aerialSupport_5",
+        "modifierKey": "dragonRider_buff_5",
+        "type": "attackMultiplier",
+        "value": 0.1,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "aerialSupport_6": {
+        "key": "aerialSupport_6",
+        "modifierKey": "dragonRider_buff_6",
+        "type": "attackMultiplier",
+        "value": 0.12,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "aerialSupport_7": {
+        "key": "aerialSupport_7",
+        "modifierKey": "dragonRider_buff_7",
+        "type": "attackMultiplier",
+        "value": 0.15,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "aerialSupport_8": {
+        "key": "aerialSupport_8",
+        "modifierKey": "dragonRider_buff_8",
+        "type": "attackMultiplier",
+        "value": 0.18,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "aerialSupport_9": {
+        "key": "aerialSupport_9",
+        "modifierKey": "dragonRider_buff_9",
+        "type": "attackMultiplier",
+        "value": 0.21,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "aerialSupport_10": {
+        "key": "aerialSupport_10",
+        "modifierKey": "dragonRider_buff_10",
+        "type": "attackMultiplier",
+        "value": 0.25,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "deathAura_1": {
+        "key": "deathAura_1",
+        "modifierKey": "boneDragon_buff_1",
+        "type": "attackMultiplier",
+        "value": 0.02,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "deathAura_2": {
+        "key": "deathAura_2",
+        "modifierKey": "boneDragon_buff_2",
+        "type": "attackMultiplier",
+        "value": 0.04,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "deathAura_3": {
+        "key": "deathAura_3",
+        "modifierKey": "boneDragon_buff_3",
+        "type": "attackMultiplier",
+        "value": 0.06,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "deathAura_4": {
+        "key": "deathAura_4",
+        "modifierKey": "boneDragon_buff_4",
+        "type": "attackMultiplier",
+        "value": 0.08,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "deathAura_5": {
+        "key": "deathAura_5",
+        "modifierKey": "boneDragon_buff_5",
+        "type": "attackMultiplier",
+        "value": 0.1,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "deathAura_6": {
+        "key": "deathAura_6",
+        "modifierKey": "boneDragon_buff_6",
+        "type": "attackMultiplier",
+        "value": 0.12,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "deathAura_7": {
+        "key": "deathAura_7",
+        "modifierKey": "boneDragon_buff_7",
+        "type": "attackMultiplier",
+        "value": 0.15,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "deathAura_8": {
+        "key": "deathAura_8",
+        "modifierKey": "boneDragon_buff_8",
+        "type": "attackMultiplier",
+        "value": 0.18,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "deathAura_9": {
+        "key": "deathAura_9",
+        "modifierKey": "boneDragon_buff_9",
+        "type": "attackMultiplier",
+        "value": 0.21,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "deathAura_10": {
+        "key": "deathAura_10",
+        "modifierKey": "boneDragon_buff_10",
+        "type": "attackMultiplier",
+        "value": 0.25,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "flamingHeart_1": {
+        "key": "flamingHeart_1",
+        "modifierKey": "fireMage_buff_1",
+        "type": "attackMultiplier",
+        "value": 0.02,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "flamingHeart_2": {
+        "key": "flamingHeart_2",
+        "modifierKey": "fireMage_buff_2",
+        "type": "attackMultiplier",
+        "value": 0.04,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "flamingHeart_3": {
+        "key": "flamingHeart_3",
+        "modifierKey": "fireMage_buff_3",
+        "type": "attackMultiplier",
+        "value": 0.06,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "flamingHeart_4": {
+        "key": "flamingHeart_4",
+        "modifierKey": "fireMage_buff_4",
+        "type": "attackMultiplier",
+        "value": 0.08,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "flamingHeart_5": {
+        "key": "flamingHeart_5",
+        "modifierKey": "fireMage_buff_5",
+        "type": "attackMultiplier",
+        "value": 0.1,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "flamingHeart_6": {
+        "key": "flamingHeart_6",
+        "modifierKey": "fireMage_buff_6",
+        "type": "attackMultiplier",
+        "value": 0.12,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "flamingHeart_7": {
+        "key": "flamingHeart_7",
+        "modifierKey": "fireMage_buff_7",
+        "type": "attackMultiplier",
+        "value": 0.15,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "flamingHeart_8": {
+        "key": "flamingHeart_8",
+        "modifierKey": "fireMage_buff_8",
+        "type": "attackMultiplier",
+        "value": 0.18,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "flamingHeart_9": {
+        "key": "flamingHeart_9",
+        "modifierKey": "fireMage_buff_9",
+        "type": "attackMultiplier",
+        "value": 0.21,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "flamingHeart_10": {
+        "key": "flamingHeart_10",
+        "modifierKey": "fireMage_buff_10",
+        "type": "attackMultiplier",
+        "value": 0.25,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "revengeOfTheFallen_1": {
+        "key": "revengeOfTheFallen_1",
+        "modifierKey": "charmer_buff_1",
+        "type": "attackMultiplier",
+        "value": -0.15,
+        "caption": "talentEffect_reduceDamage",
+        "format": "minusPercent"
+    },
+    "revengeOfTheFallen_2": {
+        "key": "revengeOfTheFallen_2",
+        "modifierKey": "charmer_buff_2",
+        "type": "attackMultiplier",
+        "value": -0.18,
+        "caption": "talentEffect_reduceDamage",
+        "format": "minusPercent"
+    },
+    "revengeOfTheFallen_3": {
+        "key": "revengeOfTheFallen_3",
+        "modifierKey": "charmer_buff_3",
+        "type": "attackMultiplier",
+        "value": -0.21,
+        "caption": "talentEffect_reduceDamage",
+        "format": "minusPercent"
+    },
+    "revengeOfTheFallen_4": {
+        "key": "revengeOfTheFallen_4",
+        "modifierKey": "charmer_buff_4",
+        "type": "attackMultiplier",
+        "value": -0.24,
+        "caption": "talentEffect_reduceDamage",
+        "format": "minusPercent"
+    },
+    "revengeOfTheFallen_5": {
+        "key": "revengeOfTheFallen_5",
+        "modifierKey": "charmer_buff_5",
+        "type": "attackMultiplier",
+        "value": -0.27,
+        "caption": "talentEffect_reduceDamage",
+        "format": "minusPercent"
+    },
+    "revengeOfTheFallen_6": {
+        "key": "revengeOfTheFallen_6",
+        "modifierKey": "charmer_buff_6",
+        "type": "attackMultiplier",
+        "value": -0.3,
+        "caption": "talentEffect_reduceDamage",
+        "format": "minusPercent"
+    },
+    "revengeOfTheFallen_7": {
+        "key": "revengeOfTheFallen_7",
+        "modifierKey": "charmer_buff_7",
+        "type": "attackMultiplier",
+        "value": -0.33,
+        "caption": "talentEffect_reduceDamage",
+        "format": "minusPercent"
+    },
+    "revengeOfTheFallen_8": {
+        "key": "revengeOfTheFallen_8",
+        "modifierKey": "charmer_buff_8",
+        "type": "attackMultiplier",
+        "value": -0.36,
+        "caption": "talentEffect_reduceDamage",
+        "format": "minusPercent"
+    },
+    "revengeOfTheFallen_9": {
+        "key": "revengeOfTheFallen_9",
+        "modifierKey": "charmer_buff_9",
+        "type": "attackMultiplier",
+        "value": -0.4,
+        "caption": "talentEffect_reduceDamage",
+        "format": "minusPercent"
+    },
+    "revengeOfTheFallen_10": {
+        "key": "revengeOfTheFallen_10",
+        "modifierKey": "charmer_buff_10",
+        "type": "attackMultiplier",
+        "value": -0.45,
+        "caption": "talentEffect_reduceDamage",
+        "format": "minusPercent"
+    },
+    "thorns_1": {
+        "key": "thorns_1",
+        "modifierKey": "forestQueen_buff_1",
+        "type": "reflectSum",
+        "value": 0.03,
+        "caption": "talentEffect_reflectDamage",
+        "format": "percent"
+    },
+    "thorns_2": {
+        "key": "thorns_2",
+        "modifierKey": "forestQueen_buff_2",
+        "type": "reflectSum",
+        "value": 0.06,
+        "caption": "talentEffect_reflectDamage",
+        "format": "percent"
+    },
+    "thorns_3": {
+        "key": "thorns_3",
+        "modifierKey": "forestQueen_buff_3",
+        "type": "reflectSum",
+        "value": 0.09,
+        "caption": "talentEffect_reflectDamage",
+        "format": "percent"
+    },
+    "thorns_4": {
+        "key": "thorns_4",
+        "modifierKey": "forestQueen_buff_4",
+        "type": "reflectSum",
+        "value": 0.12,
+        "caption": "talentEffect_reflectDamage",
+        "format": "percent"
+    },
+    "thorns_5": {
+        "key": "thorns_5",
+        "modifierKey": "forestQueen_buff_5",
+        "type": "reflectSum",
+        "value": 0.15,
+        "caption": "talentEffect_reflectDamage",
+        "format": "percent"
+    },
+    "thorns_6": {
+        "key": "thorns_6",
+        "modifierKey": "forestQueen_buff_6",
+        "type": "reflectSum",
+        "value": 0.19,
+        "caption": "talentEffect_reflectDamage",
+        "format": "percent"
+    },
+    "thorns_7": {
+        "key": "thorns_7",
+        "modifierKey": "forestQueen_buff_7",
+        "type": "reflectSum",
+        "value": 0.23,
+        "caption": "talentEffect_reflectDamage",
+        "format": "percent"
+    },
+    "thorns_8": {
+        "key": "thorns_8",
+        "modifierKey": "forestQueen_buff_8",
+        "type": "reflectSum",
+        "value": 0.27,
+        "caption": "talentEffect_reflectDamage",
+        "format": "percent"
+    },
+    "thorns_9": {
+        "key": "thorns_9",
+        "modifierKey": "forestQueen_buff_9",
+        "type": "reflectSum",
+        "value": 0.31,
+        "caption": "talentEffect_reflectDamage",
+        "format": "percent"
+    },
+    "thorns_10": {
+        "key": "thorns_10",
+        "modifierKey": "forestQueen_buff_10",
+        "type": "reflectSum",
+        "value": 0.35,
+        "caption": "talentEffect_reflectDamage",
+        "format": "percent"
+    },
+    "frostArmor_1": {
+        "key": "frostArmor_1",
+        "modifierKey": "iceMage_buff_1",
+        "type": "hpMultiplier",
+        "value": 1.02,
+        "caption": "talentEffect_bonusHp",
+        "format": "minusOnePercent"
+    },
+    "frostArmor_2": {
+        "key": "frostArmor_2",
+        "modifierKey": "iceMage_buff_2",
+        "type": "hpMultiplier",
+        "value": 1.04,
+        "caption": "talentEffect_bonusHp",
+        "format": "minusOnePercent"
+    },
+    "frostArmor_3": {
+        "key": "frostArmor_3",
+        "modifierKey": "iceMage_buff_3",
+        "type": "hpMultiplier",
+        "value": 1.06,
+        "caption": "talentEffect_bonusHp",
+        "format": "minusOnePercent"
+    },
+    "frostArmor_4": {
+        "key": "frostArmor_4",
+        "modifierKey": "iceMage_buff_4",
+        "type": "hpMultiplier",
+        "value": 1.08,
+        "caption": "talentEffect_bonusHp",
+        "format": "minusOnePercent"
+    },
+    "frostArmor_5": {
+        "key": "frostArmor_5",
+        "modifierKey": "iceMage_buff_5",
+        "type": "hpMultiplier",
+        "value": 1.1,
+        "caption": "talentEffect_bonusHp",
+        "format": "minusOnePercent"
+    },
+    "frostArmor_6": {
+        "key": "frostArmor_6",
+        "modifierKey": "iceMage_buff_6",
+        "type": "hpMultiplier",
+        "value": 1.12,
+        "caption": "talentEffect_bonusHp",
+        "format": "minusOnePercent"
+    },
+    "frostArmor_7": {
+        "key": "frostArmor_7",
+        "modifierKey": "iceMage_buff_7",
+        "type": "hpMultiplier",
+        "value": 1.15,
+        "caption": "talentEffect_bonusHp",
+        "format": "minusOnePercent"
+    },
+    "frostArmor_8": {
+        "key": "frostArmor_8",
+        "modifierKey": "iceMage_buff_8",
+        "type": "hpMultiplier",
+        "value": 1.18,
+        "caption": "talentEffect_bonusHp",
+        "format": "minusOnePercent"
+    },
+    "frostArmor_9": {
+        "key": "frostArmor_9",
+        "modifierKey": "iceMage_buff_9",
+        "type": "hpMultiplier",
+        "value": 1.21,
+        "caption": "talentEffect_bonusHp",
+        "format": "minusOnePercent"
+    },
+    "frostArmor_10": {
+        "key": "frostArmor_10",
+        "modifierKey": "iceMage_buff_10",
+        "type": "hpMultiplier",
+        "value": 1.25,
+        "caption": "talentEffect_bonusHp",
+        "format": "minusOnePercent"
+    },
+    "windTamer_1": {
+        "key": "windTamer_1",
+        "modifierKey": "airMage_buff_1",
+        "type": "evasionSum",
+        "value": 0.02,
+        "caption": "talentEffect_evasion",
+        "format": "percent"
+    },
+    "windTamer_2": {
+        "key": "windTamer_2",
+        "modifierKey": "airMage_buff_2",
+        "type": "evasionSum",
+        "value": 0.04,
+        "caption": "talentEffect_evasion",
+        "format": "percent"
+    },
+    "windTamer_3": {
+        "key": "windTamer_3",
+        "modifierKey": "airMage_buff_3",
+        "type": "evasionSum",
+        "value": 0.06,
+        "caption": "talentEffect_evasion",
+        "format": "percent"
+    },
+    "windTamer_4": {
+        "key": "windTamer_4",
+        "modifierKey": "airMage_buff_4",
+        "type": "evasionSum",
+        "value": 0.08,
+        "caption": "talentEffect_evasion",
+        "format": "percent"
+    },
+    "windTamer_5": {
+        "key": "windTamer_5",
+        "modifierKey": "airMage_buff_5",
+        "type": "evasionSum",
+        "value": 0.1,
+        "caption": "talentEffect_evasion",
+        "format": "percent"
+    },
+    "windTamer_6": {
+        "key": "windTamer_6",
+        "modifierKey": "airMage_buff_6",
+        "type": "evasionSum",
+        "value": 0.12,
+        "caption": "talentEffect_evasion",
+        "format": "percent"
+    },
+    "windTamer_7": {
+        "key": "windTamer_7",
+        "modifierKey": "airMage_buff_7",
+        "type": "evasionSum",
+        "value": 0.14,
+        "caption": "talentEffect_evasion",
+        "format": "percent"
+    },
+    "windTamer_8": {
+        "key": "windTamer_8",
+        "modifierKey": "airMage_buff_8",
+        "type": "evasionSum",
+        "value": 0.16,
+        "caption": "talentEffect_evasion",
+        "format": "percent"
+    },
+    "windTamer_9": {
+        "key": "windTamer_9",
+        "modifierKey": "airMage_buff_9",
+        "type": "evasionSum",
+        "value": 0.18,
+        "caption": "talentEffect_evasion",
+        "format": "percent"
+    },
+    "windTamer_10": {
+        "key": "windTamer_10",
+        "modifierKey": "airMage_buff_10",
+        "type": "evasionSum",
+        "value": 0.2,
+        "caption": "talentEffect_evasion",
+        "format": "percent"
+    },
+    "sandStorm_1": {
+        "key": "sandStorm_1",
+        "modifierKey": "sandMage_buff_1",
+        "type": "missSum",
+        "value": 0.02,
+        "caption": "talentEffect_miss",
+        "format": "percent"
+    },
+    "sandStorm_2": {
+        "key": "sandStorm_2",
+        "modifierKey": "sandMage_buff_2",
+        "type": "missSum",
+        "value": 0.04,
+        "caption": "talentEffect_miss",
+        "format": "percent"
+    },
+    "sandStorm_3": {
+        "key": "sandStorm_3",
+        "modifierKey": "sandMage_buff_3",
+        "type": "missSum",
+        "value": 0.06,
+        "caption": "talentEffect_miss",
+        "format": "percent"
+    },
+    "sandStorm_4": {
+        "key": "sandStorm_4",
+        "modifierKey": "sandMage_buff_4",
+        "type": "missSum",
+        "value": 0.08,
+        "caption": "talentEffect_miss",
+        "format": "percent"
+    },
+    "sandStorm_5": {
+        "key": "sandStorm_5",
+        "modifierKey": "sandMage_buff_5",
+        "type": "missSum",
+        "value": 0.1,
+        "caption": "talentEffect_miss",
+        "format": "percent"
+    },
+    "sandStorm_6": {
+        "key": "sandStorm_6",
+        "modifierKey": "sandMage_buff_6",
+        "type": "missSum",
+        "value": 0.12,
+        "caption": "talentEffect_miss",
+        "format": "percent"
+    },
+    "sandStorm_7": {
+        "key": "sandStorm_7",
+        "modifierKey": "sandMage_buff_7",
+        "type": "missSum",
+        "value": 0.14,
+        "caption": "talentEffect_miss",
+        "format": "percent"
+    },
+    "sandStorm_8": {
+        "key": "sandStorm_8",
+        "modifierKey": "sandMage_buff_8",
+        "type": "missSum",
+        "value": 0.16,
+        "caption": "talentEffect_miss",
+        "format": "percent"
+    },
+    "sandStorm_9": {
+        "key": "sandStorm_9",
+        "modifierKey": "sandMage_buff_9",
+        "type": "missSum",
+        "value": 0.18,
+        "caption": "talentEffect_miss",
+        "format": "percent"
+    },
+    "sandStorm_10": {
+        "key": "sandStorm_10",
+        "modifierKey": "sandMage_buff_10",
+        "type": "missSum",
+        "value": 0.2,
+        "caption": "talentEffect_miss",
+        "format": "percent"
+    },
+    "boardingParty_1": {
+        "key": "boardingParty_1",
+        "modifierKey": "undeadPirate_buff_1",
+        "type": "attackMultiplier",
+        "value": 1,
+        "caption": "talentEffect_doubleHit",
+        "format": "plain"
+    },
+    "boardingParty_2": {
+        "key": "boardingParty_2",
+        "modifierKey": "undeadPirate_buff_2",
+        "type": "attackMultiplier",
+        "value": 1,
+        "caption": "talentEffect_doubleHit",
+        "format": "plain"
+    },
+    "boardingParty_3": {
+        "key": "boardingParty_3",
+        "modifierKey": "undeadPirate_buff_3",
+        "type": "attackMultiplier",
+        "value": 1,
+        "caption": "talentEffect_doubleHit",
+        "format": "plain"
+    },
+    "boardingParty_4": {
+        "key": "boardingParty_4",
+        "modifierKey": "undeadPirate_buff_4",
+        "type": "attackMultiplier",
+        "value": 1,
+        "caption": "talentEffect_doubleHit",
+        "format": "plain"
+    },
+    "boardingParty_5": {
+        "key": "boardingParty_5",
+        "modifierKey": "undeadPirate_buff_5",
+        "type": "attackMultiplier",
+        "value": 1,
+        "caption": "talentEffect_doubleHit",
+        "format": "plain"
+    },
+    "boardingParty_6": {
+        "key": "boardingParty_6",
+        "modifierKey": "undeadPirate_buff_6",
+        "type": "attackMultiplier",
+        "value": 1,
+        "caption": "talentEffect_doubleHit",
+        "format": "plain"
+    },
+    "boardingParty_7": {
+        "key": "boardingParty_7",
+        "modifierKey": "undeadPirate_buff_7",
+        "type": "attackMultiplier",
+        "value": 1,
+        "caption": "talentEffect_doubleHit",
+        "format": "plain"
+    },
+    "boardingParty_8": {
+        "key": "boardingParty_8",
+        "modifierKey": "undeadPirate_buff_8",
+        "type": "attackMultiplier",
+        "value": 1,
+        "caption": "talentEffect_doubleHit",
+        "format": "plain"
+    },
+    "boardingParty_9": {
+        "key": "boardingParty_9",
+        "modifierKey": "undeadPirate_buff_9",
+        "type": "attackMultiplier",
+        "value": 1,
+        "caption": "talentEffect_doubleHit",
+        "format": "plain"
+    },
+    "boardingParty_10": {
+        "key": "boardingParty_10",
+        "modifierKey": "undeadPirate_buff_10",
+        "type": "attackMultiplier",
+        "value": 1,
+        "caption": "talentEffect_doubleHit",
+        "format": "plain"
+    },
+    "unholyAlliance_1": {
+        "key": "unholyAlliance_1",
+        "modifierKey": "darknessMage_buff_1",
+        "type": "attackMultiplier",
+        "value": 0.04,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "unholyAlliance_2": {
+        "key": "unholyAlliance_2",
+        "modifierKey": "darknessMage_buff_2",
+        "type": "attackMultiplier",
+        "value": 0.08,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "unholyAlliance_3": {
+        "key": "unholyAlliance_3",
+        "modifierKey": "darknessMage_buff_3",
+        "type": "attackMultiplier",
+        "value": 0.12,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "unholyAlliance_4": {
+        "key": "unholyAlliance_4",
+        "modifierKey": "darknessMage_buff_4",
+        "type": "attackMultiplier",
+        "value": 0.16,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "unholyAlliance_5": {
+        "key": "unholyAlliance_5",
+        "modifierKey": "darknessMage_buff_5",
+        "type": "attackMultiplier",
+        "value": 0.2,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "unholyAlliance_6": {
+        "key": "unholyAlliance_6",
+        "modifierKey": "darknessMage_buff_6",
+        "type": "attackMultiplier",
+        "value": 0.24,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "unholyAlliance_7": {
+        "key": "unholyAlliance_7",
+        "modifierKey": "darknessMage_buff_7",
+        "type": "attackMultiplier",
+        "value": 0.28,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "unholyAlliance_8": {
+        "key": "unholyAlliance_8",
+        "modifierKey": "darknessMage_buff_8",
+        "type": "attackMultiplier",
+        "value": 0.32,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "unholyAlliance_9": {
+        "key": "unholyAlliance_9",
+        "modifierKey": "darknessMage_buff_9",
+        "type": "attackMultiplier",
+        "value": 0.36,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "unholyAlliance_10": {
+        "key": "unholyAlliance_10",
+        "modifierKey": "darknessMage_buff_10",
+        "type": "attackMultiplier",
+        "value": 0.4,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "unholyAlliance1_1": {
+        "key": "unholyAlliance1_1",
+        "modifierKey": "darknessMage_buff_1",
+        "type": "hpMultiplier",
+        "value": 1.04,
+        "caption": "talentEffect_bonusHp",
+        "format": "minusOnePercent"
+    },
+    "unholyAlliance1_2": {
+        "key": "unholyAlliance1_2",
+        "modifierKey": "darknessMage_buff_2",
+        "type": "hpMultiplier",
+        "value": 1.08,
+        "caption": "talentEffect_bonusHp",
+        "format": "minusOnePercent"
+    },
+    "unholyAlliance1_3": {
+        "key": "unholyAlliance1_3",
+        "modifierKey": "darknessMage_buff_3",
+        "type": "hpMultiplier",
+        "value": 1.12,
+        "caption": "talentEffect_bonusHp",
+        "format": "minusOnePercent"
+    },
+    "unholyAlliance1_4": {
+        "key": "unholyAlliance1_4",
+        "modifierKey": "darknessMage_buff_4",
+        "type": "hpMultiplier",
+        "value": 1.16,
+        "caption": "talentEffect_bonusHp",
+        "format": "minusOnePercent"
+    },
+    "unholyAlliance1_5": {
+        "key": "unholyAlliance1_5",
+        "modifierKey": "darknessMage_buff_5",
+        "type": "hpMultiplier",
+        "value": 1.2,
+        "caption": "talentEffect_bonusHp",
+        "format": "minusOnePercent"
+    },
+    "unholyAlliance1_6": {
+        "key": "unholyAlliance1_6",
+        "modifierKey": "darknessMage_buff_6",
+        "type": "hpMultiplier",
+        "value": 1.24,
+        "caption": "talentEffect_bonusHp",
+        "format": "minusOnePercent"
+    },
+    "unholyAlliance1_7": {
+        "key": "unholyAlliance1_7",
+        "modifierKey": "darknessMage_buff_7",
+        "type": "hpMultiplier",
+        "value": 1.28,
+        "caption": "talentEffect_bonusHp",
+        "format": "minusOnePercent"
+    },
+    "unholyAlliance1_8": {
+        "key": "unholyAlliance1_8",
+        "modifierKey": "darknessMage_buff_8",
+        "type": "hpMultiplier",
+        "value": 1.32,
+        "caption": "talentEffect_bonusHp",
+        "format": "minusOnePercent"
+    },
+    "unholyAlliance1_9": {
+        "key": "unholyAlliance1_9",
+        "modifierKey": "darknessMage_buff_9",
+        "type": "hpMultiplier",
+        "value": 1.36,
+        "caption": "talentEffect_bonusHp",
+        "format": "minusOnePercent"
+    },
+    "unholyAlliance1_10": {
+        "key": "unholyAlliance1_10",
+        "modifierKey": "darknessMage_buff_10",
+        "type": "hpMultiplier",
+        "value": 1.4,
+        "caption": "talentEffect_bonusHp",
+        "format": "minusOnePercent"
+    },
+    "library_attackDebuffHuman_1": {
+        "key": "library_attackDebuffHuman_1",
+        "modifierKey": "attackDebuffHuman_1",
+        "type": "attackMultiplier",
+        "value": -0.1,
+        "caption": "attackDebuffHuman",
+        "format": "minusPercent"
+    },
+    "library_attackDebuffHuman_2": {
+        "key": "library_attackDebuffHuman_2",
+        "modifierKey": "attackDebuffHuman_2",
+        "type": "attackMultiplier",
+        "value": -0.15,
+        "caption": "attackDebuffHuman",
+        "format": "minusPercent"
+    },
+    "library_attackDebuffHuman_3": {
+        "key": "library_attackDebuffHuman_3",
+        "modifierKey": "attackDebuffHuman_3",
+        "type": "attackMultiplier",
+        "value": -0.2,
+        "caption": "attackDebuffHuman",
+        "format": "minusPercent"
+    },
+    "library_attackBuffHuman_1": {
+        "key": "library_attackBuffHuman_1",
+        "modifierKey": "attackBuffHuman_1",
+        "type": "attackMultiplier",
+        "value": 0.1,
+        "caption": "attackBuffHuman",
+        "format": "percent"
+    },
+    "library_attackBuffHuman_2": {
+        "key": "library_attackBuffHuman_2",
+        "modifierKey": "attackBuffHuman_2",
+        "type": "attackMultiplier",
+        "value": 0.15,
+        "caption": "attackBuffHuman",
+        "format": "percent"
+    },
+    "library_attackBuffHuman_3": {
+        "key": "library_attackBuffHuman_3",
+        "modifierKey": "attackBuffHuman_3",
+        "type": "attackMultiplier",
+        "value": 0.2,
+        "caption": "attackBuffHuman",
+        "format": "percent"
+    },
+    "library_attackDebuffMage_1": {
+        "key": "library_attackDebuffMage_1",
+        "modifierKey": "attackDebuffMage_1",
+        "type": "attackMultiplier",
+        "value": -0.1,
+        "caption": "attackDebuffMage",
+        "format": "minusPercent"
+    },
+    "library_attackDebuffMage_2": {
+        "key": "library_attackDebuffMage_2",
+        "modifierKey": "attackDebuffMage_2",
+        "type": "attackMultiplier",
+        "value": -0.15,
+        "caption": "attackDebuffMage",
+        "format": "minusPercent"
+    },
+    "library_attackDebuffMage_3": {
+        "key": "library_attackDebuffMage_3",
+        "modifierKey": "attackDebuffMage_3",
+        "type": "attackMultiplier",
+        "value": -0.2,
+        "caption": "attackDebuffMage",
+        "format": "minusPercent"
+    },
+    "library_attackBuffMage_1": {
+        "key": "library_attackBuffMage_1",
+        "modifierKey": "attackBuffMage_1",
+        "type": "attackMultiplier",
+        "value": 0.1,
+        "caption": "attackBuffMage",
+        "format": "percent"
+    },
+    "library_attackBuffMage_2": {
+        "key": "library_attackBuffMage_2",
+        "modifierKey": "attackBuffMage_2",
+        "type": "attackMultiplier",
+        "value": 0.15,
+        "caption": "attackBuffMage",
+        "format": "percent"
+    },
+    "library_attackBuffMage_3": {
+        "key": "library_attackBuffMage_3",
+        "modifierKey": "attackBuffMage_3",
+        "type": "attackMultiplier",
+        "value": 0.2,
+        "caption": "attackBuffMage",
+        "format": "percent"
+    },
+    "library_attackDebuffUndead_1": {
+        "key": "library_attackDebuffUndead_1",
+        "modifierKey": "attackDebuffUndead_1",
+        "type": "attackMultiplier",
+        "value": -0.1,
+        "caption": "attackDebuffUndead",
+        "format": "minusPercent"
+    },
+    "library_attackDebuffUndead_2": {
+        "key": "library_attackDebuffUndead_2",
+        "modifierKey": "attackDebuffUndead_2",
+        "type": "attackMultiplier",
+        "value": -0.15,
+        "caption": "attackDebuffUndead",
+        "format": "minusPercent"
+    },
+    "library_attackDebuffUndead_3": {
+        "key": "library_attackDebuffUndead_3",
+        "modifierKey": "attackDebuffUndead_3",
+        "type": "attackMultiplier",
+        "value": -0.2,
+        "caption": "attackDebuffUndead",
+        "format": "minusPercent"
+    },
+    "library_attackBuffUndead_1": {
+        "key": "library_attackBuffUndead_1",
+        "modifierKey": "attackBuffUndead_1",
+        "type": "attackMultiplier",
+        "value": 0.1,
+        "caption": "attackBuffUndead",
+        "format": "percent"
+    },
+    "library_attackBuffUndead_2": {
+        "key": "library_attackBuffUndead_2",
+        "modifierKey": "attackBuffUndead_2",
+        "type": "attackMultiplier",
+        "value": 0.15,
+        "caption": "attackBuffUndead",
+        "format": "percent"
+    },
+    "library_attackBuffUndead_3": {
+        "key": "library_attackBuffUndead_3",
+        "modifierKey": "attackBuffUndead_3",
+        "type": "attackMultiplier",
+        "value": 0.2,
+        "caption": "attackBuffUndead",
+        "format": "percent"
+    },
+    "library_hpDebuffHuman_1": {
+        "key": "library_hpDebuffHuman_1",
+        "modifierKey": "hpDebuffHuman_1",
+        "type": "hpMultiplier",
+        "value": 0.9,
+        "caption": "hpDebuffHuman",
+        "format": "oneMinusPercent"
+    },
+    "library_hpDebuffHuman_2": {
+        "key": "library_hpDebuffHuman_2",
+        "modifierKey": "hpDebuffHuman_2",
+        "type": "hpMultiplier",
+        "value": 0.85,
+        "caption": "hpDebuffHuman",
+        "format": "oneMinusPercent"
+    },
+    "library_hpDebuffHuman_3": {
+        "key": "library_hpDebuffHuman_3",
+        "modifierKey": "hpDebuffHuman_3",
+        "type": "hpMultiplier",
+        "value": 0.8,
+        "caption": "hpDebuffHuman",
+        "format": "oneMinusPercent"
+    },
+    "library_hpBuffHuman_1": {
+        "key": "library_hpBuffHuman_1",
+        "modifierKey": "hpBuffHuman_1",
+        "type": "hpMultiplier",
+        "value": 1.1,
+        "caption": "hpBuffHuman",
+        "format": "minusOnePercent"
+    },
+    "library_hpBuffHuman_2": {
+        "key": "library_hpBuffHuman_2",
+        "modifierKey": "hpBuffHuman_2",
+        "type": "hpMultiplier",
+        "value": 1.15,
+        "caption": "hpBuffHuman",
+        "format": "minusOnePercent"
+    },
+    "library_hpBuffHuman_3": {
+        "key": "library_hpBuffHuman_3",
+        "modifierKey": "hpBuffHuman_3",
+        "type": "hpMultiplier",
+        "value": 1.2,
+        "caption": "hpBuffHuman",
+        "format": "minusOnePercent"
+    },
+    "library_hpDebuffMage_1": {
+        "key": "library_hpDebuffMage_1",
+        "modifierKey": "hpDebuffMage_1",
+        "type": "hpMultiplier",
+        "value": 0.9,
+        "caption": "hpDebuffMage",
+        "format": "oneMinusPercent"
+    },
+    "library_hpDebuffMage_2": {
+        "key": "library_hpDebuffMage_2",
+        "modifierKey": "hpDebuffMage_2",
+        "type": "hpMultiplier",
+        "value": 0.85,
+        "caption": "hpDebuffMage",
+        "format": "oneMinusPercent"
+    },
+    "library_hpDebuffMage_3": {
+        "key": "library_hpDebuffMage_3",
+        "modifierKey": "hpDebuffMage_3",
+        "type": "hpMultiplier",
+        "value": 0.8,
+        "caption": "hpDebuffMage",
+        "format": "oneMinusPercent"
+    },
+    "library_hpBuffMage_1": {
+        "key": "library_hpBuffMage_1",
+        "modifierKey": "hpBuffMage_1",
+        "type": "hpMultiplier",
+        "value": 1.1,
+        "caption": "hpBuffMage",
+        "format": "minusOnePercent"
+    },
+    "library_hpBuffMage_2": {
+        "key": "library_hpBuffMage_2",
+        "modifierKey": "hpBuffMage_2",
+        "type": "hpMultiplier",
+        "value": 1.15,
+        "caption": "hpBuffMage",
+        "format": "minusOnePercent"
+    },
+    "library_hpBuffMage_3": {
+        "key": "library_hpBuffMage_3",
+        "modifierKey": "hpBuffMage_3",
+        "type": "hpMultiplier",
+        "value": 1.2,
+        "caption": "hpBuffMage",
+        "format": "minusOnePercent"
+    },
+    "library_hpDebuffUndead_1": {
+        "key": "library_hpDebuffUndead_1",
+        "modifierKey": "hpDebuffUndead_1",
+        "type": "hpMultiplier",
+        "value": 0.9,
+        "caption": "hpDebuffUndead",
+        "format": "oneMinusPercent"
+    },
+    "library_hpDebuffUndead_2": {
+        "key": "library_hpDebuffUndead_2",
+        "modifierKey": "hpDebuffUndead_2",
+        "type": "hpMultiplier",
+        "value": 0.85,
+        "caption": "hpDebuffUndead",
+        "format": "oneMinusPercent"
+    },
+    "library_hpDebuffUndead_3": {
+        "key": "library_hpDebuffUndead_3",
+        "modifierKey": "hpDebuffUndead_3",
+        "type": "hpMultiplier",
+        "value": 0.8,
+        "caption": "hpDebuffUndead",
+        "format": "oneMinusPercent"
+    },
+    "library_hpBuffUndead_1": {
+        "key": "library_hpBuffUndead_1",
+        "modifierKey": "hpBuffUndead_1",
+        "type": "hpMultiplier",
+        "value": 1.1,
+        "caption": "hpBuffUndead",
+        "format": "minusOnePercent"
+    },
+    "library_hpBuffUndead_2": {
+        "key": "library_hpBuffUndead_2",
+        "modifierKey": "hpBuffUndead_2",
+        "type": "hpMultiplier",
+        "value": 1.15,
+        "caption": "hpBuffUndead",
+        "format": "minusOnePercent"
+    },
+    "library_hpBuffUndead_3": {
+        "key": "library_hpBuffUndead_3",
+        "modifierKey": "hpBuffUndead_3",
+        "type": "hpMultiplier",
+        "value": 1.2,
+        "caption": "hpBuffUndead",
+        "format": "minusOnePercent"
+    },
+    "library_meleeDebuff_1": {
+        "key": "library_meleeDebuff_1",
+        "modifierKey": "meleeDebuff_1",
+        "type": "attackMultiplier",
+        "value": -0.1,
+        "caption": "meleeDebuff",
+        "format": "minusPercent"
+    },
+    "library_meleeDebuff_2": {
+        "key": "library_meleeDebuff_2",
+        "modifierKey": "meleeDebuff_2",
+        "type": "attackMultiplier",
+        "value": -0.15,
+        "caption": "meleeDebuff",
+        "format": "minusPercent"
+    },
+    "library_meleeDebuff_3": {
+        "key": "library_meleeDebuff_3",
+        "modifierKey": "meleeDebuff_3",
+        "type": "attackMultiplier",
+        "value": -0.2,
+        "caption": "meleeDebuff",
+        "format": "minusPercent"
+    },
+    "library_meleeBuff_1": {
+        "key": "library_meleeBuff_1",
+        "modifierKey": "meleeBuff_1",
+        "type": "attackMultiplier",
+        "value": 0.1,
+        "caption": "meleeBuff",
+        "format": "percent"
+    },
+    "library_meleeBuff_2": {
+        "key": "library_meleeBuff_2",
+        "modifierKey": "meleeBuff_2",
+        "type": "attackMultiplier",
+        "value": 0.15,
+        "caption": "meleeBuff",
+        "format": "percent"
+    },
+    "library_meleeBuff_3": {
+        "key": "library_meleeBuff_3",
+        "modifierKey": "meleeBuff_3",
+        "type": "attackMultiplier",
+        "value": 0.2,
+        "caption": "meleeBuff",
+        "format": "percent"
+    },
+    "library_rangeDebuff_1": {
+        "key": "library_rangeDebuff_1",
+        "modifierKey": "rangeDebuff_1",
+        "type": "attackMultiplier",
+        "value": -0.1,
+        "caption": "rangeDebuff",
+        "format": "minusPercent"
+    },
+    "library_rangeDebuff_2": {
+        "key": "library_rangeDebuff_2",
+        "modifierKey": "rangeDebuff_2",
+        "type": "attackMultiplier",
+        "value": -0.15,
+        "caption": "rangeDebuff",
+        "format": "minusPercent"
+    },
+    "library_rangeDebuff_3": {
+        "key": "library_rangeDebuff_3",
+        "modifierKey": "rangeDebuff_3",
+        "type": "attackMultiplier",
+        "value": -0.2,
+        "caption": "rangeDebuff",
+        "format": "minusPercent"
+    },
+    "library_rangeBuff_1": {
+        "key": "library_rangeBuff_1",
+        "modifierKey": "rangeBuff_1",
+        "type": "attackMultiplier",
+        "value": 0.1,
+        "caption": "rangeBuff",
+        "format": "percent"
+    },
+    "library_rangeBuff_2": {
+        "key": "library_rangeBuff_2",
+        "modifierKey": "rangeBuff_2",
+        "type": "attackMultiplier",
+        "value": 0.15,
+        "caption": "rangeBuff",
+        "format": "percent"
+    },
+    "library_rangeBuff_3": {
+        "key": "library_rangeBuff_3",
+        "modifierKey": "rangeBuff_3",
+        "type": "attackMultiplier",
+        "value": 0.2,
+        "caption": "rangeBuff",
+        "format": "percent"
+    },
+    "library_aoeDebuff_1": {
+        "key": "library_aoeDebuff_1",
+        "modifierKey": "aoeDebuff_1",
+        "type": "aoeAttackMultiplier",
+        "value": -0.1,
+        "caption": "aoeDebuff",
+        "format": "minusPercent"
+    },
+    "library_aoeDebuff_2": {
+        "key": "library_aoeDebuff_2",
+        "modifierKey": "aoeDebuff_2",
+        "type": "aoeAttackMultiplier",
+        "value": -0.15,
+        "caption": "aoeDebuff",
+        "format": "minusPercent"
+    },
+    "library_aoeDebuff_3": {
+        "key": "library_aoeDebuff_3",
+        "modifierKey": "aoeDebuff_3",
+        "type": "aoeAttackMultiplier",
+        "value": -0.2,
+        "caption": "aoeDebuff",
+        "format": "minusPercent"
+    },
+    "library_aoeBuff_1": {
+        "key": "library_aoeBuff_1",
+        "modifierKey": "aoeBuff_1",
+        "type": "aoeAttackMultiplier",
+        "value": 0.1,
+        "caption": "aoeBuff",
+        "format": "percent"
+    },
+    "library_aoeBuff_2": {
+        "key": "library_aoeBuff_2",
+        "modifierKey": "aoeBuff_2",
+        "type": "aoeAttackMultiplier",
+        "value": 0.15,
+        "caption": "aoeBuff",
+        "format": "percent"
+    },
+    "library_aoeBuff_3": {
+        "key": "library_aoeBuff_3",
+        "modifierKey": "aoeBuff_3",
+        "type": "aoeAttackMultiplier",
+        "value": 0.2,
+        "caption": "aoeBuff",
+        "format": "percent"
+    },
+    "library_healDebuff_1": {
+        "key": "library_healDebuff_1",
+        "modifierKey": "healDebuff_1",
+        "type": "healMultiplier",
+        "value": 0.9,
+        "caption": "healDebuff",
+        "format": "oneMinusPercent"
+    },
+    "library_healDebuff_2": {
+        "key": "library_healDebuff_2",
+        "modifierKey": "healDebuff_2",
+        "type": "healMultiplier",
+        "value": 0.85,
+        "caption": "healDebuff",
+        "format": "oneMinusPercent"
+    },
+    "library_healDebuff_3": {
+        "key": "library_healDebuff_3",
+        "modifierKey": "healDebuff_3",
+        "type": "healMultiplier",
+        "value": 0.8,
+        "caption": "healDebuff",
+        "format": "oneMinusPercent"
+    },
+    "library_healBuff_1": {
+        "key": "library_healBuff_1",
+        "modifierKey": "healBuff_1",
+        "type": "healMultiplier",
+        "value": 1.1,
+        "caption": "healBuff",
+        "format": "minusOnePercent"
+    },
+    "library_healBuff_2": {
+        "key": "library_healBuff_2",
+        "modifierKey": "healBuff_2",
+        "type": "healMultiplier",
+        "value": 1.15,
+        "caption": "healBuff",
+        "format": "minusOnePercent"
+    },
+    "library_healBuff_3": {
+        "key": "library_healBuff_3",
+        "modifierKey": "healBuff_3",
+        "type": "healMultiplier",
+        "value": 1.2,
+        "caption": "healBuff",
+        "format": "minusOnePercent"
+    },
+    "shadowBlink_buff_1": {
+        "key": "shadowBlink_buff_1",
+        "modifierKey": "shadowHuntress_buff_1",
+        "type": "damageMultiplier",
+        "value": 0.9,
+        "caption": "shadowBlink_buff",
+        "format": "minusOnePercent"
+    },
+    "shadowBlink_buff_2": {
+        "key": "shadowBlink_buff_2",
+        "modifierKey": "shadowHuntress_buff_2",
+        "type": "damageMultiplier",
+        "value": 0.75,
+        "caption": "shadowBlink_buff",
+        "format": "minusOnePercent"
+    },
+    "shadowBlink_buff_3": {
+        "key": "shadowBlink_buff_3",
+        "modifierKey": "shadowHuntress_buff_3",
+        "type": "damageMultiplier",
+        "value": 0.5,
+        "caption": "shadowBlink_buff",
+        "format": "minusOnePercent"
+    },
+    "blackPlague_1": {
+        "key": "blackPlague_1",
+        "modifierKey": "undeadPestilence_buff_1",
+        "type": "attackMultiplier",
+        "value": -0.01,
+        "caption": "talentEffect_reduceDamage",
+        "format": "minusPercent"
+    },
+    "blackPlague_2": {
+        "key": "blackPlague_2",
+        "modifierKey": "undeadPestilence_buff_2",
+        "type": "attackMultiplier",
+        "value": -0.02,
+        "caption": "talentEffect_reduceDamage",
+        "format": "minusPercent"
+    },
+    "blackPlague_3": {
+        "key": "blackPlague_3",
+        "modifierKey": "undeadPestilence_buff_3",
+        "type": "attackMultiplier",
+        "value": -0.03,
+        "caption": "talentEffect_reduceDamage",
+        "format": "minusPercent"
+    },
+    "blackPlague_4": {
+        "key": "blackPlague_4",
+        "modifierKey": "undeadPestilence_buff_4",
+        "type": "attackMultiplier",
+        "value": -0.04,
+        "caption": "talentEffect_reduceDamage",
+        "format": "minusPercent"
+    },
+    "blackPlague_5": {
+        "key": "blackPlague_5",
+        "modifierKey": "undeadPestilence_buff_5",
+        "type": "attackMultiplier",
+        "value": -0.05,
+        "caption": "talentEffect_reduceDamage",
+        "format": "minusPercent"
+    },
+    "blackPlague_6": {
+        "key": "blackPlague_6",
+        "modifierKey": "undeadPestilence_buff_6",
+        "type": "attackMultiplier",
+        "value": -0.06,
+        "caption": "talentEffect_reduceDamage",
+        "format": "minusPercent"
+    },
+    "blackPlague_7": {
+        "key": "blackPlague_7",
+        "modifierKey": "undeadPestilence_buff_7",
+        "type": "attackMultiplier",
+        "value": -0.07,
+        "caption": "talentEffect_reduceDamage",
+        "format": "minusPercent"
+    },
+    "blackPlague_8": {
+        "key": "blackPlague_8",
+        "modifierKey": "undeadPestilence_buff_8",
+        "type": "attackMultiplier",
+        "value": -0.08,
+        "caption": "talentEffect_reduceDamage",
+        "format": "minusPercent"
+    },
+    "blackPlague_9": {
+        "key": "blackPlague_9",
+        "modifierKey": "undeadPestilence_buff_9",
+        "type": "attackMultiplier",
+        "value": -0.09,
+        "caption": "talentEffect_reduceDamage",
+        "format": "minusPercent"
+    },
+    "blackPlague_10": {
+        "key": "blackPlague_10",
+        "modifierKey": "undeadPestilence_buff_10",
+        "type": "attackMultiplier",
+        "value": -0.1,
+        "caption": "talentEffect_reduceDamage",
+        "format": "minusPercent"
+    },
+    "courageSongDmg_1": {
+        "key": "courageSongDmg_1",
+        "modifierKey": "bardHero_buff_1",
+        "type": "attackMultiplier",
+        "value": 0.02,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "courageSongDef_1": {
+        "key": "courageSongDef_1",
+        "modifierKey": "bardHero_buff_1",
+        "type": "damageMultiplier",
+        "value": 0.9,
+        "caption": "talentEffect_reduceRecievedDamage",
+        "format": "oneMinusPercent"
+    },
+    "courageSongDmg_2": {
+        "key": "courageSongDmg_2",
+        "modifierKey": "bardHero_buff_2",
+        "type": "attackMultiplier",
+        "value": 0.04,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "courageSongDef_2": {
+        "key": "courageSongDef_2",
+        "modifierKey": "bardHero_buff_2",
+        "type": "damageMultiplier",
+        "value": 0.85,
+        "caption": "talentEffect_reduceRecievedDamage",
+        "format": "oneMinusPercent"
+    },
+    "courageSongDmg_3": {
+        "key": "courageSongDmg_3",
+        "modifierKey": "bardHero_buff_3",
+        "type": "attackMultiplier",
+        "value": 0.06,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "courageSongDef_3": {
+        "key": "courageSongDef_3",
+        "modifierKey": "bardHero_buff_3",
+        "type": "damageMultiplier",
+        "value": 0.8,
+        "caption": "talentEffect_reduceRecievedDamage",
+        "format": "oneMinusPercent"
+    },
+    "courageSongDmg_4": {
+        "key": "courageSongDmg_4",
+        "modifierKey": "bardHero_buff_4",
+        "type": "attackMultiplier",
+        "value": 0.08,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "courageSongDef_4": {
+        "key": "courageSongDef_4",
+        "modifierKey": "bardHero_buff_4",
+        "type": "damageMultiplier",
+        "value": 0.75,
+        "caption": "talentEffect_reduceRecievedDamage",
+        "format": "oneMinusPercent"
+    },
+    "courageSongDmg_5": {
+        "key": "courageSongDmg_5",
+        "modifierKey": "bardHero_buff_5",
+        "type": "attackMultiplier",
+        "value": 0.1,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "courageSongDef_5": {
+        "key": "courageSongDef_5",
+        "modifierKey": "bardHero_buff_5",
+        "type": "damageMultiplier",
+        "value": 0.7,
+        "caption": "talentEffect_reduceRecievedDamage",
+        "format": "oneMinusPercent"
+    },
+    "courageSongDmg_6": {
+        "key": "courageSongDmg_6",
+        "modifierKey": "bardHero_buff_6",
+        "type": "attackMultiplier",
+        "value": 0.12,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "courageSongDef_6": {
+        "key": "courageSongDef_6",
+        "modifierKey": "bardHero_buff_6",
+        "type": "damageMultiplier",
+        "value": 0.65,
+        "caption": "talentEffect_reduceRecievedDamage",
+        "format": "oneMinusPercent"
+    },
+    "courageSongDmg_7": {
+        "key": "courageSongDmg_7",
+        "modifierKey": "bardHero_buff_7",
+        "type": "attackMultiplier",
+        "value": 0.14,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "courageSongDef_7": {
+        "key": "courageSongDef_7",
+        "modifierKey": "bardHero_buff_7",
+        "type": "damageMultiplier",
+        "value": 0.6,
+        "caption": "talentEffect_reduceRecievedDamage",
+        "format": "oneMinusPercent"
+    },
+    "courageSongDmg_8": {
+        "key": "courageSongDmg_8",
+        "modifierKey": "bardHero_buff_8",
+        "type": "attackMultiplier",
+        "value": 0.16,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "courageSongDef_8": {
+        "key": "courageSongDef_8",
+        "modifierKey": "bardHero_buff_8",
+        "type": "damageMultiplier",
+        "value": 0.55,
+        "caption": "talentEffect_reduceRecievedDamage",
+        "format": "oneMinusPercent"
+    },
+    "courageSongDmg_9": {
+        "key": "courageSongDmg_9",
+        "modifierKey": "bardHero_buff_9",
+        "type": "attackMultiplier",
+        "value": 0.18,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "courageSongDef_9": {
+        "key": "courageSongDef_9",
+        "modifierKey": "bardHero_buff_9",
+        "type": "damageMultiplier",
+        "value": 0.5,
+        "caption": "talentEffect_reduceRecievedDamage",
+        "format": "oneMinusPercent"
+    },
+    "courageSongDmg_10": {
+        "key": "courageSongDmg_10",
+        "modifierKey": "bardHero_buff_10",
+        "type": "attackMultiplier",
+        "value": 0.2,
+        "caption": "talentEffect_increaseDamage",
+        "format": "percent"
+    },
+    "courageSongDef_10": {
+        "key": "courageSongDef_10",
+        "modifierKey": "bardHero_buff_10",
+        "type": "damageMultiplier",
+        "value": 0.45,
+        "caption": "talentEffect_reduceRecievedDamage",
+        "format": "oneMinusPercent"
+    },
+    "ImmutabilityTime_1": {
+        "key": "ImmutabilityTime_1",
+        "modifierKey": "lordInquisitor_buff_1",
+        "type": "negativeDebuffDurationMultiplier",
+        "value": 0.95,
+        "caption": "talentEffect_negativeDebuffDurationMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "ImmutabilityDef_1": {
+        "key": "ImmutabilityDef_1",
+        "modifierKey": "lordInquisitor_buff_1",
+        "type": "defaultDamageMultiplier",
+        "value": 0.95,
+        "caption": "talentEffect_reduceRecievedDamage",
+        "format": "oneMinusPercent"
+    },
+    "ImmutabilityTime_2": {
+        "key": "ImmutabilityTime_2",
+        "modifierKey": "lordInquisitor_buff_2",
+        "type": "negativeDebuffDurationMultiplier",
+        "value": 0.9,
+        "caption": "talentEffect_negativeDebuffDurationMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "ImmutabilityDef_2": {
+        "key": "ImmutabilityDef_2",
+        "modifierKey": "lordInquisitor_buff_2",
+        "type": "defaultDamageMultiplier",
+        "value": 0.925,
+        "caption": "talentEffect_reduceRecievedDamage",
+        "format": "oneMinusPercent"
+    },
+    "ImmutabilityTime_3": {
+        "key": "ImmutabilityTime_3",
+        "modifierKey": "lordInquisitor_buff_3",
+        "type": "negativeDebuffDurationMultiplier",
+        "value": 0.85,
+        "caption": "talentEffect_negativeDebuffDurationMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "ImmutabilityDef_3": {
+        "key": "ImmutabilityDef_3",
+        "modifierKey": "lordInquisitor_buff_3",
+        "type": "defaultDamageMultiplier",
+        "value": 0.9,
+        "caption": "talentEffect_reduceRecievedDamage",
+        "format": "oneMinusPercent"
+    },
+    "ImmutabilityTime_4": {
+        "key": "ImmutabilityTime_4",
+        "modifierKey": "lordInquisitor_buff_4",
+        "type": "negativeDebuffDurationMultiplier",
+        "value": 0.8,
+        "caption": "talentEffect_negativeDebuffDurationMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "ImmutabilityDef_4": {
+        "key": "ImmutabilityDef_4",
+        "modifierKey": "lordInquisitor_buff_4",
+        "type": "defaultDamageMultiplier",
+        "value": 0.875,
+        "caption": "talentEffect_reduceRecievedDamage",
+        "format": "oneMinusPercent"
+    },
+    "ImmutabilityTime_5": {
+        "key": "ImmutabilityTime_5",
+        "modifierKey": "lordInquisitor_buff_5",
+        "type": "negativeDebuffDurationMultiplier",
+        "value": 0.75,
+        "caption": "talentEffect_negativeDebuffDurationMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "ImmutabilityDef_5": {
+        "key": "ImmutabilityDef_5",
+        "modifierKey": "lordInquisitor_buff_5",
+        "type": "defaultDamageMultiplier",
+        "value": 0.85,
+        "caption": "talentEffect_reduceRecievedDamage",
+        "format": "oneMinusPercent"
+    },
+    "ImmutabilityTime_6": {
+        "key": "ImmutabilityTime_6",
+        "modifierKey": "lordInquisitor_buff_6",
+        "type": "negativeDebuffDurationMultiplier",
+        "value": 0.7,
+        "caption": "talentEffect_negativeDebuffDurationMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "ImmutabilityDef_6": {
+        "key": "ImmutabilityDef_6",
+        "modifierKey": "lordInquisitor_buff_6",
+        "type": "defaultDamageMultiplier",
+        "value": 0.825,
+        "caption": "talentEffect_reduceRecievedDamage",
+        "format": "oneMinusPercent"
+    },
+    "ImmutabilityTime_7": {
+        "key": "ImmutabilityTime_7",
+        "modifierKey": "lordInquisitor_buff_7",
+        "type": "negativeDebuffDurationMultiplier",
+        "value": 0.6,
+        "caption": "talentEffect_negativeDebuffDurationMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "ImmutabilityDef_7": {
+        "key": "ImmutabilityDef_7",
+        "modifierKey": "lordInquisitor_buff_7",
+        "type": "defaultDamageMultiplier",
+        "value": 0.8,
+        "caption": "talentEffect_reduceRecievedDamage",
+        "format": "oneMinusPercent"
+    },
+    "ImmutabilityTime_8": {
+        "key": "ImmutabilityTime_8",
+        "modifierKey": "lordInquisitor_buff_8",
+        "type": "negativeDebuffDurationMultiplier",
+        "value": 0.5,
+        "caption": "talentEffect_negativeDebuffDurationMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "ImmutabilityDef_8": {
+        "key": "ImmutabilityDef_8",
+        "modifierKey": "lordInquisitor_buff_8",
+        "type": "defaultDamageMultiplier",
+        "value": 0.775,
+        "caption": "talentEffect_reduceRecievedDamage",
+        "format": "oneMinusPercent"
+    },
+    "ImmutabilityTime_9": {
+        "key": "ImmutabilityTime_9",
+        "modifierKey": "lordInquisitor_buff_9",
+        "type": "negativeDebuffDurationMultiplier",
+        "value": 0.4,
+        "caption": "talentEffect_negativeDebuffDurationMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "ImmutabilityDef_9": {
+        "key": "ImmutabilityDef_9",
+        "modifierKey": "lordInquisitor_buff_9",
+        "type": "defaultDamageMultiplier",
+        "value": 0.725,
+        "caption": "talentEffect_reduceRecievedDamage",
+        "format": "oneMinusPercent"
+    },
+    "ImmutabilityTime_10": {
+        "key": "ImmutabilityTime_10",
+        "modifierKey": "lordInquisitor_buff_10",
+        "type": "negativeDebuffDurationMultiplier",
+        "value": 0.2,
+        "caption": "talentEffect_negativeDebuffDurationMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "ImmutabilityDef_10": {
+        "key": "ImmutabilityDef_10",
+        "modifierKey": "lordInquisitor_buff_10",
+        "type": "defaultDamageMultiplier",
+        "value": 0.675,
+        "caption": "talentEffect_reduceRecievedDamage",
+        "format": "oneMinusPercent"
+    },
+    "SacredShield_1": {
+        "key": "SacredShield_1",
+        "modifierKey": "elevateTank_shield_1",
+        "type": "damageSum",
+        "value": -1250,
+        "caption": "talentEffect_reduceDamage",
+        "format": "minusOnePercent"
+    },
+    "SacredShield_2": {
+        "key": "SacredShield_2",
+        "modifierKey": "elevateTank_shield_2",
+        "type": "damageSum",
+        "value": -2250,
+        "caption": "talentEffect_reduceDamage",
+        "format": "minusOnePercent"
+    },
+    "SacredShield_3": {
+        "key": "SacredShield_3",
+        "modifierKey": "elevateTank_shield_3",
+        "type": "damageSum",
+        "value": -3250,
+        "caption": "talentEffect_reduceDamage",
+        "format": "minusOnePercent"
+    },
+    "SacredShield_4": {
+        "key": "SacredShield_4",
+        "modifierKey": "elevateTank_shield_4",
+        "type": "damageSum",
+        "value": -4250,
+        "caption": "talentEffect_reduceDamage",
+        "format": "minusOnePercent"
+    },
+    "SacredShield_5": {
+        "key": "SacredShield_5",
+        "modifierKey": "elevateTank_shield_5",
+        "type": "damageSum",
+        "value": -5250,
+        "caption": "talentEffect_reduceDamage",
+        "format": "minusOnePercent"
+    },
+    "SacredShield_6": {
+        "key": "SacredShield_6",
+        "modifierKey": "elevateTank_shield_6",
+        "type": "damageSum",
+        "value": -6250,
+        "caption": "talentEffect_reduceDamage",
+        "format": "minusOnePercent"
+    },
+    "SacredShield_7": {
+        "key": "SacredShield_7",
+        "modifierKey": "elevateTank_shield_7",
+        "type": "damageSum",
+        "value": -7250,
+        "caption": "talentEffect_reduceDamage",
+        "format": "minusOnePercent"
+    },
+    "SacredShield_8": {
+        "key": "SacredShield_8",
+        "modifierKey": "elevateTank_shield_8",
+        "type": "damageSum",
+        "value": -8250,
+        "caption": "talentEffect_reduceDamage",
+        "format": "minusOnePercent"
+    },
+    "SacredShield_9": {
+        "key": "SacredShield_9",
+        "modifierKey": "elevateTank_shield_9",
+        "type": "damageSum",
+        "value": -9250,
+        "caption": "talentEffect_reduceDamage",
+        "format": "minusOnePercent"
+    },
+    "SacredShield_10": {
+        "key": "SacredShield_10",
+        "modifierKey": "elevateTank_shield_10",
+        "type": "damageSum",
+        "value": -10250,
+        "caption": "talentEffect_reduceDamage",
+        "format": "minusOnePercent"
+    },
+    "markOfGiant_1": {
+        "key": "markOfGiant_1",
+        "modifierKey": "elevateTank_buff_1",
+        "type": "defaultDamageMultiplier",
+        "value": 1.3,
+        "caption": "talentEffect_increaseDamage",
+        "format": "minusOnePercent"
+    },
+    "markOfGiant_2": {
+        "key": "markOfGiant_2",
+        "modifierKey": "elevateTank_buff_2",
+        "type": "defaultDamageMultiplier",
+        "value": 1.35,
+        "caption": "talentEffect_increaseDamage",
+        "format": "minusOnePercent"
+    },
+    "markOfGiant_3": {
+        "key": "markOfGiant_3",
+        "modifierKey": "elevateTank_buff_3",
+        "type": "defaultDamageMultiplier",
+        "value": 1.4,
+        "caption": "talentEffect_increaseDamage",
+        "format": "minusOnePercent"
+    },
+    "markOfGiant_4": {
+        "key": "markOfGiant_4",
+        "modifierKey": "elevateTank_buff_4",
+        "type": "defaultDamageMultiplier",
+        "value": 1.45,
+        "caption": "talentEffect_increaseDamage",
+        "format": "minusOnePercent"
+    },
+    "markOfGiant_5": {
+        "key": "markOfGiant_5",
+        "modifierKey": "elevateTank_buff_5",
+        "type": "defaultDamageMultiplier",
+        "value": 1.5,
+        "caption": "talentEffect_increaseDamage",
+        "format": "minusOnePercent"
+    },
+    "markOfGiant_6": {
+        "key": "markOfGiant_6",
+        "modifierKey": "elevateTank_buff_6",
+        "type": "defaultDamageMultiplier",
+        "value": 1.55,
+        "caption": "talentEffect_increaseDamage",
+        "format": "minusOnePercent"
+    },
+    "markOfGiant_7": {
+        "key": "markOfGiant_7",
+        "modifierKey": "elevateTank_buff_7",
+        "type": "defaultDamageMultiplier",
+        "value": 1.6,
+        "caption": "talentEffect_increaseDamage",
+        "format": "minusOnePercent"
+    },
+    "markOfGiant_8": {
+        "key": "markOfGiant_8",
+        "modifierKey": "elevateTank_buff_8",
+        "type": "defaultDamageMultiplier",
+        "value": 1.7,
+        "caption": "talentEffect_increaseDamage",
+        "format": "minusOnePercent"
+    },
+    "markOfGiant_9": {
+        "key": "markOfGiant_9",
+        "modifierKey": "elevateTank_buff_9",
+        "type": "defaultDamageMultiplier",
+        "value": 1.8,
+        "caption": "talentEffect_increaseDamage",
+        "format": "minusOnePercent"
+    },
+    "markOfGiant_10": {
+        "key": "markOfGiant_10",
+        "modifierKey": "elevateTank_buff_10",
+        "type": "defaultDamageMultiplier",
+        "value": 1.85,
+        "caption": "talentEffect_increaseDamage",
+        "format": "minusOnePercent"
+    },
+    "weakSpot_1": {
+        "key": "weakSpot_1",
+        "modifierKey": "elevateArcher_buff_1",
+        "type": "defaultDamageMultiplier",
+        "value": 1.6,
+        "caption": "talentEffect_increaseDamage",
+        "format": "minusOnePercent"
+    },
+    "weakSpot_2": {
+        "key": "weakSpot_2",
+        "modifierKey": "elevateArcher_buff_2",
+        "type": "defaultDamageMultiplier",
+        "value": 1.7,
+        "caption": "talentEffect_increaseDamage",
+        "format": "minusOnePercent"
+    },
+    "weakSpot_3": {
+        "key": "weakSpot_3",
+        "modifierKey": "elevateArcher_buff_3",
+        "type": "defaultDamageMultiplier",
+        "value": 1.8,
+        "caption": "talentEffect_increaseDamage",
+        "format": "minusOnePercent"
+    },
+    "weakSpot_4": {
+        "key": "weakSpot_4",
+        "modifierKey": "elevateArcher_buff_4",
+        "type": "defaultDamageMultiplier",
+        "value": 1.9,
+        "caption": "talentEffect_increaseDamage",
+        "format": "minusOnePercent"
+    },
+    "weakSpot_5": {
+        "key": "weakSpot_5",
+        "modifierKey": "elevateArcher_buff_5",
+        "type": "defaultDamageMultiplier",
+        "value": 2,
+        "caption": "talentEffect_increaseDamage",
+        "format": "minusOnePercent"
+    },
+    "weakSpot_6": {
+        "key": "weakSpot_6",
+        "modifierKey": "elevateArcher_buff_6",
+        "type": "defaultDamageMultiplier",
+        "value": 2.2,
+        "caption": "talentEffect_increaseDamage",
+        "format": "minusOnePercent"
+    },
+    "weakSpot_7": {
+        "key": "weakSpot_7",
+        "modifierKey": "elevateArcher_buff_7",
+        "type": "defaultDamageMultiplier",
+        "value": 2.4,
+        "caption": "talentEffect_increaseDamage",
+        "format": "minusOnePercent"
+    },
+    "weakSpot_8": {
+        "key": "weakSpot_8",
+        "modifierKey": "elevateArcher_buff_8",
+        "type": "defaultDamageMultiplier",
+        "value": 2.6,
+        "caption": "talentEffect_increaseDamage",
+        "format": "minusOnePercent"
+    },
+    "weakSpot_9": {
+        "key": "weakSpot_9",
+        "modifierKey": "elevateArcher_buff_9",
+        "type": "defaultDamageMultiplier",
+        "value": 2.8,
+        "caption": "talentEffect_increaseDamage",
+        "format": "minusOnePercent"
+    },
+    "weakSpot_10": {
+        "key": "weakSpot_10",
+        "modifierKey": "elevateArcher_buff_10",
+        "type": "defaultDamageMultiplier",
+        "value": 3,
+        "caption": "talentEffect_increaseDamage",
+        "format": "minusOnePercent"
+    },
+    "echoOfPain_1": {
+        "key": "echoOfPain_1",
+        "modifierKey": "demonFat_buff_1",
+        "type": "deferredDamageDiminishingMultiplier",
+        "value": 0.2,
+        "caption": "talentEffect_reduceIncomeDamage",
+        "format": "percent"
+    },
+    "echoOfPain_2": {
+        "key": "echoOfPain_2",
+        "modifierKey": "demonFat_buff_2",
+        "type": "deferredDamageDiminishingMultiplier",
+        "value": 0.24,
+        "caption": "talentEffect_reduceIncomeDamage",
+        "format": "percent"
+    },
+    "echoOfPain_3": {
+        "key": "echoOfPain_3",
+        "modifierKey": "demonFat_buff_3",
+        "type": "deferredDamageDiminishingMultiplier",
+        "value": 0.28,
+        "caption": "talentEffect_reduceIncomeDamage",
+        "format": "percent"
+    },
+    "echoOfPain_4": {
+        "key": "echoOfPain_4",
+        "modifierKey": "demonFat_buff_4",
+        "type": "deferredDamageDiminishingMultiplier",
+        "value": 0.32,
+        "caption": "talentEffect_reduceIncomeDamage",
+        "format": "percent"
+    },
+    "echoOfPain_5": {
+        "key": "echoOfPain_5",
+        "modifierKey": "demonFat_buff_5",
+        "type": "deferredDamageDiminishingMultiplier",
+        "value": 0.36,
+        "caption": "talentEffect_reduceIncomeDamage",
+        "format": "percent"
+    },
+    "echoOfPain_6": {
+        "key": "echoOfPain_6",
+        "modifierKey": "demonFat_buff_6",
+        "type": "deferredDamageDiminishingMultiplier",
+        "value": 0.4,
+        "caption": "talentEffect_reduceIncomeDamage",
+        "format": "percent"
+    },
+    "echoOfPain_7": {
+        "key": "echoOfPain_7",
+        "modifierKey": "demonFat_buff_7",
+        "type": "deferredDamageDiminishingMultiplier",
+        "value": 0.44,
+        "caption": "talentEffect_reduceIncomeDamage",
+        "format": "percent"
+    },
+    "echoOfPain_8": {
+        "key": "echoOfPain_8",
+        "modifierKey": "demonFat_buff_8",
+        "type": "deferredDamageDiminishingMultiplier",
+        "value": 0.48,
+        "caption": "talentEffect_reduceIncomeDamage",
+        "format": "percent"
+    },
+    "echoOfPain_9": {
+        "key": "echoOfPain_9",
+        "modifierKey": "demonFat_buff_9",
+        "type": "deferredDamageDiminishingMultiplier",
+        "value": 0.52,
+        "caption": "talentEffect_reduceIncomeDamage",
+        "format": "percent"
+    },
+    "echoOfPain_10": {
+        "key": "echoOfPain_10",
+        "modifierKey": "demonFat_buff_10",
+        "type": "deferredDamageDiminishingMultiplier",
+        "value": 0.56,
+        "caption": "talentEffect_reduceIncomeDamage",
+        "format": "percent"
+    },
+    "primalFear_1": {
+        "key": "primalFear_1",
+        "modifierKey": "demonTank_aura_1",
+        "type": "speedMultiplier",
+        "value": 1.5,
+        "caption": "talentEffect_speedMultiplier",
+        "format": "minusOnePercent"
+    },
+    "primalFear_2": {
+        "key": "primalFear_2",
+        "modifierKey": "demonTank_aura_2",
+        "type": "speedMultiplier",
+        "value": 1.55,
+        "caption": "talentEffect_speedMultiplier",
+        "format": "minusOnePercent"
+    },
+    "primalFear_3": {
+        "key": "primalFear_3",
+        "modifierKey": "demonTank_aura_3",
+        "type": "speedMultiplier",
+        "value": 1.6,
+        "caption": "talentEffect_speedMultiplier",
+        "format": "minusOnePercent"
+    },
+    "primalFear_4": {
+        "key": "primalFear_4",
+        "modifierKey": "demonTank_aura_4",
+        "type": "speedMultiplier",
+        "value": 1.65,
+        "caption": "talentEffect_speedMultiplier",
+        "format": "minusOnePercent"
+    },
+    "primalFear_5": {
+        "key": "primalFear_5",
+        "modifierKey": "demonTank_aura_5",
+        "type": "speedMultiplier",
+        "value": 1.7,
+        "caption": "talentEffect_speedMultiplier",
+        "format": "minusOnePercent"
+    },
+    "primalFear_6": {
+        "key": "primalFear_6",
+        "modifierKey": "demonTank_aura_6",
+        "type": "speedMultiplier",
+        "value": 1.75,
+        "caption": "talentEffect_speedMultiplier",
+        "format": "minusOnePercent"
+    },
+    "primalFear_7": {
+        "key": "primalFear_7",
+        "modifierKey": "demonTank_aura_7",
+        "type": "speedMultiplier",
+        "value": 1.8,
+        "caption": "talentEffect_speedMultiplier",
+        "format": "minusOnePercent"
+    },
+    "primalFear_8": {
+        "key": "primalFear_8",
+        "modifierKey": "demonTank_aura_8",
+        "type": "speedMultiplier",
+        "value": 1.85,
+        "caption": "talentEffect_speedMultiplier",
+        "format": "minusOnePercent"
+    },
+    "primalFear_9": {
+        "key": "primalFear_9",
+        "modifierKey": "demonTank_aura_9",
+        "type": "speedMultiplier",
+        "value": 1.9,
+        "caption": "talentEffect_speedMultiplier",
+        "format": "minusOnePercent"
+    },
+    "primalFear_10": {
+        "key": "primalFear_10",
+        "modifierKey": "demonTank_aura_10",
+        "type": "speedMultiplier",
+        "value": 2.2,
+        "caption": "talentEffect_speedMultiplier",
+        "format": "minusOnePercent"
+    },
+    "easyPrey_1": {
+        "key": "easyPrey_1",
+        "modifierKey": "demonTank_buff_1",
+        "type": "damageMultiplier",
+        "value": 1.45,
+        "caption": "talentEffect_increaseRecievedDamage",
+        "format": "minusOnePercent"
+    },
+    "easyPrey_2": {
+        "key": "easyPrey_2",
+        "modifierKey": "demonTank_buff_2",
+        "type": "damageMultiplier",
+        "value": 1.5,
+        "caption": "talentEffect_increaseRecievedDamage",
+        "format": "minusOnePercent"
+    },
+    "easyPrey_3": {
+        "key": "easyPrey_3",
+        "modifierKey": "demonTank_buff_3",
+        "type": "damageMultiplier",
+        "value": 1.55,
+        "caption": "talentEffect_increaseRecievedDamage",
+        "format": "minusOnePercent"
+    },
+    "easyPrey_4": {
+        "key": "easyPrey_4",
+        "modifierKey": "demonTank_buff_4",
+        "type": "damageMultiplier",
+        "value": 1.6,
+        "caption": "talentEffect_increaseRecievedDamage",
+        "format": "minusOnePercent"
+    },
+    "easyPrey_5": {
+        "key": "easyPrey_5",
+        "modifierKey": "demonTank_buff_5",
+        "type": "damageMultiplier",
+        "value": 1.65,
+        "caption": "talentEffect_increaseRecievedDamage",
+        "format": "minusOnePercent"
+    },
+    "easyPrey_6": {
+        "key": "easyPrey_6",
+        "modifierKey": "demonTank_buff_6",
+        "type": "damageMultiplier",
+        "value": 1.7,
+        "caption": "talentEffect_increaseRecievedDamage",
+        "format": "minusOnePercent"
+    },
+    "easyPrey_7": {
+        "key": "easyPrey_7",
+        "modifierKey": "demonTank_buff_7",
+        "type": "damageMultiplier",
+        "value": 1.75,
+        "caption": "talentEffect_increaseRecievedDamage",
+        "format": "minusOnePercent"
+    },
+    "easyPrey_8": {
+        "key": "easyPrey_8",
+        "modifierKey": "demonTank_buff_8",
+        "type": "damageMultiplier",
+        "value": 1.8,
+        "caption": "talentEffect_increaseRecievedDamage",
+        "format": "minusOnePercent"
+    },
+    "easyPrey_9": {
+        "key": "easyPrey_9",
+        "modifierKey": "demonTank_buff_9",
+        "type": "damageMultiplier",
+        "value": 1.85,
+        "caption": "talentEffect_increaseRecievedDamage",
+        "format": "minusOnePercent"
+    },
+    "easyPrey_10": {
+        "key": "easyPrey_10",
+        "modifierKey": "demonTank_buff_10",
+        "type": "damageMultiplier",
+        "value": 2,
+        "caption": "talentEffect_increaseRecievedDamage",
+        "format": "minusOnePercent"
+    },
+    "aoeEvasion_armor_1": {
+        "key": "aoeEvasion_armor_1",
+        "modifierKey": "aoeEvasion_aura_1",
+        "type": "aoeEvasionSum",
+        "value": 0.02,
+        "caption": "caption_aoeArmor_aoeEvasion",
+        "format": "percent"
+    },
+    "aoeEvasion_armor_2": {
+        "key": "aoeEvasion_armor_2",
+        "modifierKey": "aoeEvasion_aura_2",
+        "type": "aoeEvasionSum",
+        "value": 0.023,
+        "caption": "caption_aoeArmor_aoeEvasion",
+        "format": "percent"
+    },
+    "aoeEvasion_armor_3": {
+        "key": "aoeEvasion_armor_3",
+        "modifierKey": "aoeEvasion_aura_3",
+        "type": "aoeEvasionSum",
+        "value": 0.026,
+        "caption": "caption_aoeArmor_aoeEvasion",
+        "format": "percent"
+    },
+    "aoeEvasion_armor_4": {
+        "key": "aoeEvasion_armor_4",
+        "modifierKey": "aoeEvasion_aura_4",
+        "type": "aoeEvasionSum",
+        "value": 0.029,
+        "caption": "caption_aoeArmor_aoeEvasion",
+        "format": "percent"
+    },
+    "aoeEvasion_armor_5": {
+        "key": "aoeEvasion_armor_5",
+        "modifierKey": "aoeEvasion_aura_5",
+        "type": "aoeEvasionSum",
+        "value": 0.035,
+        "caption": "caption_aoeArmor_aoeEvasion",
+        "format": "percent"
+    },
+    "aoeEvasion_armor_6": {
+        "key": "aoeEvasion_armor_6",
+        "modifierKey": "aoeEvasion_aura_6",
+        "type": "aoeEvasionSum",
+        "value": 0.038,
+        "caption": "caption_aoeArmor_aoeEvasion",
+        "format": "percent"
+    },
+    "aoeEvasion_armor_7": {
+        "key": "aoeEvasion_armor_7",
+        "modifierKey": "aoeEvasion_aura_7",
+        "type": "aoeEvasionSum",
+        "value": 0.042,
+        "caption": "caption_aoeArmor_aoeEvasion",
+        "format": "percent"
+    },
+    "aoeEvasion_armor_8": {
+        "key": "aoeEvasion_armor_8",
+        "modifierKey": "aoeEvasion_aura_8",
+        "type": "aoeEvasionSum",
+        "value": 0.046,
+        "caption": "caption_aoeArmor_aoeEvasion",
+        "format": "percent"
+    },
+    "aoeEvasion_armor_9": {
+        "key": "aoeEvasion_armor_9",
+        "modifierKey": "aoeEvasion_aura_9",
+        "type": "aoeEvasionSum",
+        "value": 0.05,
+        "caption": "caption_aoeArmor_aoeEvasion",
+        "format": "percent"
+    },
+    "aoeEvasion_armor_10": {
+        "key": "aoeEvasion_armor_10",
+        "modifierKey": "aoeEvasion_aura_10",
+        "type": "aoeEvasionSum",
+        "value": 0.072,
+        "caption": "caption_aoeArmor_aoeEvasion",
+        "format": "percent"
+    },
+    "aoeEvasion_armor_11": {
+        "key": "aoeEvasion_armor_11",
+        "modifierKey": "aoeEvasion_aura_11",
+        "type": "aoeEvasionSum",
+        "value": 0.076,
+        "caption": "caption_aoeArmor_aoeEvasion",
+        "format": "percent"
+    },
+    "aoeEvasion_armor_12": {
+        "key": "aoeEvasion_armor_12",
+        "modifierKey": "aoeEvasion_aura_12",
+        "type": "aoeEvasionSum",
+        "value": 0.08,
+        "caption": "caption_aoeArmor_aoeEvasion",
+        "format": "percent"
+    },
+    "aoeEvasion_armor_13": {
+        "key": "aoeEvasion_armor_13",
+        "modifierKey": "aoeEvasion_aura_13",
+        "type": "aoeEvasionSum",
+        "value": 0.084,
+        "caption": "caption_aoeArmor_aoeEvasion",
+        "format": "percent"
+    },
+    "aoeEvasion_armor_14": {
+        "key": "aoeEvasion_armor_14",
+        "modifierKey": "aoeEvasion_aura_14",
+        "type": "aoeEvasionSum",
+        "value": 0.088,
+        "caption": "caption_aoeArmor_aoeEvasion",
+        "format": "percent"
+    },
+    "aoeEvasion_armor_15": {
+        "key": "aoeEvasion_armor_15",
+        "modifierKey": "aoeEvasion_aura_15",
+        "type": "aoeEvasionSum",
+        "value": 0.092,
+        "caption": "caption_aoeArmor_aoeEvasion",
+        "format": "percent"
+    },
+    "aoeEvasion_armor_16": {
+        "key": "aoeEvasion_armor_16",
+        "modifierKey": "aoeEvasion_aura_16",
+        "type": "aoeEvasionSum",
+        "value": 0.096,
+        "caption": "caption_aoeArmor_aoeEvasion",
+        "format": "percent"
+    },
+    "aoeEvasion_armor_17": {
+        "key": "aoeEvasion_armor_17",
+        "modifierKey": "aoeEvasion_aura_17",
+        "type": "aoeEvasionSum",
+        "value": 0.1,
+        "caption": "caption_aoeArmor_aoeEvasion",
+        "format": "percent"
+    },
+    "aoeEvasion_armor_18": {
+        "key": "aoeEvasion_armor_18",
+        "modifierKey": "aoeEvasion_aura_18",
+        "type": "aoeEvasionSum",
+        "value": 0.104,
+        "caption": "caption_aoeArmor_aoeEvasion",
+        "format": "percent"
+    },
+    "aoeEvasion_armor_19": {
+        "key": "aoeEvasion_armor_19",
+        "modifierKey": "aoeEvasion_aura_19",
+        "type": "aoeEvasionSum",
+        "value": 0.108,
+        "caption": "caption_aoeArmor_aoeEvasion",
+        "format": "percent"
+    },
+    "aoeEvasion_armor_20": {
+        "key": "aoeEvasion_armor_20",
+        "modifierKey": "aoeEvasion_aura_20",
+        "type": "aoeEvasionSum",
+        "value": 0.132,
+        "caption": "caption_aoeArmor_aoeEvasion",
+        "format": "percent"
+    },
+    "aoeEvasion_armor_21": {
+        "key": "aoeEvasion_armor_21",
+        "modifierKey": "aoeEvasion_aura_21",
+        "type": "aoeEvasionSum",
+        "value": 0.138,
+        "caption": "caption_aoeArmor_aoeEvasion",
+        "format": "percent"
+    },
+    "aoeEvasion_armor_22": {
+        "key": "aoeEvasion_armor_22",
+        "modifierKey": "aoeEvasion_aura_22",
+        "type": "aoeEvasionSum",
+        "value": 0.144,
+        "caption": "caption_aoeArmor_aoeEvasion",
+        "format": "percent"
+    },
+    "aoeEvasion_armor_23": {
+        "key": "aoeEvasion_armor_23",
+        "modifierKey": "aoeEvasion_aura_23",
+        "type": "aoeEvasionSum",
+        "value": 0.15,
+        "caption": "caption_aoeArmor_aoeEvasion",
+        "format": "percent"
+    },
+    "aoeEvasion_armor_24": {
+        "key": "aoeEvasion_armor_24",
+        "modifierKey": "aoeEvasion_aura_24",
+        "type": "aoeEvasionSum",
+        "value": 0.156,
+        "caption": "caption_aoeArmor_aoeEvasion",
+        "format": "percent"
+    },
+    "aoeEvasion_armor_25": {
+        "key": "aoeEvasion_armor_25",
+        "modifierKey": "aoeEvasion_aura_25",
+        "type": "aoeEvasionSum",
+        "value": 0.162,
+        "caption": "caption_aoeArmor_aoeEvasion",
+        "format": "percent"
+    },
+    "aoeEvasion_armor_26": {
+        "key": "aoeEvasion_armor_26",
+        "modifierKey": "aoeEvasion_aura_26",
+        "type": "aoeEvasionSum",
+        "value": 0.17,
+        "caption": "caption_aoeArmor_aoeEvasion",
+        "format": "percent"
+    },
+    "aoeEvasion_armor_27": {
+        "key": "aoeEvasion_armor_27",
+        "modifierKey": "aoeEvasion_aura_27",
+        "type": "aoeEvasionSum",
+        "value": 0.178,
+        "caption": "caption_aoeArmor_aoeEvasion",
+        "format": "percent"
+    },
+    "aoeEvasion_armor_28": {
+        "key": "aoeEvasion_armor_28",
+        "modifierKey": "aoeEvasion_aura_28",
+        "type": "aoeEvasionSum",
+        "value": 0.186,
+        "caption": "caption_aoeArmor_aoeEvasion",
+        "format": "percent"
+    },
+    "aoeEvasion_armor_29": {
+        "key": "aoeEvasion_armor_29",
+        "modifierKey": "aoeEvasion_aura_29",
+        "type": "aoeEvasionSum",
+        "value": 0.194,
+        "caption": "caption_aoeArmor_aoeEvasion",
+        "format": "percent"
+    },
+    "aoeEvasion_armor_30": {
+        "key": "aoeEvasion_armor_30",
+        "modifierKey": "aoeEvasion_aura_30",
+        "type": "aoeEvasionSum",
+        "value": 0.222,
+        "caption": "caption_aoeArmor_aoeEvasion",
+        "format": "percent"
+    },
+    "aoeEvasion_armor_31": {
+        "key": "aoeEvasion_armor_31",
+        "modifierKey": "aoeEvasion_aura_31",
+        "type": "aoeEvasionSum",
+        "value": 0.23,
+        "caption": "caption_aoeArmor_aoeEvasion",
+        "format": "percent"
+    },
+    "aoeEvasion_armor_32": {
+        "key": "aoeEvasion_armor_32",
+        "modifierKey": "aoeEvasion_aura_32",
+        "type": "aoeEvasionSum",
+        "value": 0.238,
+        "caption": "caption_aoeArmor_aoeEvasion",
+        "format": "percent"
+    },
+    "aoeEvasion_armor_33": {
+        "key": "aoeEvasion_armor_33",
+        "modifierKey": "aoeEvasion_aura_33",
+        "type": "aoeEvasionSum",
+        "value": 0.246,
+        "caption": "caption_aoeArmor_aoeEvasion",
+        "format": "percent"
+    },
+    "aoeEvasion_armor_34": {
+        "key": "aoeEvasion_armor_34",
+        "modifierKey": "aoeEvasion_aura_34",
+        "type": "aoeEvasionSum",
+        "value": 0.254,
+        "caption": "caption_aoeArmor_aoeEvasion",
+        "format": "percent"
+    },
+    "aoeEvasion_armor_35": {
+        "key": "aoeEvasion_armor_35",
+        "modifierKey": "aoeEvasion_aura_35",
+        "type": "aoeEvasionSum",
+        "value": 0.262,
+        "caption": "caption_aoeArmor_aoeEvasion",
+        "format": "percent"
+    },
+    "aoeEvasion_armor_36": {
+        "key": "aoeEvasion_armor_36",
+        "modifierKey": "aoeEvasion_aura_36",
+        "type": "aoeEvasionSum",
+        "value": 0.27,
+        "caption": "caption_aoeArmor_aoeEvasion",
+        "format": "percent"
+    },
+    "aoeEvasion_armor_37": {
+        "key": "aoeEvasion_armor_37",
+        "modifierKey": "aoeEvasion_aura_37",
+        "type": "aoeEvasionSum",
+        "value": 0.278,
+        "caption": "caption_aoeArmor_aoeEvasion",
+        "format": "percent"
+    },
+    "aoeEvasion_armor_38": {
+        "key": "aoeEvasion_armor_38",
+        "modifierKey": "aoeEvasion_aura_38",
+        "type": "aoeEvasionSum",
+        "value": 0.286,
+        "caption": "caption_aoeArmor_aoeEvasion",
+        "format": "percent"
+    },
+    "aoeEvasion_armor_39": {
+        "key": "aoeEvasion_armor_39",
+        "modifierKey": "aoeEvasion_aura_39",
+        "type": "aoeEvasionSum",
+        "value": 0.294,
+        "caption": "caption_aoeArmor_aoeEvasion",
+        "format": "percent"
+    },
+    "aoeEvasion_armor_40": {
+        "key": "aoeEvasion_armor_40",
+        "modifierKey": "aoeEvasion_aura_40",
+        "type": "aoeEvasionSum",
+        "value": 0.328,
+        "caption": "caption_aoeArmor_aoeEvasion",
+        "format": "percent"
+    },
+    "aoeEvasion_armor_41": {
+        "key": "aoeEvasion_armor_41",
+        "modifierKey": "aoeEvasion_aura_41",
+        "type": "aoeEvasionSum",
+        "value": 0.336,
+        "caption": "caption_aoeArmor_aoeEvasion",
+        "format": "percent"
+    },
+    "aoeEvasion_armor_42": {
+        "key": "aoeEvasion_armor_42",
+        "modifierKey": "aoeEvasion_aura_42",
+        "type": "aoeEvasionSum",
+        "value": 0.344,
+        "caption": "caption_aoeArmor_aoeEvasion",
+        "format": "percent"
+    },
+    "aoeEvasion_armor_43": {
+        "key": "aoeEvasion_armor_43",
+        "modifierKey": "aoeEvasion_aura_43",
+        "type": "aoeEvasionSum",
+        "value": 0.352,
+        "caption": "caption_aoeArmor_aoeEvasion",
+        "format": "percent"
+    },
+    "aoeEvasion_armor_44": {
+        "key": "aoeEvasion_armor_44",
+        "modifierKey": "aoeEvasion_aura_44",
+        "type": "aoeEvasionSum",
+        "value": 0.36,
+        "caption": "caption_aoeArmor_aoeEvasion",
+        "format": "percent"
+    },
+    "aoeEvasion_armor_45": {
+        "key": "aoeEvasion_armor_45",
+        "modifierKey": "aoeEvasion_aura_45",
+        "type": "aoeEvasionSum",
+        "value": 0.4,
+        "caption": "caption_aoeArmor_aoeEvasion",
+        "format": "percent"
+    },
+    "reflectDamageMultiplier_weapon_1": {
+        "key": "reflectDamageMultiplier_weapon_1",
+        "modifierKey": "attackReflectDamageMultiplier_aura_1",
+        "type": "attackMultiplier",
+        "value": 0.016,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "reflectDamageMultiplier_weapon_2": {
+        "key": "reflectDamageMultiplier_weapon_2",
+        "modifierKey": "attackReflectDamageMultiplier_aura_2",
+        "type": "attackMultiplier",
+        "value": 0.02,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "reflectDamageMultiplier_weapon_3": {
+        "key": "reflectDamageMultiplier_weapon_3",
+        "modifierKey": "attackReflectDamageMultiplier_aura_3",
+        "type": "attackMultiplier",
+        "value": 0.023,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "reflectDamageMultiplier_weapon_4": {
+        "key": "reflectDamageMultiplier_weapon_4",
+        "modifierKey": "attackReflectDamageMultiplier_aura_4",
+        "type": "attackMultiplier",
+        "value": 0.026,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "reflectDamageMultiplier_weapon_5": {
+        "key": "reflectDamageMultiplier_weapon_5",
+        "modifierKey": "attackReflectDamageMultiplier_aura_5",
+        "type": "attackMultiplier",
+        "value": 0.03,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "reflectDamageMultiplier_weapon_6": {
+        "key": "reflectDamageMultiplier_weapon_6",
+        "modifierKey": "attackReflectDamageMultiplier_aura_6",
+        "type": "attackMultiplier",
+        "value": 0.033,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "reflectDamageMultiplier_weapon_7": {
+        "key": "reflectDamageMultiplier_weapon_7",
+        "modifierKey": "attackReflectDamageMultiplier_aura_7",
+        "type": "attackMultiplier",
+        "value": 0.037,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "reflectDamageMultiplier_weapon_8": {
+        "key": "reflectDamageMultiplier_weapon_8",
+        "modifierKey": "attackReflectDamageMultiplier_aura_8",
+        "type": "attackMultiplier",
+        "value": 0.04,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "reflectDamageMultiplier_weapon_9": {
+        "key": "reflectDamageMultiplier_weapon_9",
+        "modifierKey": "attackReflectDamageMultiplier_aura_9",
+        "type": "attackMultiplier",
+        "value": 0.044,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "reflectDamageMultiplier_weapon_10": {
+        "key": "reflectDamageMultiplier_weapon_10",
+        "modifierKey": "attackReflectDamageMultiplier_aura_10",
+        "type": "attackMultiplier",
+        "value": 0.063,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "reflectDamageMultiplier_weapon_11": {
+        "key": "reflectDamageMultiplier_weapon_11",
+        "modifierKey": "attackReflectDamageMultiplier_aura_11",
+        "type": "attackMultiplier",
+        "value": 0.067,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "reflectDamageMultiplier_weapon_12": {
+        "key": "reflectDamageMultiplier_weapon_12",
+        "modifierKey": "attackReflectDamageMultiplier_aura_12",
+        "type": "attackMultiplier",
+        "value": 0.07,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "reflectDamageMultiplier_weapon_13": {
+        "key": "reflectDamageMultiplier_weapon_13",
+        "modifierKey": "attackReflectDamageMultiplier_aura_13",
+        "type": "attackMultiplier",
+        "value": 0.074,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "reflectDamageMultiplier_weapon_14": {
+        "key": "reflectDamageMultiplier_weapon_14",
+        "modifierKey": "attackReflectDamageMultiplier_aura_14",
+        "type": "attackMultiplier",
+        "value": 0.077,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "reflectDamageMultiplier_weapon_15": {
+        "key": "reflectDamageMultiplier_weapon_15",
+        "modifierKey": "attackReflectDamageMultiplier_aura_15",
+        "type": "attackMultiplier",
+        "value": 0.081,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "reflectDamageMultiplier_weapon_16": {
+        "key": "reflectDamageMultiplier_weapon_16",
+        "modifierKey": "attackReflectDamageMultiplier_aura_16",
+        "type": "attackMultiplier",
+        "value": 0.084,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "reflectDamageMultiplier_weapon_17": {
+        "key": "reflectDamageMultiplier_weapon_17",
+        "modifierKey": "attackReflectDamageMultiplier_aura_17",
+        "type": "attackMultiplier",
+        "value": 0.088,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "reflectDamageMultiplier_weapon_18": {
+        "key": "reflectDamageMultiplier_weapon_18",
+        "modifierKey": "attackReflectDamageMultiplier_aura_18",
+        "type": "attackMultiplier",
+        "value": 0.091,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "reflectDamageMultiplier_weapon_19": {
+        "key": "reflectDamageMultiplier_weapon_19",
+        "modifierKey": "attackReflectDamageMultiplier_aura_19",
+        "type": "attackMultiplier",
+        "value": 0.095,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "reflectDamageMultiplier_weapon_20": {
+        "key": "reflectDamageMultiplier_weapon_20",
+        "modifierKey": "attackReflectDamageMultiplier_aura_20",
+        "type": "attackMultiplier",
+        "value": 0.116,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "reflectDamageMultiplier_weapon_21": {
+        "key": "reflectDamageMultiplier_weapon_21",
+        "modifierKey": "attackReflectDamageMultiplier_aura_21",
+        "type": "attackMultiplier",
+        "value": 0.121,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "reflectDamageMultiplier_weapon_22": {
+        "key": "reflectDamageMultiplier_weapon_22",
+        "modifierKey": "attackReflectDamageMultiplier_aura_22",
+        "type": "attackMultiplier",
+        "value": 0.126,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "reflectDamageMultiplier_weapon_23": {
+        "key": "reflectDamageMultiplier_weapon_23",
+        "modifierKey": "attackReflectDamageMultiplier_aura_23",
+        "type": "attackMultiplier",
+        "value": 0.131,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "reflectDamageMultiplier_weapon_24": {
+        "key": "reflectDamageMultiplier_weapon_24",
+        "modifierKey": "attackReflectDamageMultiplier_aura_24",
+        "type": "attackMultiplier",
+        "value": 0.137,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "reflectDamageMultiplier_weapon_25": {
+        "key": "reflectDamageMultiplier_weapon_25",
+        "modifierKey": "attackReflectDamageMultiplier_aura_25",
+        "type": "attackMultiplier",
+        "value": 0.142,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "reflectDamageMultiplier_weapon_26": {
+        "key": "reflectDamageMultiplier_weapon_26",
+        "modifierKey": "attackReflectDamageMultiplier_aura_26",
+        "type": "attackMultiplier",
+        "value": 0.149,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "reflectDamageMultiplier_weapon_27": {
+        "key": "reflectDamageMultiplier_weapon_27",
+        "modifierKey": "attackReflectDamageMultiplier_aura_27",
+        "type": "attackMultiplier",
+        "value": 0.156,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "reflectDamageMultiplier_weapon_28": {
+        "key": "reflectDamageMultiplier_weapon_28",
+        "modifierKey": "attackReflectDamageMultiplier_aura_28",
+        "type": "attackMultiplier",
+        "value": 0.163,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "reflectDamageMultiplier_weapon_29": {
+        "key": "reflectDamageMultiplier_weapon_29",
+        "modifierKey": "attackReflectDamageMultiplier_aura_29",
+        "type": "attackMultiplier",
+        "value": 0.17,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "reflectDamageMultiplier_weapon_30": {
+        "key": "reflectDamageMultiplier_weapon_30",
+        "modifierKey": "attackReflectDamageMultiplier_aura_30",
+        "type": "attackMultiplier",
+        "value": 0.194,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "reflectDamageMultiplier_weapon_31": {
+        "key": "reflectDamageMultiplier_weapon_31",
+        "modifierKey": "attackReflectDamageMultiplier_aura_31",
+        "type": "attackMultiplier",
+        "value": 0.201,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "reflectDamageMultiplier_weapon_32": {
+        "key": "reflectDamageMultiplier_weapon_32",
+        "modifierKey": "attackReflectDamageMultiplier_aura_32",
+        "type": "attackMultiplier",
+        "value": 0.208,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "reflectDamageMultiplier_weapon_33": {
+        "key": "reflectDamageMultiplier_weapon_33",
+        "modifierKey": "attackReflectDamageMultiplier_aura_33",
+        "type": "attackMultiplier",
+        "value": 0.215,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "reflectDamageMultiplier_weapon_34": {
+        "key": "reflectDamageMultiplier_weapon_34",
+        "modifierKey": "attackReflectDamageMultiplier_aura_34",
+        "type": "attackMultiplier",
+        "value": 0.222,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "reflectDamageMultiplier_weapon_35": {
+        "key": "reflectDamageMultiplier_weapon_35",
+        "modifierKey": "attackReflectDamageMultiplier_aura_35",
+        "type": "attackMultiplier",
+        "value": 0.229,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "reflectDamageMultiplier_weapon_36": {
+        "key": "reflectDamageMultiplier_weapon_36",
+        "modifierKey": "attackReflectDamageMultiplier_aura_36",
+        "type": "attackMultiplier",
+        "value": 0.236,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "reflectDamageMultiplier_weapon_37": {
+        "key": "reflectDamageMultiplier_weapon_37",
+        "modifierKey": "attackReflectDamageMultiplier_aura_37",
+        "type": "attackMultiplier",
+        "value": 0.243,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "reflectDamageMultiplier_weapon_38": {
+        "key": "reflectDamageMultiplier_weapon_38",
+        "modifierKey": "attackReflectDamageMultiplier_aura_38",
+        "type": "attackMultiplier",
+        "value": 0.25,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "reflectDamageMultiplier_weapon_39": {
+        "key": "reflectDamageMultiplier_weapon_39",
+        "modifierKey": "attackReflectDamageMultiplier_aura_39",
+        "type": "attackMultiplier",
+        "value": 0.257,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "reflectDamageMultiplier_weapon_40": {
+        "key": "reflectDamageMultiplier_weapon_40",
+        "modifierKey": "attackReflectDamageMultiplier_aura_40",
+        "type": "attackMultiplier",
+        "value": 0.287,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "reflectDamageMultiplier_weapon_41": {
+        "key": "reflectDamageMultiplier_weapon_41",
+        "modifierKey": "attackReflectDamageMultiplier_aura_41",
+        "type": "attackMultiplier",
+        "value": 0.294,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "reflectDamageMultiplier_weapon_42": {
+        "key": "reflectDamageMultiplier_weapon_42",
+        "modifierKey": "attackReflectDamageMultiplier_aura_42",
+        "type": "attackMultiplier",
+        "value": 0.301,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "reflectDamageMultiplier_weapon_43": {
+        "key": "reflectDamageMultiplier_weapon_43",
+        "modifierKey": "attackReflectDamageMultiplier_aura_43",
+        "type": "attackMultiplier",
+        "value": 0.308,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "reflectDamageMultiplier_weapon_44": {
+        "key": "reflectDamageMultiplier_weapon_44",
+        "modifierKey": "attackReflectDamageMultiplier_aura_44",
+        "type": "attackMultiplier",
+        "value": 0.315,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "reflectDamageMultiplier_weapon_45": {
+        "key": "reflectDamageMultiplier_weapon_45",
+        "modifierKey": "attackReflectDamageMultiplier_aura_45",
+        "type": "attackMultiplier",
+        "value": 0.35,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "evasion_aura_trickster_1": {
+        "key": "evasion_aura_trickster_1",
+        "modifierKey": "evasion_aura_1",
+        "type": "evasionSum",
+        "value": 0.005,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "evasion_aura_trickster_2": {
+        "key": "evasion_aura_trickster_2",
+        "modifierKey": "evasion_aura_2",
+        "type": "evasionSum",
+        "value": 0.01,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "evasion_aura_trickster_3": {
+        "key": "evasion_aura_trickster_3",
+        "modifierKey": "evasion_aura_3",
+        "type": "evasionSum",
+        "value": 0.015,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "evasion_aura_trickster_4": {
+        "key": "evasion_aura_trickster_4",
+        "modifierKey": "evasion_aura_4",
+        "type": "evasionSum",
+        "value": 0.02,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "evasion_aura_trickster_5": {
+        "key": "evasion_aura_trickster_5",
+        "modifierKey": "evasion_aura_5",
+        "type": "evasionSum",
+        "value": 0.025,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "evasion_aura_trickster_6": {
+        "key": "evasion_aura_trickster_6",
+        "modifierKey": "evasion_aura_6",
+        "type": "evasionSum",
+        "value": 0.03,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "evasion_aura_trickster_7": {
+        "key": "evasion_aura_trickster_7",
+        "modifierKey": "evasion_aura_7",
+        "type": "evasionSum",
+        "value": 0.035,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "evasion_aura_trickster_8": {
+        "key": "evasion_aura_trickster_8",
+        "modifierKey": "evasion_aura_8",
+        "type": "evasionSum",
+        "value": 0.04,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "evasion_aura_trickster_9": {
+        "key": "evasion_aura_trickster_9",
+        "modifierKey": "evasion_aura_9",
+        "type": "evasionSum",
+        "value": 0.045,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "evasion_aura_trickster_10": {
+        "key": "evasion_aura_trickster_10",
+        "modifierKey": "evasion_aura_10",
+        "type": "evasionSum",
+        "value": 0.05,
+        "caption": "caption_reflectWeapon_atackMultiplier",
+        "format": "percent"
+    },
+    "aoeEvasion_weapon_1": {
+        "key": "aoeEvasion_weapon_1",
+        "modifierKey": "attackAfterAoeEvasion_aura_1",
+        "type": "attackMultiplier",
+        "value": 0.063,
+        "caption": "caption_aoeWeapon_attackMultiplier",
+        "format": "percent"
+    },
+    "aoeEvasion_weapon_2": {
+        "key": "aoeEvasion_weapon_2",
+        "modifierKey": "attackAfterAoeEvasion_aura_2",
+        "type": "attackMultiplier",
+        "value": 0.077,
+        "caption": "caption_aoeWeapon_attackMultiplier",
+        "format": "percent"
+    },
+    "aoeEvasion_weapon_3": {
+        "key": "aoeEvasion_weapon_3",
+        "modifierKey": "attackAfterAoeEvasion_aura_3",
+        "type": "attackMultiplier",
+        "value": 0.091,
+        "caption": "caption_aoeWeapon_attackMultiplier",
+        "format": "percent"
+    },
+    "aoeEvasion_weapon_4": {
+        "key": "aoeEvasion_weapon_4",
+        "modifierKey": "attackAfterAoeEvasion_aura_4",
+        "type": "attackMultiplier",
+        "value": 0.105,
+        "caption": "caption_aoeWeapon_attackMultiplier",
+        "format": "percent"
+    },
+    "aoeEvasion_weapon_5": {
+        "key": "aoeEvasion_weapon_5",
+        "modifierKey": "attackAfterAoeEvasion_aura_5",
+        "type": "attackMultiplier",
+        "value": 0.119,
+        "caption": "caption_aoeWeapon_attackMultiplier",
+        "format": "percent"
+    },
+    "aoeEvasion_weapon_6": {
+        "key": "aoeEvasion_weapon_6",
+        "modifierKey": "attackAfterAoeEvasion_aura_6",
+        "type": "attackMultiplier",
+        "value": 0.133,
+        "caption": "caption_aoeWeapon_attackMultiplier",
+        "format": "percent"
+    },
+    "aoeEvasion_weapon_7": {
+        "key": "aoeEvasion_weapon_7",
+        "modifierKey": "attackAfterAoeEvasion_aura_7",
+        "type": "attackMultiplier",
+        "value": 0.147,
+        "caption": "caption_aoeWeapon_attackMultiplier",
+        "format": "percent"
+    },
+    "aoeEvasion_weapon_8": {
+        "key": "aoeEvasion_weapon_8",
+        "modifierKey": "attackAfterAoeEvasion_aura_8",
+        "type": "attackMultiplier",
+        "value": 0.161,
+        "caption": "caption_aoeWeapon_attackMultiplier",
+        "format": "percent"
+    },
+    "aoeEvasion_weapon_9": {
+        "key": "aoeEvasion_weapon_9",
+        "modifierKey": "attackAfterAoeEvasion_aura_9",
+        "type": "attackMultiplier",
+        "value": 0.175,
+        "caption": "caption_aoeWeapon_attackMultiplier",
+        "format": "percent"
+    },
+    "aoeEvasion_weapon_10": {
+        "key": "aoeEvasion_weapon_10",
+        "modifierKey": "attackAfterAoeEvasion_aura_10",
+        "type": "attackMultiplier",
+        "value": 0.252,
+        "caption": "caption_aoeWeapon_attackMultiplier",
+        "format": "percent"
+    },
+    "aoeEvasion_weapon_11": {
+        "key": "aoeEvasion_weapon_11",
+        "modifierKey": "attackAfterAoeEvasion_aura_11",
+        "type": "attackMultiplier",
+        "value": 0.266,
+        "caption": "caption_aoeWeapon_attackMultiplier",
+        "format": "percent"
+    },
+    "aoeEvasion_weapon_12": {
+        "key": "aoeEvasion_weapon_12",
+        "modifierKey": "attackAfterAoeEvasion_aura_12",
+        "type": "attackMultiplier",
+        "value": 0.28,
+        "caption": "caption_aoeWeapon_attackMultiplier",
+        "format": "percent"
+    },
+    "aoeEvasion_weapon_13": {
+        "key": "aoeEvasion_weapon_13",
+        "modifierKey": "attackAfterAoeEvasion_aura_13",
+        "type": "attackMultiplier",
+        "value": 0.294,
+        "caption": "caption_aoeWeapon_attackMultiplier",
+        "format": "percent"
+    },
+    "aoeEvasion_weapon_14": {
+        "key": "aoeEvasion_weapon_14",
+        "modifierKey": "attackAfterAoeEvasion_aura_14",
+        "type": "attackMultiplier",
+        "value": 0.308,
+        "caption": "caption_aoeWeapon_attackMultiplier",
+        "format": "percent"
+    },
+    "aoeEvasion_weapon_15": {
+        "key": "aoeEvasion_weapon_15",
+        "modifierKey": "attackAfterAoeEvasion_aura_15",
+        "type": "attackMultiplier",
+        "value": 0.322,
+        "caption": "caption_aoeWeapon_attackMultiplier",
+        "format": "percent"
+    },
+    "aoeEvasion_weapon_16": {
+        "key": "aoeEvasion_weapon_16",
+        "modifierKey": "attackAfterAoeEvasion_aura_16",
+        "type": "attackMultiplier",
+        "value": 0.336,
+        "caption": "caption_aoeWeapon_attackMultiplier",
+        "format": "percent"
+    },
+    "aoeEvasion_weapon_17": {
+        "key": "aoeEvasion_weapon_17",
+        "modifierKey": "attackAfterAoeEvasion_aura_17",
+        "type": "attackMultiplier",
+        "value": 0.35,
+        "caption": "caption_aoeWeapon_attackMultiplier",
+        "format": "percent"
+    },
+    "aoeEvasion_weapon_18": {
+        "key": "aoeEvasion_weapon_18",
+        "modifierKey": "attackAfterAoeEvasion_aura_18",
+        "type": "attackMultiplier",
+        "value": 0.364,
+        "caption": "caption_aoeWeapon_attackMultiplier",
+        "format": "percent"
+    },
+    "aoeEvasion_weapon_19": {
+        "key": "aoeEvasion_weapon_19",
+        "modifierKey": "attackAfterAoeEvasion_aura_19",
+        "type": "attackMultiplier",
+        "value": 0.378,
+        "caption": "caption_aoeWeapon_attackMultiplier",
+        "format": "percent"
+    },
+    "aoeEvasion_weapon_20": {
+        "key": "aoeEvasion_weapon_20",
+        "modifierKey": "attackAfterAoeEvasion_aura_20",
+        "type": "attackMultiplier",
+        "value": 0.462,
+        "caption": "caption_aoeWeapon_attackMultiplier",
+        "format": "percent"
+    },
+    "aoeEvasion_weapon_21": {
+        "key": "aoeEvasion_weapon_21",
+        "modifierKey": "attackAfterAoeEvasion_aura_21",
+        "type": "attackMultiplier",
+        "value": 0.483,
+        "caption": "caption_aoeWeapon_attackMultiplier",
+        "format": "percent"
+    },
+    "aoeEvasion_weapon_22": {
+        "key": "aoeEvasion_weapon_22",
+        "modifierKey": "attackAfterAoeEvasion_aura_22",
+        "type": "attackMultiplier",
+        "value": 0.504,
+        "caption": "caption_aoeWeapon_attackMultiplier",
+        "format": "percent"
+    },
+    "aoeEvasion_weapon_23": {
+        "key": "aoeEvasion_weapon_23",
+        "modifierKey": "attackAfterAoeEvasion_aura_23",
+        "type": "attackMultiplier",
+        "value": 0.525,
+        "caption": "caption_aoeWeapon_attackMultiplier",
+        "format": "percent"
+    },
+    "aoeEvasion_weapon_24": {
+        "key": "aoeEvasion_weapon_24",
+        "modifierKey": "attackAfterAoeEvasion_aura_24",
+        "type": "attackMultiplier",
+        "value": 0.546,
+        "caption": "caption_aoeWeapon_attackMultiplier",
+        "format": "percent"
+    },
+    "aoeEvasion_weapon_25": {
+        "key": "aoeEvasion_weapon_25",
+        "modifierKey": "attackAfterAoeEvasion_aura_25",
+        "type": "attackMultiplier",
+        "value": 0.567,
+        "caption": "caption_aoeWeapon_attackMultiplier",
+        "format": "percent"
+    },
+    "aoeEvasion_weapon_26": {
+        "key": "aoeEvasion_weapon_26",
+        "modifierKey": "attackAfterAoeEvasion_aura_26",
+        "type": "attackMultiplier",
+        "value": 0.595,
+        "caption": "caption_aoeWeapon_attackMultiplier",
+        "format": "percent"
+    },
+    "aoeEvasion_weapon_27": {
+        "key": "aoeEvasion_weapon_27",
+        "modifierKey": "attackAfterAoeEvasion_aura_27",
+        "type": "attackMultiplier",
+        "value": 0.623,
+        "caption": "caption_aoeWeapon_attackMultiplier",
+        "format": "percent"
+    },
+    "aoeEvasion_weapon_28": {
+        "key": "aoeEvasion_weapon_28",
+        "modifierKey": "attackAfterAoeEvasion_aura_28",
+        "type": "attackMultiplier",
+        "value": 0.651,
+        "caption": "caption_aoeWeapon_attackMultiplier",
+        "format": "percent"
+    },
+    "aoeEvasion_weapon_29": {
+        "key": "aoeEvasion_weapon_29",
+        "modifierKey": "attackAfterAoeEvasion_aura_29",
+        "type": "attackMultiplier",
+        "value": 0.679,
+        "caption": "caption_aoeWeapon_attackMultiplier",
+        "format": "percent"
+    },
+    "aoeEvasion_weapon_30": {
+        "key": "aoeEvasion_weapon_30",
+        "modifierKey": "attackAfterAoeEvasion_aura_30",
+        "type": "attackMultiplier",
+        "value": 0.777,
+        "caption": "caption_aoeWeapon_attackMultiplier",
+        "format": "percent"
+    },
+    "aoeEvasion_weapon_31": {
+        "key": "aoeEvasion_weapon_31",
+        "modifierKey": "attackAfterAoeEvasion_aura_31",
+        "type": "attackMultiplier",
+        "value": 0.805,
+        "caption": "caption_aoeWeapon_attackMultiplier",
+        "format": "percent"
+    },
+    "aoeEvasion_weapon_32": {
+        "key": "aoeEvasion_weapon_32",
+        "modifierKey": "attackAfterAoeEvasion_aura_32",
+        "type": "attackMultiplier",
+        "value": 0.833,
+        "caption": "caption_aoeWeapon_attackMultiplier",
+        "format": "percent"
+    },
+    "aoeEvasion_weapon_33": {
+        "key": "aoeEvasion_weapon_33",
+        "modifierKey": "attackAfterAoeEvasion_aura_33",
+        "type": "attackMultiplier",
+        "value": 0.861,
+        "caption": "caption_aoeWeapon_attackMultiplier",
+        "format": "percent"
+    },
+    "aoeEvasion_weapon_34": {
+        "key": "aoeEvasion_weapon_34",
+        "modifierKey": "attackAfterAoeEvasion_aura_34",
+        "type": "attackMultiplier",
+        "value": 0.889,
+        "caption": "caption_aoeWeapon_attackMultiplier",
+        "format": "percent"
+    },
+    "aoeEvasion_weapon_35": {
+        "key": "aoeEvasion_weapon_35",
+        "modifierKey": "attackAfterAoeEvasion_aura_35",
+        "type": "attackMultiplier",
+        "value": 0.917,
+        "caption": "caption_aoeWeapon_attackMultiplier",
+        "format": "percent"
+    },
+    "aoeEvasion_weapon_36": {
+        "key": "aoeEvasion_weapon_36",
+        "modifierKey": "attackAfterAoeEvasion_aura_36",
+        "type": "attackMultiplier",
+        "value": 0.945,
+        "caption": "caption_aoeWeapon_attackMultiplier",
+        "format": "percent"
+    },
+    "aoeEvasion_weapon_37": {
+        "key": "aoeEvasion_weapon_37",
+        "modifierKey": "attackAfterAoeEvasion_aura_37",
+        "type": "attackMultiplier",
+        "value": 0.973,
+        "caption": "caption_aoeWeapon_attackMultiplier",
+        "format": "percent"
+    },
+    "aoeEvasion_weapon_38": {
+        "key": "aoeEvasion_weapon_38",
+        "modifierKey": "attackAfterAoeEvasion_aura_38",
+        "type": "attackMultiplier",
+        "value": 1.001,
+        "caption": "caption_aoeWeapon_attackMultiplier",
+        "format": "percent"
+    },
+    "aoeEvasion_weapon_39": {
+        "key": "aoeEvasion_weapon_39",
+        "modifierKey": "attackAfterAoeEvasion_aura_39",
+        "type": "attackMultiplier",
+        "value": 1.029,
+        "caption": "caption_aoeWeapon_attackMultiplier",
+        "format": "percent"
+    },
+    "aoeEvasion_weapon_40": {
+        "key": "aoeEvasion_weapon_40",
+        "modifierKey": "attackAfterAoeEvasion_aura_40",
+        "type": "attackMultiplier",
+        "value": 1.148,
+        "caption": "caption_aoeWeapon_attackMultiplier",
+        "format": "percent"
+    },
+    "aoeEvasion_weapon_41": {
+        "key": "aoeEvasion_weapon_41",
+        "modifierKey": "attackAfterAoeEvasion_aura_41",
+        "type": "attackMultiplier",
+        "value": 1.176,
+        "caption": "caption_aoeWeapon_attackMultiplier",
+        "format": "percent"
+    },
+    "aoeEvasion_weapon_42": {
+        "key": "aoeEvasion_weapon_42",
+        "modifierKey": "attackAfterAoeEvasion_aura_42",
+        "type": "attackMultiplier",
+        "value": 1.204,
+        "caption": "caption_aoeWeapon_attackMultiplier",
+        "format": "percent"
+    },
+    "aoeEvasion_weapon_43": {
+        "key": "aoeEvasion_weapon_43",
+        "modifierKey": "attackAfterAoeEvasion_aura_43",
+        "type": "attackMultiplier",
+        "value": 1.232,
+        "caption": "caption_aoeWeapon_attackMultiplier",
+        "format": "percent"
+    },
+    "aoeEvasion_weapon_44": {
+        "key": "aoeEvasion_weapon_44",
+        "modifierKey": "attackAfterAoeEvasion_aura_44",
+        "type": "attackMultiplier",
+        "value": 1.26,
+        "caption": "caption_aoeWeapon_attackMultiplier",
+        "format": "percent"
+    },
+    "aoeEvasion_weapon_45": {
+        "key": "aoeEvasion_weapon_45",
+        "modifierKey": "attackAfterAoeEvasion_aura_45",
+        "type": "attackMultiplier",
+        "value": 1.4,
+        "caption": "caption_aoeWeapon_attackMultiplier",
+        "format": "percent"
+    },
+    "reflectDamageMultiplier_armor_1": {
+        "key": "reflectDamageMultiplier_armor_1",
+        "modifierKey": "reflectDamageMultiplier_aura_1",
+        "type": "reflectDamageMultiplier",
+        "value": 0.96,
+        "caption": "caption_reflectArmor_damageMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "reflectDamageMultiplier_armor_2": {
+        "key": "reflectDamageMultiplier_armor_2",
+        "modifierKey": "reflectDamageMultiplier_aura_2",
+        "type": "reflectDamageMultiplier",
+        "value": 0.95,
+        "caption": "caption_reflectArmor_damageMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "reflectDamageMultiplier_armor_3": {
+        "key": "reflectDamageMultiplier_armor_3",
+        "modifierKey": "reflectDamageMultiplier_aura_3",
+        "type": "reflectDamageMultiplier",
+        "value": 0.94,
+        "caption": "caption_reflectArmor_damageMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "reflectDamageMultiplier_armor_4": {
+        "key": "reflectDamageMultiplier_armor_4",
+        "modifierKey": "reflectDamageMultiplier_aura_4",
+        "type": "reflectDamageMultiplier",
+        "value": 0.932,
+        "caption": "caption_reflectArmor_damageMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "reflectDamageMultiplier_armor_5": {
+        "key": "reflectDamageMultiplier_armor_5",
+        "modifierKey": "reflectDamageMultiplier_aura_5",
+        "type": "reflectDamageMultiplier",
+        "value": 0.923,
+        "caption": "caption_reflectArmor_damageMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "reflectDamageMultiplier_armor_6": {
+        "key": "reflectDamageMultiplier_armor_6",
+        "modifierKey": "reflectDamageMultiplier_aura_6",
+        "type": "reflectDamageMultiplier",
+        "value": 0.915,
+        "caption": "caption_reflectArmor_damageMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "reflectDamageMultiplier_armor_7": {
+        "key": "reflectDamageMultiplier_armor_7",
+        "modifierKey": "reflectDamageMultiplier_aura_7",
+        "type": "reflectDamageMultiplier",
+        "value": 0.905,
+        "caption": "caption_reflectArmor_damageMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "reflectDamageMultiplier_armor_8": {
+        "key": "reflectDamageMultiplier_armor_8",
+        "modifierKey": "reflectDamageMultiplier_aura_8",
+        "type": "reflectDamageMultiplier",
+        "value": 0.896,
+        "caption": "caption_reflectArmor_damageMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "reflectDamageMultiplier_armor_9": {
+        "key": "reflectDamageMultiplier_armor_9",
+        "modifierKey": "reflectDamageMultiplier_aura_9",
+        "type": "reflectDamageMultiplier",
+        "value": 0.887,
+        "caption": "caption_reflectArmor_damageMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "reflectDamageMultiplier_armor_10": {
+        "key": "reflectDamageMultiplier_armor_10",
+        "modifierKey": "reflectDamageMultiplier_aura_10",
+        "type": "reflectDamageMultiplier",
+        "value": 0.84,
+        "caption": "caption_reflectArmor_damageMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "reflectDamageMultiplier_armor_11": {
+        "key": "reflectDamageMultiplier_armor_11",
+        "modifierKey": "reflectDamageMultiplier_aura_11",
+        "type": "reflectDamageMultiplier",
+        "value": 0.83,
+        "caption": "caption_reflectArmor_damageMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "reflectDamageMultiplier_armor_12": {
+        "key": "reflectDamageMultiplier_armor_12",
+        "modifierKey": "reflectDamageMultiplier_aura_12",
+        "type": "reflectDamageMultiplier",
+        "value": 0.82,
+        "caption": "caption_reflectArmor_damageMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "reflectDamageMultiplier_armor_13": {
+        "key": "reflectDamageMultiplier_armor_13",
+        "modifierKey": "reflectDamageMultiplier_aura_13",
+        "type": "reflectDamageMultiplier",
+        "value": 0.811,
+        "caption": "caption_reflectArmor_damageMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "reflectDamageMultiplier_armor_14": {
+        "key": "reflectDamageMultiplier_armor_14",
+        "modifierKey": "reflectDamageMultiplier_aura_14",
+        "type": "reflectDamageMultiplier",
+        "value": 0.8,
+        "caption": "caption_reflectArmor_damageMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "reflectDamageMultiplier_armor_15": {
+        "key": "reflectDamageMultiplier_armor_15",
+        "modifierKey": "reflectDamageMultiplier_aura_15",
+        "type": "reflectDamageMultiplier",
+        "value": 0.793,
+        "caption": "caption_reflectArmor_damageMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "reflectDamageMultiplier_armor_16": {
+        "key": "reflectDamageMultiplier_armor_16",
+        "modifierKey": "reflectDamageMultiplier_aura_16",
+        "type": "reflectDamageMultiplier",
+        "value": 0.784,
+        "caption": "caption_reflectArmor_damageMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "reflectDamageMultiplier_armor_17": {
+        "key": "reflectDamageMultiplier_armor_17",
+        "modifierKey": "reflectDamageMultiplier_aura_17",
+        "type": "reflectDamageMultiplier",
+        "value": 0.775,
+        "caption": "caption_reflectArmor_damageMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "reflectDamageMultiplier_armor_18": {
+        "key": "reflectDamageMultiplier_armor_18",
+        "modifierKey": "reflectDamageMultiplier_aura_18",
+        "type": "reflectDamageMultiplier",
+        "value": 0.766,
+        "caption": "caption_reflectArmor_damageMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "reflectDamageMultiplier_armor_19": {
+        "key": "reflectDamageMultiplier_armor_19",
+        "modifierKey": "reflectDamageMultiplier_aura_19",
+        "type": "reflectDamageMultiplier",
+        "value": 0.757,
+        "caption": "caption_reflectArmor_damageMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "reflectDamageMultiplier_armor_20": {
+        "key": "reflectDamageMultiplier_armor_20",
+        "modifierKey": "reflectDamageMultiplier_aura_20",
+        "type": "reflectDamageMultiplier",
+        "value": 0.703,
+        "caption": "caption_reflectArmor_damageMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "reflectDamageMultiplier_armor_21": {
+        "key": "reflectDamageMultiplier_armor_21",
+        "modifierKey": "reflectDamageMultiplier_aura_21",
+        "type": "reflectDamageMultiplier",
+        "value": 0.689,
+        "caption": "caption_reflectArmor_damageMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "reflectDamageMultiplier_armor_22": {
+        "key": "reflectDamageMultiplier_armor_22",
+        "modifierKey": "reflectDamageMultiplier_aura_22",
+        "type": "reflectDamageMultiplier",
+        "value": 0.676,
+        "caption": "caption_reflectArmor_damageMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "reflectDamageMultiplier_armor_23": {
+        "key": "reflectDamageMultiplier_armor_23",
+        "modifierKey": "reflectDamageMultiplier_aura_23",
+        "type": "reflectDamageMultiplier",
+        "value": 0.662,
+        "caption": "caption_reflectArmor_damageMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "reflectDamageMultiplier_armor_24": {
+        "key": "reflectDamageMultiplier_armor_24",
+        "modifierKey": "reflectDamageMultiplier_aura_24",
+        "type": "reflectDamageMultiplier",
+        "value": 0.649,
+        "caption": "caption_reflectArmor_damageMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "reflectDamageMultiplier_armor_25": {
+        "key": "reflectDamageMultiplier_armor_25",
+        "modifierKey": "reflectDamageMultiplier_aura_25",
+        "type": "reflectDamageMultiplier",
+        "value": 0.635,
+        "caption": "caption_reflectArmor_damageMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "reflectDamageMultiplier_armor_26": {
+        "key": "reflectDamageMultiplier_armor_26",
+        "modifierKey": "reflectDamageMultiplier_aura_26",
+        "type": "reflectDamageMultiplier",
+        "value": 0.617,
+        "caption": "caption_reflectArmor_damageMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "reflectDamageMultiplier_armor_27": {
+        "key": "reflectDamageMultiplier_armor_27",
+        "modifierKey": "reflectDamageMultiplier_aura_27",
+        "type": "reflectDamageMultiplier",
+        "value": 0.599,
+        "caption": "caption_reflectArmor_damageMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "reflectDamageMultiplier_armor_28": {
+        "key": "reflectDamageMultiplier_armor_28",
+        "modifierKey": "reflectDamageMultiplier_aura_28",
+        "type": "reflectDamageMultiplier",
+        "value": 0.581,
+        "caption": "caption_reflectArmor_damageMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "reflectDamageMultiplier_armor_29": {
+        "key": "reflectDamageMultiplier_armor_29",
+        "modifierKey": "reflectDamageMultiplier_aura_29",
+        "type": "reflectDamageMultiplier",
+        "value": 0.563,
+        "caption": "caption_reflectArmor_damageMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "reflectDamageMultiplier_armor_30": {
+        "key": "reflectDamageMultiplier_armor_30",
+        "modifierKey": "reflectDamageMultiplier_aura_30",
+        "type": "reflectDamageMultiplier",
+        "value": 0.5,
+        "caption": "caption_reflectArmor_damageMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "reflectDamageMultiplier_armor_31": {
+        "key": "reflectDamageMultiplier_armor_31",
+        "modifierKey": "reflectDamageMultiplier_aura_31",
+        "type": "reflectDamageMultiplier",
+        "value": 0.482,
+        "caption": "caption_reflectArmor_damageMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "reflectDamageMultiplier_armor_32": {
+        "key": "reflectDamageMultiplier_armor_32",
+        "modifierKey": "reflectDamageMultiplier_aura_32",
+        "type": "reflectDamageMultiplier",
+        "value": 0.464,
+        "caption": "caption_reflectArmor_damageMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "reflectDamageMultiplier_armor_33": {
+        "key": "reflectDamageMultiplier_armor_33",
+        "modifierKey": "reflectDamageMultiplier_aura_33",
+        "type": "reflectDamageMultiplier",
+        "value": 0.446,
+        "caption": "caption_reflectArmor_damageMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "reflectDamageMultiplier_armor_34": {
+        "key": "reflectDamageMultiplier_armor_34",
+        "modifierKey": "reflectDamageMultiplier_aura_34",
+        "type": "reflectDamageMultiplier",
+        "value": 0.428,
+        "caption": "caption_reflectArmor_damageMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "reflectDamageMultiplier_armor_35": {
+        "key": "reflectDamageMultiplier_armor_35",
+        "modifierKey": "reflectDamageMultiplier_aura_35",
+        "type": "reflectDamageMultiplier",
+        "value": 0.41,
+        "caption": "caption_reflectArmor_damageMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "reflectDamageMultiplier_armor_36": {
+        "key": "reflectDamageMultiplier_armor_36",
+        "modifierKey": "reflectDamageMultiplier_aura_36",
+        "type": "reflectDamageMultiplier",
+        "value": 0.392,
+        "caption": "caption_reflectArmor_damageMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "reflectDamageMultiplier_armor_37": {
+        "key": "reflectDamageMultiplier_armor_37",
+        "modifierKey": "reflectDamageMultiplier_aura_37",
+        "type": "reflectDamageMultiplier",
+        "value": 0.374,
+        "caption": "caption_reflectArmor_damageMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "reflectDamageMultiplier_armor_38": {
+        "key": "reflectDamageMultiplier_armor_38",
+        "modifierKey": "reflectDamageMultiplier_aura_38",
+        "type": "reflectDamageMultiplier",
+        "value": 0.356,
+        "caption": "caption_reflectArmor_damageMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "reflectDamageMultiplier_armor_39": {
+        "key": "reflectDamageMultiplier_armor_39",
+        "modifierKey": "reflectDamageMultiplier_aura_39",
+        "type": "reflectDamageMultiplier",
+        "value": 0.338,
+        "caption": "caption_reflectArmor_damageMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "reflectDamageMultiplier_armor_40": {
+        "key": "reflectDamageMultiplier_armor_40",
+        "modifierKey": "reflectDamageMultiplier_aura_40",
+        "type": "reflectDamageMultiplier",
+        "value": 0.262,
+        "caption": "caption_reflectArmor_damageMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "reflectDamageMultiplier_armor_41": {
+        "key": "reflectDamageMultiplier_armor_41",
+        "modifierKey": "reflectDamageMultiplier_aura_41",
+        "type": "reflectDamageMultiplier",
+        "value": 0.244,
+        "caption": "caption_reflectArmor_damageMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "reflectDamageMultiplier_armor_42": {
+        "key": "reflectDamageMultiplier_armor_42",
+        "modifierKey": "reflectDamageMultiplier_aura_42",
+        "type": "reflectDamageMultiplier",
+        "value": 0.226,
+        "caption": "caption_reflectArmor_damageMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "reflectDamageMultiplier_armor_43": {
+        "key": "reflectDamageMultiplier_armor_43",
+        "modifierKey": "reflectDamageMultiplier_aura_43",
+        "type": "reflectDamageMultiplier",
+        "value": 0.208,
+        "caption": "caption_reflectArmor_damageMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "reflectDamageMultiplier_armor_44": {
+        "key": "reflectDamageMultiplier_armor_44",
+        "modifierKey": "reflectDamageMultiplier_aura_44",
+        "type": "reflectDamageMultiplier",
+        "value": 0.19,
+        "caption": "caption_reflectArmor_damageMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "reflectDamageMultiplier_armor_45": {
+        "key": "reflectDamageMultiplier_armor_45",
+        "modifierKey": "reflectDamageMultiplier_aura_45",
+        "type": "reflectDamageMultiplier",
+        "value": 0.1,
+        "caption": "caption_reflectArmor_damageMultiplier",
+        "format": "oneMinusPercent"
+    },
+    "reflect_aura_boss_1": {
+        "key": "reflect_aura_boss_1",
+        "modifierKey": "reflect_aura_1",
+        "type": "reflectSum",
+        "value": 0.2,
+        "caption": null,
+        "format": "percent"
+    },
+    "library_axeThrowers_cooldownBuff_hero_1_1": {
+        "key": "library_axeThrowers_cooldownBuff_hero_1_1",
+        "modifierKey": "library_axeThrowers_cooldownBuff_hero_1",
+        "type": "specialCooldownMultiplier",
+        "value": 0.85,
+        "caption": "cooldownBuffHero",
+        "format": "percent"
+    },
+    "library_axeThrowers_attackBuff_assassins_1_1": {
+        "key": "library_axeThrowers_attackBuff_assassins_1_1",
+        "modifierKey": "library_axeThrowers_attackBuff_assassins_1",
+        "type": "attackMultiplier",
+        "value": 0.1,
+        "caption": "attackBuffAssassins",
+        "format": "percent"
+    },
+    "library_axeThrowers_hpBuff_1_1": {
+        "key": "library_axeThrowers_hpBuff_1_1",
+        "modifierKey": "library_axeThrowers_hpBuff_1",
+        "type": "hpMultiplier",
+        "value": 1.03,
+        "caption": "hpBuff",
+        "format": "minusOnePercent"
+    },
+    "library_axeThrowers_aoeAttackDebuff_1_1": {
+        "key": "library_axeThrowers_aoeAttackDebuff_1_1",
+        "modifierKey": "library_axeThrowers_aoeAttackDebuff_1",
+        "type": "aoeAttackMultiplier",
+        "value": -0.1,
+        "caption": "aoeDebuff",
+        "format": "minusPercent"
+    },
+    "sandDebuff_1": {
+        "key": "sandDebuff_1",
+        "modifierKey": "bossSand_debuff_1",
+        "type": "missSum",
+        "value": 1,
+        "caption": "talentEffect_miss",
+        "format": "percent"
+    },
+    "sandDebuff_2": {
+        "key": "sandDebuff_2",
+        "modifierKey": "bossSand_debuff_2",
+        "type": "speedMultiplier",
+        "value": 0.3,
+        "caption": "caption_debuffSpeed",
+        "format": "percent"
+    },
+    "reflect_aura_cactus_1_1": {
+        "key": "reflect_aura_cactus_1_1",
+        "modifierKey": "reflect_aura_cactus_1",
+        "type": "reflectSum",
+        "value": 0.05,
+        "caption": "talentEffect_reflectDamage",
+        "format": "percent"
+    },
+    "reflect_aura_cactus_2_1": {
+        "key": "reflect_aura_cactus_2_1",
+        "modifierKey": "reflect_aura_cactus_2",
+        "type": "reflectSum",
+        "value": 0.08,
+        "caption": "talentEffect_reflectDamage",
+        "format": "percent"
+    },
+    "reflect_aura_cactus_3_1": {
+        "key": "reflect_aura_cactus_3_1",
+        "modifierKey": "reflect_aura_cactus_3",
+        "type": "reflectSum",
+        "value": 0.11,
+        "caption": "talentEffect_reflectDamage",
+        "format": "percent"
+    },
+    "reflect_aura_cactus_4_1": {
+        "key": "reflect_aura_cactus_4_1",
+        "modifierKey": "reflect_aura_cactus_4",
+        "type": "reflectSum",
+        "value": 0.14,
+        "caption": "talentEffect_reflectDamage",
+        "format": "percent"
+    },
+    "reflect_aura_cactus_5_1": {
+        "key": "reflect_aura_cactus_5_1",
+        "modifierKey": "reflect_aura_cactus_5",
+        "type": "reflectSum",
+        "value": 0.17,
+        "caption": "talentEffect_reflectDamage",
+        "format": "percent"
+    },
+    "reflect_aura_cactus_6_1": {
+        "key": "reflect_aura_cactus_6_1",
+        "modifierKey": "reflect_aura_cactus_6",
+        "type": "reflectSum",
+        "value": 0.21,
+        "caption": "talentEffect_reflectDamage",
+        "format": "percent"
+    },
+    "reflect_aura_cactus_7_1": {
+        "key": "reflect_aura_cactus_7_1",
+        "modifierKey": "reflect_aura_cactus_7",
+        "type": "reflectSum",
+        "value": 0.25,
+        "caption": "talentEffect_reflectDamage",
+        "format": "percent"
+    },
+    "reflect_aura_cactus_8_1": {
+        "key": "reflect_aura_cactus_8_1",
+        "modifierKey": "reflect_aura_cactus_8",
+        "type": "reflectSum",
+        "value": 0.29,
+        "caption": "talentEffect_reflectDamage",
+        "format": "percent"
+    },
+    "reflect_aura_cactus_9_1": {
+        "key": "reflect_aura_cactus_9_1",
+        "modifierKey": "reflect_aura_cactus_9",
+        "type": "reflectSum",
+        "value": 0.33,
+        "caption": "talentEffect_reflectDamage",
+        "format": "percent"
+    },
+    "reflect_aura_cactus_10_1": {
+        "key": "reflect_aura_cactus_10_1",
+        "modifierKey": "reflect_aura_cactus_10",
+        "type": "reflectSum",
+        "value": 0.37,
+        "caption": "talentEffect_reflectDamage",
+        "format": "percent"
+    },
+    "library_cactus_rangeHpDebuff_1_1": {
+        "key": "library_cactus_rangeHpDebuff_1_1",
+        "modifierKey": "library_cactus_rangeHpDebuff_1",
+        "type": "hpMultiplier",
+        "value": 0.8,
+        "caption": "hpDebuffRange",
+        "format": "oneMinusPercent"
+    },
+    "library_cactus_aoeBuff_1_1": {
+        "key": "library_cactus_aoeBuff_1_1",
+        "modifierKey": "library_cactus_aoeBuff_1",
+        "type": "aoeAttackMultiplier",
+        "value": 0.1,
+        "caption": "aoeBuff",
+        "format": "percent"
+    },
+    "library_cactus_healBuff_1_1": {
+        "key": "library_cactus_healBuff_1_1",
+        "modifierKey": "library_cactus_healBuff_1",
+        "type": "healMultiplier",
+        "value": 1.1,
+        "caption": "healBuff",
+        "format": "minusOnePercent"
+    },
+    "library_cactus_attackBuffHuman_1_1": {
+        "key": "library_cactus_attackBuffHuman_1_1",
+        "modifierKey": "library_cactus_attackBuffHuman_1",
+        "type": "attackMultiplier",
+        "value": 0.1,
+        "caption": "attackBuffHuman",
+        "format": "percent"
+    }
+}

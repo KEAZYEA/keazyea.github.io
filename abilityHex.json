@@ -1,0 +1,112 @@
+{
+    "shaman_abilityHex_1": {
+        "key": "shaman_abilityHex_1",
+        "abilityInfoId": "abilityHex",
+        "aspd": 1,
+        "aoeRadius": 12,
+        "maxNumEnemies": 1,
+        "duration": 2,
+        "speedMultiplier": 0.5,
+        "applyToHeroes": false,
+        "triggerNumber": 3
+    },
+    "shaman_abilityHex_2": {
+        "key": "shaman_abilityHex_2",
+        "abilityInfoId": "abilityHex",
+        "aspd": 1,
+        "aoeRadius": 12,
+        "maxNumEnemies": 2,
+        "duration": 2,
+        "speedMultiplier": 0.5,
+        "applyToHeroes": false,
+        "triggerNumber": 3
+    },
+    "shaman_abilityHex_3": {
+        "key": "shaman_abilityHex_3",
+        "abilityInfoId": "abilityHex",
+        "aspd": 1,
+        "aoeRadius": 12,
+        "maxNumEnemies": 3,
+        "duration": 2,
+        "speedMultiplier": 0.5,
+        "applyToHeroes": false,
+        "triggerNumber": 3
+    },
+    "shaman_abilityHex_4": {
+        "key": "shaman_abilityHex_4",
+        "abilityInfoId": "abilityHex",
+        "aspd": 1,
+        "aoeRadius": 12,
+        "maxNumEnemies": 4,
+        "duration": 2,
+        "speedMultiplier": 0.5,
+        "applyToHeroes": false,
+        "triggerNumber": 3
+    },
+    "shaman_abilityHex_5": {
+        "key": "shaman_abilityHex_5",
+        "abilityInfoId": "abilityHex",
+        "aspd": 1,
+        "aoeRadius": 12,
+        "maxNumEnemies": 5,
+        "duration": 2,
+        "speedMultiplier": 0.5,
+        "applyToHeroes": false,
+        "triggerNumber": 3
+    },
+    "shaman_abilityHex_6": {
+        "key": "shaman_abilityHex_6",
+        "abilityInfoId": "abilityHex",
+        "aspd": 1,
+        "aoeRadius": 12,
+        "maxNumEnemies": 6,
+        "duration": 2,
+        "speedMultiplier": 0.5,
+        "applyToHeroes": false,
+        "triggerNumber": 3
+    },
+    "shaman_abilityHex_7": {
+        "key": "shaman_abilityHex_7",
+        "abilityInfoId": "abilityHex",
+        "aspd": 1,
+        "aoeRadius": 12,
+        "maxNumEnemies": 7,
+        "duration": 2,
+        "speedMultiplier": 0.5,
+        "applyToHeroes": false,
+        "triggerNumber": 3
+    },
+    "shaman_abilityHex_8": {
+        "key": "shaman_abilityHex_8",
+        "abilityInfoId": "abilityHex",
+        "aspd": 1,
+        "aoeRadius": 12,
+        "maxNumEnemies": 8,
+        "duration": 2,
+        "speedMultiplier": 0.5,
+        "applyToHeroes": false,
+        "triggerNumber": 3
+    },
+    "shaman_abilityHex_9": {
+        "key": "shaman_abilityHex_9",
+        "abilityInfoId": "abilityHex",
+        "aspd": 1,
+        "aoeRadius": 12,
+        "maxNumEnemies": 9,
+        "duration": 2,
+        "speedMultiplier": 0.5,
+        "applyToHeroes": false,
+        "triggerNumber": 3
+    },
+    "shaman_abilityHex_10": {
+        "key": "shaman_abilityHex_10",
+        "abilityInfoId": "abilityHex",
+        "aspd": 1,
+        "aoeRadius": 12,
+        "maxNumEnemies": 10,
+        "duration": 2,
+        "speedMultiplier": 0.5,
+        "applyToHeroes": false,
+        "triggerNumber": 3
+    }
+}

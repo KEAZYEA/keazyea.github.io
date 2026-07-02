@@ -1,0 +1,112 @@
+{
+    "stunToad_devour_1": {
+        "key": "stunToad_devour_1",
+        "abilityInfoId": "stunToad_devour",
+        "targetSearchRadius": 6,
+        "aspdAttack": 1.2,
+        "attackRange": 1.9,
+        "devourTime": 2.5,
+        "devourRestrictionId": "castImmune",
+        "targetSearchRestrictionId": "castImmuneUnit",
+        "attackType": "Melee"
+    },
+    "stunToad_devour_2": {
+        "key": "stunToad_devour_2",
+        "abilityInfoId": "stunToad_devour",
+        "targetSearchRadius": 6,
+        "aspdAttack": 1.2,
+        "attackRange": 1.9,
+        "devourTime": 2.5,
+        "devourRestrictionId": "castImmune",
+        "targetSearchRestrictionId": "castImmuneUnit",
+        "attackType": "Melee"
+    },
+    "stunToad_devour_3": {
+        "key": "stunToad_devour_3",
+        "abilityInfoId": "stunToad_devour",
+        "targetSearchRadius": 6,
+        "aspdAttack": 1.2,
+        "attackRange": 1.9,
+        "devourTime": 2.5,
+        "devourRestrictionId": "castImmune",
+        "targetSearchRestrictionId": "castImmuneUnit",
+        "attackType": "Melee"
+    },
+    "stunToad_devour_4": {
+        "key": "stunToad_devour_4",
+        "abilityInfoId": "stunToad_devour",
+        "targetSearchRadius": 6,
+        "aspdAttack": 1.2,
+        "attackRange": 1.9,
+        "devourTime": 2,
+        "devourRestrictionId": "castImmune",
+        "targetSearchRestrictionId": "castImmuneUnit",
+        "attackType": "Melee"
+    },
+    "stunToad_devour_5": {
+        "key": "stunToad_devour_5",
+        "abilityInfoId": "stunToad_devour",
+        "targetSearchRadius": 6,
+        "aspdAttack": 1.2,
+        "attackRange": 1.9,
+        "devourTime": 2,
+        "devourRestrictionId": "castImmune",
+        "targetSearchRestrictionId": "castImmuneUnit",
+        "attackType": "Melee"
+    },
+    "stunToad_devour_6": {
+        "key": "stunToad_devour_6",
+        "abilityInfoId": "stunToad_devour",
+        "targetSearchRadius": 6,
+        "aspdAttack": 1.2,
+        "attackRange": 1.9,
+        "devourTime": 2,
+        "devourRestrictionId": "castImmune",
+        "targetSearchRestrictionId": "castImmuneUnit",
+        "attackType": "Melee"
+    },
+    "stunToad_devour_7": {
+        "key": "stunToad_devour_7",
+        "abilityInfoId": "stunToad_devour",
+        "targetSearchRadius": 6,
+        "aspdAttack": 1.2,
+        "attackRange": 1.9,
+        "devourTime": 1.5,
+        "devourRestrictionId": "castImmune",
+        "targetSearchRestrictionId": "castImmuneUnit",
+        "attackType": "Melee"
+    },
+    "stunToad_devour_8": {
+        "key": "stunToad_devour_8",
+        "abilityInfoId": "stunToad_devour",
+        "targetSearchRadius": 6,
+        "aspdAttack": 1.2,
+        "attackRange": 1.9,
+        "devourTime": 1.5,
+        "devourRestrictionId": "castImmune",
+        "targetSearchRestrictionId": "castImmuneUnit",
+        "attackType": "Melee"
+    },
+    "stunToad_devour_9": {
+        "key": "stunToad_devour_9",
+        "abilityInfoId": "stunToad_devour",
+        "targetSearchRadius": 6,
+        "aspdAttack": 1.2,
+        "attackRange": 1.9,
+        "devourTime": 1.5,
+        "devourRestrictionId": "castImmune",
+        "targetSearchRestrictionId": "castImmuneUnit",
+        "attackType": "Melee"
+    },
+    "stunToad_devour_10": {
+        "key": "stunToad_devour_10",
+        "abilityInfoId": "stunToad_devour",
+        "targetSearchRadius": 6,
+        "aspdAttack": 1.2,
+        "attackRange": 1.9,
+        "devourTime": 1,
+        "devourRestrictionId": "castImmune",
+        "targetSearchRestrictionId": "castImmuneUnit",
+        "attackType": "Melee"
+    }
+}

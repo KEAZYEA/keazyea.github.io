@@ -1,0 +1,62 @@
+{
+    "paladin_shields_1": {
+        "key": "paladin_shields_1",
+        "abilityInfoId": "paladin_defense",
+        "auraRadius": 2,
+        "damageReduceCoefficient": 0.05
+    },
+    "paladin_shields_2": {
+        "key": "paladin_shields_2",
+        "abilityInfoId": "paladin_defense",
+        "auraRadius": 2,
+        "damageReduceCoefficient": 0.05
+    },
+    "paladin_shields_3": {
+        "key": "paladin_shields_3",
+        "abilityInfoId": "paladin_defense",
+        "auraRadius": 2,
+        "damageReduceCoefficient": 0.05
+    },
+    "paladin_shields_4": {
+        "key": "paladin_shields_4",
+        "abilityInfoId": "paladin_defense",
+        "auraRadius": 3,
+        "damageReduceCoefficient": 0.05
+    },
+    "paladin_shields_5": {
+        "key": "paladin_shields_5",
+        "abilityInfoId": "paladin_defense",
+        "auraRadius": 3,
+        "damageReduceCoefficient": 0.05
+    },
+    "paladin_shields_6": {
+        "key": "paladin_shields_6",
+        "abilityInfoId": "paladin_defense",
+        "auraRadius": 3,
+        "damageReduceCoefficient": 0.05
+    },
+    "paladin_shields_7": {
+        "key": "paladin_shields_7",
+        "abilityInfoId": "paladin_defense",
+        "auraRadius": 3,
+        "damageReduceCoefficient": 0.05
+    },
+    "paladin_shields_8": {
+        "key": "paladin_shields_8",
+        "abilityInfoId": "paladin_defense",
+        "auraRadius": 3,
+        "damageReduceCoefficient": 0.05
+    },
+    "paladin_shields_9": {
+        "key": "paladin_shields_9",
+        "abilityInfoId": "paladin_defense",
+        "auraRadius": 3,
+        "damageReduceCoefficient": 0.05
+    },
+    "paladin_shields_10": {
+        "key": "paladin_shields_10",
+        "abilityInfoId": "paladin_defense",
+        "auraRadius": 3,
+        "damageReduceCoefficient": 0.05
+    }
+}

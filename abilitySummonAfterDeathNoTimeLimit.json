@@ -1,0 +1,72 @@
+{
+    "tombLibrary_summon_1": {
+        "key": "tombLibrary_summon_1",
+        "abilityInfoId": "tomb_summon",
+        "summonedTroopId": "tombSkeleton",
+        "summonedEffectId": "chargeDarkness",
+        "attackType": "Melee"
+    },
+    "tombLibrary_summon_2": {
+        "key": "tombLibrary_summon_2",
+        "abilityInfoId": "tomb_summon",
+        "summonedTroopId": "tombSkeleton",
+        "summonedEffectId": "chargeDarkness",
+        "attackType": "Melee"
+    },
+    "tombLibrary_summon_3": {
+        "key": "tombLibrary_summon_3",
+        "abilityInfoId": "tomb_summon",
+        "summonedTroopId": "tombSkeleton",
+        "summonedEffectId": "chargeDarkness",
+        "attackType": "Melee"
+    },
+    "tombLibrary_summon_4": {
+        "key": "tombLibrary_summon_4",
+        "abilityInfoId": "tomb_summon",
+        "summonedTroopId": "tombSkeleton",
+        "summonedEffectId": "chargeDarkness",
+        "attackType": "Melee"
+    },
+    "tombLibrary_summon_5": {
+        "key": "tombLibrary_summon_5",
+        "abilityInfoId": "tomb_summon",
+        "summonedTroopId": "tombSkeleton",
+        "summonedEffectId": "chargeDarkness",
+        "attackType": "Melee"
+    },
+    "tombLibrary_summon_6": {
+        "key": "tombLibrary_summon_6",
+        "abilityInfoId": "tomb_summon",
+        "summonedTroopId": "tombSkeleton",
+        "summonedEffectId": "chargeDarkness",
+        "attackType": "Melee"
+    },
+    "tombLibrary_summon_7": {
+        "key": "tombLibrary_summon_7",
+        "abilityInfoId": "tomb_summon",
+        "summonedTroopId": "tombSkeleton",
+        "summonedEffectId": "chargeDarkness",
+        "attackType": "Melee"
+    },
+    "tombLibrary_summon_8": {
+        "key": "tombLibrary_summon_8",
+        "abilityInfoId": "tomb_summon",
+        "summonedTroopId": "tombSkeleton",
+        "summonedEffectId": "chargeDarkness",
+        "attackType": "Melee"
+    },
+    "tombLibrary_summon_9": {
+        "key": "tombLibrary_summon_9",
+        "abilityInfoId": "tomb_summon",
+        "summonedTroopId": "tombSkeleton",
+        "summonedEffectId": "chargeDarkness",
+        "attackType": "Melee"
+    },
+    "tombLibrary_summon_10": {
+        "key": "tombLibrary_summon_10",
+        "abilityInfoId": "tomb_summon",
+        "summonedTroopId": "tombSkeleton",
+        "summonedEffectId": "chargeDarkness",
+        "attackType": "Melee"
+    }
+}

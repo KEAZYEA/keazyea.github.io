@@ -1,0 +1,122 @@
+{
+    "flyingMonster_fear_1": {
+        "key": "flyingMonster_fear_1",
+        "abilityInfoId": "flyingMonster_fear",
+        "aspd": 1.7,
+        "flySpeed": 9,
+        "minAttackDistance": 6,
+        "fearRadius": 3,
+        "fearDuration": 1.5,
+        "fearRestrictionId": "fearImmune",
+        "targetApproachRestrictionId": "unTargetable",
+        "attackType": "Melee"
+    },
+    "flyingMonster_fear_2": {
+        "key": "flyingMonster_fear_2",
+        "abilityInfoId": "flyingMonster_fear",
+        "aspd": 1.7,
+        "flySpeed": 9,
+        "minAttackDistance": 6,
+        "fearRadius": 3,
+        "fearDuration": 1.5,
+        "fearRestrictionId": "fearImmune",
+        "targetApproachRestrictionId": "unTargetable",
+        "attackType": "Melee"
+    },
+    "flyingMonster_fear_3": {
+        "key": "flyingMonster_fear_3",
+        "abilityInfoId": "flyingMonster_fear",
+        "aspd": 1.7,
+        "flySpeed": 9,
+        "minAttackDistance": 6,
+        "fearRadius": 3,
+        "fearDuration": 1.5,
+        "fearRestrictionId": "fearImmune",
+        "targetApproachRestrictionId": "unTargetable",
+        "attackType": "Melee"
+    },
+    "flyingMonster_fear_4": {
+        "key": "flyingMonster_fear_4",
+        "abilityInfoId": "flyingMonster_fear",
+        "aspd": 1.7,
+        "flySpeed": 9,
+        "minAttackDistance": 6,
+        "fearRadius": 4,
+        "fearDuration": 2,
+        "fearRestrictionId": "fearImmune",
+        "targetApproachRestrictionId": "unTargetable",
+        "attackType": "Melee"
+    },
+    "flyingMonster_fear_5": {
+        "key": "flyingMonster_fear_5",
+        "abilityInfoId": "flyingMonster_fear",
+        "aspd": 1.7,
+        "flySpeed": 9,
+        "minAttackDistance": 6,
+        "fearRadius": 4,
+        "fearDuration": 2,
+        "fearRestrictionId": "fearImmune",
+        "targetApproachRestrictionId": "unTargetable",
+        "attackType": "Melee"
+    },
+    "flyingMonster_fear_6": {
+        "key": "flyingMonster_fear_6",
+        "abilityInfoId": "flyingMonster_fear",
+        "aspd": 1.7,
+        "flySpeed": 9,
+        "minAttackDistance": 6,
+        "fearRadius": 4,
+        "fearDuration": 2,
+        "fearRestrictionId": "fearImmune",
+        "targetApproachRestrictionId": "unTargetable",
+        "attackType": "Melee"
+    },
+    "flyingMonster_fear_7": {
+        "key": "flyingMonster_fear_7",
+        "abilityInfoId": "flyingMonster_fear",
+        "aspd": 1.7,
+        "flySpeed": 9,
+        "minAttackDistance": 6,
+        "fearRadius": 5,
+        "fearDuration": 2.5,
+        "fearRestrictionId": "fearImmune",
+        "targetApproachRestrictionId": "unTargetable",
+        "attackType": "Melee"
+    },
+    "flyingMonster_fear_8": {
+        "key": "flyingMonster_fear_8",
+        "abilityInfoId": "flyingMonster_fear",
+        "aspd": 1.7,
+        "flySpeed": 9,
+        "minAttackDistance": 6,
+        "fearRadius": 5,
+        "fearDuration": 2.5,
+        "fearRestrictionId": "fearImmune",
+        "targetApproachRestrictionId": "unTargetable",
+        "attackType": "Melee"
+    },
+    "flyingMonster_fear_9": {
+        "key": "flyingMonster_fear_9",
+        "abilityInfoId": "flyingMonster_fear",
+        "aspd": 1.7,
+        "flySpeed": 9,
+        "minAttackDistance": 6,
+        "fearRadius": 5,
+        "fearDuration": 2.5,
+        "fearRestrictionId": "fearImmune",
+        "targetApproachRestrictionId": "unTargetable",
+        "attackType": "Melee"
+    },
+    "flyingMonster_fear_10": {
+        "key": "flyingMonster_fear_10",
+        "abilityInfoId": "flyingMonster_fear",
+        "aspd": 1.7,
+        "flySpeed": 9,
+        "minAttackDistance": 6,
+        "fearRadius": 6,
+        "fearDuration": 3,
+        "fearRestrictionId": "fearImmune",
+        "targetApproachRestrictionId": "unTargetable",
+        "attackType": "Melee"
+    }
+}

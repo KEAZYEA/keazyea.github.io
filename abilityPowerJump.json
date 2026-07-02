@@ -1,0 +1,122 @@
+{
+    "eliteWarrior_powerJump_1": {
+        "key": "eliteWarrior_powerJump_1",
+        "abilityInfoId": "eliteWarrior_powerJump",
+        "attack": 100,
+        "aoeRadius": 3,
+        "aspd": 1,
+        "triggerNumber": 5,
+        "jumpSpeed": 4,
+        "minJumpRange": 3,
+        "maxJumpRange": 10,
+        "attackType": "Range"
+    },
+    "eliteWarrior_powerJump_2": {
+        "key": "eliteWarrior_powerJump_2",
+        "abilityInfoId": "eliteWarrior_powerJump",
+        "attack": 125,
+        "aoeRadius": 3,
+        "aspd": 1,
+        "triggerNumber": 5,
+        "jumpSpeed": 4,
+        "minJumpRange": 3,
+        "maxJumpRange": 10,
+        "attackType": "Range"
+    },
+    "eliteWarrior_powerJump_3": {
+        "key": "eliteWarrior_powerJump_3",
+        "abilityInfoId": "eliteWarrior_powerJump",
+        "attack": 150,
+        "aoeRadius": 3,
+        "aspd": 1,
+        "triggerNumber": 5,
+        "jumpSpeed": 4,
+        "minJumpRange": 3,
+        "maxJumpRange": 10,
+        "attackType": "Range"
+    },
+    "eliteWarrior_powerJump_4": {
+        "key": "eliteWarrior_powerJump_4",
+        "abilityInfoId": "eliteWarrior_powerJump",
+        "attack": 175,
+        "aoeRadius": 3,
+        "aspd": 1,
+        "triggerNumber": 5,
+        "jumpSpeed": 4,
+        "minJumpRange": 3,
+        "maxJumpRange": 10,
+        "attackType": "Range"
+    },
+    "eliteWarrior_powerJump_5": {
+        "key": "eliteWarrior_powerJump_5",
+        "abilityInfoId": "eliteWarrior_powerJump",
+        "attack": 200,
+        "aoeRadius": 3,
+        "aspd": 1,
+        "triggerNumber": 5,
+        "jumpSpeed": 4,
+        "minJumpRange": 3,
+        "maxJumpRange": 10,
+        "attackType": "Range"
+    },
+    "eliteWarrior_powerJump_6": {
+        "key": "eliteWarrior_powerJump_6",
+        "abilityInfoId": "eliteWarrior_powerJump",
+        "attack": 225,
+        "aoeRadius": 3,
+        "aspd": 1,
+        "triggerNumber": 5,
+        "jumpSpeed": 4,
+        "minJumpRange": 3,
+        "maxJumpRange": 10,
+        "attackType": "Range"
+    },
+    "eliteWarrior_powerJump_7": {
+        "key": "eliteWarrior_powerJump_7",
+        "abilityInfoId": "eliteWarrior_powerJump",
+        "attack": 250,
+        "aoeRadius": 3,
+        "aspd": 1,
+        "triggerNumber": 5,
+        "jumpSpeed": 4,
+        "minJumpRange": 3,
+        "maxJumpRange": 10,
+        "attackType": "Range"
+    },
+    "eliteWarrior_powerJump_8": {
+        "key": "eliteWarrior_powerJump_8",
+        "abilityInfoId": "eliteWarrior_powerJump",
+        "attack": 275,
+        "aoeRadius": 3,
+        "aspd": 1,
+        "triggerNumber": 5,
+        "jumpSpeed": 4,
+        "minJumpRange": 3,
+        "maxJumpRange": 10,
+        "attackType": "Range"
+    },
+    "eliteWarrior_powerJump_9": {
+        "key": "eliteWarrior_powerJump_9",
+        "abilityInfoId": "eliteWarrior_powerJump",
+        "attack": 300,
+        "aoeRadius": 3,
+        "aspd": 1,
+        "triggerNumber": 5,
+        "jumpSpeed": 4,
+        "minJumpRange": 3,
+        "maxJumpRange": 10,
+        "attackType": "Range"
+    },
+    "eliteWarrior_powerJump_10": {
+        "key": "eliteWarrior_powerJump_10",
+        "abilityInfoId": "eliteWarrior_powerJump",
+        "attack": 350,
+        "aoeRadius": 3,
+        "aspd": 1,
+        "triggerNumber": 5,
+        "jumpSpeed": 4,
+        "minJumpRange": 3,
+        "maxJumpRange": 10,
+        "attackType": "Range"
+    }
+}

@@ -1,0 +1,1682 @@
+{
+    "dragonRider_talent_1": {
+        "key": "dragonRider_talent_1",
+        "heroTalentId": "dragonRider_talent",
+        "level": 1,
+        "upgradePrice": 0,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "aerialSupport_1"
+    },
+    "dragonRider_talent_2": {
+        "key": "dragonRider_talent_2",
+        "heroTalentId": "dragonRider_talent",
+        "level": 2,
+        "upgradePrice": 1,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "aerialSupport_2"
+    },
+    "dragonRider_talent_3": {
+        "key": "dragonRider_talent_3",
+        "heroTalentId": "dragonRider_talent",
+        "level": 3,
+        "upgradePrice": 2,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "aerialSupport_3"
+    },
+    "dragonRider_talent_4": {
+        "key": "dragonRider_talent_4",
+        "heroTalentId": "dragonRider_talent",
+        "level": 4,
+        "upgradePrice": 3,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "aerialSupport_4"
+    },
+    "dragonRider_talent_5": {
+        "key": "dragonRider_talent_5",
+        "heroTalentId": "dragonRider_talent",
+        "level": 5,
+        "upgradePrice": 5,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "aerialSupport_5"
+    },
+    "dragonRider_talent_6": {
+        "key": "dragonRider_talent_6",
+        "heroTalentId": "dragonRider_talent",
+        "level": 6,
+        "upgradePrice": 8,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "aerialSupport_6"
+    },
+    "dragonRider_talent_7": {
+        "key": "dragonRider_talent_7",
+        "heroTalentId": "dragonRider_talent",
+        "level": 7,
+        "upgradePrice": 12,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "aerialSupport_7"
+    },
+    "dragonRider_talent_8": {
+        "key": "dragonRider_talent_8",
+        "heroTalentId": "dragonRider_talent",
+        "level": 8,
+        "upgradePrice": 20,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "aerialSupport_8"
+    },
+    "dragonRider_talent_9": {
+        "key": "dragonRider_talent_9",
+        "heroTalentId": "dragonRider_talent",
+        "level": 9,
+        "upgradePrice": 35,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "aerialSupport_9"
+    },
+    "dragonRider_talent_10": {
+        "key": "dragonRider_talent_10",
+        "heroTalentId": "dragonRider_talent",
+        "level": 10,
+        "upgradePrice": 55,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "aerialSupport_10"
+    },
+    "charmer_talent_1": {
+        "key": "charmer_talent_1",
+        "heroTalentId": "charmer_talent",
+        "level": 1,
+        "upgradePrice": 0,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "charmer_revengeOfTheFallen_1"
+    },
+    "charmer_talent_2": {
+        "key": "charmer_talent_2",
+        "heroTalentId": "charmer_talent",
+        "level": 2,
+        "upgradePrice": 1,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "charmer_revengeOfTheFallen_2"
+    },
+    "charmer_talent_3": {
+        "key": "charmer_talent_3",
+        "heroTalentId": "charmer_talent",
+        "level": 3,
+        "upgradePrice": 2,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "charmer_revengeOfTheFallen_3"
+    },
+    "charmer_talent_4": {
+        "key": "charmer_talent_4",
+        "heroTalentId": "charmer_talent",
+        "level": 4,
+        "upgradePrice": 3,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "charmer_revengeOfTheFallen_4"
+    },
+    "charmer_talent_5": {
+        "key": "charmer_talent_5",
+        "heroTalentId": "charmer_talent",
+        "level": 5,
+        "upgradePrice": 5,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "charmer_revengeOfTheFallen_5"
+    },
+    "charmer_talent_6": {
+        "key": "charmer_talent_6",
+        "heroTalentId": "charmer_talent",
+        "level": 6,
+        "upgradePrice": 8,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "charmer_revengeOfTheFallen_6"
+    },
+    "charmer_talent_7": {
+        "key": "charmer_talent_7",
+        "heroTalentId": "charmer_talent",
+        "level": 7,
+        "upgradePrice": 12,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "charmer_revengeOfTheFallen_7"
+    },
+    "charmer_talent_8": {
+        "key": "charmer_talent_8",
+        "heroTalentId": "charmer_talent",
+        "level": 8,
+        "upgradePrice": 20,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "charmer_revengeOfTheFallen_8"
+    },
+    "charmer_talent_9": {
+        "key": "charmer_talent_9",
+        "heroTalentId": "charmer_talent",
+        "level": 9,
+        "upgradePrice": 35,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "charmer_revengeOfTheFallen_9"
+    },
+    "charmer_talent_10": {
+        "key": "charmer_talent_10",
+        "heroTalentId": "charmer_talent",
+        "level": 10,
+        "upgradePrice": 55,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "charmer_revengeOfTheFallen_10"
+    },
+    "boneDragon_talent_1": {
+        "key": "boneDragon_talent_1",
+        "heroTalentId": "boneDragon_talent",
+        "level": 1,
+        "upgradePrice": 0,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "deathAura_1"
+    },
+    "boneDragon_talent_2": {
+        "key": "boneDragon_talent_2",
+        "heroTalentId": "boneDragon_talent",
+        "level": 2,
+        "upgradePrice": 1,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "deathAura_2"
+    },
+    "boneDragon_talent_3": {
+        "key": "boneDragon_talent_3",
+        "heroTalentId": "boneDragon_talent",
+        "level": 3,
+        "upgradePrice": 2,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "deathAura_3"
+    },
+    "boneDragon_talent_4": {
+        "key": "boneDragon_talent_4",
+        "heroTalentId": "boneDragon_talent",
+        "level": 4,
+        "upgradePrice": 3,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "deathAura_4"
+    },
+    "boneDragon_talent_5": {
+        "key": "boneDragon_talent_5",
+        "heroTalentId": "boneDragon_talent",
+        "level": 5,
+        "upgradePrice": 5,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "deathAura_5"
+    },
+    "boneDragon_talent_6": {
+        "key": "boneDragon_talent_6",
+        "heroTalentId": "boneDragon_talent",
+        "level": 6,
+        "upgradePrice": 8,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "deathAura_6"
+    },
+    "boneDragon_talent_7": {
+        "key": "boneDragon_talent_7",
+        "heroTalentId": "boneDragon_talent",
+        "level": 7,
+        "upgradePrice": 12,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "deathAura_7"
+    },
+    "boneDragon_talent_8": {
+        "key": "boneDragon_talent_8",
+        "heroTalentId": "boneDragon_talent",
+        "level": 8,
+        "upgradePrice": 20,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "deathAura_8"
+    },
+    "boneDragon_talent_9": {
+        "key": "boneDragon_talent_9",
+        "heroTalentId": "boneDragon_talent",
+        "level": 9,
+        "upgradePrice": 35,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "deathAura_9"
+    },
+    "boneDragon_talent_10": {
+        "key": "boneDragon_talent_10",
+        "heroTalentId": "boneDragon_talent",
+        "level": 10,
+        "upgradePrice": 55,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "deathAura_10"
+    },
+    "forestQueen_talent_1": {
+        "key": "forestQueen_talent_1",
+        "heroTalentId": "forestQueen_talent",
+        "level": 1,
+        "upgradePrice": 0,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "thorns_1"
+    },
+    "forestQueen_talent_2": {
+        "key": "forestQueen_talent_2",
+        "heroTalentId": "forestQueen_talent",
+        "level": 2,
+        "upgradePrice": 1,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "thorns_2"
+    },
+    "forestQueen_talent_3": {
+        "key": "forestQueen_talent_3",
+        "heroTalentId": "forestQueen_talent",
+        "level": 3,
+        "upgradePrice": 2,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "thorns_3"
+    },
+    "forestQueen_talent_4": {
+        "key": "forestQueen_talent_4",
+        "heroTalentId": "forestQueen_talent",
+        "level": 4,
+        "upgradePrice": 3,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "thorns_4"
+    },
+    "forestQueen_talent_5": {
+        "key": "forestQueen_talent_5",
+        "heroTalentId": "forestQueen_talent",
+        "level": 5,
+        "upgradePrice": 5,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "thorns_5"
+    },
+    "forestQueen_talent_6": {
+        "key": "forestQueen_talent_6",
+        "heroTalentId": "forestQueen_talent",
+        "level": 6,
+        "upgradePrice": 8,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "thorns_6"
+    },
+    "forestQueen_talent_7": {
+        "key": "forestQueen_talent_7",
+        "heroTalentId": "forestQueen_talent",
+        "level": 7,
+        "upgradePrice": 12,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "thorns_7"
+    },
+    "forestQueen_talent_8": {
+        "key": "forestQueen_talent_8",
+        "heroTalentId": "forestQueen_talent",
+        "level": 8,
+        "upgradePrice": 20,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "thorns_8"
+    },
+    "forestQueen_talent_9": {
+        "key": "forestQueen_talent_9",
+        "heroTalentId": "forestQueen_talent",
+        "level": 9,
+        "upgradePrice": 35,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "thorns_9"
+    },
+    "forestQueen_talent_10": {
+        "key": "forestQueen_talent_10",
+        "heroTalentId": "forestQueen_talent",
+        "level": 10,
+        "upgradePrice": 55,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "thorns_10"
+    },
+    "darknessMage_talent_1": {
+        "key": "darknessMage_talent_1",
+        "heroTalentId": "darknessMage_talent",
+        "level": 1,
+        "upgradePrice": 0,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "unholyAlliance_1"
+    },
+    "darknessMage_talent_2": {
+        "key": "darknessMage_talent_2",
+        "heroTalentId": "darknessMage_talent",
+        "level": 2,
+        "upgradePrice": 1,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "unholyAlliance_2"
+    },
+    "darknessMage_talent_3": {
+        "key": "darknessMage_talent_3",
+        "heroTalentId": "darknessMage_talent",
+        "level": 3,
+        "upgradePrice": 2,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "unholyAlliance_3"
+    },
+    "darknessMage_talent_4": {
+        "key": "darknessMage_talent_4",
+        "heroTalentId": "darknessMage_talent",
+        "level": 4,
+        "upgradePrice": 3,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "unholyAlliance_4"
+    },
+    "darknessMage_talent_5": {
+        "key": "darknessMage_talent_5",
+        "heroTalentId": "darknessMage_talent",
+        "level": 5,
+        "upgradePrice": 5,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "unholyAlliance_5"
+    },
+    "darknessMage_talent_6": {
+        "key": "darknessMage_talent_6",
+        "heroTalentId": "darknessMage_talent",
+        "level": 6,
+        "upgradePrice": 8,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "unholyAlliance_6"
+    },
+    "darknessMage_talent_7": {
+        "key": "darknessMage_talent_7",
+        "heroTalentId": "darknessMage_talent",
+        "level": 7,
+        "upgradePrice": 12,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "unholyAlliance_7"
+    },
+    "darknessMage_talent_8": {
+        "key": "darknessMage_talent_8",
+        "heroTalentId": "darknessMage_talent",
+        "level": 8,
+        "upgradePrice": 20,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "unholyAlliance_8"
+    },
+    "darknessMage_talent_9": {
+        "key": "darknessMage_talent_9",
+        "heroTalentId": "darknessMage_talent",
+        "level": 9,
+        "upgradePrice": 35,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "unholyAlliance_9"
+    },
+    "darknessMage_talent_10": {
+        "key": "darknessMage_talent_10",
+        "heroTalentId": "darknessMage_talent",
+        "level": 10,
+        "upgradePrice": 55,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "unholyAlliance_10"
+    },
+    "iceMage_talent_1": {
+        "key": "iceMage_talent_1",
+        "heroTalentId": "iceMage_talent",
+        "level": 1,
+        "upgradePrice": 0,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "frostArmor_1"
+    },
+    "iceMage_talent_2": {
+        "key": "iceMage_talent_2",
+        "heroTalentId": "iceMage_talent",
+        "level": 2,
+        "upgradePrice": 1,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "frostArmor_2"
+    },
+    "iceMage_talent_3": {
+        "key": "iceMage_talent_3",
+        "heroTalentId": "iceMage_talent",
+        "level": 3,
+        "upgradePrice": 2,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "frostArmor_3"
+    },
+    "iceMage_talent_4": {
+        "key": "iceMage_talent_4",
+        "heroTalentId": "iceMage_talent",
+        "level": 4,
+        "upgradePrice": 3,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "frostArmor_4"
+    },
+    "iceMage_talent_5": {
+        "key": "iceMage_talent_5",
+        "heroTalentId": "iceMage_talent",
+        "level": 5,
+        "upgradePrice": 5,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "frostArmor_5"
+    },
+    "iceMage_talent_6": {
+        "key": "iceMage_talent_6",
+        "heroTalentId": "iceMage_talent",
+        "level": 6,
+        "upgradePrice": 8,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "frostArmor_6"
+    },
+    "iceMage_talent_7": {
+        "key": "iceMage_talent_7",
+        "heroTalentId": "iceMage_talent",
+        "level": 7,
+        "upgradePrice": 12,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "frostArmor_7"
+    },
+    "iceMage_talent_8": {
+        "key": "iceMage_talent_8",
+        "heroTalentId": "iceMage_talent",
+        "level": 8,
+        "upgradePrice": 20,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "frostArmor_8"
+    },
+    "iceMage_talent_9": {
+        "key": "iceMage_talent_9",
+        "heroTalentId": "iceMage_talent",
+        "level": 9,
+        "upgradePrice": 35,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "frostArmor_9"
+    },
+    "iceMage_talent_10": {
+        "key": "iceMage_talent_10",
+        "heroTalentId": "iceMage_talent",
+        "level": 10,
+        "upgradePrice": 55,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "frostArmor_10"
+    },
+    "airMage_talent_1": {
+        "key": "airMage_talent_1",
+        "heroTalentId": "airMage_talent",
+        "level": 1,
+        "upgradePrice": 0,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "windTamer_1"
+    },
+    "airMage_talent_2": {
+        "key": "airMage_talent_2",
+        "heroTalentId": "airMage_talent",
+        "level": 2,
+        "upgradePrice": 1,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "windTamer_2"
+    },
+    "airMage_talent_3": {
+        "key": "airMage_talent_3",
+        "heroTalentId": "airMage_talent",
+        "level": 3,
+        "upgradePrice": 2,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "windTamer_3"
+    },
+    "airMage_talent_4": {
+        "key": "airMage_talent_4",
+        "heroTalentId": "airMage_talent",
+        "level": 4,
+        "upgradePrice": 3,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "windTamer_4"
+    },
+    "airMage_talent_5": {
+        "key": "airMage_talent_5",
+        "heroTalentId": "airMage_talent",
+        "level": 5,
+        "upgradePrice": 5,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "windTamer_5"
+    },
+    "airMage_talent_6": {
+        "key": "airMage_talent_6",
+        "heroTalentId": "airMage_talent",
+        "level": 6,
+        "upgradePrice": 8,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "windTamer_6"
+    },
+    "airMage_talent_7": {
+        "key": "airMage_talent_7",
+        "heroTalentId": "airMage_talent",
+        "level": 7,
+        "upgradePrice": 12,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "windTamer_7"
+    },
+    "airMage_talent_8": {
+        "key": "airMage_talent_8",
+        "heroTalentId": "airMage_talent",
+        "level": 8,
+        "upgradePrice": 20,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "windTamer_8"
+    },
+    "airMage_talent_9": {
+        "key": "airMage_talent_9",
+        "heroTalentId": "airMage_talent",
+        "level": 9,
+        "upgradePrice": 35,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "windTamer_9"
+    },
+    "airMage_talent_10": {
+        "key": "airMage_talent_10",
+        "heroTalentId": "airMage_talent",
+        "level": 10,
+        "upgradePrice": 55,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "windTamer_10"
+    },
+    "fireMage_talent_1": {
+        "key": "fireMage_talent_1",
+        "heroTalentId": "fireMage_talent",
+        "level": 1,
+        "upgradePrice": 0,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "flamingHeart_1"
+    },
+    "fireMage_talent_2": {
+        "key": "fireMage_talent_2",
+        "heroTalentId": "fireMage_talent",
+        "level": 2,
+        "upgradePrice": 1,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "flamingHeart_2"
+    },
+    "fireMage_talent_3": {
+        "key": "fireMage_talent_3",
+        "heroTalentId": "fireMage_talent",
+        "level": 3,
+        "upgradePrice": 2,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "flamingHeart_3"
+    },
+    "fireMage_talent_4": {
+        "key": "fireMage_talent_4",
+        "heroTalentId": "fireMage_talent",
+        "level": 4,
+        "upgradePrice": 3,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "flamingHeart_4"
+    },
+    "fireMage_talent_5": {
+        "key": "fireMage_talent_5",
+        "heroTalentId": "fireMage_talent",
+        "level": 5,
+        "upgradePrice": 5,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "flamingHeart_5"
+    },
+    "fireMage_talent_6": {
+        "key": "fireMage_talent_6",
+        "heroTalentId": "fireMage_talent",
+        "level": 6,
+        "upgradePrice": 8,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "flamingHeart_6"
+    },
+    "fireMage_talent_7": {
+        "key": "fireMage_talent_7",
+        "heroTalentId": "fireMage_talent",
+        "level": 7,
+        "upgradePrice": 12,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "flamingHeart_7"
+    },
+    "fireMage_talent_8": {
+        "key": "fireMage_talent_8",
+        "heroTalentId": "fireMage_talent",
+        "level": 8,
+        "upgradePrice": 20,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "flamingHeart_8"
+    },
+    "fireMage_talent_9": {
+        "key": "fireMage_talent_9",
+        "heroTalentId": "fireMage_talent",
+        "level": 9,
+        "upgradePrice": 35,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "flamingHeart_9"
+    },
+    "fireMage_talent_10": {
+        "key": "fireMage_talent_10",
+        "heroTalentId": "fireMage_talent",
+        "level": 10,
+        "upgradePrice": 55,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "flamingHeart_10"
+    },
+    "waterMage_talent_1": {
+        "key": "waterMage_talent_1",
+        "heroTalentId": "waterMage_talent",
+        "level": 1,
+        "upgradePrice": 0,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "waterMage_powerOfWater_1"
+    },
+    "waterMage_talent_2": {
+        "key": "waterMage_talent_2",
+        "heroTalentId": "waterMage_talent",
+        "level": 2,
+        "upgradePrice": 1,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "waterMage_powerOfWater_2"
+    },
+    "waterMage_talent_3": {
+        "key": "waterMage_talent_3",
+        "heroTalentId": "waterMage_talent",
+        "level": 3,
+        "upgradePrice": 2,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "waterMage_powerOfWater_3"
+    },
+    "waterMage_talent_4": {
+        "key": "waterMage_talent_4",
+        "heroTalentId": "waterMage_talent",
+        "level": 4,
+        "upgradePrice": 3,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "waterMage_powerOfWater_4"
+    },
+    "waterMage_talent_5": {
+        "key": "waterMage_talent_5",
+        "heroTalentId": "waterMage_talent",
+        "level": 5,
+        "upgradePrice": 5,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "waterMage_powerOfWater_5"
+    },
+    "waterMage_talent_6": {
+        "key": "waterMage_talent_6",
+        "heroTalentId": "waterMage_talent",
+        "level": 6,
+        "upgradePrice": 8,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "waterMage_powerOfWater_6"
+    },
+    "waterMage_talent_7": {
+        "key": "waterMage_talent_7",
+        "heroTalentId": "waterMage_talent",
+        "level": 7,
+        "upgradePrice": 12,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "waterMage_powerOfWater_7"
+    },
+    "waterMage_talent_8": {
+        "key": "waterMage_talent_8",
+        "heroTalentId": "waterMage_talent",
+        "level": 8,
+        "upgradePrice": 20,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "waterMage_powerOfWater_8"
+    },
+    "waterMage_talent_9": {
+        "key": "waterMage_talent_9",
+        "heroTalentId": "waterMage_talent",
+        "level": 9,
+        "upgradePrice": 35,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "waterMage_powerOfWater_9"
+    },
+    "waterMage_talent_10": {
+        "key": "waterMage_talent_10",
+        "heroTalentId": "waterMage_talent",
+        "level": 10,
+        "upgradePrice": 55,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "waterMage_powerOfWater_10"
+    },
+    "undeadPirate_talent_1": {
+        "key": "undeadPirate_talent_1",
+        "heroTalentId": "undeadPirate_talent",
+        "level": 1,
+        "upgradePrice": 0,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "undeadPirate_boardingParty_1"
+    },
+    "undeadPirate_talent_2": {
+        "key": "undeadPirate_talent_2",
+        "heroTalentId": "undeadPirate_talent",
+        "level": 2,
+        "upgradePrice": 1,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "undeadPirate_boardingParty_2"
+    },
+    "undeadPirate_talent_3": {
+        "key": "undeadPirate_talent_3",
+        "heroTalentId": "undeadPirate_talent",
+        "level": 3,
+        "upgradePrice": 2,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "undeadPirate_boardingParty_3"
+    },
+    "undeadPirate_talent_4": {
+        "key": "undeadPirate_talent_4",
+        "heroTalentId": "undeadPirate_talent",
+        "level": 4,
+        "upgradePrice": 3,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "undeadPirate_boardingParty_4"
+    },
+    "undeadPirate_talent_5": {
+        "key": "undeadPirate_talent_5",
+        "heroTalentId": "undeadPirate_talent",
+        "level": 5,
+        "upgradePrice": 5,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "undeadPirate_boardingParty_5"
+    },
+    "undeadPirate_talent_6": {
+        "key": "undeadPirate_talent_6",
+        "heroTalentId": "undeadPirate_talent",
+        "level": 6,
+        "upgradePrice": 8,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "undeadPirate_boardingParty_6"
+    },
+    "undeadPirate_talent_7": {
+        "key": "undeadPirate_talent_7",
+        "heroTalentId": "undeadPirate_talent",
+        "level": 7,
+        "upgradePrice": 12,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "undeadPirate_boardingParty_7"
+    },
+    "undeadPirate_talent_8": {
+        "key": "undeadPirate_talent_8",
+        "heroTalentId": "undeadPirate_talent",
+        "level": 8,
+        "upgradePrice": 20,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "undeadPirate_boardingParty_8"
+    },
+    "undeadPirate_talent_9": {
+        "key": "undeadPirate_talent_9",
+        "heroTalentId": "undeadPirate_talent",
+        "level": 9,
+        "upgradePrice": 35,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "undeadPirate_boardingParty_9"
+    },
+    "undeadPirate_talent_10": {
+        "key": "undeadPirate_talent_10",
+        "heroTalentId": "undeadPirate_talent",
+        "level": 10,
+        "upgradePrice": 55,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "undeadPirate_boardingParty_10"
+    },
+    "sandMage_talent_1": {
+        "key": "sandMage_talent_1",
+        "heroTalentId": "sandMage_talent",
+        "level": 1,
+        "upgradePrice": 0,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "sandStorm_1"
+    },
+    "sandMage_talent_2": {
+        "key": "sandMage_talent_2",
+        "heroTalentId": "sandMage_talent",
+        "level": 2,
+        "upgradePrice": 1,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "sandStorm_2"
+    },
+    "sandMage_talent_3": {
+        "key": "sandMage_talent_3",
+        "heroTalentId": "sandMage_talent",
+        "level": 3,
+        "upgradePrice": 2,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "sandStorm_3"
+    },
+    "sandMage_talent_4": {
+        "key": "sandMage_talent_4",
+        "heroTalentId": "sandMage_talent",
+        "level": 4,
+        "upgradePrice": 3,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "sandStorm_4"
+    },
+    "sandMage_talent_5": {
+        "key": "sandMage_talent_5",
+        "heroTalentId": "sandMage_talent",
+        "level": 5,
+        "upgradePrice": 5,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "sandStorm_5"
+    },
+    "sandMage_talent_6": {
+        "key": "sandMage_talent_6",
+        "heroTalentId": "sandMage_talent",
+        "level": 6,
+        "upgradePrice": 8,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "sandStorm_6"
+    },
+    "sandMage_talent_7": {
+        "key": "sandMage_talent_7",
+        "heroTalentId": "sandMage_talent",
+        "level": 7,
+        "upgradePrice": 12,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "sandStorm_7"
+    },
+    "sandMage_talent_8": {
+        "key": "sandMage_talent_8",
+        "heroTalentId": "sandMage_talent",
+        "level": 8,
+        "upgradePrice": 20,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "sandStorm_8"
+    },
+    "sandMage_talent_9": {
+        "key": "sandMage_talent_9",
+        "heroTalentId": "sandMage_talent",
+        "level": 9,
+        "upgradePrice": 35,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "sandStorm_9"
+    },
+    "sandMage_talent_10": {
+        "key": "sandMage_talent_10",
+        "heroTalentId": "sandMage_talent",
+        "level": 10,
+        "upgradePrice": 55,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "sandStorm_10"
+    },
+    "undeadPestilence_talent_1": {
+        "key": "undeadPestilence_talent_1",
+        "heroTalentId": "undeadPestilence_talent",
+        "level": 1,
+        "upgradePrice": 0,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "blackPlague_1"
+    },
+    "undeadPestilence_talent_2": {
+        "key": "undeadPestilence_talent_2",
+        "heroTalentId": "undeadPestilence_talent",
+        "level": 2,
+        "upgradePrice": 1,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "blackPlague_2"
+    },
+    "undeadPestilence_talent_3": {
+        "key": "undeadPestilence_talent_3",
+        "heroTalentId": "undeadPestilence_talent",
+        "level": 3,
+        "upgradePrice": 2,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "blackPlague_3"
+    },
+    "undeadPestilence_talent_4": {
+        "key": "undeadPestilence_talent_4",
+        "heroTalentId": "undeadPestilence_talent",
+        "level": 4,
+        "upgradePrice": 3,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "blackPlague_4"
+    },
+    "undeadPestilence_talent_5": {
+        "key": "undeadPestilence_talent_5",
+        "heroTalentId": "undeadPestilence_talent",
+        "level": 5,
+        "upgradePrice": 5,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "blackPlague_5"
+    },
+    "undeadPestilence_talent_6": {
+        "key": "undeadPestilence_talent_6",
+        "heroTalentId": "undeadPestilence_talent",
+        "level": 6,
+        "upgradePrice": 8,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "blackPlague_6"
+    },
+    "undeadPestilence_talent_7": {
+        "key": "undeadPestilence_talent_7",
+        "heroTalentId": "undeadPestilence_talent",
+        "level": 7,
+        "upgradePrice": 12,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "blackPlague_7"
+    },
+    "undeadPestilence_talent_8": {
+        "key": "undeadPestilence_talent_8",
+        "heroTalentId": "undeadPestilence_talent",
+        "level": 8,
+        "upgradePrice": 20,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "blackPlague_8"
+    },
+    "undeadPestilence_talent_9": {
+        "key": "undeadPestilence_talent_9",
+        "heroTalentId": "undeadPestilence_talent",
+        "level": 9,
+        "upgradePrice": 35,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "blackPlague_9"
+    },
+    "undeadPestilence_talent_10": {
+        "key": "undeadPestilence_talent_10",
+        "heroTalentId": "undeadPestilence_talent",
+        "level": 10,
+        "upgradePrice": 55,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "blackPlague_10"
+    },
+    "lordInquisitor_talent_1": {
+        "key": "lordInquisitor_talent_1",
+        "heroTalentId": "lordInquisitor_talent",
+        "level": 1,
+        "upgradePrice": 0,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "Immutability_1"
+    },
+    "lordInquisitor_talent_2": {
+        "key": "lordInquisitor_talent_2",
+        "heroTalentId": "lordInquisitor_talent",
+        "level": 2,
+        "upgradePrice": 1,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "Immutability_2"
+    },
+    "lordInquisitor_talent_3": {
+        "key": "lordInquisitor_talent_3",
+        "heroTalentId": "lordInquisitor_talent",
+        "level": 3,
+        "upgradePrice": 2,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "Immutability_3"
+    },
+    "lordInquisitor_talent_4": {
+        "key": "lordInquisitor_talent_4",
+        "heroTalentId": "lordInquisitor_talent",
+        "level": 4,
+        "upgradePrice": 3,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "Immutability_4"
+    },
+    "lordInquisitor_talent_5": {
+        "key": "lordInquisitor_talent_5",
+        "heroTalentId": "lordInquisitor_talent",
+        "level": 5,
+        "upgradePrice": 5,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "Immutability_5"
+    },
+    "lordInquisitor_talent_6": {
+        "key": "lordInquisitor_talent_6",
+        "heroTalentId": "lordInquisitor_talent",
+        "level": 6,
+        "upgradePrice": 8,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "Immutability_6"
+    },
+    "lordInquisitor_talent_7": {
+        "key": "lordInquisitor_talent_7",
+        "heroTalentId": "lordInquisitor_talent",
+        "level": 7,
+        "upgradePrice": 12,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "Immutability_7"
+    },
+    "lordInquisitor_talent_8": {
+        "key": "lordInquisitor_talent_8",
+        "heroTalentId": "lordInquisitor_talent",
+        "level": 8,
+        "upgradePrice": 20,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "Immutability_8"
+    },
+    "lordInquisitor_talent_9": {
+        "key": "lordInquisitor_talent_9",
+        "heroTalentId": "lordInquisitor_talent",
+        "level": 9,
+        "upgradePrice": 35,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "Immutability_9"
+    },
+    "lordInquisitor_talent_10": {
+        "key": "lordInquisitor_talent_10",
+        "heroTalentId": "lordInquisitor_talent",
+        "level": 10,
+        "upgradePrice": 55,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "Immutability_10"
+    },
+    "bardHero_talent_1": {
+        "key": "bardHero_talent_1",
+        "heroTalentId": "bardHero_talent",
+        "level": 1,
+        "upgradePrice": 0,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "unitedWeStand_1"
+    },
+    "bardHero_talent_2": {
+        "key": "bardHero_talent_2",
+        "heroTalentId": "bardHero_talent",
+        "level": 2,
+        "upgradePrice": 1,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "unitedWeStand_2"
+    },
+    "bardHero_talent_3": {
+        "key": "bardHero_talent_3",
+        "heroTalentId": "bardHero_talent",
+        "level": 3,
+        "upgradePrice": 2,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "unitedWeStand_3"
+    },
+    "bardHero_talent_4": {
+        "key": "bardHero_talent_4",
+        "heroTalentId": "bardHero_talent",
+        "level": 4,
+        "upgradePrice": 3,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "unitedWeStand_4"
+    },
+    "bardHero_talent_5": {
+        "key": "bardHero_talent_5",
+        "heroTalentId": "bardHero_talent",
+        "level": 5,
+        "upgradePrice": 5,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "unitedWeStand_5"
+    },
+    "bardHero_talent_6": {
+        "key": "bardHero_talent_6",
+        "heroTalentId": "bardHero_talent",
+        "level": 6,
+        "upgradePrice": 8,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "unitedWeStand_6"
+    },
+    "bardHero_talent_7": {
+        "key": "bardHero_talent_7",
+        "heroTalentId": "bardHero_talent",
+        "level": 7,
+        "upgradePrice": 12,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "unitedWeStand_7"
+    },
+    "bardHero_talent_8": {
+        "key": "bardHero_talent_8",
+        "heroTalentId": "bardHero_talent",
+        "level": 8,
+        "upgradePrice": 20,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "unitedWeStand_8"
+    },
+    "bardHero_talent_9": {
+        "key": "bardHero_talent_9",
+        "heroTalentId": "bardHero_talent",
+        "level": 9,
+        "upgradePrice": 35,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "unitedWeStand_9"
+    },
+    "bardHero_talent_10": {
+        "key": "bardHero_talent_10",
+        "heroTalentId": "bardHero_talent",
+        "level": 10,
+        "upgradePrice": 55,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "unitedWeStand_10"
+    },
+    "elevateTank_talent_1": {
+        "key": "elevateTank_talent_1",
+        "heroTalentId": "elevateTank_talent",
+        "level": 1,
+        "upgradePrice": 0,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "markOfGiant_1"
+    },
+    "elevateTank_talent_2": {
+        "key": "elevateTank_talent_2",
+        "heroTalentId": "elevateTank_talent",
+        "level": 2,
+        "upgradePrice": 1,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "markOfGiant_2"
+    },
+    "elevateTank_talent_3": {
+        "key": "elevateTank_talent_3",
+        "heroTalentId": "elevateTank_talent",
+        "level": 3,
+        "upgradePrice": 2,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "markOfGiant_3"
+    },
+    "elevateTank_talent_4": {
+        "key": "elevateTank_talent_4",
+        "heroTalentId": "elevateTank_talent",
+        "level": 4,
+        "upgradePrice": 3,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "markOfGiant_4"
+    },
+    "elevateTank_talent_5": {
+        "key": "elevateTank_talent_5",
+        "heroTalentId": "elevateTank_talent",
+        "level": 5,
+        "upgradePrice": 5,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "markOfGiant_5"
+    },
+    "elevateTank_talent_6": {
+        "key": "elevateTank_talent_6",
+        "heroTalentId": "elevateTank_talent",
+        "level": 6,
+        "upgradePrice": 8,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "markOfGiant_6"
+    },
+    "elevateTank_talent_7": {
+        "key": "elevateTank_talent_7",
+        "heroTalentId": "elevateTank_talent",
+        "level": 7,
+        "upgradePrice": 12,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "markOfGiant_7"
+    },
+    "elevateTank_talent_8": {
+        "key": "elevateTank_talent_8",
+        "heroTalentId": "elevateTank_talent",
+        "level": 8,
+        "upgradePrice": 20,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "markOfGiant_8"
+    },
+    "elevateTank_talent_9": {
+        "key": "elevateTank_talent_9",
+        "heroTalentId": "elevateTank_talent",
+        "level": 9,
+        "upgradePrice": 35,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "markOfGiant_9"
+    },
+    "elevateTank_talent_10": {
+        "key": "elevateTank_talent_10",
+        "heroTalentId": "elevateTank_talent",
+        "level": 10,
+        "upgradePrice": 55,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "markOfGiant_10"
+    },
+    "elevateArcher_talent_1": {
+        "key": "elevateArcher_talent_1",
+        "heroTalentId": "elevateArcher_talent",
+        "level": 1,
+        "upgradePrice": 0,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "elevateArcher_weakSpot_1"
+    },
+    "elevateArcher_talent_2": {
+        "key": "elevateArcher_talent_2",
+        "heroTalentId": "elevateArcher_talent",
+        "level": 2,
+        "upgradePrice": 1,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "elevateArcher_weakSpot_2"
+    },
+    "elevateArcher_talent_3": {
+        "key": "elevateArcher_talent_3",
+        "heroTalentId": "elevateArcher_talent",
+        "level": 3,
+        "upgradePrice": 2,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "elevateArcher_weakSpot_3"
+    },
+    "elevateArcher_talent_4": {
+        "key": "elevateArcher_talent_4",
+        "heroTalentId": "elevateArcher_talent",
+        "level": 4,
+        "upgradePrice": 3,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "elevateArcher_weakSpot_4"
+    },
+    "elevateArcher_talent_5": {
+        "key": "elevateArcher_talent_5",
+        "heroTalentId": "elevateArcher_talent",
+        "level": 5,
+        "upgradePrice": 5,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "elevateArcher_weakSpot_5"
+    },
+    "elevateArcher_talent_6": {
+        "key": "elevateArcher_talent_6",
+        "heroTalentId": "elevateArcher_talent",
+        "level": 6,
+        "upgradePrice": 8,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "elevateArcher_weakSpot_6"
+    },
+    "elevateArcher_talent_7": {
+        "key": "elevateArcher_talent_7",
+        "heroTalentId": "elevateArcher_talent",
+        "level": 7,
+        "upgradePrice": 12,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "elevateArcher_weakSpot_7"
+    },
+    "elevateArcher_talent_8": {
+        "key": "elevateArcher_talent_8",
+        "heroTalentId": "elevateArcher_talent",
+        "level": 8,
+        "upgradePrice": 20,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "elevateArcher_weakSpot_8"
+    },
+    "elevateArcher_talent_9": {
+        "key": "elevateArcher_talent_9",
+        "heroTalentId": "elevateArcher_talent",
+        "level": 9,
+        "upgradePrice": 35,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "elevateArcher_weakSpot_9"
+    },
+    "elevateArcher_talent_10": {
+        "key": "elevateArcher_talent_10",
+        "heroTalentId": "elevateArcher_talent",
+        "level": 10,
+        "upgradePrice": 55,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "elevateArcher_weakSpot_10"
+    },
+    "elevateSupport_talent_1": {
+        "key": "elevateSupport_talent_1",
+        "heroTalentId": "elevateSupport_talent",
+        "level": 1,
+        "upgradePrice": 0,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "elevateSupport_giftOfLight_1"
+    },
+    "elevateSupport_talent_2": {
+        "key": "elevateSupport_talent_2",
+        "heroTalentId": "elevateSupport_talent",
+        "level": 2,
+        "upgradePrice": 1,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "elevateSupport_giftOfLight_2"
+    },
+    "elevateSupport_talent_3": {
+        "key": "elevateSupport_talent_3",
+        "heroTalentId": "elevateSupport_talent",
+        "level": 3,
+        "upgradePrice": 2,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "elevateSupport_giftOfLight_3"
+    },
+    "elevateSupport_talent_4": {
+        "key": "elevateSupport_talent_4",
+        "heroTalentId": "elevateSupport_talent",
+        "level": 4,
+        "upgradePrice": 3,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "elevateSupport_giftOfLight_4"
+    },
+    "elevateSupport_talent_5": {
+        "key": "elevateSupport_talent_5",
+        "heroTalentId": "elevateSupport_talent",
+        "level": 5,
+        "upgradePrice": 5,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "elevateSupport_giftOfLight_5"
+    },
+    "elevateSupport_talent_6": {
+        "key": "elevateSupport_talent_6",
+        "heroTalentId": "elevateSupport_talent",
+        "level": 6,
+        "upgradePrice": 8,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "elevateSupport_giftOfLight_6"
+    },
+    "elevateSupport_talent_7": {
+        "key": "elevateSupport_talent_7",
+        "heroTalentId": "elevateSupport_talent",
+        "level": 7,
+        "upgradePrice": 12,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "elevateSupport_giftOfLight_7"
+    },
+    "elevateSupport_talent_8": {
+        "key": "elevateSupport_talent_8",
+        "heroTalentId": "elevateSupport_talent",
+        "level": 8,
+        "upgradePrice": 20,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "elevateSupport_giftOfLight_8"
+    },
+    "elevateSupport_talent_9": {
+        "key": "elevateSupport_talent_9",
+        "heroTalentId": "elevateSupport_talent",
+        "level": 9,
+        "upgradePrice": 35,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "elevateSupport_giftOfLight_9"
+    },
+    "elevateSupport_talent_10": {
+        "key": "elevateSupport_talent_10",
+        "heroTalentId": "elevateSupport_talent",
+        "level": 10,
+        "upgradePrice": 55,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "elevateSupport_giftOfLight_10"
+    },
+    "demonFat_talent_1": {
+        "key": "demonFat_talent_1",
+        "heroTalentId": "demonFat_talent",
+        "level": 1,
+        "upgradePrice": 0,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "echoOfPain_1"
+    },
+    "demonFat_talent_2": {
+        "key": "demonFat_talent_2",
+        "heroTalentId": "demonFat_talent",
+        "level": 2,
+        "upgradePrice": 1,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "echoOfPain_2"
+    },
+    "demonFat_talent_3": {
+        "key": "demonFat_talent_3",
+        "heroTalentId": "demonFat_talent",
+        "level": 3,
+        "upgradePrice": 2,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "echoOfPain_3"
+    },
+    "demonFat_talent_4": {
+        "key": "demonFat_talent_4",
+        "heroTalentId": "demonFat_talent",
+        "level": 4,
+        "upgradePrice": 3,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "echoOfPain_4"
+    },
+    "demonFat_talent_5": {
+        "key": "demonFat_talent_5",
+        "heroTalentId": "demonFat_talent",
+        "level": 5,
+        "upgradePrice": 5,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "echoOfPain_5"
+    },
+    "demonFat_talent_6": {
+        "key": "demonFat_talent_6",
+        "heroTalentId": "demonFat_talent",
+        "level": 6,
+        "upgradePrice": 8,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "echoOfPain_6"
+    },
+    "demonFat_talent_7": {
+        "key": "demonFat_talent_7",
+        "heroTalentId": "demonFat_talent",
+        "level": 7,
+        "upgradePrice": 12,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "echoOfPain_7"
+    },
+    "demonFat_talent_8": {
+        "key": "demonFat_talent_8",
+        "heroTalentId": "demonFat_talent",
+        "level": 8,
+        "upgradePrice": 20,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "echoOfPain_8"
+    },
+    "demonFat_talent_9": {
+        "key": "demonFat_talent_9",
+        "heroTalentId": "demonFat_talent",
+        "level": 9,
+        "upgradePrice": 35,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "echoOfPain_9"
+    },
+    "demonFat_talent_10": {
+        "key": "demonFat_talent_10",
+        "heroTalentId": "demonFat_talent",
+        "level": 10,
+        "upgradePrice": 55,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "echoOfPain_10"
+    },
+    "demonTank_talent_1": {
+        "key": "demonTank_talent_1",
+        "heroTalentId": "demonTank_talent",
+        "level": 1,
+        "upgradePrice": 0,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "easyPrey_1"
+    },
+    "demonTank_talent_2": {
+        "key": "demonTank_talent_2",
+        "heroTalentId": "demonTank_talent",
+        "level": 2,
+        "upgradePrice": 1,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "easyPrey_2"
+    },
+    "demonTank_talent_3": {
+        "key": "demonTank_talent_3",
+        "heroTalentId": "demonTank_talent",
+        "level": 3,
+        "upgradePrice": 2,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "easyPrey_3"
+    },
+    "demonTank_talent_4": {
+        "key": "demonTank_talent_4",
+        "heroTalentId": "demonTank_talent",
+        "level": 4,
+        "upgradePrice": 3,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "easyPrey_4"
+    },
+    "demonTank_talent_5": {
+        "key": "demonTank_talent_5",
+        "heroTalentId": "demonTank_talent",
+        "level": 5,
+        "upgradePrice": 5,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "easyPrey_5"
+    },
+    "demonTank_talent_6": {
+        "key": "demonTank_talent_6",
+        "heroTalentId": "demonTank_talent",
+        "level": 6,
+        "upgradePrice": 8,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "easyPrey_6"
+    },
+    "demonTank_talent_7": {
+        "key": "demonTank_talent_7",
+        "heroTalentId": "demonTank_talent",
+        "level": 7,
+        "upgradePrice": 12,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "easyPrey_7"
+    },
+    "demonTank_talent_8": {
+        "key": "demonTank_talent_8",
+        "heroTalentId": "demonTank_talent",
+        "level": 8,
+        "upgradePrice": 20,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "easyPrey_8"
+    },
+    "demonTank_talent_9": {
+        "key": "demonTank_talent_9",
+        "heroTalentId": "demonTank_talent",
+        "level": 9,
+        "upgradePrice": 35,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "easyPrey_9"
+    },
+    "demonTank_talent_10": {
+        "key": "demonTank_talent_10",
+        "heroTalentId": "demonTank_talent",
+        "level": 10,
+        "upgradePrice": 55,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "easyPrey_10"
+    },
+    "demonMage_talent_1": {
+        "key": "demonMage_talent_1",
+        "heroTalentId": "demonMage_talent",
+        "level": 1,
+        "upgradePrice": 0,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "meteoricRequiem_1"
+    },
+    "demonMage_talent_2": {
+        "key": "demonMage_talent_2",
+        "heroTalentId": "demonMage_talent",
+        "level": 2,
+        "upgradePrice": 1,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "meteoricRequiem_2"
+    },
+    "demonMage_talent_3": {
+        "key": "demonMage_talent_3",
+        "heroTalentId": "demonMage_talent",
+        "level": 3,
+        "upgradePrice": 2,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "meteoricRequiem_3"
+    },
+    "demonMage_talent_4": {
+        "key": "demonMage_talent_4",
+        "heroTalentId": "demonMage_talent",
+        "level": 4,
+        "upgradePrice": 3,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "meteoricRequiem_4"
+    },
+    "demonMage_talent_5": {
+        "key": "demonMage_talent_5",
+        "heroTalentId": "demonMage_talent",
+        "level": 5,
+        "upgradePrice": 5,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "meteoricRequiem_5"
+    },
+    "demonMage_talent_6": {
+        "key": "demonMage_talent_6",
+        "heroTalentId": "demonMage_talent",
+        "level": 6,
+        "upgradePrice": 8,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "meteoricRequiem_6"
+    },
+    "demonMage_talent_7": {
+        "key": "demonMage_talent_7",
+        "heroTalentId": "demonMage_talent",
+        "level": 7,
+        "upgradePrice": 12,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "meteoricRequiem_7"
+    },
+    "demonMage_talent_8": {
+        "key": "demonMage_talent_8",
+        "heroTalentId": "demonMage_talent",
+        "level": 8,
+        "upgradePrice": 20,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "meteoricRequiem_8"
+    },
+    "demonMage_talent_9": {
+        "key": "demonMage_talent_9",
+        "heroTalentId": "demonMage_talent",
+        "level": 9,
+        "upgradePrice": 35,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "meteoricRequiem_9"
+    },
+    "demonMage_talent_10": {
+        "key": "demonMage_talent_10",
+        "heroTalentId": "demonMage_talent",
+        "level": 10,
+        "upgradePrice": 55,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "meteoricRequiem_10"
+    },
+    "darknessMageSquadEvent_talent_1": {
+        "key": "darknessMageSquadEvent_talent_1",
+        "heroTalentId": "darknessMageSquadEvent_talent",
+        "level": 1,
+        "upgradePrice": 0,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "unholyAlliance_1"
+    },
+    "darknessMageSquadEvent_talent_2": {
+        "key": "darknessMageSquadEvent_talent_2",
+        "heroTalentId": "darknessMageSquadEvent_talent",
+        "level": 2,
+        "upgradePrice": 1,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "unholyAlliance_2"
+    },
+    "darknessMageSquadEvent_talent_3": {
+        "key": "darknessMageSquadEvent_talent_3",
+        "heroTalentId": "darknessMageSquadEvent_talent",
+        "level": 3,
+        "upgradePrice": 2,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "unholyAlliance_3"
+    },
+    "darknessMageSquadEvent_talent_4": {
+        "key": "darknessMageSquadEvent_talent_4",
+        "heroTalentId": "darknessMageSquadEvent_talent",
+        "level": 4,
+        "upgradePrice": 3,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "unholyAlliance_4"
+    },
+    "darknessMageSquadEvent_talent_5": {
+        "key": "darknessMageSquadEvent_talent_5",
+        "heroTalentId": "darknessMageSquadEvent_talent",
+        "level": 5,
+        "upgradePrice": 5,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "unholyAlliance_5"
+    },
+    "darknessMageSquadEvent_talent_6": {
+        "key": "darknessMageSquadEvent_talent_6",
+        "heroTalentId": "darknessMageSquadEvent_talent",
+        "level": 6,
+        "upgradePrice": 8,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "unholyAlliance_6"
+    },
+    "darknessMageSquadEvent_talent_7": {
+        "key": "darknessMageSquadEvent_talent_7",
+        "heroTalentId": "darknessMageSquadEvent_talent",
+        "level": 7,
+        "upgradePrice": 12,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "unholyAlliance_7"
+    },
+    "darknessMageSquadEvent_talent_8": {
+        "key": "darknessMageSquadEvent_talent_8",
+        "heroTalentId": "darknessMageSquadEvent_talent",
+        "level": 8,
+        "upgradePrice": 20,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "unholyAlliance_8"
+    },
+    "darknessMageSquadEvent_talent_9": {
+        "key": "darknessMageSquadEvent_talent_9",
+        "heroTalentId": "darknessMageSquadEvent_talent",
+        "level": 9,
+        "upgradePrice": 35,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "unholyAlliance_9"
+    },
+    "darknessMageSquadEvent_talent_10": {
+        "key": "darknessMageSquadEvent_talent_10",
+        "heroTalentId": "darknessMageSquadEvent_talent",
+        "level": 10,
+        "upgradePrice": 55,
+        "upgradeCurrency": "TalentSphere",
+        "abilityId": "unholyAlliance_10"
+    }
+}

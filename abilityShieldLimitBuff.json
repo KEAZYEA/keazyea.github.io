@@ -1,0 +1,102 @@
+{
+    "elevateTank_sacredShield_1": {
+        "key": "elevateTank_sacredShield_1",
+        "abilityInfoId": "elevateTank_sacredShield",
+        "aspd": 2.667,
+        "aoeRadius": 12,
+        "aoeDuration": 0.8,
+        "buffModifier": "elevateTank_shield_1",
+        "buffDuration": 3,
+        "cooldown": 14
+    },
+    "elevateTank_sacredShield_2": {
+        "key": "elevateTank_sacredShield_2",
+        "abilityInfoId": "elevateTank_sacredShield",
+        "aspd": 2.667,
+        "aoeRadius": 12,
+        "aoeDuration": 0.8,
+        "buffModifier": "elevateTank_shield_2",
+        "buffDuration": 3,
+        "cooldown": 13
+    },
+    "elevateTank_sacredShield_3": {
+        "key": "elevateTank_sacredShield_3",
+        "abilityInfoId": "elevateTank_sacredShield",
+        "aspd": 2.667,
+        "aoeRadius": 14,
+        "aoeDuration": 0.8,
+        "buffModifier": "elevateTank_shield_3",
+        "buffDuration": 3,
+        "cooldown": 13
+    },
+    "elevateTank_sacredShield_4": {
+        "key": "elevateTank_sacredShield_4",
+        "abilityInfoId": "elevateTank_sacredShield",
+        "aspd": 2.667,
+        "aoeRadius": 14,
+        "aoeDuration": 0.8,
+        "buffModifier": "elevateTank_shield_4",
+        "buffDuration": 4,
+        "cooldown": 13
+    },
+    "elevateTank_sacredShield_5": {
+        "key": "elevateTank_sacredShield_5",
+        "abilityInfoId": "elevateTank_sacredShield",
+        "aspd": 2.667,
+        "aoeRadius": 16,
+        "aoeDuration": 0.8,
+        "buffModifier": "elevateTank_shield_5",
+        "buffDuration": 4,
+        "cooldown": 12
+    },
+    "elevateTank_sacredShield_6": {
+        "key": "elevateTank_sacredShield_6",
+        "abilityInfoId": "elevateTank_sacredShield",
+        "aspd": 2.667,
+        "aoeRadius": 16,
+        "aoeDuration": 0.8,
+        "buffModifier": "elevateTank_shield_6",
+        "buffDuration": 4,
+        "cooldown": 12
+    },
+    "elevateTank_sacredShield_7": {
+        "key": "elevateTank_sacredShield_7",
+        "abilityInfoId": "elevateTank_sacredShield",
+        "aspd": 2.667,
+        "aoeRadius": 18,
+        "aoeDuration": 0.8,
+        "buffModifier": "elevateTank_shield_7",
+        "buffDuration": 5,
+        "cooldown": 12
+    },
+    "elevateTank_sacredShield_8": {
+        "key": "elevateTank_sacredShield_8",
+        "abilityInfoId": "elevateTank_sacredShield",
+        "aspd": 2.667,
+        "aoeRadius": 18,
+        "aoeDuration": 0.8,
+        "buffModifier": "elevateTank_shield_8",
+        "buffDuration": 5,
+        "cooldown": 11
+    },
+    "elevateTank_sacredShield_9": {
+        "key": "elevateTank_sacredShield_9",
+        "abilityInfoId": "elevateTank_sacredShield",
+        "aspd": 2.667,
+        "aoeRadius": 20,
+        "aoeDuration": 0.8,
+        "buffModifier": "elevateTank_shield_9",
+        "buffDuration": 5,
+        "cooldown": 11
+    },
+    "elevateTank_sacredShield_10": {
+        "key": "elevateTank_sacredShield_10",
+        "abilityInfoId": "elevateTank_sacredShield",
+        "aspd": 2.667,
+        "aoeRadius": 25,
+        "aoeDuration": 0.8,
+        "buffModifier": "elevateTank_shield_10",
+        "buffDuration": 6,
+        "cooldown": 10
+    }
+}

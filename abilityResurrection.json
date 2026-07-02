@@ -1,0 +1,62 @@
+{
+    "monk_abilityResurrection_1": {
+        "key": "monk_abilityResurrection_1",
+        "abilityInfoId": "abilityResurrection",
+        "ghostTroopId": "monkGhost_1",
+        "ghostLifetime": 3
+    },
+    "monk_abilityResurrection_2": {
+        "key": "monk_abilityResurrection_2",
+        "abilityInfoId": "abilityResurrection",
+        "ghostTroopId": "monkGhost_2",
+        "ghostLifetime": 3
+    },
+    "monk_abilityResurrection_3": {
+        "key": "monk_abilityResurrection_3",
+        "abilityInfoId": "abilityResurrection",
+        "ghostTroopId": "monkGhost_3",
+        "ghostLifetime": 3
+    },
+    "monk_abilityResurrection_4": {
+        "key": "monk_abilityResurrection_4",
+        "abilityInfoId": "abilityResurrection",
+        "ghostTroopId": "monkGhost_4",
+        "ghostLifetime": 3
+    },
+    "monk_abilityResurrection_5": {
+        "key": "monk_abilityResurrection_5",
+        "abilityInfoId": "abilityResurrection",
+        "ghostTroopId": "monkGhost_5",
+        "ghostLifetime": 4
+    },
+    "monk_abilityResurrection_6": {
+        "key": "monk_abilityResurrection_6",
+        "abilityInfoId": "abilityResurrection",
+        "ghostTroopId": "monkGhost_6",
+        "ghostLifetime": 4
+    },
+    "monk_abilityResurrection_7": {
+        "key": "monk_abilityResurrection_7",
+        "abilityInfoId": "abilityResurrection",
+        "ghostTroopId": "monkGhost_7",
+        "ghostLifetime": 4
+    },
+    "monk_abilityResurrection_8": {
+        "key": "monk_abilityResurrection_8",
+        "abilityInfoId": "abilityResurrection",
+        "ghostTroopId": "monkGhost_8",
+        "ghostLifetime": 4
+    },
+    "monk_abilityResurrection_9": {
+        "key": "monk_abilityResurrection_9",
+        "abilityInfoId": "abilityResurrection",
+        "ghostTroopId": "monkGhost_9",
+        "ghostLifetime": 4
+    },
+    "monk_abilityResurrection_10": {
+        "key": "monk_abilityResurrection_10",
+        "abilityInfoId": "abilityResurrection",
+        "ghostTroopId": "monkGhost_10",
+        "ghostLifetime": 5
+    }
+}

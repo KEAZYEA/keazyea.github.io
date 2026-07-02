@@ -1,0 +1,102 @@
+{
+    "elevateSupport_healingVeil_1": {
+        "key": "elevateSupport_healingVeil_1",
+        "abilityInfoId": "elevateSupport_healingVeil",
+        "aspd": 3,
+        "healPercentPerTick": 0.05,
+        "duration": 3,
+        "tickPeriod": 1,
+        "cooldown": 20,
+        "healRestrictionId": "healImmune"
+    },
+    "elevateSupport_healingVeil_2": {
+        "key": "elevateSupport_healingVeil_2",
+        "abilityInfoId": "elevateSupport_healingVeil",
+        "aspd": 3,
+        "healPercentPerTick": 0.05,
+        "duration": 4,
+        "tickPeriod": 1,
+        "cooldown": 20,
+        "healRestrictionId": "healImmune"
+    },
+    "elevateSupport_healingVeil_3": {
+        "key": "elevateSupport_healingVeil_3",
+        "abilityInfoId": "elevateSupport_healingVeil",
+        "aspd": 3,
+        "healPercentPerTick": 0.06,
+        "duration": 4,
+        "tickPeriod": 1,
+        "cooldown": 20,
+        "healRestrictionId": "healImmune"
+    },
+    "elevateSupport_healingVeil_4": {
+        "key": "elevateSupport_healingVeil_4",
+        "abilityInfoId": "elevateSupport_healingVeil",
+        "aspd": 3,
+        "healPercentPerTick": 0.06,
+        "duration": 4,
+        "tickPeriod": 1,
+        "cooldown": 19,
+        "healRestrictionId": "healImmune"
+    },
+    "elevateSupport_healingVeil_5": {
+        "key": "elevateSupport_healingVeil_5",
+        "abilityInfoId": "elevateSupport_healingVeil",
+        "aspd": 3,
+        "healPercentPerTick": 0.06,
+        "duration": 5,
+        "tickPeriod": 1,
+        "cooldown": 19,
+        "healRestrictionId": "healImmune"
+    },
+    "elevateSupport_healingVeil_6": {
+        "key": "elevateSupport_healingVeil_6",
+        "abilityInfoId": "elevateSupport_healingVeil",
+        "aspd": 3,
+        "healPercentPerTick": 0.07,
+        "duration": 5,
+        "tickPeriod": 1,
+        "cooldown": 19,
+        "healRestrictionId": "healImmune"
+    },
+    "elevateSupport_healingVeil_7": {
+        "key": "elevateSupport_healingVeil_7",
+        "abilityInfoId": "elevateSupport_healingVeil",
+        "aspd": 3,
+        "healPercentPerTick": 0.07,
+        "duration": 5,
+        "tickPeriod": 1,
+        "cooldown": 18,
+        "healRestrictionId": "healImmune"
+    },
+    "elevateSupport_healingVeil_8": {
+        "key": "elevateSupport_healingVeil_8",
+        "abilityInfoId": "elevateSupport_healingVeil",
+        "aspd": 3,
+        "healPercentPerTick": 0.08,
+        "duration": 5,
+        "tickPeriod": 1,
+        "cooldown": 18,
+        "healRestrictionId": "healImmune"
+    },
+    "elevateSupport_healingVeil_9": {
+        "key": "elevateSupport_healingVeil_9",
+        "abilityInfoId": "elevateSupport_healingVeil",
+        "aspd": 3,
+        "healPercentPerTick": 0.09,
+        "duration": 5,
+        "tickPeriod": 1,
+        "cooldown": 18,
+        "healRestrictionId": "healImmune"
+    },
+    "elevateSupport_healingVeil_10": {
+        "key": "elevateSupport_healingVeil_10",
+        "abilityInfoId": "elevateSupport_healingVeil",
+        "aspd": 3,
+        "healPercentPerTick": 0.1,
+        "duration": 5,
+        "tickPeriod": 1,
+        "cooldown": 17,
+        "healRestrictionId": "healImmune"
+    }
+}

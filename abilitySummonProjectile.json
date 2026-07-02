@@ -1,0 +1,9 @@
+{
+    "damnCatapult_skeletonShot_1": {
+        "key": "damnCatapult_skeletonShot_1",
+        "abilityInfoId": "damnCatapult_skeletonShot",
+        "aspd": 1,
+        "summonedTroopId": "catapultSkeleton",
+        "triggerNumber": 5
+    }
+}

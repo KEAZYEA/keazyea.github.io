@@ -1,0 +1,7 @@
+{
+    "hunter_summon_beast": {
+        "key": "hunter_summon_beast",
+        "abilityInfoId": "hunter_blast",
+        "petTroopId": "beast"
+    }
+}

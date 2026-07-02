@@ -1,0 +1,92 @@
+{
+    "blackPlague_1": {
+        "key": "blackPlague_1",
+        "abilityInfoId": "undeadPestilence_buff",
+        "modifier": "undeadPestilence_buff_1",
+        "units": null,
+        "group": "enemy",
+        "stat": "negativeDebuff",
+        "keepWhenSourceKilled": false
+    },
+    "blackPlague_2": {
+        "key": "blackPlague_2",
+        "abilityInfoId": "undeadPestilence_buff",
+        "modifier": "undeadPestilence_buff_2",
+        "units": null,
+        "group": "enemy",
+        "stat": "negativeDebuff",
+        "keepWhenSourceKilled": false
+    },
+    "blackPlague_3": {
+        "key": "blackPlague_3",
+        "abilityInfoId": "undeadPestilence_buff",
+        "modifier": "undeadPestilence_buff_3",
+        "units": null,
+        "group": "enemy",
+        "stat": "negativeDebuff",
+        "keepWhenSourceKilled": false
+    },
+    "blackPlague_4": {
+        "key": "blackPlague_4",
+        "abilityInfoId": "undeadPestilence_buff",
+        "modifier": "undeadPestilence_buff_4",
+        "units": null,
+        "group": "enemy",
+        "stat": "negativeDebuff",
+        "keepWhenSourceKilled": false
+    },
+    "blackPlague_5": {
+        "key": "blackPlague_5",
+        "abilityInfoId": "undeadPestilence_buff",
+        "modifier": "undeadPestilence_buff_5",
+        "units": null,
+        "group": "enemy",
+        "stat": "negativeDebuff",
+        "keepWhenSourceKilled": false
+    },
+    "blackPlague_6": {
+        "key": "blackPlague_6",
+        "abilityInfoId": "undeadPestilence_buff",
+        "modifier": "undeadPestilence_buff_6",
+        "units": null,
+        "group": "enemy",
+        "stat": "negativeDebuff",
+        "keepWhenSourceKilled": false
+    },
+    "blackPlague_7": {
+        "key": "blackPlague_7",
+        "abilityInfoId": "undeadPestilence_buff",
+        "modifier": "undeadPestilence_buff_7",
+        "units": null,
+        "group": "enemy",
+        "stat": "negativeDebuff",
+        "keepWhenSourceKilled": false
+    },
+    "blackPlague_8": {
+        "key": "blackPlague_8",
+        "abilityInfoId": "undeadPestilence_buff",
+        "modifier": "undeadPestilence_buff_8",
+        "units": null,
+        "group": "enemy",
+        "stat": "negativeDebuff",
+        "keepWhenSourceKilled": false
+    },
+    "blackPlague_9": {
+        "key": "blackPlague_9",
+        "abilityInfoId": "undeadPestilence_buff",
+        "modifier": "undeadPestilence_buff_9",
+        "units": null,
+        "group": "enemy",
+        "stat": "negativeDebuff",
+        "keepWhenSourceKilled": false
+    },
+    "blackPlague_10": {
+        "key": "blackPlague_10",
+        "abilityInfoId": "undeadPestilence_buff",
+        "modifier": "undeadPestilence_buff_10",
+        "units": null,
+        "group": "enemy",
+        "stat": "negativeDebuff",
+        "keepWhenSourceKilled": false
+    }
+}

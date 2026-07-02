@@ -1,0 +1,112 @@
+{
+    "shadowHuntress_shadowBlink_1": {
+        "key": "shadowHuntress_shadowBlink_1",
+        "abilityInfoId": "shadowHuntress_shadowBlink",
+        "attack": 100,
+        "attackAspd": 3.1,
+        "tickPeriod": 0.5,
+        "damageBuff": "shadowHuntress_buff_1",
+        "cooldown": 16,
+        "attackRange": 1.4,
+        "attackType": "Melee"
+    },
+    "shadowHuntress_shadowBlink_2": {
+        "key": "shadowHuntress_shadowBlink_2",
+        "abilityInfoId": "shadowHuntress_shadowBlink",
+        "attack": 110,
+        "attackAspd": 3.1,
+        "tickPeriod": 0.5,
+        "damageBuff": "shadowHuntress_buff_1",
+        "cooldown": 16,
+        "attackRange": 1.4,
+        "attackType": "Melee"
+    },
+    "shadowHuntress_shadowBlink_3": {
+        "key": "shadowHuntress_shadowBlink_3",
+        "abilityInfoId": "shadowHuntress_shadowBlink",
+        "attack": 120,
+        "attackAspd": 3.1,
+        "tickPeriod": 0.5,
+        "damageBuff": "shadowHuntress_buff_1",
+        "cooldown": 16,
+        "attackRange": 1.4,
+        "attackType": "Melee"
+    },
+    "shadowHuntress_shadowBlink_4": {
+        "key": "shadowHuntress_shadowBlink_4",
+        "abilityInfoId": "shadowHuntress_shadowBlink",
+        "attack": 130,
+        "attackAspd": 3.1,
+        "tickPeriod": 0.5,
+        "damageBuff": "shadowHuntress_buff_1",
+        "cooldown": 16,
+        "attackRange": 1.4,
+        "attackType": "Melee"
+    },
+    "shadowHuntress_shadowBlink_5": {
+        "key": "shadowHuntress_shadowBlink_5",
+        "abilityInfoId": "shadowHuntress_shadowBlink",
+        "attack": 150,
+        "attackAspd": 3.1,
+        "tickPeriod": 0.4,
+        "damageBuff": "shadowHuntress_buff_2",
+        "cooldown": 15,
+        "attackRange": 1.4,
+        "attackType": "Melee"
+    },
+    "shadowHuntress_shadowBlink_6": {
+        "key": "shadowHuntress_shadowBlink_6",
+        "abilityInfoId": "shadowHuntress_shadowBlink",
+        "attack": 170,
+        "attackAspd": 3.1,
+        "tickPeriod": 0.4,
+        "damageBuff": "shadowHuntress_buff_2",
+        "cooldown": 15,
+        "attackRange": 1.4,
+        "attackType": "Melee"
+    },
+    "shadowHuntress_shadowBlink_7": {
+        "key": "shadowHuntress_shadowBlink_7",
+        "abilityInfoId": "shadowHuntress_shadowBlink",
+        "attack": 190,
+        "attackAspd": 3.1,
+        "tickPeriod": 0.4,
+        "damageBuff": "shadowHuntress_buff_2",
+        "cooldown": 15,
+        "attackRange": 1.4,
+        "attackType": "Melee"
+    },
+    "shadowHuntress_shadowBlink_8": {
+        "key": "shadowHuntress_shadowBlink_8",
+        "abilityInfoId": "shadowHuntress_shadowBlink",
+        "attack": 200,
+        "attackAspd": 3.1,
+        "tickPeriod": 0.3,
+        "damageBuff": "shadowHuntress_buff_3",
+        "cooldown": 14,
+        "attackRange": 1.4,
+        "attackType": "Melee"
+    },
+    "shadowHuntress_shadowBlink_9": {
+        "key": "shadowHuntress_shadowBlink_9",
+        "abilityInfoId": "shadowHuntress_shadowBlink",
+        "attack": 250,
+        "attackAspd": 3.1,
+        "tickPeriod": 0.3,
+        "damageBuff": "shadowHuntress_buff_3",
+        "cooldown": 14,
+        "attackRange": 1.4,
+        "attackType": "Melee"
+    },
+    "shadowHuntress_shadowBlink_10": {
+        "key": "shadowHuntress_shadowBlink_10",
+        "abilityInfoId": "shadowHuntress_shadowBlink",
+        "attack": 300,
+        "attackAspd": 3.1,
+        "tickPeriod": 0.3,
+        "damageBuff": "shadowHuntress_buff_3",
+        "cooldown": 14,
+        "attackRange": 1.4,
+        "attackType": "Melee"
+    }
+}

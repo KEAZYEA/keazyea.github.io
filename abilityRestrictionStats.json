@@ -1,0 +1,372 @@
+{
+    "aiDisabled_aiDisabled": {
+        "key": "aiDisabled_aiDisabled",
+        "abilityRestrictionId": "aiDisabled",
+        "statId": "aiDisabled"
+    },
+    "canNotMove_aiDisabled": {
+        "key": "canNotMove_aiDisabled",
+        "abilityRestrictionId": "canNotMove",
+        "statId": "aiDisabled"
+    },
+    "canNotMove_canNotMove": {
+        "key": "canNotMove_canNotMove",
+        "abilityRestrictionId": "canNotMove",
+        "statId": "canNotMove"
+    },
+    "canNotAttack_aiDisabled": {
+        "key": "canNotAttack_aiDisabled",
+        "abilityRestrictionId": "canNotAttack",
+        "statId": "aiDisabled"
+    },
+    "canNotAttack_canNotAttack": {
+        "key": "canNotAttack_canNotAttack",
+        "abilityRestrictionId": "canNotAttack",
+        "statId": "canNotAttack"
+    },
+    "canNotSpecialAttack_aiDisabled": {
+        "key": "canNotSpecialAttack_aiDisabled",
+        "abilityRestrictionId": "canNotSpecialAttack",
+        "statId": "aiDisabled"
+    },
+    "canNotSpecialAttack_canNotAttack": {
+        "key": "canNotSpecialAttack_canNotAttack",
+        "abilityRestrictionId": "canNotSpecialAttack",
+        "statId": "canNotAttack"
+    },
+    "canNotSpecialAttack_canNotSpecialAttack": {
+        "key": "canNotSpecialAttack_canNotSpecialAttack",
+        "abilityRestrictionId": "canNotSpecialAttack",
+        "statId": "canNotSpecialAttack"
+    },
+    "unTargetable_unTargetable": {
+        "key": "unTargetable_unTargetable",
+        "abilityRestrictionId": "unTargetable",
+        "statId": "unTargetable"
+    },
+    "canNotBeMindcontrolled_unTargetable": {
+        "key": "canNotBeMindcontrolled_unTargetable",
+        "abilityRestrictionId": "canNotBeMindcontrolled",
+        "statId": "unTargetable"
+    },
+    "canNotBeMindcontrolled_isBoss": {
+        "key": "canNotBeMindcontrolled_isBoss",
+        "abilityRestrictionId": "canNotBeMindcontrolled",
+        "statId": "isBoss"
+    },
+    "canNotBeMindcontrolled_isHero": {
+        "key": "canNotBeMindcontrolled_isHero",
+        "abilityRestrictionId": "canNotBeMindcontrolled",
+        "statId": "isHero"
+    },
+    "canNotBeMindcontrolled_isMindControlled": {
+        "key": "canNotBeMindcontrolled_isMindControlled",
+        "abilityRestrictionId": "canNotBeMindcontrolled",
+        "statId": "isMindControlled"
+    },
+    "canNotBeMindcontrolled_invulnerable": {
+        "key": "canNotBeMindcontrolled_invulnerable",
+        "abilityRestrictionId": "canNotBeMindcontrolled",
+        "statId": "invulnerable"
+    },
+    "castImmune_unTargetable": {
+        "key": "castImmune_unTargetable",
+        "abilityRestrictionId": "castImmune",
+        "statId": "unTargetable"
+    },
+    "castImmune_isBoss": {
+        "key": "castImmune_isBoss",
+        "abilityRestrictionId": "castImmune",
+        "statId": "isBoss"
+    },
+    "castImmune_isHero": {
+        "key": "castImmune_isHero",
+        "abilityRestrictionId": "castImmune",
+        "statId": "isHero"
+    },
+    "castImmune_invulnerable": {
+        "key": "castImmune_invulnerable",
+        "abilityRestrictionId": "castImmune",
+        "statId": "invulnerable"
+    },
+    "isNotBossAndNotHero_isBoss": {
+        "key": "isNotBossAndNotHero_isBoss",
+        "abilityRestrictionId": "isNotBossAndNotHero",
+        "statId": "isBoss"
+    },
+    "isNotBossAndNotHero_isHero": {
+        "key": "isNotBossAndNotHero_isHero",
+        "abilityRestrictionId": "isNotBossAndNotHero",
+        "statId": "isHero"
+    },
+    "canNotBeRooted_isHero": {
+        "key": "canNotBeRooted_isHero",
+        "abilityRestrictionId": "canNotBeRooted",
+        "statId": "isHero"
+    },
+    "canNotBeRooted_unTargetable": {
+        "key": "canNotBeRooted_unTargetable",
+        "abilityRestrictionId": "canNotBeRooted",
+        "statId": "unTargetable"
+    },
+    "canNotBeRooted_invulnerable": {
+        "key": "canNotBeRooted_invulnerable",
+        "abilityRestrictionId": "canNotBeRooted",
+        "statId": "invulnerable"
+    },
+    "attackReductionAndPaladinBuffDisabled_unTargetable": {
+        "key": "attackReductionAndPaladinBuffDisabled_unTargetable",
+        "abilityRestrictionId": "attackReductionAndPaladinBuffDisabled",
+        "statId": "unTargetable"
+    },
+    "attackReductionAndPaladinBuffDisabled_isBoss": {
+        "key": "attackReductionAndPaladinBuffDisabled_isBoss",
+        "abilityRestrictionId": "attackReductionAndPaladinBuffDisabled",
+        "statId": "isBoss"
+    },
+    "attackReductionAndPaladinBuffDisabled_invulnerable": {
+        "key": "attackReductionAndPaladinBuffDisabled_invulnerable",
+        "abilityRestrictionId": "attackReductionAndPaladinBuffDisabled",
+        "statId": "invulnerable"
+    },
+    "isNotMindControlled_aiDisabled": {
+        "key": "isNotMindControlled_aiDisabled",
+        "abilityRestrictionId": "isNotMindControlled",
+        "statId": "aiDisabled"
+    },
+    "isNotMindControlled_isMindControlled": {
+        "key": "isNotMindControlled_isMindControlled",
+        "abilityRestrictionId": "isNotMindControlled",
+        "statId": "isMindControlled"
+    },
+    "isNotMindControlled_fear": {
+        "key": "isNotMindControlled_fear",
+        "abilityRestrictionId": "isNotMindControlled",
+        "statId": "fear"
+    },
+    "fearImmune_fearImmune": {
+        "key": "fearImmune_fearImmune",
+        "abilityRestrictionId": "fearImmune",
+        "statId": "fearImmune"
+    },
+    "fearImmune_invulnerable": {
+        "key": "fearImmune_invulnerable",
+        "abilityRestrictionId": "fearImmune",
+        "statId": "invulnerable"
+    },
+    "castImmuneUnit_unTargetable": {
+        "key": "castImmuneUnit_unTargetable",
+        "abilityRestrictionId": "castImmuneUnit",
+        "statId": "unTargetable"
+    },
+    "castImmuneUnit_invulnerable": {
+        "key": "castImmuneUnit_invulnerable",
+        "abilityRestrictionId": "castImmuneUnit",
+        "statId": "invulnerable"
+    },
+    "fearImmune_isHero": {
+        "key": "fearImmune_isHero",
+        "abilityRestrictionId": "fearImmune",
+        "statId": "isHero"
+    },
+    "fearImmune_isBoss": {
+        "key": "fearImmune_isBoss",
+        "abilityRestrictionId": "fearImmune",
+        "statId": "isBoss"
+    },
+    "fearImmune_fear": {
+        "key": "fearImmune_fear",
+        "abilityRestrictionId": "fearImmune",
+        "statId": "fear"
+    },
+    "aggressionImmune_invulnerable": {
+        "key": "aggressionImmune_invulnerable",
+        "abilityRestrictionId": "aggressionImmune",
+        "statId": "invulnerable"
+    },
+    "sleepCancel_isMindControlled": {
+        "key": "sleepCancel_isMindControlled",
+        "abilityRestrictionId": "sleepCancel",
+        "statId": "isMindControlled"
+    },
+    "sleepCancel_fear": {
+        "key": "sleepCancel_fear",
+        "abilityRestrictionId": "sleepCancel",
+        "statId": "fear"
+    },
+    "sleepCancel_vortex": {
+        "key": "sleepCancel_vortex",
+        "abilityRestrictionId": "sleepCancel",
+        "statId": "vortex"
+    },
+    "shieldDashImmune_unTargetable": {
+        "key": "shieldDashImmune_unTargetable",
+        "abilityRestrictionId": "shieldDashImmune",
+        "statId": "unTargetable"
+    },
+    "shieldDashImmune_isBoss": {
+        "key": "shieldDashImmune_isBoss",
+        "abilityRestrictionId": "shieldDashImmune",
+        "statId": "isBoss"
+    },
+    "shieldDashImmune_isHero": {
+        "key": "shieldDashImmune_isHero",
+        "abilityRestrictionId": "shieldDashImmune",
+        "statId": "isHero"
+    },
+    "shieldDashImmune_invulnerable": {
+        "key": "shieldDashImmune_invulnerable",
+        "abilityRestrictionId": "shieldDashImmune",
+        "statId": "invulnerable"
+    },
+    "shieldDashImmune_vortex": {
+        "key": "shieldDashImmune_vortex",
+        "abilityRestrictionId": "shieldDashImmune",
+        "statId": "vortex"
+    },
+    "poisonDebuffPuddleImmune_isBoss": {
+        "key": "poisonDebuffPuddleImmune_isBoss",
+        "abilityRestrictionId": "poisonDebuffPuddleImmune",
+        "statId": "isBoss"
+    },
+    "poisonDebuffPuddleImmune_isHero": {
+        "key": "poisonDebuffPuddleImmune_isHero",
+        "abilityRestrictionId": "poisonDebuffPuddleImmune",
+        "statId": "isHero"
+    },
+    "runAwayImmune_customMove": {
+        "key": "runAwayImmune_customMove",
+        "abilityRestrictionId": "runAwayImmune",
+        "statId": "customMove"
+    },
+    "runAwayImmune_isHero": {
+        "key": "runAwayImmune_isHero",
+        "abilityRestrictionId": "runAwayImmune",
+        "statId": "isHero"
+    },
+    "pullImmune_customMove": {
+        "key": "pullImmune_customMove",
+        "abilityRestrictionId": "pullImmune",
+        "statId": "customMove"
+    },
+    "tentacleImmune_tentacleImmune": {
+        "key": "tentacleImmune_tentacleImmune",
+        "abilityRestrictionId": "tentacleImmune",
+        "statId": "tentacleImmune"
+    },
+    "castImmune_castImmune": {
+        "key": "castImmune_castImmune",
+        "abilityRestrictionId": "castImmune",
+        "statId": "castImmune"
+    },
+    "paladinShieldImmune_unTargetable": {
+        "key": "paladinShieldImmune_unTargetable",
+        "abilityRestrictionId": "paladinShieldImmune",
+        "statId": "unTargetable"
+    },
+    "paladinShieldImmune_isBoss": {
+        "key": "paladinShieldImmune_isBoss",
+        "abilityRestrictionId": "paladinShieldImmune",
+        "statId": "isBoss"
+    },
+    "paladinShieldImmune_invulnerable": {
+        "key": "paladinShieldImmune_invulnerable",
+        "abilityRestrictionId": "paladinShieldImmune",
+        "statId": "invulnerable"
+    },
+    "paladinShieldImmune_castImmune": {
+        "key": "paladinShieldImmune_castImmune",
+        "abilityRestrictionId": "paladinShieldImmune",
+        "statId": "castImmune"
+    },
+    "undeadPestilenceRestriction_isHero": {
+        "key": "undeadPestilenceRestriction_isHero",
+        "abilityRestrictionId": "undeadPestilenceRestriction",
+        "statId": "isHero"
+    },
+    "canNotAuraDefence_devouredByKraken": {
+        "key": "canNotAuraDefence_devouredByKraken",
+        "abilityRestrictionId": "canNotAuraDefence",
+        "statId": "devouredByKraken"
+    },
+    "canNotAuraDefence_aiDisabled": {
+        "key": "canNotAuraDefence_aiDisabled",
+        "abilityRestrictionId": "canNotAuraDefence",
+        "statId": "aiDisabled"
+    },
+    "healImmune_healImmune": {
+        "key": "healImmune_healImmune",
+        "abilityRestrictionId": "healImmune",
+        "statId": "healImmune"
+    },
+    "fireImmuneUnit_unTargetable": {
+        "key": "fireImmuneUnit_unTargetable",
+        "abilityRestrictionId": "fireImmuneUnit",
+        "statId": "unTargetable"
+    },
+    "fireImmuneUnit_invulnerable": {
+        "key": "fireImmuneUnit_invulnerable",
+        "abilityRestrictionId": "fireImmuneUnit",
+        "statId": "invulnerable"
+    },
+    "fireImmuneUnit_isBoss": {
+        "key": "fireImmuneUnit_isBoss",
+        "abilityRestrictionId": "fireImmuneUnit",
+        "statId": "isBoss"
+    },
+    "shieldDashImmune_shieldDashImmune": {
+        "key": "shieldDashImmune_shieldDashImmune",
+        "abilityRestrictionId": "shieldDashImmune",
+        "statId": "shieldDashImmune"
+    },
+    "canNotBeMindcontrolled_castImmune": {
+        "key": "canNotBeMindcontrolled_castImmune",
+        "abilityRestrictionId": "canNotBeMindcontrolled",
+        "statId": "castImmune"
+    },
+    "mindControlInterrupt_unTargetable": {
+        "key": "mindControlInterrupt_unTargetable",
+        "abilityRestrictionId": "mindControlInterrupt",
+        "statId": "unTargetable"
+    },
+    "mindControlInterrupt_castImmune": {
+        "key": "mindControlInterrupt_castImmune",
+        "abilityRestrictionId": "mindControlInterrupt",
+        "statId": "castImmune"
+    },
+    "poisonAreaImmune_unTargetable": {
+        "key": "poisonAreaImmune_unTargetable",
+        "abilityRestrictionId": "poisonAreaImmune",
+        "statId": "unTargetable"
+    },
+    "poisonAreaImmune_isHero": {
+        "key": "poisonAreaImmune_isHero",
+        "abilityRestrictionId": "poisonAreaImmune",
+        "statId": "isHero"
+    },
+    "throwImmune_unTargetable": {
+        "key": "throwImmune_unTargetable",
+        "abilityRestrictionId": "throwImmune",
+        "statId": "unTargetable"
+    },
+    "throwImmune_isBoss": {
+        "key": "throwImmune_isBoss",
+        "abilityRestrictionId": "throwImmune",
+        "statId": "isBoss"
+    },
+    "throwImmune_invulnerable": {
+        "key": "throwImmune_invulnerable",
+        "abilityRestrictionId": "throwImmune",
+        "statId": "invulnerable"
+    },
+    "throwImmune_vortex": {
+        "key": "throwImmune_vortex",
+        "abilityRestrictionId": "throwImmune",
+        "statId": "vortex"
+    },
+    "throwImmune_isHero": {
+        "key": "throwImmune_isHero",
+        "abilityRestrictionId": "throwImmune",
+        "statId": "isHero"
+    }
+}

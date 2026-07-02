@@ -1,0 +1,112 @@
+{
+    "meteoricRequiem_1": {
+        "key": "meteoricRequiem_1",
+        "abilityInfoId": "demonMage_meteoricRequiem",
+        "summonedTroopId": "demonMageGolem_1",
+        "meteoriteSummonTriggerCount": 8,
+        "meteoriteFallDuration": 1,
+        "bigMeteoriteAoeRadius": 5,
+        "smallMeteoriteAoeRadius": 2.2,
+        "meteoriteAoeDamage": 1600,
+        "attackType": "Range"
+    },
+    "meteoricRequiem_2": {
+        "key": "meteoricRequiem_2",
+        "abilityInfoId": "demonMage_meteoricRequiem",
+        "summonedTroopId": "demonMageGolem_2",
+        "meteoriteSummonTriggerCount": 8,
+        "meteoriteFallDuration": 1,
+        "bigMeteoriteAoeRadius": 5,
+        "smallMeteoriteAoeRadius": 2.2,
+        "meteoriteAoeDamage": 1700,
+        "attackType": "Range"
+    },
+    "meteoricRequiem_3": {
+        "key": "meteoricRequiem_3",
+        "abilityInfoId": "demonMage_meteoricRequiem",
+        "summonedTroopId": "demonMageGolem_3",
+        "meteoriteSummonTriggerCount": 8,
+        "meteoriteFallDuration": 1,
+        "bigMeteoriteAoeRadius": 5,
+        "smallMeteoriteAoeRadius": 2.2,
+        "meteoriteAoeDamage": 1800,
+        "attackType": "Range"
+    },
+    "meteoricRequiem_4": {
+        "key": "meteoricRequiem_4",
+        "abilityInfoId": "demonMage_meteoricRequiem",
+        "summonedTroopId": "demonMageGolem_4",
+        "meteoriteSummonTriggerCount": 7,
+        "meteoriteFallDuration": 1,
+        "bigMeteoriteAoeRadius": 5,
+        "smallMeteoriteAoeRadius": 2.2,
+        "meteoriteAoeDamage": 1900,
+        "attackType": "Range"
+    },
+    "meteoricRequiem_5": {
+        "key": "meteoricRequiem_5",
+        "abilityInfoId": "demonMage_meteoricRequiem",
+        "summonedTroopId": "demonMageGolem_5",
+        "meteoriteSummonTriggerCount": 7,
+        "meteoriteFallDuration": 1,
+        "bigMeteoriteAoeRadius": 5,
+        "smallMeteoriteAoeRadius": 2.2,
+        "meteoriteAoeDamage": 2000,
+        "attackType": "Range"
+    },
+    "meteoricRequiem_6": {
+        "key": "meteoricRequiem_6",
+        "abilityInfoId": "demonMage_meteoricRequiem",
+        "summonedTroopId": "demonMageGolem_6",
+        "meteoriteSummonTriggerCount": 7,
+        "meteoriteFallDuration": 1,
+        "bigMeteoriteAoeRadius": 5,
+        "smallMeteoriteAoeRadius": 2.2,
+        "meteoriteAoeDamage": 2100,
+        "attackType": "Range"
+    },
+    "meteoricRequiem_7": {
+        "key": "meteoricRequiem_7",
+        "abilityInfoId": "demonMage_meteoricRequiem",
+        "summonedTroopId": "demonMageGolem_7",
+        "meteoriteSummonTriggerCount": 6,
+        "meteoriteFallDuration": 1,
+        "bigMeteoriteAoeRadius": 5,
+        "smallMeteoriteAoeRadius": 2.2,
+        "meteoriteAoeDamage": 2200,
+        "attackType": "Range"
+    },
+    "meteoricRequiem_8": {
+        "key": "meteoricRequiem_8",
+        "abilityInfoId": "demonMage_meteoricRequiem",
+        "summonedTroopId": "demonMageGolem_8",
+        "meteoriteSummonTriggerCount": 6,
+        "meteoriteFallDuration": 1,
+        "bigMeteoriteAoeRadius": 5,
+        "smallMeteoriteAoeRadius": 2.2,
+        "meteoriteAoeDamage": 2300,
+        "attackType": "Range"
+    },
+    "meteoricRequiem_9": {
+        "key": "meteoricRequiem_9",
+        "abilityInfoId": "demonMage_meteoricRequiem",
+        "summonedTroopId": "demonMageGolem_9",
+        "meteoriteSummonTriggerCount": 6,
+        "meteoriteFallDuration": 1,
+        "bigMeteoriteAoeRadius": 5,
+        "smallMeteoriteAoeRadius": 2.2,
+        "meteoriteAoeDamage": 2400,
+        "attackType": "Range"
+    },
+    "meteoricRequiem_10": {
+        "key": "meteoricRequiem_10",
+        "abilityInfoId": "demonMage_meteoricRequiem",
+        "summonedTroopId": "demonMageGolem_10",
+        "meteoriteSummonTriggerCount": 5,
+        "meteoriteFallDuration": 1,
+        "bigMeteoriteAoeRadius": 5,
+        "smallMeteoriteAoeRadius": 2.2,
+        "meteoriteAoeDamage": 2500,
+        "attackType": "Range"
+    }
+}

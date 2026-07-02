@@ -1,0 +1,407 @@
+{
+    "attackReflectDamageMultiplier_1": {
+        "key": "attackReflectDamageMultiplier_1",
+        "abilityInfoId": "attackReflectDamageMultiplier",
+        "modifier": "attackReflectDamageMultiplier_aura_1",
+        "units": "Tank",
+        "group": "ally",
+        "restriction": null,
+        "neighbourCellOffsets": "(0, -1)"
+    },
+    "attackReflectDamageMultiplier_2": {
+        "key": "attackReflectDamageMultiplier_2",
+        "abilityInfoId": "attackReflectDamageMultiplier",
+        "modifier": "attackReflectDamageMultiplier_aura_2",
+        "units": "Tank",
+        "group": "ally",
+        "restriction": null,
+        "neighbourCellOffsets": "(0, -1)"
+    },
+    "attackReflectDamageMultiplier_3": {
+        "key": "attackReflectDamageMultiplier_3",
+        "abilityInfoId": "attackReflectDamageMultiplier",
+        "modifier": "attackReflectDamageMultiplier_aura_3",
+        "units": "Tank",
+        "group": "ally",
+        "restriction": null,
+        "neighbourCellOffsets": "(0, -1)"
+    },
+    "attackReflectDamageMultiplier_4": {
+        "key": "attackReflectDamageMultiplier_4",
+        "abilityInfoId": "attackReflectDamageMultiplier",
+        "modifier": "attackReflectDamageMultiplier_aura_4",
+        "units": "Tank",
+        "group": "ally",
+        "restriction": null,
+        "neighbourCellOffsets": "(0, -1)"
+    },
+    "attackReflectDamageMultiplier_5": {
+        "key": "attackReflectDamageMultiplier_5",
+        "abilityInfoId": "attackReflectDamageMultiplier",
+        "modifier": "attackReflectDamageMultiplier_aura_5",
+        "units": "Tank",
+        "group": "ally",
+        "restriction": null,
+        "neighbourCellOffsets": "(0, -1)"
+    },
+    "attackReflectDamageMultiplier_6": {
+        "key": "attackReflectDamageMultiplier_6",
+        "abilityInfoId": "attackReflectDamageMultiplier",
+        "modifier": "attackReflectDamageMultiplier_aura_6",
+        "units": "Tank",
+        "group": "ally",
+        "restriction": null,
+        "neighbourCellOffsets": "(0, -1)"
+    },
+    "attackReflectDamageMultiplier_7": {
+        "key": "attackReflectDamageMultiplier_7",
+        "abilityInfoId": "attackReflectDamageMultiplier",
+        "modifier": "attackReflectDamageMultiplier_aura_7",
+        "units": "Tank",
+        "group": "ally",
+        "restriction": null,
+        "neighbourCellOffsets": "(0, -1)"
+    },
+    "attackReflectDamageMultiplier_8": {
+        "key": "attackReflectDamageMultiplier_8",
+        "abilityInfoId": "attackReflectDamageMultiplier",
+        "modifier": "attackReflectDamageMultiplier_aura_8",
+        "units": "Tank",
+        "group": "ally",
+        "restriction": null,
+        "neighbourCellOffsets": "(0, -1)"
+    },
+    "attackReflectDamageMultiplier_9": {
+        "key": "attackReflectDamageMultiplier_9",
+        "abilityInfoId": "attackReflectDamageMultiplier",
+        "modifier": "attackReflectDamageMultiplier_aura_9",
+        "units": "Tank",
+        "group": "ally",
+        "restriction": null,
+        "neighbourCellOffsets": "(0, -1)"
+    },
+    "attackReflectDamageMultiplier_10": {
+        "key": "attackReflectDamageMultiplier_10",
+        "abilityInfoId": "attackReflectDamageMultiplier",
+        "modifier": "attackReflectDamageMultiplier_aura_10",
+        "units": "Tank",
+        "group": "ally",
+        "restriction": null,
+        "neighbourCellOffsets": "(0, -1)"
+    },
+    "attackReflectDamageMultiplier_11": {
+        "key": "attackReflectDamageMultiplier_11",
+        "abilityInfoId": "attackReflectDamageMultiplier",
+        "modifier": "attackReflectDamageMultiplier_aura_11",
+        "units": "Tank",
+        "group": "ally",
+        "restriction": null,
+        "neighbourCellOffsets": "(0, -1)"
+    },
+    "attackReflectDamageMultiplier_12": {
+        "key": "attackReflectDamageMultiplier_12",
+        "abilityInfoId": "attackReflectDamageMultiplier",
+        "modifier": "attackReflectDamageMultiplier_aura_12",
+        "units": "Tank",
+        "group": "ally",
+        "restriction": null,
+        "neighbourCellOffsets": "(0, -1)"
+    },
+    "attackReflectDamageMultiplier_13": {
+        "key": "attackReflectDamageMultiplier_13",
+        "abilityInfoId": "attackReflectDamageMultiplier",
+        "modifier": "attackReflectDamageMultiplier_aura_13",
+        "units": "Tank",
+        "group": "ally",
+        "restriction": null,
+        "neighbourCellOffsets": "(0, -1)"
+    },
+    "attackReflectDamageMultiplier_14": {
+        "key": "attackReflectDamageMultiplier_14",
+        "abilityInfoId": "attackReflectDamageMultiplier",
+        "modifier": "attackReflectDamageMultiplier_aura_14",
+        "units": "Tank",
+        "group": "ally",
+        "restriction": null,
+        "neighbourCellOffsets": "(0, -1)"
+    },
+    "attackReflectDamageMultiplier_15": {
+        "key": "attackReflectDamageMultiplier_15",
+        "abilityInfoId": "attackReflectDamageMultiplier",
+        "modifier": "attackReflectDamageMultiplier_aura_15",
+        "units": "Tank",
+        "group": "ally",
+        "restriction": null,
+        "neighbourCellOffsets": "(0, -1)"
+    },
+    "attackReflectDamageMultiplier_16": {
+        "key": "attackReflectDamageMultiplier_16",
+        "abilityInfoId": "attackReflectDamageMultiplier",
+        "modifier": "attackReflectDamageMultiplier_aura_16",
+        "units": "Tank",
+        "group": "ally",
+        "restriction": null,
+        "neighbourCellOffsets": "(0, -1)"
+    },
+    "attackReflectDamageMultiplier_17": {
+        "key": "attackReflectDamageMultiplier_17",
+        "abilityInfoId": "attackReflectDamageMultiplier",
+        "modifier": "attackReflectDamageMultiplier_aura_17",
+        "units": "Tank",
+        "group": "ally",
+        "restriction": null,
+        "neighbourCellOffsets": "(0, -1)"
+    },
+    "attackReflectDamageMultiplier_18": {
+        "key": "attackReflectDamageMultiplier_18",
+        "abilityInfoId": "attackReflectDamageMultiplier",
+        "modifier": "attackReflectDamageMultiplier_aura_18",
+        "units": "Tank",
+        "group": "ally",
+        "restriction": null,
+        "neighbourCellOffsets": "(0, -1)"
+    },
+    "attackReflectDamageMultiplier_19": {
+        "key": "attackReflectDamageMultiplier_19",
+        "abilityInfoId": "attackReflectDamageMultiplier",
+        "modifier": "attackReflectDamageMultiplier_aura_19",
+        "units": "Tank",
+        "group": "ally",
+        "restriction": null,
+        "neighbourCellOffsets": "(0, -1)"
+    },
+    "attackReflectDamageMultiplier_20": {
+        "key": "attackReflectDamageMultiplier_20",
+        "abilityInfoId": "attackReflectDamageMultiplier",
+        "modifier": "attackReflectDamageMultiplier_aura_20",
+        "units": "Tank",
+        "group": "ally",
+        "restriction": null,
+        "neighbourCellOffsets": "(0, -1)"
+    },
+    "attackReflectDamageMultiplier_21": {
+        "key": "attackReflectDamageMultiplier_21",
+        "abilityInfoId": "attackReflectDamageMultiplier",
+        "modifier": "attackReflectDamageMultiplier_aura_21",
+        "units": "Tank",
+        "group": "ally",
+        "restriction": null,
+        "neighbourCellOffsets": "(0, -1)"
+    },
+    "attackReflectDamageMultiplier_22": {
+        "key": "attackReflectDamageMultiplier_22",
+        "abilityInfoId": "attackReflectDamageMultiplier",
+        "modifier": "attackReflectDamageMultiplier_aura_22",
+        "units": "Tank",
+        "group": "ally",
+        "restriction": null,
+        "neighbourCellOffsets": "(0, -1)"
+    },
+    "attackReflectDamageMultiplier_23": {
+        "key": "attackReflectDamageMultiplier_23",
+        "abilityInfoId": "attackReflectDamageMultiplier",
+        "modifier": "attackReflectDamageMultiplier_aura_23",
+        "units": "Tank",
+        "group": "ally",
+        "restriction": null,
+        "neighbourCellOffsets": "(0, -1)"
+    },
+    "attackReflectDamageMultiplier_24": {
+        "key": "attackReflectDamageMultiplier_24",
+        "abilityInfoId": "attackReflectDamageMultiplier",
+        "modifier": "attackReflectDamageMultiplier_aura_24",
+        "units": "Tank",
+        "group": "ally",
+        "restriction": null,
+        "neighbourCellOffsets": "(0, -1)"
+    },
+    "attackReflectDamageMultiplier_25": {
+        "key": "attackReflectDamageMultiplier_25",
+        "abilityInfoId": "attackReflectDamageMultiplier",
+        "modifier": "attackReflectDamageMultiplier_aura_25",
+        "units": "Tank",
+        "group": "ally",
+        "restriction": null,
+        "neighbourCellOffsets": "(0, -1)"
+    },
+    "attackReflectDamageMultiplier_26": {
+        "key": "attackReflectDamageMultiplier_26",
+        "abilityInfoId": "attackReflectDamageMultiplier",
+        "modifier": "attackReflectDamageMultiplier_aura_26",
+        "units": "Tank",
+        "group": "ally",
+        "restriction": null,
+        "neighbourCellOffsets": "(0, -1)"
+    },
+    "attackReflectDamageMultiplier_27": {
+        "key": "attackReflectDamageMultiplier_27",
+        "abilityInfoId": "attackReflectDamageMultiplier",
+        "modifier": "attackReflectDamageMultiplier_aura_27",
+        "units": "Tank",
+        "group": "ally",
+        "restriction": null,
+        "neighbourCellOffsets": "(0, -1)"
+    },
+    "attackReflectDamageMultiplier_28": {
+        "key": "attackReflectDamageMultiplier_28",
+        "abilityInfoId": "attackReflectDamageMultiplier",
+        "modifier": "attackReflectDamageMultiplier_aura_28",
+        "units": "Tank",
+        "group": "ally",
+        "restriction": null,
+        "neighbourCellOffsets": "(0, -1)"
+    },
+    "attackReflectDamageMultiplier_29": {
+        "key": "attackReflectDamageMultiplier_29",
+        "abilityInfoId": "attackReflectDamageMultiplier",
+        "modifier": "attackReflectDamageMultiplier_aura_29",
+        "units": "Tank",
+        "group": "ally",
+        "restriction": null,
+        "neighbourCellOffsets": "(0, -1)"
+    },
+    "attackReflectDamageMultiplier_30": {
+        "key": "attackReflectDamageMultiplier_30",
+        "abilityInfoId": "attackReflectDamageMultiplier",
+        "modifier": "attackReflectDamageMultiplier_aura_30",
+        "units": "Tank",
+        "group": "ally",
+        "restriction": null,
+        "neighbourCellOffsets": "(0, -1)"
+    },
+    "attackReflectDamageMultiplier_31": {
+        "key": "attackReflectDamageMultiplier_31",
+        "abilityInfoId": "attackReflectDamageMultiplier",
+        "modifier": "attackReflectDamageMultiplier_aura_31",
+        "units": "Tank",
+        "group": "ally",
+        "restriction": null,
+        "neighbourCellOffsets": "(0, -1)"
+    },
+    "attackReflectDamageMultiplier_32": {
+        "key": "attackReflectDamageMultiplier_32",
+        "abilityInfoId": "attackReflectDamageMultiplier",
+        "modifier": "attackReflectDamageMultiplier_aura_32",
+        "units": "Tank",
+        "group": "ally",
+        "restriction": null,
+        "neighbourCellOffsets": "(0, -1)"
+    },
+    "attackReflectDamageMultiplier_33": {
+        "key": "attackReflectDamageMultiplier_33",
+        "abilityInfoId": "attackReflectDamageMultiplier",
+        "modifier": "attackReflectDamageMultiplier_aura_33",
+        "units": "Tank",
+        "group": "ally",
+        "restriction": null,
+        "neighbourCellOffsets": "(0, -1)"
+    },
+    "attackReflectDamageMultiplier_34": {
+        "key": "attackReflectDamageMultiplier_34",
+        "abilityInfoId": "attackReflectDamageMultiplier",
+        "modifier": "attackReflectDamageMultiplier_aura_34",
+        "units": "Tank",
+        "group": "ally",
+        "restriction": null,
+        "neighbourCellOffsets": "(0, -1)"
+    },
+    "attackReflectDamageMultiplier_35": {
+        "key": "attackReflectDamageMultiplier_35",
+        "abilityInfoId": "attackReflectDamageMultiplier",
+        "modifier": "attackReflectDamageMultiplier_aura_35",
+        "units": "Tank",
+        "group": "ally",
+        "restriction": null,
+        "neighbourCellOffsets": "(0, -1)"
+    },
+    "attackReflectDamageMultiplier_36": {
+        "key": "attackReflectDamageMultiplier_36",
+        "abilityInfoId": "attackReflectDamageMultiplier",
+        "modifier": "attackReflectDamageMultiplier_aura_36",
+        "units": "Tank",
+        "group": "ally",
+        "restriction": null,
+        "neighbourCellOffsets": "(0, -1)"
+    },
+    "attackReflectDamageMultiplier_37": {
+        "key": "attackReflectDamageMultiplier_37",
+        "abilityInfoId": "attackReflectDamageMultiplier",
+        "modifier": "attackReflectDamageMultiplier_aura_37",
+        "units": "Tank",
+        "group": "ally",
+        "restriction": null,
+        "neighbourCellOffsets": "(0, -1)"
+    },
+    "attackReflectDamageMultiplier_38": {
+        "key": "attackReflectDamageMultiplier_38",
+        "abilityInfoId": "attackReflectDamageMultiplier",
+        "modifier": "attackReflectDamageMultiplier_aura_38",
+        "units": "Tank",
+        "group": "ally",
+        "restriction": null,
+        "neighbourCellOffsets": "(0, -1)"
+    },
+    "attackReflectDamageMultiplier_39": {
+        "key": "attackReflectDamageMultiplier_39",
+        "abilityInfoId": "attackReflectDamageMultiplier",
+        "modifier": "attackReflectDamageMultiplier_aura_39",
+        "units": "Tank",
+        "group": "ally",
+        "restriction": null,
+        "neighbourCellOffsets": "(0, -1)"
+    },
+    "attackReflectDamageMultiplier_40": {
+        "key": "attackReflectDamageMultiplier_40",
+        "abilityInfoId": "attackReflectDamageMultiplier",
+        "modifier": "attackReflectDamageMultiplier_aura_40",
+        "units": "Tank",
+        "group": "ally",
+        "restriction": null,
+        "neighbourCellOffsets": "(0, -1)"
+    },
+    "attackReflectDamageMultiplier_41": {
+        "key": "attackReflectDamageMultiplier_41",
+        "abilityInfoId": "attackReflectDamageMultiplier",
+        "modifier": "attackReflectDamageMultiplier_aura_41",
+        "units": "Tank",
+        "group": "ally",
+        "restriction": null,
+        "neighbourCellOffsets": "(0, -1)"
+    },
+    "attackReflectDamageMultiplier_42": {
+        "key": "attackReflectDamageMultiplier_42",
+        "abilityInfoId": "attackReflectDamageMultiplier",
+        "modifier": "attackReflectDamageMultiplier_aura_42",
+        "units": "Tank",
+        "group": "ally",
+        "restriction": null,
+        "neighbourCellOffsets": "(0, -1)"
+    },
+    "attackReflectDamageMultiplier_43": {
+        "key": "attackReflectDamageMultiplier_43",
+        "abilityInfoId": "attackReflectDamageMultiplier",
+        "modifier": "attackReflectDamageMultiplier_aura_43",
+        "units": "Tank",
+        "group": "ally",
+        "restriction": null,
+        "neighbourCellOffsets": "(0, -1)"
+    },
+    "attackReflectDamageMultiplier_44": {
+        "key": "attackReflectDamageMultiplier_44",
+        "abilityInfoId": "attackReflectDamageMultiplier",
+        "modifier": "attackReflectDamageMultiplier_aura_44",
+        "units": "Tank",
+        "group": "ally",
+        "restriction": null,
+        "neighbourCellOffsets": "(0, -1)"
+    },
+    "attackReflectDamageMultiplier_45": {
+        "key": "attackReflectDamageMultiplier_45",
+        "abilityInfoId": "attackReflectDamageMultiplier",
+        "modifier": "attackReflectDamageMultiplier_aura_45",
+        "units": "Tank",
+        "group": "ally",
+        "restriction": null,
+        "neighbourCellOffsets": "(0, -1)"
+    }
+}

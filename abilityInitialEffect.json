@@ -1,0 +1,22 @@
+{
+    "flyingMonsterInitial": {
+        "key": "flyingMonsterInitial",
+        "abilityInfoId": "flyingMonsterInitial",
+        "effectId": "flyingMonsterInitial"
+    },
+    "monkGhostInitial": {
+        "key": "monkGhostInitial",
+        "abilityInfoId": "monkGhostInitial",
+        "effectId": "monkGhostInitial"
+    },
+    "tombInitial": {
+        "key": "tombInitial",
+        "abilityInfoId": "tombInitial",
+        "effectId": "tentacleImmune"
+    },
+    "tombLibraryInitial": {
+        "key": "tombLibraryInitial",
+        "abilityInfoId": "tombInitial",
+        "effectId": "tombLibraryInitial"
+    }
+}

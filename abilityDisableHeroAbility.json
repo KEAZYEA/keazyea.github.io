@@ -1,0 +1,6 @@
+{
+    "DisableHeroAbility": {
+        "key": "DisableHeroAbility",
+        "abilityInfoId": "dragonRider_buff"
+    }
+}

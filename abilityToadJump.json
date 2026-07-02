@@ -1,0 +1,112 @@
+{
+    "stunToad_toadJump_1": {
+        "key": "stunToad_toadJump_1",
+        "abilityInfoId": "stunToad_toadJump",
+        "attack": 400,
+        "aoeRadius": 2,
+        "jumpSpeed": 40,
+        "minJumpRange": 6,
+        "stunTime": 1.5,
+        "targetJumpRestrictionId": "castImmuneUnit",
+        "attackType": "Melee"
+    },
+    "stunToad_toadJump_2": {
+        "key": "stunToad_toadJump_2",
+        "abilityInfoId": "stunToad_toadJump",
+        "attack": 600,
+        "aoeRadius": 2,
+        "jumpSpeed": 40,
+        "minJumpRange": 6,
+        "stunTime": 2,
+        "targetJumpRestrictionId": "castImmuneUnit",
+        "attackType": "Melee"
+    },
+    "stunToad_toadJump_3": {
+        "key": "stunToad_toadJump_3",
+        "abilityInfoId": "stunToad_toadJump",
+        "attack": 800,
+        "aoeRadius": 2.5,
+        "jumpSpeed": 40,
+        "minJumpRange": 6,
+        "stunTime": 2,
+        "targetJumpRestrictionId": "castImmuneUnit",
+        "attackType": "Melee"
+    },
+    "stunToad_toadJump_4": {
+        "key": "stunToad_toadJump_4",
+        "abilityInfoId": "stunToad_toadJump",
+        "attack": 1000,
+        "aoeRadius": 2.5,
+        "jumpSpeed": 40,
+        "minJumpRange": 6,
+        "stunTime": 2.5,
+        "targetJumpRestrictionId": "castImmuneUnit",
+        "attackType": "Melee"
+    },
+    "stunToad_toadJump_5": {
+        "key": "stunToad_toadJump_5",
+        "abilityInfoId": "stunToad_toadJump",
+        "attack": 1200,
+        "aoeRadius": 3,
+        "jumpSpeed": 40,
+        "minJumpRange": 6,
+        "stunTime": 2.5,
+        "targetJumpRestrictionId": "castImmuneUnit",
+        "attackType": "Melee"
+    },
+    "stunToad_toadJump_6": {
+        "key": "stunToad_toadJump_6",
+        "abilityInfoId": "stunToad_toadJump",
+        "attack": 1400,
+        "aoeRadius": 3,
+        "jumpSpeed": 40,
+        "minJumpRange": 6,
+        "stunTime": 3,
+        "targetJumpRestrictionId": "castImmuneUnit",
+        "attackType": "Melee"
+    },
+    "stunToad_toadJump_7": {
+        "key": "stunToad_toadJump_7",
+        "abilityInfoId": "stunToad_toadJump",
+        "attack": 1600,
+        "aoeRadius": 3.5,
+        "jumpSpeed": 40,
+        "minJumpRange": 6,
+        "stunTime": 3,
+        "targetJumpRestrictionId": "castImmuneUnit",
+        "attackType": "Melee"
+    },
+    "stunToad_toadJump_8": {
+        "key": "stunToad_toadJump_8",
+        "abilityInfoId": "stunToad_toadJump",
+        "attack": 1800,
+        "aoeRadius": 3.5,
+        "jumpSpeed": 40,
+        "minJumpRange": 6,
+        "stunTime": 3.5,
+        "targetJumpRestrictionId": "castImmuneUnit",
+        "attackType": "Melee"
+    },
+    "stunToad_toadJump_9": {
+        "key": "stunToad_toadJump_9",
+        "abilityInfoId": "stunToad_toadJump",
+        "attack": 2000,
+        "aoeRadius": 4,
+        "jumpSpeed": 40,
+        "minJumpRange": 6,
+        "stunTime": 3.5,
+        "targetJumpRestrictionId": "castImmuneUnit",
+        "attackType": "Melee"
+    },
+    "stunToad_toadJump_10": {
+        "key": "stunToad_toadJump_10",
+        "abilityInfoId": "stunToad_toadJump",
+        "attack": 2200,
+        "aoeRadius": 4,
+        "jumpSpeed": 40,
+        "minJumpRange": 6,
+        "stunTime": 4,
+        "targetJumpRestrictionId": "castImmuneUnit",
+        "attackType": "Melee"
+    }
+}

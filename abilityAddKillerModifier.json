@@ -1,0 +1,82 @@
+{
+    "revengeOfTheFallen_1": {
+        "key": "revengeOfTheFallen_1",
+        "abilityInfoId": "charmer_buff",
+        "kilerModifier": "charmer_buff_1",
+        "modifierTime": 2,
+        "units": null,
+        "group": "enemy"
+    },
+    "revengeOfTheFallen_2": {
+        "key": "revengeOfTheFallen_2",
+        "abilityInfoId": "charmer_buff",
+        "kilerModifier": "charmer_buff_2",
+        "modifierTime": 2,
+        "units": null,
+        "group": "enemy"
+    },
+    "revengeOfTheFallen_3": {
+        "key": "revengeOfTheFallen_3",
+        "abilityInfoId": "charmer_buff",
+        "kilerModifier": "charmer_buff_3",
+        "modifierTime": 3,
+        "units": null,
+        "group": "enemy"
+    },
+    "revengeOfTheFallen_4": {
+        "key": "revengeOfTheFallen_4",
+        "abilityInfoId": "charmer_buff",
+        "kilerModifier": "charmer_buff_4",
+        "modifierTime": 3,
+        "units": null,
+        "group": "enemy"
+    },
+    "revengeOfTheFallen_5": {
+        "key": "revengeOfTheFallen_5",
+        "abilityInfoId": "charmer_buff",
+        "kilerModifier": "charmer_buff_5",
+        "modifierTime": 4,
+        "units": null,
+        "group": "enemy"
+    },
+    "revengeOfTheFallen_6": {
+        "key": "revengeOfTheFallen_6",
+        "abilityInfoId": "charmer_buff",
+        "kilerModifier": "charmer_buff_6",
+        "modifierTime": 4,
+        "units": null,
+        "group": "enemy"
+    },
+    "revengeOfTheFallen_7": {
+        "key": "revengeOfTheFallen_7",
+        "abilityInfoId": "charmer_buff",
+        "kilerModifier": "charmer_buff_7",
+        "modifierTime": 5,
+        "units": null,
+        "group": "enemy"
+    },
+    "revengeOfTheFallen_8": {
+        "key": "revengeOfTheFallen_8",
+        "abilityInfoId": "charmer_buff",
+        "kilerModifier": "charmer_buff_8",
+        "modifierTime": 5,
+        "units": null,
+        "group": "enemy"
+    },
+    "revengeOfTheFallen_9": {
+        "key": "revengeOfTheFallen_9",
+        "abilityInfoId": "charmer_buff",
+        "kilerModifier": "charmer_buff_9",
+        "modifierTime": 6,
+        "units": null,
+        "group": "enemy"
+    },
+    "revengeOfTheFallen_10": {
+        "key": "revengeOfTheFallen_10",
+        "abilityInfoId": "charmer_buff",
+        "kilerModifier": "charmer_buff_10",
+        "modifierTime": 6,
+        "units": null,
+        "group": "enemy"
+    }
+}

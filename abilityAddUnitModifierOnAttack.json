@@ -1,0 +1,62 @@
+{
+    "boardingParty_1": {
+        "key": "boardingParty_1",
+        "abilityInfoId": "undeadPirate_buff",
+        "modifier": "undeadPirate_buff_1",
+        "applyOnAttackProbability": 0.02
+    },
+    "boardingParty_2": {
+        "key": "boardingParty_2",
+        "abilityInfoId": "undeadPirate_buff",
+        "modifier": "undeadPirate_buff_2",
+        "applyOnAttackProbability": 0.04
+    },
+    "boardingParty_3": {
+        "key": "boardingParty_3",
+        "abilityInfoId": "undeadPirate_buff",
+        "modifier": "undeadPirate_buff_3",
+        "applyOnAttackProbability": 0.06
+    },
+    "boardingParty_4": {
+        "key": "boardingParty_4",
+        "abilityInfoId": "undeadPirate_buff",
+        "modifier": "undeadPirate_buff_4",
+        "applyOnAttackProbability": 0.08
+    },
+    "boardingParty_5": {
+        "key": "boardingParty_5",
+        "abilityInfoId": "undeadPirate_buff",
+        "modifier": "undeadPirate_buff_5",
+        "applyOnAttackProbability": 0.1
+    },
+    "boardingParty_6": {
+        "key": "boardingParty_6",
+        "abilityInfoId": "undeadPirate_buff",
+        "modifier": "undeadPirate_buff_6",
+        "applyOnAttackProbability": 0.12
+    },
+    "boardingParty_7": {
+        "key": "boardingParty_7",
+        "abilityInfoId": "undeadPirate_buff",
+        "modifier": "undeadPirate_buff_7",
+        "applyOnAttackProbability": 0.15
+    },
+    "boardingParty_8": {
+        "key": "boardingParty_8",
+        "abilityInfoId": "undeadPirate_buff",
+        "modifier": "undeadPirate_buff_8",
+        "applyOnAttackProbability": 0.18
+    },
+    "boardingParty_9": {
+        "key": "boardingParty_9",
+        "abilityInfoId": "undeadPirate_buff",
+        "modifier": "undeadPirate_buff_9",
+        "applyOnAttackProbability": 0.21
+    },
+    "boardingParty_10": {
+        "key": "boardingParty_10",
+        "abilityInfoId": "undeadPirate_buff",
+        "modifier": "undeadPirate_buff_10",
+        "applyOnAttackProbability": 0.25
+    }
+}

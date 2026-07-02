@@ -1,0 +1,30 @@
+{
+    "bossKrakenNew1_DmgLvlUp": {
+        "key": "bossKrakenNew1_DmgLvlUp",
+        "abilityInfoId": "bossKrakenNew_DmgLvlUp"
+    },
+    "bossKrakenNew2_DmgLvlUp": {
+        "key": "bossKrakenNew2_DmgLvlUp",
+        "abilityInfoId": "bossKrakenNew_DmgLvlUp"
+    },
+    "bossDragonNew1_DmgLvlUp": {
+        "key": "bossDragonNew1_DmgLvlUp",
+        "abilityInfoId": "bossDragonNew_DmgLvlUp"
+    },
+    "bossDragonNew2_DmgLvlUp": {
+        "key": "bossDragonNew2_DmgLvlUp",
+        "abilityInfoId": "bossDragonNew_DmgLvlUp"
+    },
+    "bossSpiderQueenNew1_DmgLvlUp": {
+        "key": "bossSpiderQueenNew1_DmgLvlUp",
+        "abilityInfoId": "bossSpiderQueenNew_DmgLvlUp"
+    },
+    "bossSpiderQueenNew2_DmgLvlUp": {
+        "key": "bossSpiderQueenNew2_DmgLvlUp",
+        "abilityInfoId": "bossSpiderQueenNew_DmgLvlUp"
+    },
+    "bossSand_DmgLvlUp": {
+        "key": "bossSand_DmgLvlUp",
+        "abilityInfoId": "bossSand_DmgLvlUp"
+    }
+}

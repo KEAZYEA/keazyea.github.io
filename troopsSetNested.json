@@ -1,0 +1,207 @@
+{
+    "ironGuards_Tank": {
+        "key": "ironGuards_Tank",
+        "troopsSetId": "Tank",
+        "troopsId": "ironGuards"
+    },
+    "bomber_Ranger": {
+        "key": "bomber_Ranger",
+        "troopsSetId": "Ranger",
+        "troopsId": "bomber"
+    },
+    "assasin_Trickster": {
+        "key": "assasin_Trickster",
+        "troopsSetId": "Trickster",
+        "troopsId": "assasin"
+    },
+    "butcher_Tank": {
+        "key": "butcher_Tank",
+        "troopsSetId": "Tank",
+        "troopsId": "butcher"
+    },
+    "paladin_Support": {
+        "key": "paladin_Support",
+        "troopsSetId": "Support",
+        "troopsId": "paladin"
+    },
+    "alchemist_Support": {
+        "key": "alchemist_Support",
+        "troopsSetId": "Support",
+        "troopsId": "alchemist"
+    },
+    "lancer_Trickster": {
+        "key": "lancer_Trickster",
+        "troopsSetId": "Trickster",
+        "troopsId": "lancer"
+    },
+    "hunter_Ranger": {
+        "key": "hunter_Ranger",
+        "troopsSetId": "Ranger",
+        "troopsId": "hunter"
+    },
+    "hunter_Support": {
+        "key": "hunter_Support",
+        "troopsSetId": "Support",
+        "troopsId": "hunter"
+    },
+    "monk_Tank": {
+        "key": "monk_Tank",
+        "troopsSetId": "Tank",
+        "troopsId": "monk"
+    },
+    "eliteWarrior_Trickster": {
+        "key": "eliteWarrior_Trickster",
+        "troopsSetId": "Trickster",
+        "troopsId": "eliteWarrior"
+    },
+    "pyrotechnician_Ranger": {
+        "key": "pyrotechnician_Ranger",
+        "troopsSetId": "Ranger",
+        "troopsId": "pyrotechnician"
+    },
+    "mountainsChampion_Tank": {
+        "key": "mountainsChampion_Tank",
+        "troopsSetId": "Tank",
+        "troopsId": "mountainsChampion"
+    },
+    "mountainsChampion_Trickster": {
+        "key": "mountainsChampion_Trickster",
+        "troopsSetId": "Trickster",
+        "troopsId": "mountainsChampion"
+    },
+    "undeadMage_Ranger": {
+        "key": "undeadMage_Ranger",
+        "troopsSetId": "Ranger",
+        "troopsId": "undeadMage"
+    },
+    "necromancer_Support": {
+        "key": "necromancer_Support",
+        "troopsSetId": "Support",
+        "troopsId": "necromancer"
+    },
+    "imp_Ranger": {
+        "key": "imp_Ranger",
+        "troopsSetId": "Ranger",
+        "troopsId": "imp"
+    },
+    "undeadHeadless_Tank": {
+        "key": "undeadHeadless_Tank",
+        "troopsSetId": "Tank",
+        "troopsId": "undeadHeadless"
+    },
+    "undeadHeadless_Support": {
+        "key": "undeadHeadless_Support",
+        "troopsSetId": "Support",
+        "troopsId": "undeadHeadless"
+    },
+    "flyingMonster_Trickster": {
+        "key": "flyingMonster_Trickster",
+        "troopsSetId": "Trickster",
+        "troopsId": "flyingMonster"
+    },
+    "flyingMonster_Support": {
+        "key": "flyingMonster_Support",
+        "troopsSetId": "Support",
+        "troopsId": "flyingMonster"
+    },
+    "gravedigger_Trickster": {
+        "key": "gravedigger_Trickster",
+        "troopsSetId": "Trickster",
+        "troopsId": "gravedigger"
+    },
+    "damnCatapult_Ranger": {
+        "key": "damnCatapult_Ranger",
+        "troopsSetId": "Ranger",
+        "troopsId": "damnCatapult"
+    },
+    "shaman_Support": {
+        "key": "shaman_Support",
+        "troopsSetId": "Support",
+        "troopsId": "shaman"
+    },
+    "shaman_Ranger": {
+        "key": "shaman_Ranger",
+        "troopsSetId": "Ranger",
+        "troopsId": "shaman"
+    },
+    "magicArcher_Ranger": {
+        "key": "magicArcher_Ranger",
+        "troopsSetId": "Ranger",
+        "troopsId": "magicArcher"
+    },
+    "stoneGolem_Tank": {
+        "key": "stoneGolem_Tank",
+        "troopsSetId": "Tank",
+        "troopsId": "stoneGolem"
+    },
+    "stoneGolem_Support": {
+        "key": "stoneGolem_Support",
+        "troopsSetId": "Support",
+        "troopsId": "stoneGolem"
+    },
+    "windElemental_Trickster": {
+        "key": "windElemental_Trickster",
+        "troopsSetId": "Trickster",
+        "troopsId": "windElemental"
+    },
+    "stormSpearman_Trickster": {
+        "key": "stormSpearman_Trickster",
+        "troopsSetId": "Trickster",
+        "troopsId": "stormSpearman"
+    },
+    "vulkanGolem_Tank": {
+        "key": "vulkanGolem_Tank",
+        "troopsSetId": "Tank",
+        "troopsId": "vulkanGolem"
+    },
+    "phoenix_Ranger": {
+        "key": "phoenix_Ranger",
+        "troopsSetId": "Ranger",
+        "troopsId": "phoenix"
+    },
+    "phoenix_Tank": {
+        "key": "phoenix_Tank",
+        "troopsSetId": "Tank",
+        "troopsId": "phoenix"
+    },
+    "stunToad_Trickster": {
+        "key": "stunToad_Trickster",
+        "troopsSetId": "Trickster",
+        "troopsId": "stunToad"
+    },
+    "stunToad_Support": {
+        "key": "stunToad_Support",
+        "troopsSetId": "Support",
+        "troopsId": "stunToad"
+    },
+    "skeletonWarrior_Tank": {
+        "key": "skeletonWarrior_Tank",
+        "troopsSetId": "Tank",
+        "troopsId": "skeletonWarrior"
+    },
+    "demonMageGolem_Tank": {
+        "key": "demonMageGolem_Tank",
+        "troopsSetId": "Tank",
+        "troopsId": "demonMageGolem"
+    },
+    "axeThrowers_Ranger": {
+        "key": "axeThrowers_Ranger",
+        "troopsSetId": "Ranger",
+        "troopsId": "axeThrowers"
+    },
+    "axeThrowers_Trickster": {
+        "key": "axeThrowers_Trickster",
+        "troopsSetId": "Trickster",
+        "troopsId": "axeThrowers"
+    },
+    "cactus_Tank": {
+        "key": "cactus_Tank",
+        "troopsSetId": "Tank",
+        "troopsId": "cactus"
+    },
+    "cactus_Support": {
+        "key": "cactus_Support",
+        "troopsSetId": "Support",
+        "troopsId": "cactus"
+    }
+}

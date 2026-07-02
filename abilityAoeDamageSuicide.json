@@ -1,0 +1,3102 @@
+{
+    "spiderBlast_explosion_1": {
+        "key": "spiderBlast_explosion_1",
+        "abilityInfoId": "spiderBlast_explosion",
+        "aoeRadius": 6,
+        "attack": 550,
+        "targetRefreshDuration": 1,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": true
+    },
+    "spiderBlast_explosion_2": {
+        "key": "spiderBlast_explosion_2",
+        "abilityInfoId": "spiderBlast_explosion",
+        "aoeRadius": 6,
+        "attack": 575,
+        "targetRefreshDuration": 1,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": true
+    },
+    "spiderBlast_explosion_3": {
+        "key": "spiderBlast_explosion_3",
+        "abilityInfoId": "spiderBlast_explosion",
+        "aoeRadius": 6,
+        "attack": 600,
+        "targetRefreshDuration": 1,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": true
+    },
+    "spiderBlast_explosion_4": {
+        "key": "spiderBlast_explosion_4",
+        "abilityInfoId": "spiderBlast_explosion",
+        "aoeRadius": 6,
+        "attack": 625,
+        "targetRefreshDuration": 1,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": true
+    },
+    "spiderBlast_explosion_5": {
+        "key": "spiderBlast_explosion_5",
+        "abilityInfoId": "spiderBlast_explosion",
+        "aoeRadius": 6,
+        "attack": 675,
+        "targetRefreshDuration": 1,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": true
+    },
+    "spiderBlast_explosion_6": {
+        "key": "spiderBlast_explosion_6",
+        "abilityInfoId": "spiderBlast_explosion",
+        "aoeRadius": 6,
+        "attack": 750,
+        "targetRefreshDuration": 1,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": true
+    },
+    "spiderBlast_explosion_7": {
+        "key": "spiderBlast_explosion_7",
+        "abilityInfoId": "spiderBlast_explosion",
+        "aoeRadius": 6,
+        "attack": 825,
+        "targetRefreshDuration": 1,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": true
+    },
+    "spiderBlast_explosion_8": {
+        "key": "spiderBlast_explosion_8",
+        "abilityInfoId": "spiderBlast_explosion",
+        "aoeRadius": 6,
+        "attack": 950,
+        "targetRefreshDuration": 1,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": true
+    },
+    "spiderBlast_explosion_9": {
+        "key": "spiderBlast_explosion_9",
+        "abilityInfoId": "spiderBlast_explosion",
+        "aoeRadius": 6,
+        "attack": 1730,
+        "targetRefreshDuration": 1,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": true
+    },
+    "spiderBlast_explosion_10": {
+        "key": "spiderBlast_explosion_10",
+        "abilityInfoId": "spiderBlast_explosion",
+        "aoeRadius": 6,
+        "attack": 2050,
+        "targetRefreshDuration": 1,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": true
+    },
+    "spiderBang_bang_1": {
+        "key": "spiderBang_bang_1",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 550,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_2": {
+        "key": "spiderBang_bang_2",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 556,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_3": {
+        "key": "spiderBang_bang_3",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 561,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_4": {
+        "key": "spiderBang_bang_4",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 567,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_5": {
+        "key": "spiderBang_bang_5",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 572,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_6": {
+        "key": "spiderBang_bang_6",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 578,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_7": {
+        "key": "spiderBang_bang_7",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 584,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_8": {
+        "key": "spiderBang_bang_8",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 590,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_9": {
+        "key": "spiderBang_bang_9",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 596,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_10": {
+        "key": "spiderBang_bang_10",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 602,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_11": {
+        "key": "spiderBang_bang_11",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 608,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_12": {
+        "key": "spiderBang_bang_12",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 614,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_13": {
+        "key": "spiderBang_bang_13",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 620,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_14": {
+        "key": "spiderBang_bang_14",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 626,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_15": {
+        "key": "spiderBang_bang_15",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 632,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_16": {
+        "key": "spiderBang_bang_16",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 639,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_17": {
+        "key": "spiderBang_bang_17",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 645,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_18": {
+        "key": "spiderBang_bang_18",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 651,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_19": {
+        "key": "spiderBang_bang_19",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 658,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_20": {
+        "key": "spiderBang_bang_20",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 664,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_21": {
+        "key": "spiderBang_bang_21",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 671,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_22": {
+        "key": "spiderBang_bang_22",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 678,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_23": {
+        "key": "spiderBang_bang_23",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 685,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_24": {
+        "key": "spiderBang_bang_24",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 691,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_25": {
+        "key": "spiderBang_bang_25",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 698,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_26": {
+        "key": "spiderBang_bang_26",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 705,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_27": {
+        "key": "spiderBang_bang_27",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 712,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_28": {
+        "key": "spiderBang_bang_28",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 720,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_29": {
+        "key": "spiderBang_bang_29",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 727,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_30": {
+        "key": "spiderBang_bang_30",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 734,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_31": {
+        "key": "spiderBang_bang_31",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 741,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_32": {
+        "key": "spiderBang_bang_32",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 749,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_33": {
+        "key": "spiderBang_bang_33",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 756,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_34": {
+        "key": "spiderBang_bang_34",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 764,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_35": {
+        "key": "spiderBang_bang_35",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 771,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_36": {
+        "key": "spiderBang_bang_36",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 779,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_37": {
+        "key": "spiderBang_bang_37",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 787,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_38": {
+        "key": "spiderBang_bang_38",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 795,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_39": {
+        "key": "spiderBang_bang_39",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 803,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_40": {
+        "key": "spiderBang_bang_40",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 811,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_41": {
+        "key": "spiderBang_bang_41",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 819,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_42": {
+        "key": "spiderBang_bang_42",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 827,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_43": {
+        "key": "spiderBang_bang_43",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 835,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_44": {
+        "key": "spiderBang_bang_44",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 844,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_45": {
+        "key": "spiderBang_bang_45",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 852,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_46": {
+        "key": "spiderBang_bang_46",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 861,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_47": {
+        "key": "spiderBang_bang_47",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 869,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_48": {
+        "key": "spiderBang_bang_48",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 878,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_49": {
+        "key": "spiderBang_bang_49",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 887,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_50": {
+        "key": "spiderBang_bang_50",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 896,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_51": {
+        "key": "spiderBang_bang_51",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 905,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_52": {
+        "key": "spiderBang_bang_52",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 914,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_53": {
+        "key": "spiderBang_bang_53",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 923,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_54": {
+        "key": "spiderBang_bang_54",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 932,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_55": {
+        "key": "spiderBang_bang_55",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 941,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_56": {
+        "key": "spiderBang_bang_56",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 951,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_57": {
+        "key": "spiderBang_bang_57",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 960,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_58": {
+        "key": "spiderBang_bang_58",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 970,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_59": {
+        "key": "spiderBang_bang_59",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 979,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_60": {
+        "key": "spiderBang_bang_60",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 989,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_61": {
+        "key": "spiderBang_bang_61",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 999,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_62": {
+        "key": "spiderBang_bang_62",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1009,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_63": {
+        "key": "spiderBang_bang_63",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1019,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_64": {
+        "key": "spiderBang_bang_64",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1029,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_65": {
+        "key": "spiderBang_bang_65",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1040,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_66": {
+        "key": "spiderBang_bang_66",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1050,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_67": {
+        "key": "spiderBang_bang_67",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1061,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_68": {
+        "key": "spiderBang_bang_68",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1071,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_69": {
+        "key": "spiderBang_bang_69",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1082,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_70": {
+        "key": "spiderBang_bang_70",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1093,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_71": {
+        "key": "spiderBang_bang_71",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1104,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_72": {
+        "key": "spiderBang_bang_72",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1115,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_73": {
+        "key": "spiderBang_bang_73",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1126,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_74": {
+        "key": "spiderBang_bang_74",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1137,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_75": {
+        "key": "spiderBang_bang_75",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1149,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_76": {
+        "key": "spiderBang_bang_76",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1160,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_77": {
+        "key": "spiderBang_bang_77",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1172,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_78": {
+        "key": "spiderBang_bang_78",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1183,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_79": {
+        "key": "spiderBang_bang_79",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1195,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_80": {
+        "key": "spiderBang_bang_80",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1207,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_81": {
+        "key": "spiderBang_bang_81",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1219,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_82": {
+        "key": "spiderBang_bang_82",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1231,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_83": {
+        "key": "spiderBang_bang_83",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1244,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_84": {
+        "key": "spiderBang_bang_84",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1256,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_85": {
+        "key": "spiderBang_bang_85",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1269,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_86": {
+        "key": "spiderBang_bang_86",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1281,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_87": {
+        "key": "spiderBang_bang_87",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1294,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_88": {
+        "key": "spiderBang_bang_88",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1307,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_89": {
+        "key": "spiderBang_bang_89",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1320,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_90": {
+        "key": "spiderBang_bang_90",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1333,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_91": {
+        "key": "spiderBang_bang_91",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1347,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_92": {
+        "key": "spiderBang_bang_92",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1360,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_93": {
+        "key": "spiderBang_bang_93",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1374,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_94": {
+        "key": "spiderBang_bang_94",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1388,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_95": {
+        "key": "spiderBang_bang_95",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1401,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_96": {
+        "key": "spiderBang_bang_96",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1415,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_97": {
+        "key": "spiderBang_bang_97",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1430,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_98": {
+        "key": "spiderBang_bang_98",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1444,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_99": {
+        "key": "spiderBang_bang_99",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1458,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_100": {
+        "key": "spiderBang_bang_100",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1473,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_101": {
+        "key": "spiderBang_bang_101",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1488,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_102": {
+        "key": "spiderBang_bang_102",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1503,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_103": {
+        "key": "spiderBang_bang_103",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1518,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_104": {
+        "key": "spiderBang_bang_104",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1533,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_105": {
+        "key": "spiderBang_bang_105",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1548,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_106": {
+        "key": "spiderBang_bang_106",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1564,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_107": {
+        "key": "spiderBang_bang_107",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1579,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_108": {
+        "key": "spiderBang_bang_108",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1595,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_109": {
+        "key": "spiderBang_bang_109",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1611,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_110": {
+        "key": "spiderBang_bang_110",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1627,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_111": {
+        "key": "spiderBang_bang_111",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1643,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_112": {
+        "key": "spiderBang_bang_112",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1660,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_113": {
+        "key": "spiderBang_bang_113",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1676,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_114": {
+        "key": "spiderBang_bang_114",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1693,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_115": {
+        "key": "spiderBang_bang_115",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1710,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_116": {
+        "key": "spiderBang_bang_116",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1727,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_117": {
+        "key": "spiderBang_bang_117",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1744,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_118": {
+        "key": "spiderBang_bang_118",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1762,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_119": {
+        "key": "spiderBang_bang_119",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1779,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_120": {
+        "key": "spiderBang_bang_120",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1797,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_121": {
+        "key": "spiderBang_bang_121",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1815,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_122": {
+        "key": "spiderBang_bang_122",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1833,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_123": {
+        "key": "spiderBang_bang_123",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1852,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_124": {
+        "key": "spiderBang_bang_124",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1870,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_125": {
+        "key": "spiderBang_bang_125",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1889,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_126": {
+        "key": "spiderBang_bang_126",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1908,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_127": {
+        "key": "spiderBang_bang_127",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1927,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_128": {
+        "key": "spiderBang_bang_128",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1946,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_129": {
+        "key": "spiderBang_bang_129",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1966,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_130": {
+        "key": "spiderBang_bang_130",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 1985,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_131": {
+        "key": "spiderBang_bang_131",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 2005,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_132": {
+        "key": "spiderBang_bang_132",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 2025,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_133": {
+        "key": "spiderBang_bang_133",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 2045,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_134": {
+        "key": "spiderBang_bang_134",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 2066,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_135": {
+        "key": "spiderBang_bang_135",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 2087,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_136": {
+        "key": "spiderBang_bang_136",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 2107,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_137": {
+        "key": "spiderBang_bang_137",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 2128,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_138": {
+        "key": "spiderBang_bang_138",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 2150,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_139": {
+        "key": "spiderBang_bang_139",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 2171,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_140": {
+        "key": "spiderBang_bang_140",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 2193,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_141": {
+        "key": "spiderBang_bang_141",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 2215,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_142": {
+        "key": "spiderBang_bang_142",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 2237,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_143": {
+        "key": "spiderBang_bang_143",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 2259,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_144": {
+        "key": "spiderBang_bang_144",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 2282,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_145": {
+        "key": "spiderBang_bang_145",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 2305,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_146": {
+        "key": "spiderBang_bang_146",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 2328,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_147": {
+        "key": "spiderBang_bang_147",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 2351,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_148": {
+        "key": "spiderBang_bang_148",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 2375,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_149": {
+        "key": "spiderBang_bang_149",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 2398,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_150": {
+        "key": "spiderBang_bang_150",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 2422,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_151": {
+        "key": "spiderBang_bang_151",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 2447,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_152": {
+        "key": "spiderBang_bang_152",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 2471,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_153": {
+        "key": "spiderBang_bang_153",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 2496,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_154": {
+        "key": "spiderBang_bang_154",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 2521,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_155": {
+        "key": "spiderBang_bang_155",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 2546,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_156": {
+        "key": "spiderBang_bang_156",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 2571,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_157": {
+        "key": "spiderBang_bang_157",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 2597,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_158": {
+        "key": "spiderBang_bang_158",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 2623,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_159": {
+        "key": "spiderBang_bang_159",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 2649,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_160": {
+        "key": "spiderBang_bang_160",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 2676,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_161": {
+        "key": "spiderBang_bang_161",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 2703,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_162": {
+        "key": "spiderBang_bang_162",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 2730,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_163": {
+        "key": "spiderBang_bang_163",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 2757,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_164": {
+        "key": "spiderBang_bang_164",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 2784,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_165": {
+        "key": "spiderBang_bang_165",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 2812,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_166": {
+        "key": "spiderBang_bang_166",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 2840,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_167": {
+        "key": "spiderBang_bang_167",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 2869,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_168": {
+        "key": "spiderBang_bang_168",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 2898,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_169": {
+        "key": "spiderBang_bang_169",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 2927,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_170": {
+        "key": "spiderBang_bang_170",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 2956,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_171": {
+        "key": "spiderBang_bang_171",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 2985,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_172": {
+        "key": "spiderBang_bang_172",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 3015,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_173": {
+        "key": "spiderBang_bang_173",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 3045,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_174": {
+        "key": "spiderBang_bang_174",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 3076,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_175": {
+        "key": "spiderBang_bang_175",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 3107,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_176": {
+        "key": "spiderBang_bang_176",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 3138,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_177": {
+        "key": "spiderBang_bang_177",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 3169,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_178": {
+        "key": "spiderBang_bang_178",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 3201,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_179": {
+        "key": "spiderBang_bang_179",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 3233,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_180": {
+        "key": "spiderBang_bang_180",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 3265,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_181": {
+        "key": "spiderBang_bang_181",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 3298,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_182": {
+        "key": "spiderBang_bang_182",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 3331,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_183": {
+        "key": "spiderBang_bang_183",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 3364,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_184": {
+        "key": "spiderBang_bang_184",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 3398,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_185": {
+        "key": "spiderBang_bang_185",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 3432,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_186": {
+        "key": "spiderBang_bang_186",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 3466,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_187": {
+        "key": "spiderBang_bang_187",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 3501,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_188": {
+        "key": "spiderBang_bang_188",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 3536,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_189": {
+        "key": "spiderBang_bang_189",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 3571,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_190": {
+        "key": "spiderBang_bang_190",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 3607,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_191": {
+        "key": "spiderBang_bang_191",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 3643,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_192": {
+        "key": "spiderBang_bang_192",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 3679,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_193": {
+        "key": "spiderBang_bang_193",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 3716,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_194": {
+        "key": "spiderBang_bang_194",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 3753,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_195": {
+        "key": "spiderBang_bang_195",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 3791,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_196": {
+        "key": "spiderBang_bang_196",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 3829,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_197": {
+        "key": "spiderBang_bang_197",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 3867,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_198": {
+        "key": "spiderBang_bang_198",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 3905,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_199": {
+        "key": "spiderBang_bang_199",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 3945,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_200": {
+        "key": "spiderBang_bang_200",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 3984,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_201": {
+        "key": "spiderBang_bang_201",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 4024,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_202": {
+        "key": "spiderBang_bang_202",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 4064,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_203": {
+        "key": "spiderBang_bang_203",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 4105,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_204": {
+        "key": "spiderBang_bang_204",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 4146,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_205": {
+        "key": "spiderBang_bang_205",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 4187,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_206": {
+        "key": "spiderBang_bang_206",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 4229,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_207": {
+        "key": "spiderBang_bang_207",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 4271,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_208": {
+        "key": "spiderBang_bang_208",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 4314,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_209": {
+        "key": "spiderBang_bang_209",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 4357,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_210": {
+        "key": "spiderBang_bang_210",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 4401,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_211": {
+        "key": "spiderBang_bang_211",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 4445,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_212": {
+        "key": "spiderBang_bang_212",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 4489,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_213": {
+        "key": "spiderBang_bang_213",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 4534,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_214": {
+        "key": "spiderBang_bang_214",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 4579,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_215": {
+        "key": "spiderBang_bang_215",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 4625,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_216": {
+        "key": "spiderBang_bang_216",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 4672,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_217": {
+        "key": "spiderBang_bang_217",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 4718,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_218": {
+        "key": "spiderBang_bang_218",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 4765,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_219": {
+        "key": "spiderBang_bang_219",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 4813,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_220": {
+        "key": "spiderBang_bang_220",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 4861,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_221": {
+        "key": "spiderBang_bang_221",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 4910,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_222": {
+        "key": "spiderBang_bang_222",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 4959,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_223": {
+        "key": "spiderBang_bang_223",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 5008,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_224": {
+        "key": "spiderBang_bang_224",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 5059,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_225": {
+        "key": "spiderBang_bang_225",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 5109,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_226": {
+        "key": "spiderBang_bang_226",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 5160,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_227": {
+        "key": "spiderBang_bang_227",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 5212,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_228": {
+        "key": "spiderBang_bang_228",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 5264,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_229": {
+        "key": "spiderBang_bang_229",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 5317,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_230": {
+        "key": "spiderBang_bang_230",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 5370,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_231": {
+        "key": "spiderBang_bang_231",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 5423,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_232": {
+        "key": "spiderBang_bang_232",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 5478,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_233": {
+        "key": "spiderBang_bang_233",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 5532,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_234": {
+        "key": "spiderBang_bang_234",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 5588,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_235": {
+        "key": "spiderBang_bang_235",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 5644,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_236": {
+        "key": "spiderBang_bang_236",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 5700,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_237": {
+        "key": "spiderBang_bang_237",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 5757,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_238": {
+        "key": "spiderBang_bang_238",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 5815,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_239": {
+        "key": "spiderBang_bang_239",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 5873,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_240": {
+        "key": "spiderBang_bang_240",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 5932,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_241": {
+        "key": "spiderBang_bang_241",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 5991,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_242": {
+        "key": "spiderBang_bang_242",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 6051,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_243": {
+        "key": "spiderBang_bang_243",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 6111,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_244": {
+        "key": "spiderBang_bang_244",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 6172,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_245": {
+        "key": "spiderBang_bang_245",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 6234,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_246": {
+        "key": "spiderBang_bang_246",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 6297,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_247": {
+        "key": "spiderBang_bang_247",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 6359,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_248": {
+        "key": "spiderBang_bang_248",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 6423,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_249": {
+        "key": "spiderBang_bang_249",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 6487,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_250": {
+        "key": "spiderBang_bang_250",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 6552,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_251": {
+        "key": "spiderBang_bang_251",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 6618,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_252": {
+        "key": "spiderBang_bang_252",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 6684,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_253": {
+        "key": "spiderBang_bang_253",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 6751,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_254": {
+        "key": "spiderBang_bang_254",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 6818,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_255": {
+        "key": "spiderBang_bang_255",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 6886,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_256": {
+        "key": "spiderBang_bang_256",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 6955,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_257": {
+        "key": "spiderBang_bang_257",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 7025,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_258": {
+        "key": "spiderBang_bang_258",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 7095,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_259": {
+        "key": "spiderBang_bang_259",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 7166,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_260": {
+        "key": "spiderBang_bang_260",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 7238,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_261": {
+        "key": "spiderBang_bang_261",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 7310,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_262": {
+        "key": "spiderBang_bang_262",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 7383,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_263": {
+        "key": "spiderBang_bang_263",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 7457,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_264": {
+        "key": "spiderBang_bang_264",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 7532,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_265": {
+        "key": "spiderBang_bang_265",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 7607,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_266": {
+        "key": "spiderBang_bang_266",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 7683,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_267": {
+        "key": "spiderBang_bang_267",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 7760,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_268": {
+        "key": "spiderBang_bang_268",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 7837,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_269": {
+        "key": "spiderBang_bang_269",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 7916,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_270": {
+        "key": "spiderBang_bang_270",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 7995,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_271": {
+        "key": "spiderBang_bang_271",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 8075,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_272": {
+        "key": "spiderBang_bang_272",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 8156,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_273": {
+        "key": "spiderBang_bang_273",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 8237,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_274": {
+        "key": "spiderBang_bang_274",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 8320,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_275": {
+        "key": "spiderBang_bang_275",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 8403,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_276": {
+        "key": "spiderBang_bang_276",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 8487,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_277": {
+        "key": "spiderBang_bang_277",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 8572,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_278": {
+        "key": "spiderBang_bang_278",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 8657,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_279": {
+        "key": "spiderBang_bang_279",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 8744,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_280": {
+        "key": "spiderBang_bang_280",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 8831,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_281": {
+        "key": "spiderBang_bang_281",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 8920,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_282": {
+        "key": "spiderBang_bang_282",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 9009,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_283": {
+        "key": "spiderBang_bang_283",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 9099,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_284": {
+        "key": "spiderBang_bang_284",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 9190,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_285": {
+        "key": "spiderBang_bang_285",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 9282,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_286": {
+        "key": "spiderBang_bang_286",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 9375,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_287": {
+        "key": "spiderBang_bang_287",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 9468,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_288": {
+        "key": "spiderBang_bang_288",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 9563,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_289": {
+        "key": "spiderBang_bang_289",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 9659,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_290": {
+        "key": "spiderBang_bang_290",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 9755,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_291": {
+        "key": "spiderBang_bang_291",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 9853,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_292": {
+        "key": "spiderBang_bang_292",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 9951,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_293": {
+        "key": "spiderBang_bang_293",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 10051,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_294": {
+        "key": "spiderBang_bang_294",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 10151,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_295": {
+        "key": "spiderBang_bang_295",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 10253,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_296": {
+        "key": "spiderBang_bang_296",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 10355,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_297": {
+        "key": "spiderBang_bang_297",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 10459,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_298": {
+        "key": "spiderBang_bang_298",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 10564,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_299": {
+        "key": "spiderBang_bang_299",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 10669,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    },
+    "spiderBang_bang_300": {
+        "key": "spiderBang_bang_300",
+        "abilityInfoId": "spiderBang_bang",
+        "aoeRadius": 6,
+        "attack": 10776,
+        "targetRefreshDuration": 300,
+        "attackRange": 1.5,
+        "attackType": "Melee",
+        "isModifiable": false
+    }
+}

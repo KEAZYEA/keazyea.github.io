@@ -1,0 +1,10 @@
+{
+    "bossKraken_krakenCannon_1": {
+        "key": "bossKraken_krakenCannon_1",
+        "abilityInfoId": "bossKraken_krakenCannon",
+        "attack": 20000,
+        "attackType": "Range",
+        "cooldown": 10,
+        "restoreDelay": 2.667
+    }
+}

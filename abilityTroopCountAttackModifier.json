@@ -1,0 +1,72 @@
+{
+    "unitedWeStand_1": {
+        "key": "unitedWeStand_1",
+        "abilityInfoId": "bardHero_buff",
+        "attackMultiplier": 0.005,
+        "units": null,
+        "group": "ally"
+    },
+    "unitedWeStand_2": {
+        "key": "unitedWeStand_2",
+        "abilityInfoId": "bardHero_buff",
+        "attackMultiplier": 0.01,
+        "units": null,
+        "group": "ally"
+    },
+    "unitedWeStand_3": {
+        "key": "unitedWeStand_3",
+        "abilityInfoId": "bardHero_buff",
+        "attackMultiplier": 0.015,
+        "units": null,
+        "group": "ally"
+    },
+    "unitedWeStand_4": {
+        "key": "unitedWeStand_4",
+        "abilityInfoId": "bardHero_buff",
+        "attackMultiplier": 0.02,
+        "units": null,
+        "group": "ally"
+    },
+    "unitedWeStand_5": {
+        "key": "unitedWeStand_5",
+        "abilityInfoId": "bardHero_buff",
+        "attackMultiplier": 0.025,
+        "units": null,
+        "group": "ally"
+    },
+    "unitedWeStand_6": {
+        "key": "unitedWeStand_6",
+        "abilityInfoId": "bardHero_buff",
+        "attackMultiplier": 0.03,
+        "units": null,
+        "group": "ally"
+    },
+    "unitedWeStand_7": {
+        "key": "unitedWeStand_7",
+        "abilityInfoId": "bardHero_buff",
+        "attackMultiplier": 0.035,
+        "units": null,
+        "group": "ally"
+    },
+    "unitedWeStand_8": {
+        "key": "unitedWeStand_8",
+        "abilityInfoId": "bardHero_buff",
+        "attackMultiplier": 0.04,
+        "units": null,
+        "group": "ally"
+    },
+    "unitedWeStand_9": {
+        "key": "unitedWeStand_9",
+        "abilityInfoId": "bardHero_buff",
+        "attackMultiplier": 0.045,
+        "units": null,
+        "group": "ally"
+    },
+    "unitedWeStand_10": {
+        "key": "unitedWeStand_10",
+        "abilityInfoId": "bardHero_buff",
+        "attackMultiplier": 0.05,
+        "units": null,
+        "group": "ally"
+    }
+}

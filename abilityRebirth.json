@@ -1,0 +1,82 @@
+{
+    "fireMage_rebirth_1": {
+        "key": "fireMage_rebirth_1",
+        "abilityInfoId": "fireMage_rebirth",
+        "regenerationDelay": 3,
+        "healthMultiplier": 1,
+        "abilitiesCooldownMultiplier": 0.3,
+        "summonedHeroLevelId": null
+    },
+    "fireMage_rebirth_2": {
+        "key": "fireMage_rebirth_2",
+        "abilityInfoId": "fireMage_rebirth",
+        "regenerationDelay": 3,
+        "healthMultiplier": 1,
+        "abilitiesCooldownMultiplier": 0.3,
+        "summonedHeroLevelId": null
+    },
+    "fireMage_rebirth_3": {
+        "key": "fireMage_rebirth_3",
+        "abilityInfoId": "fireMage_rebirth",
+        "regenerationDelay": 3,
+        "healthMultiplier": 1,
+        "abilitiesCooldownMultiplier": 0.3,
+        "summonedHeroLevelId": null
+    },
+    "fireMage_rebirth_4": {
+        "key": "fireMage_rebirth_4",
+        "abilityInfoId": "fireMage_rebirth",
+        "regenerationDelay": 3,
+        "healthMultiplier": 1,
+        "abilitiesCooldownMultiplier": 0.3,
+        "summonedHeroLevelId": null
+    },
+    "fireMage_rebirth_5": {
+        "key": "fireMage_rebirth_5",
+        "abilityInfoId": "fireMage_rebirth",
+        "regenerationDelay": 3,
+        "healthMultiplier": 1,
+        "abilitiesCooldownMultiplier": 0.3,
+        "summonedHeroLevelId": null
+    },
+    "fireMage_rebirth_6": {
+        "key": "fireMage_rebirth_6",
+        "abilityInfoId": "fireMage_rebirth",
+        "regenerationDelay": 3,
+        "healthMultiplier": 1,
+        "abilitiesCooldownMultiplier": 0.3,
+        "summonedHeroLevelId": null
+    },
+    "fireMage_rebirth_7": {
+        "key": "fireMage_rebirth_7",
+        "abilityInfoId": "fireMage_rebirth",
+        "regenerationDelay": 3,
+        "healthMultiplier": 1,
+        "abilitiesCooldownMultiplier": 0.3,
+        "summonedHeroLevelId": null
+    },
+    "fireMage_rebirth_8": {
+        "key": "fireMage_rebirth_8",
+        "abilityInfoId": "fireMage_rebirth",
+        "regenerationDelay": 3,
+        "healthMultiplier": 1,
+        "abilitiesCooldownMultiplier": 0.3,
+        "summonedHeroLevelId": null
+    },
+    "fireMage_rebirth_9": {
+        "key": "fireMage_rebirth_9",
+        "abilityInfoId": "fireMage_rebirth",
+        "regenerationDelay": 3,
+        "healthMultiplier": 1,
+        "abilitiesCooldownMultiplier": 0.3,
+        "summonedHeroLevelId": null
+    },
+    "fireMage_rebirth_10": {
+        "key": "fireMage_rebirth_10",
+        "abilityInfoId": "fireMage_rebirth",
+        "regenerationDelay": 3,
+        "healthMultiplier": 1,
+        "abilitiesCooldownMultiplier": 0.3,
+        "summonedHeroLevelId": null
+    }
+}

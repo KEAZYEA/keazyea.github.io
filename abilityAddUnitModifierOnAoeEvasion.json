@@ -1,0 +1,362 @@
+{
+    "attackAfterAoeEvasion_1": {
+        "key": "attackAfterAoeEvasion_1",
+        "abilityInfoId": "attackAfterAoeEvasion",
+        "modifier": "attackAfterAoeEvasion_aura_1",
+        "units": "Trickster",
+        "group": "ally",
+        "restriction": null
+    },
+    "attackAfterAoeEvasion_2": {
+        "key": "attackAfterAoeEvasion_2",
+        "abilityInfoId": "attackAfterAoeEvasion",
+        "modifier": "attackAfterAoeEvasion_aura_2",
+        "units": "Trickster",
+        "group": "ally",
+        "restriction": null
+    },
+    "attackAfterAoeEvasion_3": {
+        "key": "attackAfterAoeEvasion_3",
+        "abilityInfoId": "attackAfterAoeEvasion",
+        "modifier": "attackAfterAoeEvasion_aura_3",
+        "units": "Trickster",
+        "group": "ally",
+        "restriction": null
+    },
+    "attackAfterAoeEvasion_4": {
+        "key": "attackAfterAoeEvasion_4",
+        "abilityInfoId": "attackAfterAoeEvasion",
+        "modifier": "attackAfterAoeEvasion_aura_4",
+        "units": "Trickster",
+        "group": "ally",
+        "restriction": null
+    },
+    "attackAfterAoeEvasion_5": {
+        "key": "attackAfterAoeEvasion_5",
+        "abilityInfoId": "attackAfterAoeEvasion",
+        "modifier": "attackAfterAoeEvasion_aura_5",
+        "units": "Trickster",
+        "group": "ally",
+        "restriction": null
+    },
+    "attackAfterAoeEvasion_6": {
+        "key": "attackAfterAoeEvasion_6",
+        "abilityInfoId": "attackAfterAoeEvasion",
+        "modifier": "attackAfterAoeEvasion_aura_6",
+        "units": "Trickster",
+        "group": "ally",
+        "restriction": null
+    },
+    "attackAfterAoeEvasion_7": {
+        "key": "attackAfterAoeEvasion_7",
+        "abilityInfoId": "attackAfterAoeEvasion",
+        "modifier": "attackAfterAoeEvasion_aura_7",
+        "units": "Trickster",
+        "group": "ally",
+        "restriction": null
+    },
+    "attackAfterAoeEvasion_8": {
+        "key": "attackAfterAoeEvasion_8",
+        "abilityInfoId": "attackAfterAoeEvasion",
+        "modifier": "attackAfterAoeEvasion_aura_8",
+        "units": "Trickster",
+        "group": "ally",
+        "restriction": null
+    },
+    "attackAfterAoeEvasion_9": {
+        "key": "attackAfterAoeEvasion_9",
+        "abilityInfoId": "attackAfterAoeEvasion",
+        "modifier": "attackAfterAoeEvasion_aura_9",
+        "units": "Trickster",
+        "group": "ally",
+        "restriction": null
+    },
+    "attackAfterAoeEvasion_10": {
+        "key": "attackAfterAoeEvasion_10",
+        "abilityInfoId": "attackAfterAoeEvasion",
+        "modifier": "attackAfterAoeEvasion_aura_10",
+        "units": "Trickster",
+        "group": "ally",
+        "restriction": null
+    },
+    "attackAfterAoeEvasion_11": {
+        "key": "attackAfterAoeEvasion_11",
+        "abilityInfoId": "attackAfterAoeEvasion",
+        "modifier": "attackAfterAoeEvasion_aura_11",
+        "units": "Trickster",
+        "group": "ally",
+        "restriction": null
+    },
+    "attackAfterAoeEvasion_12": {
+        "key": "attackAfterAoeEvasion_12",
+        "abilityInfoId": "attackAfterAoeEvasion",
+        "modifier": "attackAfterAoeEvasion_aura_12",
+        "units": "Trickster",
+        "group": "ally",
+        "restriction": null
+    },
+    "attackAfterAoeEvasion_13": {
+        "key": "attackAfterAoeEvasion_13",
+        "abilityInfoId": "attackAfterAoeEvasion",
+        "modifier": "attackAfterAoeEvasion_aura_13",
+        "units": "Trickster",
+        "group": "ally",
+        "restriction": null
+    },
+    "attackAfterAoeEvasion_14": {
+        "key": "attackAfterAoeEvasion_14",
+        "abilityInfoId": "attackAfterAoeEvasion",
+        "modifier": "attackAfterAoeEvasion_aura_14",
+        "units": "Trickster",
+        "group": "ally",
+        "restriction": null
+    },
+    "attackAfterAoeEvasion_15": {
+        "key": "attackAfterAoeEvasion_15",
+        "abilityInfoId": "attackAfterAoeEvasion",
+        "modifier": "attackAfterAoeEvasion_aura_15",
+        "units": "Trickster",
+        "group": "ally",
+        "restriction": null
+    },
+    "attackAfterAoeEvasion_16": {
+        "key": "attackAfterAoeEvasion_16",
+        "abilityInfoId": "attackAfterAoeEvasion",
+        "modifier": "attackAfterAoeEvasion_aura_16",
+        "units": "Trickster",
+        "group": "ally",
+        "restriction": null
+    },
+    "attackAfterAoeEvasion_17": {
+        "key": "attackAfterAoeEvasion_17",
+        "abilityInfoId": "attackAfterAoeEvasion",
+        "modifier": "attackAfterAoeEvasion_aura_17",
+        "units": "Trickster",
+        "group": "ally",
+        "restriction": null
+    },
+    "attackAfterAoeEvasion_18": {
+        "key": "attackAfterAoeEvasion_18",
+        "abilityInfoId": "attackAfterAoeEvasion",
+        "modifier": "attackAfterAoeEvasion_aura_18",
+        "units": "Trickster",
+        "group": "ally",
+        "restriction": null
+    },
+    "attackAfterAoeEvasion_19": {
+        "key": "attackAfterAoeEvasion_19",
+        "abilityInfoId": "attackAfterAoeEvasion",
+        "modifier": "attackAfterAoeEvasion_aura_19",
+        "units": "Trickster",
+        "group": "ally",
+        "restriction": null
+    },
+    "attackAfterAoeEvasion_20": {
+        "key": "attackAfterAoeEvasion_20",
+        "abilityInfoId": "attackAfterAoeEvasion",
+        "modifier": "attackAfterAoeEvasion_aura_20",
+        "units": "Trickster",
+        "group": "ally",
+        "restriction": null
+    },
+    "attackAfterAoeEvasion_21": {
+        "key": "attackAfterAoeEvasion_21",
+        "abilityInfoId": "attackAfterAoeEvasion",
+        "modifier": "attackAfterAoeEvasion_aura_21",
+        "units": "Trickster",
+        "group": "ally",
+        "restriction": null
+    },
+    "attackAfterAoeEvasion_22": {
+        "key": "attackAfterAoeEvasion_22",
+        "abilityInfoId": "attackAfterAoeEvasion",
+        "modifier": "attackAfterAoeEvasion_aura_22",
+        "units": "Trickster",
+        "group": "ally",
+        "restriction": null
+    },
+    "attackAfterAoeEvasion_23": {
+        "key": "attackAfterAoeEvasion_23",
+        "abilityInfoId": "attackAfterAoeEvasion",
+        "modifier": "attackAfterAoeEvasion_aura_23",
+        "units": "Trickster",
+        "group": "ally",
+        "restriction": null
+    },
+    "attackAfterAoeEvasion_24": {
+        "key": "attackAfterAoeEvasion_24",
+        "abilityInfoId": "attackAfterAoeEvasion",
+        "modifier": "attackAfterAoeEvasion_aura_24",
+        "units": "Trickster",
+        "group": "ally",
+        "restriction": null
+    },
+    "attackAfterAoeEvasion_25": {
+        "key": "attackAfterAoeEvasion_25",
+        "abilityInfoId": "attackAfterAoeEvasion",
+        "modifier": "attackAfterAoeEvasion_aura_25",
+        "units": "Trickster",
+        "group": "ally",
+        "restriction": null
+    },
+    "attackAfterAoeEvasion_26": {
+        "key": "attackAfterAoeEvasion_26",
+        "abilityInfoId": "attackAfterAoeEvasion",
+        "modifier": "attackAfterAoeEvasion_aura_26",
+        "units": "Trickster",
+        "group": "ally",
+        "restriction": null
+    },
+    "attackAfterAoeEvasion_27": {
+        "key": "attackAfterAoeEvasion_27",
+        "abilityInfoId": "attackAfterAoeEvasion",
+        "modifier": "attackAfterAoeEvasion_aura_27",
+        "units": "Trickster",
+        "group": "ally",
+        "restriction": null
+    },
+    "attackAfterAoeEvasion_28": {
+        "key": "attackAfterAoeEvasion_28",
+        "abilityInfoId": "attackAfterAoeEvasion",
+        "modifier": "attackAfterAoeEvasion_aura_28",
+        "units": "Trickster",
+        "group": "ally",
+        "restriction": null
+    },
+    "attackAfterAoeEvasion_29": {
+        "key": "attackAfterAoeEvasion_29",
+        "abilityInfoId": "attackAfterAoeEvasion",
+        "modifier": "attackAfterAoeEvasion_aura_29",
+        "units": "Trickster",
+        "group": "ally",
+        "restriction": null
+    },
+    "attackAfterAoeEvasion_30": {
+        "key": "attackAfterAoeEvasion_30",
+        "abilityInfoId": "attackAfterAoeEvasion",
+        "modifier": "attackAfterAoeEvasion_aura_30",
+        "units": "Trickster",
+        "group": "ally",
+        "restriction": null
+    },
+    "attackAfterAoeEvasion_31": {
+        "key": "attackAfterAoeEvasion_31",
+        "abilityInfoId": "attackAfterAoeEvasion",
+        "modifier": "attackAfterAoeEvasion_aura_31",
+        "units": "Trickster",
+        "group": "ally",
+        "restriction": null
+    },
+    "attackAfterAoeEvasion_32": {
+        "key": "attackAfterAoeEvasion_32",
+        "abilityInfoId": "attackAfterAoeEvasion",
+        "modifier": "attackAfterAoeEvasion_aura_32",
+        "units": "Trickster",
+        "group": "ally",
+        "restriction": null
+    },
+    "attackAfterAoeEvasion_33": {
+        "key": "attackAfterAoeEvasion_33",
+        "abilityInfoId": "attackAfterAoeEvasion",
+        "modifier": "attackAfterAoeEvasion_aura_33",
+        "units": "Trickster",
+        "group": "ally",
+        "restriction": null
+    },
+    "attackAfterAoeEvasion_34": {
+        "key": "attackAfterAoeEvasion_34",
+        "abilityInfoId": "attackAfterAoeEvasion",
+        "modifier": "attackAfterAoeEvasion_aura_34",
+        "units": "Trickster",
+        "group": "ally",
+        "restriction": null
+    },
+    "attackAfterAoeEvasion_35": {
+        "key": "attackAfterAoeEvasion_35",
+        "abilityInfoId": "attackAfterAoeEvasion",
+        "modifier": "attackAfterAoeEvasion_aura_35",
+        "units": "Trickster",
+        "group": "ally",
+        "restriction": null
+    },
+    "attackAfterAoeEvasion_36": {
+        "key": "attackAfterAoeEvasion_36",
+        "abilityInfoId": "attackAfterAoeEvasion",
+        "modifier": "attackAfterAoeEvasion_aura_36",
+        "units": "Trickster",
+        "group": "ally",
+        "restriction": null
+    },
+    "attackAfterAoeEvasion_37": {
+        "key": "attackAfterAoeEvasion_37",
+        "abilityInfoId": "attackAfterAoeEvasion",
+        "modifier": "attackAfterAoeEvasion_aura_37",
+        "units": "Trickster",
+        "group": "ally",
+        "restriction": null
+    },
+    "attackAfterAoeEvasion_38": {
+        "key": "attackAfterAoeEvasion_38",
+        "abilityInfoId": "attackAfterAoeEvasion",
+        "modifier": "attackAfterAoeEvasion_aura_38",
+        "units": "Trickster",
+        "group": "ally",
+        "restriction": null
+    },
+    "attackAfterAoeEvasion_39": {
+        "key": "attackAfterAoeEvasion_39",
+        "abilityInfoId": "attackAfterAoeEvasion",
+        "modifier": "attackAfterAoeEvasion_aura_39",
+        "units": "Trickster",
+        "group": "ally",
+        "restriction": null
+    },
+    "attackAfterAoeEvasion_40": {
+        "key": "attackAfterAoeEvasion_40",
+        "abilityInfoId": "attackAfterAoeEvasion",
+        "modifier": "attackAfterAoeEvasion_aura_40",
+        "units": "Trickster",
+        "group": "ally",
+        "restriction": null
+    },
+    "attackAfterAoeEvasion_41": {
+        "key": "attackAfterAoeEvasion_41",
+        "abilityInfoId": "attackAfterAoeEvasion",
+        "modifier": "attackAfterAoeEvasion_aura_41",
+        "units": "Trickster",
+        "group": "ally",
+        "restriction": null
+    },
+    "attackAfterAoeEvasion_42": {
+        "key": "attackAfterAoeEvasion_42",
+        "abilityInfoId": "attackAfterAoeEvasion",
+        "modifier": "attackAfterAoeEvasion_aura_42",
+        "units": "Trickster",
+        "group": "ally",
+        "restriction": null
+    },
+    "attackAfterAoeEvasion_43": {
+        "key": "attackAfterAoeEvasion_43",
+        "abilityInfoId": "attackAfterAoeEvasion",
+        "modifier": "attackAfterAoeEvasion_aura_43",
+        "units": "Trickster",
+        "group": "ally",
+        "restriction": null
+    },
+    "attackAfterAoeEvasion_44": {
+        "key": "attackAfterAoeEvasion_44",
+        "abilityInfoId": "attackAfterAoeEvasion",
+        "modifier": "attackAfterAoeEvasion_aura_44",
+        "units": "Trickster",
+        "group": "ally",
+        "restriction": null
+    },
+    "attackAfterAoeEvasion_45": {
+        "key": "attackAfterAoeEvasion_45",
+        "abilityInfoId": "attackAfterAoeEvasion",
+        "modifier": "attackAfterAoeEvasion_aura_45",
+        "units": "Trickster",
+        "group": "ally",
+        "restriction": null
+    }
+}

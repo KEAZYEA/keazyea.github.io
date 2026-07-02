@@ -1,0 +1,162 @@
+{
+    "darknessMage_summon_1": {
+        "key": "darknessMage_summon_1",
+        "abilityInfoId": "darknessMage_summon",
+        "aspd": 2.3,
+        "summonedTroopId": "tomb",
+        "cooldown": 16,
+        "attackType": "Range"
+    },
+    "darknessMage_summon_2": {
+        "key": "darknessMage_summon_2",
+        "abilityInfoId": "darknessMage_summon",
+        "aspd": 2.3,
+        "summonedTroopId": "tomb",
+        "cooldown": 16,
+        "attackType": "Range"
+    },
+    "darknessMage_summon_3": {
+        "key": "darknessMage_summon_3",
+        "abilityInfoId": "darknessMage_summon",
+        "aspd": 2.3,
+        "summonedTroopId": "tomb",
+        "cooldown": 16,
+        "attackType": "Range"
+    },
+    "darknessMage_summon_4": {
+        "key": "darknessMage_summon_4",
+        "abilityInfoId": "darknessMage_summon",
+        "aspd": 2.3,
+        "summonedTroopId": "tomb",
+        "cooldown": 16,
+        "attackType": "Range"
+    },
+    "darknessMage_summon_5": {
+        "key": "darknessMage_summon_5",
+        "abilityInfoId": "darknessMage_summon",
+        "aspd": 2.3,
+        "summonedTroopId": "tomb",
+        "cooldown": 15,
+        "attackType": "Range"
+    },
+    "darknessMage_summon_6": {
+        "key": "darknessMage_summon_6",
+        "abilityInfoId": "darknessMage_summon",
+        "aspd": 2.3,
+        "summonedTroopId": "tomb",
+        "cooldown": 15,
+        "attackType": "Range"
+    },
+    "darknessMage_summon_7": {
+        "key": "darknessMage_summon_7",
+        "abilityInfoId": "darknessMage_summon",
+        "aspd": 2.3,
+        "summonedTroopId": "tomb",
+        "cooldown": 15,
+        "attackType": "Range"
+    },
+    "darknessMage_summon_8": {
+        "key": "darknessMage_summon_8",
+        "abilityInfoId": "darknessMage_summon",
+        "aspd": 2.3,
+        "summonedTroopId": "tomb",
+        "cooldown": 14,
+        "attackType": "Range"
+    },
+    "darknessMage_summon_9": {
+        "key": "darknessMage_summon_9",
+        "abilityInfoId": "darknessMage_summon",
+        "aspd": 2.3,
+        "summonedTroopId": "tomb",
+        "cooldown": 14,
+        "attackType": "Range"
+    },
+    "darknessMage_summon_10": {
+        "key": "darknessMage_summon_10",
+        "abilityInfoId": "darknessMage_summon",
+        "aspd": 2.3,
+        "summonedTroopId": "tomb",
+        "cooldown": 14,
+        "attackType": "Range"
+    },
+    "darknessMageSquadEvent_summon_1": {
+        "key": "darknessMageSquadEvent_summon_1",
+        "abilityInfoId": "darknessMageSquadEvent_summon",
+        "aspd": 2.3,
+        "summonedTroopId": "tombLibrary",
+        "cooldown": 3,
+        "attackType": "Range"
+    },
+    "darknessMageSquadEvent_summon_2": {
+        "key": "darknessMageSquadEvent_summon_2",
+        "abilityInfoId": "darknessMageSquadEvent_summon",
+        "aspd": 2.3,
+        "summonedTroopId": "tombLibrary",
+        "cooldown": 3,
+        "attackType": "Range"
+    },
+    "darknessMageSquadEvent_summon_3": {
+        "key": "darknessMageSquadEvent_summon_3",
+        "abilityInfoId": "darknessMageSquadEvent_summon",
+        "aspd": 2.3,
+        "summonedTroopId": "tombLibrary",
+        "cooldown": 3,
+        "attackType": "Range"
+    },
+    "darknessMageSquadEvent_summon_4": {
+        "key": "darknessMageSquadEvent_summon_4",
+        "abilityInfoId": "darknessMageSquadEvent_summon",
+        "aspd": 2.3,
+        "summonedTroopId": "tombLibrary",
+        "cooldown": 3,
+        "attackType": "Range"
+    },
+    "darknessMageSquadEvent_summon_5": {
+        "key": "darknessMageSquadEvent_summon_5",
+        "abilityInfoId": "darknessMageSquadEvent_summon",
+        "aspd": 2.3,
+        "summonedTroopId": "tombLibrary",
+        "cooldown": 3,
+        "attackType": "Range"
+    },
+    "darknessMageSquadEvent_summon_6": {
+        "key": "darknessMageSquadEvent_summon_6",
+        "abilityInfoId": "darknessMageSquadEvent_summon",
+        "aspd": 2.3,
+        "summonedTroopId": "tombLibrary",
+        "cooldown": 3,
+        "attackType": "Range"
+    },
+    "darknessMageSquadEvent_summon_7": {
+        "key": "darknessMageSquadEvent_summon_7",
+        "abilityInfoId": "darknessMageSquadEvent_summon",
+        "aspd": 2.3,
+        "summonedTroopId": "tombLibrary",
+        "cooldown": 3,
+        "attackType": "Range"
+    },
+    "darknessMageSquadEvent_summon_8": {
+        "key": "darknessMageSquadEvent_summon_8",
+        "abilityInfoId": "darknessMageSquadEvent_summon",
+        "aspd": 2.3,
+        "summonedTroopId": "tombLibrary",
+        "cooldown": 3,
+        "attackType": "Range"
+    },
+    "darknessMageSquadEvent_summon_9": {
+        "key": "darknessMageSquadEvent_summon_9",
+        "abilityInfoId": "darknessMageSquadEvent_summon",
+        "aspd": 2.3,
+        "summonedTroopId": "tombLibrary",
+        "cooldown": 3,
+        "attackType": "Range"
+    },
+    "darknessMageSquadEvent_summon_10": {
+        "key": "darknessMageSquadEvent_summon_10",
+        "abilityInfoId": "darknessMageSquadEvent_summon",
+        "aspd": 2.3,
+        "summonedTroopId": "tombLibrary",
+        "cooldown": 3,
+        "attackType": "Range"
+    }
+}

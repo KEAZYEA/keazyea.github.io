@@ -1,0 +1,122 @@
+{
+    "windElemental_abilityVortex_1": {
+        "key": "windElemental_abilityVortex_1",
+        "abilityInfoId": "windElemental_abilityVortex",
+        "attackRange": 1.1,
+        "minAttackDistance": 1,
+        "damage": 100,
+        "vortexDuration": 2,
+        "stunTime": 1,
+        "triggerNumber": 4,
+        "stunEffectId": "aiDisable",
+        "attackType": "Melee"
+    },
+    "windElemental_abilityVortex_2": {
+        "key": "windElemental_abilityVortex_2",
+        "abilityInfoId": "windElemental_abilityVortex",
+        "attackRange": 1.1,
+        "minAttackDistance": 1,
+        "damage": 150,
+        "vortexDuration": 2,
+        "stunTime": 1,
+        "triggerNumber": 4,
+        "stunEffectId": "aiDisable",
+        "attackType": "Melee"
+    },
+    "windElemental_abilityVortex_3": {
+        "key": "windElemental_abilityVortex_3",
+        "abilityInfoId": "windElemental_abilityVortex",
+        "attackRange": 1.1,
+        "minAttackDistance": 1,
+        "damage": 200,
+        "vortexDuration": 2,
+        "stunTime": 1,
+        "triggerNumber": 4,
+        "stunEffectId": "aiDisable",
+        "attackType": "Melee"
+    },
+    "windElemental_abilityVortex_4": {
+        "key": "windElemental_abilityVortex_4",
+        "abilityInfoId": "windElemental_abilityVortex",
+        "attackRange": 1.1,
+        "minAttackDistance": 1,
+        "damage": 250,
+        "vortexDuration": 2,
+        "stunTime": 1,
+        "triggerNumber": 4,
+        "stunEffectId": "aiDisable",
+        "attackType": "Melee"
+    },
+    "windElemental_abilityVortex_5": {
+        "key": "windElemental_abilityVortex_5",
+        "abilityInfoId": "windElemental_abilityVortex",
+        "attackRange": 1.1,
+        "minAttackDistance": 1,
+        "damage": 300,
+        "vortexDuration": 2,
+        "stunTime": 2,
+        "triggerNumber": 4,
+        "stunEffectId": "aiDisable",
+        "attackType": "Melee"
+    },
+    "windElemental_abilityVortex_6": {
+        "key": "windElemental_abilityVortex_6",
+        "abilityInfoId": "windElemental_abilityVortex",
+        "attackRange": 1.1,
+        "minAttackDistance": 1,
+        "damage": 350,
+        "vortexDuration": 2,
+        "stunTime": 2,
+        "triggerNumber": 4,
+        "stunEffectId": "aiDisable",
+        "attackType": "Melee"
+    },
+    "windElemental_abilityVortex_7": {
+        "key": "windElemental_abilityVortex_7",
+        "abilityInfoId": "windElemental_abilityVortex",
+        "attackRange": 1.1,
+        "minAttackDistance": 1,
+        "damage": 400,
+        "vortexDuration": 2,
+        "stunTime": 2,
+        "triggerNumber": 4,
+        "stunEffectId": "aiDisable",
+        "attackType": "Melee"
+    },
+    "windElemental_abilityVortex_8": {
+        "key": "windElemental_abilityVortex_8",
+        "abilityInfoId": "windElemental_abilityVortex",
+        "attackRange": 1.1,
+        "minAttackDistance": 1,
+        "damage": 450,
+        "vortexDuration": 2,
+        "stunTime": 2,
+        "triggerNumber": 4,
+        "stunEffectId": "aiDisable",
+        "attackType": "Melee"
+    },
+    "windElemental_abilityVortex_9": {
+        "key": "windElemental_abilityVortex_9",
+        "abilityInfoId": "windElemental_abilityVortex",
+        "attackRange": 1.1,
+        "minAttackDistance": 1,
+        "damage": 500,
+        "vortexDuration": 2,
+        "stunTime": 3,
+        "triggerNumber": 4,
+        "stunEffectId": "aiDisable",
+        "attackType": "Melee"
+    },
+    "windElemental_abilityVortex_10": {
+        "key": "windElemental_abilityVortex_10",
+        "abilityInfoId": "windElemental_abilityVortex",
+        "attackRange": 1.1,
+        "minAttackDistance": 1,
+        "damage": 550,
+        "vortexDuration": 2,
+        "stunTime": 3,
+        "triggerNumber": 4,
+        "stunEffectId": "aiDisable",
+        "attackType": "Melee"
+    }
+}

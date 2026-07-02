@@ -1,0 +1,102 @@
+{
+    "undeadHeadless_mindControl_1": {
+        "key": "undeadHeadless_mindControl_1",
+        "abilityInfoId": "undeadHeadless_mindControl",
+        "duration": 3,
+        "durationAfterDamage": 2,
+        "maxUseCount": 2,
+        "triggerNumber": 6,
+        "sourceControlRestrictionId": "isNotMindControlled",
+        "targetControlRestrictionId": "mindControlInterrupt"
+    },
+    "undeadHeadless_mindControl_2": {
+        "key": "undeadHeadless_mindControl_2",
+        "abilityInfoId": "undeadHeadless_mindControl",
+        "duration": 3,
+        "durationAfterDamage": 2,
+        "maxUseCount": 2,
+        "triggerNumber": 6,
+        "sourceControlRestrictionId": "isNotMindControlled",
+        "targetControlRestrictionId": "mindControlInterrupt"
+    },
+    "undeadHeadless_mindControl_3": {
+        "key": "undeadHeadless_mindControl_3",
+        "abilityInfoId": "undeadHeadless_mindControl",
+        "duration": 3,
+        "durationAfterDamage": 2,
+        "maxUseCount": 2,
+        "triggerNumber": 6,
+        "sourceControlRestrictionId": "isNotMindControlled",
+        "targetControlRestrictionId": "mindControlInterrupt"
+    },
+    "undeadHeadless_mindControl_4": {
+        "key": "undeadHeadless_mindControl_4",
+        "abilityInfoId": "undeadHeadless_mindControl",
+        "duration": 4,
+        "durationAfterDamage": 2,
+        "maxUseCount": 2,
+        "triggerNumber": 6,
+        "sourceControlRestrictionId": "isNotMindControlled",
+        "targetControlRestrictionId": "mindControlInterrupt"
+    },
+    "undeadHeadless_mindControl_5": {
+        "key": "undeadHeadless_mindControl_5",
+        "abilityInfoId": "undeadHeadless_mindControl",
+        "duration": 4,
+        "durationAfterDamage": 2,
+        "maxUseCount": 2,
+        "triggerNumber": 6,
+        "sourceControlRestrictionId": "isNotMindControlled",
+        "targetControlRestrictionId": "mindControlInterrupt"
+    },
+    "undeadHeadless_mindControl_6": {
+        "key": "undeadHeadless_mindControl_6",
+        "abilityInfoId": "undeadHeadless_mindControl",
+        "duration": 4,
+        "durationAfterDamage": 2,
+        "maxUseCount": 2,
+        "triggerNumber": 6,
+        "sourceControlRestrictionId": "isNotMindControlled",
+        "targetControlRestrictionId": "mindControlInterrupt"
+    },
+    "undeadHeadless_mindControl_7": {
+        "key": "undeadHeadless_mindControl_7",
+        "abilityInfoId": "undeadHeadless_mindControl",
+        "duration": 5,
+        "durationAfterDamage": 2,
+        "maxUseCount": 2,
+        "triggerNumber": 6,
+        "sourceControlRestrictionId": "isNotMindControlled",
+        "targetControlRestrictionId": "mindControlInterrupt"
+    },
+    "undeadHeadless_mindControl_8": {
+        "key": "undeadHeadless_mindControl_8",
+        "abilityInfoId": "undeadHeadless_mindControl",
+        "duration": 5,
+        "durationAfterDamage": 2,
+        "maxUseCount": 2,
+        "triggerNumber": 6,
+        "sourceControlRestrictionId": "isNotMindControlled",
+        "targetControlRestrictionId": "mindControlInterrupt"
+    },
+    "undeadHeadless_mindControl_9": {
+        "key": "undeadHeadless_mindControl_9",
+        "abilityInfoId": "undeadHeadless_mindControl",
+        "duration": 5,
+        "durationAfterDamage": 2,
+        "maxUseCount": 2,
+        "triggerNumber": 6,
+        "sourceControlRestrictionId": "isNotMindControlled",
+        "targetControlRestrictionId": "mindControlInterrupt"
+    },
+    "undeadHeadless_mindControl_10": {
+        "key": "undeadHeadless_mindControl_10",
+        "abilityInfoId": "undeadHeadless_mindControl",
+        "duration": 6,
+        "durationAfterDamage": 2,
+        "maxUseCount": 2,
+        "triggerNumber": 6,
+        "sourceControlRestrictionId": "isNotMindControlled",
+        "targetControlRestrictionId": "mindControlInterrupt"
+    }
+}

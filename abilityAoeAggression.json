@@ -1,0 +1,142 @@
+{
+    "tomb_aoeAggression_1": {
+        "key": "tomb_aoeAggression_1",
+        "abilityInfoId": "tomb_aoeAggression",
+        "aoeRadius": 5,
+        "attackType": "Range",
+        "targetRestrictionId": "aggressionImmune"
+    },
+    "tomb_aoeAggression_2": {
+        "key": "tomb_aoeAggression_2",
+        "abilityInfoId": "tomb_aoeAggression",
+        "aoeRadius": 5,
+        "attackType": "Range",
+        "targetRestrictionId": "aggressionImmune"
+    },
+    "tomb_aoeAggression_3": {
+        "key": "tomb_aoeAggression_3",
+        "abilityInfoId": "tomb_aoeAggression",
+        "aoeRadius": 5,
+        "attackType": "Range",
+        "targetRestrictionId": "aggressionImmune"
+    },
+    "tomb_aoeAggression_4": {
+        "key": "tomb_aoeAggression_4",
+        "abilityInfoId": "tomb_aoeAggression",
+        "aoeRadius": 6,
+        "attackType": "Range",
+        "targetRestrictionId": "aggressionImmune"
+    },
+    "tomb_aoeAggression_5": {
+        "key": "tomb_aoeAggression_5",
+        "abilityInfoId": "tomb_aoeAggression",
+        "aoeRadius": 6,
+        "attackType": "Range",
+        "targetRestrictionId": "aggressionImmune"
+    },
+    "tomb_aoeAggression_6": {
+        "key": "tomb_aoeAggression_6",
+        "abilityInfoId": "tomb_aoeAggression",
+        "aoeRadius": 6,
+        "attackType": "Range",
+        "targetRestrictionId": "aggressionImmune"
+    },
+    "tomb_aoeAggression_7": {
+        "key": "tomb_aoeAggression_7",
+        "abilityInfoId": "tomb_aoeAggression",
+        "aoeRadius": 7,
+        "attackType": "Range",
+        "targetRestrictionId": "aggressionImmune"
+    },
+    "tomb_aoeAggression_8": {
+        "key": "tomb_aoeAggression_8",
+        "abilityInfoId": "tomb_aoeAggression",
+        "aoeRadius": 7,
+        "attackType": "Range",
+        "targetRestrictionId": "aggressionImmune"
+    },
+    "tomb_aoeAggression_9": {
+        "key": "tomb_aoeAggression_9",
+        "abilityInfoId": "tomb_aoeAggression",
+        "aoeRadius": 7,
+        "attackType": "Range",
+        "targetRestrictionId": "aggressionImmune"
+    },
+    "tomb_aoeAggression_10": {
+        "key": "tomb_aoeAggression_10",
+        "abilityInfoId": "tomb_aoeAggression",
+        "aoeRadius": 8,
+        "attackType": "Range",
+        "targetRestrictionId": "aggressionImmune"
+    },
+    "tombLibrary_aoeAggression_1": {
+        "key": "tombLibrary_aoeAggression_1",
+        "abilityInfoId": "tombLibrary_aoeAggression",
+        "aoeRadius": 9,
+        "attackType": "Range",
+        "targetRestrictionId": "aggressionImmune"
+    },
+    "tombLibrary_aoeAggression_2": {
+        "key": "tombLibrary_aoeAggression_2",
+        "abilityInfoId": "tombLibrary_aoeAggression",
+        "aoeRadius": 9,
+        "attackType": "Range",
+        "targetRestrictionId": "aggressionImmune"
+    },
+    "tombLibrary_aoeAggression_3": {
+        "key": "tombLibrary_aoeAggression_3",
+        "abilityInfoId": "tombLibrary_aoeAggression",
+        "aoeRadius": 9,
+        "attackType": "Range",
+        "targetRestrictionId": "aggressionImmune"
+    },
+    "tombLibrary_aoeAggression_4": {
+        "key": "tombLibrary_aoeAggression_4",
+        "abilityInfoId": "tombLibrary_aoeAggression",
+        "aoeRadius": 9,
+        "attackType": "Range",
+        "targetRestrictionId": "aggressionImmune"
+    },
+    "tombLibrary_aoeAggression_5": {
+        "key": "tombLibrary_aoeAggression_5",
+        "abilityInfoId": "tombLibrary_aoeAggression",
+        "aoeRadius": 9,
+        "attackType": "Range",
+        "targetRestrictionId": "aggressionImmune"
+    },
+    "tombLibrary_aoeAggression_6": {
+        "key": "tombLibrary_aoeAggression_6",
+        "abilityInfoId": "tombLibrary_aoeAggression",
+        "aoeRadius": 9,
+        "attackType": "Range",
+        "targetRestrictionId": "aggressionImmune"
+    },
+    "tombLibrary_aoeAggression_7": {
+        "key": "tombLibrary_aoeAggression_7",
+        "abilityInfoId": "tombLibrary_aoeAggression",
+        "aoeRadius": 9,
+        "attackType": "Range",
+        "targetRestrictionId": "aggressionImmune"
+    },
+    "tombLibrary_aoeAggression_8": {
+        "key": "tombLibrary_aoeAggression_8",
+        "abilityInfoId": "tombLibrary_aoeAggression",
+        "aoeRadius": 9,
+        "attackType": "Range",
+        "targetRestrictionId": "aggressionImmune"
+    },
+    "tombLibrary_aoeAggression_9": {
+        "key": "tombLibrary_aoeAggression_9",
+        "abilityInfoId": "tombLibrary_aoeAggression",
+        "aoeRadius": 9,
+        "attackType": "Range",
+        "targetRestrictionId": "aggressionImmune"
+    },
+    "tombLibrary_aoeAggression_10": {
+        "key": "tombLibrary_aoeAggression_10",
+        "abilityInfoId": "tombLibrary_aoeAggression",
+        "aoeRadius": 9,
+        "attackType": "Range",
+        "targetRestrictionId": "aggressionImmune"
+    }
+}

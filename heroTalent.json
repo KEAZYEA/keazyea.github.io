@@ -1,0 +1,170 @@
+{
+    "dragonRider_talent": {
+        "key": "dragonRider_talent",
+        "heroId": "dragonRider",
+        "requiredLevel": 5,
+        "title_Localized": "Hero_DragonRider_Talent_Name",
+        "description_Localized": "Hero_DragonRider_Talent_Description",
+        "icon": "talent_dragonRider_aerialSupport"
+    },
+    "charmer_talent": {
+        "key": "charmer_talent",
+        "heroId": "charmer",
+        "requiredLevel": 5,
+        "title_Localized": "Hero_Charmer_Talent_Name",
+        "description_Localized": "Hero_Charmer_Talent_Description",
+        "icon": "talent_charmer_revengeOfTheFallen"
+    },
+    "boneDragon_talent": {
+        "key": "boneDragon_talent",
+        "heroId": "boneDragon",
+        "requiredLevel": 5,
+        "title_Localized": "Hero_BoneDragon_Talent_Name",
+        "description_Localized": "Hero_BoneDragon_Talent_Description",
+        "icon": "talent_boneDragon_deathAura"
+    },
+    "forestQueen_talent": {
+        "key": "forestQueen_talent",
+        "heroId": "forestQueen",
+        "requiredLevel": 5,
+        "title_Localized": "Hero_ForestQueen_Talent_Name",
+        "description_Localized": "Hero_ForestQueen_Talent_Description",
+        "icon": "talent_forestQueen_thorns"
+    },
+    "darknessMage_talent": {
+        "key": "darknessMage_talent",
+        "heroId": "darknessMage",
+        "requiredLevel": 5,
+        "title_Localized": "Hero_DarknessMage_Talent_Name",
+        "description_Localized": "Hero_DarknessMage_Talent_Description",
+        "icon": "talent_darknessMage_unholyAlliance"
+    },
+    "iceMage_talent": {
+        "key": "iceMage_talent",
+        "heroId": "iceMage",
+        "requiredLevel": 5,
+        "title_Localized": "Hero_IceMage_Talent_Name",
+        "description_Localized": "Hero_IceMage_Talent_Description",
+        "icon": "talent_iceMage_frostArmor"
+    },
+    "airMage_talent": {
+        "key": "airMage_talent",
+        "heroId": "airMage",
+        "requiredLevel": 5,
+        "title_Localized": "Hero_AirMage_Talent_Name",
+        "description_Localized": "Hero_AirMage_Talent_Description",
+        "icon": "talent_airMage_windTamer"
+    },
+    "fireMage_talent": {
+        "key": "fireMage_talent",
+        "heroId": "fireMage",
+        "requiredLevel": 5,
+        "title_Localized": "Hero_FireMage_Talent_Name",
+        "description_Localized": "Hero_FireMage_Talent_Description",
+        "icon": "talent_fireMage_flamingHeart"
+    },
+    "waterMage_talent": {
+        "key": "waterMage_talent",
+        "heroId": "waterMage",
+        "requiredLevel": 5,
+        "title_Localized": "Hero_WaterMage_Talent_Name",
+        "description_Localized": "Hero_WaterMage_Talent_Description",
+        "icon": "talent_waterMage_powerOfWater"
+    },
+    "undeadPirate_talent": {
+        "key": "undeadPirate_talent",
+        "heroId": "undeadPirate",
+        "requiredLevel": 5,
+        "title_Localized": "Hero_UndeadPirate_Talent_Name",
+        "description_Localized": "Hero_UndeadPirate_Talent_Description",
+        "icon": "talent_undeadPirate_boardingParty"
+    },
+    "sandMage_talent": {
+        "key": "sandMage_talent",
+        "heroId": "sandMage",
+        "requiredLevel": 5,
+        "title_Localized": "Hero_SandMage_Talent_Name",
+        "description_Localized": "Hero_SandMage_Talent_Description",
+        "icon": "talent_sandMage_sandStorm"
+    },
+    "undeadPestilence_talent": {
+        "key": "undeadPestilence_talent",
+        "heroId": "undeadPestilence",
+        "requiredLevel": 5,
+        "title_Localized": "Hero_UndeadPestilence_Talent_Name",
+        "description_Localized": "Hero_UndeadPestilence_Talent_Description",
+        "icon": "talent_undeadPestilence_plague"
+    },
+    "lordInquisitor_talent": {
+        "key": "lordInquisitor_talent",
+        "heroId": "lordInquisitor",
+        "requiredLevel": 5,
+        "title_Localized": "Hero_LordInquisitor_Talent_Name",
+        "description_Localized": "Hero_LordInquisitor_Talent_Description",
+        "icon": "talent_lordInquisitor_Immutability"
+    },
+    "bardHero_talent": {
+        "key": "bardHero_talent",
+        "heroId": "bardHero",
+        "requiredLevel": 5,
+        "title_Localized": "Hero_BardHero_Talent_Name",
+        "description_Localized": "Hero_BardHero_Talent_Description",
+        "icon": "talent_bardHero_unitedWeStand"
+    },
+    "elevateTank_talent": {
+        "key": "elevateTank_talent",
+        "heroId": "elevateTank",
+        "requiredLevel": 5,
+        "title_Localized": "Hero_ElevateTank_Talent_Name",
+        "description_Localized": "Hero_ElevateTank_Talent_Description",
+        "icon": "talent_elevateTank_giantSlayer"
+    },
+    "elevateArcher_talent": {
+        "key": "elevateArcher_talent",
+        "heroId": "elevateArcher",
+        "requiredLevel": 5,
+        "title_Localized": "Hero_ElevateArcher_Talent_Name",
+        "description_Localized": "Hero_ElevateArcher_Talent_Description",
+        "icon": "talent_elevateArcher_weakSpot"
+    },
+    "elevateSupport_talent": {
+        "key": "elevateSupport_talent",
+        "heroId": "elevateSupport",
+        "requiredLevel": 5,
+        "title_Localized": "Hero_ElevateSupport_Talent_Name",
+        "description_Localized": "Hero_ElevateSupport_Talent_Description",
+        "icon": "talent_elevateSupport_giftOfLight"
+    },
+    "demonFat_talent": {
+        "key": "demonFat_talent",
+        "heroId": "demonFat",
+        "requiredLevel": 5,
+        "title_Localized": "Hero_DemonFat_Talent_Name",
+        "description_Localized": "Hero_DemonFat_Talent_Description",
+        "icon": "talent_demonFat_echoOfPain"
+    },
+    "demonTank_talent": {
+        "key": "demonTank_talent",
+        "heroId": "demonTank",
+        "requiredLevel": 5,
+        "title_Localized": "Hero_DemonTank_Talent_Name",
+        "description_Localized": "Hero_DemonTank_Talent_Description",
+        "icon": "talent_demonTank_easyPrey"
+    },
+    "demonMage_talent": {
+        "key": "demonMage_talent",
+        "heroId": "demonMage",
+        "requiredLevel": 5,
+        "title_Localized": "Hero_DemonMage_Talent_Name",
+        "description_Localized": "Hero_DemonMage_Talent_Description",
+        "icon": "talent_demonMage_meteoricRequiem"
+    },
+    "darknessMageSquadEvent_talent": {
+        "key": "darknessMageSquadEvent_talent",
+        "heroId": "darknessMageSquadEvent",
+        "requiredLevel": 5,
+        "title_Localized": "Hero_DarknessMage_Talent_Name",
+        "description_Localized": "Hero_DarknessMage_Talent_Description",
+        "icon": "talent_darknessMage_unholyAlliance"
+    }
+}

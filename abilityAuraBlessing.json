@@ -1,0 +1,112 @@
+{
+    "clericHero_blessing_1": {
+        "key": "clericHero_blessing_1",
+        "abilityInfoId": "clericHero_blessing",
+        "aspd": 2.833,
+        "additionalAttack": 40,
+        "additionalHealth": 400,
+        "numAdditionalCenters": 3,
+        "aoeRadius": 5,
+        "cooldown": 15,
+        "duration": 5
+    },
+    "clericHero_blessing_2": {
+        "key": "clericHero_blessing_2",
+        "abilityInfoId": "clericHero_blessing",
+        "aspd": 2.833,
+        "additionalAttack": 55,
+        "additionalHealth": 550,
+        "numAdditionalCenters": 3,
+        "aoeRadius": 5,
+        "cooldown": 15,
+        "duration": 6
+    },
+    "clericHero_blessing_3": {
+        "key": "clericHero_blessing_3",
+        "abilityInfoId": "clericHero_blessing",
+        "aspd": 2.833,
+        "additionalAttack": 70,
+        "additionalHealth": 700,
+        "numAdditionalCenters": 3,
+        "aoeRadius": 5,
+        "cooldown": 14,
+        "duration": 6
+    },
+    "clericHero_blessing_4": {
+        "key": "clericHero_blessing_4",
+        "abilityInfoId": "clericHero_blessing",
+        "aspd": 2.833,
+        "additionalAttack": 85,
+        "additionalHealth": 850,
+        "numAdditionalCenters": 3,
+        "aoeRadius": 6,
+        "cooldown": 14,
+        "duration": 6
+    },
+    "clericHero_blessing_5": {
+        "key": "clericHero_blessing_5",
+        "abilityInfoId": "clericHero_blessing",
+        "aspd": 2.833,
+        "additionalAttack": 100,
+        "additionalHealth": 1000,
+        "numAdditionalCenters": 3,
+        "aoeRadius": 6,
+        "cooldown": 13,
+        "duration": 6
+    },
+    "clericHero_blessing_6": {
+        "key": "clericHero_blessing_6",
+        "abilityInfoId": "clericHero_blessing",
+        "aspd": 2.833,
+        "additionalAttack": 115,
+        "additionalHealth": 1150,
+        "numAdditionalCenters": 3,
+        "aoeRadius": 6,
+        "cooldown": 13,
+        "duration": 7
+    },
+    "clericHero_blessing_7": {
+        "key": "clericHero_blessing_7",
+        "abilityInfoId": "clericHero_blessing",
+        "aspd": 2.833,
+        "additionalAttack": 130,
+        "additionalHealth": 1300,
+        "numAdditionalCenters": 3,
+        "aoeRadius": 7,
+        "cooldown": 13,
+        "duration": 7
+    },
+    "clericHero_blessing_8": {
+        "key": "clericHero_blessing_8",
+        "abilityInfoId": "clericHero_blessing",
+        "aspd": 2.833,
+        "additionalAttack": 145,
+        "additionalHealth": 1450,
+        "numAdditionalCenters": 3,
+        "aoeRadius": 7,
+        "cooldown": 12,
+        "duration": 7
+    },
+    "clericHero_blessing_9": {
+        "key": "clericHero_blessing_9",
+        "abilityInfoId": "clericHero_blessing",
+        "aspd": 2.833,
+        "additionalAttack": 160,
+        "additionalHealth": 1600,
+        "numAdditionalCenters": 3,
+        "aoeRadius": 7,
+        "cooldown": 12,
+        "duration": 8
+    },
+    "clericHero_blessing_10": {
+        "key": "clericHero_blessing_10",
+        "abilityInfoId": "clericHero_blessing",
+        "aspd": 2.833,
+        "additionalAttack": 175,
+        "additionalHealth": 1750,
+        "numAdditionalCenters": 3,
+        "aoeRadius": 8,
+        "cooldown": 12,
+        "duration": 8
+    }
+}

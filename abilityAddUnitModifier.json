@@ -1,0 +1,2099 @@
+{
+    "aerialSupport_1": {
+        "key": "aerialSupport_1",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "dragonRider_buff_1",
+        "units": "Human",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "aerialSupport_2": {
+        "key": "aerialSupport_2",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "dragonRider_buff_2",
+        "units": "Human",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "aerialSupport_3": {
+        "key": "aerialSupport_3",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "dragonRider_buff_3",
+        "units": "Human",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "aerialSupport_4": {
+        "key": "aerialSupport_4",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "dragonRider_buff_4",
+        "units": "Human",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "aerialSupport_5": {
+        "key": "aerialSupport_5",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "dragonRider_buff_5",
+        "units": "Human",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "aerialSupport_6": {
+        "key": "aerialSupport_6",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "dragonRider_buff_6",
+        "units": "Human",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "aerialSupport_7": {
+        "key": "aerialSupport_7",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "dragonRider_buff_7",
+        "units": "Human",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "aerialSupport_8": {
+        "key": "aerialSupport_8",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "dragonRider_buff_8",
+        "units": "Human",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "aerialSupport_9": {
+        "key": "aerialSupport_9",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "dragonRider_buff_9",
+        "units": "Human",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "aerialSupport_10": {
+        "key": "aerialSupport_10",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "dragonRider_buff_10",
+        "units": "Human",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "deathAura_1": {
+        "key": "deathAura_1",
+        "abilityInfoId": "boneDragon_buff",
+        "modifier": "boneDragon_buff_1",
+        "units": "Undead",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "deathAura_2": {
+        "key": "deathAura_2",
+        "abilityInfoId": "boneDragon_buff",
+        "modifier": "boneDragon_buff_2",
+        "units": "Undead",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "deathAura_3": {
+        "key": "deathAura_3",
+        "abilityInfoId": "boneDragon_buff",
+        "modifier": "boneDragon_buff_3",
+        "units": "Undead",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "deathAura_4": {
+        "key": "deathAura_4",
+        "abilityInfoId": "boneDragon_buff",
+        "modifier": "boneDragon_buff_4",
+        "units": "Undead",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "deathAura_5": {
+        "key": "deathAura_5",
+        "abilityInfoId": "boneDragon_buff",
+        "modifier": "boneDragon_buff_5",
+        "units": "Undead",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "deathAura_6": {
+        "key": "deathAura_6",
+        "abilityInfoId": "boneDragon_buff",
+        "modifier": "boneDragon_buff_6",
+        "units": "Undead",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "deathAura_7": {
+        "key": "deathAura_7",
+        "abilityInfoId": "boneDragon_buff",
+        "modifier": "boneDragon_buff_7",
+        "units": "Undead",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "deathAura_8": {
+        "key": "deathAura_8",
+        "abilityInfoId": "boneDragon_buff",
+        "modifier": "boneDragon_buff_8",
+        "units": "Undead",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "deathAura_9": {
+        "key": "deathAura_9",
+        "abilityInfoId": "boneDragon_buff",
+        "modifier": "boneDragon_buff_9",
+        "units": "Undead",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "deathAura_10": {
+        "key": "deathAura_10",
+        "abilityInfoId": "boneDragon_buff",
+        "modifier": "boneDragon_buff_10",
+        "units": "Undead",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "flamingHeart_1": {
+        "key": "flamingHeart_1",
+        "abilityInfoId": "fireMage_buff",
+        "modifier": "fireMage_buff_1",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "flamingHeart_2": {
+        "key": "flamingHeart_2",
+        "abilityInfoId": "fireMage_buff",
+        "modifier": "fireMage_buff_2",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "flamingHeart_3": {
+        "key": "flamingHeart_3",
+        "abilityInfoId": "fireMage_buff",
+        "modifier": "fireMage_buff_3",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "flamingHeart_4": {
+        "key": "flamingHeart_4",
+        "abilityInfoId": "fireMage_buff",
+        "modifier": "fireMage_buff_4",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "flamingHeart_5": {
+        "key": "flamingHeart_5",
+        "abilityInfoId": "fireMage_buff",
+        "modifier": "fireMage_buff_5",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "flamingHeart_6": {
+        "key": "flamingHeart_6",
+        "abilityInfoId": "fireMage_buff",
+        "modifier": "fireMage_buff_6",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "flamingHeart_7": {
+        "key": "flamingHeart_7",
+        "abilityInfoId": "fireMage_buff",
+        "modifier": "fireMage_buff_7",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "flamingHeart_8": {
+        "key": "flamingHeart_8",
+        "abilityInfoId": "fireMage_buff",
+        "modifier": "fireMage_buff_8",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "flamingHeart_9": {
+        "key": "flamingHeart_9",
+        "abilityInfoId": "fireMage_buff",
+        "modifier": "fireMage_buff_9",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "flamingHeart_10": {
+        "key": "flamingHeart_10",
+        "abilityInfoId": "fireMage_buff",
+        "modifier": "fireMage_buff_10",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "thorns_1": {
+        "key": "thorns_1",
+        "abilityInfoId": "forestQueen_buff",
+        "modifier": "forestQueen_buff_1",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "thorns_2": {
+        "key": "thorns_2",
+        "abilityInfoId": "forestQueen_buff",
+        "modifier": "forestQueen_buff_2",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "thorns_3": {
+        "key": "thorns_3",
+        "abilityInfoId": "forestQueen_buff",
+        "modifier": "forestQueen_buff_3",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "thorns_4": {
+        "key": "thorns_4",
+        "abilityInfoId": "forestQueen_buff",
+        "modifier": "forestQueen_buff_4",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "thorns_5": {
+        "key": "thorns_5",
+        "abilityInfoId": "forestQueen_buff",
+        "modifier": "forestQueen_buff_5",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "thorns_6": {
+        "key": "thorns_6",
+        "abilityInfoId": "forestQueen_buff",
+        "modifier": "forestQueen_buff_6",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "thorns_7": {
+        "key": "thorns_7",
+        "abilityInfoId": "forestQueen_buff",
+        "modifier": "forestQueen_buff_7",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "thorns_8": {
+        "key": "thorns_8",
+        "abilityInfoId": "forestQueen_buff",
+        "modifier": "forestQueen_buff_8",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "thorns_9": {
+        "key": "thorns_9",
+        "abilityInfoId": "forestQueen_buff",
+        "modifier": "forestQueen_buff_9",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "thorns_10": {
+        "key": "thorns_10",
+        "abilityInfoId": "forestQueen_buff",
+        "modifier": "forestQueen_buff_10",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "frostArmor_1": {
+        "key": "frostArmor_1",
+        "abilityInfoId": "iceMage_buff",
+        "modifier": "iceMage_buff_1",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "frostArmor_2": {
+        "key": "frostArmor_2",
+        "abilityInfoId": "iceMage_buff",
+        "modifier": "iceMage_buff_2",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "frostArmor_3": {
+        "key": "frostArmor_3",
+        "abilityInfoId": "iceMage_buff",
+        "modifier": "iceMage_buff_3",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "frostArmor_4": {
+        "key": "frostArmor_4",
+        "abilityInfoId": "iceMage_buff",
+        "modifier": "iceMage_buff_4",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "frostArmor_5": {
+        "key": "frostArmor_5",
+        "abilityInfoId": "iceMage_buff",
+        "modifier": "iceMage_buff_5",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "frostArmor_6": {
+        "key": "frostArmor_6",
+        "abilityInfoId": "iceMage_buff",
+        "modifier": "iceMage_buff_6",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "frostArmor_7": {
+        "key": "frostArmor_7",
+        "abilityInfoId": "iceMage_buff",
+        "modifier": "iceMage_buff_7",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "frostArmor_8": {
+        "key": "frostArmor_8",
+        "abilityInfoId": "iceMage_buff",
+        "modifier": "iceMage_buff_8",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "frostArmor_9": {
+        "key": "frostArmor_9",
+        "abilityInfoId": "iceMage_buff",
+        "modifier": "iceMage_buff_9",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "frostArmor_10": {
+        "key": "frostArmor_10",
+        "abilityInfoId": "iceMage_buff",
+        "modifier": "iceMage_buff_10",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "windTamer_1": {
+        "key": "windTamer_1",
+        "abilityInfoId": "airMage_buff",
+        "modifier": "airMage_buff_1",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "windTamer_2": {
+        "key": "windTamer_2",
+        "abilityInfoId": "airMage_buff",
+        "modifier": "airMage_buff_2",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "windTamer_3": {
+        "key": "windTamer_3",
+        "abilityInfoId": "airMage_buff",
+        "modifier": "airMage_buff_3",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "windTamer_4": {
+        "key": "windTamer_4",
+        "abilityInfoId": "airMage_buff",
+        "modifier": "airMage_buff_4",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "windTamer_5": {
+        "key": "windTamer_5",
+        "abilityInfoId": "airMage_buff",
+        "modifier": "airMage_buff_5",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "windTamer_6": {
+        "key": "windTamer_6",
+        "abilityInfoId": "airMage_buff",
+        "modifier": "airMage_buff_6",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "windTamer_7": {
+        "key": "windTamer_7",
+        "abilityInfoId": "airMage_buff",
+        "modifier": "airMage_buff_7",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "windTamer_8": {
+        "key": "windTamer_8",
+        "abilityInfoId": "airMage_buff",
+        "modifier": "airMage_buff_8",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "windTamer_9": {
+        "key": "windTamer_9",
+        "abilityInfoId": "airMage_buff",
+        "modifier": "airMage_buff_9",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "windTamer_10": {
+        "key": "windTamer_10",
+        "abilityInfoId": "airMage_buff",
+        "modifier": "airMage_buff_10",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "sandStorm_1": {
+        "key": "sandStorm_1",
+        "abilityInfoId": "sandMage_buff",
+        "modifier": "sandMage_buff_1",
+        "units": "Range",
+        "group": "enemy",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "sandStorm_2": {
+        "key": "sandStorm_2",
+        "abilityInfoId": "sandMage_buff",
+        "modifier": "sandMage_buff_2",
+        "units": "Range",
+        "group": "enemy",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "sandStorm_3": {
+        "key": "sandStorm_3",
+        "abilityInfoId": "sandMage_buff",
+        "modifier": "sandMage_buff_3",
+        "units": "Range",
+        "group": "enemy",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "sandStorm_4": {
+        "key": "sandStorm_4",
+        "abilityInfoId": "sandMage_buff",
+        "modifier": "sandMage_buff_4",
+        "units": "Range",
+        "group": "enemy",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "sandStorm_5": {
+        "key": "sandStorm_5",
+        "abilityInfoId": "sandMage_buff",
+        "modifier": "sandMage_buff_5",
+        "units": "Range",
+        "group": "enemy",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "sandStorm_6": {
+        "key": "sandStorm_6",
+        "abilityInfoId": "sandMage_buff",
+        "modifier": "sandMage_buff_6",
+        "units": "Range",
+        "group": "enemy",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "sandStorm_7": {
+        "key": "sandStorm_7",
+        "abilityInfoId": "sandMage_buff",
+        "modifier": "sandMage_buff_7",
+        "units": "Range",
+        "group": "enemy",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "sandStorm_8": {
+        "key": "sandStorm_8",
+        "abilityInfoId": "sandMage_buff",
+        "modifier": "sandMage_buff_8",
+        "units": "Range",
+        "group": "enemy",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "sandStorm_9": {
+        "key": "sandStorm_9",
+        "abilityInfoId": "sandMage_buff",
+        "modifier": "sandMage_buff_9",
+        "units": "Range",
+        "group": "enemy",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "sandStorm_10": {
+        "key": "sandStorm_10",
+        "abilityInfoId": "sandMage_buff",
+        "modifier": "sandMage_buff_10",
+        "units": "Range",
+        "group": "enemy",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "unholyAlliance_1": {
+        "key": "unholyAlliance_1",
+        "abilityInfoId": "darknessMage_buff",
+        "modifier": "darknessMage_buff_1",
+        "units": "Skeleton",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "unholyAlliance_2": {
+        "key": "unholyAlliance_2",
+        "abilityInfoId": "darknessMage_buff",
+        "modifier": "darknessMage_buff_2",
+        "units": "Skeleton",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "unholyAlliance_3": {
+        "key": "unholyAlliance_3",
+        "abilityInfoId": "darknessMage_buff",
+        "modifier": "darknessMage_buff_3",
+        "units": "Skeleton",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "unholyAlliance_4": {
+        "key": "unholyAlliance_4",
+        "abilityInfoId": "darknessMage_buff",
+        "modifier": "darknessMage_buff_4",
+        "units": "Skeleton",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "unholyAlliance_5": {
+        "key": "unholyAlliance_5",
+        "abilityInfoId": "darknessMage_buff",
+        "modifier": "darknessMage_buff_5",
+        "units": "Skeleton",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "unholyAlliance_6": {
+        "key": "unholyAlliance_6",
+        "abilityInfoId": "darknessMage_buff",
+        "modifier": "darknessMage_buff_6",
+        "units": "Skeleton",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "unholyAlliance_7": {
+        "key": "unholyAlliance_7",
+        "abilityInfoId": "darknessMage_buff",
+        "modifier": "darknessMage_buff_7",
+        "units": "Skeleton",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "unholyAlliance_8": {
+        "key": "unholyAlliance_8",
+        "abilityInfoId": "darknessMage_buff",
+        "modifier": "darknessMage_buff_8",
+        "units": "Skeleton",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "unholyAlliance_9": {
+        "key": "unholyAlliance_9",
+        "abilityInfoId": "darknessMage_buff",
+        "modifier": "darknessMage_buff_9",
+        "units": "Skeleton",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "unholyAlliance_10": {
+        "key": "unholyAlliance_10",
+        "abilityInfoId": "darknessMage_buff",
+        "modifier": "darknessMage_buff_10",
+        "units": "Skeleton",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "unholyAlliance1_1": {
+        "key": "unholyAlliance1_1",
+        "abilityInfoId": "darknessMage_buff",
+        "modifier": "darknessMage_buff_1",
+        "units": "Skeleton",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "unholyAlliance1_2": {
+        "key": "unholyAlliance1_2",
+        "abilityInfoId": "darknessMage_buff",
+        "modifier": "darknessMage_buff_2",
+        "units": "Skeleton",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "unholyAlliance1_3": {
+        "key": "unholyAlliance1_3",
+        "abilityInfoId": "darknessMage_buff",
+        "modifier": "darknessMage_buff_3",
+        "units": "Skeleton",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "unholyAlliance1_4": {
+        "key": "unholyAlliance1_4",
+        "abilityInfoId": "darknessMage_buff",
+        "modifier": "darknessMage_buff_4",
+        "units": "Skeleton",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "unholyAlliance1_5": {
+        "key": "unholyAlliance1_5",
+        "abilityInfoId": "darknessMage_buff",
+        "modifier": "darknessMage_buff_5",
+        "units": "Skeleton",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "unholyAlliance1_6": {
+        "key": "unholyAlliance1_6",
+        "abilityInfoId": "darknessMage_buff",
+        "modifier": "darknessMage_buff_6",
+        "units": "Skeleton",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "unholyAlliance1_7": {
+        "key": "unholyAlliance1_7",
+        "abilityInfoId": "darknessMage_buff",
+        "modifier": "darknessMage_buff_7",
+        "units": "Skeleton",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "unholyAlliance1_8": {
+        "key": "unholyAlliance1_8",
+        "abilityInfoId": "darknessMage_buff",
+        "modifier": "darknessMage_buff_8",
+        "units": "Skeleton",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "unholyAlliance1_9": {
+        "key": "unholyAlliance1_9",
+        "abilityInfoId": "darknessMage_buff",
+        "modifier": "darknessMage_buff_9",
+        "units": "Skeleton",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "unholyAlliance1_10": {
+        "key": "unholyAlliance1_10",
+        "abilityInfoId": "darknessMage_buff",
+        "modifier": "darknessMage_buff_10",
+        "units": "Skeleton",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_attackDebuffHuman_1": {
+        "key": "library_attackDebuffHuman_1",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "attackDebuffHuman_1",
+        "units": "Human",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_attackDebuffHuman_2": {
+        "key": "library_attackDebuffHuman_2",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "attackDebuffHuman_2",
+        "units": "Human",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_attackDebuffHuman_3": {
+        "key": "library_attackDebuffHuman_3",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "attackDebuffHuman_3",
+        "units": "Human",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_attackBuffHuman_1": {
+        "key": "library_attackBuffHuman_1",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "attackBuffHuman_1",
+        "units": "Human",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_attackBuffHuman_2": {
+        "key": "library_attackBuffHuman_2",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "attackBuffHuman_2",
+        "units": "Human",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_attackBuffHuman_3": {
+        "key": "library_attackBuffHuman_3",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "attackBuffHuman_3",
+        "units": "Human",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_attackDebuffMage_1": {
+        "key": "library_attackDebuffMage_1",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "attackDebuffMage_1",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_attackDebuffMage_2": {
+        "key": "library_attackDebuffMage_2",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "attackDebuffMage_2",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_attackDebuffMage_3": {
+        "key": "library_attackDebuffMage_3",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "attackDebuffMage_3",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_attackBuffMage_1": {
+        "key": "library_attackBuffMage_1",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "attackBuffMage_1",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_attackBuffMage_2": {
+        "key": "library_attackBuffMage_2",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "attackBuffMage_2",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_attackBuffMage_3": {
+        "key": "library_attackBuffMage_3",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "attackBuffMage_3",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_attackDebuffUndead_1": {
+        "key": "library_attackDebuffUndead_1",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "attackDebuffUndead_1",
+        "units": "Undead",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_attackDebuffUndead_2": {
+        "key": "library_attackDebuffUndead_2",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "attackDebuffUndead_2",
+        "units": "Undead",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_attackDebuffUndead_3": {
+        "key": "library_attackDebuffUndead_3",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "attackDebuffUndead_3",
+        "units": "Undead",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_attackBuffUndead_1": {
+        "key": "library_attackBuffUndead_1",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "attackBuffUndead_1",
+        "units": "Undead",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_attackBuffUndead_2": {
+        "key": "library_attackBuffUndead_2",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "attackBuffUndead_2",
+        "units": "Undead",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_attackBuffUndead_3": {
+        "key": "library_attackBuffUndead_3",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "attackBuffUndead_3",
+        "units": "Undead",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_hpDebuffHuman_1": {
+        "key": "library_hpDebuffHuman_1",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "hpDebuffHuman_1",
+        "units": "Human",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_hpDebuffHuman_2": {
+        "key": "library_hpDebuffHuman_2",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "hpDebuffHuman_2",
+        "units": "Human",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_hpDebuffHuman_3": {
+        "key": "library_hpDebuffHuman_3",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "hpDebuffHuman_3",
+        "units": "Human",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_hpBuffHuman_1": {
+        "key": "library_hpBuffHuman_1",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "hpBuffHuman_1",
+        "units": "Human",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_hpBuffHuman_2": {
+        "key": "library_hpBuffHuman_2",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "hpBuffHuman_2",
+        "units": "Human",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_hpBuffHuman_3": {
+        "key": "library_hpBuffHuman_3",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "hpBuffHuman_3",
+        "units": "Human",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_hpDebuffMage_1": {
+        "key": "library_hpDebuffMage_1",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "hpDebuffMage_1",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_hpDebuffMage_2": {
+        "key": "library_hpDebuffMage_2",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "hpDebuffMage_2",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_hpDebuffMage_3": {
+        "key": "library_hpDebuffMage_3",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "hpDebuffMage_3",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_hpBuffMage_1": {
+        "key": "library_hpBuffMage_1",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "hpBuffMage_1",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_hpBuffMage_2": {
+        "key": "library_hpBuffMage_2",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "hpBuffMage_2",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_hpBuffMage_3": {
+        "key": "library_hpBuffMage_3",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "hpBuffMage_3",
+        "units": "Mage",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_hpDebuffUndead_1": {
+        "key": "library_hpDebuffUndead_1",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "hpDebuffUndead_1",
+        "units": "Undead",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_hpDebuffUndead_2": {
+        "key": "library_hpDebuffUndead_2",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "hpDebuffUndead_2",
+        "units": "Undead",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_hpDebuffUndead_3": {
+        "key": "library_hpDebuffUndead_3",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "hpDebuffUndead_3",
+        "units": "Undead",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_hpBuffUndead_1": {
+        "key": "library_hpBuffUndead_1",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "hpBuffUndead_1",
+        "units": "Undead",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_hpBuffUndead_2": {
+        "key": "library_hpBuffUndead_2",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "hpBuffUndead_2",
+        "units": "Undead",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_hpBuffUndead_3": {
+        "key": "library_hpBuffUndead_3",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "hpBuffUndead_3",
+        "units": "Undead",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_meleeDebuff_1": {
+        "key": "library_meleeDebuff_1",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "meleeDebuff_1",
+        "units": "Melee",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_meleeDebuff_2": {
+        "key": "library_meleeDebuff_2",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "meleeDebuff_2",
+        "units": "Melee",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_meleeDebuff_3": {
+        "key": "library_meleeDebuff_3",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "meleeDebuff_3",
+        "units": "Melee",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_meleeBuff_1": {
+        "key": "library_meleeBuff_1",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "meleeBuff_1",
+        "units": "Melee",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_meleeBuff_2": {
+        "key": "library_meleeBuff_2",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "meleeBuff_2",
+        "units": "Melee",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_meleeBuff_3": {
+        "key": "library_meleeBuff_3",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "meleeBuff_3",
+        "units": "Melee",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_rangeDebuff_1": {
+        "key": "library_rangeDebuff_1",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "rangeDebuff_1",
+        "units": "Range",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_rangeDebuff_2": {
+        "key": "library_rangeDebuff_2",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "rangeDebuff_2",
+        "units": "Range",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_rangeDebuff_3": {
+        "key": "library_rangeDebuff_3",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "rangeDebuff_3",
+        "units": "Range",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_rangeBuff_1": {
+        "key": "library_rangeBuff_1",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "rangeBuff_1",
+        "units": "Range",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_rangeBuff_2": {
+        "key": "library_rangeBuff_2",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "rangeBuff_2",
+        "units": "Range",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_rangeBuff_3": {
+        "key": "library_rangeBuff_3",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "rangeBuff_3",
+        "units": "Range",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_aoeDebuff_1": {
+        "key": "library_aoeDebuff_1",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "aoeDebuff_1",
+        "units": null,
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_aoeDebuff_2": {
+        "key": "library_aoeDebuff_2",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "aoeDebuff_2",
+        "units": null,
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_aoeDebuff_3": {
+        "key": "library_aoeDebuff_3",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "aoeDebuff_3",
+        "units": null,
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_aoeBuff_1": {
+        "key": "library_aoeBuff_1",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "aoeBuff_1",
+        "units": null,
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_aoeBuff_2": {
+        "key": "library_aoeBuff_2",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "aoeBuff_2",
+        "units": null,
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_aoeBuff_3": {
+        "key": "library_aoeBuff_3",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "aoeBuff_3",
+        "units": null,
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_healDebuff_1": {
+        "key": "library_healDebuff_1",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "healDebuff_1",
+        "units": null,
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_healDebuff_2": {
+        "key": "library_healDebuff_2",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "healDebuff_2",
+        "units": null,
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_healDebuff_3": {
+        "key": "library_healDebuff_3",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "healDebuff_3",
+        "units": null,
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_healBuff_1": {
+        "key": "library_healBuff_1",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "healBuff_1",
+        "units": null,
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_healBuff_2": {
+        "key": "library_healBuff_2",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "healBuff_2",
+        "units": null,
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_healBuff_3": {
+        "key": "library_healBuff_3",
+        "abilityInfoId": "dragonRider_buff",
+        "modifier": "healBuff_3",
+        "units": null,
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "Immutability_1": {
+        "key": "Immutability_1",
+        "abilityInfoId": "lordInquisitor_buff",
+        "modifier": "lordInquisitor_buff_1",
+        "units": "Tank",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "Immutability_2": {
+        "key": "Immutability_2",
+        "abilityInfoId": "lordInquisitor_buff",
+        "modifier": "lordInquisitor_buff_2",
+        "units": "Tank",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "Immutability_3": {
+        "key": "Immutability_3",
+        "abilityInfoId": "lordInquisitor_buff",
+        "modifier": "lordInquisitor_buff_3",
+        "units": "Tank",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "Immutability_4": {
+        "key": "Immutability_4",
+        "abilityInfoId": "lordInquisitor_buff",
+        "modifier": "lordInquisitor_buff_4",
+        "units": "Tank",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "Immutability_5": {
+        "key": "Immutability_5",
+        "abilityInfoId": "lordInquisitor_buff",
+        "modifier": "lordInquisitor_buff_5",
+        "units": "Tank",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "Immutability_6": {
+        "key": "Immutability_6",
+        "abilityInfoId": "lordInquisitor_buff",
+        "modifier": "lordInquisitor_buff_6",
+        "units": "Tank",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "Immutability_7": {
+        "key": "Immutability_7",
+        "abilityInfoId": "lordInquisitor_buff",
+        "modifier": "lordInquisitor_buff_7",
+        "units": "Tank",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "Immutability_8": {
+        "key": "Immutability_8",
+        "abilityInfoId": "lordInquisitor_buff",
+        "modifier": "lordInquisitor_buff_8",
+        "units": "Tank",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "Immutability_9": {
+        "key": "Immutability_9",
+        "abilityInfoId": "lordInquisitor_buff",
+        "modifier": "lordInquisitor_buff_9",
+        "units": "Tank",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "Immutability_10": {
+        "key": "Immutability_10",
+        "abilityInfoId": "lordInquisitor_buff",
+        "modifier": "lordInquisitor_buff_10",
+        "units": "Tank",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "markOfGiant_1": {
+        "key": "markOfGiant_1",
+        "abilityInfoId": "elevateTank_buff",
+        "modifier": "elevateTank_buff_1",
+        "units": "Tank",
+        "group": "enemy",
+        "applyToBoss": true,
+        "keepWhenSourceKilled": true
+    },
+    "markOfGiant_2": {
+        "key": "markOfGiant_2",
+        "abilityInfoId": "elevateTank_buff",
+        "modifier": "elevateTank_buff_2",
+        "units": "Tank",
+        "group": "enemy",
+        "applyToBoss": true,
+        "keepWhenSourceKilled": true
+    },
+    "markOfGiant_3": {
+        "key": "markOfGiant_3",
+        "abilityInfoId": "elevateTank_buff",
+        "modifier": "elevateTank_buff_3",
+        "units": "Tank",
+        "group": "enemy",
+        "applyToBoss": true,
+        "keepWhenSourceKilled": true
+    },
+    "markOfGiant_4": {
+        "key": "markOfGiant_4",
+        "abilityInfoId": "elevateTank_buff",
+        "modifier": "elevateTank_buff_4",
+        "units": "Tank",
+        "group": "enemy",
+        "applyToBoss": true,
+        "keepWhenSourceKilled": true
+    },
+    "markOfGiant_5": {
+        "key": "markOfGiant_5",
+        "abilityInfoId": "elevateTank_buff",
+        "modifier": "elevateTank_buff_5",
+        "units": "Tank",
+        "group": "enemy",
+        "applyToBoss": true,
+        "keepWhenSourceKilled": true
+    },
+    "markOfGiant_6": {
+        "key": "markOfGiant_6",
+        "abilityInfoId": "elevateTank_buff",
+        "modifier": "elevateTank_buff_6",
+        "units": "Tank",
+        "group": "enemy",
+        "applyToBoss": true,
+        "keepWhenSourceKilled": true
+    },
+    "markOfGiant_7": {
+        "key": "markOfGiant_7",
+        "abilityInfoId": "elevateTank_buff",
+        "modifier": "elevateTank_buff_7",
+        "units": "Tank",
+        "group": "enemy",
+        "applyToBoss": true,
+        "keepWhenSourceKilled": true
+    },
+    "markOfGiant_8": {
+        "key": "markOfGiant_8",
+        "abilityInfoId": "elevateTank_buff",
+        "modifier": "elevateTank_buff_8",
+        "units": "Tank",
+        "group": "enemy",
+        "applyToBoss": true,
+        "keepWhenSourceKilled": true
+    },
+    "markOfGiant_9": {
+        "key": "markOfGiant_9",
+        "abilityInfoId": "elevateTank_buff",
+        "modifier": "elevateTank_buff_9",
+        "units": "Tank",
+        "group": "enemy",
+        "applyToBoss": true,
+        "keepWhenSourceKilled": true
+    },
+    "markOfGiant_10": {
+        "key": "markOfGiant_10",
+        "abilityInfoId": "elevateTank_buff",
+        "modifier": "elevateTank_buff_10",
+        "units": "Tank",
+        "group": "enemy",
+        "applyToBoss": true,
+        "keepWhenSourceKilled": true
+    },
+    "echoOfPain_1": {
+        "key": "echoOfPain_1",
+        "abilityInfoId": "demonFat_buff",
+        "modifier": "demonFat_buff_1",
+        "units": null,
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "echoOfPain_2": {
+        "key": "echoOfPain_2",
+        "abilityInfoId": "demonFat_buff",
+        "modifier": "demonFat_buff_2",
+        "units": null,
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "echoOfPain_3": {
+        "key": "echoOfPain_3",
+        "abilityInfoId": "demonFat_buff",
+        "modifier": "demonFat_buff_3",
+        "units": null,
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "echoOfPain_4": {
+        "key": "echoOfPain_4",
+        "abilityInfoId": "demonFat_buff",
+        "modifier": "demonFat_buff_4",
+        "units": null,
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "echoOfPain_5": {
+        "key": "echoOfPain_5",
+        "abilityInfoId": "demonFat_buff",
+        "modifier": "demonFat_buff_5",
+        "units": null,
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "echoOfPain_6": {
+        "key": "echoOfPain_6",
+        "abilityInfoId": "demonFat_buff",
+        "modifier": "demonFat_buff_6",
+        "units": null,
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "echoOfPain_7": {
+        "key": "echoOfPain_7",
+        "abilityInfoId": "demonFat_buff",
+        "modifier": "demonFat_buff_7",
+        "units": null,
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "echoOfPain_8": {
+        "key": "echoOfPain_8",
+        "abilityInfoId": "demonFat_buff",
+        "modifier": "demonFat_buff_8",
+        "units": null,
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "echoOfPain_9": {
+        "key": "echoOfPain_9",
+        "abilityInfoId": "demonFat_buff",
+        "modifier": "demonFat_buff_9",
+        "units": null,
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "echoOfPain_10": {
+        "key": "echoOfPain_10",
+        "abilityInfoId": "demonFat_buff",
+        "modifier": "demonFat_buff_10",
+        "units": null,
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "aoeEvasion_1": {
+        "key": "aoeEvasion_1",
+        "abilityInfoId": "aoeEvasion",
+        "modifier": "aoeEvasion_aura_1",
+        "units": "Trickster",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "aoeEvasion_2": {
+        "key": "aoeEvasion_2",
+        "abilityInfoId": "aoeEvasion",
+        "modifier": "aoeEvasion_aura_2",
+        "units": "Trickster",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "aoeEvasion_3": {
+        "key": "aoeEvasion_3",
+        "abilityInfoId": "aoeEvasion",
+        "modifier": "aoeEvasion_aura_3",
+        "units": "Trickster",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "aoeEvasion_4": {
+        "key": "aoeEvasion_4",
+        "abilityInfoId": "aoeEvasion",
+        "modifier": "aoeEvasion_aura_4",
+        "units": "Trickster",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "aoeEvasion_5": {
+        "key": "aoeEvasion_5",
+        "abilityInfoId": "aoeEvasion",
+        "modifier": "aoeEvasion_aura_5",
+        "units": "Trickster",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "aoeEvasion_6": {
+        "key": "aoeEvasion_6",
+        "abilityInfoId": "aoeEvasion",
+        "modifier": "aoeEvasion_aura_6",
+        "units": "Trickster",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "aoeEvasion_7": {
+        "key": "aoeEvasion_7",
+        "abilityInfoId": "aoeEvasion",
+        "modifier": "aoeEvasion_aura_7",
+        "units": "Trickster",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "aoeEvasion_8": {
+        "key": "aoeEvasion_8",
+        "abilityInfoId": "aoeEvasion",
+        "modifier": "aoeEvasion_aura_8",
+        "units": "Trickster",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "aoeEvasion_9": {
+        "key": "aoeEvasion_9",
+        "abilityInfoId": "aoeEvasion",
+        "modifier": "aoeEvasion_aura_9",
+        "units": "Trickster",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "aoeEvasion_10": {
+        "key": "aoeEvasion_10",
+        "abilityInfoId": "aoeEvasion",
+        "modifier": "aoeEvasion_aura_10",
+        "units": "Trickster",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "aoeEvasion_11": {
+        "key": "aoeEvasion_11",
+        "abilityInfoId": "aoeEvasion",
+        "modifier": "aoeEvasion_aura_11",
+        "units": "Trickster",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "aoeEvasion_12": {
+        "key": "aoeEvasion_12",
+        "abilityInfoId": "aoeEvasion",
+        "modifier": "aoeEvasion_aura_12",
+        "units": "Trickster",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "aoeEvasion_13": {
+        "key": "aoeEvasion_13",
+        "abilityInfoId": "aoeEvasion",
+        "modifier": "aoeEvasion_aura_13",
+        "units": "Trickster",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "aoeEvasion_14": {
+        "key": "aoeEvasion_14",
+        "abilityInfoId": "aoeEvasion",
+        "modifier": "aoeEvasion_aura_14",
+        "units": "Trickster",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "aoeEvasion_15": {
+        "key": "aoeEvasion_15",
+        "abilityInfoId": "aoeEvasion",
+        "modifier": "aoeEvasion_aura_15",
+        "units": "Trickster",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "aoeEvasion_16": {
+        "key": "aoeEvasion_16",
+        "abilityInfoId": "aoeEvasion",
+        "modifier": "aoeEvasion_aura_16",
+        "units": "Trickster",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "aoeEvasion_17": {
+        "key": "aoeEvasion_17",
+        "abilityInfoId": "aoeEvasion",
+        "modifier": "aoeEvasion_aura_17",
+        "units": "Trickster",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "aoeEvasion_18": {
+        "key": "aoeEvasion_18",
+        "abilityInfoId": "aoeEvasion",
+        "modifier": "aoeEvasion_aura_18",
+        "units": "Trickster",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "aoeEvasion_19": {
+        "key": "aoeEvasion_19",
+        "abilityInfoId": "aoeEvasion",
+        "modifier": "aoeEvasion_aura_19",
+        "units": "Trickster",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "aoeEvasion_20": {
+        "key": "aoeEvasion_20",
+        "abilityInfoId": "aoeEvasion",
+        "modifier": "aoeEvasion_aura_20",
+        "units": "Trickster",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "aoeEvasion_21": {
+        "key": "aoeEvasion_21",
+        "abilityInfoId": "aoeEvasion",
+        "modifier": "aoeEvasion_aura_21",
+        "units": "Trickster",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "aoeEvasion_22": {
+        "key": "aoeEvasion_22",
+        "abilityInfoId": "aoeEvasion",
+        "modifier": "aoeEvasion_aura_22",
+        "units": "Trickster",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "aoeEvasion_23": {
+        "key": "aoeEvasion_23",
+        "abilityInfoId": "aoeEvasion",
+        "modifier": "aoeEvasion_aura_23",
+        "units": "Trickster",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "aoeEvasion_24": {
+        "key": "aoeEvasion_24",
+        "abilityInfoId": "aoeEvasion",
+        "modifier": "aoeEvasion_aura_24",
+        "units": "Trickster",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "aoeEvasion_25": {
+        "key": "aoeEvasion_25",
+        "abilityInfoId": "aoeEvasion",
+        "modifier": "aoeEvasion_aura_25",
+        "units": "Trickster",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "aoeEvasion_26": {
+        "key": "aoeEvasion_26",
+        "abilityInfoId": "aoeEvasion",
+        "modifier": "aoeEvasion_aura_26",
+        "units": "Trickster",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "aoeEvasion_27": {
+        "key": "aoeEvasion_27",
+        "abilityInfoId": "aoeEvasion",
+        "modifier": "aoeEvasion_aura_27",
+        "units": "Trickster",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "aoeEvasion_28": {
+        "key": "aoeEvasion_28",
+        "abilityInfoId": "aoeEvasion",
+        "modifier": "aoeEvasion_aura_28",
+        "units": "Trickster",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "aoeEvasion_29": {
+        "key": "aoeEvasion_29",
+        "abilityInfoId": "aoeEvasion",
+        "modifier": "aoeEvasion_aura_29",
+        "units": "Trickster",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "aoeEvasion_30": {
+        "key": "aoeEvasion_30",
+        "abilityInfoId": "aoeEvasion",
+        "modifier": "aoeEvasion_aura_30",
+        "units": "Trickster",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "aoeEvasion_31": {
+        "key": "aoeEvasion_31",
+        "abilityInfoId": "aoeEvasion",
+        "modifier": "aoeEvasion_aura_31",
+        "units": "Trickster",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "aoeEvasion_32": {
+        "key": "aoeEvasion_32",
+        "abilityInfoId": "aoeEvasion",
+        "modifier": "aoeEvasion_aura_32",
+        "units": "Trickster",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "aoeEvasion_33": {
+        "key": "aoeEvasion_33",
+        "abilityInfoId": "aoeEvasion",
+        "modifier": "aoeEvasion_aura_33",
+        "units": "Trickster",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "aoeEvasion_34": {
+        "key": "aoeEvasion_34",
+        "abilityInfoId": "aoeEvasion",
+        "modifier": "aoeEvasion_aura_34",
+        "units": "Trickster",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "aoeEvasion_35": {
+        "key": "aoeEvasion_35",
+        "abilityInfoId": "aoeEvasion",
+        "modifier": "aoeEvasion_aura_35",
+        "units": "Trickster",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "aoeEvasion_36": {
+        "key": "aoeEvasion_36",
+        "abilityInfoId": "aoeEvasion",
+        "modifier": "aoeEvasion_aura_36",
+        "units": "Trickster",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "aoeEvasion_37": {
+        "key": "aoeEvasion_37",
+        "abilityInfoId": "aoeEvasion",
+        "modifier": "aoeEvasion_aura_37",
+        "units": "Trickster",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "aoeEvasion_38": {
+        "key": "aoeEvasion_38",
+        "abilityInfoId": "aoeEvasion",
+        "modifier": "aoeEvasion_aura_38",
+        "units": "Trickster",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "aoeEvasion_39": {
+        "key": "aoeEvasion_39",
+        "abilityInfoId": "aoeEvasion",
+        "modifier": "aoeEvasion_aura_39",
+        "units": "Trickster",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "aoeEvasion_40": {
+        "key": "aoeEvasion_40",
+        "abilityInfoId": "aoeEvasion",
+        "modifier": "aoeEvasion_aura_40",
+        "units": "Trickster",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "aoeEvasion_41": {
+        "key": "aoeEvasion_41",
+        "abilityInfoId": "aoeEvasion",
+        "modifier": "aoeEvasion_aura_41",
+        "units": "Trickster",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "aoeEvasion_42": {
+        "key": "aoeEvasion_42",
+        "abilityInfoId": "aoeEvasion",
+        "modifier": "aoeEvasion_aura_42",
+        "units": "Trickster",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "aoeEvasion_43": {
+        "key": "aoeEvasion_43",
+        "abilityInfoId": "aoeEvasion",
+        "modifier": "aoeEvasion_aura_43",
+        "units": "Trickster",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "aoeEvasion_44": {
+        "key": "aoeEvasion_44",
+        "abilityInfoId": "aoeEvasion",
+        "modifier": "aoeEvasion_aura_44",
+        "units": "Trickster",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "aoeEvasion_45": {
+        "key": "aoeEvasion_45",
+        "abilityInfoId": "aoeEvasion",
+        "modifier": "aoeEvasion_aura_45",
+        "units": "Trickster",
+        "group": "ally",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": true
+    },
+    "library_axeThrowers_cooldownBuff_hero_1": {
+        "key": "library_axeThrowers_cooldownBuff_hero_1",
+        "abilityInfoId": "library_axeThrowers_cooldownBuff_hero",
+        "modifier": "library_axeThrowers_cooldownBuff_hero_1",
+        "units": "Hero",
+        "group": "",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_axeThrowers_attackBuff_assassins_1": {
+        "key": "library_axeThrowers_attackBuff_assassins_1",
+        "abilityInfoId": "library_axeThrowers_attackBuff_assassins",
+        "modifier": "library_axeThrowers_attackBuff_assassins_1",
+        "units": "Assassin",
+        "group": "",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_axeThrowers_hpBuff_1": {
+        "key": "library_axeThrowers_hpBuff_1",
+        "abilityInfoId": "library_axeThrowers_hpBuff",
+        "modifier": "library_axeThrowers_hpBuff_1",
+        "units": null,
+        "group": "",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_axeThrowers_aoeAttackDebuff_1": {
+        "key": "library_axeThrowers_aoeAttackDebuff_1",
+        "abilityInfoId": "library_axeThrowers_aoeAttackDebuff",
+        "modifier": "library_axeThrowers_aoeAttackDebuff_1",
+        "units": null,
+        "group": "",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_cactus_rangeHpDebuff_1": {
+        "key": "library_cactus_rangeHpDebuff_1",
+        "abilityInfoId": "library_cactus_rangeHpDebuff",
+        "modifier": "library_cactus_rangeHpDebuff_1",
+        "units": "Range",
+        "group": "",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_cactus_aoeBuff_1": {
+        "key": "library_cactus_aoeBuff_1",
+        "abilityInfoId": "library_cactus_aoeBuff",
+        "modifier": "library_cactus_aoeBuff_1",
+        "units": null,
+        "group": "",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_cactus_healBuff_1": {
+        "key": "library_cactus_healBuff_1",
+        "abilityInfoId": "library_cactus_healBuff",
+        "modifier": "library_cactus_healBuff_1",
+        "units": null,
+        "group": "",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_cactus_attackBuffHuman_1": {
+        "key": "library_cactus_attackBuffHuman_1",
+        "abilityInfoId": "library_cactus_attackBuffHuman",
+        "modifier": "library_cactus_attackBuffHuman_1",
+        "units": "Human",
+        "group": "",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    }
+}

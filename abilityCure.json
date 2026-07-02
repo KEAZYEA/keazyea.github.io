@@ -1,0 +1,52 @@
+{
+    "giftOfLight_1": {
+        "key": "giftOfLight_1",
+        "abilityInfoId": "elevateSupport_giftOfLight",
+        "damageCureDuration": 35
+    },
+    "giftOfLight_2": {
+        "key": "giftOfLight_2",
+        "abilityInfoId": "elevateSupport_giftOfLight",
+        "damageCureDuration": 34
+    },
+    "giftOfLight_3": {
+        "key": "giftOfLight_3",
+        "abilityInfoId": "elevateSupport_giftOfLight",
+        "damageCureDuration": 33
+    },
+    "giftOfLight_4": {
+        "key": "giftOfLight_4",
+        "abilityInfoId": "elevateSupport_giftOfLight",
+        "damageCureDuration": 32
+    },
+    "giftOfLight_5": {
+        "key": "giftOfLight_5",
+        "abilityInfoId": "elevateSupport_giftOfLight",
+        "damageCureDuration": 31
+    },
+    "giftOfLight_6": {
+        "key": "giftOfLight_6",
+        "abilityInfoId": "elevateSupport_giftOfLight",
+        "damageCureDuration": 30
+    },
+    "giftOfLight_7": {
+        "key": "giftOfLight_7",
+        "abilityInfoId": "elevateSupport_giftOfLight",
+        "damageCureDuration": 29
+    },
+    "giftOfLight_8": {
+        "key": "giftOfLight_8",
+        "abilityInfoId": "elevateSupport_giftOfLight",
+        "damageCureDuration": 28
+    },
+    "giftOfLight_9": {
+        "key": "giftOfLight_9",
+        "abilityInfoId": "elevateSupport_giftOfLight",
+        "damageCureDuration": 27
+    },
+    "giftOfLight_10": {
+        "key": "giftOfLight_10",
+        "abilityInfoId": "elevateSupport_giftOfLight",
+        "damageCureDuration": 26
+    }
+}
