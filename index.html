@@ -1285,6 +1285,8 @@ window.addEventListener("resize", updateTabsHeight);
                     selectTroop = troop;
                     troopType = "troop";
                     resultsDiv.innerHTML = "";
+                    resultsDiv.classList.remove("floating-results");
+                    resultsDiv.style.top = resultsDiv.style.left = resultsDiv.style.width = "";
                     updateTroopsCard();
 
                     window.scrollTo(0, 0);
@@ -1301,6 +1303,8 @@ window.addEventListener("resize", updateTabsHeight);
                     selectTroop = hero;
                     troopType = "hero";
                     resultsDiv.innerHTML = "";
+                    resultsDiv.classList.remove("floating-results");
+                    resultsDiv.style.top = resultsDiv.style.left = resultsDiv.style.width = "";
                     updateTroopsCard();
 
                     window.scrollTo(0, 0);
