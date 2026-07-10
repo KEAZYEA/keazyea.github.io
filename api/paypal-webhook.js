@@ -101,12 +101,21 @@ module.exports = async (req, res) => {
       const expiresAtField = planKey === "vip" ? "vipExpiresAt" : "noAdsExpiresAt";
       const subscriptionIdField = planKey === "vip" ? "vipSubscriptionId" : "noAdsSubscriptionId";
 
-      await db.collection("users").doc(uid).set({
-        [expiresAtField]: Date.now() + ONE_MONTH_MS,
+      // If they still have time left on a previous (possibly cancelled)
+      // subscription, stack the new month on top of that instead of
+      // resetting to "1 month from right now" — so resubscribing before
+      // the old period ends adds 30 days rather than shortening it.
+      const userRef = db.collection("users").doc(uid);
+      const userSnap = await userRef.get();
+      const currentExpiresAt = userSnap.exists ? (userSnap.data()[expiresAtField] || 0) : 0;
+      const baseTime = currentExpiresAt > Date.now() ? currentExpiresAt : Date.now();
+
+      await userRef.set({
+        [expiresAtField]: baseTime + ONE_MONTH_MS,
         [subscriptionIdField]: subscriptionId
       }, { merge: true });
 
-      console.log(`Updated ${planKey} for user ${uid}, expires in ~1 month.`);
+      console.log(`Updated ${planKey} for user ${uid}, now expires ${new Date(baseTime + ONE_MONTH_MS).toISOString()}.`);
     }
 
     else if (
