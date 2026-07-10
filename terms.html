@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Terms of Service — Keazyea's Intelligence Hub</title>
+    <link rel="icon" href="images/KIH.jpg">
+    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+        body {
+            background: #1a1a2e;
+            color: white;
+        }
+        .legal-wrap {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 66px 24px 60px;
+            line-height: 1.6;
+        }
+        .legal-wrap h1 {
+            text-align: center;
+            margin-bottom: 4px;
+        }
+        .legal-updated {
+            text-align: center;
+            color: #9a9ab0;
+            font-size: 0.9rem;
+            margin-bottom: 32px;
+        }
+        .legal-wrap h2 {
+            color: #4169e1;
+            font-size: 1.3rem;
+            margin-top: 32px;
+            margin-bottom: 8px;
+        }
+        .legal-wrap p, .legal-wrap li {
+            color: #d0d0da;
+            font-size: 1rem;
+        }
+        .legal-wrap ul {
+            padding-left: 22px;
+        }
+        .legal-wrap a {
+            color: #6c9bff;
+        }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .legal-topbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background: #16162a;
+            border-bottom: 1px solid #2a2a4a;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 12px;
+            z-index: 20;
+            box-sizing: border-box;
+        }
+
+        .legal-topbar .icon-btn {
+            background: none;
+            border: none;
+            font-size: 1.4rem;
+            padding: 8px;
+            min-width: 40px;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .legal-topbar .icon-btn:hover {
+            background: #1c1c36;
+        }
+
+        .menu-wrapper {
+            position: relative;
+        }
+
+        .menu-dropdown {
+            display: none;
+            flex-direction: column;
+            position: absolute;
+            top: 46px;
+            right: 0;
+            min-width: 180px;
+            background: #16162a;
+            border: 1px solid #2a2a4a;
+            border-radius: 10px;
+            overflow: hidden;
+            z-index: 50;
+        }
+
+        .menu-dropdown.open {
+            display: flex;
+        }
+
+        .menu-dropdown a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            font-size: 0.95rem;
+            color: white;
+            text-decoration: none;
+        }
+
+        .menu-dropdown a:hover {
+            background: #1c1c36;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="legal-topbar">
+        <a class="icon-btn" href="home.html" title="Home">🏠</a>
+        <div class="menu-wrapper">
+            <button class="icon-btn" title="Menu" onclick="document.getElementById('legalMenuDropdown').classList.toggle('open')">☰</button>
+            <div class="menu-dropdown" id="legalMenuDropdown">
+                <a href="home.html?goto=inbox">📬 Inbox</a>
+                <a href="home.html?goto=settings">⚙️ Settings</a>
+                <a href="home.html?goto=profile">👤 Profile</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="legal-wrap">
+        <h1>Terms of Service</h1>
+        <p class="legal-updated">Last updated: July 4, 2026</p>
+
+        <p>Welcome to Keazyea's Intelligence Hub ("we", "our", "the site"). By using this site, you agree to these
+            Terms of Service. If you don't agree, please don't use the site.</p>
+
+        <h2>About This Site</h2>
+        <p>Keazyea's Intelligence Hub is an unofficial, fan-made companion resource covering troop/hero information,
+            promo codes, tips, and community features for the game it references. We are not affiliated with,
+            endorsed by, or sponsored by the game's official publisher or developer. Game names, characters, images,
+            and trademarks referenced here belong to their respective owners and are used for identification and
+            informational purposes only.</p>
+
+        <h2>Accounts</h2>
+        <p>You may optionally sign in with Google to sync your profile and enter the weekly giveaway. You're
+            responsible for keeping access to your Google account secure. We may suspend or remove access for
+            accounts used to abuse the site (e.g. spam, exploiting bugs, creating multiple accounts to gain extra
+            giveaway entries).</p>
+
+        <h2>Subscriptions & Payments</h2>
+        <ul>
+            <li>VIP Pass and No Ads subscriptions are billed monthly through PayPal.</li>
+            <li>Subscriptions renew automatically each month until cancelled.</li>
+            <li>You can cancel anytime from the Store page; you'll keep access until the end of the current billing
+                period, with no partial refunds for unused time.</li>
+            <li>We reserve the right to change subscription prices or included perks going forward, with reasonable
+                notice on the Store page.</li>
+        </ul>
+
+        <h2>Promo Codes</h2>
+        <p>Promo codes posted on this site are collected from publicly available sources. We do our best to keep
+            them current, but codes are issued by the game's publisher, not us, and may expire or stop working at
+            any time without notice. Use them at your own risk.</p>
+
+        <h2>Weekly Giveaway</h2>
+        <ul>
+            <li>VIP Pass is required to unlock entry and can be obtained through the paid subscription described above.</li>
+            <li>One entry per person per week. Entries close each Sunday when the winner is drawn.</li>
+            <li>Winners are selected at random from that week's valid entries.</li>
+            <li>Prizes (e.g. promo codes) are delivered via the site's Inbox feature. It's your responsibility to
+                check and redeem prizes in a timely manner.</li>
+            <li>We may disqualify entries or winners found to be using multiple accounts or other exploits to gain
+                an unfair advantage.</li>
+        </ul>
+
+        <h2>Acceptable Use</h2>
+        <p>You agree not to:</p>
+        <ul>
+            <li>Attempt to disrupt, hack, or exploit bugs in the site or its backend services</li>
+            <li>Use the site to harass others or post abusive content in community features</li>
+            <li>Attempt to manipulate the giveaway or subscription system</li>
+            <li>Scrape or republish site content at scale without permission</li>
+        </ul>
+
+        <h2>Disclaimer of Warranties</h2>
+        <p>This site is provided "as is" without warranties of any kind. We don't guarantee the site will be
+            error-free, uninterrupted, or that any information (including troop/hero stats, promo codes, or tips) is
+            fully accurate or up to date.</p>
+
+        <h2>Limitation of Liability</h2>
+        <p>To the fullest extent permitted by law, we are not liable for any indirect, incidental, or consequential
+            damages arising from your use of the site, including issues related to promo codes not working, missed
+            giveaway prizes, or subscription billing handled by PayPal.</p>
+
+        <h2>Changes to These Terms</h2>
+        <p>We may update these Terms from time to time. Continued use of the site after changes are posted means you
+            accept the updated Terms.</p>
+
+        <h2>Contact Us</h2>
+        <p>Questions about these Terms? Email us at <a href="mailto:keazyea@gmail.com">keazyea@gmail.com</a>.</p>
+
+        <a class="back-link" href="home.html?goto=settings">← Back to Settings</a>
+    </div>
+
+    <script>
+        document.addEventListener("click", (e) => {
+            const wrapper = document.querySelector(".menu-wrapper");
+            const dropdown = document.getElementById("legalMenuDropdown");
+            if (wrapper && dropdown && !wrapper.contains(e.target)) {
+                dropdown.classList.remove("open");
+            }
+        });
+    </script>
+</body>
+
+</html>

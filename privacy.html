@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Privacy Policy — Keazyea's Intelligence Hub</title>
+    <link rel="icon" href="images/KIH.jpg">
+    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+        body {
+            background: #1a1a2e;
+            color: white;
+        }
+        .legal-wrap {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 66px 24px 60px;
+            line-height: 1.6;
+        }
+        .legal-wrap h1 {
+            text-align: center;
+            margin-bottom: 4px;
+        }
+        .legal-updated {
+            text-align: center;
+            color: #9a9ab0;
+            font-size: 0.9rem;
+            margin-bottom: 32px;
+        }
+        .legal-wrap h2 {
+            color: #4169e1;
+            font-size: 1.3rem;
+            margin-top: 32px;
+            margin-bottom: 8px;
+        }
+        .legal-wrap p, .legal-wrap li {
+            color: #d0d0da;
+            font-size: 1rem;
+        }
+        .legal-wrap ul {
+            padding-left: 22px;
+        }
+        .legal-wrap a {
+            color: #6c9bff;
+        }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .legal-topbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background: #16162a;
+            border-bottom: 1px solid #2a2a4a;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 12px;
+            z-index: 20;
+            box-sizing: border-box;
+        }
+
+        .legal-topbar .icon-btn {
+            background: none;
+            border: none;
+            font-size: 1.4rem;
+            padding: 8px;
+            min-width: 40px;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .legal-topbar .icon-btn:hover {
+            background: #1c1c36;
+        }
+
+        .menu-wrapper {
+            position: relative;
+        }
+
+        .menu-dropdown {
+            display: none;
+            flex-direction: column;
+            position: absolute;
+            top: 46px;
+            right: 0;
+            min-width: 180px;
+            background: #16162a;
+            border: 1px solid #2a2a4a;
+            border-radius: 10px;
+            overflow: hidden;
+            z-index: 50;
+        }
+
+        .menu-dropdown.open {
+            display: flex;
+        }
+
+        .menu-dropdown a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            font-size: 0.95rem;
+            color: white;
+            text-decoration: none;
+        }
+
+        .menu-dropdown a:hover {
+            background: #1c1c36;
+        }
+    </style>
+    </style>
+</head>
+
+<body>
+    <div class="legal-topbar">
+        <a class="icon-btn" href="home.html" title="Home">🏠</a>
+        <div class="menu-wrapper">
+            <button class="icon-btn" title="Menu" onclick="document.getElementById('legalMenuDropdown').classList.toggle('open')">☰</button>
+            <div class="menu-dropdown" id="legalMenuDropdown">
+                <a href="home.html?goto=inbox">📬 Inbox</a>
+                <a href="home.html?goto=settings">⚙️ Settings</a>
+                <a href="home.html?goto=profile">👤 Profile</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="legal-wrap">
+        <h1>Privacy Policy</h1>
+        <p class="legal-updated">Last updated: July 4, 2026</p>
+
+        <p>This Privacy Policy explains what information Keazyea's Intelligence Hub ("we", "our", "the site")
+            collects, how it's used, and the choices you have. This site is an unofficial fan-made companion hub and
+            is not affiliated with or endorsed by the publisher of the game it covers.</p>
+
+        <h2>Information We Collect</h2>
+        <p>We collect the following types of information:</p>
+        <ul>
+            <li><strong>Google Sign-In data:</strong> If you choose to sign in with Google, we receive your name,
+                email address, and profile photo from Google. Signing in is optional — most features work without
+                it.</li>
+            <li><strong>Profile information:</strong> If you're signed in, we store your chosen in-game display name
+                and avatar selection in our database (Firebase/Firestore) so it can sync across your devices.</li>
+            <li><strong>Giveaway entries:</strong> If you enter the weekly VIP giveaway, we store your name, email,
+                and selected device type (iOS/Android) to run the draw and deliver prizes.</li>
+            <li><strong>Subscription status:</strong> If you subscribe to VIP or No Ads, we store your subscription
+                status and expiration date. Payment itself is handled entirely by PayPal — we never see or store
+                your card, bank, or PayPal login details.</li>
+            <li><strong>Inbox messages:</strong> Notifications (like promo code alerts or giveaway results) are
+                stored locally in your browser and are not tied to your account across devices.</li>
+            <li><strong>Advertising data:</strong> We use Google AdSense to show ads to non-subscribers. Google may
+                use cookies and similar technologies to serve ads based on your visits to this and other
+                sites.</li>
+        </ul>
+
+        <h2>How We Use Information</h2>
+        <ul>
+            <li>To let you sign in and keep your profile/progress synced across devices</li>
+            <li>To run the weekly giveaway and contact winners about their prize</li>
+            <li>To manage VIP/No Ads subscription access</li>
+            <li>To show relevant ads to visitors who haven't subscribed to remove them</li>
+            <li>To respond to support questions you send us</li>
+        </ul>
+
+        <h2>Third-Party Services</h2>
+        <p>We rely on the following third parties, each with their own privacy policies:</p>
+        <ul>
+            <li><strong>Google Firebase</strong> (authentication and database hosting)</li>
+            <li><strong>PayPal</strong> (subscription billing — see
+                <a href="https://www.paypal.com/us/legalhub/privacy-full" target="_blank" rel="noopener noreferrer">PayPal's
+                    Privacy Statement</a>)</li>
+            <li><strong>Google AdSense</strong> (advertising — see
+                <a href="https://policies.google.com/technologies/ads" target="_blank" rel="noopener noreferrer">how
+                    Google uses information from sites that use its services</a>). You can manage your ad
+                personalization settings at
+                <a href="https://adssettings.google.com" target="_blank" rel="noopener noreferrer">Google Ads
+                    Settings</a>.</li>
+        </ul>
+
+        <h2>Cookies</h2>
+        <p>This site uses cookies and similar technologies for sign-in sessions and, for non-subscribers, ad
+            personalization through Google AdSense. Subscribing to the No Ads or VIP plan removes ads (and the
+            associated ad cookies) site-wide.</p>
+
+        <h2>Data Retention & Your Choices</h2>
+        <p>You can sign out at any time, which stops your profile from syncing further. To request that we delete
+            your account data (profile, giveaway entries, prize history), email us at the address below and we'll
+            process the request. Locally stored inbox messages can be cleared by clearing your browser's site data.</p>
+
+        <h2>Children's Privacy</h2>
+        <p>This site does not knowingly collect personal information from children under 13. If you believe a child
+            has provided us with personal information, please contact us and we will remove it.</p>
+
+        <h2>Changes to This Policy</h2>
+        <p>We may update this policy occasionally. Continued use of the site after changes are posted means you
+            accept the updated policy.</p>
+
+        <h2>Contact Us</h2>
+        <p>Questions about this policy or your data? Email us at
+            <a href="mailto:keazyea@gmail.com">keazyea@gmail.com</a>.</p>
+
+         <a class="back-link" href="home.html?goto=settings">← Back to Settings</a>
+    </div>
+    <script>
+        document.addEventListener("click", (e) => {
+            const wrapper = document.querySelector(".menu-wrapper");
+            const dropdown = document.getElementById("legalMenuDropdown");
+            if (wrapper && dropdown && !wrapper.contains(e.target)) {
+                dropdown.classList.remove("open");
+            }
+        });
+    </script>
+</body>
+
+
+</html>

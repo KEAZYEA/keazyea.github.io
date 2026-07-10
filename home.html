@@ -1,0 +1,1956 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Keazyea's Intelligence Hub</title>
+    <link rel="icon" href="images/KIH.jpg">
+    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+        /* ===== HOME MENU LAYOUT (new) =====
+           Scoped to the home screen only — doesn't touch your other pages.
+           Uses generic dark-UI colors that match your existing #2a2a4a borders;
+           tweak the CSS vars below if your style.css uses different values. */
+        :root {
+            --kih-bg: #0e0e1a;
+            --kih-panel: #16162a;
+            --kih-border: #2a2a4a;
+            --kih-accent: #6c63ff;
+            --kih-accent-hover: #857dff;
+            --kih-text: #f0f0f5;
+            --kih-text-dim: #9a9ab0;
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .home-shell {
+            height: 100vh;
+            width: 100vw;
+            max-width: 100%;
+            background: var(--kih-bg);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Topbar stays at the top, full width, on every screen */
+        .home-topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 24px;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .topbar-avatar-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            object-fit: cover;
+            display: none;
+        }
+
+        .profile-summary {
+            cursor: pointer;
+        }
+
+        /* ---- HOME LANDING SCREEN ---- */
+        .home-landing {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: clamp(8px, 2.5vh, 20px);
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        .home-landing-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--kih-text);
+            margin-bottom: 4px;
+            text-align: center;
+        }
+
+        .home-landing-title-img {
+            max-width: 100%;
+            width: clamp(110px, min(24vh, 50vw), 220px);
+            height: auto;
+            margin-bottom: clamp(4px, 1.5vh, 12px);
+        }
+
+        .home-landing-sub {
+            color: var(--kih-text-dim);
+            margin-bottom: clamp(6px, 2vh, 16px);
+            font-size: clamp(0.8rem, 2vh, 1rem);
+            text-align: center;
+        }
+
+        .home-menu {
+            display: flex;
+            flex-direction: column;
+            gap: clamp(6px, min(1.6vh, 2vw), 12px);
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .home-menu-btn {
+            display: flex;
+            align-items: center;
+            gap: clamp(8px, 2vw, 14px);
+            width: 100%;
+            padding: clamp(8px, min(1.8vh, 2.5vw), 14px) clamp(12px, 4vw, 22px);
+            background: var(--kih-panel);
+            border: 1px solid var(--kih-border);
+            border-radius: 12px;
+            color: var(--kih-text);
+            font-size: clamp(0.85rem, 2.4vh, 1.05rem);
+            font-weight: 600;
+            cursor: pointer;
+            text-align: left;
+            transition: transform 0.12s ease, border-color 0.12s ease, background 0.12s ease;
+        }
+
+
+
+        .home-menu-btn:hover {
+            transform: translateY(-2px);
+            border-color: var(--kih-accent);
+            background: #1c1c36;
+        }
+
+        .home-menu-btn:active {
+            transform: translateY(0);
+        }
+
+        .about-creator-link {
+            background: none;
+            border: none;
+            color: var(--kih-text-dim);
+            font-size: clamp(0.75rem, 2vh, 0.85rem);
+            padding: clamp(4px, 1.5vh, 10px);
+            margin-top: clamp(2px, 1vh, 4px);
+            cursor: pointer;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+            flex-shrink: 0;
+        }
+
+        .about-creator-link:hover {
+            color: var(--kih-text);
+        }
+
+        .home-menu-icon {
+            font-size: clamp(1rem, 2.8vh, 1.3rem);
+            width: clamp(28px, 6vh, 38px);
+            height: clamp(28px, 6vh, 38px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(108, 99, 255, 0.15);
+            border-radius: 10px;
+            flex-shrink: 0;
+        }
+
+        .home-menu-text {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .home-menu-text small {
+            font-weight: 400;
+            color: var(--kih-text-dim);
+            font-size: clamp(0.65rem, 1.8vh, 0.8rem);
+            margin-top: 2px;
+        }
+
+        /* ---- CONTENT PAGES (troops/promo/tips/social/store/settings/profile/inbox) ---- */
+        .home-content-wrap {
+            flex: 1;
+            display: none;
+            flex-direction: column;
+            padding: 0;
+            min-height: 0;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        .home-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        #page-troops.active {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
+        }
+
+        #page-troops iframe {
+            flex: 1;
+            width: 100%;
+            margin: 0;
+            border: none;
+            border-radius: 0;
+        }
+
+        .home-content-wrap.active {
+            display: flex;
+        }
+
+        .back-to-home-btn {
+            align-self: flex-start;
+            background: none;
+            border: 1px solid var(--kih-border);
+            color: var(--kih-text);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 16px;
+            font-size: 0.95rem;
+        }
+
+        .back-to-home-btn:hover {
+            border-color: var(--kih-accent);
+        }
+
+        .home-page-content {
+            display: none;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        .home-landing.hidden {
+            display: none;
+        }
+
+        .home-page-content.active {
+            display: block;
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            overscroll-behavior: contain;
+            background: var(--kih-bg);
+        }
+
+        .placeholder-box {
+            text-align: center;
+            color: var(--kih-text-dim);
+            padding: 60px 20px;
+        }
+
+        .ph-icon {
+            display: block;
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+        }
+
+        /* ---- Settings / Profile / Inbox pages (previously modals) ---- */
+        .page-panel {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 24px;
+            box-sizing: border-box;
+            color: var(--kih-text);
+        }
+
+        .page-panel h1 {
+            margin-top: 0;
+            text-align: center;
+        }
+
+        .settings-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--kih-border);
+        }
+
+        .settings-row:last-child {
+            border-bottom: none;
+        }
+
+        .settings-label {
+            font-weight: 600;
+        }
+
+        .settings-sub {
+            color: var(--kih-text-dim);
+            font-size: 0.85rem;
+            margin-top: 2px;
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+
+        .field-label {
+            display: block;
+            margin: 18px 0 6px;
+            color: var(--kih-text-dim);
+            font-size: 0.85rem;
+        }
+
+        .profile-name-input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--kih-border);
+            background: var(--kih-bg);
+            color: var(--kih-text);
+            font-size: 1rem;
+        }
+
+        .avatar-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 8px;
+            max-height: 50vh;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            padding-right: 4px;
+        }
+
+        .avatar-option {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 2px solid transparent;
+            cursor: pointer;
+        }
+
+        .avatar-option.selected {
+            border-color: var(--kih-accent);
+        }
+
+        .avatar-picker-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-top: 8px;
+        }
+
+        .avatar-preview-thumb {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: var(--kih-border);
+            border: 2px solid var(--kih-accent);
+        }
+
+        .btn-block {
+            width: 100%;
+            margin-top: 24px;
+        }
+
+        .inbox-empty {
+            text-align: center;
+            color: var(--kih-text-dim);
+            padding: 40px 10px;
+        }
+
+        .inbox-item {
+            padding: 14px 0;
+            border-bottom: 1px solid var(--kih-border);
+        }
+
+        .inbox-item:last-child {
+            border-bottom: none;
+        }
+
+        .inbox-title {
+            font-weight: 600;
+        }
+
+        .inbox-body {
+            color: var(--kih-text-dim);
+            font-size: 0.9rem;
+            margin: 4px 0;
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+
+        .inbox-time {
+            color: var(--kih-text-dim);
+            font-size: 0.75rem;
+        }
+
+        .badge-dot {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: #ff4d4f;
+            color: white;
+            font-size: 0.65rem;
+            min-width: 16px;
+            height: 16px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 3px;
+        }
+
+        .home-topbar .icon-btn {
+            background: none;
+            border: none;
+            font-size: 1.7rem;
+            padding: 12px;
+            min-width: 48px;
+            min-height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            color: var(--kih-text);
+            position: relative;
+            cursor: pointer;
+        }
+
+        .home-topbar .icon-btn:hover {
+            background: #1c1c36;
+        }
+
+        .menu-wrapper {
+            position: relative;
+        }
+
+        .menu-dropdown {
+            display: none;
+            flex-direction: column;
+            position: absolute;
+            top: 46px;
+            right: 0;
+            min-width: 190px;
+            background: var(--kih-panel);
+            border: 1px solid var(--kih-border);
+            border-radius: 10px;
+            overflow: hidden;
+            z-index: 50;
+        }
+
+        .menu-dropdown.open {
+            display: flex;
+        }
+
+        .menu-dropdown button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: none;
+            border: none;
+            color: var(--kih-text);
+            padding: 12px 14px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .menu-dropdown button:hover {
+            background: #1c1c36;
+        }
+
+        .menu-dropdown img {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* ---- Friend request dropdown (topbar) ---- */
+        .friend-req-wrapper {
+            position: relative;
+        }
+
+        .friend-req-panel {
+            display: none;
+            flex-direction: column;
+            position: fixed;
+            top: 72px;
+            right: 8px;
+            left: 8px;
+            width: auto;
+            max-width: 300px;
+            margin-left: auto;
+            max-height: 360px;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            background: var(--kih-panel);
+            border: 1px solid var(--kih-border);
+            border-radius: 12px;
+            padding: 10px;
+            box-sizing: border-box;
+            z-index: 50;
+        }
+
+        .friend-req-panel.open {
+            display: flex;
+        }
+
+        .friend-req-panel-title {
+            font-weight: bold;
+            color: var(--kih-text-dim);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            padding: 4px 6px 8px;
+        }
+
+        .friend-req-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 8px 6px;
+            border-bottom: 1px solid var(--kih-border);
+        }
+
+        .friend-req-item:last-child {
+            border-bottom: none;
+        }
+
+        .friend-req-person {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .friend-req-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: var(--kih-border);
+            flex-shrink: 0;
+        }
+
+        .friend-req-name {
+            font-weight: 600;
+            color: var(--kih-text);
+        }
+
+        .friend-req-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .friend-req-mini-btn {
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .friend-req-mini-btn.accept {
+            background: var(--kih-accent);
+            color: white;
+        }
+
+        .friend-req-mini-btn.decline {
+            background: var(--kih-border);
+            color: #aaa;
+        }
+
+        .friend-req-empty {
+            text-align: center;
+            color: var(--kih-text-dim);
+            font-size: 0.85rem;
+            padding: 16px 6px;
+        }
+
+        /* ---- Mini modal (view profile) ---- */
+        .mini-modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 16px;
+        }
+
+        .mini-modal-overlay.open {
+            display: flex;
+        }
+
+        .mini-modal-box {
+            background: var(--kih-panel);
+            border: 1px solid var(--kih-border);
+            border-radius: 14px;
+            padding: 24px;
+            width: 100%;
+            max-width: 320px;
+            color: var(--kih-text);
+            text-align: center;
+        }
+
+        .topbar-avatar-fallback {
+            display: flex;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--kih-panel);
+            border: 1px solid var(--kih-border);
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            line-height: 1;
+        }
+
+        .unsaved-modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .unsaved-modal-overlay.open {
+            display: flex;
+        }
+
+        .unsaved-modal {
+            background: var(--kih-panel);
+            border: 1px solid var(--kih-border);
+            border-radius: 14px;
+            padding: 24px;
+            width: 90%;
+            max-width: 360px;
+            color: var(--kih-text);
+        }
+
+        .unsaved-modal-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .unsaved-modal-body {
+            color: var(--kih-text-dim);
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+
+        .unsaved-modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .scroll-bottom-btn {
+            display: none;
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--kih-accent);
+            color: white;
+            border: none;
+            font-size: 1.3rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            z-index: 40;
+        }
+
+        .scroll-bottom-btn:hover {
+            background: var(--kih-accent-hover);
+        }
+
+        .scroll-bottom-btn.visible {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+            flex-shrink: 0;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background: var(--kih-border);
+            border-radius: 24px;
+            transition: 0.2s;
+        }
+
+        .toggle-slider::before {
+            content: "";
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            left: 3px;
+            bottom: 3px;
+            background: white;
+            border-radius: 50%;
+            transition: 0.2s;
+        }
+
+        .toggle-switch input:checked+.toggle-slider {
+            background: var(--kih-accent);
+        }
+
+        .toggle-switch input:checked+.toggle-slider::before {
+            transform: translateX(20px);
+        }
+
+        .btn-settings-action {
+            display: inline-block;
+            background: #ffffff;
+            color: #0e0e1a;
+            border: 1px solid #ffffff;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .btn-settings-action:visited {
+            color: #0e0e1a;
+        }
+
+        .btn-settings-action:hover {
+            background: #e5e5e5;
+        }
+
+        #page-promo.active {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
+        }
+
+        #page-promo iframe {
+            flex: 1;
+            width: 100%;
+            margin: 0;
+            border: none;
+            border-radius: 0;
+        }
+
+        #page-tips.active {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
+        }
+
+        #page-tips iframe {
+            flex: 1;
+            width: 100%;
+            margin: 0;
+            border: none;
+            border-radius: 0;
+        }
+
+        #page-store.active {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
+        }
+
+        #page-store iframe {
+            flex: 1;
+            width: 100%;
+            margin: 0;
+            border: none;
+            border-radius: 0;
+        }
+
+        #page-social.active {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
+        }
+
+        #page-social iframe {
+            flex: 1;
+            width: 100%;
+            margin: 0;
+            border: none;
+            border-radius: 0;
+        }
+
+        .social-btn-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .social-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 10px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            border: 1px solid var(--kih-border);
+            transition: transform 0.12s ease, background 0.12s ease;
+        }
+
+        .social-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .social-btn-youtube {
+            background: rgba(255, 0, 0, 0.12);
+            color: #ff6b6b;
+        }
+
+        .social-btn-youtube:hover {
+            background: rgba(255, 0, 0, 0.2);
+        }
+
+        .social-btn-discord {
+            background: rgba(88, 101, 242, 0.15);
+            color: #9aa3ff;
+        }
+
+        .social-btn-discord:hover {
+            background: rgba(88, 101, 242, 0.25);
+        }
+
+        .social-btn-donate {
+            background: rgba(255, 196, 57, 0.15);
+            color: #ffd76b;
+        }
+
+        .social-btn-donate:hover {
+            background: rgba(255, 196, 57, 0.25);
+        }
+
+        .about-section {
+            margin-bottom: 22px;
+            color: #ffffff;
+        }
+
+        .about-section-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--kih-accent);
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            margin-bottom: 8px;
+        }
+
+        .about-lead {
+            font-size: 1.1rem;
+        }
+
+        .about-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .about-list li {
+            background: var(--kih-panel);
+            border: 1px solid var(--kih-border);
+            border-radius: 10px;
+            padding: 10px 14px;
+        }
+
+        .about-link {
+            color: #4fc3f7;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="home-shell">
+
+        <!-- Topbar shown ONLY on the home landing page -->
+        <div class="home-topbar" id="homeTopbar">
+            <button class="icon-btn" title="Profile" onclick="goToPage('profile')">
+                <img id="topbarAvatarIcon" src="" alt="Profile" class="topbar-avatar-icon">
+                <span id="topbarAvatarFallback" class="topbar-avatar-fallback">👤</span>
+            </button>
+            <div class="topbar-right">
+                <div class="friend-req-wrapper" id="friendReqWrapperHome">
+                    <button class="icon-btn" title="Friend requests" id="friendReqBtnHome">
+                        👥<span class="badge-dot" id="friendReqBadgeHome" style="display:none;"></span>
+                    </button>
+                    <div class="friend-req-panel" id="friendReqPanelHome">
+                        <div class="friend-req-panel-title">Friend Requests</div>
+                        <div id="friendReqListHome">
+                            <div class="friend-req-empty">No pending requests.</div>
+                        </div>
+                    </div>
+                </div>
+                <button class="icon-btn" title="Inbox" onclick="goToPage('inbox')">
+                    📬<span class="badge-dot" id="inboxBadgeHome" style="display:none;"></span>
+                </button>
+                <button class="icon-btn" title="Settings" onclick="goToPage('settings')">⚙️</button>
+            </div>
+        </div>
+
+        <!-- Topbar shown on every other page -->
+        <div class="home-topbar" id="pageTopbar" style="display:none;">
+            <button class="icon-btn" title="Home" onclick="goHome()">🏠</button>
+            <div class="menu-wrapper">
+                <button class="icon-btn" title="Menu" onclick="toggleMenu()">☰</button>
+                <div class="menu-dropdown" id="menuDropdown">
+                    <button onclick="goToPage('inbox'); closeMenu();">
+                        📬 Inbox <span class="badge-dot" id="inboxBadgeMenu" style="display:none;"></span>
+                    </button>
+                    <button onclick="goToPage('settings'); closeMenu();">⚙️ Settings</button>
+                    <button onclick="goToPage('profile'); closeMenu();">
+                        <img id="topbarAvatar" src="" alt="Profile" class="topbar-avatar-icon">
+                        <span id="topbarAvatarFallback2" class="topbar-avatar-fallback" style="display:flex;">👤</span>
+                        <span id="topbarName">Profile</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== HOME LANDING — big vertical centered buttons ===== -->
+        <div class="home-landing" id="homeLanding">
+            <img src="images/KIH_HP.jpg" alt="Keazyea's Intelligence Hub" class="home-landing-title-img">
+
+            <div class="home-menu">
+                <button class="home-menu-btn" onclick="goToPage('troops')">
+                    <span class="home-menu-icon">⚔️</span>
+                    <span class="home-menu-text">Troops & Heroes<small>Browse & compare every unit</small></span>
+                </button>
+                <button class="home-menu-btn" onclick="goToPage('promo')">
+                    <span class="home-menu-icon">🎁</span>
+                    <span class="home-menu-text">Promo Codes<small>Latest codes & giveaway wheel</small></span>
+                </button>
+                <button class="home-menu-btn" onclick="goToPage('tips')">
+                    <span class="home-menu-icon">💡</span>
+                    <span class="home-menu-text">Tips<small>Team comps, talents, event strategy</small></span>
+                </button>
+                <button class="home-menu-btn" onclick="goToPage('social')" style="position:relative;">
+                    <span class="home-menu-icon">👥</span>
+                    <span class="home-menu-text">Social<small>Clan, friends & community</small></span>
+                    <span class="badge-dot" id="socialUnreadBadgeHome"
+                        style="display:none; position:absolute; top:10px; right:14px;"></span>
+                </button>
+                <button class="home-menu-btn" onclick="goToPage('store')">
+                    <span class="home-menu-icon">🛒</span>
+                    <span class="home-menu-text">Store<small>VIP pass & offers</small></span>
+                </button>
+            </div>
+            <button class="about-creator-link" onclick="goToPage('about')">About the Creator</button>
+        </div>
+
+        <!-- ===== CONTENT PAGES (shown once something is picked) ===== -->
+        <div class="home-content-wrap" id="homeContentWrap">
+
+
+            <div class="home-main">
+
+                <!-- TROOPS & HEROES -->
+                <div class="home-page-content" id="page-troops">
+
+
+                    <iframe src="troopsAndHeroes.html"></iframe>
+                </div>
+
+                <!-- PROMO CODES -->
+                <div class="home-page-content" id="page-promo">
+                    <iframe src="promo.html"></iframe>
+                </div>
+
+                <!-- TIPS -->
+                <div class="home-page-content" id="page-tips">
+                    <iframe src="tips.html"></iframe>
+                </div>
+
+                <!-- SOCIAL -->
+                <div class="home-page-content" id="page-social">
+                    <iframe src="social.html"></iframe>
+                </div>
+
+                <!-- STORE -->
+                <div class="home-page-content" id="page-store">
+                    <iframe src="store.html"></iframe>
+                </div>
+
+                <!-- ABOUT THE CREATOR -->
+                <div class="home-page-content" id="page-about">
+                    <div class="page-panel">
+                        <h1>About the Creator</h1>
+                        <div class="about-section">
+                            <p class="about-lead">Hello, I'm <strong>Keazyea</strong> — the creator of this app. 👋</p>
+                        </div>
+
+                        <div class="about-section">
+                            <div class="about-section-title">What this app is for</div>
+                            <ul class="about-list">
+                                <li>⚔️ Troop & hero comparisons</li>
+                                <li>🎁 Latest promo codes</li>
+                                <li>💡 Tips, team comps & strategy</li>
+                                <li>🎲 Weekly giveaways</li>
+                                <li>👥 Community — clan recruitment, friends & chat</li>
+                            </ul>
+                        </div>
+
+                        <div class="about-section">
+                            <div class="about-section-title">Join my clan</div>
+                            <p>🏰 <a href="https://play.google.com/store/apps/details?id=azurgames.idle.war&hl=en_SG"
+                                    target="_blank" rel="noopener noreferrer" class="about-link"><strong>Kingdom
+                                        Cash</strong></a> — Android only for now!</p>
+                        </div>
+
+                        <div class="about-section">
+                            <div class="about-section-title">Get in touch</div>
+                            <p>Got feedback, bug reports, or suggestions? Reach out anytime.</p>
+                            <p><a href="mailto:keazyea@gmail.com" class="about-link">📧 keazyea@gmail.com</a></p>
+                        </div>
+
+                        <div class="about-section">
+                            <div class="social-btn-row">
+                                <a class="social-btn social-btn-youtube" href="https://www.youtube.com/@keazyea"
+                                    target="_blank" rel="noopener noreferrer">
+                                    <svg viewBox="0 0 24 24" width="18" height="18">
+                                        <path fill="#FF0000"
+                                            d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.4 31.4 0 0 0 0 12a31.4 31.4 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31.4 31.4 0 0 0 24 12a31.4 31.4 0 0 0-.5-5.8z">
+                                        </path>
+                                        <path fill="white" d="M9.6 15.6 15.8 12 9.6 8.4z"></path>
+                                    </svg>
+                                    <span>YouTube</span>
+                                </a>
+                                <a class="social-btn social-btn-discord" href="https://discord.gg/j3Zqb6GVmq"
+                                    target="_blank" rel="noopener noreferrer">
+                                    <svg viewBox="0 0 24 24" width="18" height="18">
+                                        <path fill="#5865F2"
+                                            d="M20.3 4.4A19.7 19.7 0 0 0 15.4 3c-.2.4-.5.9-.7 1.3a18.3 18.3 0 0 0-5.4 0A11 11 0 0 0 8.6 3 19.6 19.6 0 0 0 3.7 4.4C1 8.4.3 12.3.6 16.2A19.8 19.8 0 0 0 6.6 19c.5-.7.9-1.4 1.3-2.2-.7-.3-1.4-.6-2-1l.5-.4c3.8 1.8 7.9 1.8 11.7 0l.5.4c-.6.4-1.3.7-2 1 .4.8.8 1.5 1.3 2.2a19.7 19.7 0 0 0 6-2.8c.4-4.5-.7-8.4-2.9-11.8zM9.7 13.8c-1 0-1.8-1-1.8-2.1 0-1.2.8-2.2 1.8-2.2s1.9 1 1.8 2.2c0 1.1-.8 2.1-1.8 2.1zm6.6 0c-1 0-1.8-1-1.8-2.1 0-1.2.8-2.2 1.8-2.2s1.9 1 1.8 2.2c0 1.1-.8 2.1-1.8 2.1z">
+                                        </path>
+                                    </svg>
+                                    <span>Discord</span>
+                                </a>
+                                <a class="social-btn social-btn-donate" href="https://www.paypal.me/keazyea"
+                                    target="_blank" rel="noopener noreferrer">
+                                    <span>💸</span>
+                                    <span>Donate</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SETTINGS (was a modal, now its own page) -->
+
+                <!-- SETTINGS (was a modal, now its own page) -->
+                <div class="home-page-content" id="page-settings">
+                    <div class="page-panel">
+                        <h1>Settings</h1>
+
+                        <div class="settings-row">
+                            <div>
+                                <div class="settings-label">Google Account</div>
+                                <div class="settings-sub" id="googleStatusText">Not signed in — sign in to save progress
+                                    & unlock VIP</div>
+                            </div>
+                            <button class="btn-settings-action" id="googleSignInBtn" onclick="toggleGoogleSignIn()">Sign
+                                in</button>
+                        </div>
+
+                        <div class="settings-row">
+                            <div>
+                                <div class="settings-label">VIP Pass</div>
+                                <div class="settings-sub" id="vipStatusText">Inactive</div>
+                            </div>
+                            <button class="btn-settings-action" onclick="goToPage('store')">Manage</button>
+                        </div>
+
+                        <div class="settings-row">
+                            <div>
+                                <div class="settings-label">Privacy Policy</div>
+                                <div class="settings-sub">How your data is used</div>
+                            </div>
+                            <a class="btn-settings-action" href="privacy.html">View</a>
+                        </div>
+
+                        <div class="settings-row">
+                            <div>
+                                <div class="settings-label">Terms of Service</div>
+                                <div class="settings-sub">Rules for using this app</div>
+                            </div>
+                            <a class="btn-settings-action" href="terms.html">View</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PROFILE (was a modal, now its own page) -->
+                <div class="home-page-content" id="page-profile">
+                    <div class="page-panel">
+                        <h1>In-Game Profile</h1>
+
+                        <label class="field-label">In-game name</label>
+                        <input type="text" id="profileNameInput" class="profile-name-input"
+                            placeholder="Enter a name" />
+
+                        <label class="field-label">Avatar</label>
+                        <div class="avatar-picker-row">
+                            <img id="avatarPreview" class="avatar-preview-thumb" src="" alt="Avatar"
+                                onerror="this.src='images/KIH.jpg'">
+                            <button type="button" class="btn-settings-action" onclick="openAvatarModal()">Choose
+                                Avatar</button>
+                        </div>
+
+                        <label class="field-label">Bio</label>
+                        <textarea id="profileBioInput" class="profile-name-input" rows="3" maxlength="160"
+                            placeholder="Tell other commanders a bit about yourself..."></textarea>
+
+                        <label class="field-label">Favorite Troop</label>
+                        <input type="text" id="profileFavTroopInput" class="profile-name-input" list="troopNamesList"
+                            placeholder="Start typing...">
+                        <datalist id="troopNamesList"></datalist>
+
+                        <label class="field-label">Favorite Hero</label>
+                        <input type="text" id="profileFavHeroInput" class="profile-name-input" list="heroNamesList"
+                            placeholder="Start typing...">
+                        <datalist id="heroNamesList"></datalist>
+
+                        <label class="field-label">Highest Trophies</label>
+                        <input type="number" id="profileTrophiesInput" class="profile-name-input" min="0"
+                            placeholder="e.g. 5000">
+
+                        <label class="field-label">Current Clan</label>
+                        <input type="text" id="profileClanInput" class="profile-name-input" maxlength="60"
+                            placeholder="e.g. Dragon Warriors">
+
+                        <label class="field-label">Current Level (1–10000)</label>
+                        <input type="number" id="profileLevelInput" class="profile-name-input" min="1" max="10000"
+                            placeholder="1–10000">
+
+                        <label class="field-label">Current Power</label>
+                        <input type="text" inputmode="numeric" id="profilePowerInput" class="profile-name-input"
+                            placeholder="e.g. 6,700,000">
+
+                        <button class="btn-primary btn-block" onclick="saveProfile()">Save profile</button>
+                    </div>
+                </div>
+
+                <!-- INBOX (was a modal, now its own page) -->
+                <div class="home-page-content" id="page-inbox">
+                    <div class="page-panel">
+                        <h1>Inbox</h1>
+                        <div id="inboxList"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="unsaved-modal-overlay" id="unsavedModalOverlay">
+            <div class="unsaved-modal">
+                <div class="unsaved-modal-title">Unsaved Changes</div>
+                <div class="unsaved-modal-body">You have unsaved profile changes. Do you want to save before leaving?
+                </div>
+                <div class="unsaved-modal-actions">
+                    <button class="btn-secondary" id="unsavedDiscardBtn">Don't Save</button>
+                    <button class="btn-primary" id="unsavedSaveBtn">Save</button>
+                </div>
+            </div>
+        </div>
+        <!-- Mini profile view (from friend requests) -->
+        <div class="mini-modal-overlay" id="viewProfileModalOverlayHome">
+            <div class="mini-modal-box" style="max-width:360px; text-align:left;">
+                <div style="text-align:center;">
+                    <img id="viewProfileAvatarHome"
+                        style="width:84px; height:84px; border-radius:50%; object-fit:cover; background:var(--kih-border); margin-bottom:10px;"
+                        onerror="this.src='images/KIH.jpg'">
+                    <div id="viewProfileNameHome" style="font-weight:800; font-size:1.2rem; margin-bottom:4px;"></div>
+                    <div id="viewProfileBioHome"
+                        style="color:var(--kih-text-dim); font-size:0.85rem; margin-bottom:14px;"></div>
+                </div>
+                <div style="display:flex; flex-direction:column; margin-bottom:16px;">
+                    <div class="settings-row" style="padding:8px 0;">
+                        <span class="settings-label" style="font-size:0.85rem;">⭐ Level</span>
+                        <span id="viewProfileLevelHome"></span>
+                    </div>
+                    <div class="settings-row" style="padding:8px 0;">
+                        <span class="settings-label" style="font-size:0.85rem;">🏆 Highest Trophies</span>
+                        <span id="viewProfileTrophiesHome"></span>
+                    </div>
+                    <div class="settings-row" style="padding:8px 0;">
+                        <span class="settings-label" style="font-size:0.85rem;">⚔️ Power</span>
+                        <span id="viewProfilePowerHome"></span>
+                    </div>
+                    <div class="settings-row" style="padding:8px 0;">
+                        <span class="settings-label" style="font-size:0.85rem;">🏰 Clan</span>
+                        <span id="viewProfileClanHome"></span>
+                    </div>
+                    <div class="settings-row" style="padding:8px 0;">
+                        <span class="settings-label" style="font-size:0.85rem;">🗡️ Favorite Troop</span>
+                        <span id="viewProfileFavTroopHome"></span>
+                    </div>
+                    <div class="settings-row" style="padding:8px 0; border-bottom:none;">
+                        <span class="settings-label" style="font-size:0.85rem;">🦸 Favorite Hero</span>
+                        <span id="viewProfileFavHeroHome"></span>
+                    </div>
+                </div>
+                <button class="btn-settings-action btn-block" onclick="closeViewProfileModalHome()">Close</button>
+            </div>
+        </div>
+
+        <!-- Avatar picker popup -->
+        <div class="mini-modal-overlay" id="avatarModalOverlay">
+            <div class="mini-modal-box" style="max-width:420px;">
+                <h3 style="margin-top:0;">Choose an avatar</h3>
+                <div class="avatar-grid" id="avatarGrid"></div>
+                <button class="btn-settings-action" style="margin-top:16px;" onclick="closeAvatarModal()">Close</button>
+            </div>
+        </div>
+
+        <button class="scroll-bottom-btn" id="scrollBottomBtn" onclick="scrollActivePageToBottom()">↓</button>
+
+        <button class="scroll-bottom-btn" id="scrollBottomBtn" onclick="scrollActivePageToBottom()">↓</button>
+    </div>
+
+    <script type="module" src="appState.js"></script>
+    <script>
+        /* ============================================================
+           NOTE on avatars: I don't have access to your real images
+           folder from where this was generated, so this list is a
+           placeholder. Replace it with the actual filenames in your
+           images/ folder (e.g. "images/KNIGHT.jpg", "images/MAGE.jpg" …).
+           Any filename that fails to load is just skipped, so it's
+           safe to list more than you need.
+           ============================================================ */
+        const avatarOptions = [
+            "images/archer.jpg",
+            "images/infantry.jpg",
+            "images/catapult.jpg",
+            "images/undeadInfantry.jpg",
+            "images/undeadJavelin.jpg",
+            "images/golemInfantry.jpg",
+            "images/mageStudent.jpg",
+            "images/general.jpg",
+            "images/ironGuards.jpg",
+            "images/darkKnight.jpg",
+            "images/bomber.jpg",
+            "images/dragonRider.jpg",
+            "images/assasin.jpg",
+            "images/accurateMerida.jpg",
+            "images/necromancer.jpg",
+            "images/baronBenua.jpg",
+            "images/butcher.jpg",
+            "images/swordmasterHero.jpg",
+            "images/paladin.jpg",
+            "images/clericHero.jpg",
+            "images/boneDragon.jpg",
+            "images/lancer.jpg",
+            "images/undeadMage.jpg",
+            "images/ringleaderHero.jpg",
+            "images/alchemist.jpg",
+            "images/charmer.jpg",
+            "images/hunter.jpg",
+            "images/forestQueen.jpg",
+            "images/imp.jpg",
+            "images/nun.jpg",
+            "images/mountainsChampion.jpg",
+            "images/undeadWarrior.jpg",
+            "images/shaman.jpg",
+            "images/undeadGunner.jpg",
+            "images/monk.jpg",
+            "images/iceMage.jpg",
+            "images/undeadHeadless.jpg",
+            "images/airMage.jpg",
+            "images/flyingMonster.jpg",
+            "images/druid.jpg",
+            "images/damnCatapult.jpg",
+            "images/fireMage.jpg",
+            "images/spiderBlast.jpg",
+            "images/lightningElemental.jpg",
+            "images/magicArcher.jpg",
+            "images/darknessMage.jpg",
+            "images/stoneGolem.jpg",
+            "images/waterMage.jpg",
+            "images/pyrotechnician.jpg",
+            "images/undeadPirate.jpg",
+            "images/stormSpearman.jpg",
+            "images/sandMage.jpg",
+            "images/gravedigger.jpg",
+            "images/debafferOnMaunt.jpg",
+            "images/eliteWarrior.jpg",
+            "images/doubleShield.jpg",
+            "images/skeletonWarrior.jpg",
+            "images/undeadPestilence.jpg",
+            "images/windElemental.jpg",
+            "images/lordInquisitor.jpg",
+            "images/cursedGiant.jpg",
+            "images/vulkanGolem.jpg",
+            "images/phoenix.jpg",
+            "images/axeThrowers.jpg",
+            "images/cactus.jpg",
+            "images/bardHero.jpg",
+            "images/elevateTank.jpg",
+            "images/elevateSupport.jpg",
+            "images/elevateArcher.jpg",
+            "images/demonFat.jpg",
+            "images/demonTank.jpg",
+            "images/demonMage.jpg"
+        ];
+
+        /* ---------------- PAGE NAVIGATION ----------------
+           One function handles every destination: the 5 menu
+           sections AND settings/profile/inbox. Each just loads
+           its own data right before it's shown. */
+        async function goToPage(page) {
+            if (page !== "profile" && isProfileDirty()) {
+                let choice = await showUnsavedModal();
+                if (choice === "save") await saveProfile();
+            }
+
+            if (page !== "social") {
+                resetSocialIframeIfActive();
+            }
+
+            document.getElementById("homeLanding").classList.add("hidden");
+            document.getElementById("homeContentWrap").classList.add("active");
+            document.getElementById("homeTopbar").style.display = "none";
+            document.getElementById("pageTopbar").style.display = "flex";
+
+            document.querySelectorAll(".home-page-content").forEach(p => p.classList.remove("active"));
+            let target = document.getElementById("page-" + page);
+            target.classList.add("active");
+            target.scrollTop = 0;
+
+            if (page === "promo") {
+                let promoFrame = target.querySelector("iframe");
+                if (promoFrame) promoFrame.src = promoFrame.src;
+            }
+            if (page === "tips") {
+                let tipsFrame = target.querySelector("iframe");
+                if (tipsFrame) tipsFrame.src = tipsFrame.src;
+            }
+
+            if (page === "profile") await loadProfileIntoPage();
+            if (page === "settings") await loadSettingsIntoPage();
+            if (page === "inbox") { renderInboxList(mergedNotifications()); markInboxSeen(); }
+            setTimeout(updateScrollBottomBtn, 50);
+        }
+
+        function showUnsavedModal() {
+            return new Promise(resolve => {
+                let overlay = document.getElementById("unsavedModalOverlay");
+                overlay.classList.add("open");
+                document.getElementById("unsavedSaveBtn").onclick = () => {
+                    overlay.classList.remove("open");
+                    resolve("save");
+                };
+                document.getElementById("unsavedDiscardBtn").onclick = () => {
+                    overlay.classList.remove("open");
+                    resolve("discard");
+                };
+            });
+        }
+
+        // If the Social page is currently the active page, tell its iframe
+        // to reset (close any open chat/modal, back to the friend list)
+        // before we navigate away from it.
+        function resetSocialIframeIfActive() {
+            let socialPage = document.getElementById("page-social");
+            if (socialPage && socialPage.classList.contains("active")) {
+                let frame = socialPage.querySelector("iframe");
+                try {
+                    frame?.contentWindow?.resetSocialView?.();
+                } catch (e) {
+                    console.warn("Couldn't reset social view:", e);
+                }
+            }
+        }
+
+        async function goHome() {
+            if (isProfileDirty()) {
+                let choice = await showUnsavedModal();
+                if (choice === "save") {
+                    await saveProfile(); // calls goHome() again after saving
+                    return;
+                }
+                // "discard" falls through and continues leaving
+            }
+            resetSocialIframeIfActive();
+            document.getElementById("homeContentWrap").classList.remove("active");
+            document.getElementById("homeLanding").classList.remove("hidden");
+            document.getElementById("homeTopbar").style.display = "flex";
+            document.getElementById("pageTopbar").style.display = "none";
+            document.getElementById("scrollBottomBtn").classList.remove("visible");
+        }
+        function toggleMenu() {
+            document.getElementById("menuDropdown").classList.toggle("open");
+        }
+        function closeMenu() {
+            document.getElementById("menuDropdown").classList.remove("open");
+        }
+        document.addEventListener("click", (e) => {
+            let wrapper = document.querySelector(".menu-wrapper");
+            if (wrapper && !wrapper.contains(e.target)) closeMenu();
+        });
+        /* ---------------- PROFILE ---------------- */
+        function buildAvatarGrid(selected) {
+            let grid = document.getElementById("avatarGrid");
+            grid.innerHTML = "";
+            avatarOptions.forEach(src => {
+                let img = document.createElement("img");
+                img.src = src;
+                img.className = "avatar-option" + (src === selected ? " selected" : "");
+                img.onerror = function () { this.style.display = "none"; };
+                img.addEventListener("click", () => {
+                    document.querySelectorAll(".avatar-option").forEach(a => a.classList.remove("selected"));
+                    img.classList.add("selected");
+                    img.dataset.chosen = "true";
+                    updateAvatarPreview(src);
+                    closeAvatarModal();
+                });
+                grid.appendChild(img);
+            });
+        }
+
+        function updateAvatarPreview(src) {
+            document.getElementById("avatarPreview").src = src || "images/KIH.jpg";
+        }
+
+        function openAvatarModal() {
+            document.getElementById("avatarModalOverlay").classList.add("open");
+        }
+
+        function closeAvatarModal() {
+            document.getElementById("avatarModalOverlay").classList.remove("open");
+        }
+
+        // Auto-clamp Current Level to 1–10000 as soon as the user leaves
+        // the field, instead of just rejecting it on save.
+        document.getElementById("profileLevelInput").addEventListener("blur", function () {
+            if (this.value === "") return;
+            let val = parseInt(this.value, 10);
+            if (isNaN(val)) { this.value = ""; return; }
+            if (val > 10000) val = 10000;
+            if (val < 1) val = 1;
+            this.value = val;
+        });
+
+        document.getElementById("profilePowerInput").addEventListener("input", function () {
+            let digitsOnly = this.value.replace(/[^\d]/g, "");
+            this.value = digitsOnly ? Number(digitsOnly).toLocaleString("en-US") : "";
+        });
+        // Real troop/hero display names, loaded straight from the same JSON
+        // files troopsAndHeroes.html uses (troops.json/hero.json for the
+        // keys + isDisplayed flag, troopsLevel.json/heroLevel.json to know
+        // which ones actually have level data, localization.json + en.json
+        // to resolve the display name). Loaded once and cached.
+        let TROOP_NAMES = [];
+        let HERO_NAMES = [];
+        let troopHeroNamesLoaded = false;
+
+        async function loadTroopHeroNames() {
+            if (troopHeroNamesLoaded) return;
+            try {
+                const [troopsData, troopLevelData, heroData, heroLevelData, locData, enData] = await Promise.all([
+                    fetch("troops.json").then(r => r.json()),
+                    fetch("troopsLevel.json").then(r => r.json()),
+                    fetch("hero.json").then(r => r.json()),
+                    fetch("heroLevel.json").then(r => r.json()),
+                    fetch("localization.json").then(r => r.json()),
+                    fetch("en.json").then(r => r.json())
+                ]);
+
+                function resolveName(meta, key) {
+                    let locEntry = locData[meta.name];
+                    return locEntry ? (enData[locEntry.value] || meta.name) : (meta.name || key);
+                }
+
+                let troopHasLevels = new Set(Object.values(troopLevelData).map(t => t.troopId));
+                let heroHasLevels = new Set(Object.values(heroLevelData).map(h => h.heroId));
+
+                TROOP_NAMES = Object.keys(troopsData)
+                    .filter(key => troopsData[key].isDisplayed !== false && troopHasLevels.has(key))
+                    .map(key => resolveName(troopsData[key], key))
+                    .sort((a, b) => a.localeCompare(b));
+
+                HERO_NAMES = Object.keys(heroData)
+                    .filter(key => heroData[key].isDisplayed !== false && heroHasLevels.has(key))
+                    .map(key => resolveName(heroData[key], key))
+                    .sort((a, b) => a.localeCompare(b));
+
+                troopHeroNamesLoaded = true;
+            } catch (e) {
+                console.warn("Couldn't load troop/hero names:", e.message);
+            }
+        }
+
+        async function populateNameDatalists() {
+            await loadTroopHeroNames();
+            document.getElementById("troopNamesList").innerHTML = TROOP_NAMES.map(n => `<option value="${n}">`).join("");
+            document.getElementById("heroNamesList").innerHTML = HERO_NAMES.map(n => `<option value="${n}">`).join("");
+        }
+
+        let profileSnapshot = { name: "", avatar: "", bio: "", favoriteTroop: "", favoriteHero: "", highestTrophies: 0, currentClan: "", currentLevel: 0, currentPower: 0 };
+
+        async function loadProfileIntoPage() {
+            let profile = await AppState.getProfile();
+            document.getElementById("profileNameInput").value = profile.name;
+            document.getElementById("profileBioInput").value = profile.bio || "";
+            await populateNameDatalists();
+            document.getElementById("profileFavTroopInput").value = profile.favoriteTroop || "";
+            document.getElementById("profileFavHeroInput").value = profile.favoriteHero || "";
+            document.getElementById("profileTrophiesInput").value = profile.highestTrophies || "";
+            document.getElementById("profileClanInput").value = profile.currentClan || "";
+            document.getElementById("profileLevelInput").value = profile.currentLevel || "";
+            document.getElementById("profilePowerInput").value = profile.currentPower ? Number(profile.currentPower).toLocaleString("en-US") : "";
+            buildAvatarGrid(profile.avatar);
+            updateAvatarPreview(profile.avatar);
+            profileSnapshot = {
+                name: profile.name, avatar: profile.avatar, bio: profile.bio || "",
+                favoriteTroop: profile.favoriteTroop || "", favoriteHero: profile.favoriteHero || "",
+                highestTrophies: profile.highestTrophies || 0, currentClan: profile.currentClan || "",
+                currentLevel: profile.currentLevel || 0, currentPower: profile.currentPower || 0
+            };
+        }
+
+        function getCurrentProfileFormValues() {
+            let name = document.getElementById("profileNameInput").value.trim();
+            let bio = document.getElementById("profileBioInput").value.trim();
+            let chosen = document.querySelector(".avatar-option.selected");
+            let avatar = chosen ? chosen.getAttribute("src") : profileSnapshot.avatar;
+            let favoriteTroop = document.getElementById("profileFavTroopInput").value.trim();
+            let favoriteHero = document.getElementById("profileFavHeroInput").value.trim();
+            let highestTrophies = parseInt(document.getElementById("profileTrophiesInput").value, 10) || 0;
+            let currentClan = document.getElementById("profileClanInput").value.trim();
+            let currentLevel = parseInt(document.getElementById("profileLevelInput").value, 10) || 0;
+            let currentPower = parseInt(document.getElementById("profilePowerInput").value.replace(/[^\d]/g, ""), 10) || 0;
+            return { name, avatar, bio, favoriteTroop, favoriteHero, highestTrophies, currentClan, currentLevel, currentPower };
+        }
+
+        function isProfileDirty() {
+            if (!document.getElementById("page-profile").classList.contains("active")) return false;
+            let current = getCurrentProfileFormValues();
+            return Object.keys(current).some(k => current[k] !== profileSnapshot[k]);
+        }
+
+        async function saveProfile() {
+            let current = getCurrentProfileFormValues();
+            if (current.currentLevel && (current.currentLevel < 1 || current.currentLevel > 10000)) {
+                alert("Level must be between 1 and 10000.");
+                return;
+            }
+            try {
+                let claimed = await AppState.claimUsername(current.name || "Commander");
+                let updated = await AppState.setProfile({
+                    name: claimed.name, usernameKey: claimed.usernameKey, avatar: current.avatar, bio: current.bio,
+                    favoriteTroop: current.favoriteTroop, favoriteHero: current.favoriteHero,
+                    highestTrophies: current.highestTrophies, currentClan: current.currentClan,
+                    currentLevel: current.currentLevel, currentPower: current.currentPower
+                });
+                profileSnapshot = {
+                    name: updated.name, avatar: updated.avatar, bio: updated.bio || "",
+                    favoriteTroop: updated.favoriteTroop || "", favoriteHero: updated.favoriteHero || "",
+                    highestTrophies: updated.highestTrophies || 0, currentClan: updated.currentClan || "",
+                    currentLevel: updated.currentLevel || 0, currentPower: updated.currentPower || 0
+                };
+                await refreshTopbar();
+                goHome();
+            } catch (e) {
+                alert(e.message);
+            }
+        }
+        /* ---------------- SETTINGS ---------------- */
+        async function loadSettingsIntoPage() {
+            let user = AppState.getCurrentUser();
+            let profile = await AppState.getProfile();
+
+            document.getElementById("googleStatusText").textContent = user
+                ? "Signed in as " + user.email
+                : "Not signed in — sign in to save progress & unlock VIP";
+            document.getElementById("googleSignInBtn").textContent = user ? "Sign out" : "Sign in";
+
+            document.getElementById("vipStatusText").textContent = profile.vip ? "Active ✓" : "Inactive";
+        }
+
+        async function toggleGoogleSignIn() {
+            let user = AppState.getCurrentUser();
+            try {
+                if (user) {
+                    if (!confirm("Sign out of your Google account?")) return;
+                    await AppState.signOut();
+                } else {
+                    await AppState.signIn();
+                }
+                await loadSettingsIntoPage();
+                await refreshTopbar();
+            } catch (err) {
+                console.error("Google sign-in error:", err);
+                alert("Sign-in failed or was cancelled.");
+            }
+        }
+
+        /* ---------------- INBOX (live shared notifications, per-device "seen" marker) ---------------- */
+        let latestNotifications = [];
+
+
+
+
+        /* ---------------- TOPBAR ---------------- */
+        async function refreshTopbar() {
+            let profile = await AppState.getProfile();
+
+            let iconImg = document.getElementById("topbarAvatarIcon");
+            let iconFallback = document.getElementById("topbarAvatarFallback");
+            if (profile.avatar) {
+                iconImg.src = profile.avatar;
+                iconImg.style.display = "block";
+                iconFallback.style.display = "none";
+                iconImg.onerror = function () {
+                    iconImg.style.display = "none";
+                    iconFallback.style.display = "flex";
+                };
+            } else {
+                iconImg.style.display = "none";
+                iconFallback.style.display = "flex";
+            }
+
+            let dropdownIcon = document.getElementById("topbarAvatar");
+            let dropdownFallback = document.getElementById("topbarAvatarFallback2");
+            if (profile.avatar) {
+                dropdownIcon.src = profile.avatar;
+                dropdownIcon.style.display = "block";
+                dropdownFallback.style.display = "none";
+                dropdownIcon.onerror = function () {
+                    dropdownIcon.style.display = "none";
+                    dropdownFallback.style.display = "flex";
+                };
+            } else {
+                dropdownIcon.style.display = "none";
+                dropdownFallback.style.display = "flex";
+            }
+            document.getElementById("topbarName").textContent = "Profile";
+        }
+        function scrollActivePageToBottom() {
+            let active = document.querySelector(".home-page-content.active");
+            if (active) active.scrollTo({ top: active.scrollHeight, behavior: "smooth" });
+        }
+
+        function updateScrollBottomBtn() {
+            let active = document.querySelector(".home-page-content.active");
+            let btn = document.getElementById("scrollBottomBtn");
+            if (!active || active.id !== "page-profile") {
+                btn.classList.remove("visible");
+                return;
+            }
+            let hasOverflow = active.scrollHeight > active.clientHeight + 20;
+            let nearBottom = active.scrollTop + active.clientHeight >= active.scrollHeight - 20;
+            btn.classList.toggle("visible", hasOverflow && !nearBottom);
+        }
+
+        document.querySelectorAll(".home-page-content").forEach(page => {
+            page.addEventListener("scroll", updateScrollBottomBtn);
+        });
+
+        function loadNotificationsIntoPage() {
+            let prefs = JSON.parse(localStorage.getItem("kih_notifications") || "{}");
+            document.getElementById("notifyPromo").checked = prefs.promo !== false;
+            document.getElementById("notifyInbox").checked = prefs.inbox !== false;
+            document.getElementById("notifyClan").checked = prefs.clan !== false;
+        }
+
+        function saveNotificationPrefs() {
+            let prefs = {
+                promo: document.getElementById("notifyPromo").checked,
+                inbox: document.getElementById("notifyInbox").checked,
+                clan: document.getElementById("notifyClan").checked
+            };
+            localStorage.setItem("kih_notifications", JSON.stringify(prefs));
+        }
+
+        /* ---------------- FRIEND REQUESTS (topbar dropdown) ---------------- */
+        let unsubFriendReqsHome = null;
+
+        function escapeHomeHtml(str) {
+            return String(str || "").replace(/[&<>"']/g, s => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[s]));
+        }
+
+        function renderFriendReqsHome(requests) {
+            const badge = document.getElementById("friendReqBadgeHome");
+            badge.textContent = requests.length > 9 ? "9+" : String(requests.length);
+            badge.style.display = requests.length > 0 ? "flex" : "none";
+
+            const list = document.getElementById("friendReqListHome");
+            if (!requests.length) {
+                list.innerHTML = '<div class="friend-req-empty">No pending requests.</div>';
+                return;
+            }
+            list.innerHTML = requests.map(r => `
+                <div class="friend-req-item">
+                    <div class="friend-req-person" onclick="openViewProfileModalHome('${r.fromUid}', '${escapeHomeHtml(r.fromName).replace(/'/g, "\\'")}', '${escapeHomeHtml(r.fromAvatar || "")}')">
+                        <img class="friend-req-avatar" src="${escapeHomeHtml(r.fromAvatar || 'images/KIH.jpg')}" onerror="this.src='images/KIH.jpg'">
+                        <span class="friend-req-name">${escapeHomeHtml(r.fromName)}</span>
+                    </div>
+                    <div class="friend-req-actions">
+                        <button class="friend-req-mini-btn accept" onclick="respondReqHome('${r.id}', true)">Accept</button>
+                        <button class="friend-req-mini-btn decline" onclick="respondReqHome('${r.id}', false)">Decline</button>
+                    </div>
+                </div>
+            `).join("");
+        }
+        window.respondReqHome = async function (reqId, accept) {
+            try {
+                await AppState.respondToFriendRequest(reqId, accept);
+            } catch (e) {
+                alert(e.message);
+            }
+        };
+
+        function startFriendReqListenerHome() {
+            if (unsubFriendReqsHome) { unsubFriendReqsHome(); unsubFriendReqsHome = null; }
+            const user = AppState.getCurrentUser();
+            if (user) {
+                unsubFriendReqsHome = AppState.listenToIncomingFriendRequests(renderFriendReqsHome);
+            } else {
+                renderFriendReqsHome([]);
+            }
+        }
+
+        document.getElementById("friendReqBtnHome").addEventListener("click", (e) => {
+            e.stopPropagation();
+            document.getElementById("friendReqPanelHome").classList.toggle("open");
+        });
+        document.addEventListener("click", (e) => {
+            const wrapper = document.getElementById("friendReqWrapperHome");
+            if (wrapper && !wrapper.contains(e.target)) {
+                document.getElementById("friendReqPanelHome").classList.remove("open");
+            }
+        });
+
+        window.openViewProfileModalHome = async function (uid, fallbackName, fallbackAvatar) {
+            let overlay = document.getElementById("viewProfileModalOverlayHome");
+
+            // show something immediately using what we already have, then
+            // fill in the rest once the full public profile comes back
+            document.getElementById("viewProfileNameHome").textContent = fallbackName || "Commander";
+            document.getElementById("viewProfileAvatarHome").src = fallbackAvatar || "images/KIH.jpg";
+            document.getElementById("viewProfileBioHome").textContent = "";
+            document.getElementById("viewProfileLevelHome").textContent = "—";
+            document.getElementById("viewProfileTrophiesHome").textContent = "—";
+            document.getElementById("viewProfilePowerHome").textContent = "—";
+            document.getElementById("viewProfileClanHome").textContent = "—";
+            document.getElementById("viewProfileFavTroopHome").textContent = "—";
+            document.getElementById("viewProfileFavHeroHome").textContent = "—";
+            overlay.classList.add("open");
+
+            if (!uid) return;
+            let profile = await AppState.getPublicProfile(uid);
+            if (!profile) return; // fallback name/avatar stay as-is
+
+            document.getElementById("viewProfileNameHome").textContent = profile.name || fallbackName || "Commander";
+            document.getElementById("viewProfileAvatarHome").src = profile.avatar || fallbackAvatar || "images/KIH.jpg";
+            document.getElementById("viewProfileBioHome").textContent = profile.bio || "";
+            document.getElementById("viewProfileLevelHome").textContent = profile.currentLevel || "—";
+            document.getElementById("viewProfileTrophiesHome").textContent = profile.highestTrophies || "—";
+            document.getElementById("viewProfilePowerHome").textContent = profile.currentPower || "—";
+            document.getElementById("viewProfileClanHome").textContent = profile.currentClan || "—";
+            document.getElementById("viewProfileFavTroopHome").textContent = profile.favoriteTroop || "—";
+            document.getElementById("viewProfileFavHeroHome").textContent = profile.favoriteHero || "—";
+        };
+        window.closeViewProfileModalHome = function () {
+            document.getElementById("viewProfileModalOverlayHome").classList.remove("open");
+        };
+
+        let latestPersonalNotifications = [];
+        let unsubPersonalNotifs = null;
+
+        function mergedNotifications() {
+            return [...latestNotifications, ...latestPersonalNotifications]
+                .sort((a, b) => b.createdAt - a.createdAt);
+        }
+
+        function startPersonalNotifListener() {
+            if (unsubPersonalNotifs) { unsubPersonalNotifs(); unsubPersonalNotifs = null; }
+            if (!AppState.getCurrentUser()) {
+                latestPersonalNotifications = [];
+                renderInboxBadgeFrom(mergedNotifications());
+                return;
+            }
+            unsubPersonalNotifs = AppState.listenToPersonalNotifications((items) => {
+                latestPersonalNotifications = items;
+                renderInboxBadgeFrom(mergedNotifications());
+                if (document.getElementById("page-inbox").classList.contains("active")) {
+                    renderInboxList(mergedNotifications());
+                }
+            });
+        }
+
+        function renderInboxBadgeFrom(notifications) {
+            let lastSeenAt = parseInt(localStorage.getItem("kih_notif_last_seen_at") || "0", 10);
+            let inboxOpen = document.getElementById("page-inbox").classList.contains("active");
+            let unread = inboxOpen ? 0 : notifications.filter(n => {
+                // Personal notifications track their own read state per-doc.
+                if (n.type === "friendAccepted") return !n.read;
+                return n.createdAt > lastSeenAt;
+            }).length;
+            let show = unread > 0;
+            ["inboxBadgeHome", "inboxBadgeMenu"].forEach(id => {
+                let el = document.getElementById(id);
+                if (!el) return;
+                el.textContent = unread > 9 ? "9+" : String(unread);
+                el.style.display = show ? "flex" : "none";
+            });
+        }
+
+        function renderInboxList(notifications) {
+            let list = document.getElementById("inboxList");
+            if (!list) return;
+            if (notifications.length === 0) {
+                list.innerHTML = `<div class="inbox-empty">📭 Nothing here yet.<br>New promo codes, tips, and friend updates will show up here.</div>`;
+                return;
+            }
+            list.innerHTML = notifications.map(n => {
+
+                let button = "";
+                if (n.type === "promo") {
+                    button = `<button class="btn-primary" style="margin-top:8px; padding:6px 16px; font-size:0.85rem;" onclick="goToPage('promo')">View Promo Codes</button>`;
+                } else if (n.type === "tip") {
+                    button = `<button class="btn-primary" style="margin-top:8px; padding:6px 16px; font-size:0.85rem;" onclick="openInboxTip('${n.sourceId}')">View Tip</button>`;
+                } else if (n.type === "friendAccepted") {
+                    button = `<button class="btn-primary" style="margin-top:8px; padding:6px 16px; font-size:0.85rem;" onclick="openInboxFriendChat('${n.fromUid}', '${escapeHomeHtml(n.fromName).replace(/'/g, "\\'")}', '${escapeHomeHtml(n.fromAvatar || "")}')">💬 Message</button>`;
+                }
+                return `
+        <div class="inbox-item">
+            <div class="inbox-title">${n.title}</div>
+            <div class="inbox-body">${n.body}</div>
+            <div class="inbox-time">${new Date(n.createdAt).toLocaleString()}</div>
+            ${button}
+        </div>
+    `;
+            }).join("");
+        }
+
+        function markInboxSeen() {
+            localStorage.setItem("kih_notif_last_seen_at", String(Date.now()));
+            latestPersonalNotifications
+                .filter(n => !n.read)
+                .forEach(n => AppState.markPersonalNotificationRead(n.id));
+            renderInboxBadgeFrom(mergedNotifications());
+        }
+
+        // Jump into the Tips page and open a specific tip directly.
+        function openInboxTip(tipId) {
+            let frame = document.querySelector("#page-tips iframe");
+            let url = new URL(frame.getAttribute("src") || "tips.html", window.location.href);
+            if (tipId) url.searchParams.set("tipId", tipId);
+            frame.src = url.toString();
+            goToPage("tips");
+        }
+
+        // Jump into Social's Friends tab and auto-open the DM with this person.
+        function openInboxFriendChat(uid, name, avatar) {
+            let frame = document.querySelector("#page-social iframe");
+            let url = new URL(frame.getAttribute("src") || "social.html", window.location.href);
+            url.searchParams.set("dmUid", uid);
+            url.searchParams.set("dmName", name);
+            if (avatar) url.searchParams.set("dmAvatar", avatar);
+            frame.src = url.toString();
+            goToPage("social");
+        }
+
+        let unsubUnreadDmHome = null;
+        function startUnreadDmListenerHome() {
+            if (unsubUnreadDmHome) { unsubUnreadDmHome(); unsubUnreadDmHome = null; }
+            const user = AppState.getCurrentUser();
+            if (!user) { updateSocialUnreadBadgeHome(0); return; }
+            unsubUnreadDmHome = AppState.listenToUnreadDmCount(updateSocialUnreadBadgeHome);
+        }
+        function updateSocialUnreadBadgeHome(count) {
+            const badge = document.getElementById("socialUnreadBadgeHome");
+            if (!badge) return;
+            badge.textContent = count > 9 ? "9+" : String(count);
+            badge.style.display = count > 0 ? "flex" : "none";
+        }
+        document.addEventListener("DOMContentLoaded", () => {
+            AppState.listenToNotifications((notifications) => {
+                latestNotifications = notifications;
+                renderInboxBadgeFrom(mergedNotifications());
+                if (document.getElementById("page-inbox").classList.contains("active")) {
+                    renderInboxList(mergedNotifications());
+                }
+            });
+
+            AppState.onAuthChange(() => {
+                refreshTopbar();
+                startFriendReqListenerHome();
+                startPersonalNotifListener();
+                startUnreadDmListenerHome();
+            });
+            refreshTopbar();
+            AppState.waitForAuthReady().then(() => {
+                startFriendReqListenerHome();
+                startPersonalNotifListener();
+                startUnreadDmListenerHome();
+                AppState.touchLastActive();
+                setInterval(() => AppState.touchLastActive(), 5 * 60 * 1000);
+            });
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const gotoPage = urlParams.get("goto");
+            if (gotoPage) {
+                goToPage(gotoPage);
+            }
+        });
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,2778 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Social — Keazyea's Intelligence Hub</title>
+    <link rel="icon" href="images/KIH.jpg">
+    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+        .social-wrap {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 16px 40px;
+            box-sizing: border-box;
+        }
+
+        .social-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-shrink: 0;
+        }
+
+        .social-tab-btn {
+            flex: 1;
+            max-width: 300px;
+            padding: 10px 40px;
+            font-size: 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            background: #2a2a4a;
+            color: white;
+        }
+
+        .social-tab-btn.active {
+            background: #4169e1;
+            color: white;
+        }
+
+        .social-tab-panel {
+            display: none;
+        }
+
+        .social-tab-panel.active {
+            display: block;
+        }
+
+        #socialSignedInWrap {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .social-content-inner {
+            width: 100%;
+        }
+
+        .social-header-row {
+            position: relative;
+            margin-bottom: 6px;
+            flex-shrink: 0;
+        }
+
+        .friend-req-wrapper {
+            position: absolute;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+        }
+
+        .friend-req-btn {
+            background: #16162a;
+            border: 1px solid #2a2a4a;
+            color: white;
+            font-size: 1.4rem;
+            padding: 8px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .friend-req-btn:hover {
+            border-color: #4169e1;
+        }
+
+        .friend-req-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: #ff4d4f;
+            color: white;
+            font-size: 0.65rem;
+            min-width: 16px;
+            height: 16px;
+            border-radius: 8px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 0 3px;
+        }
+
+        .friend-req-badge.show {
+            display: flex;
+        }
+
+        .friend-req-panel {
+            display: none;
+            position: absolute;
+            top: 48px;
+            right: 0;
+            width: 300px;
+            max-height: 360px;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            background: #16162a;
+            border: 1px solid #2a2a4a;
+            border-radius: 12px;
+            padding: 10px;
+            z-index: 50;
+        }
+
+        .friend-req-panel.open {
+            display: block;
+        }
+
+        .friend-req-panel-title {
+            font-weight: bold;
+            color: #9a9ab0;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            padding: 4px 6px 8px;
+        }
+
+        .friend-req-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 8px 6px;
+            border-bottom: 1px solid #2a2a4a;
+        }
+
+        .friend-req-item:last-child {
+            border-bottom: none;
+        }
+
+        .friend-req-name {
+            font-weight: 600;
+        }
+
+        .friend-req-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #2a2a4a;
+            flex-shrink: 0;
+        }
+
+        .friend-req-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .mini-btn {
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .mini-btn.accept {
+            background: #4169e1;
+            color: white;
+        }
+
+        .mini-btn.decline {
+            background: #2a2a4a;
+            color: #aaa;
+        }
+
+        .friend-req-empty {
+            text-align: center;
+            color: #9a9ab0;
+            font-size: 0.85rem;
+            padding: 16px 6px;
+        }
+
+        /* ---- Clan board ---- */
+        .compose-box {
+            background: #20203a;
+            border: 1px solid #2a2a4a;
+            border-radius: 14px;
+            padding: 20px;
+            margin: 16px 0 22px;
+        }
+
+        .compose-box textarea {
+            width: 100%;
+            box-sizing: border-box;
+            min-height: 160px;
+            resize: vertical;
+            padding: 14px 16px;
+            border-radius: 8px;
+            border: 1px solid #2a2a4a;
+            background: #1a1a2e;
+            color: white;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        .compose-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .compose-hint {
+            color: #9a9ab0;
+            font-size: 0.8rem;
+        }
+
+        .post-btn {
+            padding: 10px 22px;
+            font-size: 0.95rem;
+            border-radius: 8px;
+        }
+
+        .post-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .signin-prompt {
+            text-align: center;
+            color: #d0d0da;
+        }
+
+        .signin-prompt button {
+            margin-top: 8px;
+        }
+
+        /* ---- Signed-out gate (mirrors promo.html's lock screen pattern) ---- */
+        .social-lock-screen {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .social-lock-icon {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        .social-signin-btn {
+            font-size: 1.15rem;
+            padding: 16px 32px;
+            margin-top: 16px;
+            border-radius: 12px;
+        }
+
+        .clan-post {
+            background: #16162a;
+            border: 1px solid #2a2a4a;
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .clan-post:hover {
+            border-color: #4169e1;
+        }
+
+        .clan-card-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            object-fit: cover;
+            background: #2a2a4a;
+            flex-shrink: 0;
+        }
+
+        /* after */
+        .clan-post-head {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .clan-post-head:hover .clan-post-name {
+            text-decoration: underline;
+        }
+
+        .clan-post-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #2a2a4a;
+            flex-shrink: 0;
+        }
+
+        .clan-post-name {
+            font-weight: 700;
+            color: #4169e1;
+        }
+
+        .clan-post-time {
+            color: #9a9ab0;
+            font-size: 0.75rem;
+            margin-left: auto;
+        }
+
+        .clan-post-body {
+            margin-top: 8px;
+            color: #eaeaf0;
+            white-space: pre-wrap;
+            line-height: 1.4;
+        }
+
+        .clan-post-footer {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 8px;
+        }
+
+        .report-link {
+            background: none;
+            border: none;
+            color: #9a9ab0;
+            font-size: 0.78rem;
+            cursor: pointer;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+        }
+
+        .report-link:hover {
+            color: #ff8080;
+        }
+
+        .clan-empty {
+            text-align: center;
+            color: #9a9ab0;
+            padding: 30px 10px;
+        }
+
+        /* ---- Clan board: full-width, filter bar, tag pills ---- */
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+        }
+
+        .social-wrap {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        .social-tab-panel.active {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .social-content-inner {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .clan-main {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .clan-toolbar {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+            flex-shrink: 0;
+        }
+
+        .clan-filter-btn {
+            position: relative;
+            background: #16162a;
+            border: 1px solid #2a2a4a;
+            color: white;
+            padding: 14px 20px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .clan-filter-btn:hover {
+            border-color: #4169e1;
+        }
+
+        .clan-filter-count {
+            background: #4169e1;
+            color: white;
+            font-size: 0.7rem;
+            border-radius: 10px;
+            padding: 1px 7px;
+            margin-left: 6px;
+        }
+
+        .clan-post-btn-big {
+            font-size: 1.05rem;
+            font-weight: 700;
+            padding: 16px 28px;
+            white-space: nowrap;
+        }
+
+        .clan-filter-dropdown {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: min(360px, calc(100vw - 32px));
+            max-height: min(70vh, 600px);
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            background: #16162a;
+            border: 1px solid #2a2a4a;
+            border-radius: 12px;
+            padding: 16px;
+            z-index: 60;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+        }
+
+        .clan-filter-dropdown.open {
+            display: block;
+        }
+
+        .clan-filter-section-title {
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: #9a9ab0;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            margin: 12px 0 8px;
+        }
+
+        .clan-filter-section-title:first-child {
+            margin-top: 0;
+        }
+
+        .tag-checkbox-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .tag-checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 0.92rem;
+        }
+
+        .trophy-tier-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .trophy-tier-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 14px;
+            border-radius: 20px;
+            border: 1px solid #2a2a4a;
+            background: #1a1a2e;
+            color: #c0c0e0;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .trophy-tier-pill input {
+            display: none;
+        }
+
+        .trophy-tier-pill.selected {
+            background: #4169e1;
+            border-color: #4169e1;
+            color: white;
+        }
+
+        .clan-filter-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 16px;
+        }
+
+        .clan-list-scroll {
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            padding-right: 4px;
+        }
+
+        .clan-card-server-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge-ios {
+            background: rgba(79, 195, 247, 0.15);
+            color: #4fc3f7;
+        }
+
+        .badge-android {
+            background: rgba(69, 170, 56, 0.15);
+            color: #45aa38;
+        }
+
+        .badge-both {
+            background: rgba(255, 196, 57, 0.15);
+            color: #ffd76b;
+        }
+
+        .clan-card-trophies {
+            color: #ffd76b;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .clan-tag-pill {
+            display: inline-block;
+            background: #2a2a4a;
+            color: #c0c0e0;
+            border-radius: 12px;
+            padding: 3px 10px;
+            font-size: 0.72rem;
+            margin: 4px 6px 0 0;
+        }
+
+        .modal-field-label {
+            display: block;
+            text-align: left;
+            margin-bottom: 4px;
+            color: #9a9ab0;
+            font-size: 0.85rem;
+        }
+
+        .modal-field-input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #2a2a4a;
+            background: #1a1a2e;
+            color: white;
+            margin-bottom: 12px;
+            font-family: inherit;
+        }
+
+        /* ---- Action sheet (click a poster) ---- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 16px;
+        }
+
+        /* Must render above the DM modal so opening a profile from inside
+           a chat is actually visible instead of stacking underneath it. */
+        #friendProfileModalOverlay {
+            z-index: 150;
+        }
+
+        /* Report modal can be triggered from inside an already-open DM or
+           profile popup, so it needs to outrank both of those layers. */
+        #reportModalOverlay {
+            z-index: 200;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal-box {
+            background: #16162a;
+            border: 1px solid #2a2a4a;
+            border-radius: 14px;
+            padding: 20px;
+            width: 100%;
+            max-width: 380px;
+            color: white;
+        }
+
+        .modal-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 14px;
+            text-align: center;
+        }
+
+        .modal-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .modal-actions button {
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+        }
+
+        .modal-cancel {
+            background: none;
+            border: 1px solid #2a2a4a;
+            color: #aaa;
+        }
+
+        /* ---- Report modal ---- */
+        .report-textarea {
+            width: 100%;
+            box-sizing: border-box;
+            min-height: 90px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid #2a2a4a;
+            background: #1a1a2e;
+            color: white;
+            font-family: inherit;
+            margin-bottom: 12px;
+        }
+
+        /* ---- DM modal ---- */
+        #dmModalOverlay {
+            padding: 0;
+        }
+
+        .dm-modal-box {
+            width: 100%;
+            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+            border-radius: 0;
+        }
+
+        .dm-actions-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 6px;
+            background: #16162a;
+            border: 1px solid #2a2a4a;
+            border-radius: 10px;
+            padding: 6px;
+            z-index: 60;
+            min-width: 150px;
+        }
+
+        .dm-actions-menu.open {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .dm-actions-menu button {
+            background: none;
+            border: none;
+            color: white;
+            text-align: left;
+            padding: 8px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.88rem;
+        }
+
+        .dm-actions-menu button:hover {
+            background: #2a2a4a;
+        }
+
+        /* ---- Post Clan modal: wider + scrollable so nothing gets cut off ---- */
+        .postclan-box {
+            max-width: 520px;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        /* ---- Highlight your own clan post in the list ---- */
+        .clan-post.my-post {
+            border: 2px solid #4169e1;
+            background: #1b1b3a;
+        }
+
+        .my-post-badge {
+            display: inline-block;
+            background: #4169e1;
+            color: white;
+            font-weight: 800;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            border-radius: 6px;
+            padding: 2px 8px;
+            margin-left: 8px;
+        }
+
+        .clan-post.my-post .clan-post-name {
+            color: #ffd76b;
+            font-weight: 900;
+        }
+
+        .edit-post-link {
+            background: none;
+            border: none;
+            color: #6c9bff;
+            font-size: 0.78rem;
+            cursor: pointer;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+            margin-right: 14px;
+        }
+
+        .edit-post-link:hover {
+            color: #9ab8ff;
+        }
+
+        .delete-post-link {
+            background: none;
+            border: none;
+            color: #ff8080;
+            font-size: 0.78rem;
+            cursor: pointer;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+        }
+
+        .delete-post-link:hover {
+            color: #ffb3b3;
+        }
+
+        .dm-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 18px;
+            border-bottom: 1px solid #2a2a4a;
+        }
+
+        .dm-header-name {
+            font-weight: 700;
+        }
+
+        .dm-close-btn {
+            background: none;
+            border: none;
+            color: #aaa;
+            font-size: 1.3rem;
+            cursor: pointer;
+        }
+
+        .dm-messages {
+            flex: 1;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            padding: 14px 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .dm-msg {
+            max-width: 78%;
+            padding: 9px 13px;
+            border-radius: 12px;
+            font-size: 0.92rem;
+            line-height: 1.35;
+            position: relative;
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+
+        .dm-msg.mine {
+            align-self: flex-end;
+            background: #4169e1;
+            color: white;
+        }
+
+        .dm-msg.theirs {
+            align-self: flex-start;
+            background: #2a2a4a;
+            color: #eaeaf0;
+        }
+
+        .dm-msg-report {
+            display: block;
+            margin-top: 4px;
+            font-size: 0.68rem;
+            opacity: 0.75;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .dm-msg-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 4px;
+        }
+
+        .dm-msg-action-link {
+            background: none;
+            border: none;
+            font-size: 0.68rem;
+            opacity: 0.75;
+            text-decoration: underline;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .dm-msg.mine .dm-msg-action-link {
+            color: #e6ecff;
+        }
+
+        .dm-msg.theirs .dm-msg-action-link {
+            color: #c0c0e0;
+        }
+
+        .dm-msg-quote {
+            display: block;
+            border-left: 3px solid rgba(255, 255, 255, 0.4);
+            padding: 4px 8px;
+            margin-bottom: 6px;
+            font-size: 0.8rem;
+            opacity: 0.85;
+            border-radius: 4px;
+            background: rgba(0, 0, 0, 0.15);
+            white-space: pre-wrap;
+        }
+
+        .dm-msg-edited-tag {
+            font-size: 0.65rem;
+            opacity: 0.6;
+            margin-left: 6px;
+        }
+
+        .dm-msg-edit-box {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 6px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(0, 0, 0, 0.2);
+            color: inherit;
+            font-family: inherit;
+            font-size: 0.92rem;
+            resize: vertical;
+            min-height: 50px;
+        }
+
+        .dm-msg-edit-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 6px;
+        }
+
+        .dm-reply-bar {
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 8px 14px;
+            background: #20203a;
+            border-top: 1px solid #2a2a4a;
+            font-size: 0.82rem;
+        }
+
+        .dm-reply-bar.open {
+            display: flex;
+        }
+
+        .dm-reply-bar-text {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            color: #c0c0e0;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .dm-reply-bar-cancel {
+            background: none;
+            border: none;
+            color: #9a9ab0;
+            font-size: 1rem;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .dm-input-row {
+            display: flex;
+            gap: 8px;
+            padding: 12px 14px;
+            border-top: 1px solid #2a2a4a;
+        }
+
+        .dm-input-row input {
+            flex: 1;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid #2a2a4a;
+            background: #1a1a2e;
+            color: white;
+        }
+
+        /* ---- Friends list ---- */
+        .friends-section-title {
+            color: #9a9ab0;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            margin: 22px 0 8px;
+        }
+
+        .friend-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #16162a;
+            border: 1px solid #2a2a4a;
+            border-radius: 12px;
+            padding: 10px 14px;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+
+        .friend-row:hover {
+            border-color: #4169e1;
+        }
+
+        .friend-row-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #2a2a4a;
+            flex-shrink: 0;
+        }
+
+        .friend-row-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .friend-row-name {
+            font-weight: 700;
+        }
+
+        .friend-row-status {
+            font-size: 0.75rem;
+            color: #9a9ab0;
+            margin-top: 2px;
+        }
+
+        .friend-status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #45aa38;
+            margin-right: 5px;
+        }
+
+        .friend-avatar-status-wrap {
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .online-dot {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #45aa38;
+            border: 2px solid #16162a;
+        }
+
+        .friend-search-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            flex-shrink: 0;
+        }
+
+        .friend-search-row input {
+            flex: 1;
+            min-width: 160px;
+            margin-bottom: 0;
+        }
+
+        .friend-search-row button {
+            flex-shrink: 0;
+        }
+
+
+
+        .friend-row-chevron {
+            color: #9a9ab0;
+            font-size: 1.1rem;
+        }
+
+        .friend-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #16162a;
+            border: 1px solid #2a2a4a;
+            border-radius: 20px;
+            padding: 6px 14px 6px 6px;
+            margin: 0 8px 8px 0;
+            cursor: pointer;
+        }
+
+        .friend-chip:hover {
+            border-color: #4169e1;
+        }
+
+        .friend-chip-avatar {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #2a2a4a;
+        }
+
+        #friendsSection {
+            flex-shrink: 0;
+        }
+
+        #suggestedFriendsSection {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* dark-themed scrollbar so it blends with the page instead of white */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1a2e;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #3a3a5a;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4a4a6a;
+        }
+
+        html {
+            scrollbar-color: #3a3a5a #1a1a2e;
+            scrollbar-width: thin;
+        }
+
+        .avatar-wrap {
+            position: relative;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            aspect-ratio: 1 / 1;
+        }
+
+        .avatar-wrap img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid #2a2a4a;
+            font-size: 0.88rem;
+        }
+
+        .profile-stat-row:last-child {
+            border-bottom: none;
+        }
+
+        .profile-stat-row span:first-child {
+            color: #9a9ab0;
+        }
+
+        .profile-stat-row span:last-child {
+            font-weight: 600;
+        }
+
+        .evidence-thumb-wrap {
+            position: relative;
+            width: 80px;
+            height: 80px;
+        }
+
+        .evidence-thumb-remove {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #c62828;
+            color: white;
+            border: none;
+            font-size: 0.75rem;
+            line-height: 1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .suggested-friends-scroll {
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            padding-right: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="social-wrap">
+        <div class="social-header-row">
+            <h1>Social</h1>
+            <div class="friend-req-wrapper">
+                <button class="friend-req-btn" id="friendReqBtn" title="Friend requests">
+                    👥<span class="friend-req-badge" id="friendReqBadge"></span>
+                </button>
+                <div class="friend-req-panel" id="friendReqPanel">
+                    <div class="friend-req-panel-title">Friend Requests</div>
+                    <div id="friendReqList">
+                        <div class="friend-req-empty">No pending requests.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Signed-out gate: shown instead of tabs/content until signed in -->
+        <div class="social-lock-screen" id="socialSignedOutState" style="display:none;">
+            <span class="social-lock-icon">🔒</span>
+            <h2>Sign in to use Social</h2>
+            <p class="compose-hint" style="font-size:0.95rem;">Sign in with Google to add friends, chat, and post your
+                clan for recruitment.</p>
+            <button class="btn-primary social-signin-btn" onclick="doSignIn()">Sign in with Google</button>
+        </div>
+
+        <div id="socialSignedInWrap">
+            <div class="social-tabs">
+                <button class="social-tab-btn active" id="tabBtnFriends"
+                    onclick="switchSocialTab('friends')">Friends<span class="clan-filter-count" id="dmUnreadBadge"
+                        style="display:none;"></span></button>
+                <button class="social-tab-btn" id="tabBtnClan" onclick="switchSocialTab('clan')">Clan
+                    Recruitment</button>
+            </div>
+
+            <!-- CLAN RECRUITMENT TAB -->
+            <div class="social-tab-panel" id="tabPanelClan">
+                <div class="social-content-inner">
+                    <div class="clan-main">
+                        <div class="clan-toolbar">
+                            <div style="position:relative;">
+                                <button class="clan-filter-btn" onclick="toggleClanFilterDropdown()">
+                                    ⚙️ Filter<span class="clan-filter-count" id="clanFilterCount"
+                                        style="display:none;"></span>
+                                </button>
+                                <div class="clan-filter-dropdown" id="clanFilterDropdown">
+                                    <div class="clan-filter-section-title">Server</div>
+                                    <select id="filterServer" class="modal-field-input" style="margin-bottom:0;"
+                                        onchange="onClanFilterChange()">
+                                        <option value="">Any</option>
+                                        <option value="ios">iOS</option>
+                                        <option value="android">Android</option>
+                                    </select>
+
+                                    <div class="clan-filter-section-title">Clan Traits</div>
+                                    <div class="tag-checkbox-list" id="filterTagList"></div>
+                                    <div class="clan-filter-actions">
+                                        <button class="field-clear-btn" onclick="clearAllClanFilters()">Clear
+                                            All</button>
+                                        <button class="btn-primary" style="padding:8px 18px;"
+                                            onclick="toggleClanFilterDropdown()">Done</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="signin-prompt" id="signinPrompt" style="display:none;">
+                                <button class="btn-primary clan-post-btn-big" onclick="doSignIn()">Sign in with Google
+                                    to
+                                    post</button>
+                            </div>
+                            <button class="btn-primary clan-post-btn-big" id="openPostModalBtn"
+                                onclick="openPostClanModal()" style="display:none;" data-requires-not-banned>📢 Post
+                                Your Clan</button>
+                        </div>
+
+                        <div class="clan-list-scroll" id="clanPostsList"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FRIENDS TAB -->
+            <div class="social-tab-panel active" id="tabPanelFriends">
+                <div class="social-content-inner">
+                    <div class="friend-search-row">
+                        <input type="text" id="friendSearchInput" class="modal-field-input"
+                            placeholder="Search friends by name..."
+                            onkeydown="if(event.key==='Enter') runFriendSearch();">
+                        <button class="btn-primary" onclick="runFriendSearch()">🔍 Search</button>
+                    </div>
+                    <div id="friendSearchResults" style="display:none; margin-bottom:20px;"></div>
+
+                    <div id="friendsSection">
+                        <div class="friends-section-title">Friends</div>
+                        <div id="friendsList"></div>
+                        <div class="clan-empty" id="friendsEmptyState" style="display:none;">
+                            👥 No friends yet.<br>Press search above to find friends.
+                        </div>
+                    </div>
+
+                    <div id="suggestedFriendsSection" style="display:none;">
+                        <div class="friends-section-title">Suggested Friends</div>
+                        <div id="suggestedFriendsList" class="suggested-friends-scroll"></div>
+                    </div>
+                </div>
+            </div>
+        </div><!-- /#socialSignedInWrap -->
+    </div>
+
+    <!-- Action sheet: click a poster -->
+    <div class="modal-overlay" id="actionModalOverlay">
+        <div class="modal-box">
+            <div class="modal-title" id="actionModalTitle"></div>
+            <div class="modal-actions" id="actionModalActions"></div>
+            <div class="modal-actions" style="margin-top:10px;">
+                <button class="modal-cancel" onclick="closeActionModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report modal -->
+    <div class="modal-overlay" id="reportModalOverlay">
+        <div class="modal-box">
+            <div class="modal-title">Report content</div>
+            <textarea class="report-textarea" id="reportReasonInput"
+                placeholder="What's wrong with this? (explicit content, harassment, scam, etc.)"></textarea>
+
+            <label class="modal-field-label">Evidence screenshots (optional, up to 5)</label>
+            <input type="file" id="reportEvidenceInput" accept="image/*" multiple style="display:none;">
+            <button type="button" class="btn-primary" id="reportEvidencePickBtn"
+                style="margin-bottom:8px; padding:8px 16px; font-size:0.9rem;" onclick="triggerEvidencePick()">📎 Add
+                Screenshots</button>
+            <span id="reportEvidenceCountText" class="compose-hint" style="margin-left:10px;"></span>
+            <div id="reportEvidencePreviewList" style="display:flex; flex-wrap:wrap; gap:8px; margin:10px 0 12px;">
+            </div>
+            <div class="modal-actions">
+                <button class="btn-primary" id="submitReportBtn" onclick="confirmSubmitReport()">Submit report</button>
+                <button class="modal-cancel" onclick="closeReportModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+    <!-- Info modal (replaces alert()) -->
+    <div class="modal-overlay" id="infoModalOverlay" style="z-index:250;">
+        <div class="modal-box" style="max-width:380px;">
+            <div class="modal-title" id="infoModalTitle"></div>
+            <p class="compose-hint" id="infoModalBody"
+                style="margin:0 0 18px; font-size:0.95rem; line-height:1.5; white-space:pre-wrap;"></p>
+            <div class="modal-actions">
+                <button class="btn-primary" onclick="closeInfoModal()">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm modal (replaces confirm()) -->
+    <div class="modal-overlay" id="confirmModalOverlay" style="z-index:250;">
+        <div class="modal-box" style="max-width:380px;">
+            <div class="modal-title" id="confirmModalTitle"></div>
+            <p class="compose-hint" id="confirmModalBody" style="margin:0 0 18px; font-size:0.95rem; line-height:1.5;">
+            </p>
+            <div class="modal-actions">
+                <button class="btn-primary" id="confirmModalYesBtn">Confirm</button>
+                <button class="modal-cancel" id="confirmModalCancelBtn">Cancel</button>
+            </div>
+        </div>
+    </div>
+    <!-- Post Clan modal -->
+    <div class="modal-overlay" id="postClanModalOverlay">
+        <div class="modal-box postclan-box">
+            <div class="modal-title" id="postClanModalTitle">Post Your Clan</div>
+            <div id="postClanCooldownNote" class="compose-hint" style="display:block; margin-bottom:14px;"></div>
+            <label class="modal-field-label">Clan Name</label>
+            <input type="text" id="postClanName" class="modal-field-input" placeholder="e.g. Kingdom Cash">
+
+            <label class="modal-field-label">Clan Icon (optional)</label>
+            <input type="file" id="postClanIconInput" accept="image/*" class="modal-field-input" style="padding:8px;">
+            <img id="postClanIconPreview"
+                style="display:none; max-width:100%; max-height:140px; margin-bottom:12px; border-radius:10px;">
+
+            <label class="modal-field-label">Server</label>
+            <select id="postClanServer" class="modal-field-input">
+                <option value="ios">iOS</option>
+                <option value="android">Android</option>
+
+            </select>
+
+            <label class="modal-field-label">Looking for members around how many trophies?</label>
+            <div class="trophy-tier-list" id="postClanTrophyTierList" style="margin-bottom:16px;"></div>
+
+            <label class="modal-field-label">Description (any extra requirements)</label>
+            <textarea id="postClanDescription" class="modal-field-input" maxlength="500" rows="4"></textarea>
+
+            <label class="modal-field-label">Clan Traits</label>
+            <div class="tag-checkbox-list" id="postClanTagList" style="margin-bottom:16px;"></div>
+            <div class="modal-actions">
+                <button class="btn-primary" id="submitPostClanBtn" onclick="submitClanPost()">Post</button>
+                <button class="modal-cancel" onclick="closePostClanModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Post agreement modal: must Agree before the post form opens -->
+    <div class="modal-overlay" id="postAgreeModalOverlay">
+        <div class="modal-box" style="max-width:400px;">
+            <div class="modal-title">Before you post</div>
+            <p class="compose-hint" style="margin:0 0 18px; font-size:0.95rem; line-height:1.5;">
+                📌 Your post stays live for 30 days, then it's automatically removed.
+                Posting again before then will replace your existing post — only your latest one is ever shown.
+            </p>
+            <div class="modal-actions">
+                <button class="btn-primary" onclick="confirmPostAgreement()">I Agree, Continue</button>
+                <button class="modal-cancel" onclick="closePostAgreeModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Post cooldown modal: shown instead of the form when still on cooldown -->
+    <div class="modal-overlay" id="postCooldownModalOverlay">
+        <div class="modal-box" style="max-width:400px;">
+            <div class="modal-title">You've already posted</div>
+            <p class="compose-hint" id="postCooldownMessage"
+                style="margin:0 0 18px; font-size:0.95rem; line-height:1.5;"></p>
+            <div class="modal-actions">
+                <button class="btn-primary" onclick="closePostCooldownModal()">Got it</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete post confirmation modal -->
+    <div class="modal-overlay" id="deleteConfirmModalOverlay">
+        <div class="modal-box" style="max-width:400px;">
+            <div class="modal-title">Delete this post?</div>
+            <p class="compose-hint" style="margin:0 0 18px; font-size:0.95rem; line-height:1.5;">
+                Deleting your post will <strong>NOT</strong> reset your posting cooldown — you'll still need to wait
+                the same amount of time before you can post again. Would you prefer to edit it instead?
+            </p>
+            <div class="modal-actions">
+                <button class="btn-primary" style="background:#2e7d32; border-color:#2e7d32;"
+                    onclick="editInsteadOfDelete()">✏️ Edit Instead</button>
+                <button class="btn-primary" style="background:#c62828; border-color:#c62828;"
+                    onclick="confirmDeleteClanPost()">🗑️ Confirm Delete</button>
+                <button class="modal-cancel" onclick="closeDeleteConfirmModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- View profile mini modal (from friend requests) -->
+    <div class="modal-overlay" id="viewProfileModalOverlay">
+        <div class="modal-box" style="max-width:340px; text-align:center;">
+            <img id="viewProfileAvatar"
+                style="width:84px; height:84px; border-radius:50%; object-fit:cover; background:#2a2a4a; margin-bottom:14px;"
+                onerror="this.src='images/KIH.jpg'">
+            <div id="viewProfileName" style="font-weight:800; font-size:1.2rem; margin-bottom:16px;"></div>
+            <div class="modal-actions">
+                <button class="modal-cancel" onclick="closeViewProfileModal()">Close</button>
+            </div>
+        </div>
+    </div>
+    <!-- Friend / suggested profile modal -->
+    <div class="modal-overlay" id="friendProfileModalOverlay">
+        <div class="modal-box" style="max-width:360px; max-height:85vh; overflow-y:auto; text-align:center;">
+            <div id="friendProfileAvatar" style="width:84px; height:84px; margin:0 auto 14px;"></div>
+            <div id="friendProfileName" style="font-weight:800; font-size:1.2rem; margin-bottom:6px;"></div>
+            <div id="friendProfileBio" class="compose-hint" style="margin-bottom:14px; display:none;"></div>
+
+            <div id="friendProfileStats"
+                style="text-align:left; background:#1a1a2e; border:1px solid #2a2a4a; border-radius:10px; padding:12px 16px; margin-bottom:16px; display:none;">
+                <div id="statFavTroop" class="profile-stat-row" style="display:none;"><span>⚔️ Favorite
+                        Troop</span><span></span></div>
+                <div id="statFavHero" class="profile-stat-row" style="display:none;"><span>🦸 Favorite
+                        Hero</span><span></span></div>
+                <div id="statTrophies" class="profile-stat-row" style="display:none;"><span>🏆 Highest
+                        Trophies</span><span></span></div>
+                <div id="statClan" class="profile-stat-row" style="display:none;"><span>🏰 Current
+                        Clan</span><span></span></div>
+                <div id="statLevel" class="profile-stat-row" style="display:none;"><span>⭐ Level</span><span></span>
+                </div>
+                <div id="statPower" class="profile-stat-row" style="display:none;"><span>💪 Power</span><span></span>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn-primary" id="friendProfileMessageBtn" style="display:none;">💬 Message</button>
+                <button class="btn-primary" id="friendProfileAddBtn" style="display:none;">➕ Add Friend</button>
+                <button class="btn-primary" id="friendProfileReportBtn"
+                    style="display:none; background:#aa7a1e; border-color:#aa7a1e;">🚩 Report</button>
+                <button class="btn-primary" id="friendProfileUnfriendBtn"
+                    style="display:none; background:#c62828; border-color:#c62828;">❌ Unfriend</button>
+                <button class="modal-cancel" onclick="closeFriendProfileModal()">Close</button>
+            </div>
+        </div>
+    </div>
+    <!-- Clan detail modal (full description shown only here) -->
+    <div class="modal-overlay" id="clanDetailModalOverlay">
+        <div class="modal-box" style="max-width:440px; text-align:left;">
+            <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
+                <img id="clanDetailIcon" class="clan-card-icon" style="width:56px; height:56px;"
+                    onerror="this.src='images/KIH.jpg'">
+                <div>
+                    <div id="clanDetailName" style="font-weight:800; font-size:1.2rem;"></div>
+                    <div id="clanDetailServer" style="margin-top:4px;"></div>
+                </div>
+            </div>
+            <div class="clan-card-trophies" id="clanDetailTrophies" style="margin-bottom:10px;"></div>
+            <div id="clanDetailTags" style="margin-bottom:6px;"></div>
+            <div class="clan-post-body" id="clanDetailDescription"></div>
+
+            <div class="clan-post-head" id="clanDetailPosterRow" style="margin-top:16px; cursor:pointer;">
+                <img class="clan-post-avatar" id="clanDetailAvatar" onerror="this.style.visibility='hidden'">
+                <span class="clan-post-name" id="clanDetailPosterName"></span>
+                <span class="clan-post-time" id="clanDetailTime"></span>
+            </div>
+            <div class="clan-post-footer">
+                <button class="report-link" id="clanDetailReportBtn">🚩 Report</button>
+            </div>
+
+            <div class="modal-actions" style="margin-top:14px;">
+                <button class="modal-cancel" onclick="closeClanDetailModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DM modal -->
+    <div class="modal-overlay" id="dmModalOverlay">
+        <div class="modal-box dm-modal-box">
+            <div class="dm-header">
+                <div style="display:flex; align-items:center; gap:10px; min-width:0;">
+                    <button class="dm-close-btn" onclick="closeDmModal()" title="Back"
+                        style="margin-right:2px;">←</button>
+                    <div id="dmHeaderProfileTrigger"
+                        style="display:flex; align-items:center; gap:10px; min-width:0; cursor:pointer;">
+                        <div id="dmHeaderAvatar" style="width:36px; height:36px; flex-shrink:0;"></div>
+                        <span class="dm-header-name" id="dmHeaderName"></span>
+                    </div>
+                </div>
+                <div style="display:flex; align-items:center; gap:6px; position:relative;">
+                    <button class="dm-close-btn" id="dmActionsBtn" title="More">⋮</button>
+                    <div class="dm-actions-menu" id="dmActionsMenu">
+                        <button onclick="dmReportCurrentFriend()">🚩 Report</button>
+                        <button id="dmBlockBtn" onclick="dmBlockCurrentFriend()">🚫 Block</button>
+                        <button onclick="dmDeleteChatCurrent()">🗑️ Delete Chat</button>
+                        <button onclick="dmUnfriendCurrentFriend()">❌ Unfriend</button>
+                    </div>
+                </div>
+            </div>
+            <div class="dm-messages" id="dmMessages"></div>
+            <div id="dmBlockedNotice" class="compose-hint"
+                style="display:none; padding:12px 16px; text-align:center; color:#ff8080; border-top:1px solid #2a2a4a;">
+                🚫 You've blocked this user. Unblock them to send messages.
+            </div>
+            <div class="dm-reply-bar" id="dmReplyBar">
+                <span class="dm-reply-bar-text" id="dmReplyBarText"></span>
+                <button class="dm-reply-bar-cancel" onclick="cancelReplyToMessage()" title="Cancel reply">✕</button>
+            </div>
+            <div class="dm-input-row" id="dmInputRow">
+                <input type="text" id="dmInput" placeholder="Type a message..." maxlength="2000"
+                    data-requires-not-banned>
+                <button class="btn-primary" style="padding:10px 18px; border-radius:8px;" onclick="sendDmFromInput()"
+                    data-requires-not-banned>Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="appState.js"></script>
+    <script type="module">
+        const CLAN_TAGS = [
+            { id: "active", label: "Active Clan" },
+            { id: "clanClash", label: "Plays Clan Clash" },
+            { id: "clanHunt", label: "Plays Clan Hunt" },
+            { id: "goldFarming", label: "Gold Farming" },
+            { id: "tips", label: "Shares tips and tricks" },
+            { id: "rev", label: "Clears revenges" }
+        ];
+
+        function buildTagCheckboxes(containerId, checkedIds) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = CLAN_TAGS.map(t => `
+                <label class="tag-checkbox-row">
+                    <input type="checkbox" value="${t.id}" ${checkedIds.includes(t.id) ? "checked" : ""}>
+                    ${t.label}
+                </label>
+            `).join("");
+        }
+
+        function getCheckedTags(containerId) {
+            return [...document.querySelectorAll(`#${containerId} input[type="checkbox"]:checked`)].map(el => el.value);
+        }
+
+        const TROPHY_TIERS = [0, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000];
+
+        function buildTrophyTierPicker(containerId, selected) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = TROPHY_TIERS.map(t => `
+                <label class="trophy-tier-pill ${selected === t ? "selected" : ""}">
+                    <input type="radio" name="${containerId}Radio" value="${t}" ${selected === t ? "checked" : ""}>
+                    ${t.toLocaleString()}+
+                </label>
+            `).join("");
+            container.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radio.addEventListener("change", () => {
+                    container.querySelectorAll(".trophy-tier-pill").forEach(p => p.classList.remove("selected"));
+                    radio.closest(".trophy-tier-pill").classList.add("selected");
+                });
+            });
+        }
+
+        function getSelectedTrophyTier(containerId) {
+            const checked = document.querySelector(`#${containerId} input[type="radio"]:checked`);
+            return checked ? parseInt(checked.value, 10) : 0;
+        }
+
+        function tagPillsHtml(tags) {
+            if (!tags || !tags.length) return "";
+            return tags.map(t => {
+                const found = CLAN_TAGS.find(ct => ct.id === t);
+                return `<span class="clan-tag-pill">${escapeHtml(found ? found.label : t)}</span>`;
+            }).join("");
+        }
+
+        let myProfile = null;
+        let incomingRequests = [];
+        let friends = [];
+        let currentActionTarget = null; // { uid, name }
+        let currentReportContext = null; // { type, targetUid, targetName, contentId, contentText }
+        let currentDmThreadId = null;
+        let currentDmOtherName = "";
+        let unsubDmMessages = null;
+        let replyingToMsg = null; // { id, senderUid, text } or null
+        let editingMsgId = null;  // id of the message currently being edited, or null
+        let editingPostId = null; // set when the post modal is open in "edit" mode
+        let pendingDeletePostId = null; // set while the delete-confirm modal is open
+        let reportEvidenceFiles = []; // accumulates across multiple "Choose Files" picks, up to 5
+
+        window.switchSocialTab = function (tab) {
+            document.getElementById("tabBtnClan").classList.toggle("active", tab === "clan");
+            document.getElementById("tabBtnFriends").classList.toggle("active", tab === "friends");
+            document.getElementById("tabPanelClan").classList.toggle("active", tab === "clan");
+            document.getElementById("tabPanelFriends").classList.toggle("active", tab === "friends");
+            if (tab === "friends") loadSuggestedFriends();
+        };
+        function avatarColorFor(name) {
+            const colors = ["#4169e1", "#aa7a1e", "#2e7d32", "#c62828", "#6c63ff", "#00897b", "#d81b60", "#ef6c00"];
+            let hash = 0;
+            const str = name || "?";
+            for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
+            return colors[Math.abs(hash) % colors.length];
+        }
+
+        function avatarHtml(url, name, sizeClass) {
+            const initial = (name || "?").trim().charAt(0).toUpperCase() || "?";
+            const color = avatarColorFor(name);
+            const safeUrl = url ? escapeHtml(url) : "";
+            return `<div class="avatar-wrap ${sizeClass}" style="background:${color};">
+                ${safeUrl ? `<img src="${safeUrl}" onerror="this.remove();">` : ""}
+                <span>${initial}</span>
+            </div>`;
+        }
+        function escapeHtml(str) {
+            return String(str || "").replace(/[&<>"']/g, s => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[s]));
+        }
+
+        function timeAgo(ts) {
+            return new Date(ts).toLocaleString();
+        }
+
+        function showToast(message) {
+            const toast = document.createElement("div");
+            toast.textContent = message;
+            toast.style.cssText = "position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:#16162a; border:1px solid #4169e1; color:white; padding:12px 20px; border-radius:10px; z-index:200; font-size:0.9rem; box-shadow:0 4px 12px rgba(0,0,0,0.4); max-width:80%; text-align:center;";
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.transition = "opacity 0.3s";
+                toast.style.opacity = "0";
+                setTimeout(() => toast.remove(), 300);
+            }, 2200);
+        }
+
+        function showActionToast(message, buttonLabel, onClick) {
+            const toast = document.createElement("div");
+            toast.style.cssText = "position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:#16162a; border:1px solid #4169e1; color:white; padding:14px 20px; border-radius:10px; z-index:200; font-size:0.9rem; box-shadow:0 4px 12px rgba(0,0,0,0.4); max-width:80%; text-align:center; display:flex; align-items:center; gap:14px; flex-wrap:wrap; justify-content:center;";
+            const text = document.createElement("span");
+            text.textContent = message;
+            toast.appendChild(text);
+            const btn = document.createElement("button");
+            btn.textContent = buttonLabel;
+            btn.className = "btn-primary";
+            btn.style.cssText = "padding:8px 16px; border-radius:8px; flex-shrink:0; border:none; cursor:pointer;";
+            btn.onclick = () => { onClick(); toast.remove(); };
+            toast.appendChild(btn);
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.transition = "opacity 0.3s";
+                toast.style.opacity = "0";
+                setTimeout(() => toast.remove(), 300);
+            }, 8000);
+        }
+        function showInfoModal(title, message) {
+            document.getElementById("infoModalTitle").textContent = title;
+            document.getElementById("infoModalBody").textContent = message;
+            document.getElementById("infoModalOverlay").classList.add("open");
+        }
+        window.closeInfoModal = function () {
+            document.getElementById("infoModalOverlay").classList.remove("open");
+        };
+
+        function showConfirmModal(title, message) {
+            return new Promise((resolve) => {
+                document.getElementById("confirmModalTitle").textContent = title;
+                document.getElementById("confirmModalBody").textContent = message;
+                const overlay = document.getElementById("confirmModalOverlay");
+                overlay.classList.add("open");
+                const yesBtn = document.getElementById("confirmModalYesBtn");
+                const cancelBtn = document.getElementById("confirmModalCancelBtn");
+                function cleanup(result) {
+                    overlay.classList.remove("open");
+                    yesBtn.onclick = null;
+                    cancelBtn.onclick = null;
+                    resolve(result);
+                }
+                yesBtn.onclick = () => cleanup(true);
+                cancelBtn.onclick = () => cleanup(false);
+            });
+        }
+
+        async function updateDmInputBlockedState() {
+            if (!currentDmOtherUid) return;
+            const blocked = await AppState.haveIBlocked(currentDmOtherUid);
+            document.getElementById("dmBlockedNotice").style.display = blocked ? "block" : "none";
+            document.getElementById("dmInputRow").style.display = blocked ? "none" : "flex";
+        }
+        function formatCooldown(ms) {
+            const hours = Math.ceil(ms / (60 * 60 * 1000));
+            if (hours <= 24) return `You can post again in about ${hours} hour(s).`;
+            const days = Math.ceil(hours / 24);
+            return `You can post again in about ${days} day(s).`;
+        }
+
+        /* ---------------- COMPOSE ---------------- */
+
+        function updateSocialAuthGate() {
+            const user = AppState.getCurrentUser();
+            document.getElementById("socialSignedOutState").style.display = user ? "none" : "block";
+            document.getElementById("socialSignedInWrap").style.display = user ? "flex" : "none";
+            const reqWrapper = document.querySelector(".friend-req-wrapper");
+            if (reqWrapper) reqWrapper.style.display = user ? "block" : "none";
+        }
+
+        async function refreshComposeBox() {
+            updateSocialAuthGate();
+            const user = AppState.getCurrentUser();
+            const signinPrompt = document.getElementById("signinPrompt");
+            const postBtn = document.getElementById("openPostModalBtn");
+            if (!user) {
+                signinPrompt.style.display = "block";
+                postBtn.style.display = "none";
+                return;
+            }
+            signinPrompt.style.display = "none";
+            postBtn.style.display = "inline-block";
+            myProfile = await AppState.getProfile();
+        }
+
+        window.doSignIn = async function () {
+            try {
+                await AppState.signIn();
+            } catch (e) {
+                showInfoModal("Sign-in failed", e.message);
+            }
+        };
+
+        /* ---------------- POST CLAN MODAL ---------------- */
+
+        window.openPostClanModal = async function () {
+            const user = AppState.getCurrentUser();
+            if (!user) { showInfoModal("Sign in required", "Sign in with Google first."); return; }
+
+            const profile = await AppState.getProfile();
+            if (AppState.isBannedNow(profile)) {
+                AppState.showRestrictedNotice(profile.banReason, profile.banUntil);
+                return;
+            }
+            if (!profile.name) { showInfoModal("Set your name", "Set an in-game name in your profile before posting."); return; }
+
+            editingPostId = null;
+
+            const remaining = await AppState.getClanPostCooldownRemaining();
+            if (remaining > 0) {
+                document.getElementById("postCooldownMessage").textContent =
+                    "You can't post again until " + new Date(Date.now() + remaining).toLocaleString() +
+                    " (" + formatCooldown(remaining) + ")";
+                document.getElementById("postCooldownModalOverlay").classList.add("open");
+                return;
+            }
+
+            document.getElementById("postAgreeModalOverlay").classList.add("open");
+        };
+
+        window.closePostCooldownModal = function () {
+            document.getElementById("postCooldownModalOverlay").classList.remove("open");
+        };
+
+        window.closePostAgreeModal = function () {
+            document.getElementById("postAgreeModalOverlay").classList.remove("open");
+        };
+
+        window.confirmPostAgreement = async function () {
+            document.getElementById("postAgreeModalOverlay").classList.remove("open");
+
+            const profile = await AppState.getProfile();
+            const note = document.getElementById("postClanCooldownNote");
+            const vip = AppState.isVipActive(profile);
+            note.textContent = vip ? "VIP: you can post once every 24 hours." : "You can post once every 7 days.";
+
+            document.getElementById("postClanModalTitle").textContent = "Post Your Clan";
+            document.getElementById("submitPostClanBtn").textContent = "Post";
+            document.getElementById("submitPostClanBtn").disabled = false;
+            document.getElementById("postClanName").value = "";
+            document.getElementById("postClanServer").value = "ios";
+            buildTrophyTierPicker("postClanTrophyTierList", 0);
+            document.getElementById("postClanDescription").value = "";
+            buildTagCheckboxes("postClanTagList", []);
+            document.getElementById("postClanIconInput").value = "";
+            document.getElementById("postClanIconPreview").style.display = "none";
+            document.getElementById("postClanModalOverlay").classList.add("open");
+        };
+
+
+        window.openEditClanModal = async function (postId) {
+            const p = allClanPosts.find(x => x.id === postId);
+            if (!p) return;
+
+            const profile = await AppState.getProfile();
+            if (AppState.isBannedNow(profile)) {
+                AppState.showRestrictedNotice(profile.banReason, profile.banUntil);
+                return;
+            }
+
+            editingPostId = postId;
+            window.scrollTo(0, 0);
+
+            document.getElementById("postClanCooldownNote").textContent = "Editing your existing post does not affect your posting cooldown.";
+            document.getElementById("postClanModalTitle").textContent = "Edit Your Clan Post";
+            document.getElementById("submitPostClanBtn").textContent = "Save Changes";
+            document.getElementById("submitPostClanBtn").disabled = false;
+
+            document.getElementById("postClanName").value = p.clanName || "";
+            document.getElementById("postClanServer").value = p.server || "ios";
+            buildTrophyTierPicker("postClanTrophyTierList", p.minTrophies || 0);
+            document.getElementById("postClanDescription").value = p.description || "";
+            buildTagCheckboxes("postClanTagList", p.tags || []);
+            document.getElementById("postClanIconInput").value = "";
+            document.getElementById("postClanIconPreview").style.display = "none";
+
+            document.getElementById("postClanModalOverlay").classList.add("open");
+        };
+
+        window.closePostClanModal = function () {
+            document.getElementById("postClanModalOverlay").classList.remove("open");
+            editingPostId = null;
+        };
+
+        document.getElementById("postClanIconInput").addEventListener("change", (e) => {
+            const file = e.target.files[0];
+            const preview = document.getElementById("postClanIconPreview");
+            if (!file) { preview.style.display = "none"; return; }
+            preview.src = URL.createObjectURL(file);
+            preview.style.display = "block";
+        });
+
+        window.submitClanPost = async function () {
+            const clanName = document.getElementById("postClanName").value;
+            const server = document.getElementById("postClanServer").value;
+            const minTrophies = getSelectedTrophyTier("postClanTrophyTierList");
+            const description = document.getElementById("postClanDescription").value;
+            const tags = getCheckedTags("postClanTagList");
+            const iconFile = document.getElementById("postClanIconInput").files[0];
+
+            const submitBtn = document.getElementById("submitPostClanBtn");
+            submitBtn.disabled = true;
+            const isEditing = !!editingPostId;
+            const oldPost = isEditing ? allClanPosts.find(p => p.id === editingPostId) : null;
+            const oldIconPath = oldPost ? oldPost.iconPath : null;
+
+            try {
+                let iconUrl = null;
+                let iconPath = null;
+                if (iconFile) {
+                    submitBtn.textContent = "Uploading icon...";
+                    const uploadResult = await AppState.uploadClanIcon(iconFile);
+                    iconUrl = uploadResult.iconUrl;
+                    iconPath = uploadResult.iconPath;
+                }
+
+                if (isEditing) {
+                    submitBtn.textContent = "Saving...";
+                    await AppState.updateClanPost(editingPostId, { clanName, server, minTrophies, description, tags, iconUrl, iconPath });
+                } else {
+                    submitBtn.textContent = "Posting...";
+                    await AppState.postClanRecruitMessage({ clanName, server, minTrophies, description, tags, iconUrl, iconPath });
+                }
+
+                // Replaced an existing icon with a new one — clean up the old file.
+                if (iconPath && oldIconPath && oldIconPath !== iconPath) {
+                    AppState.deleteClanIconSafe(oldIconPath);
+                }
+
+                document.getElementById("postClanName").value = "";
+                document.getElementById("postClanDescription").value = "";
+                document.getElementById("postClanIconInput").value = "";
+                document.getElementById("postClanIconPreview").style.display = "none";
+                closePostClanModal();
+            } catch (e) {
+                if (e.message !== "__RESTRICTED__") {
+                    showInfoModal("Couldn't post", e.message);
+                }
+            }
+            submitBtn.disabled = false;
+            submitBtn.textContent = isEditing ? "Save Changes" : "Post";
+        };
+
+        window.deleteClanPostConfirm = function (postId) {
+            window.scrollTo(0, 0);
+            pendingDeletePostId = postId;
+            document.getElementById("deleteConfirmModalOverlay").classList.add("open");
+        };
+
+        window.closeDeleteConfirmModal = function () {
+            document.getElementById("deleteConfirmModalOverlay").classList.remove("open");
+            pendingDeletePostId = null;
+        };
+
+        window.editInsteadOfDelete = function () {
+            const postId = pendingDeletePostId;
+            closeDeleteConfirmModal();
+            openEditClanModal(postId);
+        };
+
+        window.confirmDeleteClanPost = async function () {
+            try {
+                await AppState.deleteClanPost(pendingDeletePostId);
+                closeDeleteConfirmModal();
+            } catch (e) {
+                showInfoModal("Couldn't delete", e.message);
+            }
+        };
+
+        /* ---------------- FILTER DROPDOWN ---------------- */
+
+        window.toggleClanFilterDropdown = function () {
+            document.getElementById("clanFilterDropdown").classList.toggle("open");
+        };
+        document.addEventListener("click", (e) => {
+            const dropdown = document.getElementById("clanFilterDropdown");
+            const btn = e.target.closest(".clan-filter-btn");
+            if (dropdown && dropdown.classList.contains("open") && !dropdown.contains(e.target) && !btn) {
+                dropdown.classList.remove("open");
+            }
+        });
+
+        /* ---------------- CLAN POSTS + FILTERS ---------------- */
+
+        let allClanPosts = [];
+        const CLAN_FILTER_KEY = "kih_clan_filters";
+
+        function getClanFilters() {
+            try {
+                return JSON.parse(localStorage.getItem(CLAN_FILTER_KEY) || "{}");
+            } catch (e) {
+                return {};
+            }
+        }
+
+        function saveClanFilters(filters) {
+            localStorage.setItem(CLAN_FILTER_KEY, JSON.stringify(filters));
+        }
+
+        function loadClanFiltersIntoUI() {
+            const filters = getClanFilters();
+            document.getElementById("filterServer").value = filters.server || "";
+            buildTagCheckboxes("filterTagList", filters.tags || []);
+            document.querySelectorAll('#filterTagList input[type="checkbox"]').forEach(cb => {
+                cb.addEventListener("change", onClanFilterChange);
+            });
+            updateClanFilterCount();
+        }
+
+        function updateClanFilterCount() {
+            const filters = getClanFilters();
+            let count = 0;
+            if (filters.server) count++;
+            if (filters.tags && filters.tags.length) count += filters.tags.length;
+            const badge = document.getElementById("clanFilterCount");
+            badge.textContent = count;
+            badge.style.display = count > 0 ? "inline-block" : "none";
+        }
+
+        window.onClanFilterChange = function () {
+            const filters = {
+                server: document.getElementById("filterServer").value,
+                tags: getCheckedTags("filterTagList")
+            };
+            saveClanFilters(filters);
+            updateClanFilterCount();
+            applyClanFiltersAndRender();
+        };
+
+        window.clearAllClanFilters = function () {
+            saveClanFilters({});
+            document.getElementById("filterServer").value = "";
+            buildTagCheckboxes("filterTagList", []);
+            document.querySelectorAll('#filterTagList input[type="checkbox"]').forEach(cb => {
+                cb.addEventListener("change", onClanFilterChange);
+            });
+            updateClanFilterCount();
+            applyClanFiltersAndRender();
+        };
+
+        function serverBadgeHtml(server) {
+            const map = {
+                ios: ["iOS", "badge-ios"],
+                android: ["Android", "badge-android"],
+                both: ["iOS & Android", "badge-both"]
+            };
+            const entry = map[server] || [server || "Any", "badge-both"];
+            return `<span class="clan-card-server-badge ${entry[1]}">${escapeHtml(entry[0])}</span>`;
+        }
+
+        function renderClanPosts(posts) {
+            allClanPosts = posts;
+            applyClanFiltersAndRender();
+        }
+
+        function applyClanFiltersAndRender() {
+            const filters = getClanFilters();
+            let filtered = allClanPosts.filter(p => {
+                if (filters.server && p.server !== filters.server) return false;
+                if (filters.tags && filters.tags.length) {
+                    const postTags = p.tags || [];
+                    const hasAll = filters.tags.every(t => postTags.includes(t));
+                    if (!hasAll) return false;
+                }
+                return true;
+            });
+
+            const list = document.getElementById("clanPostsList");
+            if (!filtered.length) {
+                list.innerHTML = '<div class="clan-empty">📭 No recruitment posts match your filters.</div>';
+                return;
+            }
+            const myUid = AppState.getCurrentUser()?.uid;
+            list.innerHTML = filtered.map(p => {
+                const isMine = p.uid === myUid;
+                const footer = isMine
+                    ? `<button class="edit-post-link" onclick="event.stopPropagation(); openEditClanModal('${p.id}')">✏️ Edit</button>
+                       <button class="delete-post-link" onclick="event.stopPropagation(); deleteClanPostConfirm('${p.id}')">🗑️ Delete</button>`
+                    : `<button class="report-link" onclick="event.stopPropagation(); openReportModal('post', '${p.uid}', '${escapeHtml(p.name).replace(/'/g, "\\'")}', '${p.id}', ${escapeHtml(JSON.stringify(p.description || ""))})">🚩 Report</button>`;
+                return `
+                <div class="clan-post${isMine ? " my-post" : ""}" data-uid="${p.uid}" data-name="${escapeHtml(p.name)}" data-id="${p.id}" onclick="openClanDetailModal('${p.id}')">
+                    <div style="display:flex; align-items:center; gap:12px;">
+                        <img class="clan-card-icon" src="${escapeHtml(p.iconUrl || 'images/KIH.jpg')}" onerror="this.src='images/KIH.jpg'">
+                        <div style="flex:1; min-width:0;">
+                            <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+                                <span style="font-weight:800; font-size:1.15rem;">${escapeHtml(p.clanName || "Unnamed Clan")}${isMine ? '<span class="my-post-badge">Your Post</span>' : ""}</span>
+                                ${serverBadgeHtml(p.server)}
+                            </div>
+                            <div class="clan-card-trophies" style="margin-top:4px;">🏆 Looking for ${p.minTrophies ? Number(p.minTrophies).toLocaleString() + "+" : "any"} trophies</div>
+                            ${(p.tags && p.tags.length) ? `<div>${tagPillsHtml(p.tags)}</div>` : ""}
+                        </div>
+                    </div>
+                    
+<div class="clan-post-head" style="margin-top:16px; padding-top:10px; border-top:1px solid #2a2a4a; cursor:pointer;" onclick="event.stopPropagation(); onPosterClick('${p.uid}', '${escapeHtml(p.name).replace(/'/g, "\\'")}')">
+                        <img class="clan-post-avatar" src="${escapeHtml(p.avatar)}" onerror="this.style.visibility='hidden'">
+                        <span class="clan-post-name">${escapeHtml(p.name)}</span>
+                        <span class="clan-post-time">${timeAgo(p.createdAt)}</span>
+                    </div>
+                    <div class="clan-post-footer">
+                        ${footer}
+                    </div>
+                </div>`;
+            }).join("");
+        }
+
+        /* ---------------- CLAN DETAIL MODAL ---------------- */
+
+        window.openClanDetailModal = function (postId) {
+            const p = allClanPosts.find(x => x.id === postId);
+            if (!p) return;
+
+            document.getElementById("clanDetailIcon").src = p.iconUrl || "images/KIH.jpg";
+            document.getElementById("clanDetailName").textContent = p.clanName || "Unnamed Clan";
+            document.getElementById("clanDetailServer").innerHTML = serverBadgeHtml(p.server);
+
+            document.getElementById("clanDetailTrophies").textContent =
+                `🏆 Looking for ${p.minTrophies ? Number(p.minTrophies).toLocaleString() + "+" : "any"} trophies`;
+            document.getElementById("clanDetailTags").innerHTML = tagPillsHtml(p.tags);
+            document.getElementById("clanDetailDescription").textContent = p.description || "No additional description.";
+            document.getElementById("clanDetailAvatar").src = p.avatar;
+            document.getElementById("clanDetailPosterName").textContent = p.name;
+            document.getElementById("clanDetailTime").textContent = timeAgo(p.createdAt);
+
+            document.getElementById("clanDetailPosterRow").onclick = () => {
+                closeClanDetailModal();
+                onPosterClick(p.uid, p.name);
+            };
+
+            const myUid = AppState.getCurrentUser()?.uid;
+            const reportBtn = document.getElementById("clanDetailReportBtn");
+            if (p.uid === myUid) {
+                reportBtn.textContent = "✏️ Edit Post";
+                reportBtn.onclick = () => {
+                    closeClanDetailModal();
+                    openEditClanModal(p.id);
+                };
+            } else {
+                reportBtn.textContent = "🚩 Report";
+                reportBtn.onclick = () => {
+                    closeClanDetailModal();
+                    openReportModal("post", p.uid, p.name, p.id, p.description || "");
+                };
+            }
+
+            document.getElementById("clanDetailModalOverlay").classList.add("open");
+        };
+
+        window.closeClanDetailModal = function () {
+            document.getElementById("clanDetailModalOverlay").classList.remove("open");
+        };
+
+        /* ---------------- FRIEND REQUEST PANEL ---------------- */
+
+        window.toggleFriendReqPanel = function () {
+            document.getElementById("friendReqPanel").classList.toggle("open");
+        };
+        document.addEventListener("click", (e) => {
+            const wrapper = document.querySelector(".friend-req-wrapper");
+            if (wrapper && !wrapper.contains(e.target)) {
+                document.getElementById("friendReqPanel").classList.remove("open");
+            }
+        });
+        document.getElementById("friendReqBtn").addEventListener("click", (e) => {
+            e.stopPropagation();
+            window.toggleFriendReqPanel();
+        });
+
+        function renderFriendRequests(requests) {
+            incomingRequests = requests;
+            const badge = document.getElementById("friendReqBadge");
+            badge.textContent = requests.length > 9 ? "9+" : String(requests.length);
+            badge.classList.toggle("show", requests.length > 0);
+
+            const list = document.getElementById("friendReqList");
+            if (!requests.length) {
+                list.innerHTML = '<div class="friend-req-empty">No pending requests.</div>';
+                return;
+            }
+            list.innerHTML = requests.map(r => `
+                <div class="friend-req-item">
+                    <div class="friend-req-person" style="display:flex; align-items:center; gap:8px; cursor:pointer;" onclick="openViewProfileModal('${escapeHtml(r.fromName).replace(/'/g, "\\'")}', '${escapeHtml(r.fromAvatar || "")}')">
+                        ${avatarHtml(r.fromAvatar, r.fromName, "friend-req-avatar")}
+                        <span class="friend-req-name">${escapeHtml(r.fromName)}</span>
+                    </div>
+                    <div class="friend-req-actions">
+                        <button class="mini-btn accept" onclick="respondReq('${r.id}', true)">Accept</button>
+                        <button class="mini-btn decline" onclick="respondReq('${r.id}', false)">Decline</button>
+                    </div>
+                </div>
+            `).join("");
+        }
+
+        window.respondReq = async function (reqId, accept) {
+            try {
+                await AppState.respondToFriendRequest(reqId, accept);
+            } catch (e) {
+                showInfoModal("Couldn't respond", e.message);
+            }
+        };
+        window.showProfileModal = function (profile, isFriend) {
+            document.getElementById("friendProfileAvatar").innerHTML = avatarHtml(profile.avatar, profile.name, "");
+            document.getElementById("friendProfileName").textContent = profile.name;
+
+            const bioEl = document.getElementById("friendProfileBio");
+            if (profile.bio) { bioEl.textContent = profile.bio; bioEl.style.display = "block"; }
+            else { bioEl.style.display = "none"; }
+
+            const statMap = [
+                ["statFavTroop", profile.favoriteTroop],
+                ["statFavHero", profile.favoriteHero],
+                ["statTrophies", profile.highestTrophies ? Number(profile.highestTrophies).toLocaleString() : null],
+                ["statClan", profile.currentClan],
+                ["statLevel", profile.currentLevel || null],
+                ["statPower", profile.currentPower ? Number(profile.currentPower).toLocaleString() : null]
+            ];
+            statMap.forEach(([id, value]) => {
+                const row = document.getElementById(id);
+                row.querySelector("span:last-child").textContent = value || "—";
+                row.style.display = "flex";
+            });
+            document.getElementById("friendProfileStats").style.display = "block";
+            const msgBtn = document.getElementById("friendProfileMessageBtn");
+            const addBtn = document.getElementById("friendProfileAddBtn");
+            const reportBtn = document.getElementById("friendProfileReportBtn");
+            const unfriendBtn = document.getElementById("friendProfileUnfriendBtn");
+
+            msgBtn.style.display = isFriend ? "block" : "none";
+            unfriendBtn.style.display = isFriend ? "block" : "none";
+            reportBtn.style.display = isFriend ? "block" : "none";
+            addBtn.style.display = isFriend ? "none" : "block";
+
+            if (isFriend) {
+                msgBtn.onclick = () => { closeFriendProfileModal(); openDmWith(profile.uid, profile.name, profile.avatar); };
+                reportBtn.onclick = () => { closeFriendProfileModal(); openReportModal("profile", profile.uid, profile.name, profile.uid, ""); };
+                unfriendBtn.onclick = () => confirmUnfriend(profile.uid, profile.name);
+            } else {
+                addBtn.onclick = () => { closeFriendProfileModal(); sendFriendReqTo(profile.uid, profile.name); };
+            }
+
+            document.getElementById("friendProfileModalOverlay").classList.add("open");
+        };
+        window.closeFriendProfileModal = function () {
+            document.getElementById("friendProfileModalOverlay").classList.remove("open");
+        };
+
+        window.confirmUnfriend = async function (uid, name) {
+            if (!await showConfirmModal("Remove friend", `Remove ${name} from your friends? You can always send another friend request later.`)) return;
+            try {
+                await AppState.unfriend(uid);
+                closeFriendProfileModal();
+                showToast(`Removed ${name} from your friends.`);
+            } catch (e) {
+                showInfoModal("Couldn't remove friend", e.message);
+            }
+        };
+        window.openViewProfileModal = function (name, avatar) {
+            document.getElementById("viewProfileName").textContent = name;
+            document.getElementById("viewProfileAvatar").src = avatar || "images/KIH.jpg";
+            document.getElementById("viewProfileModalOverlay").classList.add("open");
+        };
+        window.closeViewProfileModal = function () {
+            document.getElementById("viewProfileModalOverlay").classList.remove("open");
+        };
+
+        /* ---------------- FRIENDS LIST ---------------- */
+
+        function formatLastActive(ts) {
+            if (!ts) return "Last active unknown";
+            const diffMs = Date.now() - ts;
+            if (diffMs < 5 * 60 * 1000) return `<span class="friend-status-dot"></span>Active now`;
+            const mins = Math.floor(diffMs / 60000);
+            if (mins < 60) return `Active ${mins}m ago`;
+            const hours = Math.floor(mins / 60);
+            if (hours < 24) return `Active ${hours}h ago`;
+            const days = Math.floor(hours / 24);
+            return `Active ${days}d ago`;
+        }
+
+        const ONLINE_THRESHOLD_MS = 5 * 60 * 1000;
+
+        function renderFriends(list) {
+            friends = list;
+            const container = document.getElementById("friendsList");
+            const empty = document.getElementById("friendsEmptyState");
+            if (!list.length) {
+                container.innerHTML = "";
+                empty.style.display = "block";
+                return;
+            }
+            empty.style.display = "none";
+            const myUid = AppState.getCurrentUser()?.uid;
+            // Clicking a friend jumps straight into the DM — report/unfriend/
+            // block still live inside the DM modal's ⋮ menu.
+            container.innerHTML = list.map((f) => {
+                const hasMsg = !!f.lastMessageAt;
+                const previewRaw = hasMsg
+                    ? (f.lastMessageSenderUid === myUid ? "You: " : "") + (f.lastMessageText || "")
+                    : "No messages yet";
+                const badge = f.unreadCount > 0
+                    ? `<span class="clan-filter-count" style="margin-left:6px; flex-shrink:0;">${f.unreadCount > 9 ? "9+" : f.unreadCount}</span>`
+                    : "";
+                const isOnline = !!f.lastActiveAt && (Date.now() - f.lastActiveAt) < ONLINE_THRESHOLD_MS;
+                return `
+        <div class="friend-row" onclick="openDmWith('${f.uid}', '${escapeHtml(f.name).replace(/'/g, "\\'")}', '${escapeHtml(f.avatar || "")}')">
+            <div class="friend-avatar-status-wrap">
+                ${avatarHtml(f.avatar, f.name, "friend-row-avatar")}
+                ${isOnline ? '<span class="online-dot" title="Online"></span>' : ""}
+            </div>
+            <div class="friend-row-info" style="min-width:0;">
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+                    <div class="friend-row-name" style="${f.unreadCount > 0 ? 'font-weight:800;' : ''}">${escapeHtml(f.name)}</div>
+                    ${hasMsg ? `<span style="color:#9a9ab0; font-size:0.72rem; flex-shrink:0;">${timeAgo(f.lastMessageAt)}</span>` : ""}
+                </div>
+                <div class="friend-row-status" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; ${f.unreadCount > 0 ? 'color:#eaeaf0; font-weight:600;' : ''}">${escapeHtml(previewRaw)}</div>
+            </div>
+            ${badge}
+        </div>`;
+            }).join("");
+        }
+
+        window.runFriendSearch = async function () {
+            const term = document.getElementById("friendSearchInput").value.trim();
+            const box = document.getElementById("friendSearchResults");
+            if (!term) { box.style.display = "none"; box.innerHTML = ""; return; }
+            box.style.display = "block";
+            box.innerHTML = `<div class="clan-empty">Searching...</div>`;
+            try {
+                const results = await AppState.searchUsersByName(term);
+                if (!results.length) {
+                    box.innerHTML = `<div class="clan-empty">No commanders found matching "${escapeHtml(term)}".</div>`;
+                    return;
+                }
+                window._lastSearchResults = results;
+                box.innerHTML = results.map((r, i) => `
+                    <div class="friend-row" onclick="showProfileModal(window._lastSearchResults[${i}], ${isFriendUid(r.uid)})">
+                        ${avatarHtml(r.avatar, r.name, "friend-row-avatar")}
+                        <div class="friend-row-info">
+                            <div class="friend-row-name">${escapeHtml(r.name)}</div>
+                            <div class="friend-row-status">${formatLastActive(r.lastActiveAt)}</div>
+                        </div>
+                        ${isFriendUid(r.uid)
+                        ? `<button class="mini-btn accept" onclick="event.stopPropagation(); openDmWith('${r.uid}', '${escapeHtml(r.name).replace(/'/g, "\\'")}')">Message</button>`
+                        : `<button class="mini-btn accept" onclick="event.stopPropagation(); sendFriendReqTo('${r.uid}', '${escapeHtml(r.name).replace(/'/g, "\\'")}')">Add</button>`}
+                    </div>
+                `).join("");
+            } catch (e) {
+                box.innerHTML = `<div class="clan-empty">${escapeHtml(e.message)}</div>`;
+            }
+        };
+
+        async function loadSuggestedFriends() {
+            const section = document.getElementById("suggestedFriendsSection");
+            const container = document.getElementById("suggestedFriendsList");
+            if (!AppState.getCurrentUser()) { section.style.display = "none"; return; }
+            try {
+                const suggestions = await AppState.getSuggestedFriends(10);
+                if (!suggestions.length) { section.style.display = "none"; return; }
+                section.style.display = "flex";
+                window._lastSuggestions = suggestions;
+                container.innerHTML = suggestions.map((s, i) => `
+    <div class="friend-row" onclick="openPersonActionSheet('${s.uid}', '${escapeHtml(s.name).replace(/'/g, "\\'")}', window._lastSuggestions[${i}], false)">
+        ${avatarHtml(s.avatar, s.name, "friend-row-avatar")}
+        <div class="friend-row-info">
+            <div class="friend-row-name">${escapeHtml(s.name)}</div>
+            <div class="friend-row-status">${formatLastActive(s.lastActiveAt)}</div>
+        </div>
+        <span class="friend-row-chevron">›</span>
+    </div>
+`).join("");
+            } catch (e) {
+                console.error("Couldn't load suggested friends:", e.message);
+                section.style.display = "none";
+            }
+        }
+
+        function isFriendUid(uid) {
+            return friends.some(f => f.uid === uid);
+        }
+
+        /* ---------------- ACTION SHEET (click a poster) ---------------- */
+
+        window.openPersonActionSheet = function (uid, name, profile, isFriend) {
+            document.getElementById("actionModalTitle").textContent = name;
+            window._lastActionSheetProfile = profile;
+            document.getElementById("actionModalActions").innerHTML = `
+                <button class="btn-primary" onclick="closeActionModal(); showProfileModal(window._lastActionSheetProfile, ${isFriend})">👤 View Profile</button>
+                ${isFriend
+                    ? `<button class="btn-primary" onclick="closeActionModal(); openDmWith('${uid}', '${escapeHtml(name).replace(/'/g, "\\'")}', '${escapeHtml(profile.avatar || "")}')">💬 Message</button>`
+                    : `<button class="btn-primary" onclick="closeActionModal(); sendFriendReqTo('${uid}', '${escapeHtml(name).replace(/'/g, "\\'")}')">➕ Add Friend</button>`}
+            `;
+            document.getElementById("actionModalOverlay").classList.add("open");
+        };
+
+        window.onPosterClick = async function (uid, name) {
+            const user = AppState.getCurrentUser();
+            if (!user) { showInfoModal("Sign in required", "Sign in with Google first."); return; }
+            if (uid === user.uid) return; // don't show actions on your own post
+
+            // Pull their full public profile (bio, level, trophies, power,
+            // clan, favorite troop/hero) so clicking a clan poster shows the
+            // same rich profile popup as Friends/Suggested Friends — with
+            // Message/Add Friend + Close at the bottom.
+            let profile = await AppState.getPublicProfile(uid);
+            if (!profile) profile = {};
+            profile.uid = uid;
+            profile.name = profile.name || name;
+
+            openPersonActionSheet(uid, name, profile, isFriendUid(uid));
+        };
+
+        window.closeActionModal = function () {
+            document.getElementById("actionModalOverlay").classList.remove("open");
+        };
+
+        window.sendFriendReqTo = async function (uid, name) {
+            try {
+                await AppState.sendFriendRequest(uid, name);
+                closeActionModal();
+                showToast("Friend request sent to " + name + "!");
+            } catch (e) {
+                if (e.message !== "__RESTRICTED__") {
+                    showInfoModal("Couldn't send request", e.message);
+                }
+            }
+        };
+
+        /* ---------------- REPORT MODAL ---------------- */
+
+        window.openReportModal = function (type, targetUid, targetName, contentId, contentText) {
+            const user = AppState.getCurrentUser();
+            if (!user) { showInfoModal("Sign in required", "Sign in with Google first to report something."); return; }
+            currentReportContext = { type, targetUid, targetName, contentId, contentText };
+            document.getElementById("reportReasonInput").value = "";
+            document.getElementById("reportEvidenceInput").value = "";
+            reportEvidenceFiles = [];
+            renderEvidencePreviews();
+            document.getElementById("reportModalOverlay").classList.add("open");
+            document.getElementById("reportReasonInput").focus();
+        };
+        window.closeReportModal = function () {
+            document.getElementById("reportModalOverlay").classList.remove("open");
+        };
+        function renderEvidencePreviews() {
+            const previewList = document.getElementById("reportEvidencePreviewList");
+            previewList.innerHTML = reportEvidenceFiles.map((file, i) => {
+                const url = URL.createObjectURL(file);
+                return `
+                    <div class="evidence-thumb-wrap">
+                        <img src="${url}" style="width:80px; height:80px; object-fit:cover; border-radius:10px;">
+                        <button type="button" class="evidence-thumb-remove" onclick="removeEvidenceFile(${i})" title="Remove">✕</button>
+                    </div>`;
+            }).join("");
+
+            const countText = document.getElementById("reportEvidenceCountText");
+            countText.textContent = reportEvidenceFiles.length
+                ? `${reportEvidenceFiles.length}/5 selected`
+                : "";
+        }
+        window.triggerEvidencePick = function () {
+            if (reportEvidenceFiles.length >= 5) {
+                showToast("Sorry, you've reached the limit of 5 screenshots.");
+                return;
+            }
+            document.getElementById("reportEvidenceInput").click();
+        };
+        window.removeEvidenceFile = function (index) {
+            reportEvidenceFiles.splice(index, 1);
+            renderEvidencePreviews();
+        };
+
+        document.getElementById("reportEvidenceInput").addEventListener("change", (e) => {
+            const newFiles = [...e.target.files];
+            if (!newFiles.length) return;
+
+            const combined = [...reportEvidenceFiles, ...newFiles];
+            if (combined.length > 5) {
+                showToast("Sorry, you've reached the limit of 5 screenshots.");
+            }
+            reportEvidenceFiles = combined.slice(0, 5);
+
+            e.target.value = "";
+            renderEvidencePreviews();
+        });
+        window.confirmSubmitReport = async function () {
+            const reason = document.getElementById("reportReasonInput").value.trim();
+            if (!reason) { showInfoModal("Missing info", "Please describe the issue."); return; }
+            const evidenceFiles = reportEvidenceFiles.slice(0, 5);
+            const submitBtn = document.getElementById("submitReportBtn");
+
+            submitBtn.disabled = true;
+            try {
+                // after
+                let evidenceUrls = [];
+                let evidencePaths = [];
+                if (evidenceFiles.length) {
+                    for (let i = 0; i < evidenceFiles.length; i++) {
+                        submitBtn.textContent = `Uploading evidence (${i + 1}/${evidenceFiles.length})...`;
+                        const uploadResult = await AppState.uploadReportEvidence(evidenceFiles[i]);
+                        evidenceUrls.push(uploadResult.evidenceUrl);
+                        evidencePaths.push(uploadResult.evidencePath);
+                    }
+                }
+                submitBtn.textContent = "Submitting...";
+                const ctx = currentReportContext;
+                const fullText = `[Reason: ${reason}]\n\nOriginal content: ${ctx.contentText || ""}`;
+                await AppState.submitReport(ctx.type, ctx.targetUid, ctx.targetName, ctx.contentId, fullText, evidenceUrls, evidencePaths);
+                closeReportModal();
+                showToast("Thanks — this has been reported.");
+            } catch (e) {
+                showInfoModal("Couldn't submit report", e.message);
+            }
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Submit report";
+        };
+        /* ---------------- DMs ---------------- */
+        document.getElementById("dmActionsBtn").addEventListener("click", (e) => {
+            e.stopPropagation();
+            document.getElementById("dmActionsMenu").classList.toggle("open");
+        });
+        document.addEventListener("click", (e) => {
+            const menu = document.getElementById("dmActionsMenu");
+            if (menu && menu.classList.contains("open") && !menu.contains(e.target) && e.target.id !== "dmActionsBtn") {
+                menu.classList.remove("open");
+            }
+        });
+
+        window.dmReportCurrentFriend = function () {
+            document.getElementById("dmActionsMenu").classList.remove("open");
+            openReportModal("profile", currentDmOtherUid, currentDmOtherName, currentDmOtherUid, "");
+        };
+        window.dmBlockCurrentFriend = async function () {
+            document.getElementById("dmActionsMenu").classList.remove("open");
+            if (!await showConfirmModal("Block user", `Block ${currentDmOtherName}? They won't be able to message you, and you won't be able to message them either unless you unblock.`)) return;
+            try {
+                await AppState.blockUser(currentDmOtherUid);
+                showToast(`Blocked ${currentDmOtherName}.`);
+                updateDmBlockButtonLabel();
+                updateDmInputBlockedState();
+            } catch (e) {
+                showInfoModal("Couldn't block", e.message);
+            }
+        };
+
+        window.dmUnblockCurrentFriend = async function () {
+            document.getElementById("dmActionsMenu").classList.remove("open");
+            if (!await showConfirmModal("Unblock user", `Unblock ${currentDmOtherName}?`)) return;
+            try {
+                await AppState.unblockUser(currentDmOtherUid);
+                showToast(`Unblocked ${currentDmOtherName}.`);
+                updateDmBlockButtonLabel();
+                updateDmInputBlockedState();
+            } catch (e) {
+                showInfoModal("Couldn't unblock", e.message);
+            }
+        };
+
+        async function updateDmBlockButtonLabel() {
+            const btn = document.getElementById("dmBlockBtn");
+            if (!currentDmOtherUid) return;
+            const blocked = await AppState.haveIBlocked(currentDmOtherUid);
+            btn.textContent = blocked ? "✅ Unblock" : "🚫 Block";
+            btn.onclick = blocked ? window.dmUnblockCurrentFriend : window.dmBlockCurrentFriend;
+        }
+
+        window.dmDeleteChatCurrent = async function () {
+            document.getElementById("dmActionsMenu").classList.remove("open");
+            if (!await showConfirmModal("Delete chat", `Delete all messages with ${currentDmOtherName}? This cannot be undone.`)) return;
+            try {
+                await AppState.deleteDmMessagesOnly(currentDmThreadId);
+                showToast("Chat deleted.");
+            } catch (e) {
+                showInfoModal("Couldn't delete chat", e.message);
+            }
+        };
+        window.dmUnfriendCurrentFriend = async function () {
+            document.getElementById("dmActionsMenu").classList.remove("open");
+            if (!await showConfirmModal("Remove friend", `Remove ${currentDmOtherName} from your friends? You can always send another friend request later.`)) return;
+            try {
+                await AppState.unfriend(currentDmOtherUid);
+                closeDmModal();
+                showToast(`Removed ${currentDmOtherName} from your friends.`);
+            } catch (e) {
+                showInfoModal("Couldn't remove friend", e.message);
+            }
+        };
+        let currentDmOtherUid = null;
+
+        window.openDmWith = async function (uid, name, avatar) {
+            const user = AppState.getCurrentUser();
+            if (!user) { showInfoModal("Sign in required", "Sign in with Google first."); return; }
+            try {
+                currentDmThreadId = await AppState.getOrCreateDmThread(uid, name);
+                currentDmOtherUid = uid;
+                currentDmOtherName = name;
+                document.getElementById("dmHeaderName").textContent = name;
+                document.getElementById("dmHeaderAvatar").innerHTML = avatarHtml(avatar, name, "");
+                document.getElementById("dmMessages").innerHTML = "";
+                document.getElementById("dmActionsMenu").classList.remove("open");
+                document.getElementById("dmModalOverlay").classList.add("open");
+                replyingToMsg = null;
+                editingMsgId = null;
+                document.getElementById("dmReplyBar").classList.remove("open");
+                updateDmBlockButtonLabel();
+                updateDmInputBlockedState();
+
+                document.getElementById("dmHeaderProfileTrigger").onclick = () => openDmHeaderProfile(uid, name);
+
+                if (unsubDmMessages) unsubDmMessages();
+                unsubDmMessages = AppState.listenToDmMessages(currentDmThreadId, renderDmMessages);
+
+                AppState.markDmThreadRead(currentDmThreadId);
+            } catch (e) {
+                showInfoModal("Couldn't open chat", e.message);
+            }
+        };
+
+        // Clicking the friend's avatar/name inside a chat shows their full
+        // profile (same rich popup used elsewhere) without leaving the DM.
+        window.openDmHeaderProfile = async function (uid, fallbackName) {
+            let profile = await AppState.getPublicProfile(uid);
+            if (!profile) profile = {};
+            profile.uid = uid;
+            profile.name = profile.name || fallbackName;
+            showProfileModal(profile, true); // true = isFriend, since DMs only exist between friends
+        };
+        function renderDmMessages(messages) {
+            window._lastDmMessages = messages; // so edit/cancel can re-render without a fresh snapshot
+            const user = AppState.getCurrentUser();
+            const box = document.getElementById("dmMessages");
+            box.innerHTML = messages.map(m => {
+                const mine = m.senderUid === user.uid;
+
+                const quoteHtml = m.replyToId
+                    ? `<span class="dm-msg-quote">${escapeHtml((m.replyToText || "").slice(0, 200))}</span>`
+                    : "";
+                const editedTag = m.editedAt ? `<span class="dm-msg-edited-tag">(edited)</span>` : "";
+
+                // Inline edit mode: swap the bubble body for a textarea + Save/Cancel.
+                if (editingMsgId === m.id) {
+                    return `<div class="dm-msg ${mine ? "mine" : "theirs"}">
+                        ${quoteHtml}
+                        <textarea class="dm-msg-edit-box" id="dmEditBox_${m.id}">${escapeHtml(m.text)}</textarea>
+                        <div class="dm-msg-edit-actions">
+                            <button class="mini-btn accept" onclick="saveEditMessage('${m.id}')">Save</button>
+                            <button class="mini-btn decline" onclick="cancelEditMessage()">Cancel</button>
+                        </div>
+                    </div>`;
+                }
+
+                const replyBtn = `<button class="dm-msg-action-link" onclick='startReplyToMessage("${m.id}", "${m.senderUid}", ${JSON.stringify((m.text || "").slice(0, 200))})'>↩ Reply</button>`;
+                const editBtn = mine
+                    ? `<button class="dm-msg-action-link" onclick='startEditMessage("${m.id}", ${JSON.stringify(m.text)})'>✏️ Edit</button>`
+                    : "";
+                const reportBtn = mine ? "" :
+                    `<button class="dm-msg-action-link" onclick='openReportModal("message", "${m.senderUid}", "${currentDmOtherName.replace(/"/g, '')}", "${m.id}", ${JSON.stringify(m.text)})'>🚩 Report</button>`;
+
+                return `<div class="dm-msg ${mine ? "mine" : "theirs"}">
+                    ${quoteHtml}
+                    ${escapeHtml(m.text)}${editedTag}
+                    <div class="dm-msg-actions">
+                        ${replyBtn}${editBtn}${reportBtn}
+                    </div>
+                </div>`;
+            }).join("");
+            box.scrollTop = box.scrollHeight;
+        }
+
+        window.startReplyToMessage = function (msgId, senderUid, text) {
+            replyingToMsg = { id: msgId, senderUid, text };
+            const isMine = senderUid === AppState.getCurrentUser()?.uid;
+            const label = isMine ? "You" : currentDmOtherName;
+            document.getElementById("dmReplyBarText").textContent = `Replying to ${label}: ${text}`;
+            document.getElementById("dmReplyBar").classList.add("open");
+            document.getElementById("dmInput").focus();
+        };
+
+        window.cancelReplyToMessage = function () {
+            replyingToMsg = null;
+            document.getElementById("dmReplyBar").classList.remove("open");
+        };
+
+        window.startEditMessage = function (msgId) {
+            editingMsgId = msgId;
+            renderDmMessages(window._lastDmMessages || []);
+            setTimeout(() => {
+                const box = document.getElementById("dmEditBox_" + msgId);
+                if (box) { box.focus(); box.setSelectionRange(box.value.length, box.value.length); }
+            }, 0);
+        };
+
+        window.cancelEditMessage = function () {
+            editingMsgId = null;
+            renderDmMessages(window._lastDmMessages || []);
+        };
+
+        window.saveEditMessage = async function (msgId) {
+            const boxEl = document.getElementById("dmEditBox_" + msgId);
+            if (!boxEl) return;
+            const newText = boxEl.value.trim();
+            if (!newText) return;
+
+            try {
+                await AppState.editDmMessage(currentDmThreadId, msgId, newText);
+                editingMsgId = null;
+
+                // Don't wait on the Firestore onSnapshot round-trip to close
+                // the edit box — patch our local copy of the messages and
+                // re-render immediately. The real snapshot will arrive a
+                // moment later and simply confirm/overwrite with the same data.
+                const messages = window._lastDmMessages || [];
+                const updated = messages.map(m =>
+                    m.id === msgId ? { ...m, text: newText, editedAt: Date.now() } : m
+                );
+                renderDmMessages(updated);
+            } catch (e) {
+                if (e.message !== "__RESTRICTED__") showInfoModal("Couldn't edit message", e.message);
+            }
+        };
+
+        window.closeDmModal = function () {
+            document.getElementById("dmModalOverlay").classList.remove("open");
+            if (unsubDmMessages) { unsubDmMessages(); unsubDmMessages = null; }
+            replyingToMsg = null;
+            editingMsgId = null;
+            document.getElementById("dmReplyBar").classList.remove("open");
+        };
+
+        // Called by home.html whenever the person navigates away from the
+        // Social page — closes any open chat/modal and resets back to the
+        // Friends tab so returning later always starts fresh.
+        window.resetSocialView = function () {
+            closeDmModal();
+            closeActionModal();
+            closeReportModal();
+            closePostClanModal();
+            closeClanDetailModal();
+            closeDeleteConfirmModal();
+            closePostAgreeModal();
+            closePostCooldownModal();
+            document.getElementById("dmActionsMenu")?.classList.remove("open");
+            document.getElementById("friendReqPanel")?.classList.remove("open");
+            document.getElementById("clanFilterDropdown")?.classList.remove("open");
+            switchSocialTab("friends");
+        };
+
+        window.sendDmFromInput = async function () {
+            const input = document.getElementById("dmInput");
+            const text = input.value;
+            if (!text.trim()) return;
+            try {
+                await AppState.sendDmMessage(currentDmThreadId, text, replyingToMsg);
+                input.value = "";
+                cancelReplyToMessage();
+            } catch (e) {
+                if (e.message === "__RESTRICTED__") return;
+                if (e.message === "__BLOCKED_BY_ME__") {
+                    showInfoModal("User blocked", "You've blocked this user. Unblock them to send a message.");
+                    return;
+                }
+                showInfoModal("Couldn't send message", e.message);
+            }
+        };
+        document.getElementById("dmInput").addEventListener("keydown", (e) => {
+            if (e.key === "Enter") window.sendDmFromInput();
+        });
+
+        /* ---------------- INIT ---------------- */
+
+        let unsubPosts = null, unsubReqs = null, unsubFriends = null, unsubUnreadDm = null;
+
+        function startLiveListeners() {
+            const user = AppState.getCurrentUser();
+            if (unsubReqs) { unsubReqs(); unsubReqs = null; }
+            if (unsubFriends) { unsubFriends(); unsubFriends = null; }
+            if (unsubUnreadDm) { unsubUnreadDm(); unsubUnreadDm = null; }
+            if (user) {
+                unsubReqs = AppState.listenToIncomingFriendRequests(renderFriendRequests);
+                unsubFriends = AppState.listenToFriendsWithDmMeta(renderFriends);
+                unsubUnreadDm = AppState.listenToUnreadDmCount(updateDmUnreadBadge);
+            } else {
+                renderFriendRequests([]);
+                renderFriends([]);
+                updateDmUnreadBadge(0);
+            }
+        }
+
+        function updateDmUnreadBadge(count) {
+            const badge = document.getElementById("dmUnreadBadge");
+            if (!badge) return;
+            badge.textContent = count > 9 ? "9+" : String(count);
+            badge.style.display = count > 0 ? "inline-block" : "none";
+        }
+
+        AppState.waitForAuthReady().then(async () => {
+            loadClanFiltersIntoUI();
+            await refreshComposeBox();
+            startLiveListeners();
+            unsubPosts = AppState.listenToClanPosts(renderClanPosts);
+            // Presence heartbeat now lives in appState.js and runs on every page,
+            // triggered by real activity — nothing to call here anymore.
+            // Re-render the friends list periodically so the online dot decays
+            // even if no new Firestore snapshot has fired.
+            setInterval(() => renderFriends(friends), 30 * 1000);
+            loadSuggestedFriends();
+
+            // Arrived here from an inbox notification ("Message" button) — open
+            // straight into the DM with that friend.
+            const params = new URLSearchParams(window.location.search);
+            const dmUid = params.get("dmUid");
+            if (dmUid) {
+                switchSocialTab("friends");
+                openDmWith(dmUid, params.get("dmName") || "Commander", params.get("dmAvatar") || "");
+            }
+        });
+        AppState.onAuthChange(async () => {
+            await refreshComposeBox();
+            startLiveListeners();
+        });
+    </script>
+</body>
+
+</html>

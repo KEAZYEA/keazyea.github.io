@@ -1,0 +1,2582 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Keazyea's Intelligence Hub</title>
+    <link rel="icon" href="images/KIH.jpg">
+    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+
+<body>
+    <div id="pageScroll">
+        <h1>Troops & Heroes</h1>
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('troops')">Troops & Heroes</button>
+            <button class="tab-btn" onclick="switchTab('compare')">Compare</button>
+        </div>
+        <div id="troopsPage" class="page active">
+            <div class="sticky-controls">
+                <div class="search-row">
+                    <input type="text" id="troopsSearch" placeholder="Search Troop/Hero" />
+                    <button type="button" class="clear-btn" onclick="clearSearch('troopsSearch')">Clear</button>
+                </div>
+                <div class="slider-row">
+                    <input type="range" min="1" max="10" value="1" id="troopsSlider" />
+                    <span id="troopsLevel">Level 1</span>
+                </div>
+                <div id="troopsBackBtnSlot"></div>
+            </div>
+            <div id="troopsResults"></div>
+            <div id="troopsCard"></div>
+        </div>
+
+        <div class="applies-to-modal-overlay" id="appliesToModalOverlay">
+            <div class="applies-to-modal-box">
+                <div class="applies-to-modal-title" id="appliesToModalTitle"></div>
+                <div id="appliesToModalBody"></div>
+                <button class="applies-to-close-btn" onclick="closeAppliesToList()">Close</button>
+            </div>
+        </div>
+
+        <div id="comparePage" class="page">
+            <div class="sticky-controls">
+                <div class="container">
+                    <div id="left">
+                        <div class="search-row">
+                            <input type="text" id="leftSearch" placeholder="Search Troop/Hero" />
+                            <button type="button" class="clear-btn" onclick="clearSearch('leftSearch')">Clear</button>
+                        </div>
+                        <div class="slider-row">
+                            <input type="range" min="1" max="10" value="1" id="leftSlider" />
+                            <span id="leftLevel">Level 1</span>
+                        </div>
+                        <div id="leftResults"></div>
+                    </div>
+                    <div id="right">
+                        <div class="search-row">
+                            <input type="text" id="rightSearch" placeholder="Search Troop/Hero" />
+                            <button type="button" class="clear-btn" onclick="clearSearch('rightSearch')">Clear</button>
+                        </div>
+                        <div class="slider-row">
+                            <input type="range" min="1" max="10" value="1" id="rightSlider" />
+                            <span id="rightLevel">Level 1</span>
+                        </div>
+                        <div id="rightResults"></div>
+                    </div>
+                </div>
+            </div>
+            <div id="compareCard"></div>
+        </div>
+
+        <script src="abilities.js"></script>
+        <script src="talents.js"></script>
+        <script>
+
+            /* ================================================================
+               SECTION 1: GLOBAL STATE
+               All mutable state variables shared across the app.
+               ================================================================ */
+
+            let troopMeta = {};
+            let troopLevels = {};
+
+            let hpAddModifierData = {};
+            let heroTalentLevelData = {};
+            let attackProbabilityModifierData = {};
+
+
+            let heroMeta = {};
+            let heroLevels = {};
+            let localization = {};
+            let en = {};
+            let heroList = [];
+            let troopList = [];
+
+            let selectleft = null;
+            let selectright = null;
+            let leftLevel = 1;
+            let rightLevel = 1;
+            let leftType = null;
+            let rightType = null;
+
+            let troopsLevel = 1;
+            let selectTroop = null;
+            let troopType = null;
+            let troopNavStack = [];
+            let galleryScrollY = 0;
+
+
+            let heroTalentData = {};
+
+            let summonMap = {};
+            let persistedOpenDescs = new Set();
+
+            let troopRoleDefs = {};
+            let troopRoleLinks = {};
+
+            /* ================================================================
+               SECTION 2: CONFIG / STATIC LOOKUP DATA
+               Constant maps, descriptions, and override tables used by the
+               rendering/helper functions below. No page-specific logic here.
+               ================================================================ */
+
+            const statDescriptions = {
+                // existing stat descriptions
+                // ===== ABILITY STAT DESCRIPTIONS =====
+                abilitiesCooldownMultiplier: "Multiplier applied to all ability cooldowns. Lower is better (e.g. 0.5 = half cooldown).",
+                absorbRadius: "Radius within which this unit pulls in, absorbs, or intercepts nearby enemies, projectiles, or effects (functions as an AoE radius for area-pull abilities).",
+                additionalAttack: "Bonus attack damage added on top of the unit's base attack.",
+                additionalHealth: "Bonus health granted to the summoned or buffed unit.",
+                aoeAngle: "The angle of the area-of-effect in degrees. 360 = hits all directions around the unit. Lower values = cone/directional attack.",
+                aoeAttack: "Damage dealt per tick or hit within the area-of-effect.",
+                aoeAttackInterval: "Time in seconds between each AoE damage tick. Lower is faster.",
+                aoeAttackType: "Whether the AoE damage is melee or ranged.",
+                aoeDamageInterval: "Interval in seconds between AoE damage pulses. Lower is faster.",
+                aoeDuration: "How long the AoE effect persists in seconds.",
+                aoeInterval: "Time between AoE activations in seconds. Lower is faster.",
+                aoeMaxTargets: "Maximum number of targets the AoE can hit per pulse.",
+                aoeMaxUnits: "Maximum number of units affected by the AoE at once.",
+                aoeNumber: "Number of AoE pulses or instances created.",
+                aoeRadius: "Radius of the area-of-effect. Larger = more units hit. -1 = single target",
+                aoeRadiusSizeChangeDuration: "How long the AoE radius takes to grow or shrink to its final size.",
+                aoeRectSizeX: "Width of a rectangular AoE zone.",
+                aoeRectSizeZ: "Depth/length of a rectangular AoE zone.",
+                aoeSpeed: "How fast the AoE zone moves if it travels.",
+                aoeTickPeriod: "Time between each AoE damage tick in seconds. Lower is faster.",
+                applyToBoss: "Whether this ability's effect applies to boss units.",
+                applyToHeroes: "Whether this ability's effect applies to hero units.",
+                approachDistance: "How close the unit must get to the target before this ability activates.",
+                aspd: "Attacks per second. Lower value = Faster attack rate.",
+                aspdAttack: "Attack speed used specifically during this ability's attack animation.",
+                aspdMultiplier: "Multiplier applied to attack speed while this ability is active.",
+                aspdTeleportIn: "Attack speed during the teleport-in animation.",
+                aspdTeleportOut: "Attack speed during the teleport-out animation.",
+                attack: "Base damage dealt by this ability per hit.",
+                attackAspd: "The attack speed stat used during this specific ability.",
+                attackCooldown: "Extra delay in seconds after attacking before the unit can attack again. Lower is better.",
+                attackInterval: "Time in seconds between each attack. Lower is faster.",
+                attackMultiplier: "Multiplier applied to the unit's base attack damage. Higher is better.",
+                attackMultiplierDelta: "How much the attack multiplier changes per stack or tick.",
+                attackNumber: "Number of hits or projectiles fired per attack.",
+                attackRange: "Distance at which this ability or unit can attack.",
+                attackSpeedMultiplier: "Multiplier applied to attack speed. Lower value = faster attacks.",
+                attackType: "Melee or ranged — the type of damage this ability deals.",
+                auraDuration: "How long the aura effect lasts in seconds.",
+                auraRadius: "Radius of the aura affecting nearby units.",
+                bigMeteorAttack: "Damage dealt by the large meteor impact.",
+                bigMeteorAttackType: "Damage type of the large meteor (melee/ranged).",
+                bigMeteorFallDuration: "Time in seconds for the large meteor to fall and land.",
+                bigMeteorFirstDelay: "Delay before the first large meteor is launched.",
+                bigMeteorInterval: "Time between successive large meteor strikes.",
+                bigMeteorRadius: "Impact radius of the large meteor.",
+                bigMeteoriteAoeRadius: "AoE radius of the large meteorite explosion.",
+                bleedAttackMultiplier: "Damage multiplier applied to bleed ticks.",
+                bleedDamage: "Damage dealt per bleed tick.",
+                blinkDistance: "Distance travelled per blink/teleport.",
+                blinkRadius: "Radius around the blink target point.",
+                buffAdditionalAttack: "Bonus attack granted to buffed allies.",
+                buffAoeRadius: "Radius in which the buff applies to allied units.",
+                buffDamageReduceCoefficient: "Percentage damage reduction applied to buffed allies. Higher = more reduction.",
+                buffDuration: "How long the buff lasts in seconds.",
+                buffModifier: "The specific stat modifier applied by this buff.",
+                chargeAoeRadius: "AoE radius triggered at the end of a charge.",
+                chargeAspd: "Attack speed during a charge attack.",
+                chargeAttack: "Damage dealt during a charge.",
+                chargeKillsCount: "Number of kills required to trigger a charge.",
+                chargeSpeed: "Movement speed during a charge.",
+                chargeStatId: "Internal ID of the stat modified by a charge.",
+                clawsDistance: "Distance the claw attack reaches.",
+                clawsMoveTime: "Time taken for the claw to travel to the target.",
+                clawsRadius: "Hit radius of the claw attack.",
+                cooldown: "Time in seconds before this ability can be used again. Lower is better.",
+                cooldownReduction: "Reduces the cooldown of this or another ability. Higher is better.",
+                damage: "Base damage dealt by this ability.",
+                damageBuff: "Bonus damage added on top of base damage.",
+                damageCount: "Number of times this ability deals damage, either as separate hits or periodic ticks.",
+                damageCureDuration: "Duration of a healing or cure effect triggered on damage.",
+                damageInterval: "Time between damage ticks in seconds. Lower is faster.",
+                damageMultiplier: "Multiplier on base damage. Higher is better.",
+                damageMultiplierForDeath: "Damage multiplier applied when the unit dies.",
+                damageReduceCoefficient: "How much incoming damage is reduced. Higher = more reduction.",
+                damageShape: "The shape of the damage hitbox (circle, rectangle, etc).",
+                dashAttack: "Damage dealt during a dash.",
+                dashDistance: "Distance covered during a dash.",
+                dashRadius: "Hit radius during a dash.",
+                dashSpeed: "Speed of the dash movement.",
+                deathAoeAttack: "Damage dealt in an AoE when this unit dies.",
+                deathAoeRadius: "Radius of the AoE triggered on this unit's death.",
+                deathAttackType: "Type of damage dealt on death (melee/ranged).",
+                deathSphereSpeed: "Speed of the projectile or sphere released on death.",
+                debuffDamageMultiplier: "Damage multiplier applied to debuffed targets. Higher is better.",
+                debuffDuration: "How long the debuff lasts on the target in seconds.",
+                delayBetweenShots: "Time in seconds between each shot in a multi-shot ability.",
+                devourTime: "Time in seconds to devour a target.",
+                distance: "General distance parameter for this ability's effect.",
+                duration: "How long this ability's effect lasts in seconds.",
+                durationAfterDamage: "How long the effect persists after receiving damage",
+                effectDuration: "Duration of the visual or gameplay effect applied.",
+                empowerDuration: "How long the empowered state lasts.",
+                empowerPoisonDamage: "Poison damage dealt while empowered.",
+                empowerPoisonDamageCount: "Number of poison ticks while empowered.",
+                empowerPoisonDamageInterval: "Interval between poison ticks while empowered.",
+                explodeOutsideLocation: "Whether the explosion triggers outside the unit's location.",
+                explosionAttack: "Damage dealt by an explosion.",
+                explosionDistance: "Distance the explosion travels or reaches.",
+                explosionMoveTime: "Time for the explosion to travel to the target.",
+                explosionRadius: "Radius of the explosion.",
+                explosionStunTime: "Duration of stun applied by the explosion.",
+                fallRadius: "Radius of the impact zone when this unit or object falls.",
+                fearDuration: "How long the fear effect lasts on targets.",
+                fearRadius: "Radius within which targets are feared.",
+                fearResetAttackDelay: "Delay before the feared unit can attack again after fear ends.",
+                fireGolemHealthThresholdCoefficient: "Health percentage threshold that triggers the golem's fire ability.",
+                flameAoeRadius: "Radius of the flame area-of-effect.",
+                flameCount: "Number of flame ticks applied.",
+                flameDamage: "Damage per flame tick.",
+                flameDuration: "How long the flame effect lasts.",
+                flameInterval: "Time between flame ticks. Lower is faster.",
+                flameTickPeriod: "Period between flame damage ticks. Lower is faster.",
+                flowDelay: "Delay before this ability's flow/movement effect starts (e.g. time before a toss/knock-up effect triggers).",
+                flowDuration: "How long the flow effect lasts (e.g. how long affected units stay knocked up/airborne and unable to act).",
+                flySpeed: "Speed of this unit or projectile while airborne.",
+                ghostLifetime: "How long the ghost unit persists before disappearing.",
+                goldMultiplier: "Multiplier applied to gold earned. Higher is better.",
+                group: "Whether this ability targets allies or enemies.",
+                healAmount: "Flat amount of health restored.",
+                healPercentPerTick: "Percentage of max health restored per tick.",
+                healthMultiplier: "Multiplier applied to the unit's health. Higher is better.",
+                hitDelayProportion: "Proportion of the attack animation that passes before the hit registers.",
+                isAttackReductedByDistance: "Whether damage falls off with distance.",
+                isDefaultDamage: "Whether this uses the unit's default damage calculation.",
+                isImmortalWhenActive: "Whether the unit cannot die while this ability is active.",
+                jumpSpeed: "Speed of the unit's jump.",
+                keepWhenSourceKilled: "Whether this effect persists even if the casting unit dies.",
+                lightningAoeRadius: "Radius of the lightning strike AoE.",
+                lightningAttack: "Damage dealt by the lightning strike.",
+                lightningCount: "Number of lightning strikes triggered.",
+                lightningDelay: "Delay between lightning strikes.",
+                maxCount: "Maximum number of instances or stacks of this effect.",
+                maxDistance: "Maximum distance this ability can reach.",
+                maxEnemies: "Maximum number of enemies this ability can target.",
+                maxJumpRange: "Maximum range for a jump attack.",
+                maxNumEnemies: "Maximum enemies hit per activation.",
+                maxUseCount: "Maximum number of times this ability can be used.",
+                meleeDamageMultiplier: "Damage multiplier applied specifically to melee attacks.",
+                meteoriteAoeDamage: "Damage dealt by a small meteorite AoE.",
+                meteoriteFallDuration: "Time for a meteorite to fall and land.",
+                meteoriteSummonTriggerCount: "Number of triggers required to summon a meteorite.",
+                minAttackDistance: "Minimum distance required before this unit can attack. Higher = can attack from further.",
+                minBlinkDistance: "Minimum distance required to trigger a blink.",
+                minChargeRange: "Minimum range required to trigger a charge.",
+                minJumpRange: "Minimum range required for a jump attack.",
+                modelScaleDelta: "How much the unit's visual scale changes during this ability.",
+                modifier: "The stat or effect this ability modifies.",
+                modifierDuration: "How long the modifier effect lasts.",
+                modifierTime: "Time before the modifier takes effect.",
+                moveSpeed: "Movement speed of the unit or summoned entity.",
+                moveSpeedMultiplier: "Multiplier applied to movement speed.",
+                numAdditionalCenters: "Number of extra AoE centers spawned.",
+                numAoe: "Number of AoE zones created.",
+                numAoes: "Total number of AoE instances.",
+                numBigMeteor: "Number of large meteors summoned.",
+                numBlinks: "Number of times the unit teleports or repositions during this ability.",
+                numPuddles: "Number of puddles created.",
+                numRebirths: "Number of times this unit can revive.",
+                numShots: "Number of projectiles fired per activation.",
+                numSummons: "Number of units summoned.",
+                ownerAspd: "Attack speed modifier applied to the owner while this ability is active.",
+                poisonCount: "Number of poison ticks applied.",
+                poisonDamage: "Damage per poison tick.",
+                poisonDamageCount: "Total number of poison damage instances.",
+                poisonDamageInterval: "Time between poison ticks. Lower is faster.",
+                poisonInterval: "Interval between poison applications.",
+                poisonLifetime: "How long the poison effect lasts.",
+                projectileSpeed: "Speed of the projectile fired by this ability.",
+                puddleRadius: "Radius of the puddle effect.",
+                puddlesInterval: "Time between puddle spawns.",
+                pullDuration: "How long the pull effect lasts.",
+                pushDistance: "Distance the target is pushed back.",
+                radius: "General radius of this ability's effect.",
+                radiusFinish: "Final radius after the AoE expands.",
+                radiusStart: "Starting radius before the AoE expands.",
+                rangeDamageMultiplier: "Damage multiplier applied specifically to ranged attacks.",
+                rebirthEffect: "The effect applied when this unit is reborn.",
+                rectAngle: "Angle of the rectangular AoE zone.",
+                rectHeight: "Height of the rectangular AoE zone.",
+                rectWidth: "Width of the rectangular AoE zone.",
+                regenerationDelay: "Time the unit remains incapacitated/dormant before reviving or regenerating. Lower is better.",
+                resetAttackDelay: "Delay before the unit can attack again after this ability fires.",
+                restoreDelay: "Delay before a restore effect activates.",
+                rotationSpeed: "Speed at which this ability or effect rotates.",
+                smallMeteoriteAoeRadius: "AoE radius of a small meteorite impact.",
+                speed: "General speed parameter for this ability's movement or projectile.",
+                speedMultiplier: "Multiplier applied to speed.",
+                squeezeDelay: "Delay before the squeeze effect activates.",
+                squeezeMoveTime: "Time for the squeeze movement to complete.",
+                squeezeRadius: "Radius of the squeeze effect.",
+                stormCloudRadius: "Radius of the storm cloud effect.",
+                stunTime: "Duration of the stun applied to targets in seconds.",
+                summonDelay: "Delay before the summoned unit appears.",
+                swingDuration: "Duration of the swing animation.",
+                targetRefreshDuration: "How long before the target selection refreshes.",
+                targetSearchRadius: "Radius within which this ability searches for targets.",
+                teleportDelay: "Delay before the teleport triggers.",
+                throwDistance: "Distance the target is thrown.",
+                throwMoveTime: "Time taken for the throw to complete.",
+                tickPeriod: "Time between effect ticks in seconds. Lower is faster.",
+                triggerNumber: "Number of triggers required to activate this ability.",
+                triggerNumberMark: "The trigger count at which a special effect activates.",
+                units: "Which unit type this ability targets or summons.",
+                vortexDuration: "How long the vortex effect lasts in seconds.",
+                collisionRadius: "The physical size of the unit for collision detection. Smaller = less likely to block allies.",
+                faction: "The faction this unit belongs to.",
+                stoppingDistance: "How close the unit gets to its target before stopping to attack.",
+                navigationPriority: "Priority used when pathfinding. Higher = more likely to find a path.",
+                navigationMask: "Whether this unit moves on Land or Air.",
+                engagementMovement: "Whether the unit engages from range (true) or closes into melee distance (false).",
+                // ===== TALENT STAT DESCRIPTIONS =====
+                type: "The mechanic this talent modifies, e.g. 'attackMultiplier' increases attack damage.",
+                value: "The magnitude of the talent's effect. Negative values mean a reduction.",
+                appliesTo: "Which unit type benefits from this talent.",
+                addAbilityId: "The internal ability ID this talent unlocks or adds to the unit.",
+                applyOnAttackProbability: "Chance (0–1) that this talent's effect triggers on each attack.",
+                applyOnDamageProbability: "Chance (0–1) that this talent's effect triggers when the unit takes damage.",
+                attackMultiplier: "Damage multiplier applied to the unit's attacks. Higher is better.",
+                kilerModifier: "Stat modifier applied to the unit that delivers the killing blow.",
+                modifier: "Internal ID of the stat modifier this talent applies.",
+                modifierTime: "How long the talent's modifier effect lasts in seconds.",
+                stat: "The specific stat this talent reads or modifies.",
+                keepWhenSourceKilled: "Whether this talent's effect persists even after the unit that owns it dies.",
+                group: "Whether this talent applies to allies or enemies.",
+                health: "The total amount of damage this unit can take before being defeated.",
+                shardsRequired: "The number of shards needed to upgrade this unit.",
+                defense: "Reduces incoming damage. Higher defense = less damage taken per hit.",
+                count: "The number of units deployed per placement.",
+                upgradePrice: "The amount of currency required to upgrade this unit to the next level.",
+                upgradeCurrency: "The currency used to upgrade this unit (Gold or Gem).",
+                ownershipBonus: "Bonus applied when you own this unit. Higher ownership bonus = stronger buff to your army.",
+                reflectSum: "Percentage of incoming damage reflected back at the attacker. Higher is better.",
+            };
+
+            // maps a basic attack's abilityInfoId -> the abilityInfoId of the ability
+            // whose active window grants its bonus (empower*) effects
+            const basicAttackDuringAbility = {
+                "lordInquisitor_furiousMace": "lordInquisitor_holyFire"
+            };
+
+
+            // abilityInfoIds where damageMultiplier represents damage RECEIVED (incoming — lower = more reduction)
+            // instead of the default meaning of damage DEALT. Add more heroes here as you find them.
+            const damageReceivedDescriptions = {
+                "bardHero_courageSong": "Percentage of incoming damage allies still take while affected. Lower is better (e.g. 0.9 = takes 90% damage, a 10% reduction)."
+            };
+            const damageReceivedAbilities = {
+                "bardHero_courageSong": true
+            };
+            const ignoreKeys = ["key", "troopId", "heroId", "level", "minAttackDistance", "aoeAngle",
+                "luckyPoints", "cellPatternId", "power", "speed_Localized",
+                "luckyTimeOpenPriceCurreny", "luckyTimeOpenPrice", "rootsEffectRestriction"];
+
+            const extraStatsKeyMap = {
+                collisionRadius: "collisionRadius",
+                attackType: "attackType",
+                faction: "factionId",
+                stoppingDistance: "stoppingDistance",
+                navigationPriority: "navigationPriority",
+                navigationMask: "navigationMask",
+                engagementMovement: "IsEngagementMovement"
+            };
+            function buildExtraStats(meta) {
+                let result = {};
+                for (let key in extraStatsKeyMap) result[key] = meta[extraStatsKeyMap[key]];
+                return result;
+            }
+
+            const talentSkipKeys = ["name", "level", "addAbilityId", "key", "talentId", "heroId", "id", "modifier", "buffModifier"];
+
+            const abilityPriorityOverride = {
+                "fireMage_sunrise": 0,
+                "fireMage_rebirth": 1,
+            };
+            function abilityPriorityComparator(a, b) {
+                let aPriority = abilityPriorityOverride[a.abilityInfoId];
+                let bPriority = abilityPriorityOverride[b.abilityInfoId];
+                if (aPriority !== undefined && bPriority !== undefined) return aPriority - bPriority;
+                if (aPriority !== undefined) return -1;
+                if (bPriority !== undefined) return 1;
+                let aHasDesc = !!getAbilityDescription(a.abilityInfoId);
+                let bHasDesc = !!getAbilityDescription(b.abilityInfoId);
+                return bHasDesc - aHasDesc;
+            }
+            function sortByHasDescription(a, b) {
+                let aHasDesc = !!getAbilityDescription(a.abilityInfoId);
+                let bHasDesc = !!getAbilityDescription(b.abilityInfoId);
+                return (bHasDesc ? 1 : 0) - (aHasDesc ? 1 : 0);
+            }
+            const abilityIgnoreKeys = ["buffModifier", "isModifiable", "rebirthEffect"];
+            const basicAttackAbilities = {
+                "charmer_ray": true,
+                "forestQueen_rayPoison": true,
+                "darknessMage_attack": true,
+                "iceMage_rangeStun": true,
+                "druid_bleeding": true,
+                "fireMage_attack": true,
+                "undeadPestilence_melee": true,
+                "lordInquisitor_furiousMace": true,
+                "drunkTank_barrel": true,
+                "elevateArcher_impale": true,
+                "elevateTank_meleeThrow": true,
+                "demonFat_squeeze": true,
+                "magicArcher_range": true,
+                "stunToad_devour": true
+                // add more here as you find them e.g.:
+                // "knight_melee": true,
+            };
+            const statDisplayMap = {
+                hpMultiplier: "HP Multiplier",
+                health: "Health",
+                attack: "Attack",
+                attackRange: "Attack Range",
+                aoeRadius: "AOE Radius",
+                aspd: "Attack Speed",
+                aspdMultiplier: "Attack Speed Multiplier",
+                aspdAttack: "Attack Speed",
+                ownerAspd: "Owner Attack Speed",
+                attackCooldown: "Attack Cooldown",
+                defense: "Defense",
+                moveSpeed: "Move Speed",
+                count: "Count",
+                shardsRequired: "Shards Required",
+                ownershipBonus: "Ownership Bonus",
+                upgradeCurrency: "Upgrade Currency",
+                upgradePrice: "Upgrade Required",
+
+                collisionRadius: "Collision Radius",
+                attackType: "Attack Type",
+                faction: "Faction",
+                stoppingDistance: "Stopping Distance",
+                navigationPriority: "Navigation Priority",
+                navigationMask: "Navigation Mask",
+                engagementMovement: "Engagement Movement",
+
+                numBigMeteor: "Num Big Meteor (Lava Golem)",
+                reflectSum: "Reflect Damage",
+            };
+
+            const factionColorMap = {
+                Human: "#4169e1",
+                Undead: "#6c63ff",
+                Mage: "#00897b",
+                Elevate: "#d81b60",
+                Demon: "#c62828"
+            };
+
+            function renderFactionBadge(meta) {
+                if (!meta || !meta.factionId) return "";
+                let color = factionColorMap[meta.factionId] || "gray";
+                return `<span style="background:${color}; color:white; padding:4px 12px; border-radius:12px; font-size:14px; font-weight:bold; white-space:nowrap;">${meta.factionId}</span>`;
+            }
+
+            const roleColorMap = {
+                Tank: "#4169e1",
+                Ranger: "#45aa38",
+                Support: "gold",
+                Trickster: "purple"
+            };
+            // only these values have a matching gallery — everything else should render as plain text
+            const appliesToClickableValues = new Set([
+                ...Object.keys(factionColorMap).map(k => k.toLowerCase()),
+                ...Object.keys(roleColorMap).map(k => k.toLowerCase())
+            ]);
+            function isClickableAppliesToValue(val) {
+                if (!val) return false;
+                return appliesToClickableValues.has(String(val).trim().toLowerCase());
+            }
+            const percentageKeys = new Set([
+                "attackMultiplier",
+                "applyOnAttackProbability",
+                "applyOnDamageProbability",
+                "value",
+                "hpMultiplier",
+                "damageMultiplier",
+                "meleeDamageMultiplier",
+                "rangeDamageMultiplier",
+                "debuffDamageMultiplier",
+                "buffDamageReduceCoefficient",
+                "damageReduceCoefficient",
+                "bleedAttackMultiplier",
+                // "attackSpeedMultiplier",
+                "moveSpeedMultiplier",
+                "speedMultiplier",
+                "goldMultiplier",
+                "ownerAspd",
+                "ownershipBonus",
+                "healPercentPerTick",
+                "attackMultiplierDelta",
+                "fireGolemHealthThresholdCoefficient",
+                "reflectSum",
+            ]);
+
+            // manual overrides for units whose "summoned unit" relationship isn't present in the
+            // ability/talent JSON or troopMeta.linkedTroopsId data — checked first, before anything else
+            const manualSummonOverrides = {
+                hunter: "beast"
+            };
+            const toggleMap = {
+                necromancer: "skeleton",
+                skeleton: "necromancer",
+                hunter: "beast",
+                beast: "hunter"
+            };
+            const unitVideoMap = {
+                "archer": "https://youtu.be/KPfWEdjSy_0?si=8vlnQzBDlwxw3RYj",
+                "infantry": "https://youtu.be/QnYOR8A8UP4?si=ufYw7hhMCdOKTGk6",
+                "catapult": "https://youtu.be/KPfWEdjSy_0?si=8vlnQzBDlwxw3RYj",
+                "undeadInfantry": "https://youtu.be/KPfWEdjSy_0?si=8vlnQzBDlwxw3RYj",
+                "undeadJavelin": "https://youtu.be/KPfWEdjSy_0?si=8vlnQzBDlwxw3RYj",
+                "golemInfantry": "https://youtu.be/KPfWEdjSy_0?si=8vlnQzBDlwxw3RYj",
+                "mageStudent": "https://youtu.be/KPfWEdjSy_0?si=8vlnQzBDlwxw3RYj",
+                "general": "https://youtu.be/QnYOR8A8UP4?si=ufYw7hhMCdOKTGk6",
+
+                "ironGuards": "https://youtu.be/Fddgfm7qZQc?si=JdwFAut4BmkSnFeW",
+                "darkKnight": "https://youtu.be/Fddgfm7qZQc?si=JdwFAut4BmkSnFeW",
+
+                "bomber": "https://youtu.be/ytknDisieSA?si=eehwI2tGuOD093NZ",
+                "dragonRider": "https://youtu.be/ytknDisieSA?si=eehwI2tGuOD093NZ",
+
+                "assasin": "https://youtu.be/dgsV8uxZNq8?si=E1TyumC_SF5UQkjw",
+                "accurateMerida": "https://youtu.be/dgsV8uxZNq8?si=E1TyumC_SF5UQkjw",
+
+                "necromancer": "https://youtu.be/9iDJZin7fAc?si=w_n05iHGK7HSdrzO",
+                "baronBenua": "https://youtu.be/9iDJZin7fAc?si=w_n05iHGK7HSdrzO",
+
+                "butcher": "https://youtu.be/2H2ZTSQC9r8?si=UoF7ztKfotDQy4Eb",
+                "swordmasterHero": "https://youtu.be/2H2ZTSQC9r8?si=UoF7ztKfotDQy4Eb",
+
+                "paladin": "https://youtu.be/s4iC4pEnJjg?si=O002dpM7GfsfBTQj",
+                "clericHero": "https://youtu.be/s4iC4pEnJjg?si=O002dpM7GfsfBTQj",
+
+                "boneDragon": "https://youtu.be/qgKcKzNz_Ak?si=TjvSP3x4lCg9gsCE",
+                "lancer": "https://youtu.be/qgKcKzNz_Ak?si=TjvSP3x4lCg9gsCE",
+
+                "undeadMage": "https://youtu.be/dgsV8uxZNq8?si=E1TyumC_SF5UQkjw",
+                "ringleaderHero": "https://youtu.be/dgsV8uxZNq8?si=E1TyumC_SF5UQkjw",
+
+                "alchemist": "https://youtu.be/DRgMn1C8Z9A?si=yVOVn6Dc4ANZm7AQ",
+                "charmer": "https://youtu.be/DRgMn1C8Z9A?si=yVOVn6Dc4ANZm7AQ",
+
+                "hunter": "https://youtu.be/kuHIKC-zwcs?si=crFXEX6YRhPyh2jP",
+                "forestQueen": "https://youtu.be/kuHIKC-zwcs?si=crFXEX6YRhPyh2jP",
+
+                "imp": "https://youtu.be/HE_UC8A3Qlg?si=hS3bl4pwGOj9yjF4",
+                "nun": "https://youtu.be/HE_UC8A3Qlg?si=hS3bl4pwGOj9yjF4",
+
+                "mountainsChampion": "https://youtu.be/fBHkhFpyA1g?si=R6T9VAVBMndZn_hP",
+                "undeadWarrior": "https://youtu.be/fBHkhFpyA1g?si=R6T9VAVBMndZn_hP",
+
+                "shaman": "https://youtu.be/m01doJbD-5s?si=vOiJsiuLRIKnrn_0",
+                "undeadGunner": "https://youtu.be/m01doJbD-5s?si=vOiJsiuLRIKnrn_0",
+
+                "monk": "https://youtu.be/DN7m5Qtb72c?si=eoAQ7d4wwOUInSyO",
+                "iceMage": "https://youtu.be/DN7m5Qtb72c?si=eoAQ7d4wwOUInSyO",
+
+                "undeadHeadless": "https://youtu.be/gQSZ2K75T_0?si=6GgY0fDLQe9DqZ79",
+                "airMage": "https://youtu.be/gQSZ2K75T_0?si=6GgY0fDLQe9DqZ79",
+
+                "flyingMonster": "https://youtu.be/N5aKKneURqA?si=2mgZRM5QIYsU-pxq",
+                "druid": "https://youtu.be/N5aKKneURqA?si=2mgZRM5QIYsU-pxq",
+
+                "damnCatapult": "https://youtu.be/aRAXXhZdlK4?si=ECl5u1WTUo3fBxRt",
+                "fireMage": "https://youtu.be/aRAXXhZdlK4?si=ECl5u1WTUo3fBxRt",
+
+                "spiderBlast": "https://youtu.be/bGtKBpM5LdM?si=v8v0zJdpZgNIWm4K",
+                "lightningElemental": "https://youtu.be/bGtKBpM5LdM?si=v8v0zJdpZgNIWm4K",
+
+                "magicArcher": "https://youtu.be/oviLjIRLmqc?si=1ab3cWWQSyft_YU_",
+                "darknessMage": "https://youtu.be/oviLjIRLmqc?si=1ab3cWWQSyft_YU_",
+
+                "stoneGolem": "https://youtu.be/Ftt3tMJ379Q?si=tlaWiUA9iRAho0m9",
+                "waterMage": "https://youtu.be/Ftt3tMJ379Q?si=tlaWiUA9iRAho0m9",
+
+                "pyrotechnician": "https://youtu.be/KhveBYw6GJI?si=NrZXWIGrmteIgC43",
+                "undeadPirate": "https://youtu.be/KhveBYw6GJI?si=NrZXWIGrmteIgC43",
+
+                "stormSpearman": "https://youtu.be/a02UYUZs93A?si=LVgwwmtRq5EL89q0",
+                "sandMage": "https://youtu.be/a02UYUZs93A?si=LVgwwmtRq5EL89q0",
+
+                "gravedigger": "https://youtu.be/G-_lzVOY1l0?si=gCHe6TeuHFKg6Q3-",
+                "debafferOnMaunt": "https://youtu.be/G-_lzVOY1l0?si=gCHe6TeuHFKg6Q3-",
+
+                "eliteWarrior": "https://youtu.be/M5rk4IMtD30?si=854-5SFC_Cp38Eep",
+                "doubleShield": "https://youtu.be/M5rk4IMtD30?si=854-5SFC_Cp38Eep",
+
+                "skeletonWarrior": "https://youtu.be/jCPNKMjFlAA?si=nczd7F-NKfK9nUb2",
+                "undeadPestilence": "https://youtu.be/jCPNKMjFlAA?si=nczd7F-NKfK9nUb2",
+
+                "windElemental": "https://youtu.be/kiQjOFnAZWo?si=YYBjKwIbExa60vmq",
+                "lordInquisitor": "https://youtu.be/kiQjOFnAZWo?si=YYBjKwIbExa60vmq",
+
+                "cursedGiant": "https://youtu.be/cldUqMp0Qso?si=nLs1bSoe0bUDItfQ",
+                "vulkanGolem": "https://youtu.be/cldUqMp0Qso?si=nLs1bSoe0bUDItfQ",
+
+                //tentative as we wait for TnH
+                "phoenix": "https://youtu.be/f7dPgTi2p9A?si=DYhsMwsn5n3SQafC",
+                "axeThrowers": "https://youtu.be/4UXcg1WvGCc?si=vBc1dDMDG5AmWNck",
+
+                "cactus": "https://youtu.be/uXZ-GrbF-Qw?si=S4UBtr9KEsp2EEND",
+                "bardHero": "https://youtu.be/_ISkrf5YOX8?si=CAzDKBIdacBNNzlu",
+
+                "elevateTank": "https://youtu.be/WSCY190amfI?si=LxA2lIYZxZKKlLrS",
+                "elevateSupport": "https://youtu.be/WSCY190amfI?si=LxA2lIYZxZKKlLrS",
+                "elevateArcher": "https://youtu.be/WSCY190amfI?si=LxA2lIYZxZKKlLrS",
+                "demonFat": "https://youtu.be/WSCY190amfI?si=LxA2lIYZxZKKlLrS",
+                "demonTank": "https://youtu.be/WSCY190amfI?si=LxA2lIYZxZKKlLrS",
+                "demonMage": "https://youtu.be/WSCY190amfI?si=LxA2lIYZxZKKlLrS",
+
+            };
+
+            function openUnitVideo(unitKey) {
+                let url = unitVideoMap[unitKey];
+                if (url) {
+                    window.open(url, "_blank", "noopener,noreferrer");
+                }
+            }
+            /* ================================================================
+               SECTION 3: SHARED FORMATTING HELPERS
+               Small utility functions used across both the Troops and Compare
+               pages to format and label stat values.
+               ================================================================ */
+
+            function formatKey(key) {
+                if (!key) return key;
+
+                if (statDisplayMap[key]) return statDisplayMap[key];
+
+                return key
+                    .replace(/_/g, " ")              // snake_case → spaces
+                    .replace(/([a-z])([A-Z])/g, "$1 $2") // camelCase → spaces
+                    .replace(/\b\w/g, c => c.toUpperCase()); // Title Case
+            }
+
+            function formatStatValue(key, val) {
+                if (key === "upgradeCurrency" && val === "TalentSphere") {
+                    return "Books";
+                }
+                if ((key === "units" || key === "appliesTo") && isClickableAppliesToValue(val)) {
+                    return `<span class="applies-to-link" onclick="openAppliesToList('${String(val).replace(/'/g, "\\'")}')">${val} 🔍</span>`;
+                }
+                if (percentageKeys.has(key) && typeof val === "number") {
+                    return parseFloat((val * 100).toFixed(2)) + "%";
+                }
+                return val;
+            }
+
+            function getStatLabel(key, abilityInfoId) {
+                if (key === "damageMultiplier" && damageReceivedAbilities[abilityInfoId]) {
+                    return "Damage Received";
+                }
+                return formatKey(key);
+            }
+            function getStatDescription(key, abilityInfoId) {
+                if (key === "damageMultiplier" && damageReceivedAbilities[abilityInfoId]) {
+                    return damageReceivedDescriptions[abilityInfoId] || "Percentage of incoming damage taken while affected. Lower is better.";
+                }
+                return statDescriptions[key];
+            }
+
+            function getColor(key, leftVal, rightVal) {
+                let speedOrder = { "low": 1, "medium": 2, "high": 3 };
+                if (key === "speed") {
+                    let leftSpeed = speedOrder[leftVal.toLowerCase()];
+                    let rightSpeed = speedOrder[rightVal.toLowerCase()];
+                    return {
+                        left: leftSpeed > rightSpeed ? "stat-better" : leftSpeed < rightSpeed ? "stat-worse" : "stat-neutral",
+                        right: rightSpeed > leftSpeed ? "stat-better" : rightSpeed < leftSpeed ? "stat-worse" : "stat-neutral"
+                    };
+                } else if (key === "attackSpeed" || key === "aspd" || key === "attackCooldown") {
+                    // lower is better
+                    return {
+                        left: leftVal < rightVal ? "stat-better" : leftVal > rightVal ? "stat-worse" : "stat-neutral",
+                        right: rightVal < leftVal ? "stat-better" : rightVal > leftVal ? "stat-worse" : "stat-neutral"
+                    };
+                } else if (typeof leftVal === "number" && typeof rightVal === "number") {
+                    // higher is better
+                    return {
+                        left: leftVal > rightVal ? "stat-better" : leftVal < rightVal ? "stat-worse" : "stat-neutral",
+                        right: rightVal > leftVal ? "stat-better" : rightVal < leftVal ? "stat-worse" : "stat-neutral"
+                    };
+                }
+                return { left: "stat-neutral", right: "stat-neutral" };
+            }
+
+            /* ================================================================
+               SECTION 4: SHARED DATA-LOOKUP HELPERS
+               Functions that pull ability/talent text, icons, and modifiers
+               out of the loaded JSON, and resolve summoned-unit / linked-unit
+               relationships. Used by both the Troops and Compare pages.
+               ================================================================ */
+
+            function getAbilityDescription(abilityKey) {
+                if (!abilityKey || !abilityData) return "";
+                let entry = abilityData[abilityKey];
+                if (!entry) return "";
+                let locKey = entry.description_Localized; // correct spelling
+                if (!locKey) return "";
+                let locEntry = localization[locKey];
+                if (!locEntry) return "";
+                return en[locEntry.value] || "";
+            }
+            function getAbilityTitle(abilityInfoId) {
+                if (!abilityInfoId || !abilityData) return "";
+                let entry = abilityData[abilityInfoId];
+                if (!entry) return "";
+                let locKey = entry.title_Localized;
+                if (!locKey) return "";
+                let locEntry = localization[locKey];
+                if (!locEntry) return "";
+                return en[locEntry.value] || "";
+            }
+            function getTalentDescription(unitKey) {
+                if (!unitKey || !heroTalentData) return "";
+                // heroTalent.json entries have heroId matching the unit key
+                // e.g. { "iceMage_talent": { heroId: "iceMage", description_Localized: "Hero_IceMage_Talent_Description" } }
+                let entry = Object.values(heroTalentData).find(t => t.heroId === unitKey);
+                if (!entry) return "";
+                let locKey = entry.description_Localized;
+                if (!locKey) return "";
+                let locEntry = localization[locKey];
+                if (!locEntry) return "";
+                return en[locEntry.value] || "";
+            }
+            function getTalentModifier(talent) {
+                if (!talent) return null;
+
+                // Try direct lookup by addAbilityId (for talents that have it)
+                if (talent.addAbilityId) {
+                    let result = hpAddModifierData[talent.addAbilityId]
+                        || attackProbabilityModifierData[talent.addAbilityId]
+                        || modifierData[talent.addAbilityId];
+                    if (result) return result;
+                }
+
+                // Fallback: construct key from talent name + level (e.g., "blackPlague_1")
+                if (talent.name && talent.level) {
+                    let constructedKey = `${talent.name}_${talent.level}`;
+                    let result = modifierData[constructedKey];
+                    if (result) return result;
+                }
+
+                // Fallback: search by modifierKey matching talent.modifier
+                if (talent.modifier) {
+                    let entry = Object.values(modifierData).find(m => m.modifierKey === talent.modifier);
+                    if (entry) return entry;
+                }
+                return null;
+            }
+
+            function getTalentIcon(unitKey) {
+                if (!unitKey || !heroTalentData) return "";
+                let entry = Object.values(heroTalentData).find(t => t.heroId === unitKey);
+                return entry ? entry.icon : "";
+            }
+
+
+            function enrichAbilitiesWithInfo(abilities) {
+                if (!abilities) return abilities;
+                return abilities.map(a => {
+                    let info = abilityData[a.abilityInfoId];
+                    if (!info || info.isImmortalWhenActive !== true) return a;
+                    return { ...a, isImmortalWhenActive: true };
+                });
+            }
+            function enrichTalentsWithModifiers(talents, unitKey) {
+                if (!talents) return talents;
+                let talentMeta = unitKey ? Object.values(heroTalentData).find(t => t.heroId === unitKey) : null;
+
+                return talents.map(t => {
+                    let mod = getTalentModifier(t);
+                    let extra = {};
+                    if (mod) {
+                        for (let k in mod) {
+                            if (["key", "abilityInfoId", "units", "group", "modifier", "modifierKey", "caption", "format"].includes(k)) continue;
+                            extra[k] = mod[k];
+                        }
+                    }
+                    if (talentMeta) {
+                        let levelInfo = heroTalentLevelData[`${talentMeta.key}_${t.level}`];
+                        if (levelInfo) {
+                            extra.upgradePrice = levelInfo.upgradePrice;
+                            extra.upgradeCurrency = levelInfo.upgradeCurrency;
+                        }
+                    }
+                    return { ...t, ...extra };
+                });
+            }
+
+            function getSummonedUnitKey(abilities, talents, unitKey) {
+                if (manualSummonOverrides[unitKey]) return manualSummonOverrides[unitKey];
+                let raw = (abilities.find(a => a.summonedTroopId) || {}).summonedTroopId
+                    || (talents.find(t => t.summonedTroopId) || {}).summonedTroopId;
+                if (raw) return raw.replace(/_\d+$/, "");
+                return summonMap[unitKey] || null;
+            }
+            function getLinkedUnit(key) {
+                let linkedKey = toggleMap[key];
+                return linkedKey ? troopList.find(t => t.key === linkedKey) : null;
+            }
+
+            // Matches an "Applies To" value against either faction (Human/Undead/
+            // Mage/Elevate/Demon) or a troop role (Tank/Ranger/Support/Trickster).
+            // Faction match takes priority; falls back to role match (troops only,
+            // since heroes have no role data).
+            function getUnitsByAppliesTo(value) {
+                if (!value) return [];
+                let normalized = String(value).trim().toLowerCase();
+                let matches = [];
+
+                troopList.forEach(t => {
+                    if ((t.meta.factionId || "").toLowerCase() === normalized) matches.push({ ...t, unitType: "troop" });
+                });
+                heroList.forEach(h => {
+                    if ((h.meta.factionId || "").toLowerCase() === normalized) matches.push({ ...h, unitType: "hero" });
+                });
+                if (matches.length) return matches;
+
+                troopList.forEach(t => {
+                    let roles = getTroopRoles(t.key);
+                    if (roles.some(r => r.id.toLowerCase() === normalized || r.displayName.toLowerCase() === normalized)) {
+                        matches.push({ ...t, unitType: "troop" });
+                    }
+                });
+                return matches;
+            }
+
+            function openAppliesToList(value) {
+                let units = getUnitsByAppliesTo(value);
+                document.getElementById("appliesToModalTitle").textContent = `Applies to: ${value}`;
+                let body = document.getElementById("appliesToModalBody");
+
+                if (!units.length) {
+                    body.innerHTML = `<p style="text-align:center; color:#9a9ab0;">No matching units found.</p>`;
+                    document.getElementById("appliesToModalOverlay").classList.add("open");
+                    return;
+                }
+
+                let troopUnits = units.filter(u => u.unitType === "troop");
+                let heroUnits = units.filter(u => u.unitType === "hero");
+
+                function renderGroup(label, group) {
+                    if (!group.length) return "";
+                    return `
+            <div style="font-weight:bold; font-size:16px; margin:12px 0 6px; color:#fff;">${label}</div>
+            <div class="applies-to-grid">
+                ${group.map(u => `
+                    <div class="applies-to-item" onclick="selectUnitFromAppliesTo('${u.key}', '${u.unitType}')">
+                        <img src="images/${u.key.toUpperCase()}.jpg" alt="${u.displayName}" onerror="this.style.visibility='hidden'">
+                        <span>${u.displayName}</span>
+                    </div>
+                `).join("")}
+            </div>
+        `;
+                }
+
+                body.innerHTML = renderGroup("Troops", troopUnits) + renderGroup("Heroes", heroUnits);
+                document.getElementById("appliesToModalOverlay").classList.add("open");
+            }
+            function closeAppliesToList() {
+                document.getElementById("appliesToModalOverlay").classList.remove("open");
+            }
+            function selectUnitFromAppliesTo(key, unitType) {
+                let target = (unitType === "hero" ? heroList : troopList).find(u => u.key === key);
+                if (!target) return;
+                if (selectTroop) {
+                    troopNavStack.push({ unit: selectTroop, level: parseInt(troopsLevel), scrollY: window.scrollY });
+                }
+                closeAppliesToList();
+                selectTroop = target;
+                troopType = unitType;
+                troopsLevel = 1;
+                document.getElementById("troopsSlider").value = 1;
+                document.getElementById("troopsLevel").textContent = "Level 1";
+                updateTroopsCard();
+                window.scrollTo(0, 0);
+            }
+            function renderUnitImageWithVideo(unitKey, imgSrc, altText) {
+                let hasVideo = !!unitVideoMap[unitKey];
+                let overlay = hasVideo
+                    ? `<div class="video-play-overlay">
+             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#FF0000"/><path fill="white" d="M9.6 15.6 15.8 12 9.6 8.4z"/></svg>
+           </div>`
+                    : "";
+                return `<div class="video-thumb-wrap" ${hasVideo ? `onclick="openUnitVideo('${unitKey}')"` : ""}>
+        <img class="troop-img" src="${imgSrc}" alt="${altText}" />
+        ${overlay}
+    </div>`;
+            }
+            function buildHiddenTroopEntry(key) {
+                let meta = troopMeta[key];
+                if (!meta) return null;
+
+                // resolve display name
+                let nameKey = meta.name;
+                let locEntry = localization[nameKey];
+                let displayName = locEntry ? (en[locEntry.value] || nameKey) : (nameKey || key);
+
+                // gather all level entries for this troop
+                let levels = Object.values(troopLevels)
+                    .filter(t => t.troopId === key)
+                    .sort((a, b) => a.level - b.level);
+
+                if (levels.length === 0) return null;
+
+                return {
+                    key: key,
+                    displayName: displayName,
+                    rarity: (meta.rarityId || "common").toLowerCase(),
+                    meta: meta,
+                    levels: levels
+                };
+            }
+
+            /* ================================================================
+               SECTION 5: TROOP ROLES
+               Resolves and renders the role badges (Tank/Ranger/Support/
+               Trickster) shown on troop cards.
+               ================================================================ */
+
+            function getTroopRoles(troopKey) {
+                if (!troopRoleLinks) return [];
+                return Object.values(troopRoleLinks)
+                    .filter(r => r.troopsId === troopKey)
+                    .map(r => {
+                        let roleDef = Object.values(troopRoleDefs).find(d => d.troopsSetId === r.troopsSetId);
+                        let displayName = r.troopsSetId;
+                        if (roleDef) {
+                            let locEntry = localization[roleDef.name];
+                            displayName = locEntry ? (en[locEntry.value] || roleDef.name) : roleDef.name;
+                        }
+                        return { id: r.troopsSetId, displayName: displayName };
+                    });
+            }
+
+            function renderRoleBadges(troopKey, meta) {
+                let roles = getTroopRoles(troopKey);
+                let factionBadge = renderFactionBadge(meta);
+                if (!roles.length && !factionBadge) return "";
+                return `<div style="display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:6px; margin-top:6px; width:100%;">
+        ${factionBadge}
+        ${roles.map(r => `<span style="background:${roleColorMap[r.id] || "gray"}; color:${r.id === "Support" ? "black" : "white"}; padding:4px 12px; border-radius:12px; font-size:14px; font-weight:bold; white-space:nowrap;">${r.displayName}</span>`).join("")}
+    </div>`;
+            }
+
+            /* ================================================================
+               SECTION 6: DATA LOADING
+               Loads every JSON data file on startup, wires up troopList /
+               heroList / summonMap, then kicks off the initial render.
+               ================================================================ */
+
+            function loadJSON(path) {
+                return fetch(path).then(r => r.json());
+            }
+            //promise.all loads in all the json files at the same time
+            Promise.all([
+                loadJSON("troops.json"),
+                loadJSON("troopsLevel.json"),
+                loadJSON("hero.json"),
+                loadJSON("heroLevel.json"),
+                loadJSON("localization.json"),
+                loadJSON("en.json"),
+                loadAbilities(loadJSON),
+                loadTalents(loadJSON),
+                loadJSON("unitParameterModifierNested.json"),
+                loadJSON("abilityAddUnitModifier.json"),
+                loadJSON("abilityAddUnitAbility.json"),
+                loadJSON("heroTalent.json"),
+                loadJSON("abilityHpAddModifier.json"),
+                loadJSON("heroTalentLevel.json"),
+                loadJSON("abilityAddUnitModifierOnAttack.json"),
+                loadJSON("troopsRole.json"),         // <-- new
+                loadJSON("troopsSetNested.json")     // <-- new
+            ]).then(function ([troopsData, troopLevelData, heroData, heroLevelData, locData, enData,
+                _abilities, _talents, modifierNested, modifierLinks, abilityLinks, heroTalentJson, hpAddModifierJson, heroTalentLevelJson,
+                attackProbModifierJson, troopsRoleJson, troopsSetJson]) {
+                // add this line inside the .then:
+                heroTalentData = heroTalentJson;
+                hpAddModifierData = hpAddModifierJson;   // <-- new
+                troopMeta = troopsData;
+
+                troopLevels = troopLevelData;
+
+                heroMeta = heroData;
+
+                heroLevels = heroLevelData;
+
+                localization = locData;
+
+                en = enData;
+                modifierData = modifierNested;
+                modifierLinkData = modifierLinks;
+
+                abilityTalentData = abilityLinks;
+                heroTalentLevelData = heroTalentLevelJson;
+                attackProbabilityModifierData = attackProbModifierJson;
+
+                troopRoleDefs = troopsRoleJson;
+                troopRoleLinks = troopsSetJson;
+
+                let levelsByHero = {};
+                for (let k in heroLevels) {
+                    let entry = heroLevels[k];
+                    let hid = entry.heroId;
+                    if (!levelsByHero[hid]) levelsByHero[hid] = [];
+                    levelsByHero[hid].push(entry);
+                }
+                // Sort each hero's levels ascending
+                for (let hid in levelsByHero) {
+                    levelsByHero[hid].sort((a, b) => a.level - b.level);
+                    //shows the smallest number first. 
+                }
+
+                for (let key in heroMeta) {
+                    let meta = heroMeta[key];
+
+                    // Resolve display name through the two-hop lookup
+                    let nameKey = meta.name;                          // "Hero_Druid_Name"
+                    let locEntry = localization[nameKey];              // { value:"896" }
+                    let displayName = locEntry
+                        ? (en[locEntry.value] || nameKey)
+                        : (nameKey || key);
+
+                    // Skip heroes with no level data (not yet in the game or hidden)
+                    if (!levelsByHero[key]) continue;
+                    // Skip heroes marked as not displayed
+                    if (meta.isDisplayed === false) continue;
+
+                    heroList.push({
+                        key: key,
+                        displayName: displayName,
+                        rarity: (meta.rarityId || "common").toLowerCase(),
+                        meta: meta,
+                        levels: levelsByHero[key]   // array of stat objects sorted by level
+                    });
+                }
+
+                // Sort heroes by order field so the list is predictable
+                heroList.sort((a, b) => (a.meta.order || 99) - (b.meta.order || 99));
+
+                let levelsByTroops = {};
+                for (let k in troopLevels) {
+                    let entry = troopLevels[k];
+                    let tid = entry.troopId;
+                    if (!levelsByTroops[tid]) levelsByTroops[tid] = [];
+                    levelsByTroops[tid].push(entry);
+                }
+                // Sort each hero's levels ascending
+                for (let tid in levelsByTroops) {
+                    levelsByTroops[tid].sort((a, b) => a.level - b.level);
+                    //shows the smallest number first. 
+                }
+
+                for (let key in troopMeta) {
+                    let meta = troopMeta[key];
+
+                    // Resolve display name through the two-hop lookup
+                    let nameKey = meta.name;                          // "Hero_Druid_Name"
+                    let locEntry = localization[nameKey];              // { value:"896" }
+                    let displayName = locEntry
+                        ? (en[locEntry.value] || nameKey)
+                        : (nameKey || key);
+
+                    // Skip heroes with no level data (not yet in the game or hidden)
+                    if (!levelsByTroops[key]) continue;
+                    // Skip heroes marked as not displayed
+                    if (meta.isDisplayed === false) continue;
+
+                    troopList.push({
+                        key: key,
+                        displayName: displayName,
+                        rarity: (meta.rarityId || "common").toLowerCase(),
+                        meta: meta,
+                        levels: levelsByTroops[key]   // array of stat objects sorted by level
+                    });
+                }
+
+                // Sort heroes by order field so the list is predictable
+                troopList.sort((a, b) => (a.meta.order || 99) - (b.meta.order || 99));
+                showTroopsGallery();
+
+                // build summon map now that troopMeta is loaded
+                for (let key in troopMeta) {
+                    let meta = troopMeta[key];
+                    if (meta.linkedTroopsId) {
+                        summonMap[meta.linkedTroopsId] = key;
+                    }
+                }
+
+            }).catch(function (err) {
+                document.getElementById("loadingMsg").textContent =
+                    "❌ Failed to load game data. Make sure all JSON files are in the same folder. (" + err.message + ")";
+                console.error(err);
+            });
+
+
+
+            /* ================================================================
+               SECTION 7: TAB NAVIGATION
+               Switches between the "Troops & Heroes" page and "Compare" page,
+               plus the sticky-header height calculation used by both.
+               ================================================================ */
+            function clearSearch(inputId) {
+                let input = document.getElementById(inputId);
+                input.value = "";
+                input.dispatchEvent(new Event("input"));
+                input.focus({ preventScroll: true });
+                if (inputId === "leftSearch" || inputId === "rightSearch" || inputId === "troopsSearch") {
+                    window.scrollTo(0, 0);
+                }
+            }
+            function switchTab(tab) {
+
+                document.querySelectorAll(".page").forEach((p) => p.classList.remove("active"));
+                // Same logic as above, so the tab is no longer light blue since no active
+                document.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"));
+                if (tab === "troops") {
+                    // we go to the element with id = troopsPage, then we look at its class = "page active"
+                    // but recall that active has been removed from page. so now we add it back, and we show the page
+                    document.getElementById("troopsPage").classList.add("active");
+                    // as well as the blue tab to indicate. The order is according to the order of html.
+                    // since troops tab is above compare, troops will be tab-btn[0], while compare is tab-btn[1]
+                    document.querySelectorAll(".tab-btn")[0].classList.add("active");
+                } else {
+                    // same logic
+                    document.getElementById("comparePage").classList.add("active");
+                    document.querySelectorAll(".tab-btn")[1].classList.add("active");
+                }
+            }
+
+            function updateTabsHeight() {
+                let tabsEl = document.querySelector(".tabs");
+                if (tabsEl) {
+                    document.documentElement.style.setProperty("--tabs-height", tabsEl.offsetHeight + "px");
+                }
+            }
+            updateTabsHeight();
+            window.addEventListener("resize", updateTabsHeight);
+            if (window.ResizeObserver) {
+                new ResizeObserver(updateTabsHeight).observe(document.querySelector(".tabs"));
+            }
+
+            function updateStickyControlsHeight() {
+                let stickyEl = document.querySelector("#troopsPage .sticky-controls");
+                if (stickyEl) {
+                    document.documentElement.style.setProperty("--sticky-controls-height", stickyEl.offsetHeight + "px");
+                }
+            }
+            updateStickyControlsHeight();
+            window.addEventListener("resize", updateStickyControlsHeight);
+            if (window.ResizeObserver) {
+                new ResizeObserver(updateStickyControlsHeight).observe(document.querySelector("#troopsPage .sticky-controls"));
+            }
+
+            /* ================================================================
+               SECTION 8: TROOPS & HEROES PAGE
+               Gallery/search, level slider, the single-unit card renderer,
+               and the "summoned unit" sub-card it can embed.
+               ================================================================ */
+
+            function buildSummonedUnitRows(unitKey, level, colspan) {
+                let meta = troopMeta[unitKey];
+                if (!meta) return "";
+
+                // get level data — find closest available level
+                let levelEntry = Object.values(troopLevels)
+                    .filter(t => t.troopId === unitKey)
+                    .sort((a, b) => a.level - b.level)
+                    .find(t => t.level >= level);
+                if (!levelEntry) {
+                    // fallback to highest available
+                    let entries = Object.values(troopLevels)
+                        .filter(t => t.troopId === unitKey)
+                        .sort((a, b) => a.level - b.level);
+                    levelEntry = entries[entries.length - 1];
+                }
+                if (!levelEntry) return "";
+
+
+                let nameKey = meta.name;
+                let locEntry = localization[nameKey];
+                let displayName = locEntry ? (en[locEntry.value] || nameKey) : (nameKey || unitKey);
+
+                let html = `
+        <tr>
+            <td colspan="${colspan}" class="img-row">
+                <img class="troop-img" src="images/${unitKey.toUpperCase()}.jpg" alt="${displayName}" />
+                <div class="ability-name">${displayName}</div>
+                <div class="desc-text-loose">Summoned Unit</div>
+            </td>
+        </tr>
+    `;
+
+                // base stats
+                // base stats
+                for (let key in levelEntry) {
+                    if (ignoreKeys.includes(key)) continue;
+                    let displayVal = formatStatValue(key, levelEntry[key]);
+                    let desc = statDescriptions[key];
+                    let descId = `desc-summoned-${unitKey}-${key}`;
+                    html += `
+        <tr>
+            <td>${statDisplayMap[key] || formatKey(key)}${desc ? ` <button onclick="let d = document.getElementById('${descId}'); d.style.display = d.style.display === 'none' ? 'table-row' : 'none';" class="info-btn">i</button>` : ""}</td>
+            <td>${displayVal}</td>
+        </tr>
+        ${desc ? `<tr id="${descId}" style="display:none;"><td colspan="2" class="desc-text">${desc}</td></tr>` : ""}
+    `;
+                }
+
+                // extra meta stats
+                let extraStats = buildExtraStats(meta);
+
+                html += `<tr><td colspan="${colspan}" class="section-header">📊 Extra Info</td></tr>`;
+                for (let key in extraStats) {
+                    if (extraStats[key] === undefined) continue;
+                    let displayVal = extraStats[key];
+                    if (key === "navigationMask") {
+                        displayVal = displayVal === 0 ? "Land" : displayVal === 1 ? "Air" : displayVal;
+                    }
+                    let desc = statDescriptions[key];
+                    let descId = `desc-summoned-extra-${unitKey}-${key}`;
+                    html += `
+        <tr>
+            <td>${statDisplayMap[key] || formatKey(key)}${desc ? ` <button onclick="let d = document.getElementById('${descId}'); d.style.display = d.style.display === 'none' ? 'table-row' : 'none';" class="info-btn">i</button>` : ""}</td>
+            <td>${displayVal}</td>
+        </tr>
+        ${desc ? `<tr id="${descId}" style="display:none;"><td colspan="2" class="desc-text">${desc}</td></tr>` : ""}
+    `;
+                }
+
+                return html;
+            }
+            function goBackToGallery() {
+                selectTroop = null;
+                troopType = null;
+                troopNavStack = [];
+                document.getElementById("troopsCard").innerHTML = "";
+                document.getElementById("troopsBackBtnSlot").innerHTML = "";
+                document.getElementById("troopsSearch").value = "";
+                showTroopsGallery();
+                window.scrollTo(0, galleryScrollY);
+            }
+            // troops page search — searches both troops and heroes together
+            function showTroopsGallery() {
+                let resultsDiv = document.getElementById("troopsResults");
+                resultsDiv.classList.remove("floating-results");
+                resultsDiv.innerHTML = "";
+                if (troopList.length > 0) {
+                    let troopLabel = document.createElement("div");
+                    troopLabel.className = "gallery-section-label";
+                    troopLabel.textContent = "Troops";
+                    resultsDiv.appendChild(troopLabel);
+
+                    let troopRow = document.createElement("div");
+                    troopRow.className = "unit-gallery";
+                    troopList.forEach(function (troop) {
+                        let item = document.createElement("div");
+                        item.className = "gallery-item " + troop.rarity;
+                        item.innerHTML = `<img src="images/${troop.key.toUpperCase()}.jpg" alt="${troop.displayName}"><span>${troop.displayName}</span>`;
+                        item.addEventListener("click", function () {
+                            galleryScrollY = window.scrollY;
+                            troopNavStack = [];
+                            selectTroop = troop;
+                            troopType = "troop";
+                            resultsDiv.innerHTML = "";
+                            updateTroopsCard();
+                            window.scrollTo(0, 0);
+                        });
+                        troopRow.appendChild(item);
+                    });
+                    resultsDiv.appendChild(troopRow);
+                }
+
+                if (heroList.length > 0) {
+                    let heroLabel = document.createElement("div");
+                    heroLabel.className = "gallery-section-label";
+                    heroLabel.textContent = "Heroes";
+                    resultsDiv.appendChild(heroLabel);
+
+                    let heroRow = document.createElement("div");
+                    heroRow.className = "unit-gallery";
+                    heroList.forEach(function (hero) {
+                        let item = document.createElement("div");
+                        item.className = "gallery-item " + hero.rarity;
+                        item.innerHTML = `<img src="images/${hero.key.toUpperCase()}.jpg" alt="${hero.displayName}"><span>${hero.displayName}</span>`;
+                        item.addEventListener("click", function () {
+                            galleryScrollY = window.scrollY;
+                            selectTroop = hero;
+                            troopType = "hero";
+                            resultsDiv.innerHTML = "";
+                            updateTroopsCard();
+                            window.scrollTo(0, 0);
+                        });
+                        heroRow.appendChild(item);
+                    });
+                    resultsDiv.appendChild(heroRow);
+                }
+            }
+
+            document.getElementById("troopsSearch").addEventListener("input", function () {
+                if (this.value === "") {
+                    document.getElementById("troopsBackBtnSlot").innerHTML = "";
+                    document.getElementById("troopsCard").innerHTML = "";
+                    selectTroop = null;
+                    troopType = null;
+                    troopNavStack = [];
+                    showTroopsGallery();
+                    return;
+                }
+
+                let query = this.value.toLowerCase();
+                let troopMatches = troopList.filter((troop) => troop.displayName.toLowerCase().includes(query));
+                let heroMatches = heroList.filter((hero) => hero.displayName.toLowerCase().includes(query));
+                let resultsDiv = document.getElementById("troopsResults");
+                resultsDiv.innerHTML = "";
+                resultsDiv.classList.add("floating-results");
+
+                troopMatches.forEach(function (troop) {
+                    let item = document.createElement("div");
+                    item.innerHTML = `<img src="images/${troop.key.toUpperCase()}.jpg" class="stat-icon"> ${troop.displayName}`;
+                    item.classList.add(troop.rarity.toLowerCase());
+                    item.classList.add("search-result-item");
+                    item.addEventListener("click", function () {
+                        troopNavStack = [];
+                        selectTroop = troop;
+                        troopType = "troop";
+                        resultsDiv.innerHTML = "";
+                        updateTroopsCard();
+                        window.scrollTo(0, 0);
+                    });
+                    resultsDiv.appendChild(item);
+                });
+
+                heroMatches.forEach(function (hero) {
+                    let item = document.createElement("div");
+                    item.innerHTML = `<img src="images/${hero.key.toUpperCase()}.jpg" class="stat-icon"> ${hero.displayName}`;
+                    item.classList.add(hero.rarity.toLowerCase());
+                    item.classList.add("search-result-item");
+                    item.addEventListener("click", function () {
+                        selectTroop = hero;
+                        troopType = "hero";
+                        resultsDiv.innerHTML = "";
+                        updateTroopsCard();
+                        window.scrollTo(0, 0);
+                    });
+                    resultsDiv.appendChild(item);
+                });
+            });
+
+            document.getElementById("troopsSlider").addEventListener("input", function () {
+                troopsLevel = this.value;
+                document.getElementById("troopsLevel").textContent = "Level " + troopsLevel;
+                updateTroopsCard();
+            });
+
+            function updateTroopsCard() {
+
+                if (!selectTroop) return;
+                let renderedSummons = new Set();
+                document.querySelectorAll('[id^="desc-"]').forEach(el => {
+                    if (el.style.display !== "none") persistedOpenDescs.add(el.id);
+                });
+                let cardDiv = document.getElementById("troopsCard");
+                let levelData = selectTroop.levels[troopsLevel - 1];
+                let stats = levelData;
+                let abilities = enrichAbilitiesWithInfo(getAbilitiesForUnit(selectTroop.key, troopsLevel));
+                let talents = enrichTalentsWithModifiers(getTalentsForUnit(selectTroop.key, parseInt(troopsLevel)), selectTroop.key);
+
+
+                // then when rendering abilities:
+                abilities = abilities.filter(a => !a.abilityInfoId?.startsWith("talentAbility_"));
+
+                abilities.sort(abilityPriorityComparator);
+                let meta = selectTroop.meta;
+
+                // unit-level summon override (e.g. Hunter -> Beast) not tied to a specific ability/talent
+                let unitLevelSummonKey = manualSummonOverrides[selectTroop.key];
+
+                let linkedUnit = getLinkedUnit(selectTroop.key);
+
+                let backLabel = troopNavStack.length > 0 ? troopNavStack[troopNavStack.length - 1].unit.displayName : "";
+                document.getElementById("troopsBackBtnSlot").innerHTML = troopNavStack.length > 0 ? `
+  <button style="font-size:15px; padding:6px 18px; background:white; color:#000; border:2px solid gray;font-weight: bold; border-radius:6px; cursor:pointer;"
+    onclick="
+      let prev = troopNavStack.pop();
+      selectTroop = prev.unit;
+      troopsLevel = prev.level;
+      document.getElementById('troopsSlider').value = troopsLevel;
+      document.getElementById('troopsLevel').textContent = 'Level ' + troopsLevel;
+      updateTroopsCard();
+      window.scrollTo(0, prev.scrollY || 0);
+    ">← Back to ${backLabel}</button>
+` : `
+  <button style="font-size:15px; padding:6px 18px; background:white; color:#000; border:2px solid gray;font-weight: bold; border-radius:6px; cursor:pointer;"
+    onclick="goBackToGallery()">← Back to all Troops & Heroes</button>
+`;
+
+                let html = `
+    ${renderUnitImageWithVideo(selectTroop.key, `images/${(imageAliasMap[selectTroop.key] || selectTroop.key).toUpperCase()}.jpg`, selectTroop.displayName)}
+        <h3 style="display:flex; align-items:center; justify-content:center; gap:16px;">
+      ${selectTroop.displayName} (Lvl ${troopsLevel})
+      ${linkedUnit ? `
+        <button class="switch-btn"
+          onclick="selectTroop = troopList.find(t => t.key === '${linkedUnit.key}'); updateTroopsCard()">
+          Switch to ${linkedUnit.displayName}
+        </button>
+      ` : ""}
+    </h3>
+        ${renderRoleBadges(selectTroop.key, selectTroop.meta)}
+    <table>
+  `;
+
+                for (let key in stats) {
+                    if (ignoreKeys.includes(key)) continue;
+
+                    let displayVal = formatStatValue(key, levelData[key]);
+
+                    let desc = statDescriptions[key];
+                    html += `
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>${statDisplayMap[key] || key}${desc ? ` <button onclick="
+                  let d = document.getElementById('desc-troop-extra-${key}');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button>` : ""}</span>
+              <img src="images/${key.toUpperCase()}.jpg" class="stat-icon">
+            </span>
+          </td>
+          <td>${displayVal}</td>
+        </tr>
+        ${desc ? `
+        <tr id="desc-troop-extra-${key}" style="display:none;">
+            <td colspan="2" class="desc-text">${desc}</td>
+          </tr>
+          ` : ""}
+        `;
+                }
+
+                // EXTRA META STATS SECTION
+                html += `<tr><td colspan="2" class="section-header">📊 Extra Info</td></tr>`;
+
+                let extraStats = buildExtraStats(meta);
+
+                for (let key in extraStats) {
+                    if (extraStats[key] === undefined) continue;
+
+                    let desc = statDescriptions[key];
+                    let displayVal = extraStats[key];
+                    if (key === "navigationMask") {
+                        displayVal = displayVal === 0 ? "Land" : displayVal === 1 ? "Air" : displayVal;
+                    }
+                    html += `
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>${statDisplayMap[key] || key}${desc ? ` <button onclick="
+                  let d = document.getElementById('desc-troop-${key}');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button>` : ""}</span>
+                <img src="images/${key.toUpperCase()}.jpg" class="stat-icon">
+              </span>
+            </td>
+            <td>${displayVal}</td>
+          </tr>
+          ${desc ? `
+          <tr id="desc-troop-${key}" style="display:none;">
+          <td colspan="2" class="desc-text">${desc}</td>
+        </tr>
+        ` : ""}
+        `;
+                }
+
+                // abilities section — image + name below, then stats, This is only for 1 hero.
+                // ✅ Abilities section
+                if (abilities && abilities.length > 0) {
+                    html += `<tr><td colspan="2" class="section-header">⚔️ Abilities</td></tr>`;
+                    let imageShown = false;
+
+                    abilities.forEach(function (ability) {
+                        if (ability.name) {
+                            let abilityDesc = getAbilityDescription(ability.abilityInfoId);
+                            html += `
+                          <tr>
+                            <td colspan="2" class="img-row">
+                              ${!imageShown ? `<img class="troop-img" src="images/${ability.abilityInfoId.toUpperCase()}.jpg" alt="${ability.name}" />` : ""}
+                              <div class="ability-name">${getAbilityTitle(ability.abilityInfoId) || formatKey(ability.name)}${basicAttackAbilities[ability.abilityInfoId] ? (basicAttackDuringAbility[ability.abilityInfoId] ? "<br><span style='font-size:16px; color:gray;'>(Basic Attack — during Ability)</span>" : "<br><span style='font-size:16px; color:gray;'>(Basic Attack)</span>") : ""}</div>
+                              ${abilityDesc && !imageShown ? `<div class="ability-desc-block">${abilityDesc}</div>` : ""}
+                                </td>
+                              </tr>
+                        `;
+                            imageShown = true;
+                        }
+                        let summonedUnitHtml = "";
+                        for (let key in ability) {
+                            if (key === "name" || key === "abilityInfoId" || abilityIgnoreKeys.includes(key)) continue;
+
+                            let val = ability[key];
+                            let abilityDesc = getStatDescription(key, ability.abilityInfoId);
+                            if (key === "summonedTroopId") {
+                                let troopBaseKey = val.replace(/_\d+$/, "");
+
+                                // ✅ ADD THIS CHECK (THIS IS THE FIX)
+                                if (renderedSummons.has(troopBaseKey)) {
+                                    continue;
+                                }
+                                renderedSummons.add(troopBaseKey);
+
+                                let troopEntry = troopList.find(t => t.key === troopBaseKey) || buildHiddenTroopEntry(troopBaseKey);
+                                let isHidden = !troopEntry || troopEntry.meta?.order === -1;
+
+                                if (isHidden) {
+                                    summonedUnitHtml = `<tr><td colspan="2" class="section-header">⚔️ Summoned Unit</td></tr>`;
+                                    summonedUnitHtml += buildSummonedUnitRows(troopBaseKey, troopsLevel, 2);
+                                } else {
+                                    let troopName = troopEntry.displayName;
+                                    let displayVal = `<span class="linked-unit-badge">
+        🔗 ${troopName}</span>`;
+                                    html += `<tr><td>${formatKey(key)}</td><td>${displayVal}</td></tr>`;
+                                }
+
+                                continue;
+                            }
+
+                            let abilityDescId = 'desc-troop-ability-' + (ability.name || ability.abilityInfoId || "") + '-' + key;
+                            let btn = abilityDesc ? ' <button onclick="let d = document.getElementById(\'' + abilityDescId + '\'); d.style.display = d.style.display === \'none\' ? \'table-row\' : \'none\';" class="info-btn">i</button>' : "";
+                            let descRow = abilityDesc ? '<tr id="' + abilityDescId + '" style="display:none;"><td colspan="2" class="desc-text">' + abilityDesc + '</td></tr>' : "";
+                            html += '<tr><td>' + getStatLabel(key, ability.abilityInfoId) + btn + '</td><td>' + formatStatValue(key, ability[key]) + '</td></tr>' + descRow;
+                        }
+                        html += summonedUnitHtml;
+                    });
+
+
+                }
+
+                // render unit-level summoned unit (manual override), skip if already rendered via abilities/talents
+                if (unitLevelSummonKey && !renderedSummons.has(unitLevelSummonKey)) {
+                    renderedSummons.add(unitLevelSummonKey);
+                    html += `<tr><td colspan="2" class="section-header">⚔️ Summoned Unit</td></tr>`;
+                    html += buildSummonedUnitRows(unitLevelSummonKey, troopsLevel, 2);
+                }
+
+                // talents section
+                if (talents && talents.length > 0) {
+                    html += `<tr><td colspan="2" class="section-header">✨ Talents</td></tr>`;
+
+                    let talentDesc = getTalentDescription(selectTroop.key);
+                    let talentIcon = getTalentIcon(selectTroop.key); // or selected.key
+                    if (talentIcon || talentDesc) {
+                        html += `
+                      <tr>
+                        <td colspan="2" class="img-row">
+                          ${talentIcon ? `<img class="troop-img" src="images/${talentIcon.toUpperCase()}.jpg" alt="${talentIcon}" />` : ""}
+                          <div class="ability-name">${talentIcon ? formatKey(talentIcon.split("_").slice(2).join("_")) : ""}</div>
+                          ${talentDesc ? `<div class="ability-desc-block">${talentDesc}</div>` : ""}
+                        </td>
+                      </tr>
+                    `;
+                    }
+
+
+
+                    let seenTalentNames = new Set();
+                    talents.forEach(function (talent, talentIndex) {
+                        if (talent.name && seenTalentNames.has(talent.name)) return;
+                        if (talent.name) seenTalentNames.add(talent.name);
+
+                        for (let key in talent) {
+                            if (talentSkipKeys.includes(key)) continue;
+                            if (key.toLowerCase() === "name") continue;
+
+                            let val = talent[key];
+                            let desc = statDescriptions[key];
+                            let safeKey = key;
+
+                            if (safeKey === "type") continue; // skip raw type row — used as a label below instead
+
+                            // special handling for summonedTroopId
+                            let displayVal;
+                            if (safeKey === "summonedTroopId") {
+                                let troopBaseKey = val.replace(/_\d+$/, "");
+
+                                if (renderedSummons.has(troopBaseKey)) continue;
+                                renderedSummons.add(troopBaseKey);
+
+                                let troopEntry = troopList.find(t => t.key === troopBaseKey) || buildHiddenTroopEntry(troopBaseKey);
+                                let isHidden = !troopEntry || troopEntry.meta?.order === -1;
+                                if (isHidden) {
+                                    html += `<tr><td colspan="2" class="section-header">⚔️ Summoned Unit</td></tr>`;
+                                    html += buildSummonedUnitRows(troopBaseKey, troopsLevel, 2);
+                                    displayVal = null;
+                                } else {
+                                    let troopName = troopEntry.displayName;
+                                    displayVal = `<span class="linked-unit-badge"
+            onclick="
+                troopNavStack.push({ unit: selectTroop, level: parseInt(troopsLevel) });
+                selectTroop = troopList.find(t => t.key === '${troopBaseKey}') || buildHiddenTroopEntry('${troopBaseKey}');
+                troopType = 'troop'; updateTroopsCard(); window.scrollTo(0,0);
+            ">🔗 ${troopName}</span>`;
+                                }// formating 
+                            } else {
+                                displayVal = formatStatValue(safeKey, val);
+                            }
+
+                            let label = formatKey(safeKey);
+                            if (safeKey === "value" && talent.type) {
+                                label = formatKey(talent.type);
+                            }
+                            let descId = `desc-troop-talent-${talentIndex}-${safeKey}`;
+                            if (displayVal !== null) {
+                                html += `
+<tr>
+    <td>${label}${desc ? ` <button onclick="let d = document.getElementById('${descId}'); d.style.display = d.style.display === 'none' ? 'table-row' : 'none';" class="info-btn">i</button>` : ""}</td>
+    <td>${displayVal}</td>
+</tr>
+${desc ? `<tr id="${descId}" style="display:none;"><td colspan="2" class="desc-text">${desc}</td></tr>` : ""}
+`;
+                            }
+                        }
+                    });
+                }
+
+                html += "</table>";
+                cardDiv.innerHTML = html;
+                persistedOpenDescs.forEach(id => {
+                    let el = document.getElementById(id);
+                    if (el) el.style.display = "table-row";
+                });
+                updateTabsHeight();
+            }
+
+            /* ================================================================
+               SECTION 9: COMPARE PAGE
+               Left/right search + level sliders, the side-by-side compare
+               card renderer, and its ability/talent/summoned-unit row builders.
+               ================================================================ */
+
+            // builds ability/talent compare rows for the side-by-side compare table
+            // shows images side by side with names below, then stat rows with green/red colouring
+            function buildAbilityCompareRows(leftAbilities, rightAbilities) {
+                if ((!leftAbilities || leftAbilities.length === 0) && (!rightAbilities || rightAbilities.length === 0)) return "";
+
+                let html = "";
+
+                let maxCount = Math.max(
+                    leftAbilities ? leftAbilities.length : 0,
+                    rightAbilities ? rightAbilities.length : 0
+                );
+
+                for (let i = 0; i < maxCount; i++) {
+                    let leftAbility = leftAbilities && leftAbilities[i] ? leftAbilities[i] : {};
+                    let rightAbility = rightAbilities && rightAbilities[i] ? rightAbilities[i] : {};
+
+                    if (!leftAbility.abilityInfoId && !rightAbility.abilityInfoId) continue;
+
+                    let leftImgSrc = leftAbility.abilityInfoId ? `images/${leftAbility.abilityInfoId.toUpperCase()}.jpg` : null;
+                    let rightImgSrc = rightAbility.abilityInfoId ? `images/${rightAbility.abilityInfoId.toUpperCase()}.jpg` : null;
+                    let leftAbilityDesc = getAbilityDescription(leftAbility.abilityInfoId || "");
+                    let rightAbilityDesc = getAbilityDescription(rightAbility.abilityInfoId || "");
+
+                    html += `
+    <tr>
+        <td class="vtop-center">
+            ${i === 0 ? `
+                <div class="ability-image-slot">
+                    ${leftImgSrc ? `<img class="troop-img" src="${leftImgSrc}" alt="${leftAbility.name}" />` : ""}
+                </div>
+                ${leftAbility.abilityInfoId ? `
+                    <div class="ability-name">${getAbilityTitle(leftAbility.abilityInfoId) || formatKey(leftAbility.name)}${basicAttackAbilities[leftAbility.abilityInfoId] ? "<br><span style='font-size:16px; color:gray;'>(Basic Attack)</span>" : ""}</div>
+                    ${leftAbilityDesc ? `<div class="ability-desc-inline">${leftAbilityDesc}</div>` : ""}
+                ` : ""}
+            ` : leftAbility.abilityInfoId ? `
+                <div class="ability-name">${getAbilityTitle(leftAbility.abilityInfoId) || formatKey(leftAbility.name)}${basicAttackAbilities[leftAbility.abilityInfoId] ? "<br><span style='font-size:16px; color:gray;'>(Basic Attack)</span>" : ""}</div>
+            ` : ""}
+        </td>
+        <td></td>
+        <td class="vtop-center">
+            ${i === 0 ? `
+                <div class="ability-image-slot">
+                    ${rightImgSrc ? `<img class="troop-img" src="${rightImgSrc}" alt="${rightAbility.name}" />` : ""}
+                </div>
+                ${rightAbility.abilityInfoId ? `
+                    <div class="ability-name">${getAbilityTitle(rightAbility.abilityInfoId) || formatKey(rightAbility.name)}${basicAttackAbilities[rightAbility.abilityInfoId] ? "<br><span style='font-size:16px; color:gray;'>(Basic Attack)</span>" : ""}</div>
+                    ${rightAbilityDesc ? `<div class="ability-desc-inline">${rightAbilityDesc}</div>` : ""}
+                ` : ""}
+            ` : rightAbility.abilityInfoId ? `
+                <div class="ability-name">${getAbilityTitle(rightAbility.abilityInfoId) || formatKey(rightAbility.name)}${basicAttackAbilities[rightAbility.abilityInfoId] ? "<br><span style='font-size:16px; color:gray;'>(Basic Attack)</span>" : ""}</div>
+            ` : ""}
+        </td>
+    </tr>
+`;
+
+                    let allKeys = new Set([...Object.keys(leftAbility), ...Object.keys(rightAbility)]);
+
+                    allKeys.forEach(function (key) {
+                        if (key === "name" || key === "abilityInfoId" || key === "summonedTroopId" || abilityIgnoreKeys.includes(key)) return;
+
+                        let leftVal = leftAbility[key] !== undefined ? leftAbility[key] : "—";
+                        let rightVal = rightAbility[key] !== undefined ? rightAbility[key] : "—";
+
+                        let leftColor = "stat-neutral";
+                        let rightColor = "stat-neutral";
+                        if (leftVal !== "—" && rightVal !== "—") {
+                            let lowerIsBetter = ["cooldown", "attackCooldown", "aspd", "attackSpeed", "attack_speed", "interval", "tickPeriod", "flameTick", "flameInterval", "regenerationDelay", "abilitiesCooldownMultiplier"];
+                            if (lowerIsBetter.some(k => key.toLowerCase().includes(k.toLowerCase()))) {
+                                leftColor = leftVal < rightVal ? "stat-better" : leftVal > rightVal ? "stat-worse" : "stat-neutral";
+                                rightColor = rightVal < leftVal ? "stat-better" : rightVal > leftVal ? "stat-worse" : "stat-neutral";
+                            } else if (typeof leftVal === "number" && typeof rightVal === "number") {
+                                leftColor = leftVal > rightVal ? "stat-better" : leftVal < rightVal ? "stat-worse" : "stat-neutral";
+                                rightColor = rightVal > leftVal ? "stat-better" : rightVal < leftVal ? "stat-worse" : "stat-neutral";
+                            }
+                        }
+
+                        let leftDisplay = leftVal === "—" ? "—" : formatStatValue(key, leftVal);
+                        let rightDisplay = rightVal === "—" ? "—" : formatStatValue(key, rightVal);
+
+                        let abilityDesc = getStatDescription(key, leftAbility.abilityInfoId || rightAbility.abilityInfoId);
+                        html += `
+<tr>
+    <td class="${leftColor}">${leftDisplay}</td>
+    <td class="stat-label">
+        ${getStatLabel(key, leftAbility.abilityInfoId || rightAbility.abilityInfoId)}${abilityDesc ? ` <button onclick="
+            let d = document.getElementById('desc-cmp-ability-${i}-${key}');
+            d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+        " class="info-btn">i</button>` : ""}
+    </td>
+    <td class="${rightColor}">${rightDisplay}</td>
+</tr>
+${abilityDesc ? `
+<tr id="desc-cmp-ability-${i}-${key}" class="desc-row" style="display:none;">
+    <td colspan="3" class="desc-text">${abilityDesc}</td>
+</tr>` : ""}
+`;
+                    });
+                }
+
+                return html;
+            }
+
+
+
+
+            // builds talent compare rows for the side-by-side compare table
+            // talents have no images so we just show name, stat fields, and appliesTo
+            function buildTalentCompareRows(leftTalents, rightTalents, leftUnitKey, rightUnitKey) {
+                if ((!leftTalents || leftTalents.length === 0) && (!rightTalents || rightTalents.length === 0)) return "";
+
+                let html = "";
+                let skipKeys = ["name", "level", "addAbilityId", "appliesTo", "modifier", "buffModifier", "summonedTroopId"];
+                let maxCount = Math.max(
+                    leftTalents ? leftTalents.length : 0,
+                    rightTalents ? rightTalents.length : 0
+                );
+
+                let leftIcon = getTalentIcon(leftUnitKey);
+                let rightIcon = getTalentIcon(rightUnitKey);
+                let leftIconDesc = getTalentDescription(leftUnitKey);
+                let rightIconDesc = getTalentDescription(rightUnitKey);
+
+                if (leftIcon || rightIcon || leftIconDesc || rightIconDesc) {
+                    html += `
+          <tr>
+            <td style="text-align:right; vertical-align:top;">
+              ${leftIcon ? `<img class="troop-img" src="images/${leftIcon.toUpperCase()}.jpg" alt="${leftIcon}" />` : ""}
+              ${leftIcon ? `<div class="ability-name">${formatKey(leftIcon.split("_").slice(2).join("_"))}</div>` : ""}
+              ${leftIconDesc ? `<div class="ability-desc-inline">${leftIconDesc}</div>` : ""}
+            </td>
+            <td></td>
+            <td style="text-align:left; vertical-align:top;">
+              ${rightIcon ? `<img class="troop-img" src="images/${rightIcon.toUpperCase()}.jpg" alt="${rightIcon}" />` : ""}
+              ${rightIcon ? `<div class="ability-name">${formatKey(rightIcon.split("_").slice(2).join("_"))}</div>` : ""}
+              ${rightIconDesc ? `<div class="ability-desc-inline">${rightIconDesc}</div>` : ""}
+            </td>
+          </tr>
+        `;
+                }
+
+                for (let i = 0; i < maxCount; i++) {
+                    let lt = leftTalents && leftTalents[i] ? leftTalents[i] : {};
+                    let rt = rightTalents && rightTalents[i] ? rightTalents[i] : {};
+
+                    // talent name row
+                    // only show name row if no icon header was shown above
+                    if (!leftIcon && !rightIcon) {
+                        html += `
+      <tr>
+        <td style="text-align:right; color:#45aa38">${lt.name ? formatKey(lt.name) : ""}</td>
+        <td class="stat-label">Talent</td>
+        <td style="text-align:left; color:#45aa38">${rt.name ? formatKey(rt.name) : ""}</td>
+      </tr>
+    `;
+                    }
+
+                    // type row
+                    let leftType = lt.type ? formatKey(lt.type) : "—";
+                    let rightType = rt.type ? formatKey(rt.type) : "—";
+                    if (lt.type || rt.type) {
+                        html += `
+              <tr>
+                <td>${leftType}</td>
+                <td class="stat-label">Type</td>
+                <td>${rightType}</td>
+              </tr>
+            `;
+                    }
+
+                    // all other stat keys
+                    let allKeys = new Set([...Object.keys(lt), ...Object.keys(rt)]);
+                    allKeys.forEach(function (key) {
+                        if (skipKeys.includes(key) || key === "type") return;
+
+                        let leftVal = lt[key] !== undefined ? lt[key] : "—";
+                        let rightVal = rt[key] !== undefined ? rt[key] : "—";
+
+                        let leftColor = "stat-neutral", rightColor = "stat-neutral";
+                        if (typeof leftVal === "number" && typeof rightVal === "number") {
+                            leftColor = leftVal > rightVal ? "stat-better" : leftVal < rightVal ? "stat-worse" : "stat-neutral";
+                            rightColor = rightVal > leftVal ? "stat-better" : rightVal < leftVal ? "stat-worse" : "stat-neutral";
+                        }
+
+                        let leftDisplay = leftVal === "—" ? "—" : formatStatValue(key, leftVal);
+                        let rightDisplay = rightVal === "—" ? "—" : formatStatValue(key, rightVal);
+
+                        let desc = statDescriptions[key];
+                        html += `
+      <tr>
+        <td class="${leftColor}">${leftDisplay}</td>
+        <td class="stat-label">
+          ${formatKey(key)}${desc ? ` <button onclick="
+            let d = document.getElementById('desc-cmp-talent-${key}');
+            d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+          " class="info-btn">i</button>` : ""}
+        </td>
+        <td class="${rightColor}">${rightDisplay}</td>
+      </tr>
+      ${desc ? `
+      <tr id="desc-cmp-talent-${key}" class="desc-row" style="display:none;">
+        <td colspan="3" class="desc-text">${desc}</td>
+      </tr>` : ""}
+    `;
+                    });
+
+                    // appliesTo always last
+                    if (lt.appliesTo || rt.appliesTo) {
+                        html += `
+              <tr>
+                <td style="text-align:right">${lt.appliesTo || "—"}</td>
+                <td class="stat-label">Applies To</td>
+                <td style="text-align:left">${rt.appliesTo || "—"}</td>
+              </tr>
+            `;
+                    }
+                }
+
+                return html;
+            }
+
+            // side-by-side summoned unit rows for the compare page (mirrors buildAbilityCompareRows layout)
+            function buildSummonedUnitCompareRows(leftUnitKey, leftLevel, rightUnitKey, rightLevel) {
+                if (!leftUnitKey && !rightUnitKey) return "";
+
+                let leftMeta = leftUnitKey ? troopMeta[leftUnitKey] : null;
+                let rightMeta = rightUnitKey ? troopMeta[rightUnitKey] : null;
+                if (!leftMeta && !rightMeta) return "";
+
+                function getLevelEntry(unitKey, level) {
+                    if (!unitKey) return null;
+                    let entries = Object.values(troopLevels)
+                        .filter(t => t.troopId === unitKey)
+                        .sort((a, b) => a.level - b.level);
+                    if (entries.length === 0) return null;
+                    return entries.find(t => t.level >= level) || entries[entries.length - 1];
+                }
+
+                function getDisplayName(unitKey, meta) {
+                    if (!unitKey || !meta) return "";
+                    let nameKey = meta.name;
+                    let locEntry = localization[nameKey];
+                    return locEntry ? (en[locEntry.value] || nameKey) : (nameKey || unitKey);
+                }
+
+                let leftLevelEntry = getLevelEntry(leftUnitKey, leftLevel);
+                let rightLevelEntry = getLevelEntry(rightUnitKey, rightLevel);
+                let leftDisplayName = getDisplayName(leftUnitKey, leftMeta);
+                let rightDisplayName = getDisplayName(rightUnitKey, rightMeta);
+
+                let html = `
+        <tr>
+            <td class="vtop-center">
+                ${leftUnitKey ? `
+                    <img class="troop-img" src="images/${leftUnitKey.toUpperCase()}.jpg" alt="${leftDisplayName}" />
+                    <div class="ability-name">${leftDisplayName}</div>
+                    <div class="desc-text-loose">Summoned Unit</div>
+                ` : ""}
+            </td>
+            <td></td>
+            <td class="vtop-center">
+                ${rightUnitKey ? `
+                    <img class="troop-img" src="images/${rightUnitKey.toUpperCase()}.jpg" alt="${rightDisplayName}" />
+                    <div class="ability-name">${rightDisplayName}</div>
+                    <div class="desc-text-loose">Summoned Unit</div>
+                ` : ""}
+            </td>
+        </tr>
+    `;
+
+                let allStatKeys = new Set([
+                    ...(leftLevelEntry ? Object.keys(leftLevelEntry) : []),
+                    ...(rightLevelEntry ? Object.keys(rightLevelEntry) : [])
+                ]);
+
+                allStatKeys.forEach(function (key) {
+                    if (ignoreKeys.includes(key)) return;
+
+                    let leftVal = leftLevelEntry && leftLevelEntry[key] !== undefined ? leftLevelEntry[key] : "—";
+                    let rightVal = rightLevelEntry && rightLevelEntry[key] !== undefined ? rightLevelEntry[key] : "—";
+
+                    let colors = { left: "white", right: "white" };
+                    if (leftVal !== "—" && rightVal !== "—") {
+                        colors = getColor(key, leftVal, rightVal);
+                    }
+
+                    let leftDisplay = leftVal === "—" ? "—" : formatStatValue(key, leftVal);
+                    let rightDisplay = rightVal === "—" ? "—" : formatStatValue(key, rightVal);
+                    let desc = statDescriptions[key];
+                    let descId = `desc-cmp-summon-${key}`;
+
+                    html += `
+            <tr>
+                <td class="${colors.left}">${leftDisplay}</td>
+                <td class="stat-label">
+                    ${statDisplayMap[key] || formatKey(key)}${desc ? ` <button onclick="
+                        let d = document.getElementById('${descId}');
+                        d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                    " class="info-btn">i</button>` : ""}
+                </td>
+                <td class="${colors.right}">${rightDisplay}</td>
+            </tr>
+            ${desc ? `
+            <tr id="${descId}" class="desc-row" style="display:none;">
+                <td colspan="3" class="desc-text">${desc}</td>
+            </tr>` : ""}
+        `;
+                });
+
+                let leftExtra = leftMeta ? buildExtraStats(leftMeta) : {};
+                let rightExtra = rightMeta ? buildExtraStats(rightMeta) : {};
+                let allExtraKeys = new Set([...Object.keys(leftExtra), ...Object.keys(rightExtra)]);
+
+                let extraRows = "";
+                allExtraKeys.forEach(function (key) {
+                    let leftVal = leftExtra[key];
+                    let rightVal = rightExtra[key];
+                    if (leftVal === undefined && rightVal === undefined) return;
+
+                    let colors = (leftVal !== undefined && rightVal !== undefined) ? getColor(key, leftVal, rightVal) : { left: "white", right: "white" };
+
+                    let leftDisplay = leftVal, rightDisplay = rightVal;
+                    if (key === "navigationMask") {
+                        if (leftVal === 0) leftDisplay = "Land"; else if (leftVal === 1) leftDisplay = "Air";
+                        if (rightVal === 0) rightDisplay = "Land"; else if (rightVal === 1) rightDisplay = "Air";
+                    }
+
+                    let desc = statDescriptions[key];
+                    let descId = `desc-cmp-summon-extra-${key}`;
+                    extraRows += `
+            <tr>
+                <td class="${colors.left}">${leftDisplay !== undefined ? leftDisplay : "—"}</td>
+                <td class="stat-label">
+                    ${formatKey(key)}${desc ? ` <button onclick="
+                        let d = document.getElementById('${descId}');
+                        d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                    " class="info-btn">i</button>` : ""}
+                </td>
+                <td class="${colors.right}">${rightDisplay !== undefined ? rightDisplay : "—"}</td>
+            </tr>
+            ${desc ? `
+            <tr id="${descId}" class="desc-row" style="display:none;">
+                <td colspan="3" class="desc-text">${desc}</td>
+            </tr>` : ""}
+        `;
+                });
+
+                if (extraRows) {
+                    html += `<tr><td colspan="3" class="section-header">📊 Extra Info</td></tr>${extraRows}`;
+                }
+
+                return html;
+            }
+
+            function updateCards() {
+                document.querySelectorAll('[id^="desc-"]').forEach(el => {
+                    if (el.style.display !== "none") persistedOpenDescs.add(el.id);
+                });
+                let compareCard = document.getElementById("compareCard");
+
+                // check if both are selected but are different types (one troop one hero)
+                if (selectleft && selectright && leftType !== rightType) {
+                    compareCard.innerHTML = `
+            <div class="error-msg">
+              ⚠️ Cannot compare a Troop with a Hero! Please select two Troops or two Heroes.
+            </div>
+          `;
+                    return;
+                }
+
+                if (selectleft && selectright) {
+                    // both sides selected — full side-by-side compare in compareCard
+
+                    // FIX: stats live directly on the level object, not inside a .stats sub-object
+                    let leftData = selectleft.levels[leftLevel - 1];
+                    let rightData = selectright.levels[rightLevel - 1];
+
+                    // FIX: fetch abilities and talents via the helper functions, same as updateTroopsCard does
+                    let leftAbilities = enrichAbilitiesWithInfo(getAbilitiesForUnit(selectleft.key, parseInt(leftLevel)));
+                    let rightAbilities = enrichAbilitiesWithInfo(getAbilitiesForUnit(selectright.key, parseInt(rightLevel)));
+                    let leftTalents = enrichTalentsWithModifiers(getTalentsForUnit(selectleft.key, parseInt(leftLevel)));
+                    let rightTalents = enrichTalentsWithModifiers(getTalentsForUnit(selectright.key, parseInt(rightLevel)));
+                    leftAbilities = leftAbilities.filter(a => !a.abilityInfoId?.startsWith("talentAbility_"));
+                    rightAbilities = rightAbilities.filter(a => !a.abilityInfoId?.startsWith("talentAbility_"));
+
+                    leftAbilities.sort(sortByHasDescription);
+                    rightAbilities.sort(sortByHasDescription);
+
+                    let html = `
+    <table>
+      <tr>
+<th>
+  ${renderUnitImageWithVideo(selectleft.key, `images/${selectleft.key.toUpperCase()}.jpg`, selectleft.displayName)}
+  <div class="flex-center-gap10">
+    ${selectleft.displayName} (Lvl ${leftLevel})
+      </div>
+</th>
+<th></th>
+<th>
+  ${renderUnitImageWithVideo(selectright.key, `images/${selectright.key.toUpperCase()}.jpg`, selectright.displayName)}
+  <div class="flex-center-gap10">
+    ${selectright.displayName} (Lvl ${rightLevel})
+      </div>
+</th>
+      </tr>
+      <tr>
+        <td class="ta-center">${renderRoleBadges(selectleft.key, selectleft.meta)}</td>
+        <td></td>
+        <td class="ta-center">${renderRoleBadges(selectright.key, selectright.meta)}</td>
+      </tr>
+  `;
+
+                    // FIX: keys that are metadata, not real stats — skip them in the table
+
+                    // stats rows — iterate left side keys, match against right
+                    for (let key in leftData) {
+                        if (ignoreKeys.includes(key)) continue;
+                        let leftVal = leftData[key];
+                        let rightVal = rightData[key] !== undefined ? rightData[key] : "—";
+                        let colors;
+                        if (key === "upgradePrice") {
+                            if (leftData.upgradeCurrency === rightData.upgradeCurrency) {
+                                colors = getColor(key, leftVal, rightVal);
+                            } else {
+                                colors = { left: "white", right: "white" };
+                            }
+                        } else {
+                            colors = getColor(key, leftVal, rightVal);
+                        }
+                        let leftDisplay = formatStatValue(key, leftVal);
+                        let rightDisplay = rightVal === "—" ? rightVal : formatStatValue(key, rightVal);
+                        let desc = statDescriptions[key];
+                        html += `
+              <tr>
+                <td class="${colors.left}">${leftDisplay}</td>
+                <td class="stat-label">
+                  <span class="stat-name">
+                    <span>${statDisplayMap[key] || key}${desc ? ` <button onclick="
+                      let d = document.getElementById('desc-${key}');
+                      d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                    " class="info-btn">i</button>` : ""}</span>
+                    <img src="images/${key.toUpperCase()}.jpg" class="stat-icon">
+                  </span>
+                </td>
+                <td class="${colors.right}">${rightDisplay}</td>
+              </tr>
+${desc ? `
+<tr id="desc-${key}" class="desc-row" style="display:none;">
+  <td colspan="3" class="desc-row-pad">
+<div style="font-size:14px; color:gray; display:block; max-width:400px; margin:0 auto;">${desc}</div>
+  </td>
+</tr>
+` : ""}
+            `;
+                    }
+
+                    // abilities section — only show if at least one side has abilities
+                    // Extra Info section
+                    let leftMeta = selectleft.meta;
+                    let rightMeta = selectright.meta;
+                    let extraStatsKeys = extraStatsKeyMap;
+
+                    let extraRows = "";
+                    for (let displayKey in extraStatsKeys) {
+                        let metaKey = extraStatsKeys[displayKey];
+                        let leftVal = leftMeta[metaKey];
+                        let rightVal = rightMeta[metaKey];
+                        if (leftVal === undefined && rightVal === undefined) continue;
+
+                        let colors = getColor(displayKey, leftVal, rightVal);
+
+                        let leftDisplay = leftVal, rightDisplay = rightVal;
+                        if (displayKey === "navigationMask") {
+                            if (leftVal === 0) leftDisplay = "Land"; else if (leftVal === 1) leftDisplay = "Air";
+                            if (rightVal === 0) rightDisplay = "Land"; else if (rightVal === 1) rightDisplay = "Air";
+                        }
+
+                        let desc = statDescriptions[displayKey];
+                        extraRows += `
+            <tr>
+              <td class="${colors.left}">${leftDisplay !== undefined ? leftDisplay : "—"}</td>
+              <td style="color:#56CCB6; text-align:center !important;">
+                <span class="stat-name" style="width:100%;">
+                  <span style="display:block;text-align:center; width:100%;">${formatKey(displayKey)}${desc ? ` <button onclick="
+                    let d = document.getElementById('desc-cmp-extra-${displayKey}');
+                    d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                  " class="info-btn">i</button>` : ""}</span>
+                  <img src="images/${displayKey.toUpperCase()}.jpg" class="stat-icon">
+                </span>
+              </td>
+              <td class="${colors.right}">${rightDisplay !== undefined ? rightDisplay : "—"}</td>
+            </tr>
+${desc ? `
+<tr id="desc-cmp-extra-${displayKey}" class="desc-row" style="display:none;">
+  <td colspan="3" class="desc-row-pad">
+    <div style="font-size:14px; color:gray; display:block; max-width:400px; margin:0 auto; text-align:center;">${desc}</div>
+  </td>
+</tr>
+` : ""}
+          `;
+                    }
+                    if (extraRows) {
+                        html += `<tr><td colspan="3" class="section-header">📊 Extra Info</td></tr>${extraRows}`;
+                    }
+
+                    // abilities section — only show if at least one side has abilities
+                    let abilityRows = buildAbilityCompareRows(leftAbilities, rightAbilities);
+                    if (abilityRows) {
+                        // colspan=3 will spread out 1 <td> across all 3 columns
+                        html += `<tr><td colspan="3" class="section-header">⚔️ Abilities</td></tr>${abilityRows}`;
+                    }
+
+                    // talents section — only show if at least one side has talents
+                    // FIX: use buildTalentCompareRows instead of buildAbilityCompareRows (talents have no images)
+                    let talentRows = buildTalentCompareRows(leftTalents, rightTalents, selectleft.key, selectright.key);
+                    if (talentRows) {
+                        html += `<tr><td colspan="3" class="section-header">✨ Talents</td></tr>${talentRows}`;
+                    }
+
+                    let leftSummonKey = getSummonedUnitKey(leftAbilities, leftTalents, selectleft.key);
+                    let rightSummonKey = getSummonedUnitKey(rightAbilities, rightTalents, selectright.key);
+                    if (leftSummonKey || rightSummonKey) {
+                        html += `<tr><td colspan="3" class="section-header">⚔️ Summoned Units</td></tr>`;
+                        html += buildSummonedUnitCompareRows(leftSummonKey, leftLevel, rightSummonKey, rightLevel);
+                    }
+
+                    html += `</table>`;
+                    compareCard.innerHTML = html;
+                    persistedOpenDescs.forEach(id => {
+                        let el = document.getElementById(id);
+                        if (el) el.style.display = "table-row";
+                    });
+
+                } else if (selectleft || selectright) {
+
+                    let selected = selectleft || selectright;
+                    let renderedSummons = new Set();
+                    let isLeft = !!selectleft;
+                    let level = selectleft ? leftLevel : rightLevel;
+
+                    // FIX: stats live directly on the level object, not inside a .stats sub-object
+                    let levelData = selected.levels[level - 1];
+
+                    // FIX: fetch abilities and talents via the helper functions
+                    let abilities = enrichAbilitiesWithInfo(getAbilitiesForUnit(selected.key, parseInt(level)));
+                    let talents = enrichTalentsWithModifiers(getTalentsForUnit(selected.key, parseInt(level)));
+                    abilities = abilities.filter(a => !a.abilityInfoId?.startsWith("talentAbility_"));
+
+                    abilities.sort(abilityPriorityComparator);
+                    // FIX: was referencing selectTroop.key instead of selected.key for the toggle button
+                    let linkedUnit = getLinkedUnit(selected.key);
+
+
+                    let html = `
+    <table class="single-card">
+      <tr>
+        <th colspan="2">
+          ${renderUnitImageWithVideo(selected.key, `images/${selected.key.toUpperCase()}.jpg`, selected.displayName)}
+          <div class="flex-center-gap10">
+            ${selected.displayName} (Lvl ${level})
+            ${linkedUnit ? `
+              <button class="switch-btn"   
+              onclick="
+                if (${isLeft}) {
+                  selectleft = troopList.find(t => t.key === '${linkedUnit.key}');
+                } else {
+                  selectright = troopList.find(t => t.key === '${linkedUnit.key}');
+                }
+                updateCards()
+              "
+              >
+                Switch to ${linkedUnit.displayName}
+              </button>
+            ` : ""}
+          </div>
+        </th>
+      </tr>
+      
+      <tr><td colspan="2" style="text-align:center; padding-bottom:8px;">${renderRoleBadges(selected.key, selected.meta)}</td></tr>
+  `;
+
+                    // stat rows
+                    // stat rows
+                    for (let key in levelData) {
+                        if (ignoreKeys.includes(key)) continue;
+
+                        let displayVal = formatStatValue(key, levelData[key]);
+
+                        let desc = statDescriptions[key];
+                        html += `
+        <tr>
+          <td>
+            <span class="stat-name">
+  <span style="display:block; width:100%; text-align:center;">${statDisplayMap[key] || key}</span>
+  ${desc ? `<button onclick="
+                  let d = document.getElementById('desc-single-stat-${key}');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn info-btn-block">i</button>` : ""}
+    <img src="images/${key.toUpperCase()}.jpg" class="stat-icon">
+  </span>
+          </td>
+          <td>${displayVal}</td>
+        </tr>
+        ${desc ? `
+        <tr id="desc-single-stat-${key}" style="display:none;">
+          <td colspan="2" class="desc-text">${desc}</td>
+        </tr>
+        ` : ""}
+      `;
+                    }
+
+                    // abilities section — image + name below, then stat rows
+                    // Extra Info section
+                    let meta = selected.meta;
+                    let extraStatsKeys = extraStatsKeyMap;
+                    let extraRows = "";
+                    for (let displayKey in extraStatsKeys) {
+                        let metaKey = extraStatsKeys[displayKey];
+                        let val = meta[metaKey];
+                        if (val === undefined) continue;
+
+                        let displayVal = val;
+                        if (displayKey === "navigationMask") {
+                            displayVal = val === 0 ? "Land" : val === 1 ? "Air" : val;
+                        }
+
+                        let desc = statDescriptions[displayKey];
+                        extraRows += `
+            <tr>
+              <td>
+                <span class="stat-name">
+                  <span>${formatKey(displayKey)}${desc ? ` <button onclick="
+                    let d = document.getElementById('desc-single-extra-${displayKey}');
+                    d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                  " class="info-btn">i</button>` : ""}</span>
+                  <img src="images/${displayKey.toUpperCase()}.jpg" class="stat-icon">
+                </span>
+              </td>
+              <td>${displayVal}</td>
+            </tr>
+            ${desc ? `
+            <tr id="desc-single-extra-${displayKey}" style="display:none;">
+              <td colspan="2" class="desc-text">${desc}</td>
+            </tr>
+            ` : ""}
+          `;
+                    }
+
+                    if (extraRows) {
+                        html += `<tr><td colspan="2" class="section-header">📊 Extra Info</td></tr>${extraRows}`;
+                    }
+
+                    // abilities section — image + name below, then stat rows
+                    // abilities section — image + name below, then stat rows
+                    if (abilities && abilities.length > 0) {
+                        html += `<tr><td colspan="3" class="section-header">⚔️ Abilities</td></tr>`;
+                        let imageShown = false;
+
+                        abilities.forEach(function (ability) {
+                            if (ability.name) {
+                                let abilityDesc = getAbilityDescription(ability.abilityInfoId);
+                                html += `
+                              <tr>
+                                <td colspan="3" class="img-row">
+                                  ${!imageShown ? `<img class="troop-img" src="images/${ability.abilityInfoId.toUpperCase()}.jpg" alt="${ability.name}" />` : ""}
+                                  <div class="ability-name">${getAbilityTitle(ability.abilityInfoId) || formatKey(ability.name)}${basicAttackAbilities[ability.abilityInfoId] ? "<br><span style='font-size:16px; color:gray;'>(Basic Attack)</span>" : ""}</div>
+                                  ${abilityDesc && !imageShown ? `<div class="ability-desc-block">${abilityDesc}</div>` : ""}
+                                </td>
+                              </tr>
+                            `;
+                                imageShown = true;
+                            }
+                            for (let key in ability) {
+                                if (key === "name" || key === "abilityInfoId" || abilityIgnoreKeys.includes(key)) continue;
+                                let val = ability[key];
+                                let desc = getStatDescription(key, ability.abilityInfoId);
+
+                                if (key === "summonedTroopId") {
+                                    let troopBaseKey = val.replace(/_\d+$/, "");
+                                    if (renderedSummons.has(troopBaseKey)) continue;
+                                    renderedSummons.add(troopBaseKey);
+
+                                    let troopEntry = troopList.find(t => t.key === troopBaseKey) || buildHiddenTroopEntry(troopBaseKey);
+                                    let isHidden = !troopEntry || troopEntry.meta?.order === -1;
+
+                                    if (isHidden) {
+                                        html += `<tr><td colspan="2" class="section-header">⚔️ Summoned Unit</td></tr>`;
+                                        html += buildSummonedUnitRows(troopBaseKey, troopsLevel, 2);
+                                    } else {
+                                        let troopName = troopEntry.displayName;
+                                        let linkVal = `<span class="linked-unit-badge">
+        🔗 ${troopName}</span>`;
+                                        html += `<tr><td>${formatKey(key)}</td><td>${linkVal}</td></tr>`;
+                                    }
+                                    continue;
+                                }
+
+                                html += `
+                              <tr>
+                                <td style="text-align:center; color:white">${getStatLabel(key, ability.abilityInfoId)}${desc ? ` <button onclick="
+                                    let d = document.getElementById('desc-single-cmp-ability-${key}');
+                                    d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                                " class="info-btn">i</button>` : ""}</td>
+                                <td class="ta-center">${formatStatValue(key, ability[key])}</td>
+                              </tr>
+                              ${desc ? `
+                              <tr id="desc-single-cmp-ability-${key}" style="display:none;">
+                                <td colspan="2" class="desc-text">${desc}</td>
+                              </tr>` : ""}
+                            `;
+                            }
+                        });
+                    }
+
+
+                    // talents section — image + name below, then stat rows
+                    if (talents && talents.length > 0) {
+                        html += `<tr><td colspan="2" class="section-header">✨ Talents</td></tr>`;
+
+                        let talentDesc = getTalentDescription(selected.key);
+                        let talentIcon = getTalentIcon(selected.key);     // or selected.key
+                        if (talentIcon || talentDesc) {
+                            html += `
+                      <tr>
+                        <td colspan="2" class="img-row">
+                          ${talentIcon ? `<img class="troop-img" src="images/${talentIcon.toUpperCase()}.jpg" alt="${talentIcon}" />` : ""}
+                          <div class="ability-name">${talentIcon ? formatKey(talentIcon.split("_").slice(2).join("_")) : ""}</div>
+                          ${talentDesc ? `<div class="ability-desc-block">${talentDesc}</div>` : ""}
+                        </td>
+                      </tr>
+                    `;
+                        }
+
+
+                        let seenTalentNames = new Set();
+
+                        // show talent name
+
+
+                        // type always first, formatted
+                        talents.forEach(function (talent, talentIndex) {
+                            if (talent.name && seenTalentNames.has(talent.name)) return;
+                            if (talent.name) seenTalentNames.add(talent.name);
+
+                            for (let key in talent) {
+                                if (talentSkipKeys.includes(key)) continue;
+                                if (key.toLowerCase() === "name") continue;
+                                let val = talent[key];
+                                let desc = statDescriptions[key];
+                                let safeKey = key;
+
+                                if (safeKey === "type") continue; // skip raw type row — used as a label below instead
+
+                                // special handling for summonedTroopId
+                                let displayVal;
+                                if (safeKey === "summonedTroopId") {
+                                    let troopBaseKey = val.replace(/_\d+$/, "");
+
+                                    if (renderedSummons.has(troopBaseKey)) continue;
+                                    renderedSummons.add(troopBaseKey);
+                                    let troopEntry = troopList.find(t => t.key === troopBaseKey) || buildHiddenTroopEntry(troopBaseKey);
+                                    let isHidden = !troopEntry || troopEntry.meta?.order === -1;
+                                    if (isHidden) {
+                                        html += `<tr><td colspan="2" class="section-header">⚔️ Summoned Unit</td></tr>`;
+                                        html += buildSummonedUnitRows(troopBaseKey, troopsLevel, 2);
+                                        displayVal = null;
+                                    } else {
+                                        let troopName = troopEntry.displayName;
+                                        displayVal = `<span class="linked-unit-badge"
+            onclick="
+                troopNavStack.push({ unit: selectTroop, level: parseInt(troopsLevel) });
+                selectTroop = troopList.find(t => t.key === '${troopBaseKey}') || buildHiddenTroopEntry('${troopBaseKey}');
+                troopType = 'troop'; updateTroopsCard(); window.scrollTo(0,0);
+            ">🔗 ${troopName}</span>`;
+                                    }
+                                } else {
+                                    displayVal = formatStatValue(safeKey, val);
+                                }
+
+                                let btn = desc ? ' <button onclick="let d = document.getElementById(\'desc-troop-talent-' + talentIndex + '-' + key + '\'); d.style.display = d.style.display === \'none\' ? \'table-row\' : \'none\';" class="info-btn">i</button>' : "";
+                                let descRow = desc ? '<tr id="desc-troop-talent-' + talentIndex + '-' + key + '" style="display:none;"><td colspan="2" class="desc-text">' + desc + '</td></tr>' : "";
+                                let label = formatKey(safeKey);
+                                if (safeKey === "value" && talent.type) {
+                                    label = formatKey(talent.type);
+                                }
+                                if (displayVal !== null) {
+                                    html += '<tr><td>' + label + btn + '</td><td>' + displayVal + '</td></tr>' + descRow;
+                                }
+                            }
+                        });
+                    }
+
+
+                    html += `</table>`;
+                    compareCard.innerHTML = html;
+                    persistedOpenDescs.forEach(id => {
+                        let el = document.getElementById(id);
+                        if (el) el.style.display = "table-row";
+                    });
+
+                } else {
+                    // nothing selected — clear everything
+                    compareCard.innerHTML = "";
+                }
+            }
+
+            // left search — searches both troops and heroes
+            document.getElementById("leftSearch").addEventListener("input", function () {
+                if (this.value === "") {
+                    selectleft = null;
+                    leftType = null;
+                    document.getElementById("leftResults").innerHTML = "";
+                    updateCards();
+                    return;
+                }
+                let query = this.value.toLowerCase();
+                let troopMatches = troopList.filter((troop) => troop.displayName.toLowerCase().includes(query));
+                let heroMatches = heroList.filter((hero) => hero.displayName.toLowerCase().includes(query));
+                let resultsDiv = document.getElementById("leftResults");
+                resultsDiv.innerHTML = "";
+
+                troopMatches.forEach(function (troop) {
+                    let item = document.createElement("div");
+                    item.innerHTML = `<img src="images/${troop.key.toUpperCase()}.jpg" class="stat-icon"> ${troop.displayName}`;
+                    item.classList.add(troop.rarity.toLowerCase());
+                    item.classList.add("search-result-item");
+                    item.addEventListener("click", function () {
+                        selectleft = troop;
+                        leftType = "troop";
+                        document.getElementById("leftSearch").value = troop.displayName;
+                        resultsDiv.innerHTML = "";
+                        updateCards();
+                        window.scrollTo(0, 0);
+                    });
+                    resultsDiv.appendChild(item);
+                });
+
+                heroMatches.forEach(function (hero) {
+                    let item = document.createElement("div");
+                    item.innerHTML = `<img src="images/${hero.key.toUpperCase()}.jpg" class="stat-icon"> ${hero.displayName}`;
+                    item.classList.add(hero.rarity.toLowerCase());
+                    item.classList.add("search-result-item");
+                    item.addEventListener("click", function () {
+                        selectleft = hero;
+                        leftType = "hero";
+                        document.getElementById("leftSearch").value = hero.displayName;
+                        resultsDiv.innerHTML = "";
+                        updateCards();
+                        window.scrollTo(0, 0);
+                    });
+                    resultsDiv.appendChild(item);
+                });
+            });
+
+            // right search — searches both troops and heroes
+            document.getElementById("rightSearch").addEventListener("input", function () {
+                if (this.value === "") {
+                    selectright = null;
+                    rightType = null;
+                    document.getElementById("rightResults").innerHTML = "";
+                    updateCards();
+                    return;
+                }
+                let query = this.value.toLowerCase();
+                let troopMatches = troopList.filter((troop) => troop.displayName.toLowerCase().includes(query));
+                let heroMatches = heroList.filter((hero) => hero.displayName.toLowerCase().includes(query));
+                let resultsDiv = document.getElementById("rightResults");
+                resultsDiv.innerHTML = "";
+
+                troopMatches.forEach(function (troop) {
+                    let item = document.createElement("div");
+                    item.innerHTML = `<img src="images/${troop.key.toUpperCase()}.jpg" class="stat-icon"> ${troop.displayName}`;
+                    item.classList.add(troop.rarity.toLowerCase());
+                    item.classList.add("search-result-item");
+                    item.addEventListener("click", function () {
+                        selectright = troop;
+                        rightType = "troop";
+                        document.getElementById("rightSearch").value = troop.displayName;
+                        resultsDiv.innerHTML = "";
+                        updateCards();
+                        window.scrollTo(0, 0);
+                    });
+                    resultsDiv.appendChild(item);
+                });
+
+                heroMatches.forEach(function (hero) {
+                    let item = document.createElement("div");
+                    item.innerHTML = `<img src="images/${hero.key.toUpperCase()}.jpg" class="stat-icon"> ${hero.displayName}`;
+                    item.classList.add(hero.rarity.toLowerCase());
+                    item.classList.add("search-result-item");
+                    item.addEventListener("click", function () {
+                        selectright = hero;
+                        rightType = "hero";
+                        document.getElementById("rightSearch").value = hero.displayName;
+                        resultsDiv.innerHTML = "";
+                        updateCards();
+                        window.scrollTo(0, 0);
+                    });
+                    resultsDiv.appendChild(item);
+                });
+            });
+
+            document.getElementById("leftSlider").addEventListener("input", function () {
+                leftLevel = this.value;
+                document.getElementById("leftLevel").textContent = "Level " + leftLevel;
+                updateCards();
+            });
+
+            document.getElementById("rightSlider").addEventListener("input", function () {
+                rightLevel = this.value;
+                document.getElementById("rightLevel").textContent = "Level " + rightLevel;
+                updateCards();
+            });
+
+        </script>
+</body>
+
+</html>

@@ -1,0 +1,929 @@
+/* ===============================
+   1. GLOBAL / BASE
+================================*/
+body {
+    background: #1a1a2e;
+    color: white;
+    font-family: Arial, sans-serif;
+}
+
+/* h1 is a tag. it targest all elements of that type */
+h1 {
+    color: #4169e1;
+    font-size: 50px;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+/* ===============================
+   2. LAYOUT
+================================*/
+
+/* . stands for class. Display flex puts things top down instead of left right.
+   Helps to control layout nicely*/
+.tabs {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 0;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: #1a1a2e;
+    padding: 10px 0;
+    box-sizing: border-box;
+}
+
+.sticky-controls {
+    position: sticky;
+    top: var(--tabs-height, 64px);
+    z-index: 10;
+    background: #1a1a2e;
+    padding-bottom: 8px;
+}
+
+.slider-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+/* likewise the container class is inside the comparepage id */
+#comparePage .container {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+#comparePage #left,
+#comparePage #right {
+    flex: 1;
+    padding: 0 60px;
+    min-width: 0;
+}
+
+#left,
+#right {
+    position: relative;
+}
+
+.unit-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    max-width: 900px;
+    margin: 0 auto;
+    border: none;
+}
+
+/* ===============================
+   3. COMPONENTS
+================================*/
+
+.tab-btn {
+    flex: 1;
+    padding: 10px 40px;
+    font-size: 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    background: #2a2a4a;
+    color: white;
+}
+
+/* this makes it such that when we are on that tab it turns light blue, indicating what tab we are in */
+/* select elements that have both the class tab-btn and the class active */
+/* Note we can also do like .tab-btn#mainButton if <button id="mainButton" class="tab-btn active">Click</button> */
+/* if u see .tab-btn .active with a space, then it means an element of class active inside the class tab-btn */
+.tab-btn.active {
+    background: #4169e1;
+    color: white;
+}
+
+/* we hide all pages because we just want to show which page we are on. Not all */
+.page {
+    display: none;
+}
+
+/* this displays pages that are active */
+.page.active {
+    display: block;
+}
+
+.gallery-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    width: 110px;
+    text-align: center;
+}
+
+.gallery-item img {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+    border-radius: 10px;
+    border: none;
+}
+
+.gallery-item span {
+    font-size: 12px;
+    text-align: center;
+    margin-top: 10px;
+    color: #111;
+    background: white;
+    border-radius: 4px;
+    padding: 2px 6px;
+    word-break: break-word;
+    box-shadow: none;
+}
+
+#troopsResults .gallery-section-label {
+    font-size: 28px;
+    font-weight: bold;
+    color: #4169e1;
+    text-align: center;
+    margin-top: 10px;
+    margin-bottom: 6px;
+}
+
+/* this refers to the list of items, when we let item = document.createElement("div");
+   then resultsDiv.appendChild(item); so it applies to each item in the list. creating boxes */
+#troopsResults div:not(.gallery-section-label) {
+    padding: 10px 16px;
+    border: 1px solid #1a1a2e;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    text-align: left;
+}
+
+#leftResults,
+#rightResults {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #1a1a2e;
+    z-index: 30;
+    max-height: 300px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border-radius: 6px;
+    margin-top: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+#leftResults div,
+#rightResults div {
+    padding: 8px 12px;
+    border: 1px solid gray;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+#leftResults div.rare,
+#rightResults div.rare,
+#troopsResults div.rare {
+    background: #4169e1;
+    color: white;
+}
+
+#leftResults div.common,
+#rightResults div.common,
+#troopsResults div.common {
+    background: gray;
+    color: white;
+}
+
+#leftResults div.epic,
+#rightResults div.epic,
+#troopsResults div.epic {
+    background: purple;
+    color: white;
+}
+
+#leftResults div.legendary,
+#rightResults div.legendary,
+#troopsResults div.legendary {
+    background: gold;
+    color: black;
+}
+
+#leftResults div.mythic,
+#rightResults div.mythic,
+#troopsResults div.mythic {
+    background: crimson;
+    color: white;
+}
+
+.search-result-item {
+    width: 100%;
+    height: 60px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* by doing object-fit: contain it will scale the image down and keep the original shape, no stretch */
+.troop-img {
+    display: block;
+    width: 150px;
+    height: 150px;
+    object-fit: contain;
+    object-position: top;
+    margin: 0 auto;
+}
+
+/* this refers to the images beside the stats */
+.stat-icon {
+    width: 50px;
+    height: 50px;
+    vertical-align: middle;
+}
+
+.stat-name {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    text-align: center;
+}
+
+.section-header {
+    font-size: 18px;
+    font-weight: bold;
+    color: #4169e1;
+    /* 3 values = TOP  LEFT/RIGHT  BOTTOM */
+    padding: 10px 16px 4px;
+    border-top: 1px solid #444;
+    margin-top: 6px;
+}
+
+/* name shown below the ability/talent image */
+.ability-name {
+    font-size: 30px;
+    color: #45aa38;
+    margin-top: 4px;
+    text-align: center;
+}
+
+.error-msg {
+    color: #ff4444;
+    font-size: 18px;
+    text-align: center;
+    margin-top: 20px;
+    padding: 10px;
+    border: 10px solid #ff4444;
+    border-radius: 6px;
+    width: 60%;
+    margin: 20px auto;
+}
+
+.search-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.search-row input[type="text"] {
+    flex: 1;
+}
+
+.clear-btn {
+    flex-shrink: 0;
+    padding: 6px 10px;
+    border: none;
+    border-radius: 6px;
+    background: #555;
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.clear-btn:hover {
+    background: #777;
+}
+
+.video-thumb-wrap {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.video-play-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 48px;
+    height: 48px;
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    opacity: 0.35;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.video-thumb-wrap:hover .video-play-overlay {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.08);
+}
+
+/* ===============================
+   3b. STORE BUTTONS
+================================*/
+
+.btn-primary {
+    background: #4169e1;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.btn-primary:hover {
+    background: #5a7ff0;
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background: #2a2a4a;
+    color: #aaa;
+    border: 1px solid #555;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.btn-secondary:hover {
+    background: #3a3a5a;
+}
+
+.plan-btn {
+    font-weight: bold;
+}
+
+.donate-btn {
+    background: #ffc439;
+    color: #1a1a2e;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.donate-btn:hover {
+    background: #ffcd5c;
+    transform: translateY(-1px);
+}
+/* ===============================
+   4. PAGES
+================================*/
+
+/* ---- Troops & Heroes tab ---- */
+
+/* # stands for 1 specific element */
+#troopsPage {
+    width: 95%;
+    margin: 0 auto;
+    text-align: center;
+    position: relative;
+}
+
+/* this means select all text input boxes that are inside the element with id troopsPage 
+   so this <input type="text" id="leftSearch" placeholder="Search troop/Hero" /> is selected
+   The space means it is inside of. e.g. input is inside of troopsPage*/
+#troopsPage input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 6px;
+    border: 1px solid gray;
+    margin-bottom: 10px;
+    background: #2a2a4a;
+    color: white;
+    box-sizing: border-box;
+}
+
+/* we make it a column becuase we want it like an up down list */
+#troopsResults {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    margin-top: 8px;
+}
+
+#troopsCard {
+    margin-top: 20px;
+    font-size: 20px;
+}
+
+/* table is created dynamically in JS let html = '...' 
+   table is the box containing all the stats. from the for loop...
+   border-collapse merges all the borders into 1 line, so no double lines*/
+#troopsCard table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+/* td is the table data. html += `<tr><td>${key}</td><td>${stats[key]}</td></tr>`;
+   in this case it will e for e.g. attack 600. so the format is for them */
+#troopsCard td {
+    padding: 10px 16px;
+    font-size: 20px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* this is for the key images, e.g. unit,hp,dmg... */
+#troopsCard td:first-child {
+    text-align: center;
+}
+
+#troopsCard h3 {
+    font-size: 26px;
+}
+
+/* ---- Compare tab ---- */
+
+#comparePage input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 6px;
+    border: 1px solid gray;
+    background: #2a2a4a;
+    color: white;
+}
+
+#compareCard {
+    width: 60%;
+    margin: 20px auto;
+}
+
+#compareCard table {
+    width: 100%;
+    max-width: 100%;
+    border-collapse: collapse;
+}
+
+#compareCard table:not(.single-card) {
+    table-layout: fixed;
+}
+
+#compareCard td,
+#compareCard th {
+    text-align: center;
+    padding: 10px 20px;
+    font-size: 20px;
+    vertical-align: middle;
+}
+
+/* select the first td in each row 
+   <tr>
+     <td style="color:${colors.left}">${leftVal}</td>
+     <td style="color:#56CCB6">${key}</td>
+     <td style="color:${colors.right}">${rightVal}</td>
+   </tr>
+   in this case the first child is the left one and the last td is the right one*/
+#compareCard tr.desc-row td {
+    text-align: center !important;
+}
+
+#compareCard td:first-child {
+    text-align: right;
+}
+
+#compareCard td:last-child {
+    text-align: left;
+}
+
+/* single-card view inside compareCard — centre both columns */
+#compareCard table.single-card td {
+    text-align: center;
+}
+
+#compareCard table.single-card td:first-child {
+    text-align: center;
+}
+
+#compareCard table.single-card td:last-child {
+    text-align: center;
+}
+
+#compareCard td:nth-child(2) {
+    text-align: center;
+}
+
+#compareCard td:nth-child(2) .stat-name {
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+/* this compareCard.innerHTML = html; so when we open it later we use comparecard  */
+#compareCard .section-header {
+    text-align: center;
+    border-top: 1px solid #444;
+    padding: 10px 0 4px;
+}
+
+/* centres the stat-name flexbox when inside a single-card table */
+.single-card .stat-name {
+    justify-content: center;
+}
+
+/* ===============================
+   5. UTILITIES
+   (DEDUPED INLINE STYLES — these classes replace inline style="..."
+   attributes that were repeated many times across the JS-generated
+   HTML in index.html. Each one used to be typed out as a literal
+   style string at every call site; now it's defined once here.)
+================================*/
+
+/* the small circular "i" info-toggle button shown next to stat labels */
+.info-btn {
+    cursor: pointer;
+    background: #2a2a4a;
+    color: white;
+    border: 1px solid gray;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    padding: 0;
+}
+
+/* same info button, but used inside a centered stat-name column where it
+   needs to sit on its own line below the label instead of inline */
+.info-btn-block {
+    display: block;
+    margin: 4px auto 0;
+}
+
+/* grey, centered description text shown in an expandable row */
+.desc-text {
+    font-size: 14px;
+    color: gray;
+    text-align: center;
+}
+
+/* same grey description text, without forced centering (used where the
+   parent row already controls alignment) */
+.desc-text-loose {
+    font-size: 14px;
+    color: gray;
+}
+
+/* the teal "stat label" column header color used throughout compare tables */
+.stat-label {
+    color: #56CCB6;
+}
+
+/* dynamic better/worse/neutral coloring used by getColor() and the
+   ability/talent compare-row builders, replacing inline color:green/red/white */
+.stat-better {
+    color: green;
+}
+
+.stat-worse {
+    color: red;
+}
+
+.stat-neutral {
+    color: white;
+}
+
+/* centered image + name block shown above an ability/talent/summoned unit */
+.img-row {
+    text-align: center;
+    padding: 8px 0;
+}
+
+/* top-aligned, centered ability/talent compare column */
+#compareCard .vtop-center {
+    text-align: center;
+    vertical-align: top;
+}
+#compareCard th {
+    vertical-align: top;
+}
+/* ability/talent description text shown inline in the compare view */
+.ability-desc-inline {
+    font-size: 16px;
+    color: white;
+    margin-top: 6px;
+}
+
+.ability-image-slot {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    min-height: 150px;
+}
+
+/* ability/talent description block shown in the single-card view, with
+   wrapping for long text */
+.ability-desc-block {
+    font-size: 12px;
+    color: white;
+    margin-top: 6px;
+    padding: 0 8px;
+    width: 100%;
+    box-sizing: border-box;
+    word-break: break-word;
+}
+
+/* the blue clickable "🔗 Linked Unit" pill that jumps to a summoned unit */
+/* the blue clickable "🔗 Linked Unit" pill that jumps to a summoned unit */
+.linked-unit-badge {
+    display: inline-block;
+    background: #1a3a5c;
+    border: 1px solid #4169e1;
+    border-radius: 6px;
+    padding: 4px 14px;
+    color: #4fc3f7;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+/* clickable "Applies To" value on talent rows — opens the applies-to modal */
+.applies-to-link {
+    color: #4169e1;
+    text-decoration: underline;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+/* modal popup listing units matching a clicked "Applies To" faction/role */
+.applies-to-modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    padding: 16px;
+}
+
+.applies-to-modal-overlay.open {
+    display: flex;
+}
+
+.applies-to-modal-box {
+    background: #16162a;
+    border: 1px solid #2a2a4a;
+    border-radius: 14px;
+    padding: 20px;
+    width: 100%;
+    max-width: 480px;
+    max-height: 80vh;
+    overflow-y: auto;
+    color: white;
+}
+
+.applies-to-modal-title {
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 14px;
+    text-align: center;
+}
+
+.applies-to-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 12px;
+}
+
+.applies-to-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.applies-to-item img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 1px solid #2a2a4a;
+}
+
+.applies-to-item span {
+    font-size: 0.75rem;
+}
+
+.applies-to-item:hover img {
+    border-color: #4169e1;
+}
+
+.applies-to-close-btn {
+    display: block;
+    width: 100%;
+    margin-top: 16px;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #2a2a4a;
+    background: none;
+    color: #aaa;
+    cursor: pointer;
+}
+
+/* centered flex row with a 10px gap, used for name + button headers */
+.flex-center-gap10 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* padding used for the wide description row that spans all compare columns */
+.desc-row-pad {
+    padding: 10px 0;
+    text-align: center !important;
+}
+
+/* the small "Switch to X" toggle button (e.g. Hunter <-> Beast) */
+.switch-btn {
+    font-size: 16px;
+    padding: 6px 14px;
+}
+
+/* generic centered text helper */
+.ta-center {
+    text-align: center;
+}
+/* the Troops & Heroes search results panel pinned under the search bar,
+   positioned to float above the page content instead of pushing it down */
+.floating-results {
+    position: sticky;
+    top: calc(var(--tabs-height, 64px) + var(--sticky-controls-height, 140px));
+    left: 0;
+    right: 0;
+    z-index: 30;
+    background: #1a1a2e;
+    border-radius: 6px;
+    max-height: 60vh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+/* ===============================
+   6. MEDIA QUERIES
+================================*/
+
+@media (max-width: 700px) {
+
+    .page-header-bar h1 {
+        font-size: 22px;
+    }
+
+    .icon-nav-btn {
+        padding: 7px 10px;
+        font-size: 13px;
+    }
+
+    .social-icon {
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+
+    h1 {
+        font-size: 28px;
+        margin-bottom: 6px;
+    }
+
+    .tab-btn {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+
+    .gallery-item img {
+        width: 60px;
+        height: 60px;
+    }
+
+    .gallery-item {
+        width: 70px;
+    }
+
+    .gallery-item span {
+        font-size: 10px;
+    }
+
+    #comparePage .container {
+        gap: 12px;
+        display: flex;
+    }
+
+    #comparePage #left,
+    #comparePage #right {
+        flex: 1 1 calc(50% - 6px);
+        max-width: calc(50% - 6px);
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    #comparePage input[type="text"] {
+        box-sizing: border-box;
+        width: 100%;
+        font-size: 14px;
+        padding: 8px 6px;
+    }
+
+    #troopsResults div,
+    #leftResults div,
+    #rightResults div {
+        font-size: 13px;
+        padding: 6px 8px;
+    }
+
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+    }
+
+    #compareCard td,
+    #compareCard th {
+        padding: 8px 6px;
+        font-size: 18px;
+    }
+
+    #compareCard .troop-img {
+        width: 70px;
+        height: 90px;
+    }
+
+    /* 2-troop comparison view: smaller stat icons so both columns fit comfortably */
+    #compareCard table:not(.single-card) .stat-icon {
+        width: 32px;
+        height: 32px;
+    }
+
+    /* single-troop compare view: match Troops & Heroes tab's icon size */
+    #compareCard table.single-card .stat-icon {
+        width: 50px;
+        height: 50px;
+    }
+
+    #compareCard .ability-name {
+        font-size: 12px;
+    }
+
+    /* single-troop compare view should match the Troops & Heroes tab's full size */
+    #compareCard table.single-card .troop-img {
+        width: 150px;
+        height: 150px;
+    }
+
+    #compareCard table.single-card td,
+    #compareCard table.single-card th {
+        font-size: 22px;
+    }
+
+    #compareCard td,
+    #compareCard th {
+        padding-left: 4px;
+        padding-right: 4px;
+    }
+
+    #compareCard td:first-child,
+    #compareCard td:last-child,
+    #compareCard td:nth-child(2) {
+        text-align: center !important;
+    }
+
+    #compareCard table {
+        margin: 0 auto;
+    }
+
+    .ability-name {
+        font-size: 20px;
+    }
+
+    .ability-image-slot {
+        min-height: 90px;
+    }
+}

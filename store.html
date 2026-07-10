@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Store — Keazyea's Intelligence Hub</title>
+    <link rel="icon" href="images/KIH.jpg">
+    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8" />
+    <style>
+        :root {
+            --kih-panel: #16162a;
+            --kih-border: #2a2a4a;
+            --kih-accent: #6c63ff;
+            --kih-text: #f0f0f5;
+        }
+
+        .home-topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 24px;
+        }
+
+        .home-topbar .icon-btn {
+            background: none;
+            border: none;
+            font-size: 1.7rem;
+            padding: 12px;
+            min-width: 48px;
+            min-height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            color: var(--kih-text);
+            position: relative;
+            cursor: pointer;
+        }
+
+        .home-topbar .icon-btn:hover {
+            background: #1c1c36;
+        }
+
+        .menu-wrapper {
+            position: relative;
+        }
+
+        .menu-dropdown {
+            display: none;
+            flex-direction: column;
+            position: absolute;
+            top: 46px;
+            right: 0;
+            min-width: 190px;
+            background: var(--kih-panel);
+            border: 1px solid var(--kih-border);
+            border-radius: 10px;
+            overflow: hidden;
+            z-index: 50;
+        }
+
+        .menu-dropdown.open {
+            display: flex;
+        }
+
+        .menu-dropdown button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: none;
+            border: none;
+            color: var(--kih-text);
+            padding: 12px 14px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            text-align: left;
+            width: 100%;
+        }
+
+        .menu-dropdown button:hover {
+            background: #1c1c36;
+        }
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- TODO: swap the client-id below between your SANDBOX and LIVE
+         PayPal app client IDs as you move from testing to production.
+         This value is PUBLIC/safe to expose client-side (like the
+         Firebase API key) — it is not a secret. -->
+    <script src="https://www.paypal.com/sdk/js?client-id=Aej56iglBkMUmp1f3LJBR-egvy-BvA3Yh3sWlVtyXTfqTCsy91Q10L2iSewf7dhXQiW90JG_mBoHRzKd&vault=true&intent=subscription"></script>
+</head>
+
+<body>
+    <div class="home-topbar" id="storeFallbackTopbar" style="display:none;">
+        <button class="icon-btn" title="Home" onclick="goHomeFallback()">🏠</button>
+        <div class="menu-wrapper">
+            <button class="icon-btn" title="Menu" onclick="toggleFallbackMenu()">☰</button>
+            <div class="menu-dropdown" id="fallbackMenuDropdown">
+                <button onclick="goHomeFallback('inbox')">📬 Inbox</button>
+                <button onclick="goHomeFallback('settings')">⚙️ Settings</button>
+                <button onclick="goHomeFallback('profile')">👤 Profile</button>
+            </div>
+        </div>
+    </div>
+    <h1>Store</h1>
+
+    <div id="storePage">
+
+        <p style="text-align:center; color:#d0d0da; font-size:1.05rem; max-width:600px; margin:0 auto 24px;">
+            Support the site and unlock perks. Subscriptions are billed monthly through PayPal.
+        </p>
+
+        <div class="store-grid"
+    style="display:flex; justify-content:center; align-items:stretch; flex-wrap:wrap; gap:32px; margin-bottom:40px;">
+            <!-- NO ADS PLAN -->
+            <div class="plan-card"
+                style="text-align:center; border:1px solid #6c63ff; border-radius:16px; padding:28px 24px; width:280px; display:flex; flex-direction:column; justify-content:space-between;">
+                <h3>🚫 No Ads</h3>
+                <div class="plan-price">USD $1<span>/month</span></div>
+                <ul class="plan-perks" style="display:inline-block; text-align:left;">
+                    <li>Removes all ads site-wide</li>
+                    <li>Faster, cleaner browsing</li>
+                </ul>
+                <div id="noAdsActiveBox" style="display:none;">
+                    <p class="promo-sub" id="noAdsStatusText"></p>
+                    <button class="btn-primary plan-btn btn-secondary" id="noAdsCancelBtn"
+                        onclick="handleCancel('noAds')"
+                        style="width:auto; font-size:1.05rem; padding:12px 28px; margin-top:8px; border-radius:12px;">Cancel
+                        subscription</button>
+                </div>
+                <div id="noAdsButtonBox"></div>
+            </div>
+
+            <!-- VIP PLAN -->
+            <div class="plan-card vip"
+                style="text-align:center; border:1px solid #6c63ff; border-radius:16px; padding:28px 24px; width:280px; display:flex; flex-direction:column; justify-content:space-between;">
+                <h3>👑 VIP Pass</h3>
+                <div class="plan-price">USD $2<span>/month</span></div>
+                <ul class="plan-perks" style="display:inline-block; text-align:left;">
+                    <li>No ads included</li>
+                    <li>Post clan recruitment messages daily (instead of once a week)</li>
+                    <li>Chance to win exclusive promo codes via the VIP giveaway wheel</li>
+                </ul>
+                <div id="vipActiveBox" style="display:none;">
+                    <p class="promo-sub" id="vipStatusText"></p>
+                    <button class="btn-primary plan-btn btn-secondary" id="vipCancelBtn" onclick="handleCancel('vip')"
+                        style="width:auto; font-size:1.05rem; padding:12px 28px; margin-top:8px; border-radius:12px;">Cancel
+                        subscription</button>
+                </div>
+                <div id="vipButtonBox"></div>
+            </div>
+
+        </div>
+
+        <div class="donate-box" style="text-align:center;">
+            <h3 style="margin-top:0;">☕ Enjoying the site?</h3>
+            <p class="promo-sub">If this hub has helped you, consider buying me a coffee — no perks attached, just
+                appreciated.</p>
+            <a href="https://www.paypal.me/keazyea" target="_blank" rel="noopener noreferrer">
+                <button class="donate-btn" style="font-size:1.15rem; padding:14px 32px; border-radius:12px;">Donate via
+                    PayPal</button>
+            </a>
+        </div>
+
+        <p class="store-note" style="text-align:center;">Subscriptions are processed by PayPal; this site never sees or
+            stores your payment details.</p>
+    </div>
+
+    <script type="module" src="appState.js"></script>
+    <script>
+        if (window.self === window.top) {
+            document.getElementById("storeFallbackTopbar").style.display = "flex";
+        }
+        function goHomeFallback(page) {
+            window.location.href = page ? "home.html?goto=" + page : "home.html";
+        }
+        function toggleFallbackMenu() {
+            document.getElementById("fallbackMenuDropdown").classList.toggle("open");
+        }
+        document.addEventListener("click", (e) => {
+            let wrapper = document.querySelector("#storeFallbackTopbar .menu-wrapper");
+            if (wrapper && !wrapper.contains(e.target)) {
+                document.getElementById("fallbackMenuDropdown").classList.remove("open");
+            }
+        });
+    </script>
+    <script type="module">
+        // TODO: fill these in after running create-plans.js and deploying to Vercel.
+        const VIP_PLAN_ID = "P-9V698193BN398663ANJHSUUA";
+        const NOADS_PLAN_ID = "P-27700628LC199444RNJHSUTY";
+        const BACKEND_BASE = "https://kih-store.vercel.app";
+
+        let buttonsRendered = { vip: false, noAds: false };
+
+        function daysLeft(expiresAt) {
+            return Math.max(0, Math.ceil((expiresAt - Date.now()) / 86400000));
+        }
+
+        async function refreshPlanButtons() {
+            const user = AppState.getCurrentUser();
+            const profile = await AppState.getProfile();
+            const vipActive = AppState.isVipActive(profile);
+            const noAdsActive = AppState.isNoAdsActive(profile);
+
+            // ----- No Ads card -----
+            document.getElementById("noAdsActiveBox").style.display = noAdsActive ? "block" : "none";
+            document.getElementById("noAdsButtonBox").style.display = noAdsActive ? "none" : "block";
+            if (noAdsActive) {
+                if (vipActive && !profile.noAdsSubscriptionId) {
+                    document.getElementById("noAdsStatusText").textContent = "Included with your VIP Pass";
+                    document.getElementById("noAdsCancelBtn").style.display = "none";
+                } else {
+                    document.getElementById("noAdsStatusText").textContent =
+                        `Active — ${daysLeft(profile.noAdsExpiresAt)} day(s) left`;
+                    document.getElementById("noAdsCancelBtn").style.display = "inline-block";
+                }
+            } else if (user && !buttonsRendered.noAds) {
+                renderSubscribeButton("noAdsButtonBox", NOADS_PLAN_ID, "noAds");
+                buttonsRendered.noAds = true;
+            }
+
+            // ----- VIP card -----
+            document.getElementById("vipActiveBox").style.display = vipActive ? "block" : "none";
+            document.getElementById("vipButtonBox").style.display = vipActive ? "none" : "block";
+            if (vipActive) {
+                document.getElementById("vipStatusText").textContent =
+                    `Active — ${daysLeft(profile.vipExpiresAt)} day(s) left`;
+            } else if (user && !buttonsRendered.vip) {
+                renderSubscribeButton("vipButtonBox", VIP_PLAN_ID, "vip");
+                buttonsRendered.vip = true;
+            }
+        }
+
+        function renderSubscribeButton(containerId, planId, plan) {
+            const user = AppState.getCurrentUser();
+            if (!user) {
+                document.getElementById(containerId).innerHTML =
+                    '<button class="btn-primary plan-btn" style="width:auto; font-size:1.1rem; padding:14px 32px; margin-top:10px; border-radius:12px;" onclick="handleSignInPrompt()">Sign in to subscribe</button>';
+                return;
+            }
+            paypal.Buttons({
+                style: { shape: "pill", color: "blue", layout: "vertical", label: "subscribe" },
+                createSubscription: function (data, actions) {
+                    return actions.subscription.create({
+                        plan_id: planId,
+                        custom_id: user.uid // lets our webhook know WHICH Firebase user this is
+                    });
+                },
+                onApprove: function (data) {
+                    alert("Thanks! Your subscription is being activated — this can take a few seconds.");
+                    pollForActivation(plan);
+                },
+                onError: function (err) {
+                    console.error(err);
+                    alert("Something went wrong with PayPal checkout. Please try again.");
+                }
+            }).render("#" + containerId);
+        }
+
+        async function pollForActivation(plan, attempts = 0) {
+            const profile = await AppState.getProfile();
+            const active = plan === "vip" ? AppState.isVipActive(profile) : AppState.isNoAdsActive(profile);
+            if (active || attempts > 10) {
+                await refreshPlanButtons();
+                return;
+            }
+            setTimeout(() => pollForActivation(plan, attempts + 1), 2000);
+        }
+
+        async function handleCancel(plan) {
+            if (!confirm("Cancel this subscription? You'll keep access until the current billing period ends.")) return;
+            try {
+                const idToken = await AppState.getIdToken();
+                const res = await fetch(BACKEND_BASE + "/api/cancel-subscription", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " + idToken
+                    },
+                    body: JSON.stringify({ plan })
+                });
+                if (!res.ok) throw new Error(await res.text());
+                alert("Cancellation requested. Your access will end when the current billing period closes.");
+                await refreshPlanButtons();
+            } catch (e) {
+                alert("Couldn't cancel — please try again in a moment.");
+                console.error(e);
+            }
+        }
+        window.handleCancel = handleCancel;
+
+        async function handleSignInPrompt() {
+            try {
+                await AppState.signIn();
+                buttonsRendered = { vip: false, noAds: false };
+                await refreshPlanButtons();
+            } catch (e) {
+                alert("Sign-in failed: " + e.message);
+            }
+        }
+        window.handleSignInPrompt = handleSignInPrompt;
+
+        AppState.waitForAuthReady().then(refreshPlanButtons);
+        AppState.onAuthChange(() => {
+            buttonsRendered = { vip: false, noAds: false };
+            refreshPlanButtons();
+        });
+    </script>
+</body>
+
+</html>

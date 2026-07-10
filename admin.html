@@ -1,0 +1,903 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Admin — Keazyea's Intelligence Hub</title>
+    <link rel="icon" href="images/KIH.jpg">
+    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+        .info-modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            align-items: center;
+            justify-content: center;
+            z-index: 300;
+            padding: 16px;
+        }
+
+        .info-modal-overlay.open {
+            display: flex;
+        }
+
+        .info-modal-box {
+            background: #16162a;
+            border: 1px solid #2a2a4a;
+            border-radius: 14px;
+            padding: 22px;
+            width: 100%;
+            max-width: 420px;
+            max-height: 80vh;
+            overflow-y: auto;
+            color: white;
+            text-align: left;
+        }
+
+        .info-modal-title {
+            font-weight: 700;
+            font-size: 1.15rem;
+            margin-bottom: 12px;
+        }
+
+        .info-modal-body {
+            color: #d0d0da;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            margin-bottom: 18px;
+        }
+
+        .info-modal-ok-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            background: #4169e1;
+            color: white;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .confirm-modal-body {
+            color: #d0d0da;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 18px;
+        }
+
+        .confirm-modal-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .confirm-modal-actions button {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .confirm-modal-btn-yes {
+            background: #4169e1;
+            color: white;
+        }
+
+        .confirm-modal-btn-cancel {
+            background: #2a2a4a;
+            color: white;
+            border: 1px solid #555 !important;
+        }
+
+        .prompt-modal-input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #2a2a4a;
+            background: #1a1a2e;
+            color: white;
+            margin-bottom: 16px;
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <body>
+        <div class="info-modal-overlay" id="infoModalOverlay">
+            <div class="info-modal-box">
+                <div class="info-modal-title" id="infoModalTitle"></div>
+                <div class="info-modal-body" id="infoModalBody"></div>
+                <button class="info-modal-ok-btn" id="infoModalOkBtn">OK</button>
+            </div>
+        </div>
+        <div class="info-modal-overlay" id="confirmModalOverlay">
+            <div class="info-modal-box">
+                <div class="info-modal-title" id="confirmModalTitle"></div>
+                <div class="confirm-modal-body" id="confirmModalBody"></div>
+                <div class="confirm-modal-actions">
+                    <button class="confirm-modal-btn-cancel" id="confirmModalCancelBtn">Cancel</button>
+                    <button class="confirm-modal-btn-yes" id="confirmModalYesBtn">Confirm</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-modal-overlay" id="promptModalOverlay">
+            <div class="info-modal-box">
+                <div class="info-modal-title" id="promptModalTitle"></div>
+                <input type="text" class="prompt-modal-input" id="promptModalInput">
+                <div class="confirm-modal-actions">
+                    <button class="confirm-modal-btn-cancel" id="promptModalCancelBtn">Cancel</button>
+                    <button class="confirm-modal-btn-yes" id="promptModalOkBtn">OK</button>
+                </div>
+            </div>
+        </div>
+
+        <h1>Admin</h1>
+
+        <div id="adminPage" style="max-width:600px; margin:0 auto; text-align:center; padding:0 20px;">
+
+            <!-- STATE: CHECKING -->
+            <div id="checkingState">
+                <p>Checking access...</p>
+            </div>
+
+            <!-- STATE: DENIED -->
+            <div id="deniedState" style="display:none;">
+                <h2>🚫 Not authorized</h2>
+                <p class="promo-sub">This page is restricted to the site admin.</p>
+            </div>
+
+            <!-- STATE: SIGNED OUT -->
+            <div id="signedOutState" style="display:none;">
+                <h2>Sign in required</h2>
+                <button class="btn-primary" onclick="handleSignIn()" style="padding:14px 32px; margin-top:10px;">Sign in
+                    with Google</button>
+            </div>
+
+            <!-- STATE: ADMIN PANEL -->
+            <div id="adminPanelState" style="display:none;">
+                <h2>🎲 Weekly Giveaway Draw</h2>
+                <p class="promo-sub">Current week: <strong id="currentWeekId"></strong></p>
+                <p class="promo-sub" id="entryCountText"></p>
+                <p class="promo-sub" id="alreadyDrawnText" style="display:none; color:gold;"></p>
+
+                <!-- Step 1: pick a winner (no code involved yet) -->
+                <button class="btn-primary" id="drawBtn" onclick="handlePick()"
+                    style="font-size:1.1rem; padding:16px 32px; margin-top:16px;">Pick This Week's Winner</button>
+
+                <!-- Step 2: shown only after a winner is picked, before anything is saved -->
+                <div id="pickedResult"
+                    style="display:none; margin-top:24px; padding:20px; border:1px solid #4169e1; border-radius:12px; text-align:left;">
+                    <h3 style="margin-top:0;">Winner picked (not saved yet)</h3>
+                    <p><strong>Name:</strong> <span id="pickedName"></span></p>
+                    <p><strong>Device:</strong> <span id="pickedDevice"></span></p>
+                    <p><strong>Total entries:</strong> <span id="pickedCount"></span></p>
+
+                    <label for="prizeCodeInput" style="display:block; margin-top:14px; margin-bottom:6px;">Type the
+                        promo
+                        code to send them:</label>
+                    <input type="text" id="prizeCodeInput" placeholder="e.g. KCJUNE26"
+                        style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box;">
+
+                    <button class="btn-primary" id="confirmBtn" onclick="handleConfirm()"
+                        style="margin-top:14px; padding:12px 28px;">Confirm & Send Prize</button>
+                </div>
+
+                <div id="drawResult"
+                    style="display:none; margin-top:24px; padding:20px; border:1px solid #45aa38; border-radius:12px; text-align:left;">
+                    <h3 style="margin-top:0;">✅ Prize saved</h3>
+                    <p>The winner will see the code the next time they open the giveaway wheel and it's tied only to
+                        their
+                        account.</p>
+                </div>
+
+                <hr style="border-color:#2a2a4a; margin:40px 0;">
+
+                <h2>🎁 Post a Promo Code</h2>
+                <p class="promo-sub">This appears instantly on the Promo Codes page and notifies everyone via their
+                    inbox.
+                </p>
+                <input type="text" id="newCodeInput" placeholder="e.g. KCJULY26"
+                    style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box;">
+                <button class="btn-primary" id="postCodeBtn" onclick="handlePostCode()"
+                    style="margin-top:12px; padding:12px 28px;">Post Code</button>
+                <div id="recentCodesList" style="margin-top:16px; text-align:left;"></div>
+
+                <hr style="border-color:#2a2a4a; margin:40px 0;">
+
+                <h2>💡 Post a Tip</h2>
+                <p class="promo-sub">This appears on the Tips page and notifies everyone via their inbox.</p>
+                <input type="text" id="newTipTitleInput" placeholder="Tip title, e.g. IRON GUARDS"
+                    style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box; margin-bottom:10px;">
+                <textarea id="newTipBodyInput" placeholder="Paste your full tip text here..." rows="10"
+                    style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box; font-family:inherit; margin-bottom:10px;"></textarea>
+
+                <label for="newTipImageInput"
+                    style="display:block; text-align:left; margin-bottom:6px; color:#9a9ab0; font-size:0.85rem;">Optional
+                    image (shown at the bottom of the tip)</label>
+                <input type="file" id="newTipImageInput" accept="image/*"
+                    style="width:100%; padding:8px; font-size:0.95rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box;">
+                <img id="newTipImagePreview"
+                    style="display:none; max-width:100%; max-height:200px; margin-top:10px; border-radius:8px;">
+
+                <button class="btn-primary" id="postTipBtn" onclick="handlePostTip()"
+                    style="margin-top:12px; padding:12px 28px;">Post Tip</button>
+                <div id="recentTipsList" style="margin-top:16px; text-align:left;"></div>
+
+                <hr style="border-color:#2a2a4a; margin:40px 0;">
+
+                <h2>🚩 Reports Queue</h2>
+                <p class="promo-sub">Reports from users about clan posts or DMs. Reviewing one shows the reported
+                    content
+                    plus a shortcut to that account's name-change history before you act.</p>
+                <div id="reportsList" style="text-align:left;"></div>
+
+                <hr style="border-color:#2a2a4a; margin:40px 0;">
+
+                <h2>⏱️ Active Timeouts</h2>
+                <p class="promo-sub">Users currently serving a temporary timeout. Remove it early if needed.</p>
+                <div id="timeoutsList" style="text-align:left;"></div>
+
+                <hr style="border-color:#2a2a4a; margin:40px 0;">
+
+                <h2>🔨 Banned Users</h2>
+                <p class="promo-sub">Users currently permanently banned.</p>
+                <div id="bansList" style="text-align:left;"></div>
+
+                <hr style="border-color:#2a2a4a; margin:40px 0;">
+
+                <h2>🔨 Moderation Lookup</h2>
+                <p class="promo-sub">Look up any player by their in-game name to see their name-change history and ban
+                    status.</p>
+                <div style="display:flex; gap:8px;">
+                    <input type="text" id="lookupNameInput" placeholder="In-game name"
+                        style="flex:1; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box;">
+                    <button class="btn-primary" onclick="handleLookupUser()"
+                        style="padding:10px 20px; flex-shrink:0;">Look
+                        Up</button>
+                </div>
+                <div id="lookupResult" style="margin-top:16px; text-align:left;"></div>
+
+                <p class="promo-sub" style="margin-top:20px;">One-time tool: reserve usernames for profiles that existed
+                    before name uniqueness was added. Safe to click more than once.</p>
+                <button onclick="handleBackfillUsernames()"
+                    style="background:#555; color:white; border:none; border-radius:8px; padding:10px 20px; cursor:pointer;">Backfill
+                    Username Reservations</button>
+                <div id="backfillResult" style="margin-top:12px; text-align:left;"></div>
+            </div>
+
+        </div>
+
+        <script type="module" src="appState.js"></script>
+        <script type="module">
+            let pickedWinner = null;
+            let pickedWeekId = null;
+            function showInfoModal(title, message) {
+                document.getElementById("infoModalTitle").textContent = title;
+                document.getElementById("infoModalBody").textContent = message;
+                document.getElementById("infoModalOverlay").classList.add("open");
+            }
+            function showConfirmModal(title, message) {
+                return new Promise((resolve) => {
+                    document.getElementById("confirmModalTitle").textContent = title;
+                    document.getElementById("confirmModalBody").textContent = message;
+                    const overlay = document.getElementById("confirmModalOverlay");
+                    overlay.classList.add("open");
+
+                    const yesBtn = document.getElementById("confirmModalYesBtn");
+                    const cancelBtn = document.getElementById("confirmModalCancelBtn");
+                    function cleanup(result) {
+                        overlay.classList.remove("open");
+                        yesBtn.onclick = null;
+                        cancelBtn.onclick = null;
+                        resolve(result);
+                    }
+                    yesBtn.onclick = () => cleanup(true);
+                    cancelBtn.onclick = () => cleanup(false);
+                });
+            }
+
+            function showPromptModal(title, defaultValue = "") {
+                return new Promise((resolve) => {
+                    document.getElementById("promptModalTitle").textContent = title;
+                    const input = document.getElementById("promptModalInput");
+                    input.value = defaultValue;
+                    const overlay = document.getElementById("promptModalOverlay");
+                    overlay.classList.add("open");
+                    input.focus();
+
+                    const okBtn = document.getElementById("promptModalOkBtn");
+                    const cancelBtn = document.getElementById("promptModalCancelBtn");
+                    function cleanup(result) {
+                        overlay.classList.remove("open");
+                        okBtn.onclick = null;
+                        cancelBtn.onclick = null;
+                        resolve(result);
+                    }
+                    okBtn.onclick = () => cleanup(input.value);
+                    cancelBtn.onclick = () => cleanup(null);
+                });
+            }
+            document.getElementById("infoModalOkBtn").addEventListener("click", () => {
+                document.getElementById("infoModalOverlay").classList.remove("open");
+            });
+            window.showInfoModal = showInfoModal;
+            function showState(state) {
+                document.getElementById("checkingState").style.display = state === "checking" ? "block" : "none";
+                document.getElementById("deniedState").style.display = state === "denied" ? "block" : "none";
+                document.getElementById("signedOutState").style.display = state === "signedout" ? "block" : "none";
+                document.getElementById("adminPanelState").style.display = state === "admin" ? "block" : "none";
+            }
+
+            async function handleSignIn() {
+                try {
+                    await AppState.signIn();
+                    await refreshAdminState();
+                } catch (e) {
+                    showInfoModal("Sign-in failed", e.message);
+                }
+            }
+            window.handleSignIn = handleSignIn;
+
+            async function refreshAdminState() {
+                const user = AppState.getCurrentUser();
+                if (!user) {
+                    showState("signedout");
+                    return;
+                }
+                if (!AppState.isAdmin()) {
+                    showState("denied");
+                    return;
+                }
+
+                const weekId = AppState.getWeekId();
+                document.getElementById("currentWeekId").textContent = weekId;
+
+                const entries = await AppState.getGiveawayEntries(weekId);
+                document.getElementById("entryCountText").textContent = entries.length + " entr" + (entries.length === 1 ? "y" : "ies") + " so far this week.";
+
+                const existing = await AppState.getWeekWinner(weekId);
+                const drawBtn = document.getElementById("drawBtn");
+                const alreadyText = document.getElementById("alreadyDrawnText");
+                document.getElementById("pickedResult").style.display = "none";
+                document.getElementById("drawResult").style.display = "none";
+
+                if (existing) {
+                    drawBtn.disabled = true;
+                    drawBtn.textContent = "Already drawn";
+                    alreadyText.style.display = "block";
+                    alreadyText.textContent = "Winner already drawn: " + existing.winnerName;
+                } else {
+                    drawBtn.disabled = false;
+                    drawBtn.textContent = "Pick This Week's Winner";
+                    alreadyText.style.display = "none";
+                }
+
+                showState("admin");
+            }
+
+            async function handlePick() {
+                const btn = document.getElementById("drawBtn");
+                if (!await showConfirmModal("Pick winner", "Pick a random winner for this week?")) return;
+
+                btn.disabled = true;
+                btn.textContent = "Picking...";
+
+                try {
+                    const result = await AppState.pickWeeklyWinner();
+                    pickedWinner = result.winner;
+                    pickedWeekId = result.weekId;
+
+                    document.getElementById("pickedName").textContent = result.winner.name;
+                    document.getElementById("pickedDevice").textContent = result.winner.device;
+                    document.getElementById("pickedCount").textContent = result.entryCount;
+                    document.getElementById("pickedResult").style.display = "block";
+                    document.getElementById("prizeCodeInput").value = "";
+
+                    btn.style.display = "none";
+                } catch (e) {
+                    showInfoModal("Pick failed", e.message);
+                    btn.disabled = false;
+                    btn.textContent = "Pick This Week's Winner";
+                }
+            }
+            window.handlePick = handlePick;
+
+            async function handleConfirm() {
+                const code = document.getElementById("prizeCodeInput").value;
+                if (!code.trim()) {
+                    showInfoModal("Missing code", "Type in the promo code before confirming.");
+                    return;
+                }
+
+                if (!await showConfirmModal("Send prize", "Send \"" + code.trim() + "\" to " + pickedWinner.name + "? This can't be undone.")) return;
+
+                const confirmBtn = document.getElementById("confirmBtn");
+                confirmBtn.disabled = true;
+                confirmBtn.textContent = "Saving...";
+
+                try {
+                    await AppState.finalizeGiveawayPrize(pickedWeekId, pickedWinner, code);
+                    document.getElementById("pickedResult").style.display = "none";
+                    document.getElementById("drawResult").style.display = "block";
+                } catch (e) {
+                    showInfoModal("Failed to save", e.message);
+                    confirmBtn.disabled = false;
+                    confirmBtn.textContent = "Confirm & Send Prize";
+                }
+            }
+            window.handleConfirm = handleConfirm;
+
+            /* ---------------- POST PROMO CODE ---------------- */
+            async function handlePostCode() {
+                const input = document.getElementById("newCodeInput");
+                const code = input.value.trim();
+                if (!code) {
+                    showInfoModal("Missing code", "Type a code first.");
+                    return;
+                }
+                const btn = document.getElementById("postCodeBtn");
+                btn.disabled = true;
+                btn.textContent = "Posting...";
+                try {
+                    await AppState.addPromoCode(code);
+                    input.value = "";
+                    await refreshRecentCodes();
+                } catch (e) {
+                    showInfoModal("Couldn't post", e.message);
+                }
+                btn.disabled = false;
+                btn.textContent = "Post Code";
+            }
+            window.handlePostCode = handlePostCode;
+
+            async function refreshRecentCodes() {
+                const codes = await AppState.getPromoCodes(5);
+                const list = document.getElementById("recentCodesList");
+                if (!codes.length) {
+                    list.innerHTML = '<p class="promo-sub">No codes posted yet.</p>';
+                    return;
+                }
+                list.innerHTML = "<p class='promo-sub'>Recently posted:</p>" + codes.map(c =>
+                    `<div style="display:flex; align-items:center; justify-content:space-between; padding:8px 0; border-bottom:1px solid #2a2a4a;">
+                    <span>${escapeHtml(c.code)} — <span class="promo-sub">${new Date(c.createdAt).toLocaleString()}</span></span>
+                    <button onclick="handleDeleteCode('${c.id}')" style="background:#aa3838; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer; flex-shrink:0; margin-left:10px;">Delete</button>
+                </div>`
+                ).join("");
+            }
+
+            async function handleDeleteCode(codeId) {
+                if (!await showConfirmModal("Delete code", "Delete this promo code? This can't be undone.")) return;
+                try {
+                    await AppState.deletePromoCode(codeId);
+                    await refreshRecentCodes();
+                } catch (e) {
+                    showInfoModal("Couldn't delete", e.message);
+                }
+            }
+            window.handleDeleteCode = handleDeleteCode;
+            /* ---------------- POST TIP ---------------- */
+            document.getElementById("newTipImageInput").addEventListener("change", (e) => {
+                const file = e.target.files[0];
+                const preview = document.getElementById("newTipImagePreview");
+                if (!file) {
+                    preview.style.display = "none";
+                    return;
+                }
+                preview.src = URL.createObjectURL(file);
+                preview.style.display = "block";
+            });
+
+            let editingTipId = null;
+
+            async function handlePostTip() {
+                const titleInput = document.getElementById("newTipTitleInput");
+                const bodyInput = document.getElementById("newTipBodyInput");
+                const imageInput = document.getElementById("newTipImageInput");
+                const title = titleInput.value.trim();
+                const body = bodyInput.value.trim();
+                if (!title || !body) {
+                    showInfoModal("Missing info", "Fill in both the title and the tip content.");
+                    return;
+                }
+                const btn = document.getElementById("postTipBtn");
+                btn.disabled = true;
+
+                try {
+                    let imageUrl = null;
+                    let imagePath = null;
+                    const file = imageInput.files[0];
+                    if (file) {
+                        btn.textContent = "Uploading image...";
+                        const uploadResult = await AppState.uploadTipImage(file);
+                        imageUrl = uploadResult.imageUrl;
+                        imagePath = uploadResult.imagePath;
+                    }
+
+                    if (editingTipId) {
+                        btn.textContent = "Saving...";
+                        await AppState.updateTip(editingTipId, title, body, imageUrl, imagePath);
+                    } else {
+                        btn.textContent = "Posting...";
+                        await AppState.addTip(title, body, imageUrl, imagePath);
+                    }
+
+                    cancelTipEdit();
+                    await refreshRecentTips();
+                } catch (e) {
+                    showInfoModal("Couldn't save", e.message);
+                }
+                btn.disabled = false;
+                btn.textContent = editingTipId ? "Save Changes" : "Post Tip";
+            }
+            window.handlePostTip = handlePostTip;
+
+            async function handleEditTip(tipId) {
+                const tip = await AppState.getTip(tipId);
+                if (!tip) {
+                    showInfoModal("Couldn't load tip", "It may have been deleted.");
+                    return;
+                }
+                editingTipId = tipId;
+                document.getElementById("newTipTitleInput").value = tip.title;
+                document.getElementById("newTipBodyInput").value = tip.body;
+                document.getElementById("newTipImageInput").value = "";
+
+                const preview = document.getElementById("newTipImagePreview");
+                if (tip.imageUrl) {
+                    preview.src = tip.imageUrl;
+                    preview.style.display = "block";
+                } else {
+                    preview.style.display = "none";
+                }
+
+                document.getElementById("postTipBtn").textContent = "Save Changes";
+                showCancelEditButton();
+                document.getElementById("newTipTitleInput").scrollIntoView({ behavior: "smooth", block: "center" });
+            }
+            window.handleEditTip = handleEditTip;
+
+            function cancelTipEdit() {
+                editingTipId = null;
+                document.getElementById("newTipTitleInput").value = "";
+                document.getElementById("newTipBodyInput").value = "";
+                document.getElementById("newTipImageInput").value = "";
+                document.getElementById("newTipImagePreview").style.display = "none";
+                document.getElementById("postTipBtn").textContent = "Post Tip";
+                hideCancelEditButton();
+            }
+            window.cancelTipEdit = cancelTipEdit;
+
+            function showCancelEditButton() {
+                let btn = document.getElementById("cancelTipEditBtn");
+                if (!btn) {
+                    btn = document.createElement("button");
+                    btn.id = "cancelTipEditBtn";
+                    btn.textContent = "Cancel Edit";
+                    btn.style.cssText = "margin-top:12px; margin-left:10px; padding:12px 20px; background:#555; color:white; border:none; border-radius:8px; cursor:pointer;";
+                    btn.onclick = cancelTipEdit;
+                    document.getElementById("postTipBtn").insertAdjacentElement("afterend", btn);
+                }
+                btn.style.display = "inline-block";
+            }
+
+            function hideCancelEditButton() {
+                const btn = document.getElementById("cancelTipEditBtn");
+                if (btn) btn.style.display = "none";
+            }
+
+            async function refreshRecentTips() {
+                const tips = await AppState.getTips(5);
+                const list = document.getElementById("recentTipsList");
+                if (!tips.length) {
+                    list.innerHTML = '<p class="promo-sub">No tips posted yet.</p>';
+                    return;
+                }
+                list.innerHTML = "<p class='promo-sub'>Recently posted:</p>" + tips.map(t =>
+                    `<div style="display:flex; align-items:center; justify-content:space-between; padding:8px 0; border-bottom:1px solid #2a2a4a;">
+                    <span><strong>${escapeHtml(t.title)}</strong> — <span class="promo-sub">${new Date(t.createdAt).toLocaleString()}</span></span>
+                    <span style="flex-shrink:0; display:flex; gap:8px;">
+                        <button onclick="handleEditTip('${t.id}')" style="background:#4169e1; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Edit</button>
+                        <button onclick="handleDeleteTip('${t.id}')" style="background:#aa3838; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Delete</button>
+                    </span>
+                </div>`
+                ).join("");
+            }
+
+            async function handleDeleteTip(tipId) {
+                if (!await showConfirmModal("Delete tip", "Delete this tip? This can't be undone.")) return;
+                try {
+                    await AppState.deleteTip(tipId);
+                    await refreshRecentTips();
+                } catch (e) {
+                    showInfoModal("Couldn't delete", e.message);
+                }
+            }
+            window.handleDeleteTip = handleDeleteTip;
+
+            function escapeHtml(str) {
+                return String(str).replace(/[&<>"']/g, s => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[s]));
+            }
+
+            /* ---------------- REPORTS QUEUE ---------------- */
+            async function refreshReports() {
+                if (!AppState.isAdmin()) return;
+                let reports;
+                try {
+                    reports = await AppState.getReports(50);
+                } catch (e) {
+                    return;
+                }
+                const open = reports.filter(r => r.status !== "closed");
+                const list = document.getElementById("reportsList");
+                if (!open.length) {
+                    list.innerHTML = '<p class="promo-sub">No open reports. 🎉</p>';
+                    return;
+                }
+                list.innerHTML = open.map(r => {
+                    const evidenceUrls = Array.isArray(r.evidenceUrls) ? r.evidenceUrls : (r.evidenceUrl ? [r.evidenceUrl] : []);
+                    const evidenceHtml = evidenceUrls.length
+                        ? `<div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;">
+            ${evidenceUrls.map(url => `<img src="${escapeHtml(url)}" onclick="window.open('${escapeHtml(url)}', '_blank')" style="width:90px; height:90px; object-fit:cover; border-radius:8px; cursor:pointer; border:1px solid #2a2a4a;">`).join("")}
+        </div>`
+                        : "";
+                    // Older reports predate reporterName being stored — fall back gracefully.
+                    const reporterLabel = r.reporterName || (r.reporterUid ? `uid: ${r.reporterUid}` : "Unknown");
+                    return `
+    <div style="border:1px solid #2a2a4a; border-radius:10px; padding:14px 16px; margin-bottom:12px;">
+        <p style="margin:0 0 6px;">
+            <strong>${escapeHtml(reporterLabel)}</strong> reported <strong>${escapeHtml(r.targetName || "Unknown")}</strong>
+            <span class="promo-sub">(${escapeHtml(r.type)}, ${new Date(r.createdAt).toLocaleString()})</span>
+        </p>
+        <p class="promo-sub" style="white-space:pre-wrap; margin:0 0 10px;">${escapeHtml(r.contentText)}</p>
+        ${evidenceHtml}
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <button onclick="handleViewHistory('${r.targetUid}')" style="background:#4169e1; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">View Name History</button>
+            <button onclick="handleTimeoutFromReport('${r.id}', '${r.targetUid}')" style="background:#aa7a1e; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Timeout...</button>
+            <button onclick="handleBanFromReport('${r.id}', '${r.targetUid}', 0)" style="background:#aa3838; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Ban Permanently</button>
+            <button onclick="handleDismissReport('${r.id}')" style="background:#555; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Dismiss</button>
+        </div>
+    </div>`;
+                }).join("");
+            }
+
+            async function handleViewHistory(uid) {
+                if (!uid) { showInfoModal("No user", "No user attached to this report."); return; }
+                try {
+                    const history = await AppState.getNameHistory(uid);
+                    if (!history.length) {
+                        showInfoModal("Name history", "No name changes on record for this account.");
+                        return;
+                    }
+                    const lines = history.map(h => `${new Date(h.changedAt).toLocaleString()}: "${h.fromName || "(none)"}" → "${h.toName}"`);
+                    showInfoModal("Name history", lines.join("\n"));
+                } catch (e) {
+                    showInfoModal("Couldn't load history", e.message);
+                }
+            }
+            window.handleViewHistory = handleViewHistory;
+
+            async function handleBanFromReport(reportId, uid, durationMs) {
+                if (!uid) { showInfoModal("No user", "No user attached to this report."); return; }
+                const label = durationMs ? "24-hour timeout" : "permanent ban";
+                const reason = await showPromptModal("Reason for this " + label + "?", "");
+                if (reason === null) return;
+                if (!await showConfirmModal("Confirm action", "Apply a " + label + " to this user?")) return;
+                try {
+                    await AppState.banUser(uid, durationMs, reason);
+                    await AppState.closeReport(reportId);
+                    await refreshReports();
+                    await refreshBansAndTimeouts();
+                    showInfoModal("Done", "The action was applied successfully.");
+                } catch (e) {
+                    showInfoModal("Couldn't apply", e.message);
+                }
+            }
+            window.handleBanFromReport = handleBanFromReport;
+
+            async function handleTimeoutFromReport(reportId, uid) {
+                if (!uid) { showInfoModal("No user", "No user attached to this report."); return; }
+                const hoursStr = await showPromptModal("Timeout duration in hours?", "24");
+                if (hoursStr === null) return;
+                const hours = parseFloat(hoursStr);
+                if (isNaN(hours) || hours <= 0) { showInfoModal("Invalid duration", "Enter a positive number of hours."); return; }
+                const reason = await showPromptModal("Reason for this timeout?", "");
+                if (reason === null) return;
+                if (!await showConfirmModal("Confirm timeout", `Apply a ${hours}-hour timeout to this user?`)) return;
+                try {
+                    await AppState.banUser(uid, hours * 3600000, reason);
+                    await AppState.closeReport(reportId);
+                    await refreshReports();
+                    await refreshBansAndTimeouts();
+                    showInfoModal("Done", "The timeout was applied successfully.");
+                } catch (e) {
+                    showInfoModal("Couldn't apply", e.message);
+                }
+            }
+            window.handleTimeoutFromReport = handleTimeoutFromReport;
+
+            async function handleDismissReport(reportId) {
+                if (!await showConfirmModal("Dismiss report", "Dismiss this report with no action?")) return;
+                try {
+                    await AppState.closeReport(reportId);
+                    await refreshReports();
+                } catch (e) {
+                    showInfoModal("Couldn't dismiss", e.message);
+                }
+            }
+            window.handleDismissReport = handleDismissReport;
+
+            /* ---------------- ACTIVE TIMEOUTS & BANS ---------------- */
+            async function refreshBansAndTimeouts() {
+                if (!AppState.isAdmin()) return;
+                let users;
+                try {
+                    // Expected to return every currently-banned/timed-out user:
+                    // [{ uid, name, reason, bannedAt, expiresAt }]
+                    // expiresAt: a future timestamp for a timeout, or null/0 for a permanent ban.
+                    users = await AppState.getBannedUsers();
+                } catch (e) {
+                    return;
+                }
+
+                const now = Date.now();
+                const timeouts = users.filter(u => u.expiresAt && u.expiresAt > now);
+                const bans = users.filter(u => !u.expiresAt);
+
+                const timeoutsList = document.getElementById("timeoutsList");
+                if (!timeouts.length) {
+                    timeoutsList.innerHTML = '<p class="promo-sub">No one is currently timed out. 🎉</p>';
+                } else {
+                    timeoutsList.innerHTML = timeouts.map(u => `
+                    <div style="border:1px solid #2a2a4a; border-radius:10px; padding:14px 16px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+                        <div>
+                            <p style="margin:0 0 4px;"><strong>${escapeHtml(u.name || "Unknown")}</strong> <span class="promo-sub">(uid: ${escapeHtml(u.uid)})</span></p>
+                            <p class="promo-sub" style="margin:0 0 4px;">Reason: ${escapeHtml(u.reason || "—")}</p>
+                            <p class="promo-sub" style="margin:0;">Expires: ${new Date(u.expiresAt).toLocaleString()}</p>
+                        </div>
+                        <button onclick="handleUnbanUid('${u.uid}')" style="background:#45aa38; color:white; border:none; border-radius:6px; padding:8px 14px; cursor:pointer; flex-shrink:0;">Remove Timeout</button>
+                    </div>
+                `).join("");
+                }
+
+                const bansList = document.getElementById("bansList");
+                if (!bans.length) {
+                    bansList.innerHTML = '<p class="promo-sub">No permanently banned users.</p>';
+                } else {
+                    bansList.innerHTML = bans.map(u => `
+                    <div style="border:1px solid #2a2a4a; border-radius:10px; padding:14px 16px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+                        <div>
+                            <p style="margin:0 0 4px;"><strong>${escapeHtml(u.name || "Unknown")}</strong> <span class="promo-sub">(uid: ${escapeHtml(u.uid)})</span></p>
+                            <p class="promo-sub" style="margin:0 0 4px;">Reason: ${escapeHtml(u.reason || "—")}</p>
+                            <p class="promo-sub" style="margin:0;">Banned: ${u.bannedAt ? new Date(u.bannedAt).toLocaleString() : "—"}</p>
+                        </div>
+                        <button onclick="handleUnbanUid('${u.uid}')" style="background:#45aa38; color:white; border:none; border-radius:6px; padding:8px 14px; cursor:pointer; flex-shrink:0;">Unban</button>
+                    </div>
+                `).join("");
+                }
+            }
+            window.refreshBansAndTimeouts = refreshBansAndTimeouts;
+
+            /* ---------------- MODERATION LOOKUP ---------------- */
+            async function handleLookupUser() {
+                const name = document.getElementById("lookupNameInput").value.trim();
+                if (!name) { showInfoModal("Missing name", "Type a name first."); return; }
+                const result = document.getElementById("lookupResult");
+                result.innerHTML = "<p class='promo-sub'>Looking up...</p>";
+                try {
+                    const found = await AppState.findUserByName(name);
+                    if (!found) {
+                        result.innerHTML = "<p class='promo-sub'>No account found with that name.</p>";
+                        return;
+                    }
+                    const history = await AppState.getNameHistory(found.uid);
+                    const historyHtml = history.length
+                        ? history.map(h => `<div class="promo-sub">${new Date(h.changedAt).toLocaleString()}: "${escapeHtml(h.fromName || "(none)")}" → "${escapeHtml(h.toName)}"</div>`).join("")
+                        : "<p class='promo-sub'>No recorded name changes.</p>";
+
+                    result.innerHTML = `
+                    <div style="border:1px solid #2a2a4a; border-radius:10px; padding:14px 16px;">
+                        <p style="margin:0 0 8px;"><strong>${escapeHtml(found.name)}</strong> <span class="promo-sub">(uid: ${found.uid})</span></p>
+                        <p class="promo-sub" style="margin:0 0 10px;">Name history:</p>
+                        ${historyHtml}
+                        <div style="display:flex; gap:8px; margin-top:14px; flex-wrap:wrap;">
+                            <button onclick="handleTimeoutUid('${found.uid}')" style="background:#aa7a1e; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Timeout...</button>
+                            <button onclick="handleBanUid('${found.uid}', 0)" style="background:#aa3838; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Ban Permanently</button>
+                            <button onclick="handleUnbanUid('${found.uid}')" style="background:#45aa38; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Unban</button>
+                        </div>
+                    </div>
+                `;
+                } catch (e) {
+                    result.innerHTML = `<p class="promo-sub">Error: ${escapeHtml(e.message)}</p>`;
+                }
+            }
+            window.handleLookupUser = handleLookupUser;
+
+            async function handleBanUid(uid, durationMs) {
+                const label = durationMs ? "24-hour timeout" : "permanent ban";
+                const reason = await showPromptModal("Reason for this " + label + "?", "");
+                if (reason === null) return;
+                if (!await showConfirmModal("Confirm action", "Apply a " + label + " to this user?")) return;
+                try {
+                    await AppState.banUser(uid, durationMs, reason);
+                    showInfoModal("Done", "The action was applied successfully.");
+                    handleLookupUser();
+                    await refreshBansAndTimeouts();
+                } catch (e) {
+                    showInfoModal("Couldn't apply", e.message);
+                }
+            }
+            window.handleBanUid = handleBanUid;
+
+            async function handleTimeoutUid(uid) {
+                const hoursStr = await showPromptModal("Timeout duration in hours?", "24");
+                if (hoursStr === null) return;
+                const hours = parseFloat(hoursStr);
+                if (isNaN(hours) || hours <= 0) { showInfoModal("Invalid duration", "Enter a positive number of hours."); return; }
+                const reason = await showPromptModal("Reason for this timeout?", "");
+                if (reason === null) return;
+                if (!await showConfirmModal("Confirm timeout", `Apply a ${hours}-hour timeout to this user?`)) return;
+                try {
+                    await AppState.banUser(uid, hours * 3600000, reason);
+                    showInfoModal("Done", "The timeout was applied successfully.");
+                    handleLookupUser();
+                    await refreshBansAndTimeouts();
+                } catch (e) {
+                    showInfoModal("Couldn't apply", e.message);
+                }
+            }
+            window.handleTimeoutUid = handleTimeoutUid;
+
+
+            async function handleUnbanUid(uid) {
+                if (!await showConfirmModal("Remove ban/timeout", "Remove the ban/timeout from this user?")) return;
+                try {
+                    await AppState.unbanUser(uid);
+                    showInfoModal("Unbanned", "The user has been unbanned.");
+                    if (document.getElementById("lookupNameInput").value.trim()) handleLookupUser();
+                    await refreshBansAndTimeouts();
+                } catch (e) {
+                    showInfoModal("Couldn't unban", e.message);
+                }
+            }
+            window.handleUnbanUid = handleUnbanUid;
+            async function handleBackfillUsernames() {
+                if (!await showConfirmModal("Backfill usernames", "Scan every profile and reserve any missing usernames? This can take a moment on a large user base.")) return;
+                const result = document.getElementById("backfillResult");
+                result.innerHTML = "<p class='promo-sub'>Running...</p>";
+                try {
+                    const summary = await AppState.backfillUsernameReservations();
+                    let html = `<p class="promo-sub">Created ${summary.created}, skipped ${summary.skipped} (already reserved or blank name).</p>`;
+                    if (summary.conflicts.length) {
+                        html += `<p style="color:#ff8080;">⚠️ ${summary.conflicts.length} name conflict(s) — these players share a name that predates uniqueness enforcement:</p>`;
+                        html += summary.conflicts.map(c => `<div class="promo-sub">"${escapeHtml(c.name)}" — uid ${c.uid} lost the name to uid ${c.ownedBy}</div>`).join("");
+                    }
+                    result.innerHTML = html;
+                } catch (e) {
+                    result.innerHTML = `<p class="promo-sub">Error: ${escapeHtml(e.message)}</p>`;
+                }
+            }
+            window.handleBackfillUsernames = handleBackfillUsernames;
+            AppState.waitForAuthReady().then(() => {
+                refreshAdminState();
+                refreshRecentCodes();
+                refreshRecentTips();
+                refreshReports();
+                refreshBansAndTimeouts();
+            });
+            AppState.onAuthChange(refreshAdminState);
+        </script>
+    </body>
+
+</html>

@@ -1,0 +1,633 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Promo Codes — Keazyea's Intelligence Hub</title>
+    <link rel="icon" href="images/KIH.jpg">
+    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+        /* ===== Centered confirmation modal (replaces native confirm()) ===== */
+        .center-modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+        }
+
+        .center-modal-overlay.open {
+            display: flex;
+        }
+
+        .center-modal-box {
+            background: #16162a;
+            border: 1px solid #2a2a4a;
+            border-radius: 16px;
+            padding: 24px;
+            width: 90%;
+            max-width: 360px;
+            color: white;
+            text-align: center;
+        }
+
+        .center-modal-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .center-modal-body {
+            color: #9a9ab0;
+            font-size: 0.95rem;
+            margin-bottom: 22px;
+        }
+
+        .center-modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .center-modal-actions button {
+            flex: 1;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+        }
+
+        .center-modal-btn-confirm {
+            background: #4169e1;
+            color: white;
+        }
+
+        .center-modal-btn-cancel {
+            background: #2a2a4a;
+            color: white;
+            border: 1px solid #555;
+        }
+
+        /* ===== Switch device button ===== */
+        .switch-device-btn {
+            display: block;
+            width: 100%;
+            max-width: 280px;
+            margin: 24px auto 0;
+            padding: 16px 24px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 16px;
+            background: #2a2a4a;
+            color: white;
+            border: 1px solid #4169e1;
+            cursor: pointer;
+        }
+/* ---- Bigger, more prominent lock icon (matches social.html's gate style) ---- */
+.vip-lock-icon-big {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 12px;
+}
+        /* ===============================
+   3c. VIP GIVEAWAY WHEEL
+================================*/
+
+        .wheel-svg {
+            transition: transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Promo Codes</h1>
+
+    <div class="center-modal-overlay" id="switchDeviceModalOverlay">
+        <div class="center-modal-box">
+            <div class="center-modal-title">Switch device?</div>
+            <div class="center-modal-body">Your device choice will be reset (your entry for this week stays saved).
+            </div>
+            <div class="center-modal-actions">
+                <button class="center-modal-btn-cancel" id="switchDeviceCancelBtn">Cancel</button>
+                <button class="center-modal-btn-confirm" id="switchDeviceConfirmBtn">Switch</button>
+            </div>
+        </div>
+    </div>
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchPromoTab('codes')">Latest Codes</button>
+        <button class="tab-btn" id="vipTabBtn" onclick="switchPromoTab('vip')">VIP Giveaway <span
+                id="vipTabLockIcon">🔒</span></button>
+    </div>
+
+    <div id="promoPage">
+
+        <!-- ===== LEFT-STYLE TAB: LATEST CODES ===== -->
+        <div id="codesPage" class="page active">
+            <div class="promo-grid">
+                <div class="promo-panel" style="max-width:600px; margin:0 auto; text-align:center;">
+                    <h2 style="font-size:1.8rem;">🎁 Latest Promo Code</h2>
+                    <p class="promo-sub" style="font-size:1.1rem;">Redeem this in-game before it expires — may or may
+                        not still work, try at your own risk 😛</p>
+
+                    <div class="promo-old-list" id="promoCodeList" style="text-align:center;">
+                        <p class="promo-sub">Loading codes...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== RIGHT-STYLE TAB: VIP GIVEAWAY ===== -->
+        <div id="vipPage" class="page">
+            <div class="promo-grid">
+                <div class="promo-panel" style="max-width:600px; margin:0 auto; text-align:center; font-size:1.1rem;">
+                    <!-- STATE 0: SIGNED OUT -->
+                    <div id="vipSignedOutState" class="lock-screen" style="display:none;">
+                        <span class="vip-lock-icon-big">🔒</span>
+                        <h2>Sign in to enter</h2>
+                        <p class="promo-sub">You need to be signed in with Google so we can track your entry and
+                            deliver your prize if you win.</p>
+                        <button class="btn-primary vip-unlock-btn" onclick="handleSignIn()"
+                            style="font-size:1.2rem; padding:16px 32px; margin-top:12px;">Sign in with Google</button>
+                    </div>
+                    <!-- STATE 1: LOCKED (non-VIP) -->
+                    <div id="vipLockedState" class="lock-screen">
+                        <span class="vip-lock-icon-big">🔒</span>
+                        <h2>VIP Giveaway</h2>
+                        <p class="promo-sub">This wheel is reserved for VIP Pass holders — a chance to win exclusive
+                            promo codes.</p>
+                        <button class="btn-primary vip-unlock-btn" onclick="requestUnlock()"
+                            style="font-size:1.2rem; padding:16px 32px; margin-top:12px;">Unlock with VIP
+                            Pass</button>
+                    </div>
+
+                    <!-- STATE 2: DEVICE SELECT -->
+                    <div id="vipDeviceState" class="lock-screen" style="display:none;">
+                        <h2>Which device are you using?</h2>
+                        <div class="device-options"
+                            style="display:flex; justify-content:center; gap:16px; margin-top:16px;">
+                            <button class="btn-primary" onclick="chooseDevice('ios')"
+                                style="display:flex; align-items:center; gap:8px; font-size:1.05rem; padding:14px 28px; border-radius:12px;">
+                                <span class="device-icon">🍎</span>iOS
+                            </button>
+                            <button class="btn-primary" onclick="chooseDevice('android')"
+                                style="display:flex; align-items:center; gap:8px; font-size:1.05rem; padding:14px 28px; border-radius:12px;">
+                                <span class="device-icon">🤖</span>Android
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- STATE 3: JOIN / COUNTDOWN / WHEEL -->
+                    <div id="vipWheelState" class="lock-screen" style="display:none;">
+                        <h2>VIP Giveaway</h2>
+                        <p class="promo-sub" id="deviceConfirmText"></p>
+                        <p class="promo-sub">Entering as <strong id="giveawayPlayerName"></strong></p>
+                        <p class="promo-sub">🗓️ New winner every Sunday. Next draw in: <strong
+                                id="giveawayCountdown"></strong></p>
+
+                        <p id="joinedNotice" class="promo-sub" style="display:none; color:#45aa38;">✅ You're in for
+                            this week!</p>
+                        <p id="entriesClosedNotice" class="promo-sub" style="display:none;">🔒 Entries are closed for
+                            today — the winner is being drawn. Check back Monday to join next week's giveaway.</p>
+
+                        <div id="wheelSection" style="display:none; margin-top:16px;">
+                            <div class="wheel-wrap"
+                                style="display:flex; flex-direction:column; align-items:center; justify-content:center; width:100%;">
+                                <div class="wheel-pointer" style="align-self:center;">▼</div>
+                                <svg id="spinWheel" class="wheel-svg" width="240" height="240" viewBox="0 0 240 240"
+                                    style="display:block; margin:0 auto;">
+                                    <g id="wheelSegments"></g>
+                                    <circle cx="120" cy="120" r="14" fill="#1a1a2e" stroke="#4169e1" stroke-width="3" />
+                                </svg>
+                                <button class="btn-primary spin-btn" id="spinBtn" onclick="spinWheel()"
+                                    style="margin-top:20px; align-self:center; font-size:1.3rem; font-weight:700; padding:20px 40px; border-radius:14px;">🎡
+                                    Reveal
+                                    This Week's Winner</button>
+                            </div>
+                        </div>
+
+                        <p id="pendingDrawNotice" class="promo-sub" style="display:none;">🎲 The draw is happening
+                            soon — check back shortly!</p>
+
+                        <div id="giveawayResult" class="giveaway-result" style="display:none;"></div>
+
+                        <button class="switch-device-btn" id="switchDeviceBtn" onclick="backToDeviceSelect()">🔄 Switch
+                            Device</button>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <script type="module" src="appState.js"></script>
+        <script type="module">
+
+
+            /* ---------------- PROMO CODES (Firestore-backed) ---------------- */
+            function escapeHtml(str) {
+                return String(str).replace(/[&<>"']/g, s => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[s]));
+            }
+
+            function renderPromoCodes(codes) {
+                const container = document.getElementById("promoCodeList");
+                if (!codes.length) {
+                    container.innerHTML = '<p class="promo-sub">No codes posted yet — check back soon!</p>';
+                    return;
+                }
+                container.innerHTML = codes.map(c => `
+                <div class="promo-code-box" style="justify-content:center; font-size:1.4rem; padding:18px; margin-bottom:14px;">
+                    <span>${escapeHtml(c.code)}</span>
+                    <button class="copy-btn" data-code="${escapeHtml(c.code)}" style="font-size:1rem; padding:8px 16px;">Copy</button>
+                </div>
+            `).join("");
+                container.querySelectorAll(".copy-btn").forEach(btn => {
+                    btn.addEventListener("click", () => copyCode(btn.getAttribute("data-code"), btn));
+                });
+            }
+
+            function checkForNewCodes(codes) {
+                const key = "kih_last_seen_code_time";
+                const lastSeen = localStorage.getItem(key);
+
+                if (lastSeen === null) {
+                    const maxTime = codes.length ? Math.max(...codes.map(c => c.createdAt)) : Date.now();
+                    localStorage.setItem(key, String(maxTime));
+                    return;
+                }
+
+                const lastSeenNum = parseInt(lastSeen, 10);
+                const newCodes = codes.filter(c => c.createdAt > lastSeenNum).sort((a, b) => a.createdAt - b.createdAt);
+
+                newCodes.forEach(c => {
+                    AppState.addInboxMessage(
+                        "🎁 New Promo Code",
+                        "A new code just dropped: " + escapeHtml(c.code) + ". Redeem it in-game before it expires!" +
+                        '<br><button class="btn-primary" style="margin-top:10px; padding:8px 16px; font-size:0.9rem;" ' +
+                        'onclick="window.top.goToPage(\'promo\')">View & Copy Code</button>'
+                    );
+                });
+
+                if (codes.length) {
+                    const maxTime = Math.max(...codes.map(c => c.createdAt));
+                    localStorage.setItem(key, String(maxTime));
+                }
+            }
+
+            async function loadPromoCodes() {
+                const codes = await AppState.getPromoCodes();
+                renderPromoCodes(codes);
+                checkForNewCodes(codes);
+            }
+
+            /* ---------------- TAB SWITCHING ---------------- */
+            function switchPromoTab(tab) {
+                document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+                document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+                if (tab === "codes") {
+                    document.getElementById("codesPage").classList.add("active");
+                    document.querySelectorAll(".tab-btn")[0].classList.add("active");
+                } else {
+                    document.getElementById("vipPage").classList.add("active");
+                    document.querySelectorAll(".tab-btn")[1].classList.add("active");
+                    refreshVipState();
+                }
+            }
+            window.switchPromoTab = switchPromoTab;
+
+            /* ---------------- COPY BUTTON ---------------- */
+            function copyCode(code, btn) {
+                navigator.clipboard.writeText(code).then(() => {
+                    let original = btn.textContent;
+                    btn.textContent = "Copied!";
+                    btn.classList.add("copied");
+                    setTimeout(() => {
+                        btn.textContent = original;
+                        btn.classList.remove("copied");
+                    }, 1500);
+                }).catch(() => {
+                    alert("Couldn't copy automatically — the code is: " + code);
+                });
+            }
+            window.copyCode = copyCode;
+
+            /* ---------------- VIP FLOW STATE ---------------- */
+            let chosenDevice = null;
+            let currentWeekId = null;
+
+            async function handleSignIn() {
+                try {
+                    await AppState.signIn();
+                    await refreshVipState();
+                } catch (e) {
+                    alert("Sign-in failed: " + e.message);
+                }
+            }
+            window.handleSignIn = handleSignIn;
+
+            async function refreshVipState() {
+                const user = AppState.getCurrentUser();
+                if (!user) {
+                    document.getElementById("vipTabLockIcon").textContent = "🔒";
+                    showState("signedout");
+                    return;
+                }
+                const profile = await AppState.getProfile();
+                const vipActive = AppState.isVipActive(profile);
+                document.getElementById("vipTabLockIcon").textContent = vipActive ? "🔓" : "🔒";
+
+                if (!vipActive) {
+                    showState("locked");
+                    return;
+                }
+
+                currentWeekId = AppState.getWeekId();
+                const existingEntry = await AppState.getMyGiveawayEntry(currentWeekId);
+                if (existingEntry) {
+                    chosenDevice = existingEntry.device;
+                    await enterWheelUIForDevice(chosenDevice, false);
+                } else {
+                    showState("device");
+                }
+            }
+
+            function showState(state) {
+                document.getElementById("vipSignedOutState").style.display = state === "signedout" ? "block" : "none";
+                document.getElementById("vipLockedState").style.display = state === "locked" ? "block" : "none";
+                document.getElementById("vipDeviceState").style.display = state === "device" ? "block" : "none";
+                document.getElementById("vipWheelState").style.display = state === "wheel" ? "block" : "none";
+            }
+
+            function requestUnlock() {
+                window.top.goToPage('store');
+            }
+            window.requestUnlock = requestUnlock;
+
+            async function chooseDevice(device) {
+                chosenDevice = device;
+                await enterWheelUIForDevice(device, true);
+            }
+            window.chooseDevice = chooseDevice;
+
+            async function enterWheelUIForDevice(device, shouldJoin) {
+                const otherDevice = device === "ios" ? "Android" : "iOS";
+                document.getElementById("deviceConfirmText").innerHTML =
+                    '<div style="display:inline-block; background:#2a2a4a; border:2px solid #4169e1; border-radius:10px; ' +
+                    'padding:10px 20px; margin-bottom:10px;">' +
+                    '<strong style="font-size:1.3rem; text-decoration:underline;">Playing on ' +
+                    (device === "ios" ? "iOS 🍎" : "Android 🤖") + '</strong></div>' +
+                    (isDrawDay() ? "" :
+                        "<br><strong style=\"color:#ff4444;\">Wrong device? Use \"Change to " + otherDevice + "\" below.</strong>");
+                document.getElementById("switchDeviceBtn").textContent = "🔄 Change to " + otherDevice;
+                updateSwitchDeviceLock();
+                const profile = await AppState.getProfile();
+                document.getElementById("giveawayPlayerName").textContent = profile.name || "Commander";
+
+                document.getElementById("giveawayResult").style.display = "none";
+                document.getElementById("giveawayResult").textContent = "";
+                document.getElementById("wheelSection").style.display = "none";
+                document.getElementById("pendingDrawNotice").style.display = "none";
+
+                if (shouldJoin && AppState.isGiveawayOpen()) {
+                    try {
+                        await AppState.joinGiveaway(device);
+                    } catch (e) {
+                        alert("Couldn't join: " + e.message);
+                    }
+                }
+
+                startGiveawayCountdown();
+                await refreshJoinState();
+                showState("wheel");
+            }
+
+            function showSwitchDeviceModal() {
+                return new Promise(resolve => {
+                    const overlay = document.getElementById("switchDeviceModalOverlay");
+                    overlay.classList.add("open");
+                    document.getElementById("switchDeviceConfirmBtn").onclick = () => {
+                        overlay.classList.remove("open");
+                        resolve(true);
+                    };
+                    document.getElementById("switchDeviceCancelBtn").onclick = () => {
+                        overlay.classList.remove("open");
+                        resolve(false);
+                    };
+                });
+            }
+
+            async function backToDeviceSelect() {
+                const otherDevice = chosenDevice === "ios" ? "android" : "ios";
+                if (countdownInterval) clearInterval(countdownInterval);
+                await chooseDevice(otherDevice);
+            }
+            window.backToDeviceSelect = backToDeviceSelect;
+
+            /* ---------------- JOIN ---------------- */
+            async function refreshJoinState() {
+                currentWeekId = AppState.getWeekId();
+                const joined = await AppState.hasJoinedGiveaway(currentWeekId);
+                const open = AppState.isGiveawayOpen();
+
+                document.getElementById("joinedNotice").style.display = joined ? "block" : "none";
+                document.getElementById("entriesClosedNotice").style.display = (!joined && !open) ? "block" : "none";
+            }
+
+            /* ---------------- WEEKLY COUNTDOWN ---------------- */
+            let countdownInterval = null;
+
+            function isDrawDay() {
+                const now = AppState.getSimulatedNow();
+                return now.getDay() === 0; // Sunday
+            }
+
+            function updateSwitchDeviceLock() {
+                const btn = document.getElementById("switchDeviceBtn");
+                if (!btn) return;
+                btn.style.display = isDrawDay() ? "none" : "block";
+            }
+            function isWheelRevealed(weekId) {
+                return localStorage.getItem("kih_wheel_revealed_" + weekId) === "1";
+            }
+
+            function markWheelRevealed(weekId) {
+                localStorage.setItem("kih_wheel_revealed_" + weekId, "1");
+            }
+            function startGiveawayCountdown() {
+                if (countdownInterval) clearInterval(countdownInterval);
+                async function tick() {
+                    const now = AppState.getSimulatedNow();
+                    const target = new Date(now);
+                    const daysUntilSunday = (7 - now.getDay()) % 7;
+                    target.setDate(now.getDate() + daysUntilSunday);
+                    target.setHours(0, 0, 0, 0);
+                    let diff = target - now;
+                    if (diff < 0) diff = 0;
+                    const d = Math.floor(diff / 86400000);
+                    const h = Math.floor((diff % 86400000) / 3600000);
+                    const m = Math.floor((diff % 3600000) / 60000);
+                    document.getElementById("giveawayCountdown").textContent = diff === 0 ? "Drawing now!" : `${d}d ${h}h ${m}m`;
+                    updateSwitchDeviceLock();
+
+                    if (diff === 0) {
+                        await tryShowWheel();
+                    }
+                }
+                tick();
+                countdownInterval = setInterval(tick, 60000);
+            }
+
+            /* ---------------- WHEEL (real entries, deterministic winner) ---------------- */
+            async function tryShowWheel() {
+                const weekId = AppState.getWeekId();
+                const winner = await AppState.getWeekWinner(weekId);
+
+                if (!winner) {
+                    document.getElementById("wheelSection").style.display = "none";
+                    document.getElementById("pendingDrawNotice").style.display = "block";
+                    return;
+                }
+                document.getElementById("pendingDrawNotice").style.display = "none";
+                document.getElementById("wheelSection").style.display = "block";
+
+                const entries = await AppState.getPublicGiveawayEntries(weekId);
+                buildWheel(entries, winner);
+
+                const spinBtn = document.getElementById("spinBtn");
+
+                if (isWheelRevealed(weekId)) {
+                    // Already spun earlier (or on a previous page load) — snap the
+                    // wheel straight to the winning position with no animation, and
+                    // show the result immediately instead of waiting for a click.
+                    const segments = wheelNames.length;
+                    const angle = 360 / segments;
+                    const winnerIndex = wheelNames.indexOf(winnerData.winnerName);
+                    const targetRotation = 360 - (winnerIndex * angle + angle / 2);
+
+                    const wheel = document.getElementById("spinWheel");
+                    wheel.style.transition = "none";
+                    wheel.style.transform = "rotate(" + targetRotation + "deg)";
+                    void wheel.offsetHeight; // force the browser to apply the no-transition snap
+                    wheel.style.transition = "";
+
+                    spinBtn.disabled = true;
+                    spinBtn.textContent = "Winner revealed";
+
+                    await showWinnerResult();
+                } else {
+                    spinBtn.disabled = false;
+                    spinBtn.textContent = "🎡 Reveal This Week's Winner";
+                }
+            }
+
+            let wheelNames = [];
+            let winnerData = null;
+
+            function buildWheel(entries, winner) {
+                let names = entries.map(e => e.name);
+                if (!names.includes(winner.winnerName)) names.push(winner.winnerName);
+                if (names.length > 10) {
+                    const winnerName = winner.winnerName;
+                    const others = names.filter(n => n !== winnerName);
+                    others.sort(() => Math.random() - 0.5);
+                    names = [winnerName, ...others.slice(0, 9)];
+                }
+                wheelNames = names;
+                winnerData = winner;
+
+                const group = document.getElementById("wheelSegments");
+                const segments = names.length;
+                const angle = 360 / segments;
+                const colors = ["#4169e1", "#2a2a4a", "#45aa38", "gold"];
+                let html = "";
+                for (let i = 0; i < segments; i++) {
+                    const startAngle = i * angle;
+                    const endAngle = startAngle + angle;
+                    const largeArc = angle > 180 ? 1 : 0;
+                    const r = 118, cx = 120, cy = 120;
+                    const x1 = cx + r * Math.cos(Math.PI * startAngle / 180 - Math.PI / 2);
+                    const y1 = cy + r * Math.sin(Math.PI * startAngle / 180 - Math.PI / 2);
+                    const x2 = cx + r * Math.cos(Math.PI * endAngle / 180 - Math.PI / 2);
+                    const y2 = cy + r * Math.sin(Math.PI * endAngle / 180 - Math.PI / 2);
+                    html += `<path d="M${cx},${cy} L${x1},${y1} A${r},${r} 0 ${largeArc} 1 ${x2},${y2} Z" fill="${colors[i % colors.length]}" stroke="#1a1a2e" stroke-width="2"/>`;
+
+                    const midAngle = startAngle + angle / 2;
+                    const tx = cx + (r * 0.62) * Math.cos(Math.PI * midAngle / 180 - Math.PI / 2);
+                    const ty = cy + (r * 0.62) * Math.sin(Math.PI * midAngle / 180 - Math.PI / 2);
+                    html += `<text x="${tx}" y="${ty}" fill="white" font-size="10" font-weight="bold" text-anchor="middle" transform="rotate(${midAngle},${tx},${ty})">${names[i]}</text>`;
+                }
+                group.innerHTML = html;
+                document.getElementById("spinWheel").style.transform = "rotate(0deg)";
+            }
+            async function showWinnerResult() {
+                const resultDiv = document.getElementById("giveawayResult");
+                resultDiv.style.display = "block";
+                resultDiv.style.color = "#45aa38";
+                resultDiv.innerHTML = "🎉 This week's winner: " + escapeHtml(winnerData.winnerName) + "!";
+
+                const user = AppState.getCurrentUser();
+                if (user && user.uid === winnerData.winnerUid) {
+                    const myPrize = await AppState.getMyPrize(currentWeekId);
+                    if (myPrize) {
+                        const claimFlag = "kih_giveaway_claimed_" + currentWeekId;
+                        if (!localStorage.getItem(claimFlag)) {
+                            AppState.addInboxMessage(
+                                "🎁 You won the VIP Giveaway!",
+                                "Congrats — you won \"" + myPrize.prize + "\" playing on " +
+                                (myPrize.device === "ios" ? "iOS" : "Android") + ". Redeem it in-game." +
+                                '<br><button class="btn-primary" style="margin-top:10px; padding:8px 16px; font-size:0.9rem;" ' +
+                                'onclick="window.top.goToPage(\'promo\')">View Code</button>'
+                            );
+                            localStorage.setItem(claimFlag, "1");
+                        }
+                        resultDiv.innerHTML +=
+                            '<br><br><strong style="font-size:1.3rem;">🏆 Congrats, you won!</strong>' +
+                            '<br><div style="margin-top:14px; font-size:1rem; color:#9a9ab0;">Your Promo Code</div>' +
+                            '<div style="font-size:1.4rem; margin-top:2px;">⬇️</div>' +
+                            '<div class="promo-code-box" style="display:inline-flex; align-items:center; gap:10px; justify-content:center; font-size:1.3rem; padding:14px 20px; margin-top:6px;">' +
+                            '<span>' + escapeHtml(myPrize.prize) + '</span>' +
+                            '<button class="copy-btn" data-code="' + escapeHtml(myPrize.prize) + '" style="font-size:0.9rem; padding:6px 14px;">Copy</button>' +
+                            '</div>';
+
+                        const newCopyBtn = resultDiv.querySelector(".copy-btn");
+                        newCopyBtn.addEventListener("click", () => copyCode(newCopyBtn.getAttribute("data-code"), newCopyBtn));
+                    }
+                } else {
+                    resultDiv.innerHTML +=
+                        '<br><br><span style="color:#9a9ab0; font-size:1rem;">Awwww, You didn\'t win... Come back again next week! 🍀</span>';
+                }
+            }
+
+            function spinWheel() {
+                const spinBtn = document.getElementById("spinBtn");
+                spinBtn.disabled = true;
+                spinBtn.textContent = "Revealing...";
+
+                const segments = wheelNames.length;
+                const angle = 360 / segments;
+                const winnerIndex = wheelNames.indexOf(winnerData.winnerName);
+                const targetRotation = 360 * 5 + (360 - (winnerIndex * angle + angle / 2));
+
+                const wheel = document.getElementById("spinWheel");
+                wheel.style.transform = "rotate(" + targetRotation + "deg)";
+
+                setTimeout(async () => {
+                    await showWinnerResult();
+                    spinBtn.textContent = "Winner revealed";
+                    markWheelRevealed(currentWeekId);
+                }, 5000);
+            }
+            window.spinWheel = spinWheel;
+
+            /* init */
+            loadPromoCodes();
+            AppState.waitForAuthReady().then(refreshVipState);
+            AppState.onAuthChange(refreshVipState);
+        </script>
+</body>
+
+</html>
