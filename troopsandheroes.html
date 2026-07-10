@@ -862,6 +862,7 @@
         body.innerHTML = `<p style="text-align:center; color:#9a9ab0;">No matching units found.</p>`;
         document.getElementById("appliesToModalOverlay").classList.add("open");
         document.body.style.overflow = "hidden";
+        try { window.parent.document.body.style.overflow = "hidden"; } catch (e) {}
         return;
     }
 
@@ -886,10 +887,12 @@
     body.innerHTML = renderGroup("Troops", troopUnits) + renderGroup("Heroes", heroUnits);
     document.getElementById("appliesToModalOverlay").classList.add("open");
     document.body.style.overflow = "hidden";
+    try { window.parent.document.body.style.overflow = "hidden"; } catch (e) {}
 }
             function closeAppliesToList() {
     document.getElementById("appliesToModalOverlay").classList.remove("open");
     document.body.style.overflow = "";
+    try { window.parent.document.body.style.overflow = ""; } catch (e) {}
 }
             function selectUnitFromAppliesTo(key, unitType) {
                 let target = (unitType === "hero" ? heroList : troopList).find(u => u.key === key);
