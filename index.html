@@ -1618,7 +1618,8 @@
                 : "Not signed in — sign in to save progress & unlock VIP";
             document.getElementById("googleSignInBtn").textContent = user ? "Sign out" : "Sign in";
 
-            document.getElementById("vipStatusText").textContent = profile.vip ? "Active ✓" : "Inactive";
+            let vipActive = profile.vipExpiresAt && profile.vipExpiresAt > Date.now();
+document.getElementById("vipStatusText").textContent = vipActive ? "Active ✓" : "Inactive";
         }
 
         async function toggleGoogleSignIn() {
