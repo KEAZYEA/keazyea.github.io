@@ -11,6 +11,19 @@
 const { getFirebaseAdmin, getPayPalAccessToken, PAYPAL_API } = require("./_lib");
 
 module.exports = async (req, res) => {
+  // store.html is served from a different origin (GitHub Pages) than this
+  // API (Vercel). The browser sends a CORS preflight (OPTIONS) before the
+  // real POST — without these headers it gets blocked before your code
+  // ever runs, which looks like the button silently doing nothing.
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+  if (req.method === "OPTIONS") {
+    res.status(204).end();
+    return;
+  }
+
   if (req.method !== "POST") {
     res.status(405).send("Method not allowed");
     return;
