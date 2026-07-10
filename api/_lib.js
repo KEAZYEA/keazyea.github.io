@@ -21,7 +21,7 @@ function getFirebaseAdmin() {
     });
   }
   // Backward-compatible shim so existing code calling admin.firestore()
-  // and admin.auth() keeps working without changes to the other files.
+  // and admin.auth() keeps working without changes to other files.
   return {
     firestore: getFirestore,
     auth: getAuth
