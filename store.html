@@ -325,6 +325,16 @@
             setTimeout(() => pollForActivation(plan, attempts + 1), 2000);
         }
 
+        async function pollForDeactivation(plan, attempts = 0) {
+            const profile = await AppState.getProfile();
+            const stillLive = plan === "vip" ? !!profile.vipSubscriptionId : !!profile.noAdsSubscriptionId;
+            if (!stillLive || attempts > 10) {
+                await refreshPlanButtons();
+                return;
+            }
+            setTimeout(() => pollForDeactivation(plan, attempts + 1), 2000);
+        }
+
         async function handleCancel(plan) {
     if (!confirm("Cancel this subscription? You'll keep access until the current billing period ends.")) return;
     const btnId = plan === "vip" ? "vipCancelBtn" : "noAdsCancelBtn";
@@ -345,7 +355,7 @@
         });
         if (!res.ok) throw new Error(await res.text());
         alert("Cancellation requested. Your access will end when the current billing period closes.");
-        await refreshPlanButtons(); // this will hide the button once noAds/vipActive flips, or re-enable it if still active
+        await pollForDeactivation(plan); // webhook takes a moment to clear the subscriptionId — poll instead of reading stale data immediately
     } catch (e) {
         alert("Couldn't cancel — please try again in a moment.");
         console.error(e);
