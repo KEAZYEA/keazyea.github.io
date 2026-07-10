@@ -6,7 +6,7 @@
     <link rel="icon" href="images/KIH.jpg">
     <link rel="stylesheet" href="style.css">
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <style>
         /* ===== HOME MENU LAYOUT (new) =====
            Scoped to the home screen only — doesn't touch your other pages.
@@ -29,21 +29,23 @@
         }
 
         html,
-        body {
-            height: 100%;
-            margin: 0;
-            overflow: hidden;
-        }
+body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+}
 
-        .home-shell {
-            height: 100vh;
-            width: 100vw;
-            max-width: 100%;
-            background: var(--kih-bg);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
+.home-shell {
+    height: 100vh;
+    height: 100dvh; /* dynamic viewport height — accounts for mobile browser UI */
+    width: 100vw;
+    max-width: 100%;
+    background: var(--kih-bg);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding-bottom: env(safe-area-inset-bottom); /* clears the home indicator / gesture bar */
+}
 
         /* Topbar stays at the top, full width, on every screen */
         .home-topbar {
