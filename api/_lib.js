@@ -7,7 +7,8 @@
 const admin = require("firebase-admin");
 
 /* ---------------- Firebase Admin (singleton) ---------------- */
-
+console.log("admin keys:", admin && Object.keys(admin));
+   console.log("admin.apps:", admin.apps);
 function getFirebaseAdmin() {
   if (!admin.apps.length) {
     admin.initializeApp({
