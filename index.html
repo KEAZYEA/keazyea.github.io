@@ -6,7 +6,7 @@
     <link rel="icon" href="images/KIH.jpg">
     <link rel="stylesheet" href="style.css">
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
     <style>
         /* ===== HOME MENU LAYOUT (new) =====
            Scoped to the home screen only — doesn't touch your other pages.
@@ -1952,7 +1952,13 @@ document.getElementById("vipStatusText").textContent = AppState.isVipActive(prof
                 goToPage(gotoPage);
             }
         });
-
+function setAppHeight() {
+    let vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+    document.querySelector(".home-shell").style.height = vh + "px";
+}
+window.visualViewport?.addEventListener("resize", setAppHeight);
+window.addEventListener("resize", setAppHeight);
+setAppHeight();
     </script>
 </body>
 
