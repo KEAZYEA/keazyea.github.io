@@ -217,7 +217,10 @@
         const NOADS_PLAN_ID = "P-27700628LC199444RNJHSUTY";
         const BACKEND_BASE = "https://kih-store.vercel.app";
 
-       let buttonsRendered = { vip: false, noAds: false };
+       // Tracks WHICH variant of the PayPal button is currently rendered per
+       // plan ("subscribe" vs "resubscribe"), so refreshPlanButtons() knows
+       // when to swap it out — not just whether *a* button was rendered once.
+       let renderedKeys = { vip: null, noAds: null };
 
         function daysLeft(expiresAt) {
             return Math.max(0, Math.ceil((expiresAt - Date.now()) / 86400000));
@@ -237,43 +240,63 @@
             const noAdsActive = AppState.isNoAdsActive(profile);
 
             // ----- No Ads card -----
+            const noAdsIncludedInVip = noAdsActive && vipActive && !profile.noAdsSubscriptionId;
+            const noAdsLiveSub = noAdsActive && !!profile.noAdsSubscriptionId;
+            const noAdsCancelledButActive = noAdsActive && !noAdsLiveSub && !noAdsIncludedInVip;
 
-            // ----- No Ads card -----
-            document.getElementById("noAdsActiveBox").style.display = noAdsActive ? "block" : "none";
-            document.getElementById("noAdsButtonBox").style.display = noAdsActive ? "none" : "block";
-            if (noAdsActive) {
-                if (vipActive && !profile.noAdsSubscriptionId) {
-                    document.getElementById("noAdsStatusText").textContent = "Included with your VIP Pass";
-                    document.getElementById("noAdsCancelBtn").style.display = "none";
-                } else {
-                    document.getElementById("noAdsStatusText").textContent =
-                        `Active — ${daysLeft(profile.noAdsExpiresAt)} day(s) left`;
-                    document.getElementById("noAdsCancelBtn").style.display = "inline-block";
+            document.getElementById("noAdsActiveBox").style.display = (noAdsLiveSub || noAdsIncludedInVip) ? "block" : "none";
+            document.getElementById("noAdsButtonBox").style.display = (noAdsLiveSub || noAdsIncludedInVip) ? "none" : "block";
+
+            if (noAdsIncludedInVip) {
+                document.getElementById("noAdsStatusText").textContent = "Included with your VIP Pass";
+                document.getElementById("noAdsCancelBtn").style.display = "none";
+            } else if (noAdsLiveSub) {
+                document.getElementById("noAdsStatusText").textContent =
+                    `Active — ${daysLeft(profile.noAdsExpiresAt)} day(s) left`;
+                document.getElementById("noAdsCancelBtn").style.display = "inline-block";
+            } else if (noAdsCancelledButActive) {
+                if (user && renderedKeys.noAds !== "resubscribe") {
+                    renderSubscribeButton("noAdsButtonBox", NOADS_PLAN_ID, "noAds",
+                        `Cancelled — ${daysLeft(profile.noAdsExpiresAt)} day(s) left. Resubscribe to add another 30 days:`);
+                    renderedKeys.noAds = "resubscribe";
                 }
-            } else if (user && !buttonsRendered.noAds) {
+            } else if (user && renderedKeys.noAds !== "subscribe") {
                 renderSubscribeButton("noAdsButtonBox", NOADS_PLAN_ID, "noAds");
-                buttonsRendered.noAds = true;
+                renderedKeys.noAds = "subscribe";
             }
 
             // ----- VIP card -----
-            document.getElementById("vipActiveBox").style.display = vipActive ? "block" : "none";
-            document.getElementById("vipButtonBox").style.display = vipActive ? "none" : "block";
-            if (vipActive) {
+            const vipLiveSub = vipActive && !!profile.vipSubscriptionId;
+            const vipCancelledButActive = vipActive && !vipLiveSub;
+
+            document.getElementById("vipActiveBox").style.display = vipLiveSub ? "block" : "none";
+            document.getElementById("vipButtonBox").style.display = vipLiveSub ? "none" : "block";
+
+            if (vipLiveSub) {
                 document.getElementById("vipStatusText").textContent =
                     `Active — ${daysLeft(profile.vipExpiresAt)} day(s) left`;
-            } else if (user && !buttonsRendered.vip) {
+            } else if (vipCancelledButActive) {
+                if (user && renderedKeys.vip !== "resubscribe") {
+                    renderSubscribeButton("vipButtonBox", VIP_PLAN_ID, "vip",
+                        `Cancelled — ${daysLeft(profile.vipExpiresAt)} day(s) left. Resubscribe to add another 30 days:`);
+                    renderedKeys.vip = "resubscribe";
+                }
+            } else if (user && renderedKeys.vip !== "subscribe") {
                 renderSubscribeButton("vipButtonBox", VIP_PLAN_ID, "vip");
-                buttonsRendered.vip = true;
+                renderedKeys.vip = "subscribe";
             }
         }
 
-        function renderSubscribeButton(containerId, planId, plan) {
+       function renderSubscribeButton(containerId, planId, plan, noticeText) {
             const user = AppState.getCurrentUser();
             if (!user) {
                 document.getElementById(containerId).innerHTML =
                     '<button class="btn-primary plan-btn" style="width:auto; font-size:1.1rem; padding:14px 32px; margin-top:10px; border-radius:12px;" onclick="handleSignInPrompt()">Sign in to subscribe</button>';
                 return;
             }
+            const btnHolderId = containerId + "Btns";
+            document.getElementById(containerId).innerHTML =
+                (noticeText ? `<p class="promo-sub">${noticeText}</p>` : "") + `<div id="${btnHolderId}"></div>`;
             paypal.Buttons({
                 style: { shape: "pill", color: "blue", layout: "vertical", label: "subscribe" },
                 createSubscription: function (data, actions) {
@@ -290,9 +313,8 @@
                     console.error(err);
                     alert("Something went wrong with PayPal checkout. Please try again.");
                 }
-            }).render("#" + containerId);
+            }).render("#" + btnHolderId);
         }
-
         async function pollForActivation(plan, attempts = 0) {
             const profile = await AppState.getProfile();
             const active = plan === "vip" ? AppState.isVipActive(profile) : AppState.isNoAdsActive(profile);
@@ -336,7 +358,7 @@
         async function handleSignInPrompt() {
             try {
                 await AppState.signIn();
-                buttonsRendered = { vip: false, noAds: false };
+                renderedKeys = { vip: null, noAds: null };
                 await refreshPlanButtons();
             } catch (e) {
                 alert("Sign-in failed: " + e.message);
@@ -346,7 +368,7 @@
 
         AppState.waitForAuthReady().then(refreshPlanButtons);
         AppState.onAuthChange(() => {
-            buttonsRendered = { vip: false, noAds: false };
+            renderedKeys = { vip: null, noAds: null };
             refreshPlanButtons();
         });
     </script>
