@@ -854,40 +854,43 @@
             }
 
             function openAppliesToList(value) {
-                let units = getUnitsByAppliesTo(value);
-                document.getElementById("appliesToModalTitle").textContent = `Applies to: ${value}`;
-                let body = document.getElementById("appliesToModalBody");
+    let units = getUnitsByAppliesTo(value);
+    document.getElementById("appliesToModalTitle").textContent = `Applies to: ${value}`;
+    let body = document.getElementById("appliesToModalBody");
 
-                if (!units.length) {
-                    body.innerHTML = `<p style="text-align:center; color:#9a9ab0;">No matching units found.</p>`;
-                    document.getElementById("appliesToModalOverlay").classList.add("open");
-                    return;
-                }
+    if (!units.length) {
+        body.innerHTML = `<p style="text-align:center; color:#9a9ab0;">No matching units found.</p>`;
+        document.getElementById("appliesToModalOverlay").classList.add("open");
+        document.body.style.overflow = "hidden";
+        return;
+    }
 
-                let troopUnits = units.filter(u => u.unitType === "troop");
-                let heroUnits = units.filter(u => u.unitType === "hero");
+    let troopUnits = units.filter(u => u.unitType === "troop");
+    let heroUnits = units.filter(u => u.unitType === "hero");
 
-                function renderGroup(label, group) {
-                    if (!group.length) return "";
-                    return `
-            <div style="font-weight:bold; font-size:16px; margin:12px 0 6px; color:#fff;">${label}</div>
-            <div class="applies-to-grid">
-                ${group.map(u => `
-                    <div class="applies-to-item" onclick="selectUnitFromAppliesTo('${u.key}', '${u.unitType}')">
-                        <img src="images/${u.key.toUpperCase()}.jpg" alt="${u.displayName}" onerror="this.style.visibility='hidden'">
-                        <span>${u.displayName}</span>
-                    </div>
-                `).join("")}
-            </div>
-        `;
-                }
+    function renderGroup(label, group) {
+        if (!group.length) return "";
+        return `
+        <div style="font-weight:bold; font-size:16px; margin:12px 0 6px; color:#fff;">${label}</div>
+        <div class="applies-to-grid">
+            ${group.map(u => `
+                <div class="applies-to-item" onclick="selectUnitFromAppliesTo('${u.key}', '${u.unitType}')">
+                    <img src="images/${u.key.toUpperCase()}.jpg" alt="${u.displayName}" onerror="this.style.visibility='hidden'">
+                    <span>${u.displayName}</span>
+                </div>
+            `).join("")}
+        </div>
+    `;
+    }
 
-                body.innerHTML = renderGroup("Troops", troopUnits) + renderGroup("Heroes", heroUnits);
-                document.getElementById("appliesToModalOverlay").classList.add("open");
-            }
+    body.innerHTML = renderGroup("Troops", troopUnits) + renderGroup("Heroes", heroUnits);
+    document.getElementById("appliesToModalOverlay").classList.add("open");
+    document.body.style.overflow = "hidden";
+}
             function closeAppliesToList() {
-                document.getElementById("appliesToModalOverlay").classList.remove("open");
-            }
+    document.getElementById("appliesToModalOverlay").classList.remove("open");
+    document.body.style.overflow = "";
+}
             function selectUnitFromAppliesTo(key, unitType) {
                 let target = (unitType === "hero" ? heroList : troopList).find(u => u.key === key);
                 if (!target) return;
