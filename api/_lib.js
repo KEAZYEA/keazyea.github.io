@@ -3,19 +3,14 @@
  * Shared helpers used by both api/paypal-webhook.js and api/cancel-subscription.js.
  * Not itself an API route (the leading underscore keeps Vercel from treating it as one).
  */
-
-const admin = require("firebase-admin");
-console.log("DEBUG admin type:", typeof admin);
-console.log("DEBUG admin keys:", admin ? Object.keys(admin) : "admin is falsy");
-console.log("DEBUG admin.apps:", admin ? admin.apps : "n/a");
+const { initializeApp, getApps, cert } = require("firebase-admin/app");
+const { getFirestore } = require("firebase-admin/firestore");
 
 /* ---------------- Firebase Admin (singleton) ---------------- */
-console.log("admin keys:", admin && Object.keys(admin));
-   console.log("admin.apps:", admin.apps);
 function getFirebaseAdmin() {
-  if (!admin.apps.length) {
-    admin.initializeApp({
-      credential: admin.credential.cert({
+  if (!getApps().length) {
+    initializeApp({
+      credential: cert({
         projectId: process.env.FIREBASE_PROJECT_ID,
         clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
         // Vercel env vars store literal "\n" as two characters — convert
@@ -24,7 +19,9 @@ function getFirebaseAdmin() {
       })
     });
   }
-  return admin;
+  // Backward-compatible shim: old code called admin.firestore().collection(...)
+  // This makes that keep working without touching paypal-webhook.js
+  return { firestore: getFirestore };
 }
 
 /* ---------------- PayPal ---------------- */
