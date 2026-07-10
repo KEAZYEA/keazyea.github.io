@@ -304,25 +304,33 @@
         }
 
         async function handleCancel(plan) {
-            if (!confirm("Cancel this subscription? You'll keep access until the current billing period ends.")) return;
-            try {
-                const idToken = await AppState.getIdToken();
-                const res = await fetch(BACKEND_BASE + "/api/cancel-subscription", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": "Bearer " + idToken
-                    },
-                    body: JSON.stringify({ plan })
-                });
-                if (!res.ok) throw new Error(await res.text());
-                alert("Cancellation requested. Your access will end when the current billing period closes.");
-                await refreshPlanButtons();
-            } catch (e) {
-                alert("Couldn't cancel — please try again in a moment.");
-                console.error(e);
-            }
-        }
+    if (!confirm("Cancel this subscription? You'll keep access until the current billing period ends.")) return;
+    const btnId = plan === "vip" ? "vipCancelBtn" : "noAdsCancelBtn";
+    const btn = document.getElementById(btnId);
+    if (btn.disabled) return; // guard against a second click while the first request is still in flight
+    btn.disabled = true;
+    const originalText = btn.textContent;
+    btn.textContent = "Cancelling...";
+    try {
+        const idToken = await AppState.getIdToken();
+        const res = await fetch(BACKEND_BASE + "/api/cancel-subscription", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + idToken
+            },
+            body: JSON.stringify({ plan })
+        });
+        if (!res.ok) throw new Error(await res.text());
+        alert("Cancellation requested. Your access will end when the current billing period closes.");
+        await refreshPlanButtons(); // this will hide the button once noAds/vipActive flips, or re-enable it if still active
+    } catch (e) {
+        alert("Couldn't cancel — please try again in a moment.");
+        console.error(e);
+        btn.disabled = false;
+        btn.textContent = originalText;
+    }
+}
         window.handleCancel = handleCancel;
 
         async function handleSignInPrompt() {
