@@ -5,6 +5,9 @@
  */
 
 const admin = require("firebase-admin");
+console.log("DEBUG admin type:", typeof admin);
+console.log("DEBUG admin keys:", admin ? Object.keys(admin) : "admin is falsy");
+console.log("DEBUG admin.apps:", admin ? admin.apps : "n/a");
 
 /* ---------------- Firebase Admin (singleton) ---------------- */
 console.log("admin keys:", admin && Object.keys(admin));
