@@ -5,6 +5,7 @@
  */
 const { initializeApp, getApps, cert } = require("firebase-admin/app");
 const { getFirestore } = require("firebase-admin/firestore");
+const { getAuth } = require("firebase-admin/auth");
 
 /* ---------------- Firebase Admin (singleton) ---------------- */
 function getFirebaseAdmin() {
@@ -19,13 +20,15 @@ function getFirebaseAdmin() {
       })
     });
   }
-  // Backward-compatible shim: old code called admin.firestore().collection(...)
-  // This makes that keep working without touching paypal-webhook.js
-  return { firestore: getFirestore };
+  // Backward-compatible shim so existing code calling admin.firestore()
+  // and admin.auth() keeps working without changes to the other files.
+  return {
+    firestore: getFirestore,
+    auth: getAuth
+  };
 }
 
 /* ---------------- PayPal ---------------- */
-
 const PAYPAL_ENV = process.env.PAYPAL_ENV || "sandbox";
 const PAYPAL_API = PAYPAL_ENV === "live"
   ? "https://api-m.paypal.com"
