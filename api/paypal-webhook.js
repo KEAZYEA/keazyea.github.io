@@ -100,12 +100,36 @@ module.exports = async (req, res) => {
 
       const expiresAtField = planKey === "vip" ? "vipExpiresAt" : "noAdsExpiresAt";
       const subscriptionIdField = planKey === "vip" ? "vipSubscriptionId" : "noAdsSubscriptionId";
+      const userRef = db.collection("users").doc(uid);
+
+      // ACTIVATED and PAYMENT.SALE.COMPLETED both fire for the SAME initial
+      // charge. Only PAYMENT.SALE.COMPLETED represents an actual payment we
+      // should grant time for — ACTIVATED just means the subscription is
+      // now live, so it only needs to record the subscription id.
+      if (eventType === "BILLING.SUBSCRIPTION.ACTIVATED") {
+        await userRef.set({ [subscriptionIdField]: subscriptionId }, { merge: true });
+        console.log(`Recorded ${planKey} subscription id for user ${uid} (activation, no expiry change).`);
+        res.status(200).send("OK");
+        return;
+      }
+
+      // Idempotency guard: PayPal retries webhooks that don't get a fast
+      // 200 response, which could otherwise double-grant days for the exact
+      // same sale. resource.id here is the unique PAYMENT SALE id (distinct
+      // from the subscription id), so it's a safe one-time key.
+      const saleId = resource.id;
+      const processedRef = db.collection("processedPaypalSales").doc(saleId);
+      const processedSnap = await processedRef.get();
+      if (processedSnap.exists) {
+        console.log(`Sale ${saleId} already processed, skipping duplicate.`);
+        res.status(200).send("OK (duplicate sale, ignored)");
+        return;
+      }
 
       // If they still have time left on a previous (possibly cancelled)
       // subscription, stack the new month on top of that instead of
       // resetting to "1 month from right now" — so resubscribing before
       // the old period ends adds 30 days rather than shortening it.
-      const userRef = db.collection("users").doc(uid);
       const userSnap = await userRef.get();
       const currentExpiresAt = userSnap.exists ? (userSnap.data()[expiresAtField] || 0) : 0;
       const baseTime = currentExpiresAt > Date.now() ? currentExpiresAt : Date.now();
@@ -114,6 +138,7 @@ module.exports = async (req, res) => {
         [expiresAtField]: baseTime + ONE_MONTH_MS,
         [subscriptionIdField]: subscriptionId
       }, { merge: true });
+      await processedRef.set({ uid, planKey, processedAt: Date.now() });
 
       console.log(`Updated ${planKey} for user ${uid}, now expires ${new Date(baseTime + ONE_MONTH_MS).toISOString()}.`);
     }
