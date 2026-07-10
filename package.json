@@ -14,5 +14,8 @@
   "dependencies": {
     "express": "^5.2.1",
     "firebase-admin": "^14.1.0"
+  },
+  "overrides": {
+    "jose": "^4.15.5"
   }
 }
