@@ -683,6 +683,7 @@ h1 {
     justify-content: center;
     z-index: 200;
     padding: 16px;
+    touch-action: none;
 }
 
 .applies-to-modal-overlay.open {
@@ -699,13 +700,7 @@ h1 {
     max-height: 80vh;
     overflow-y: auto;
     color: white;
-}
-
-.applies-to-modal-title {
-    font-weight: 700;
-    font-size: 1.1rem;
-    margin-bottom: 14px;
-    text-align: center;
+    touch-action: pan-y;
 }
 
 .applies-to-grid {
