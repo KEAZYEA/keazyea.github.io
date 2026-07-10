@@ -80,6 +80,25 @@
         .menu-dropdown button:hover {
             background: #1c1c36;
         }
+
+        /* ---- Signed-out gate (mirrors social.html's lock screen pattern) ---- */
+        .store-lock-screen {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .store-lock-icon {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 12px;
+        }
+
+        .store-signin-btn {
+            font-size: 1.15rem;
+            padding: 16px 32px;
+            margin-top: 16px;
+            border-radius: 12px;
+        }
     </style>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -104,7 +123,15 @@
     </div>
     <h1>Store</h1>
 
-    <div id="storePage">
+    <!-- Signed-out gate: shown instead of the store until signed in -->
+    <div class="store-lock-screen" id="storeSignedOutState" style="display:none;">
+        <span class="store-lock-icon">🔒</span>
+        <h2>Sign in to use the Store</h2>
+        <p class="compose-hint" style="font-size:0.95rem;">Sign in with Google to subscribe to a plan or manage your existing subscription.</p>
+        <button class="btn-primary store-signin-btn" onclick="handleSignInPrompt()">Sign in with Google</button>
+    </div>
+
+    <div id="storePage" style="display:none;">
 
         <p style="text-align:center; color:#d0d0da; font-size:1.05rem; max-width:600px; margin:0 auto 24px;">
             Support the site and unlock perks. Subscriptions are billed monthly through PayPal.
@@ -190,17 +217,26 @@
         const NOADS_PLAN_ID = "P-27700628LC199444RNJHSUTY";
         const BACKEND_BASE = "https://kih-store.vercel.app";
 
-        let buttonsRendered = { vip: false, noAds: false };
+       let buttonsRendered = { vip: false, noAds: false };
 
         function daysLeft(expiresAt) {
             return Math.max(0, Math.ceil((expiresAt - Date.now()) / 86400000));
         }
 
+        function updateStoreAuthGate() {
+            const user = AppState.getCurrentUser();
+            document.getElementById("storeSignedOutState").style.display = user ? "none" : "block";
+            document.getElementById("storePage").style.display = user ? "block" : "none";
+        }
+
         async function refreshPlanButtons() {
+            updateStoreAuthGate();
             const user = AppState.getCurrentUser();
             const profile = await AppState.getProfile();
             const vipActive = AppState.isVipActive(profile);
             const noAdsActive = AppState.isNoAdsActive(profile);
+
+            // ----- No Ads card -----
 
             // ----- No Ads card -----
             document.getElementById("noAdsActiveBox").style.display = noAdsActive ? "block" : "none";
