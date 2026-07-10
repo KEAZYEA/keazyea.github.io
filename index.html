@@ -1619,7 +1619,7 @@
             document.getElementById("googleSignInBtn").textContent = user ? "Sign out" : "Sign in";
 
             let vipActive = profile.vipExpiresAt && profile.vipExpiresAt > Date.now();
-document.getElementById("vipStatusText").textContent = vipActive ? "Active ✓" : "Inactive";
+document.getElementById("vipStatusText").textContent = AppState.isVipActive(profile) ? "Active ✓" : "Inactive";
         }
 
         async function toggleGoogleSignIn() {
