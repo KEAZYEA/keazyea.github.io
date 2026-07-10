@@ -852,7 +852,25 @@
                 });
                 return matches;
             }
+let scrollLockY = 0;
 
+function lockBackgroundScroll() {
+    scrollLockY = window.scrollY;
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollLockY}px`;
+    document.body.style.left = "0";
+    document.body.style.right = "0";
+    document.body.style.width = "100%";
+}
+
+function unlockBackgroundScroll() {
+    document.body.style.position = "";
+    document.body.style.top = "";
+    document.body.style.left = "";
+    document.body.style.right = "";
+    document.body.style.width = "";
+    window.scrollTo(0, scrollLockY);
+}
             function openAppliesToList(value) {
     let units = getUnitsByAppliesTo(value);
     document.getElementById("appliesToModalTitle").textContent = `Applies to: ${value}`;
@@ -861,8 +879,7 @@
     if (!units.length) {
         body.innerHTML = `<p style="text-align:center; color:#9a9ab0;">No matching units found.</p>`;
         document.getElementById("appliesToModalOverlay").classList.add("open");
-        document.body.style.overflow = "hidden";
-        try { window.parent.document.body.style.overflow = "hidden"; } catch (e) {}
+        lockBackgroundScroll();
         return;
     }
 
@@ -886,13 +903,11 @@
 
     body.innerHTML = renderGroup("Troops", troopUnits) + renderGroup("Heroes", heroUnits);
     document.getElementById("appliesToModalOverlay").classList.add("open");
-    document.body.style.overflow = "hidden";
-    try { window.parent.document.body.style.overflow = "hidden"; } catch (e) {}
+    lockBackgroundScroll();
 }
             function closeAppliesToList() {
     document.getElementById("appliesToModalOverlay").classList.remove("open");
-    document.body.style.overflow = "";
-    try { window.parent.document.body.style.overflow = ""; } catch (e) {}
+    unlockBackgroundScroll();
 }
             function selectUnitFromAppliesTo(key, unitType) {
                 let target = (unitType === "hero" ? heroList : troopList).find(u => u.key === key);
