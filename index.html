@@ -84,7 +84,9 @@ body {
             justify-content: center;
             padding: clamp(8px, 2.5vh, 20px);
             min-height: 0;
-            overflow: hidden;
+            overflow-y: auto;
+            overflow-x: hidden;
+            overscroll-behavior: contain;
         }
 
         .home-landing-title {
@@ -157,6 +159,33 @@ body {
             text-decoration: underline;
             text-underline-offset: 3px;
             flex-shrink: 0;
+        }
+
+        /* Short/landscape phones: the vh-based clamps above still add up to
+           more than the viewport, so compact things further and drop the
+           subtitle text under each button to save vertical space. */
+        @media (max-height: 480px) and (orientation: landscape) {
+            .home-landing-title-img {
+                width: clamp(60px, 14vh, 110px);
+                margin-bottom: 4px;
+            }
+            .home-landing-sub {
+                display: none;
+            }
+            .home-menu {
+                gap: 6px;
+            }
+            .home-menu-btn {
+                padding: 6px 14px;
+            }
+            .home-menu-text small {
+                display: none;
+            }
+            .home-menu-icon {
+                width: 26px;
+                height: 26px;
+                font-size: 1rem;
+            }
         }
 
         .about-creator-link:hover {
