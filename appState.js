@@ -1730,13 +1730,10 @@ const AppState = (function () {
         const tipSnap = await getDoc(tipRef);
         if (tipSnap.exists()) {
             const data = tipSnap.data();
-            if (data.imagePath) {
-                try {
-                    await deleteObject(ref(storage, data.imagePath));
-                } catch (e) {
-                    console.warn("Couldn't delete tip image from Storage:", e.message);
-                }
-            }
+            const paths = Array.isArray(data.imagePaths) ? data.imagePaths : (data.imagePath ? [data.imagePath] : []);
+            await Promise.all(paths.map(p =>
+                deleteObject(ref(storage, p)).catch(e => console.warn("Couldn't delete tip image from Storage:", e.message))
+            ));
         }
         await deleteDoc(tipRef);
         await deleteNotificationsBySource(tipId);
@@ -1823,7 +1820,7 @@ const AppState = (function () {
         return { imageUrl, imagePath: path };
     }
 
-    async function addTip(title, body, imageUrl, imagePath) {
+    async function addTip(title, body, imageUrls, imagePaths) {
         await waitForAuthReady();
         if (!currentUser || currentUser.uid !== ADMIN_UID) {
             throw new Error("Not authorized.");
@@ -1834,18 +1831,25 @@ const AppState = (function () {
         if (!body || !body.trim()) {
             throw new Error("Body cannot be empty.");
         }
+        const urls = Array.isArray(imageUrls) ? imageUrls : (imageUrls ? [imageUrls] : []);
+        const paths = Array.isArray(imagePaths) ? imagePaths : (imagePaths ? [imagePaths] : []);
         const ref2 = collection(db, "tips");
         const docRef = await addDoc(ref2, {
             title: title.trim(),
             body: body.trim(),
-            imageUrl: imageUrl || null,
-            imagePath: imagePath || null,
+            // Keep imageUrl/imagePath as the FIRST image for backward
+            // compatibility with any page still reading the old single-image
+            // fields; imageUrls/imagePaths carries the full set.
+            imageUrl: urls[0] || null,
+            imagePath: paths[0] || null,
+            imageUrls: urls,
+            imagePaths: paths,
             createdAt: Date.now()
         });
         await addNotification("tip", "💡 New Tip: " + title.trim(), body.trim().slice(0, 100), docRef.id);
         return docRef.id;
     }
-    async function updateTip(tipId, title, body, imageUrl, imagePath) {
+    async function updateTip(tipId, title, body, imageUrls, imagePaths) {
         await waitForAuthReady();
         if (!currentUser || currentUser.uid !== ADMIN_UID) {
             throw new Error("Not authorized.");
@@ -1861,16 +1865,19 @@ const AppState = (function () {
             title: title.trim(),
             body: body.trim()
         };
-        // Only touch image fields if a new image was actually provided —
-        // otherwise leave the existing image untouched.
-        if (imageUrl) {
-            patch.imageUrl = imageUrl;
-            patch.imagePath = imagePath || null;
+        // Only touch image fields if new images were actually provided —
+        // otherwise leave the existing images untouched.
+        const urls = Array.isArray(imageUrls) ? imageUrls : (imageUrls ? [imageUrls] : []);
+        const paths = Array.isArray(imagePaths) ? imagePaths : (imagePaths ? [imagePaths] : []);
+        if (urls.length) {
+            patch.imageUrl = urls[0];
+            patch.imagePath = paths[0] || null;
+            patch.imageUrls = urls;
+            patch.imagePaths = paths;
         }
         await updateDoc(tipRef, patch);
         return tipId;
     }
-
     async function getTip(tipId) {
         const snap = await getDoc(doc(db, "tips", tipId));
         return snap.exists() ? { id: snap.id, ...snap.data() } : null;
