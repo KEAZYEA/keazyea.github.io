@@ -106,9 +106,10 @@ const AppState = (function () {
 
     /* ---------------- PROFILE ---------------- */
 
-    function defaultProfile() {
+    ffunction defaultProfile() {
         return {
             name: "",
+            email: "",
             avatar: "images/BOMBER.jpg",
             usernameKey: "",
             vipExpiresAt: 0,
@@ -162,13 +163,28 @@ const AppState = (function () {
             const fresh = {
                 ...defaultProfile(),
                 name: currentUser.displayName || "",
+                email: currentUser.email ? currentUser.email.toLowerCase() : "",
                 avatar: currentUser.photoURL || defaultProfile().avatar
             };
             await setDoc(ref, fresh);
             await mirrorPublicProfile(fresh);
             return fresh;
         }
-        return { ...defaultProfile(), ...snap.data() };
+        const data = snap.data();
+        // Self-heal: accounts created before this change won't have an email
+        // on file yet. Backfill it quietly the next time they load their
+        // profile, so admin email lookup eventually covers everyone without
+        // needing a separate one-time migration tool.
+        if (!data.email && currentUser.email) {
+            const email = currentUser.email.toLowerCase();
+            try {
+                await updateDoc(ref, { email });
+                data.email = email;
+            } catch (e) {
+                console.warn("Couldn't backfill email:", e.message);
+            }
+        }
+        return { ...defaultProfile(), ...data };
     }
 
     // NOTE: this can still update name/avatar freely, but Firestore rules
@@ -395,6 +411,33 @@ const AppState = (function () {
         if (!key) return null;
         const snap = await getDoc(doc(db, "usernames", key));
         return snap.exists() ? snap.data() : null; // { uid, name, updatedAt }
+    }
+
+    // Email is tied to the person's actual Google account and can't be
+    // changed the way an in-game name can — more reliable for tracking down
+    // a repeat offender who keeps renaming themselves.
+    async function findUserByEmail(email) {
+        await waitForAuthReady();
+        if (!currentUser || currentUser.uid !== ADMIN_UID) throw new Error("Not authorized.");
+        const trimmed = (email || "").trim().toLowerCase();
+        if (!trimmed) return null;
+        const q = query(collection(db, "users"), where("email", "==", trimmed), limit(1));
+        const snap = await getDocs(q);
+        if (snap.empty) return null;
+        const d = snap.docs[0];
+        return { uid: d.id, ...d.data() };
+    }
+
+    // Fetch a user's own profile doc by uid — used by admin.html so a
+    // reporter or reported user's name in the Reports queue can be clicked
+    // straight through to their profile/moderation actions, without needing
+    // to already know their in-game name.
+    async function getUserProfileForAdmin(uid) {
+        await waitForAuthReady();
+        if (!currentUser || currentUser.uid !== ADMIN_UID) throw new Error("Not authorized.");
+        if (!uid) throw new Error("No uid provided.");
+        const snap = await getDoc(doc(db, "users", uid));
+        return snap.exists() ? { uid, ...snap.data() } : null;
     }
 
     // ONE-TIME TOOL: for profiles that existed before unique-name enforcement
@@ -1907,7 +1950,7 @@ const AppState = (function () {
         // profile
         getProfile, setProfile, isVipActive, isNoAdsActive, isBannedNow, shouldShowAds,
         // unique names
-        claimUsername, findUserByName, backfillUsernameReservations,
+        claimUsername, findUserByName, findUserByEmail, getUserProfileForAdmin, backfillUsernameReservations,
         // inbox
         getInbox, addInboxMessage, markAllRead, unreadCount,
         // giveaway
