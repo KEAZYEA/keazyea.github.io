@@ -1536,6 +1536,7 @@
                 <input type="text" id="dmInput" placeholder="Type a message..." maxlength="2000"
                     data-requires-not-banned>
                 <button class="btn-primary" style="padding:10px 18px; border-radius:8px;" onclick="sendDmFromInput()"
+                    onmousedown="event.preventDefault()" ontouchstart="event.preventDefault()"
                     data-requires-not-banned>Send</button>
             </div>
         </div>
@@ -2675,7 +2676,11 @@
         };
 
         window.closeDmModal = function () {
-            document.getElementById("dmModalOverlay").classList.remove("open");
+            const overlay = document.getElementById("dmModalOverlay");
+            overlay.classList.remove("open");
+            overlay.style.height = "";
+            overlay.style.top = "";
+            document.querySelector(".dm-modal-box").style.height = "";
             if (unsubDmMessages) { unsubDmMessages(); unsubDmMessages = null; }
             replyingToMsg = null;
             editingMsgId = null;
@@ -2693,16 +2698,20 @@
 
         function setupDmViewportHandling() {
             if (!window.visualViewport) return;
+            const overlay = document.getElementById("dmModalOverlay");
             const dmBox = document.querySelector(".dm-modal-box");
 
             function handleViewportChange() {
-                const overlay = document.getElementById("dmModalOverlay");
                 if (!overlay.classList.contains("open")) return;
-                // Resize the modal itself to the real visible height so the
-                // input row stays above the keyboard instead of underneath it.
-                dmBox.style.height = window.visualViewport.height + "px";
-                // Wait a frame for the resize to actually apply, then re-stick
-                // the scroll position to the bottom.
+                const vv = window.visualViewport;
+                // Keyboard opening doesn't just shrink the visible area on iOS —
+                // it also shifts it down (offsetTop). Repositioning the whole
+                // overlay (not just resizing the box inside it) is what keeps
+                // the input row sitting right above the keyboard instead of
+                // getting covered by it.
+                overlay.style.height = vv.height + "px";
+                overlay.style.top = vv.offsetTop + "px";
+                dmBox.style.height = vv.height + "px";
                 requestAnimationFrame(pinDmScrollToBottom);
             }
 
@@ -2742,6 +2751,7 @@
                 await AppState.sendDmMessage(currentDmThreadId, text, replyingToMsg);
                 input.value = "";
                 cancelReplyToMessage();
+                input.focus(); // keep the keyboard open for the next message
             } catch (e) {
                 if (e.message === "__RESTRICTED__") return;
                 if (e.message === "__BLOCKED_BY_ME__") {
