@@ -1089,20 +1089,19 @@
         #friendsSection {
             display: flex;
             flex-direction: column;
-            flex: 2;
-            min-height: 260px;
+            flex: 0 0 auto; /* size to content (1 friend = small, many = capped below) */
+            max-height: 260px; /* caps it so a long list scrolls instead of taking over the page */
         }
 
         #friendsList {
-            flex: 1;
-            min-height: 190px;
+            max-height: 190px; /* ~2+ rows before scrolling kicks in */
             overflow-y: auto;
             overscroll-behavior: contain;
             padding-right: 4px;
         }
 
         #suggestedFriendsSection {
-            flex: 1;
+            flex: 1; /* grows to absorb whatever space Friends doesn't need */
             min-height: 130px;
             display: flex;
             flex-direction: column;
