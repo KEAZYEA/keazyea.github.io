@@ -984,12 +984,12 @@ body {
             max-width: 320px;
         }
 
-        /* Only phones — tablets/desktops in landscape are usually tall
-           enough not to match max-height, so they're left alone. */
-        @media (max-height: 500px) and (orientation: landscape) {
-            .landscape-block-overlay {
-                display: flex;
-            }
+       /* Toggled by JS instead of a fixed-pixel media query — Chrome's
+           collapsing address bar on Android makes the reported landscape
+           viewport height inconsistent, so a static max-height breakpoint
+           can miss real devices. */
+        body.landscape-blocked .landscape-block-overlay {
+            display: flex;
         }
     </style>
 </head>
@@ -2046,6 +2046,18 @@ function setAppHeight() {
 window.visualViewport?.addEventListener("resize", setAppHeight);
 window.addEventListener("resize", setAppHeight);
 setAppHeight();
+
+// Block landscape on phones only — width < 900 filters out tablets/
+// desktop browser windows that happen to be wider than tall, so this
+// only fires for an actual handset turned sideways.
+function checkOrientationBlock() {
+    let isPhoneLandscape = window.innerWidth > window.innerHeight && window.innerWidth < 900;
+    document.body.classList.toggle("landscape-blocked", isPhoneLandscape);
+}
+window.addEventListener("resize", checkOrientationBlock);
+window.addEventListener("orientationchange", checkOrientationBlock);
+window.visualViewport?.addEventListener("resize", checkOrientationBlock);
+checkOrientationBlock();
     </script>
 </body>
 
