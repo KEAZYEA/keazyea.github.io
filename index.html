@@ -474,6 +474,28 @@ body {
             background: #1c1c36;
         }
 
+        /* Distinct from the plain icon buttons — a visible border + label
+           so it reads as a clickable "tab" rather than a faint icon. */
+        .back-to-about-btn {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: var(--kih-panel);
+            border: 1px solid var(--kih-border);
+            color: var(--kih-text);
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: border-color 0.12s ease, background 0.12s ease;
+        }
+
+        .back-to-about-btn:hover {
+            border-color: var(--kih-accent);
+            background: #1c1c36;
+        }
+
         .menu-wrapper {
             position: relative;
         }
@@ -1024,8 +1046,8 @@ body {
 
         <!-- Topbar shown on every other page -->
         <div class="home-topbar" id="pageTopbar" style="display:none;">
+            <button class="back-to-about-btn" title="Back to About" id="backToAboutBtn" onclick="goToPage('about')" style="display:none;">← Back</button>
             <button class="icon-btn" title="Home" onclick="goHome()">🏠</button>
-            <button class="icon-btn" title="Back to About" id="backToAboutBtn" onclick="goToPage('about')" style="display:none; font-size:1.1rem;">← About</button>
             <div class="menu-wrapper">
                 <button class="icon-btn" title="Menu" onclick="toggleMenu()">☰</button>
                 <div class="menu-dropdown" id="menuDropdown">
