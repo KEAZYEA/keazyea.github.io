@@ -788,7 +788,67 @@ h1 {
 /* ===============================
    6. MEDIA QUERIES
 ================================*/
+/* Landscape phones: width alone doesn't trigger the 700px query above
+   (e.g. 812px wide), but height is short, so troop images/icons stay
+   full-size and everything feels oversized. Shrink by height instead. */
+@media (max-height: 500px) and (orientation: landscape) {
+    .troop-img {
+        width: 90px;
+        height: 90px;
+    }
 
+    .stat-icon {
+        width: 32px;
+        height: 32px;
+    }
+
+    #troopsCard td {
+        padding: 6px 10px;
+        font-size: 16px;
+    }
+
+    .gallery-item img {
+        width: 60px;
+        height: 60px;
+    }
+
+    .gallery-item {
+        width: 74px;
+    }
+
+    .gallery-item span {
+        font-size: 10px;
+    }
+
+    .ability-name {
+        font-size: 18px;
+    }
+
+    .ability-image-slot {
+        min-height: 90px;
+    }
+
+    #compareCard td,
+    #compareCard th {
+        padding: 6px 10px;
+        font-size: 16px;
+    }
+
+    #compareCard table.single-card .troop-img {
+        width: 90px;
+        height: 90px;
+    }
+
+    #compareCard table.single-card .stat-icon {
+        width: 32px;
+        height: 32px;
+    }
+
+    #compareCard table.single-card td,
+    #compareCard table.single-card th {
+        font-size: 16px;
+    }
+}
 @media (max-width: 700px) {
 
     .page-header-bar h1 {
