@@ -106,7 +106,7 @@ const AppState = (function () {
 
     /* ---------------- PROFILE ---------------- */
 
-    ffunction defaultProfile() {
+    function defaultProfile() {
         return {
             name: "",
             email: "",
@@ -171,10 +171,6 @@ const AppState = (function () {
             return fresh;
         }
         const data = snap.data();
-        // Self-heal: accounts created before this change won't have an email
-        // on file yet. Backfill it quietly the next time they load their
-        // profile, so admin email lookup eventually covers everyone without
-        // needing a separate one-time migration tool.
         if (!data.email && currentUser.email) {
             const email = currentUser.email.toLowerCase();
             try {
