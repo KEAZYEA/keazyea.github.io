@@ -1038,6 +1038,7 @@
 
         .friend-search-row button {
             flex-shrink: 0;
+            white-space: nowrap;
         }
 
 
@@ -1074,14 +1075,12 @@
         #friendSearchResults {
             display: none; /* JS switches this to "flex" when there are results */
             flex-direction: column;
-            flex: 2; /* matches Friends now, so a search doesn't feel cramped */
-            min-height: 220px; /* enough for the title + ~2 result rows */
+            flex: 0 0 auto; /* size to content, don't stretch to fill leftover space */
+            max-height: 220px; /* cap at ~2 rows worth, scrolls beyond that */
             margin-bottom: 16px;
         }
 
         .friend-search-results-scroll {
-            flex: 1;
-            min-height: 160px; /* fits ~2 rows before scrolling */
             overflow-y: auto;
             overscroll-behavior: contain;
             padding-right: 4px;
@@ -1295,7 +1294,7 @@
                             placeholder="Search friends by name..."
                             onkeydown="if(event.key==='Enter') runFriendSearch();">
                         <button class="btn-primary" onclick="runFriendSearch()">🔍 Search</button>
-                        <button class="modal-cancel" onclick="clearFriendSearch()" style="padding:10px 16px;">✕ Clear</button>
+                        <button class="modal-cancel" onclick="clearFriendSearch()" style="padding:10px 16px; flex-shrink:0;">✕ Clear</button>
                     </div>
                     <div id="friendSearchResults">
                         <div class="friends-section-title">Search Results</div>
