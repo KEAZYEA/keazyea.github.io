@@ -981,10 +981,10 @@ body {
                     <span class="home-menu-icon">🎁</span>
                     <span class="home-menu-text">Promo Codes<small>Latest codes & giveaway wheel</small></span>
                 </button>
-                <button class="home-menu-btn" onclick="goToPage('tips')">
-                    <span class="home-menu-icon">💡</span>
-                    <span class="home-menu-text">Tips<small>Team comps, talents, event strategy</small></span>
-                </button>
+                <button class="home-menu-btn" onclick="openTipsFresh()">
+    <span class="home-menu-icon">💡</span>
+    <span class="home-menu-text">Tips<small>Team comps, talents, event strategy</small></span>
+</button>
                 <button class="home-menu-btn" onclick="goToPage('social')" style="position:relative;">
                     <span class="home-menu-icon">👥</span>
                     <span class="home-menu-text">Social<small>Clan, friends & community</small></span>
@@ -1889,6 +1889,15 @@ document.getElementById("vipStatusText").textContent = AppState.isVipActive(prof
                 .filter(n => !n.read)
                 .forEach(n => AppState.markPersonalNotificationRead(n.id));
             renderInboxBadgeFrom(mergedNotifications());
+        }
+
+        // Reset the Tips iframe back to the full tip list (clears any
+        // ?tipId= left over from opening a specific tip via the inbox),
+        // then navigate there. Used by the home-menu Tips button.
+        function openTipsFresh() {
+            let frame = document.querySelector("#page-tips iframe");
+            if (frame) frame.src = "tips.html";
+            goToPage("tips");
         }
 
         // Jump into the Tips page and open a specific tip directly.
