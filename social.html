@@ -1074,14 +1074,14 @@
         #friendSearchResults {
             display: none; /* JS switches this to "flex" when there are results */
             flex-direction: column;
-            flex: 1;
-            min-height: 100px; /* enough for the title + ~1 result row */
+            flex: 2; /* matches Friends now, so a search doesn't feel cramped */
+            min-height: 220px; /* enough for the title + ~2 result rows */
             margin-bottom: 16px;
         }
 
         .friend-search-results-scroll {
             flex: 1;
-            min-height: 60px;
+            min-height: 160px; /* fits ~2 rows before scrolling */
             overflow-y: auto;
             overscroll-behavior: contain;
             padding-right: 4px;
@@ -1090,20 +1090,20 @@
         #friendsSection {
             display: flex;
             flex-direction: column;
-            flex: 2; /* Friends now gets the bigger share */
+            flex: 2;
             min-height: 260px;
         }
 
         #friendsList {
             flex: 1;
-            min-height: 190px; /* comfortably fits 2+ rows */
+            min-height: 190px;
             overflow-y: auto;
             overscroll-behavior: contain;
             padding-right: 4px;
         }
 
         #suggestedFriendsSection {
-            flex: 1; /* smaller share now, Friends takes priority */
+            flex: 1;
             min-height: 130px;
             display: flex;
             flex-direction: column;
@@ -1295,6 +1295,7 @@
                             placeholder="Search friends by name..."
                             onkeydown="if(event.key==='Enter') runFriendSearch();">
                         <button class="btn-primary" onclick="runFriendSearch()">🔍 Search</button>
+                        <button class="modal-cancel" onclick="clearFriendSearch()" style="padding:10px 16px;">✕ Clear</button>
                     </div>
                     <div id="friendSearchResults">
                         <div class="friends-section-title">Search Results</div>
@@ -2305,6 +2306,12 @@
         </div>`;
             }).join("");
         }
+
+        window.clearFriendSearch = function () {
+            document.getElementById("friendSearchInput").value = "";
+            document.getElementById("friendSearchResults").style.display = "none";
+            document.getElementById("friendSearchResultsList").innerHTML = "";
+        };
 
         window.runFriendSearch = async function () {
             const term = document.getElementById("friendSearchInput").value.trim();
