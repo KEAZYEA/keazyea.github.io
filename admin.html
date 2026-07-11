@@ -256,14 +256,21 @@
                 <hr style="border-color:#2a2a4a; margin:40px 0;">
 
                 <h2>🔨 Moderation Lookup</h2>
-                <p class="promo-sub">Look up any player by their in-game name to see their name-change history and ban
-                    status.</p>
-                <div style="display:flex; gap:8px;">
+                <p class="promo-sub">Look up any player by their in-game name (can be changed) or their email address
+                    (tied to their Google account — more reliable for a repeat offender who keeps renaming themselves).</p>
+                <div style="display:flex; gap:8px; margin-bottom:10px;">
                     <input type="text" id="lookupNameInput" placeholder="In-game name"
                         style="flex:1; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box;">
                     <button class="btn-primary" onclick="handleLookupUser()"
                         style="padding:10px 20px; flex-shrink:0;">Look
                         Up</button>
+                </div>
+                <div style="display:flex; gap:8px;">
+                    <input type="email" id="lookupEmailInput" placeholder="Email address"
+                        style="flex:1; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box;">
+                    <button class="btn-primary" onclick="handleLookupUserByEmail()"
+                        style="padding:10px 20px; flex-shrink:0;">Look
+                        Up by Email</button>
                 </div>
                 <div id="lookupResult" style="margin-top:16px; text-align:left;"></div>
 
@@ -678,10 +685,16 @@
                         : "";
                     // Older reports predate reporterName being stored — fall back gracefully.
                     const reporterLabel = r.reporterName || (r.reporterUid ? `uid: ${r.reporterUid}` : "Unknown");
+                    const reporterBtn = r.reporterUid
+                        ? `<button onclick="openUidLookup('${r.reporterUid}', ${JSON.stringify(reporterLabel)})" style="background:none; border:none; color:#4169e1; text-decoration:underline; cursor:pointer; font-weight:700; padding:0; font-size:inherit;">${escapeHtml(reporterLabel)}</button>`
+                        : escapeHtml(reporterLabel);
+                    const targetBtn = r.targetUid
+                        ? `<button onclick="openUidLookup('${r.targetUid}', ${JSON.stringify(r.targetName || "Unknown")})" style="background:none; border:none; color:#4169e1; text-decoration:underline; cursor:pointer; font-weight:700; padding:0; font-size:inherit;">${escapeHtml(r.targetName || "Unknown")}</button>`
+                        : escapeHtml(r.targetName || "Unknown");
                     return `
     <div style="border:1px solid #2a2a4a; border-radius:10px; padding:14px 16px; margin-bottom:12px;">
         <p style="margin:0 0 6px;">
-            <strong>${escapeHtml(reporterLabel)}</strong> reported <strong>${escapeHtml(r.targetName || "Unknown")}</strong>
+            <strong>${reporterBtn}</strong> reported <strong>${targetBtn}</strong>
             <span class="promo-sub">(${escapeHtml(r.type)}, ${new Date(r.createdAt).toLocaleString()})</span>
         </p>
         <p class="promo-sub" style="white-space:pre-wrap; margin:0 0 10px;">${escapeHtml(r.contentText)}</p>
@@ -813,7 +826,36 @@
             }
             window.refreshBansAndTimeouts = refreshBansAndTimeouts;
 
-            /* ---------------- MODERATION LOOKUP ---------------- */
+           /* ---------------- MODERATION LOOKUP ---------------- */
+
+            // Shared renderer used by name lookup, email lookup, and clicking
+            // a reporter/target name in the Reports queue — one place to keep
+            // the ban/timeout/unban buttons consistent everywhere.
+            async function renderLookupProfile(uid, name, email) {
+                const result = document.getElementById("lookupResult");
+                try {
+                    const history = await AppState.getNameHistory(uid);
+                    const historyHtml = history.length
+                        ? history.map(h => `<div class="promo-sub">${new Date(h.changedAt).toLocaleString()}: "${escapeHtml(h.fromName || "(none)")}" → "${escapeHtml(h.toName)}"</div>`).join("")
+                        : "<p class='promo-sub'>No recorded name changes.</p>";
+                    result.innerHTML = `
+                    <div style="border:1px solid #2a2a4a; border-radius:10px; padding:14px 16px;">
+                        <p style="margin:0 0 4px;"><strong>${escapeHtml(name || "Unknown")}</strong> <span class="promo-sub">(uid: ${escapeHtml(uid)})</span></p>
+                        ${email ? `<p class="promo-sub" style="margin:0 0 8px;">Email: ${escapeHtml(email)}</p>` : ""}
+                        <p class="promo-sub" style="margin:0 0 10px;">Name history:</p>
+                        ${historyHtml}
+                        <div style="display:flex; gap:8px; margin-top:14px; flex-wrap:wrap;">
+                            <button onclick="handleTimeoutUid('${uid}')" style="background:#aa7a1e; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Timeout...</button>
+                            <button onclick="handleBanUid('${uid}', 0)" style="background:#aa3838; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Ban Permanently</button>
+                            <button onclick="handleUnbanUid('${uid}')" style="background:#45aa38; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Unban</button>
+                        </div>
+                    </div>
+                `;
+                } catch (e) {
+                    result.innerHTML = `<p class="promo-sub">Error: ${escapeHtml(e.message)}</p>`;
+                }
+            }
+
             async function handleLookupUser() {
                 const name = document.getElementById("lookupNameInput").value.trim();
                 if (!name) { showInfoModal("Missing name", "Type a name first."); return; }
@@ -825,28 +867,49 @@
                         result.innerHTML = "<p class='promo-sub'>No account found with that name.</p>";
                         return;
                     }
-                    const history = await AppState.getNameHistory(found.uid);
-                    const historyHtml = history.length
-                        ? history.map(h => `<div class="promo-sub">${new Date(h.changedAt).toLocaleString()}: "${escapeHtml(h.fromName || "(none)")}" → "${escapeHtml(h.toName)}"</div>`).join("")
-                        : "<p class='promo-sub'>No recorded name changes.</p>";
-
-                    result.innerHTML = `
-                    <div style="border:1px solid #2a2a4a; border-radius:10px; padding:14px 16px;">
-                        <p style="margin:0 0 8px;"><strong>${escapeHtml(found.name)}</strong> <span class="promo-sub">(uid: ${found.uid})</span></p>
-                        <p class="promo-sub" style="margin:0 0 10px;">Name history:</p>
-                        ${historyHtml}
-                        <div style="display:flex; gap:8px; margin-top:14px; flex-wrap:wrap;">
-                            <button onclick="handleTimeoutUid('${found.uid}')" style="background:#aa7a1e; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Timeout...</button>
-                            <button onclick="handleBanUid('${found.uid}', 0)" style="background:#aa3838; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Ban Permanently</button>
-                            <button onclick="handleUnbanUid('${found.uid}')" style="background:#45aa38; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Unban</button>
-                        </div>
-                    </div>
-                `;
+                    const profile = await AppState.getUserProfileForAdmin(found.uid);
+                    await renderLookupProfile(found.uid, found.name, profile?.email || null);
                 } catch (e) {
                     result.innerHTML = `<p class="promo-sub">Error: ${escapeHtml(e.message)}</p>`;
                 }
             }
             window.handleLookupUser = handleLookupUser;
+
+            async function handleLookupUserByEmail() {
+                const email = document.getElementById("lookupEmailInput").value.trim();
+                if (!email) { showInfoModal("Missing email", "Type an email address first."); return; }
+                const result = document.getElementById("lookupResult");
+                result.innerHTML = "<p class='promo-sub'>Looking up...</p>";
+                try {
+                    const found = await AppState.findUserByEmail(email);
+                    if (!found) {
+                        result.innerHTML = "<p class='promo-sub'>No account found with that email.</p>";
+                        return;
+                    }
+                    await renderLookupProfile(found.uid, found.name || "Unknown", found.email || email);
+                } catch (e) {
+                    result.innerHTML = `<p class="promo-sub">Error: ${escapeHtml(e.message)}</p>`;
+                }
+            }
+            window.handleLookupUserByEmail = handleLookupUserByEmail;
+
+            // Clicking a reporter's or reported target's name in the Reports
+            // queue jumps straight here with their full profile + moderation
+            // actions — so a reporter who's spamming bogus reports can be
+            // timed out/banned just as easily as the person they reported.
+            async function openUidLookup(uid, fallbackLabel) {
+                if (!uid) { showInfoModal("No user", "No user attached to this report."); return; }
+                const result = document.getElementById("lookupResult");
+                result.innerHTML = "<p class='promo-sub'>Looking up...</p>";
+                result.scrollIntoView({ behavior: "smooth", block: "center" });
+                try {
+                    const profile = await AppState.getUserProfileForAdmin(uid);
+                    await renderLookupProfile(uid, profile?.name || fallbackLabel, profile?.email || null);
+                } catch (e) {
+                    result.innerHTML = `<p class="promo-sub">Error: ${escapeHtml(e.message)}</p>`;
+                }
+            }
+            window.openUidLookup = openUidLookup;
 
             async function handleBanUid(uid, durationMs) {
                 const label = durationMs ? "24-hour timeout" : "permanent ban";
