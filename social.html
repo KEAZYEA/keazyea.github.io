@@ -1071,13 +1071,40 @@
             background: #2a2a4a;
         }
 
+        #friendSearchResults {
+            display: none; /* JS switches this to "flex" when there are results */
+            flex-direction: column;
+            flex: 1;
+            min-height: 100px; /* enough for the title + ~1 result row */
+            margin-bottom: 16px;
+        }
+
+        .friend-search-results-scroll {
+            flex: 1;
+            min-height: 60px;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            padding-right: 4px;
+        }
+
         #friendsSection {
-            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 130px; /* title + ~1 friend row, so it never gets squashed to nothing */
+        }
+
+        #friendsList {
+            flex: 1;
+            min-height: 64px;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            padding-right: 4px;
         }
 
         #suggestedFriendsSection {
-            flex: 1;
-            min-height: 0;
+            flex: 2; /* taller share than Friends/Search, per your priority */
+            min-height: 150px;
             display: flex;
             flex-direction: column;
         }
@@ -1269,7 +1296,10 @@
                             onkeydown="if(event.key==='Enter') runFriendSearch();">
                         <button class="btn-primary" onclick="runFriendSearch()">🔍 Search</button>
                     </div>
-                    <div id="friendSearchResults" style="display:none; margin-bottom:20px;"></div>
+                    <div id="friendSearchResults">
+                        <div class="friends-section-title">Search Results</div>
+                        <div id="friendSearchResultsList" class="friend-search-results-scroll"></div>
+                    </div>
 
                     <div id="friendsSection">
                         <div class="friends-section-title">Friends</div>
@@ -1535,8 +1565,8 @@
             <div class="dm-input-row" id="dmInputRow">
                 <input type="text" id="dmInput" placeholder="Type a message..." maxlength="2000"
                     data-requires-not-banned>
-                <button class="btn-primary" style="padding:10px 18px; border-radius:8px;" onclick="sendDmFromInput()"
-                    onmousedown="event.preventDefault()" ontouchstart="event.preventDefault()"
+                <button class="btn-primary" style="padding:10px 18px; border-radius:8px;"
+                    id="dmSendBtn"
                     data-requires-not-banned>Send</button>
             </div>
         </div>
@@ -2279,17 +2309,18 @@
         window.runFriendSearch = async function () {
             const term = document.getElementById("friendSearchInput").value.trim();
             const box = document.getElementById("friendSearchResults");
-            if (!term) { box.style.display = "none"; box.innerHTML = ""; return; }
-            box.style.display = "block";
-            box.innerHTML = `<div class="clan-empty">Searching...</div>`;
+            const list = document.getElementById("friendSearchResultsList");
+            if (!term) { box.style.display = "none"; list.innerHTML = ""; return; }
+            box.style.display = "flex"; // matches the flex-column layout, not "block"
+            list.innerHTML = `<div class="clan-empty">Searching...</div>`;
             try {
                 const results = await AppState.searchUsersByName(term);
                 if (!results.length) {
-                    box.innerHTML = `<div class="clan-empty">No commanders found matching "${escapeHtml(term)}".</div>`;
+                    list.innerHTML = `<div class="clan-empty">No commanders found matching "${escapeHtml(term)}".</div>`;
                     return;
                 }
                 window._lastSearchResults = results;
-                box.innerHTML = results.map((r, i) => `
+                list.innerHTML = results.map((r, i) => `
                     <div class="friend-row" onclick="showProfileModal(window._lastSearchResults[${i}], ${isFriendUid(r.uid)})">
                         ${avatarHtml(r.avatar, r.name, "friend-row-avatar")}
                         <div class="friend-row-info">
@@ -2302,10 +2333,9 @@
                     </div>
                 `).join("");
             } catch (e) {
-                box.innerHTML = `<div class="clan-empty">${escapeHtml(e.message)}</div>`;
+                list.innerHTML = `<div class="clan-empty">${escapeHtml(e.message)}</div>`;
             }
         };
-
         async function loadSuggestedFriends() {
             const section = document.getElementById("suggestedFriendsSection");
             const container = document.getElementById("suggestedFriendsList");
@@ -2763,6 +2793,30 @@
         };
         document.getElementById("dmInput").addEventListener("keydown", (e) => {
             if (e.key === "Enter") window.sendDmFromInput();
+        });
+
+        // Mobile Send handling: don't rely on click at all. preventDefault()
+        // on touchstart (the old approach) unreliably suppresses the browser's
+        // synthetic click on later taps, which is why Send would silently stop
+        // working after a couple of presses. Instead, fire on touchend directly,
+        // preventDefault there (so the keyboard doesn't blur/close), and mark the
+        // interaction as "handled" so the click event fired right after doesn't
+        // send the same message a second time.
+        let dmSendHandledByTouch = false;
+        const dmSendBtn = document.getElementById("dmSendBtn");
+        dmSendBtn.addEventListener("touchend", (e) => {
+            e.preventDefault();
+            dmSendHandledByTouch = true;
+            window.sendDmFromInput();
+            setTimeout(() => { dmSendHandledByTouch = false; }, 400);
+        }, { passive: false });
+
+        dmSendBtn.addEventListener("click", (e) => {
+            if (dmSendHandledByTouch) {
+                e.preventDefault();
+                return; // already sent via touchend, ignore the synthetic click
+            }
+            window.sendDmFromInput();
         });
 
         /* ---------------- INIT ---------------- */
