@@ -183,6 +183,24 @@
             return String(str).replace(/[&<>"']/g, s => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[s]));
         }
 
+        // Escapes first (so nothing in the text can inject HTML), then turns
+        // any http(s) URLs in the already-escaped text into clickable links.
+        function linkifyText(str) {
+            const escaped = escapeHtml(str);
+            return escaped.replace(/(https?:\/\/[^\s<]+)/g, url => {
+                // Trim trailing punctuation like ) . , that's likely part of
+                // the sentence rather than the URL itself.
+                let trailing = "";
+                let clean = url;
+                const match = clean.match(/[)\.,!?]+$/);
+                if (match) {
+                    trailing = match[0];
+                    clean = clean.slice(0, -trailing.length);
+                }
+                return `<a href="${clean}" target="_blank" rel="noopener noreferrer" style="color:#4fc3f7; text-decoration:underline;">${clean}</a>${trailing}`;
+            });
+        }
+
         function renderGrid() {
             const grid = document.getElementById("tipsGrid");
 
@@ -223,7 +241,7 @@
             document.getElementById("tipDetailContent").innerHTML = `
         <div class="tip-card">
             <div class="tip-title">${escapeHtml(tip.title)}</div>
-            <div class="tip-body">${escapeHtml(tip.body)}</div>
+            <div class="tip-body">${linkifyText(tip.body)}</div>
             ${tip.imageUrl ? `<img class="tip-image" src="${escapeHtml(tip.imageUrl)}" alt="${escapeHtml(tip.title)}">` : ""}
             <div class="tip-time">${new Date(tip.createdAt).toLocaleString()}</div>
         </div>
