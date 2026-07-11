@@ -1025,6 +1025,7 @@ body {
         <!-- Topbar shown on every other page -->
         <div class="home-topbar" id="pageTopbar" style="display:none;">
             <button class="icon-btn" title="Home" onclick="goHome()">🏠</button>
+            <button class="icon-btn" title="Back to About" id="backToAboutBtn" onclick="goToPage('about')" style="display:none; font-size:1.1rem;">← About</button>
             <div class="menu-wrapper">
                 <button class="icon-btn" title="Menu" onclick="toggleMenu()">☰</button>
                 <div class="menu-dropdown" id="menuDropdown">
@@ -1116,11 +1117,11 @@ body {
                         <div class="about-section">
                             <div class="about-section-title">What this app is for</div>
                             <ul class="about-list">
-                                <li onclick="goToPage('troops')" style="cursor:pointer;">⚔️ Troop & hero comparisons</li>
-                                <li onclick="goToPage('promo')" style="cursor:pointer;">🎁 Latest promo codes</li>
-                                <li onclick="goToPage('tips')" style="cursor:pointer;">💡 Tips, team comps & strategy</li>
-                                <li onclick="goToPage('promo')" style="cursor:pointer;">🎲 Weekly giveaways</li>
-                                <li onclick="goToPage('social')" style="cursor:pointer;">👥 Community — clan recruitment, friends & chat</li>
+                                <li onclick="goToPage('troops', true)" style="cursor:pointer;">⚔️ Troop & hero comparisons</li>
+                                <li onclick="goToPage('promo', true)" style="cursor:pointer;">🎁 Latest promo codes</li>
+                                <li onclick="goToPage('tips', true)" style="cursor:pointer;">💡 Tips, team comps & strategy</li>
+                                <li onclick="goToPage('promo', true)" style="cursor:pointer;">🎲 Weekly giveaways</li>
+                                <li onclick="goToPage('social', true)" style="cursor:pointer;">👥 Community — clan recruitment, friends & chat</li>
                             </ul>
                         </div>
 
@@ -1430,7 +1431,9 @@ body {
            One function handles every destination: the 5 menu
            sections AND settings/profile/inbox. Each just loads
            its own data right before it's shown. */
-        async function goToPage(page) {
+        let cameFromAbout = false;
+
+        async function goToPage(page, fromAbout) {
             if (page !== "profile" && isProfileDirty()) {
                 let choice = await showUnsavedModal();
                 if (choice === "save") await saveProfile();
@@ -1439,6 +1442,13 @@ body {
             if (page !== "social") {
                 resetSocialIframeIfActive();
             }
+
+            // "About" itself is never reached "from About", and any normal
+            // navigation (home menu, inbox, etc.) that doesn't pass the flag
+            // clears it so the back button only shows for pages opened via
+            // an About Creator list item.
+            cameFromAbout = page !== "about" && !!fromAbout;
+            document.getElementById("backToAboutBtn").style.display = cameFromAbout ? "flex" : "none";
 
             document.getElementById("homeLanding").classList.add("hidden");
             document.getElementById("homeContentWrap").classList.add("active");
@@ -1505,6 +1515,8 @@ body {
                 // "discard" falls through and continues leaving
             }
             resetSocialIframeIfActive();
+            cameFromAbout = false;
+            document.getElementById("backToAboutBtn").style.display = "none";
             document.getElementById("homeContentWrap").classList.remove("active");
             document.getElementById("homeLanding").classList.remove("hidden");
             document.getElementById("homeTopbar").style.display = "flex";
