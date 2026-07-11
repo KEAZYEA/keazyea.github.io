@@ -672,9 +672,9 @@
 
         .dm-modal-box {
             width: 100%;
-            height: 100%;
+            height: 100dvh; /* dynamic viewport height — tracks the visible area even when the keyboard is up, unlike 100% */
             max-width: 100%;
-            max-height: 100%;
+            max-height: 100dvh;
             display: flex;
             flex-direction: column;
             padding: 0;
@@ -2682,6 +2682,40 @@
             document.getElementById("dmReplyBar").classList.remove("open");
         };
 
+        // ---- Keep the chat pinned to the bottom when the mobile keyboard
+        // opens/closes. visualViewport reports the ACTUAL visible area
+        // (shrunk by the keyboard), unlike window.innerHeight or CSS %/vh,
+        // which mostly ignore the keyboard on iOS Safari.
+        function pinDmScrollToBottom() {
+            const box = document.getElementById("dmMessages");
+            if (box) box.scrollTop = box.scrollHeight;
+        }
+
+        function setupDmViewportHandling() {
+            if (!window.visualViewport) return;
+            const dmBox = document.querySelector(".dm-modal-box");
+
+            function handleViewportChange() {
+                const overlay = document.getElementById("dmModalOverlay");
+                if (!overlay.classList.contains("open")) return;
+                // Resize the modal itself to the real visible height so the
+                // input row stays above the keyboard instead of underneath it.
+                dmBox.style.height = window.visualViewport.height + "px";
+                // Wait a frame for the resize to actually apply, then re-stick
+                // the scroll position to the bottom.
+                requestAnimationFrame(pinDmScrollToBottom);
+            }
+
+            window.visualViewport.addEventListener("resize", handleViewportChange);
+            window.visualViewport.addEventListener("scroll", handleViewportChange);
+        }
+
+        // Also re-pin on focus — covers the moment the keyboard is still
+        // animating open, before visualViewport has finished reporting it.
+        document.getElementById("dmInput").addEventListener("focus", () => {
+            setTimeout(pinDmScrollToBottom, 300);
+        });
+
         // Called by home.html whenever the person navigates away from the
         // Social page — closes any open chat/modal and resets back to the
         // Friends tab so returning later always starts fresh.
@@ -2752,6 +2786,7 @@
             loadClanFiltersIntoUI();
             await refreshComposeBox();
             startLiveListeners();
+            setupDmViewportHandling();
             unsubPosts = AppState.listenToClanPosts(renderClanPosts);
             // Presence heartbeat now lives in appState.js and runs on every page,
             // triggered by real activity — nothing to call here anymore.
