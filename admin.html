@@ -231,7 +231,7 @@
                 <div id="newTipImagePreviewList" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;"></div>
                 <button class="btn-primary" id="postTipBtn" onclick="handlePostTip()"
                     style="margin-top:12px; padding:12px 28px;">Post Tip</button>
-                <div id="recentTipsList" style="margin-top:16px; text-align:left;"></div>
+                <div id="recentTipsList" style="margin-top:16px; text-align:left; max-height:420px; overflow-y:auto; padding-right:6px;"></div>
 
                 <hr style="border-color:#2a2a4a; margin:40px 0;">
 
@@ -629,7 +629,7 @@
             }
 
             async function refreshRecentTips() {
-                const tips = await AppState.getTips(5);
+    const tips = await AppState.getTips(5000);
                 const list = document.getElementById("recentTipsList");
                 if (!tips.length) {
                     list.innerHTML = '<p class="promo-sub">No tips posted yet.</p>';
@@ -686,11 +686,11 @@
                     // Older reports predate reporterName being stored — fall back gracefully.
                     const reporterLabel = r.reporterName || (r.reporterUid ? `uid: ${r.reporterUid}` : "Unknown");
                     const reporterBtn = r.reporterUid
-                        ? `<button onclick="openUidLookup('${r.reporterUid}', ${JSON.stringify(reporterLabel)})" style="background:none; border:none; color:#4169e1; text-decoration:underline; cursor:pointer; font-weight:700; padding:0; font-size:inherit;">${escapeHtml(reporterLabel)}</button>`
-                        : escapeHtml(reporterLabel);
-                    const targetBtn = r.targetUid
-                        ? `<button onclick="openUidLookup('${r.targetUid}', ${JSON.stringify(r.targetName || "Unknown")})" style="background:none; border:none; color:#4169e1; text-decoration:underline; cursor:pointer; font-weight:700; padding:0; font-size:inherit;">${escapeHtml(r.targetName || "Unknown")}</button>`
-                        : escapeHtml(r.targetName || "Unknown");
+    ? `<button onclick="openUidLookup('${r.reporterUid}', ${escapeHtml(JSON.stringify(reporterLabel))})" style="background:none; border:none; color:#4169e1; text-decoration:underline; cursor:pointer; font-weight:700; padding:0; font-size:inherit;">${escapeHtml(reporterLabel)}</button>`
+    : escapeHtml(reporterLabel);
+const targetBtn = r.targetUid
+    ? `<button onclick="openUidLookup('${r.targetUid}', ${escapeHtml(JSON.stringify(r.targetName || "Unknown"))})" style="background:none; border:none; color:#4169e1; text-decoration:underline; cursor:pointer; font-weight:700; padding:0; font-size:inherit;">${escapeHtml(r.targetName || "Unknown")}</button>`
+    : escapeHtml(r.targetName || "Unknown");
                     return `
     <div style="border:1px solid #2a2a4a; border-radius:10px; padding:14px 16px; margin-bottom:12px;">
         <p style="margin:0 0 6px;">
