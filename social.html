@@ -1090,21 +1090,21 @@
         #friendsSection {
             display: flex;
             flex-direction: column;
-            flex: 1;
-            min-height: 195px; /* title + ~1.5-2 friend rows, so it never gets squashed to nothing */
+            flex: 2; /* Friends now gets the bigger share */
+            min-height: 260px;
         }
 
         #friendsList {
             flex: 1;
-            min-height: 130px; /* ~1.5-2 rows at ~66-70px each */
+            min-height: 190px; /* comfortably fits 2+ rows */
             overflow-y: auto;
             overscroll-behavior: contain;
             padding-right: 4px;
         }
 
         #suggestedFriendsSection {
-            flex: 2; /* taller share than Friends/Search, per your priority */
-            min-height: 150px;
+            flex: 1; /* smaller share now, Friends takes priority */
+            min-height: 130px;
             display: flex;
             flex-direction: column;
         }
