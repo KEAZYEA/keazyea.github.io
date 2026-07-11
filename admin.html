@@ -225,12 +225,10 @@
 
                 <label for="newTipImageInput"
                     style="display:block; text-align:left; margin-bottom:6px; color:#9a9ab0; font-size:0.85rem;">Optional
-                    image (shown at the bottom of the tip)</label>
-                <input type="file" id="newTipImageInput" accept="image/*"
+                    images (shown at the bottom of the tip) — you can select multiple, or add more later</label>
+                <input type="file" id="newTipImageInput" accept="image/*" multiple
                     style="width:100%; padding:8px; font-size:0.95rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box;">
-                <img id="newTipImagePreview"
-                    style="display:none; max-width:100%; max-height:200px; margin-top:10px; border-radius:8px;">
-
+                <div id="newTipImagePreviewList" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;"></div>
                 <button class="btn-primary" id="postTipBtn" onclick="handlePostTip()"
                     style="margin-top:12px; padding:12px 28px;">Post Tip</button>
                 <div id="recentTipsList" style="margin-top:16px; text-align:left;"></div>
@@ -488,23 +486,36 @@
             }
             window.handleDeleteCode = handleDeleteCode;
             /* ---------------- POST TIP ---------------- */
+            let tipImageFiles = []; // accumulates across multiple "Choose Files" picks
+
+            function renderTipImagePreviews() {
+                const list = document.getElementById("newTipImagePreviewList");
+                list.innerHTML = tipImageFiles.map((file, i) => `
+                    <div style="position:relative; width:90px; height:90px;">
+                        <img src="${URL.createObjectURL(file)}" style="width:100%; height:100%; object-fit:cover; border-radius:8px;">
+                        <button type="button" onclick="removeTipImageFile(${i})"
+                            style="position:absolute; top:-6px; right:-6px; width:22px; height:22px; border-radius:50%; background:#c62828; color:white; border:none; cursor:pointer; font-size:0.8rem; line-height:1;">✕</button>
+                    </div>
+                `).join("");
+            }
+
+            window.removeTipImageFile = function (index) {
+                tipImageFiles.splice(index, 1);
+                renderTipImagePreviews();
+            };
+
             document.getElementById("newTipImageInput").addEventListener("change", (e) => {
-                const file = e.target.files[0];
-                const preview = document.getElementById("newTipImagePreview");
-                if (!file) {
-                    preview.style.display = "none";
-                    return;
-                }
-                preview.src = URL.createObjectURL(file);
-                preview.style.display = "block";
+                const newFiles = [...e.target.files];
+                tipImageFiles = tipImageFiles.concat(newFiles);
+                e.target.value = ""; // lets picking the same file again re-add it after removal
+                renderTipImagePreviews();
             });
 
             let editingTipId = null;
 
-            async function handlePostTip() {
+           async function handlePostTip() {
                 const titleInput = document.getElementById("newTipTitleInput");
                 const bodyInput = document.getElementById("newTipBodyInput");
-                const imageInput = document.getElementById("newTipImageInput");
                 const title = titleInput.value.trim();
                 const body = bodyInput.value.trim();
                 if (!title || !body) {
@@ -514,23 +525,28 @@
                 const btn = document.getElementById("postTipBtn");
                 btn.disabled = true;
 
+                // Remember exactly where we are on the page so the view can't
+                // drift once the tip list above/below reflows after posting.
+                const scrollY = window.scrollY;
+
                 try {
-                    let imageUrl = null;
-                    let imagePath = null;
-                    const file = imageInput.files[0];
-                    if (file) {
-                        btn.textContent = "Uploading image...";
-                        const uploadResult = await AppState.uploadTipImage(file);
-                        imageUrl = uploadResult.imageUrl;
-                        imagePath = uploadResult.imagePath;
+                    let imageUrls = [];
+                    let imagePaths = [];
+                    if (tipImageFiles.length) {
+                        for (let i = 0; i < tipImageFiles.length; i++) {
+                            btn.textContent = `Uploading image (${i + 1}/${tipImageFiles.length})...`;
+                            const uploadResult = await AppState.uploadTipImage(tipImageFiles[i]);
+                            imageUrls.push(uploadResult.imageUrl);
+                            imagePaths.push(uploadResult.imagePath);
+                        }
                     }
 
                     if (editingTipId) {
                         btn.textContent = "Saving...";
-                        await AppState.updateTip(editingTipId, title, body, imageUrl, imagePath);
+                        await AppState.updateTip(editingTipId, title, body, imageUrls, imagePaths);
                     } else {
                         btn.textContent = "Posting...";
-                        await AppState.addTip(title, body, imageUrl, imagePath);
+                        await AppState.addTip(title, body, imageUrls, imagePaths);
                     }
 
                     cancelTipEdit();
@@ -540,6 +556,11 @@
                 }
                 btn.disabled = false;
                 btn.textContent = editingTipId ? "Save Changes" : "Post Tip";
+
+                // Restore scroll position after the DOM finishes updating —
+                // the recent-tips list, cleared inputs, and preview area can
+                // all change page height above/below and shift the viewport.
+                requestAnimationFrame(() => window.scrollTo(0, scrollY));
             }
             window.handlePostTip = handlePostTip;
 
@@ -553,14 +574,16 @@
                 document.getElementById("newTipTitleInput").value = tip.title;
                 document.getElementById("newTipBodyInput").value = tip.body;
                 document.getElementById("newTipImageInput").value = "";
+                tipImageFiles = []; // don't carry over queued files from a previous post
 
-                const preview = document.getElementById("newTipImagePreview");
-                if (tip.imageUrl) {
-                    preview.src = tip.imageUrl;
-                    preview.style.display = "block";
-                } else {
-                    preview.style.display = "none";
-                }
+                // Show the tip's EXISTING images read-only — picking new files
+                // only replaces them once Save Changes is clicked (matches
+                // updateTip's "only touch images if new ones were provided").
+                const existingUrls = Array.isArray(tip.imageUrls) ? tip.imageUrls : (tip.imageUrl ? [tip.imageUrl] : []);
+                document.getElementById("newTipImagePreviewList").innerHTML = existingUrls.length
+                    ? `<div class="promo-sub" style="width:100%; margin-bottom:4px;">Current image(s) — choose new files above to replace:</div>`
+                        + existingUrls.map(url => `<img src="${escapeHtml(url)}" style="width:90px; height:90px; object-fit:cover; border-radius:8px;">`).join("")
+                    : "";
 
                 document.getElementById("postTipBtn").textContent = "Save Changes";
                 showCancelEditButton();
@@ -573,7 +596,8 @@
                 document.getElementById("newTipTitleInput").value = "";
                 document.getElementById("newTipBodyInput").value = "";
                 document.getElementById("newTipImageInput").value = "";
-                document.getElementById("newTipImagePreview").style.display = "none";
+                tipImageFiles = [];
+                document.getElementById("newTipImagePreviewList").innerHTML = "";
                 document.getElementById("postTipBtn").textContent = "Post Tip";
                 hideCancelEditButton();
             }
