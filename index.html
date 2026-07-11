@@ -941,11 +941,55 @@ body {
             border: 1px solid var(--kih-border);
             border-radius: 10px;
             padding: 10px 14px;
+            transition: transform 0.12s ease, border-color 0.12s ease, background 0.12s ease;
+        }
+
+        .about-list li:hover {
+            transform: translateY(-2px);
+            border-color: var(--kih-accent);
+            background: #1c1c36;
         }
 
         .about-link {
             color: #4fc3f7;
             text-decoration: underline;
+        }
+        .landscape-block-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: var(--kih-bg);
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 24px;
+            gap: 12px;
+        }
+
+        .landscape-block-icon {
+            font-size: 3rem;
+            animation: landscape-rotate-hint 1.6s ease-in-out infinite;
+        }
+
+        @keyframes landscape-rotate-hint {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(90deg); }
+        }
+
+        .landscape-block-text {
+            color: var(--kih-text);
+            font-size: 1rem;
+            max-width: 320px;
+        }
+
+        /* Only phones — tablets/desktops in landscape are usually tall
+           enough not to match max-height, so they're left alone. */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .landscape-block-overlay {
+                display: flex;
+            }
         }
     </style>
 </head>
@@ -1072,11 +1116,11 @@ body {
                         <div class="about-section">
                             <div class="about-section-title">What this app is for</div>
                             <ul class="about-list">
-                                <li>⚔️ Troop & hero comparisons</li>
-                                <li>🎁 Latest promo codes</li>
-                                <li>💡 Tips, team comps & strategy</li>
-                                <li>🎲 Weekly giveaways</li>
-                                <li>👥 Community — clan recruitment, friends & chat</li>
+                                <li onclick="goToPage('troops')" style="cursor:pointer;">⚔️ Troop & hero comparisons</li>
+                                <li onclick="goToPage('promo')" style="cursor:pointer;">🎁 Latest promo codes</li>
+                                <li onclick="goToPage('tips')" style="cursor:pointer;">💡 Tips, team comps & strategy</li>
+                                <li onclick="goToPage('promo')" style="cursor:pointer;">🎲 Weekly giveaways</li>
+                                <li onclick="goToPage('social')" style="cursor:pointer;">👥 Community — clan recruitment, friends & chat</li>
                             </ul>
                         </div>
 
@@ -1291,7 +1335,10 @@ body {
 
         <button class="scroll-bottom-btn" id="scrollBottomBtn" onclick="scrollActivePageToBottom()">↓</button>
 
-        <button class="scroll-bottom-btn" id="scrollBottomBtn" onclick="scrollActivePageToBottom()">↓</button>
+        <div class="landscape-block-overlay">
+            <div class="landscape-block-icon">📱</div>
+            <div class="landscape-block-text">Please rotate your device back to portrait to keep using the app.</div>
+        </div>
     </div>
 
     <script type="module" src="appState.js"></script>
