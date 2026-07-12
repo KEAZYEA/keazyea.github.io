@@ -24,22 +24,24 @@
                 width: 100%;
             }
 
-            #troopsPage .slider-row {
+            /* Back button comes BEFORE the slider in source order, and we
+               pin it there explicitly so it sits on the left. */
+            #troopsBackBtnSlot {
                 order: 2;
+                flex: 0 0 auto;
+            }
+
+            #troopsPage .slider-row {
+                order: 3;
                 flex: 1 1 auto;
+                justify-content: flex-start;
                 margin-bottom: 0;
             }
 
-            #troopsBackBtnSlot {
-                order: 3;
-                flex: 0 0 auto;
-                margin-left: auto;
-            }
-
-            #troopsBackBtnSlot .troops-back-btn {
-                font-size: 12px !important;
-                padding: 4px 10px !important;
-                white-space: nowrap;
+            #troopsBackBtnSlot button.troops-back-btn {
+                font-size: 11px !important;
+                padding: 4px 8px !important;
+                white-space: nowrap !important;
             }
         }
     </style>
