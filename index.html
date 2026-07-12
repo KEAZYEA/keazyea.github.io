@@ -181,8 +181,10 @@ body {
                 gap: 6px 10px;
                 max-width: 560px;
             }
-            /* Social spans both columns since there are 5 items (odd count) */
-            .home-menu-btn:nth-child(4) {
+            /* 5 buttons in a 2-col grid packs as 2/2/1 — make the last one
+               (Store) span both columns so it centers on its own row
+               instead of leaving a gap next to it. */
+            .home-menu-btn:last-child {
                 grid-column: 1 / -1;
             }
             .home-menu-btn {
@@ -200,6 +202,50 @@ body {
                 margin-top: 2px;
                 padding: 2px;
             }
+
+            .home-topbar {
+                padding: 4px 12px;
+            }
+
+            .home-topbar .icon-btn {
+                font-size: 1.2rem;
+                padding: 6px;
+                min-width: 34px;
+                min-height: 34px;
+            }
+
+            .topbar-avatar-icon,
+            .topbar-avatar-fallback {
+                width: 22px;
+                height: 22px;
+                font-size: 0.85rem;
+            }
+
+            .back-to-about-btn {
+                padding: 5px 10px;
+                font-size: 0.8rem;
+            }
+            .page-panel {
+                padding: 12px 20px;
+            }
+
+            .page-panel h1 {
+                font-size: 1.4rem;
+                margin-bottom: 6px;
+            }
+
+            .settings-row {
+                padding: 8px 0;
+            }
+
+            .about-section {
+                margin-bottom: 12px;
+            }
+
+            .about-list li {
+                padding: 6px 12px;
+            }
+            
         }
         .about-creator-link:hover {
             color: var(--kih-text);
