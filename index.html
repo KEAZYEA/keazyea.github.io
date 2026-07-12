@@ -204,27 +204,39 @@ body {
             }
 
             .home-topbar {
-                padding: 2px 10px;
+                padding: 0 8px;
                 min-height: unset;
+                line-height: 1;
             }
 
             .home-topbar .icon-btn {
-                font-size: 1.05rem;
-                padding: 4px;
-                min-width: 28px;
-                min-height: 28px;
+                font-size: 0.95rem;
+                padding: 2px;
+                min-width: 22px;
+                min-height: 22px;
             }
 
             .topbar-avatar-icon,
             .topbar-avatar-fallback {
-                width: 22px;
-                height: 22px;
-                font-size: 0.85rem;
+                width: 18px;
+                height: 18px;
+                font-size: 0.75rem;
             }
 
             .back-to-about-btn {
-                padding: 5px 10px;
-                font-size: 0.8rem;
+                padding: 3px 8px;
+                font-size: 0.75rem;
+            }
+
+            /* Pull the content pages up right under the now-shorter bar
+               instead of leaving default vertical gap above them. */
+            .home-content-wrap,
+            .home-main {
+                margin-top: 0;
+            }
+
+            .page-panel {
+                padding-top: 2px;
             }
             .page-panel {
                 padding: 6px 20px;
