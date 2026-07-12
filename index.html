@@ -161,33 +161,46 @@ body {
             flex-shrink: 0;
         }
 
-        /* Short/landscape phones: the vh-based clamps above still add up to
-           more than the viewport, so compact things further and drop the
-           subtitle text under each button to save vertical space. */
+        /* Short/landscape phones: switch the 5 stacked buttons into a
+           2-column grid so the wide-but-short screen is used properly
+           instead of everything being squeezed vertically. */
         @media (max-height: 480px) and (orientation: landscape) {
+            .home-landing {
+                padding: 8px 16px;
+            }
             .home-landing-title-img {
-                width: clamp(60px, 14vh, 110px);
-                margin-bottom: 4px;
+                width: clamp(50px, 11vh, 90px);
+                margin-bottom: 2px;
             }
             .home-landing-sub {
                 display: none;
             }
             .home-menu {
-                gap: 6px;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 6px 10px;
+                max-width: 560px;
+            }
+            /* Social spans both columns since there are 5 items (odd count) */
+            .home-menu-btn:nth-child(4) {
+                grid-column: 1 / -1;
             }
             .home-menu-btn {
-                padding: 6px 14px;
+                padding: 6px 12px;
             }
             .home-menu-text small {
                 display: none;
             }
             .home-menu-icon {
-                width: 26px;
-                height: 26px;
-                font-size: 1rem;
+                width: 24px;
+                height: 24px;
+                font-size: 0.95rem;
+            }
+            .about-creator-link {
+                margin-top: 2px;
+                padding: 2px;
             }
         }
-
         .about-creator-link:hover {
             color: var(--kih-text);
         }
@@ -976,43 +989,7 @@ body {
             color: #4fc3f7;
             text-decoration: underline;
         }
-        .landscape-block-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            z-index: 9999;
-            background: var(--kih-bg);
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 24px;
-            gap: 12px;
-        }
-
-        .landscape-block-icon {
-            font-size: 3rem;
-            animation: landscape-rotate-hint 1.6s ease-in-out infinite;
-        }
-
-        @keyframes landscape-rotate-hint {
-            0%, 100% { transform: rotate(0deg); }
-            50% { transform: rotate(90deg); }
-        }
-
-        .landscape-block-text {
-            color: var(--kih-text);
-            font-size: 1rem;
-            max-width: 320px;
-        }
-
-       /* Toggled by JS instead of a fixed-pixel media query — Chrome's
-           collapsing address bar on Android makes the reported landscape
-           viewport height inconsistent, so a static max-height breakpoint
-           can miss real devices. */
-        body.landscape-blocked .landscape-block-overlay {
-            display: flex;
-        }
+       
     </style>
 </head>
 
@@ -1358,11 +1335,7 @@ body {
 
         <button class="scroll-bottom-btn" id="scrollBottomBtn" onclick="scrollActivePageToBottom()">↓</button>
 
-        <div class="landscape-block-overlay">
-            <div class="landscape-block-icon">📱</div>
-            <div class="landscape-block-text">Please rotate your device back to portrait to keep using the app.</div>
         </div>
-    </div>
 
     <script type="module" src="appState.js"></script>
     <script>
@@ -2081,17 +2054,7 @@ window.visualViewport?.addEventListener("resize", setAppHeight);
 window.addEventListener("resize", setAppHeight);
 setAppHeight();
 
-// Block landscape on phones only — width < 900 filters out tablets/
-// desktop browser windows that happen to be wider than tall, so this
-// only fires for an actual handset turned sideways.
-function checkOrientationBlock() {
-    let isPhoneLandscape = window.innerWidth > window.innerHeight && window.innerWidth < 900;
-    document.body.classList.toggle("landscape-blocked", isPhoneLandscape);
-}
-window.addEventListener("resize", checkOrientationBlock);
-window.addEventListener("orientationchange", checkOrientationBlock);
-window.visualViewport?.addEventListener("resize", checkOrientationBlock);
-checkOrientationBlock();
+
     </script>
 </body>
 
