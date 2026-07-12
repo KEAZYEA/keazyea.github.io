@@ -792,6 +792,64 @@ h1 {
    (e.g. 812px wide), but height is short, so troop images/icons stay
    full-size and everything feels oversized. Shrink by height instead. */
 @media (max-height: 500px) and (orientation: landscape) {
+
+    /* ---- page chrome: header, tabs, search bar ---- */
+    h1 {
+        font-size: 22px;
+        margin-bottom: 4px;
+    }
+
+    .page-header-bar h1 {
+        font-size: 18px;
+    }
+
+    .icon-nav-btn {
+        padding: 5px 8px;
+        font-size: 12px;
+    }
+
+    .social-icon {
+        padding: 5px 10px;
+        font-size: 12px;
+    }
+
+    .tabs {
+        padding: 6px 0;
+        gap: 6px;
+    }
+
+    .tab-btn {
+        padding: 6px 16px;
+        font-size: 13px;
+    }
+
+    .sticky-controls {
+        padding-bottom: 4px;
+    }
+
+    .slider-row {
+        margin-bottom: 8px;
+        gap: 6px;
+    }
+
+    #troopsPage input[type="text"],
+    #comparePage input[type="text"] {
+        padding: 6px 8px;
+        font-size: 13px;
+        margin-bottom: 6px;
+    }
+
+    .search-result-item {
+        height: 44px;
+    }
+
+    #troopsResults div,
+    #leftResults div,
+    #rightResults div {
+        font-size: 12px;
+        padding: 5px 8px;
+    }
+
     .troop-img {
         width: 90px;
         height: 90px;
