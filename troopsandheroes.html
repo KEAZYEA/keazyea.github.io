@@ -11,31 +11,48 @@
            same row as the level slider instead of it taking its own row
            below, and shrink it to match the compacted slider/search. */
         @media (max-height: 500px) and (orientation: landscape) {
+            /* Grid with mirrored left/right tracks: the back button sits in
+               the left column and an invisible spacer (::after) occupies an
+               equal-width right column, so the slider in the middle column
+               is genuinely centered to the full row width — not just
+               centered relative to whatever space is left after the button. */
             #troopsPage .sticky-controls {
-                position: relative;
+                display: grid;
+                grid-template-columns: 120px 1fr 120px;
+                grid-template-areas:
+                    "search search search"
+                    "back slider spacer";
+                align-items: center;
+                gap: 2px 8px;
             }
 
             #troopsPage .search-row {
+                grid-area: search;
                 width: 100%;
             }
 
-            /* Taken out of flex flow entirely so it doesn't shift where
-               .slider-row centers itself — it just floats on top, left side. */
             #troopsBackBtnSlot {
-                position: absolute;
-                left: 0;
-                top: 0;
-                z-index: 5;
+                grid-area: back;
             }
 
             #troopsPage .slider-row {
+                grid-area: slider;
+                justify-content: center;
                 margin-bottom: 0;
+            }
+
+            #troopsPage .sticky-controls::after {
+                content: "";
+                grid-area: spacer;
             }
 
             #troopsBackBtnSlot button.troops-back-btn {
                 font-size: 11px !important;
                 padding: 4px 8px !important;
                 white-space: nowrap !important;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 118px;
             }
         }
     </style>
