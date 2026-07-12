@@ -12,28 +12,23 @@
            below, and shrink it to match the compacted slider/search. */
         @media (max-height: 500px) and (orientation: landscape) {
             #troopsPage .sticky-controls {
-                display: flex;
-                flex-wrap: wrap;
-                align-items: center;
-                gap: 4px 10px;
+                position: relative;
             }
 
             #troopsPage .search-row {
-                order: 1;
                 width: 100%;
             }
 
-            /* Back button comes BEFORE the slider in source order, and we
-               pin it there explicitly so it sits on the left. */
+            /* Taken out of flex flow entirely so it doesn't shift where
+               .slider-row centers itself — it just floats on top, left side. */
             #troopsBackBtnSlot {
-                order: 2;
-                flex: 0 0 auto;
+                position: absolute;
+                left: 0;
+                top: 0;
+                z-index: 5;
             }
 
             #troopsPage .slider-row {
-                order: 3;
-                flex: 1 1 auto;
-                justify-content: center;
                 margin-bottom: 0;
             }
 
