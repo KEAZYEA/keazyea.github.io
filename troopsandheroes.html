@@ -7,6 +7,42 @@
     <link rel="stylesheet" href="style.css">
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+        /* Landscape phones: pull the "back to gallery" button up onto the
+           same row as the level slider instead of it taking its own row
+           below, and shrink it to match the compacted slider/search. */
+        @media (max-height: 500px) and (orientation: landscape) {
+            #troopsPage .sticky-controls {
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: 4px 10px;
+            }
+
+            #troopsPage .search-row {
+                order: 1;
+                width: 100%;
+            }
+
+            #troopsPage .slider-row {
+                order: 2;
+                flex: 1 1 auto;
+                margin-bottom: 0;
+            }
+
+            #troopsBackBtnSlot {
+                order: 3;
+                flex: 0 0 auto;
+                margin-left: auto;
+            }
+
+            #troopsBackBtnSlot .troops-back-btn {
+                font-size: 12px !important;
+                padding: 4px 10px !important;
+                white-space: nowrap;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -1429,7 +1465,7 @@ function unlockBackgroundScroll() {
 
                 let backLabel = troopNavStack.length > 0 ? troopNavStack[troopNavStack.length - 1].unit.displayName : "";
                 document.getElementById("troopsBackBtnSlot").innerHTML = troopNavStack.length > 0 ? `
-  <button style="font-size:15px; padding:6px 18px; background:white; color:#000; border:2px solid gray;font-weight: bold; border-radius:6px; cursor:pointer;"
+  <button class="troops-back-btn" style="font-size:15px; padding:6px 18px; background:white; color:#000; border:2px solid gray;font-weight: bold; border-radius:6px; cursor:pointer;"
     onclick="
       let prev = troopNavStack.pop();
       selectTroop = prev.unit;
@@ -1440,7 +1476,7 @@ function unlockBackgroundScroll() {
       window.scrollTo(0, prev.scrollY || 0);
     ">← Back to ${backLabel}</button>
 ` : `
-  <button style="font-size:15px; padding:6px 18px; background:white; color:#000; border:2px solid gray;font-weight: bold; border-radius:6px; cursor:pointer;"
+  <button class="troops-back-btn" style="font-size:15px; padding:6px 18px; background:white; color:#000; border:2px solid gray;font-weight: bold; border-radius:6px; cursor:pointer;"
     onclick="goBackToGallery()">← Back to all Troops & Heroes</button>
 `;
 
