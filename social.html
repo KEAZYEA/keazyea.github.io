@@ -679,6 +679,7 @@
             flex-direction: column;
             padding: 0;
             border-radius: 0;
+            position: relative;
         }
 
         .dm-actions-menu {
@@ -796,14 +797,38 @@
         }
 
         .dm-messages {
-            flex: 1;
-            overflow-y: auto;
-            overscroll-behavior: contain;
-            padding: 14px 18px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
+    flex: 1;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 14px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    position: relative; /* anchors the scroll-to-bottom button below */
+}
+
+.dm-scroll-bottom-btn {
+    display: none;
+    position: absolute;
+    bottom: 84px; /* sits just above the input row */
+    right: 18px;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #4169e1;
+    color: white;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    z-index: 30;
+    align-items: center;
+    justify-content: center;
+}
+
+.dm-scroll-bottom-btn.visible {
+    display: flex;
+}
 
         .dm-msg {
             max-width: 78%;
@@ -1553,7 +1578,8 @@
                 </div>
             </div>
             <div class="dm-messages" id="dmMessages"></div>
-            <div id="dmBlockedNotice" class="compose-hint"
+<button class="dm-scroll-bottom-btn" id="dmScrollBottomBtn" onclick="scrollDmToBottom()" title="Jump to latest">↓</button>
+<div id="dmBlockedNotice" class="compose-hint"
                 style="display:none; padding:12px 16px; text-align:center; color:#ff8080; border-top:1px solid #2a2a4a;">
                 🚫 You've blocked this user. Unblock them to send messages.
             </div>
@@ -2588,7 +2614,8 @@
                 document.getElementById("dmHeaderName").textContent = name;
                 document.getElementById("dmHeaderAvatar").innerHTML = avatarHtml(avatar, name, "");
                 document.getElementById("dmMessages").innerHTML = "";
-                document.getElementById("dmActionsMenu").classList.remove("open");
+document.getElementById("dmScrollBottomBtn").classList.remove("visible");
+document.getElementById("dmActionsMenu").classList.remove("open");
                 document.getElementById("dmModalOverlay").classList.add("open");
                 replyingToMsg = null;
                 editingMsgId = null;
@@ -2660,6 +2687,7 @@
         </div>`;
     }).join("");
     box.scrollTop = box.scrollHeight;
+    updateDmScrollBottomBtn();
 }
 
 // Jumps to and briefly highlights the message a reply quote points at.
@@ -2744,10 +2772,24 @@ window.scrollToDmMessage = function (msgId) {
         // (shrunk by the keyboard), unlike window.innerHeight or CSS %/vh,
         // which mostly ignore the keyboard on iOS Safari.
         function pinDmScrollToBottom() {
-            const box = document.getElementById("dmMessages");
-            if (box) box.scrollTop = box.scrollHeight;
-        }
+    const box = document.getElementById("dmMessages");
+    if (box) box.scrollTop = box.scrollHeight;
+    updateDmScrollBottomBtn();
+}
+function updateDmScrollBottomBtn() {
+    const box = document.getElementById("dmMessages");
+    const btn = document.getElementById("dmScrollBottomBtn");
+    if (!box || !btn) return;
+    const nearBottom = box.scrollTop + box.clientHeight >= box.scrollHeight - 40;
+    btn.classList.toggle("visible", !nearBottom);
+}
 
+window.scrollDmToBottom = function () {
+    const box = document.getElementById("dmMessages");
+    if (box) box.scrollTo({ top: box.scrollHeight, behavior: "smooth" });
+};
+
+document.getElementById("dmMessages").addEventListener("scroll", updateDmScrollBottomBtn);
         function setupDmViewportHandling() {
             if (!window.visualViewport) return;
             const overlay = document.getElementById("dmModalOverlay");
