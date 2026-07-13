@@ -1692,7 +1692,16 @@ const AppState = (function () {
         const snap = await getDoc(ref);
         return snap.exists() ? snap.data() : null;
     }
-
+// Public history of past draws — no prize codes included (those stay
+// private in giveawayPrizes/{uid}), just who won what week and on what
+// device. Safe to show to anyone.
+async function getGiveawayHistory(maxCount = 20) {
+    const q = query(collection(db, "giveawayWeeks"), orderBy("drawnAt", "desc"), limit(maxCount));
+    const snap = await getDocs(q);
+    const items = [];
+    snap.forEach(d => items.push({ weekId: d.id, ...d.data() }));
+    return items;
+}
     function isAdmin() {
         return !!currentUser && currentUser.uid === ADMIN_UID;
     }
@@ -1720,36 +1729,51 @@ const AppState = (function () {
     }
 
     async function finalizeGiveawayPrize(weekId, winner, prizeCode) {
-        await waitForAuthReady();
-        if (!currentUser || currentUser.uid !== ADMIN_UID) {
-            throw new Error("Not authorized.");
-        }
-        if (!prizeCode || !prizeCode.trim()) {
-            throw new Error("Prize code cannot be empty.");
-        }
+    await waitForAuthReady();
+    if (!currentUser || currentUser.uid !== ADMIN_UID) {
+        throw new Error("Not authorized.");
+    }
+    if (!prizeCode || !prizeCode.trim()) {
+        throw new Error("Prize code cannot be empty.");
+    }
 
-        const already = await getWeekWinner(weekId);
-        if (already) {
-            throw new Error("A winner has already been finalized for " + weekId + ".");
-        }
+    const already = await getWeekWinner(weekId);
+    if (already) {
+        throw new Error("A winner has already been finalized for " + weekId + ".");
+    }
 
-        const weekRef = doc(db, "giveawayWeeks", weekId);
-        await setDoc(weekRef, {
-            winnerUid: winner.uid,
-            winnerName: winner.name,
-            device: winner.device,
-            drawnAt: Date.now()
-        });
+    const weekRef = doc(db, "giveawayWeeks", weekId);
+    await setDoc(weekRef, {
+        winnerUid: winner.uid,
+        winnerName: winner.name,
+        device: winner.device,
+        drawnAt: Date.now()
+    });
 
-        const prizeRef = doc(db, "giveawayPrizes", winner.uid);
-        await setDoc(prizeRef, {
+    const prizeRef = doc(db, "giveawayPrizes", winner.uid);
+    await setDoc(prizeRef, {
+        weekId: weekId,
+        prize: prizeCode.trim(),
+        device: winner.device
+    });
+
+    // NEW: land the win in their inbox immediately — doesn't depend on
+    // them ever opening the wheel that week.
+    try {
+        await addPersonalNotification(winner.uid, {
+            type: "giveawayWin",
+            title: "🎁 You won the VIP Giveaway!",
+            body: `Congrats — you won "${prizeCode.trim()}" playing on ${winner.device === "ios" ? "iOS" : "Android"}. Redeem it in-game.`,
             weekId: weekId,
             prize: prizeCode.trim(),
             device: winner.device
         });
-
-        return true;
+    } catch (e) {
+        console.warn("Couldn't send giveaway win notification:", e.message);
     }
+
+    return true;
+}
 
     async function deletePromoCode(codeId) {
         await waitForAuthReady();
@@ -1951,7 +1975,7 @@ const AppState = (function () {
         getInbox, addInboxMessage, markAllRead, unreadCount,
         // giveaway
         getWeekId, hasJoinedGiveaway, getMyGiveawayEntry, joinGiveaway, getGiveawayEntries,
-        getPublicGiveawayEntries, getWeekWinner, getSimulatedNow, isGiveawayOpen,
+        getPublicGiveawayEntries, getWeekWinner, getGiveawayHistory, getSimulatedNow, isGiveawayOpen,
         // admin
         // promo codes
         addPromoCode, getPromoCodes, deletePromoCode,
