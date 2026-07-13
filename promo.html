@@ -118,6 +118,15 @@
             </div>
         </div>
     </div>
+
+    <div class="center-modal-overlay" id="historyModalOverlay">
+    <div class="center-modal-box" style="max-width:420px; max-height:70vh; overflow-y:auto;">
+        <div class="center-modal-title">🕘 Past Winners</div>
+        <div id="historyList" style="text-align:left; margin-bottom:16px;"></div>
+        <button class="center-modal-btn-cancel" id="historyCloseBtn" style="width:100%;">Close</button>
+    </div>
+</div>
+    
     <div class="tabs">
         <button class="tab-btn active" onclick="switchPromoTab('codes')">Latest Codes</button>
         <button class="tab-btn" id="vipTabBtn" onclick="switchPromoTab('vip')">VIP Giveaway <span
@@ -216,7 +225,9 @@
                         <div id="giveawayResult" class="giveaway-result" style="display:none;"></div>
 
                         <button class="switch-device-btn" id="switchDeviceBtn" onclick="backToDeviceSelect()">🔄 Switch
-                            Device</button>
+    Device</button>
+<button class="switch-device-btn" id="historyBtn" onclick="openGiveawayHistory()"
+    style="border-color:#45aa38;">🕘 Past Winners</button>
 
                     </div>
                 </div>
@@ -329,6 +340,32 @@
             }
             window.handleSignIn = handleSignIn;
 
+            async function openGiveawayHistory() {
+    const overlay = document.getElementById("historyModalOverlay");
+    const list = document.getElementById("historyList");
+    list.innerHTML = "<p class='promo-sub'>Loading...</p>";
+    overlay.classList.add("open");
+    try {
+        const history = await AppState.getGiveawayHistory(20);
+        if (!history.length) {
+            list.innerHTML = "<p class='promo-sub'>No past draws yet.</p>";
+        } else {
+            list.innerHTML = history.map(h => `
+                <div style="padding:10px 0; border-bottom:1px solid #2a2a4a;">
+                    <strong>${escapeHtml(h.winnerName)}</strong>
+                    <span class="promo-sub"> — ${h.device === "ios" ? "iOS 🍎" : "Android 🤖"}</span>
+                    <div class="promo-sub" style="font-size:0.8rem;">Week of ${escapeHtml(h.weekId)} · drawn ${new Date(h.drawnAt).toLocaleString()}</div>
+                </div>
+            `).join("");
+        }
+    } catch (e) {
+        list.innerHTML = "<p class='promo-sub'>Couldn't load history.</p>";
+    }
+}
+window.openGiveawayHistory = openGiveawayHistory;
+document.getElementById("historyCloseBtn").addEventListener("click", () => {
+    document.getElementById("historyModalOverlay").classList.remove("open");
+});
             async function refreshVipState() {
                 const user = AppState.getCurrentUser();
                 if (!user) {
@@ -570,20 +607,9 @@
                 resultDiv.innerHTML = "🎉 This week's winner: " + escapeHtml(winnerData.winnerName) + "!";
 
                 const user = AppState.getCurrentUser();
-                if (user && user.uid === winnerData.winnerUid) {
-                    const myPrize = await AppState.getMyPrize(currentWeekId);
-                    if (myPrize) {
-                        const claimFlag = "kih_giveaway_claimed_" + currentWeekId;
-                        if (!localStorage.getItem(claimFlag)) {
-                            AppState.addInboxMessage(
-                                "🎁 You won the VIP Giveaway!",
-                                "Congrats — you won \"" + myPrize.prize + "\" playing on " +
-                                (myPrize.device === "ios" ? "iOS" : "Android") + ". Redeem it in-game." +
-                                '<br><button class="btn-primary" style="margin-top:10px; padding:8px 16px; font-size:0.9rem;" ' +
-                                'onclick="window.top.goToPage(\'promo\')">View Code</button>'
-                            );
-                            localStorage.setItem(claimFlag, "1");
-                        }
+if (user && user.uid === winnerData.winnerUid) {
+    const myPrize = await AppState.getMyPrize(currentWeekId);
+    if (myPrize) {
                         resultDiv.innerHTML +=
                             '<br><br><strong style="font-size:1.3rem;">🏆 Congrats, you won!</strong>' +
                             '<br><div style="margin-top:14px; font-size:1rem; color:#9a9ab0;">Your Promo Code</div>' +
