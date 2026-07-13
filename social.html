@@ -2617,46 +2617,63 @@
             showProfileModal(profile, true); // true = isFriend, since DMs only exist between friends
         };
         function renderDmMessages(messages) {
-            window._lastDmMessages = messages; // so edit/cancel can re-render without a fresh snapshot
-            const user = AppState.getCurrentUser();
-            const box = document.getElementById("dmMessages");
-            box.innerHTML = messages.map(m => {
-                const mine = m.senderUid === user.uid;
+    window._lastDmMessages = messages; // so edit/cancel can re-render without a fresh snapshot
+    const user = AppState.getCurrentUser();
+    const box = document.getElementById("dmMessages");
+    box.innerHTML = messages.map(m => {
+        const mine = m.senderUid === user.uid;
 
-                const quoteHtml = m.replyToId
-                    ? `<span class="dm-msg-quote">${escapeHtml((m.replyToText || "").slice(0, 200))}</span>`
-                    : "";
-                const editedTag = m.editedAt ? `<span class="dm-msg-edited-tag">(edited)</span>` : "";
+        // Only make the quote clickable if the original message still
+        // exists in the currently loaded history — otherwise there's
+        // nothing to jump to (it may have been deleted).
+        const targetExists = m.replyToId && messages.some(x => x.id === m.replyToId);
+        const quoteHtml = m.replyToId
+            ? `<span class="dm-msg-quote"${targetExists ? ` style="cursor:pointer;" onclick='scrollToDmMessage("${m.replyToId}")'` : ""}>${escapeHtml((m.replyToText || "").slice(0, 200))}</span>`
+            : "";
+        const editedTag = m.editedAt ? `<span class="dm-msg-edited-tag">(edited)</span>` : "";
 
-                // Inline edit mode: swap the bubble body for a textarea + Save/Cancel.
-                if (editingMsgId === m.id) {
-                    return `<div class="dm-msg ${mine ? "mine" : "theirs"}">
-                        ${quoteHtml}
-                        <textarea class="dm-msg-edit-box" id="dmEditBox_${m.id}">${escapeHtml(m.text)}</textarea>
-                        <div class="dm-msg-edit-actions">
-                            <button class="mini-btn accept" onclick="saveEditMessage('${m.id}')">Save</button>
-                            <button class="mini-btn decline" onclick="cancelEditMessage()">Cancel</button>
-                        </div>
-                    </div>`;
-                }
-
-                const replyBtn = `<button class="dm-msg-action-link" onclick='startReplyToMessage("${m.id}", "${m.senderUid}", ${JSON.stringify((m.text || "").slice(0, 200))})'>↩ Reply</button>`;
-                const editBtn = mine
-                    ? `<button class="dm-msg-action-link" onclick='startEditMessage("${m.id}", ${JSON.stringify(m.text)})'>✏️ Edit</button>`
-                    : "";
-                const reportBtn = mine ? "" :
-                    `<button class="dm-msg-action-link" onclick='openReportModal("message", "${m.senderUid}", "${currentDmOtherName.replace(/"/g, '')}", "${m.id}", ${JSON.stringify(m.text)})'>🚩 Report</button>`;
-
-                return `<div class="dm-msg ${mine ? "mine" : "theirs"}">
-                    ${quoteHtml}
-                    ${escapeHtml(m.text)}${editedTag}
-                    <div class="dm-msg-actions">
-                        ${replyBtn}${editBtn}${reportBtn}
-                    </div>
-                </div>`;
-            }).join("");
-            box.scrollTop = box.scrollHeight;
+        // Inline edit mode: swap the bubble body for a textarea + Save/Cancel.
+        if (editingMsgId === m.id) {
+            return `<div class="dm-msg ${mine ? "mine" : "theirs"}" id="dmMsgRow_${m.id}">
+                ${quoteHtml}
+                <textarea class="dm-msg-edit-box" id="dmEditBox_${m.id}">${escapeHtml(m.text)}</textarea>
+                <div class="dm-msg-edit-actions">
+                    <button class="mini-btn accept" onclick="saveEditMessage('${m.id}')">Save</button>
+                    <button class="mini-btn decline" onclick="cancelEditMessage()">Cancel</button>
+                </div>
+            </div>`;
         }
+
+        const replyBtn = `<button class="dm-msg-action-link" onclick='startReplyToMessage("${m.id}", "${m.senderUid}", ${JSON.stringify((m.text || "").slice(0, 200))})'>↩ Reply</button>`;
+        const editBtn = mine
+            ? `<button class="dm-msg-action-link" onclick='startEditMessage("${m.id}", ${JSON.stringify(m.text)})'>✏️ Edit</button>`
+            : "";
+        const reportBtn = mine ? "" :
+            `<button class="dm-msg-action-link" onclick='openReportModal("message", "${m.senderUid}", "${currentDmOtherName.replace(/"/g, '')}", "${m.id}", ${JSON.stringify(m.text)})'>🚩 Report</button>`;
+
+        return `<div class="dm-msg ${mine ? "mine" : "theirs"}" id="dmMsgRow_${m.id}">
+            ${quoteHtml}
+            ${escapeHtml(m.text)}${editedTag}
+            <div class="dm-msg-actions">
+                ${replyBtn}${editBtn}${reportBtn}
+            </div>
+        </div>`;
+    }).join("");
+    box.scrollTop = box.scrollHeight;
+}
+
+// Jumps to and briefly highlights the message a reply quote points at.
+window.scrollToDmMessage = function (msgId) {
+    const el = document.getElementById("dmMsgRow_" + msgId);
+    if (!el) return;
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    el.style.transition = "background-color 0.3s";
+    const originalBg = el.style.backgroundColor;
+    el.style.boxShadow = "0 0 0 2px #4169e1";
+    setTimeout(() => {
+        el.style.boxShadow = "";
+    }, 1200);
+};
 
         window.startReplyToMessage = function (msgId, senderUid, text) {
             replyingToMsg = { id: msgId, senderUid, text };
