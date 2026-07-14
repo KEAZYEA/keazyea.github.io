@@ -204,6 +204,21 @@
 
                 <hr style="border-color:#2a2a4a; margin:40px 0;">
 
+                <h2>🛠️ Server Maintenance</h2>
+                <p class="promo-sub" id="maintenanceStatusText">Loading status...</p>
+                <textarea id="maintenanceMessageInput"
+                    placeholder="Message shown to users while maintenance is active, e.g. 'We're updating troop data — some pages may look off for a few minutes.'"
+                    rows="3"
+                    style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box; font-family:inherit; margin-bottom:10px;"></textarea>
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                    <button class="btn-primary" id="maintenanceOnBtn" onclick="handleSetMaintenance(true)"
+                        style="padding:12px 24px;">🟡 Turn ON</button>
+                    <button class="btn-primary" id="maintenanceOffBtn" onclick="handleSetMaintenance(false)"
+                        style="padding:12px 24px; background:#45aa38; border-color:#45aa38;">🟢 Turn OFF</button>
+                </div>
+
+                <hr style="border-color:#2a2a4a; margin:40px 0;">
+
                 <h2>🎁 Post a Promo Code</h2>
                 <p class="promo-sub">This appears instantly on the Promo Codes page and notifies everyone via their
                     inbox.
@@ -450,7 +465,38 @@
                 }
             }
             window.handleConfirm = handleConfirm;
+async function refreshMaintenanceStatus() {
+                try {
+                    const status = await AppState.getMaintenanceStatus();
+                    const text = document.getElementById("maintenanceStatusText");
+                    text.innerHTML = status.active
+                        ? `Status: <strong style="color:gold;">ON</strong> — "${escapeHtml(status.message || "")}"`
+                        : `Status: <strong style="color:#45aa38;">OFF</strong>`;
+                    document.getElementById("maintenanceMessageInput").value = status.message || "";
+                } catch (e) {
+                    document.getElementById("maintenanceStatusText").textContent = "Couldn't load status.";
+                }
+            }
 
+            async function handleSetMaintenance(active) {
+                const message = document.getElementById("maintenanceMessageInput").value.trim();
+                if (active && !message) {
+                    showInfoModal("Missing message", "Type a message users will see first.");
+                    return;
+                }
+                const label = active ? "turn maintenance mode ON" : "turn maintenance mode OFF";
+                if (!await showConfirmModal("Confirm", `Are you sure you want to ${label}?`)) return;
+                try {
+                    await AppState.setMaintenanceMode(active, message);
+                    await refreshMaintenanceStatus();
+                    showInfoModal("Done", active
+                        ? "Maintenance mode is now ON — everyone will see the banner immediately."
+                        : "Maintenance mode is now OFF.");
+                } catch (e) {
+                    showInfoModal("Couldn't update", e.message);
+                }
+            }
+            window.handleSetMaintenance = handleSetMaintenance;
             /* ---------------- POST PROMO CODE ---------------- */
             async function handlePostCode() {
                 const input = document.getElementById("newCodeInput");
@@ -1013,6 +1059,7 @@ const targetBtn = r.targetUid
                 refreshRecentTips();
                 refreshReports();
                 refreshBansAndTimeouts();
+                refreshMaintenanceStatus();
             });
             AppState.onAuthChange(refreshAdminState);
 
