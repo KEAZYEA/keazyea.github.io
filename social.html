@@ -1367,14 +1367,14 @@
                 Screenshots</button>
             <span id="reportEvidenceCountText" class="compose-hint" style="margin-left:10px;"></span>
             <div id="reportEvidencePreviewList" style="display:flex; flex-wrap:wrap; gap:8px; margin:10px 0 12px;">
-            </div>
-            <div class="modal-actions">
-                <button class="btn-primary" id="submitReportBtn" onclick="confirmSubmitReport()">Submit report</button>
-                <button class="modal-cancel" onclick="closeReportModal()">Cancel</button>
-            </div>
+        </div>
+        <div class="modal-actions" style="flex-direction:row;">
+            <button class="modal-cancel" onclick="closeReportModal()" style="flex:1;">Cancel</button>
+            <button class="btn-primary" id="submitReportBtn" onclick="confirmSubmitReport()" style="flex:1;">Submit report</button>
         </div>
     </div>
-    <!-- Info modal (replaces alert()) -->
+</div>
+<!-- Info modal (replaces alert()) -->
     <div class="modal-overlay" id="infoModalOverlay" style="z-index:250;">
         <div class="modal-box" style="max-width:380px;">
             <div class="modal-title" id="infoModalTitle"></div>
@@ -1392,9 +1392,9 @@
             <div class="modal-title" id="confirmModalTitle"></div>
             <p class="compose-hint" id="confirmModalBody" style="margin:0 0 18px; font-size:0.95rem; line-height:1.5;">
             </p>
-            <div class="modal-actions">
-                <button class="btn-primary" id="confirmModalYesBtn">Confirm</button>
-                <button class="modal-cancel" id="confirmModalCancelBtn">Cancel</button>
+            <div class="modal-actions" style="flex-direction:row;">
+                <button class="modal-cancel" id="confirmModalCancelBtn" style="flex:1;">Cancel</button>
+                <button class="btn-primary" id="confirmModalYesBtn" style="flex:1;">Confirm</button>
             </div>
         </div>
     </div>
@@ -1438,18 +1438,18 @@
 
     <!-- Post agreement modal: must Agree before the post form opens -->
     <div class="modal-overlay" id="postAgreeModalOverlay">
-        <div class="modal-box" style="max-width:400px;">
-            <div class="modal-title">Before you post</div>
-            <p class="compose-hint" style="margin:0 0 18px; font-size:0.95rem; line-height:1.5;">
-                📌 Your post stays live for 30 days, then it's automatically removed.
-                Posting again before then will replace your existing post — only your latest one is ever shown.
-            </p>
-            <div class="modal-actions">
-                <button class="btn-primary" onclick="confirmPostAgreement()">I Agree, Continue</button>
-                <button class="modal-cancel" onclick="closePostAgreeModal()">Cancel</button>
-            </div>
+    <div class="modal-box" style="max-width:400px;">
+        <div class="modal-title">Before you post</div>
+        <p class="compose-hint" style="margin:0 0 18px; font-size:0.95rem; line-height:1.5;">
+            📌 Your post stays live for 30 days, then it's automatically removed.
+            Posting again before then will replace your existing post — only your latest one is ever shown.
+        </p>
+        <div class="modal-actions" style="flex-direction:row;">
+            <button class="modal-cancel" onclick="closePostAgreeModal()" style="flex:1;">Cancel</button>
+            <button class="btn-primary" onclick="confirmPostAgreement()" style="flex:1;">I Agree, Continue</button>
         </div>
     </div>
+</div>
 
     <!-- Post cooldown modal: shown instead of the form when still on cooldown -->
     <div class="modal-overlay" id="postCooldownModalOverlay">
@@ -1474,9 +1474,11 @@
             <div class="modal-actions">
                 <button class="btn-primary" style="background:#2e7d32; border-color:#2e7d32;"
                     onclick="editInsteadOfDelete()">✏️ Edit Instead</button>
-                <button class="btn-primary" style="background:#c62828; border-color:#c62828;"
-                    onclick="confirmDeleteClanPost()">🗑️ Confirm Delete</button>
-                <button class="modal-cancel" onclick="closeDeleteConfirmModal()">Cancel</button>
+                <div style="display:flex; flex-direction:row; gap:8px;">
+                    <button class="modal-cancel" onclick="closeDeleteConfirmModal()" style="flex:1;">Cancel</button>
+                    <button class="btn-primary" style="background:#c62828; border-color:#c62828; flex:1;"
+                        onclick="confirmDeleteClanPost()">🗑️ Confirm Delete</button>
+                </div>
             </div>
         </div>
     </div>
