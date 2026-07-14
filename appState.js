@@ -118,6 +118,7 @@ const AppState = (function () {
             noAdsSubscriptionId: null,
             // --- new in Stage 3 ---
             lastClanPostAt: 0,
+            lastClanPostData: null, // { clanName, server, minTrophies, description, tags } — for the Autofill button
             banned: false,
             banUntil: 0,
             banReason: "",
@@ -615,7 +616,13 @@ async function backfillPublicProfileNameLower() {
             expiresAt: Timestamp.fromMillis(Date.now() + CLAN_POST_LIFETIME_MS)
         });
 
-        await setProfile({ lastClanPostAt: Date.now() });
+        // Stored separately from the live post so Autofill still works even
+        // after this post expires or is deleted (icon is intentionally left
+        // out — a stale blob/URL isn't worth re-uploading automatically).
+        await setProfile({
+            lastClanPostAt: Date.now(),
+            lastClanPostData: { clanName, server, minTrophies, description, tags }
+        });
         return postId;
     }
 
@@ -653,6 +660,9 @@ async function backfillPublicProfileNameLower() {
             patch.iconPath = data.iconPath || null;
         }
         await updateDoc(ref, patch);
+
+        // Keep the autofill snapshot in sync with edits too.
+        await setProfile({ lastClanPostData: { clanName, server, minTrophies, description, tags } });
         return postId;
     }
 
