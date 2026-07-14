@@ -1774,7 +1774,24 @@ async function getGiveawayHistory(maxCount = 20) {
 
     return true;
 }
+// Admin-only: send a free-form message straight to a specific user's inbox.
+// Useful for correcting a mistake (e.g. sent the wrong promo code) without
+// waiting for the weekly giveaway flow.
+async function sendAdminMessage(uid, title, body) {
+    await waitForAuthReady();
+    if (!currentUser || currentUser.uid !== ADMIN_UID) throw new Error("Not authorized.");
+    if (!uid) throw new Error("No user selected.");
+    const trimmedTitle = (title || "").trim();
+    const trimmedBody = (body || "").trim();
+    if (!trimmedTitle) throw new Error("Title cannot be empty.");
+    if (!trimmedBody) throw new Error("Message cannot be empty.");
 
+    await addPersonalNotification(uid, {
+        type: "adminMessage",
+        title: trimmedTitle,
+        body: trimmedBody
+    });
+}
     async function deletePromoCode(codeId) {
         await waitForAuthReady();
         if (!currentUser || currentUser.uid !== ADMIN_UID) {
@@ -1993,7 +2010,7 @@ async function getGiveawayHistory(maxCount = 20) {
         listenToAcceptedSentRequests, unfriend, friendshipId, getPublicProfile,
         searchUsersByName, getSuggestedFriends, touchLastActive,
         // personal notifications (NEW)
-        addPersonalNotification, listenToPersonalNotifications, markPersonalNotificationRead,
+        addPersonalNotification, listenToPersonalNotifications, markPersonalNotificationRead, sendAdminMessage,
         // DMs
         getOrCreateDmThread, sendDmMessage, editDmMessage, listenToDmMessages, listenToMyDmThreads, deleteDmThread, deleteDmMessagesOnly,
         markDmThreadRead, listenToUnreadDmCount,
