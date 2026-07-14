@@ -189,19 +189,23 @@ const AppState = (function () {
     // banUntil, or banReason here — those are only ever written by the
     // Vercel webhook (VIP fields) or admin.html (ban fields).
     async function mirrorPublicProfile(profile) {
-        if (!currentUser) return;
-        try {
-            const publicData = {
-                name: profile.name || "",
-                avatar: profile.avatar || "",
-                bio: profile.bio || "",
-                lastActiveAt: profile.lastActiveAt || Date.now(),
-                favoriteTroop: profile.favoriteTroop || "",
-                favoriteHero: profile.favoriteHero || "",
-                highestTrophies: profile.highestTrophies || 0,
-                currentClan: profile.currentClan || "",
-                currentPower: profile.currentPower || 0
-            };
+    if (!currentUser) return;
+    try {
+        const publicData = {
+            name: profile.name || "",
+            // NEW: normalized (lowercase) name so search can prefix-match
+            // even for accounts that never saved a Profile page — this
+            // field gets written the very first time getProfile() runs.
+            nameLower: normalizeNameKey(profile.name || ""),
+            avatar: profile.avatar || "",
+            bio: profile.bio || "",
+            lastActiveAt: profile.lastActiveAt || Date.now(),
+            favoriteTroop: profile.favoriteTroop || "",
+            favoriteHero: profile.favoriteHero || "",
+            highestTrophies: profile.highestTrophies || 0,
+            currentClan: profile.currentClan || "",
+            currentPower: profile.currentPower || 0
+        };
             // Only include currentLevel once it's actually been set to a
             // real value (1–10000) — omitting it entirely for new profiles
             // keeps it valid against the Firestore rule, which requires
@@ -490,7 +494,31 @@ const AppState = (function () {
 
         return { created, skipped, conflicts };
     }
+// ONE-TIME TOOL: publicProfiles created before nameLower existed have no
+// normalized name for searchUsersByName's fallback to match against — this
+// walks every publicProfiles/{uid} doc and fills in the missing field.
+// Safe to run more than once.
+async function backfillPublicProfileNameLower() {
+    await waitForAuthReady();
+    if (!currentUser || currentUser.uid !== ADMIN_UID) throw new Error("Not authorized.");
 
+    const snap = await getDocs(collection(db, "publicProfiles"));
+    let updated = 0;
+    let skipped = 0;
+
+    for (const d of snap.docs) {
+        const data = d.data();
+        if (data.nameLower) { skipped++; continue; }
+        try {
+            await updateDoc(doc(db, "publicProfiles", d.id), { nameLower: normalizeNameKey(data.name || "") });
+            updated++;
+        } catch (e) {
+            console.warn("Couldn't backfill nameLower for", d.id, e.message);
+        }
+    }
+
+    return { updated, skipped };
+}
     /* ======================================================
        NEW IN STAGE 3 — CLAN RECRUITMENT POSTS
        ====================================================== */
@@ -964,40 +992,63 @@ const AppState = (function () {
 
     // Prefix match only (Firestore has no substring search) — matches names
     // that START WITH what's typed, case-insensitive.
-    async function searchUsersByName(searchText, maxCount = 20) {
-        await waitForAuthReady();
-        if (!currentUser) throw new Error("You must sign in with Google first.");
-        const prefix = normalizeNameKey(searchText);
-        if (!prefix) return [];
-        const q = query(
-            collection(db, "usernames"),
-            where(documentId(), ">=", prefix),
-            where(documentId(), "<=", prefix + "\uf8ff"),
-            limit(maxCount)
-        );
-        const snap = await getDocs(q);
-        const results = [];
-        snap.forEach(d => {
-            if (d.data().uid !== currentUser.uid) results.push(d.data());
-        });
-        return Promise.all(results.map(async (r) => {
-            const pub = await getPublicProfile(r.uid);
-            return {
-                uid: r.uid,
-                name: pub?.name || r.name,
-                avatar: pub?.avatar || "",
-                bio: pub?.bio || "",
-                lastActiveAt: pub?.lastActiveAt || 0,
-                favoriteTroop: pub?.favoriteTroop || "",
-                favoriteHero: pub?.favoriteHero || "",
-                highestTrophies: pub?.highestTrophies || 0,
-                currentClan: pub?.currentClan || "",
-                currentLevel: pub?.currentLevel || 0,
-                currentPower: pub?.currentPower || 0
-            };
-        }));
-    }
+   async function searchUsersByName(searchText, maxCount = 20) {
+    await waitForAuthReady();
+    if (!currentUser) throw new Error("You must sign in with Google first.");
+    const prefix = normalizeNameKey(searchText);
+    if (!prefix) return [];
 
+    const usernamesQ = query(
+        collection(db, "usernames"),
+        where(documentId(), ">=", prefix),
+        where(documentId(), "<=", prefix + "\uf8ff"),
+        limit(maxCount)
+    );
+    // Fallback/supplement: publicProfiles gets written for EVERY signed-in
+    // user the first time getProfile() runs (unlike usernames, which only
+    // gets a reservation once they save their Profile page) — so this
+    // catches accounts that exist but never touched their profile.
+    const publicProfilesQ = query(
+        collection(db, "publicProfiles"),
+        where("nameLower", ">=", prefix),
+        where("nameLower", "<=", prefix + "\uf8ff"),
+        limit(maxCount)
+    );
+
+    const [usernamesSnap, publicProfilesSnap] = await Promise.all([
+        getDocs(usernamesQ),
+        getDocs(publicProfilesQ)
+    ]);
+
+    const found = new Map(); // uid -> { uid, name }
+    usernamesSnap.forEach(d => {
+        const data = d.data();
+        if (data.uid !== currentUser.uid) found.set(data.uid, { uid: data.uid, name: data.name });
+    });
+    publicProfilesSnap.forEach(d => {
+        if (d.id !== currentUser.uid && !found.has(d.id)) {
+            found.set(d.id, { uid: d.id, name: d.data().name });
+        }
+    });
+
+    const results = [...found.values()].slice(0, maxCount);
+    return Promise.all(results.map(async (r) => {
+        const pub = await getPublicProfile(r.uid);
+        return {
+            uid: r.uid,
+            name: pub?.name || r.name,
+            avatar: pub?.avatar || "",
+            bio: pub?.bio || "",
+            lastActiveAt: pub?.lastActiveAt || 0,
+            favoriteTroop: pub?.favoriteTroop || "",
+            favoriteHero: pub?.favoriteHero || "",
+            highestTrophies: pub?.highestTrophies || 0,
+            currentClan: pub?.currentClan || "",
+            currentLevel: pub?.currentLevel || 0,
+            currentPower: pub?.currentPower || 0
+        };
+    }));
+}
     /* ---------------- SUGGESTED FRIENDS ---------------- */
 
     async function getMyRelatedUids() {
@@ -2001,6 +2052,7 @@ async function sendAdminMessage(uid, title, body) {
         getProfile, setProfile, isVipActive, isNoAdsActive, isBannedNow, shouldShowAds,
         // unique names
         claimUsername, findUserByName, findUserByEmail, getUserProfileForAdmin, backfillUsernameReservations,
+        backfillPublicProfileNameLower,
         // inbox
         getInbox, addInboxMessage, markAllRead, unreadCount,
         // giveaway
