@@ -275,11 +275,18 @@
                 <div id="lookupResult" style="margin-top:16px; text-align:left;"></div>
 
                 <p class="promo-sub" style="margin-top:20px;">One-time tool: reserve usernames for profiles that existed
-                    before name uniqueness was added. Safe to click more than once.</p>
-                <button onclick="handleBackfillUsernames()"
-                    style="background:#555; color:white; border:none; border-radius:8px; padding:10px 20px; cursor:pointer;">Backfill
-                    Username Reservations</button>
-                <div id="backfillResult" style="margin-top:12px; text-align:left;"></div>
+    before name uniqueness was added. Safe to click more than once.</p>
+<button onclick="handleBackfillUsernames()"
+    style="background:#555; color:white; border:none; border-radius:8px; padding:10px 20px; cursor:pointer;">Backfill
+    Username Reservations</button>
+<div id="backfillResult" style="margin-top:12px; text-align:left;"></div>
+
+<p class="promo-sub" style="margin-top:20px;">One-time tool: fills in the search index for accounts that
+    signed in before Social's friend-search fallback existed. Safe to click more than once.</p>
+<button onclick="handleBackfillNameLower()"
+    style="background:#555; color:white; border:none; border-radius:8px; padding:10px 20px; cursor:pointer;">Backfill
+    Public Profile Search Index</button>
+<div id="backfillNameLowerResult" style="margin-top:12px; text-align:left;"></div>
             </div>
 
         </div>
@@ -1008,6 +1015,19 @@ const targetBtn = r.targetUid
                 refreshBansAndTimeouts();
             });
             AppState.onAuthChange(refreshAdminState);
+
+            async function handleBackfillNameLower() {
+    if (!await showConfirmModal("Backfill search index", "Scan every public profile and fill in the missing search field?")) return;
+    const result = document.getElementById("backfillNameLowerResult");
+    result.innerHTML = "<p class='promo-sub'>Running...</p>";
+    try {
+        const summary = await AppState.backfillPublicProfileNameLower();
+        result.innerHTML = `<p class="promo-sub">Updated ${summary.updated}, skipped ${summary.skipped} (already had it).</p>`;
+    } catch (e) {
+        result.innerHTML = `<p class="promo-sub">Error: ${escapeHtml(e.message)}</p>`;
+    }
+}
+window.handleBackfillNameLower = handleBackfillNameLower;
         </script>
     </body>
 
