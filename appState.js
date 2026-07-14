@@ -403,11 +403,24 @@ const AppState = (function () {
     }
 
     async function findUserByName(name) {
-        const key = normalizeNameKey(name);
-        if (!key) return null;
-        const snap = await getDoc(doc(db, "usernames", key));
-        return snap.exists() ? snap.data() : null; // { uid, name, updatedAt }
-    }
+    const key = normalizeNameKey(name);
+    if (!key) return null;
+    const snap = await getDoc(doc(db, "usernames", key));
+    if (snap.exists()) return snap.data(); // { uid, name, updatedAt }
+
+    // Fallback for accounts that exist but never saved a profile (so no
+    // usernames/{key} reservation was ever created) — admin only, since
+    // this does an exact-match scan over the users collection.
+    await waitForAuthReady();
+    if (!currentUser || currentUser.uid !== ADMIN_UID) return null;
+    const trimmed = name.trim();
+    if (!trimmed) return null;
+    const q = query(collection(db, "users"), where("name", "==", trimmed), limit(1));
+    const qsnap = await getDocs(q);
+    if (qsnap.empty) return null;
+    const d = qsnap.docs[0];
+    return { uid: d.id, name: d.data().name };
+}
 
     // Email is tied to the person's actual Google account and can't be
     // changed the way an in-game name can — more reliable for tracking down
