@@ -831,8 +831,13 @@ const targetBtn = r.targetUid
             // Shared renderer used by name lookup, email lookup, and clicking
             // a reporter/target name in the Reports queue — one place to keep
             // the ban/timeout/unban buttons consistent everywhere.
+            let lookupCurrentUid = null;
+            let lookupCurrentName = null;
+
             async function renderLookupProfile(uid, name, email) {
                 const result = document.getElementById("lookupResult");
+                lookupCurrentUid = uid;
+                lookupCurrentName = name || "Unknown";
                 try {
                     const history = await AppState.getNameHistory(uid);
                     const historyHtml = history.length
@@ -845,6 +850,7 @@ const targetBtn = r.targetUid
                         <p class="promo-sub" style="margin:0 0 10px;">Name history:</p>
                         ${historyHtml}
                         <div style="display:flex; gap:8px; margin-top:14px; flex-wrap:wrap;">
+                            <button onclick="handleSendAdminMessage()" style="background:#4169e1; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">✉️ Send Message</button>
                             <button onclick="handleTimeoutUid('${uid}')" style="background:#aa7a1e; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Timeout...</button>
                             <button onclick="handleBanUid('${uid}', 0)" style="background:#aa3838; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Ban Permanently</button>
                             <button onclick="handleUnbanUid('${uid}')" style="background:#45aa38; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Unban</button>
@@ -855,6 +861,24 @@ const targetBtn = r.targetUid
                     result.innerHTML = `<p class="promo-sub">Error: ${escapeHtml(e.message)}</p>`;
                 }
             }
+
+            async function handleSendAdminMessage() {
+                if (!lookupCurrentUid) return;
+                const title = await showPromptModal("Message title (e.g. 'Corrected Promo Code')", "");
+                if (title === null) return;
+                if (!title.trim()) { showInfoModal("Missing title", "Enter a title first."); return; }
+                const body = await showPromptModal("Message body (e.g. the correct code + any note)", "");
+                if (body === null) return;
+                if (!body.trim()) { showInfoModal("Missing message", "Enter a message first."); return; }
+                if (!await showConfirmModal("Send message", `Send this to ${lookupCurrentName}?\n\n"${title.trim()}"\n${body.trim()}`)) return;
+                try {
+                    await AppState.sendAdminMessage(lookupCurrentUid, title.trim(), body.trim());
+                    showInfoModal("Sent", "The message has been delivered to their inbox.");
+                } catch (e) {
+                    showInfoModal("Couldn't send", e.message);
+                }
+            }
+            window.handleSendAdminMessage = handleSendAdminMessage;
 
             async function handleLookupUser() {
                 const name = document.getElementById("lookupNameInput").value.trim();
