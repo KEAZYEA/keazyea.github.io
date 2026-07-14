@@ -1630,6 +1630,70 @@ async function backfillPublicProfileNameLower() {
 
     waitForAuthReady().then(startBanGateListener);
     onAuthChange(() => startBanGateListener());
+
+                                        /* ---------------- MAINTENANCE MODE ---------------- */
+
+    const MAINTENANCE_BANNER_ID = "kihMaintenanceBanner";
+    let unsubMaintenance = null;
+
+    function applyMaintenanceBanner(data) {
+        // Only the shared home shell renders the banner — pages loaded
+        // inside its iframes (promo.html, social.html, etc.) don't need
+        // their own copy stacked underneath.
+        if (!isHomeShellPage()) return;
+        let banner = document.getElementById(MAINTENANCE_BANNER_ID);
+        if (!data || !data.active) {
+            if (banner) banner.remove();
+            return;
+        }
+        if (!banner) {
+            banner = document.createElement("div");
+            banner.id = MAINTENANCE_BANNER_ID;
+            banner.style.cssText = "background:#4169e1;color:white;padding:12px 16px;border-radius:8px;margin:12px;text-align:center;";
+            document.body.prepend(banner);
+        }
+        banner.textContent = "🛠️ " + (data.message || "Server maintenance is in progress — some features may not work right now.");
+    }
+
+    function startMaintenanceListener() {
+        if (unsubMaintenance) return; // only need one global listener per page
+        unsubMaintenance = onSnapshot(
+            doc(db, "config", "maintenance"),
+            (snap) => {
+                applyMaintenanceBanner(snap.exists() ? snap.data() : null);
+            },
+            (err) => {
+                console.warn("Maintenance listener error:", err.message);
+            }
+        );
+    }
+
+    // Public read — any page can check current status without waiting for
+    // the live listener (e.g. to decide whether to warn before a write).
+    async function getMaintenanceStatus() {
+        try {
+            const snap = await getDoc(doc(db, "config", "maintenance"));
+            return snap.exists() ? snap.data() : { active: false, message: "" };
+        } catch (e) {
+            return { active: false, message: "" };
+        }
+    }
+
+    // Admin-only toggle.
+    async function setMaintenanceMode(active, message) {
+        await waitForAuthReady();
+        if (!currentUser || currentUser.uid !== ADMIN_UID) throw new Error("Not authorized.");
+        await setDoc(doc(db, "config", "maintenance"), {
+            active: !!active,
+            message: (message || "").trim(),
+            updatedAt: Date.now(),
+            updatedBy: currentUser.uid
+        });
+    }
+
+    // Starts immediately on every page that imports appState.js — read is
+    // public, doesn't need auth, so no need to wait for waitForAuthReady().
+    startMaintenanceListener();
     /* ---------------- INBOX (still local per-device) ---------------- */
 
     function getInbox() {
@@ -2097,6 +2161,8 @@ async function sendAdminMessage(uid, title, body) {
         getNameHistory, getReports, closeReport, banUser, unbanUser, getBannedUsers,
         // ban gate (new)
         getBanStatus, applyBanGate, showRestrictedNotice,
+        // maintenance mode (new)
+        getMaintenanceStatus, setMaintenanceMode,
         _firebase: { app, auth, db }
 
     };
