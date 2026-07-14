@@ -1402,8 +1402,11 @@
     <div class="modal-overlay" id="postClanModalOverlay">
         <div class="modal-box postclan-box">
             <div class="modal-title" id="postClanModalTitle">Post Your Clan</div>
-            <div id="postClanCooldownNote" class="compose-hint" style="display:block; margin-bottom:14px;"></div>
-            <label class="modal-field-label">Clan Name</label>
+<div id="postClanCooldownNote" class="compose-hint" style="display:block; margin-bottom:14px;"></div>
+<button type="button" id="autofillClanBtn" class="btn-primary"
+    style="display:none; width:100%; margin-bottom:16px; background:#555; border-color:#555;"
+    onclick="autofillClanPost()">🔁 Autofill from last post</button>
+<label class="modal-field-label">Clan Name</label>
             <input type="text" id="postClanName" class="modal-field-input" placeholder="e.g. Kingdom Cash">
 
             <label class="modal-field-label">Clan Icon (optional)</label>
@@ -1843,6 +1846,7 @@
             document.getElementById("postAgreeModalOverlay").classList.remove("open");
 
             const profile = await AppState.getProfile();
+            myProfile = profile;
             const note = document.getElementById("postClanCooldownNote");
             const vip = AppState.isVipActive(profile);
             note.textContent = vip ? "VIP: you can post once every 24 hours." : "You can post once every 7 days.";
@@ -1857,7 +1861,23 @@
             buildTagCheckboxes("postClanTagList", []);
             document.getElementById("postClanIconInput").value = "";
             document.getElementById("postClanIconPreview").style.display = "none";
+
+            // Only show Autofill if they've actually posted something before.
+            const hasPriorPost = !!(profile.lastClanPostData && profile.lastClanPostData.clanName);
+            document.getElementById("autofillClanBtn").style.display = hasPriorPost ? "block" : "none";
+
             document.getElementById("postClanModalOverlay").classList.add("open");
+        };
+
+        window.autofillClanPost = function () {
+            if (!myProfile || !myProfile.lastClanPostData) return;
+            const d = myProfile.lastClanPostData;
+            document.getElementById("postClanName").value = d.clanName || "";
+            document.getElementById("postClanServer").value = d.server || "ios";
+            buildTrophyTierPicker("postClanTrophyTierList", d.minTrophies || 0);
+            document.getElementById("postClanDescription").value = d.description || "";
+            buildTagCheckboxes("postClanTagList", d.tags || []);
+            showToast("Filled in from your last post.");
         };
 
 
@@ -1886,6 +1906,7 @@
             buildTagCheckboxes("postClanTagList", p.tags || []);
             document.getElementById("postClanIconInput").value = "";
             document.getElementById("postClanIconPreview").style.display = "none";
+            document.getElementById("autofillClanBtn").style.display = "none";
 
             document.getElementById("postClanModalOverlay").classList.add("open");
         };
