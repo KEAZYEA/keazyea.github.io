@@ -139,15 +139,11 @@
 
         <div class="store-grid"
     style="display:flex; justify-content:center; align-items:stretch; flex-wrap:wrap; gap:32px; margin-bottom:40px;">
-            <!-- NO ADS PLAN -->
-            <div class="plan-card"
-                style="text-align:center; border:1px solid #6c63ff; border-radius:16px; padding:28px 24px; width:280px; display:flex; flex-direction:column; justify-content:space-between;">
+            <!-- NO ADS PLAN — retired: only shown to existing subscribers so they can manage/cancel -->
+            <div class="plan-card" id="noAdsCard"
+                style="display:none; text-align:center; border:1px solid #6c63ff; border-radius:16px; padding:28px 24px; width:280px; flex-direction:column; justify-content:space-between;">
                 <h3>🚫 No Ads</h3>
-                <div class="plan-price">USD $1<span>/month</span></div>
-                <ul class="plan-perks" style="display:inline-block; text-align:left;">
-                    <li>Removes all ads site-wide</li>
-                    <li>Faster, cleaner browsing</li>
-                </ul>
+                <p class="promo-sub">This plan is no longer offered — VIP now includes No Ads. You can keep this until it ends, or cancel any time.</p>
                 <div id="noAdsActiveBox" style="display:none;">
                     <p class="promo-sub" id="noAdsStatusText"></p>
                     <button class="btn-primary plan-btn btn-secondary" id="noAdsCancelBtn"
@@ -155,7 +151,6 @@
                         style="width:auto; font-size:1.05rem; padding:12px 28px; margin-top:8px; border-radius:12px;">Cancel
                         subscription</button>
                 </div>
-                <div id="noAdsButtonBox"></div>
             </div>
 
             <!-- VIP PLAN -->
@@ -239,30 +234,20 @@
             const vipActive = AppState.isVipActive(profile);
             const noAdsActive = AppState.isNoAdsActive(profile);
 
-            // ----- No Ads card -----
-            const noAdsIncludedInVip = noAdsActive && vipActive && !profile.noAdsSubscriptionId;
-            const noAdsLiveSub = noAdsActive && !!profile.noAdsSubscriptionId;
-            const noAdsCancelledButActive = noAdsActive && !noAdsLiveSub && !noAdsIncludedInVip;
+            // ----- No Ads card (retired — legacy subscribers only) -----
+            const noAdsLiveSub = !!profile.noAdsSubscriptionId && noAdsActive;
+            const noAdsCard = document.getElementById("noAdsCard");
 
-            document.getElementById("noAdsActiveBox").style.display = (noAdsLiveSub || noAdsIncludedInVip) ? "block" : "none";
-            document.getElementById("noAdsButtonBox").style.display = (noAdsLiveSub || noAdsIncludedInVip) ? "none" : "block";
-
-            if (noAdsIncludedInVip) {
-                document.getElementById("noAdsStatusText").textContent = "Included with your VIP Pass";
-                document.getElementById("noAdsCancelBtn").style.display = "none";
-            } else if (noAdsLiveSub) {
+            if (noAdsLiveSub) {
+                noAdsCard.style.display = "flex";
+                document.getElementById("noAdsActiveBox").style.display = "block";
                 document.getElementById("noAdsStatusText").textContent =
                     `Active — ${daysLeft(profile.noAdsExpiresAt)} day(s) left`;
                 document.getElementById("noAdsCancelBtn").style.display = "inline-block";
-            } else if (noAdsCancelledButActive) {
-                if (user && renderedKeys.noAds !== "resubscribe") {
-                    renderSubscribeButton("noAdsButtonBox", NOADS_PLAN_ID, "noAds",
-                        `Cancelled — ${daysLeft(profile.noAdsExpiresAt)} day(s) left. Resubscribe to add another 30 days:`);
-                    renderedKeys.noAds = "resubscribe";
-                }
-            } else if (user && renderedKeys.noAds !== "subscribe") {
-                renderSubscribeButton("noAdsButtonBox", NOADS_PLAN_ID, "noAds");
-                renderedKeys.noAds = "subscribe";
+            } else {
+                // Never subscribed, or already cancelled — nothing to manage,
+                // hide the whole card since this plan can't be (re)purchased.
+                noAdsCard.style.display = "none";
             }
 
             // ----- VIP card -----
