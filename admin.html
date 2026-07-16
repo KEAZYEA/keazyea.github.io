@@ -411,7 +411,8 @@
                     drawBtn.disabled = true;
                     drawBtn.textContent = "Already drawn";
                     alreadyText.style.display = "block";
-                    alreadyText.textContent = "Winner already drawn: " + existing.winnerName;
+                    const deviceLabel = existing.device === "ios" ? "iOS 🍎" : existing.device === "android" ? "Android 🤖" : existing.device || "Unknown";
+                    alreadyText.textContent = "Winner already drawn: " + existing.winnerName + " (played on " + deviceLabel + ")";
                 } else {
                     drawBtn.disabled = false;
                     drawBtn.textContent = "Pick This Week's Winner";
