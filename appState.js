@@ -125,6 +125,7 @@ const AppState = (function () {
             bannedAt: 0,
             // --- new: bio + presence ---
             bio: "",
+            server: "", // "", "ios", "android", or "both"
             lastActiveAt: 0,
             favoriteTroop: "",
             favoriteHero: "",
@@ -190,23 +191,21 @@ const AppState = (function () {
     // banUntil, or banReason here — those are only ever written by the
     // Vercel webhook (VIP fields) or admin.html (ban fields).
     async function mirrorPublicProfile(profile) {
-    if (!currentUser) return;
-    try {
-        const publicData = {
-            name: profile.name || "",
-            // NEW: normalized (lowercase) name so search can prefix-match
-            // even for accounts that never saved a Profile page — this
-            // field gets written the very first time getProfile() runs.
-            nameLower: normalizeNameKey(profile.name || ""),
-            avatar: profile.avatar || "",
-            bio: profile.bio || "",
-            lastActiveAt: profile.lastActiveAt || Date.now(),
-            favoriteTroop: profile.favoriteTroop || "",
-            favoriteHero: profile.favoriteHero || "",
-            highestTrophies: profile.highestTrophies || 0,
-            currentClan: profile.currentClan || "",
-            currentPower: profile.currentPower || 0
-        };
+        if (!currentUser) return;
+        try {
+            const publicData = {
+                name: profile.name || "",
+                nameLower: normalizeNameKey(profile.name || ""),
+                avatar: profile.avatar || "",
+                bio: profile.bio || "",
+                server: profile.server || "",
+                lastActiveAt: profile.lastActiveAt || Date.now(),
+                favoriteTroop: profile.favoriteTroop || "",
+                favoriteHero: profile.favoriteHero || "",
+                highestTrophies: profile.highestTrophies || 0,
+                currentClan: profile.currentClan || "",
+                currentPower: profile.currentPower || 0
+            };
             // Only include currentLevel once it's actually been set to a
             // real value (1–10000) — omitting it entirely for new profiles
             // keeps it valid against the Firestore rule, which requires
