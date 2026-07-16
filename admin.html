@@ -280,12 +280,19 @@
                         style="padding:10px 20px; flex-shrink:0;">Look
                         Up</button>
                 </div>
-                <div style="display:flex; gap:8px;">
+                <div style="display:flex; gap:8px; margin-bottom:10px;">
                     <input type="email" id="lookupEmailInput" placeholder="Email address"
                         style="flex:1; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box;">
                     <button class="btn-primary" onclick="handleLookupUserByEmail()"
                         style="padding:10px 20px; flex-shrink:0;">Look
                         Up by Email</button>
+                </div>
+                <div style="display:flex; gap:8px;">
+                    <input type="text" id="lookupUidInput" placeholder="User ID (uid) — most reliable if the name has since changed"
+                        style="flex:1; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box;">
+                    <button class="btn-primary" onclick="handleLookupUserByUid()"
+                        style="padding:10px 20px; flex-shrink:0;">Look
+                        Up by UID</button>
                 </div>
                 <div id="lookupResult" style="margin-top:16px; text-align:left;"></div>
 
@@ -969,7 +976,23 @@ const targetBtn = r.targetUid
                 }
             }
             window.handleLookupUserByEmail = handleLookupUserByEmail;
-
+async function handleLookupUserByUid() {
+                const uid = document.getElementById("lookupUidInput").value.trim();
+                if (!uid) { showInfoModal("Missing uid", "Paste a uid first."); return; }
+                const result = document.getElementById("lookupResult");
+                result.innerHTML = "<p class='promo-sub'>Looking up...</p>";
+                try {
+                    const profile = await AppState.getUserProfileForAdmin(uid);
+                    if (!profile) {
+                        result.innerHTML = "<p class='promo-sub'>No account found with that uid.</p>";
+                        return;
+                    }
+                    await renderLookupProfile(uid, profile.name || "Unknown", profile.email || null);
+                } catch (e) {
+                    result.innerHTML = `<p class="promo-sub">Error: ${escapeHtml(e.message)}</p>`;
+                }
+            }
+            window.handleLookupUserByUid = handleLookupUserByUid;
             // Clicking a reporter's or reported target's name in the Reports
             // queue jumps straight here with their full profile + moderation
             // actions — so a reporter who's spamming bogus reports can be
