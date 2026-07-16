@@ -1341,7 +1341,7 @@ body {
                         <input type="text" inputmode="numeric" id="profilePowerInput" class="profile-name-input"
                             placeholder="e.g. 6,700,000">
 
-                        <button class="btn-primary btn-block" onclick="saveProfile()">Save profile</button>
+                        <button class="btn-primary btn-block" onclick="saveProfile()" style="font-size:1.15rem; padding:16px 24px;">Save profile</button>
                     </div>
                 </div>
 
@@ -1356,16 +1356,16 @@ body {
             </div>
         </div>
         <div class="unsaved-modal-overlay" id="unsavedModalOverlay">
-            <div class="unsaved-modal">
-                <div class="unsaved-modal-title">Unsaved Changes</div>
-                <div class="unsaved-modal-body">You have unsaved profile changes. Do you want to save before leaving?
-                </div>
-                <div class="unsaved-modal-actions">
-                    <button class="btn-secondary" id="unsavedDiscardBtn">Don't Save</button>
-                    <button class="btn-primary" id="unsavedSaveBtn">Save</button>
-                </div>
-            </div>
+    <div class="unsaved-modal">
+        <div class="unsaved-modal-title">Unsaved Changes</div>
+        <div class="unsaved-modal-body">You have unsaved profile changes. Do you want to save before leaving?
         </div>
+        <div class="unsaved-modal-actions">
+            <button class="btn-secondary" id="unsavedDiscardBtn" style="flex:1; font-size:1.05rem; padding:14px 20px;">Don't Save</button>
+            <button class="btn-primary" id="unsavedSaveBtn" style="flex:1; font-size:1.05rem; padding:14px 20px;">Save</button>
+        </div>
+    </div>
+</div>
         <!-- Mini profile view (from friend requests) -->
         <div class="mini-modal-overlay" id="viewProfileModalOverlayHome">
             <div class="mini-modal-box" style="max-width:360px; text-align:left;">
