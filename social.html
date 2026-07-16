@@ -1504,6 +1504,8 @@
 
             <div id="friendProfileStats"
                 style="text-align:left; background:#1a1a2e; border:1px solid #2a2a4a; border-radius:10px; padding:12px 16px; margin-bottom:16px; display:none;">
+                <div id="statServer" class="profile-stat-row" style="display:none;"><span>📱
+                        Server</span><span></span></div>
                 <div id="statFavTroop" class="profile-stat-row" style="display:none;"><span>⚔️ Favorite
                         Troop</span><span></span></div>
                 <div id="statFavHero" class="profile-stat-row" style="display:none;"><span>🦸 Favorite
@@ -2233,6 +2235,8 @@
                 showInfoModal("Couldn't respond", e.message);
             }
         };
+        const SERVER_LABELS = { ios: "iOS 🍎", android: "Android 🤖", both: "iOS & Android" };
+
         window.showProfileModal = function (profile, isFriend) {
             document.getElementById("friendProfileAvatar").innerHTML = avatarHtml(profile.avatar, profile.name, "");
             document.getElementById("friendProfileName").textContent = profile.name;
@@ -2242,6 +2246,7 @@
             else { bioEl.style.display = "none"; }
 
             const statMap = [
+                ["statServer", profile.server ? SERVER_LABELS[profile.server] || profile.server : null],
                 ["statFavTroop", profile.favoriteTroop],
                 ["statFavHero", profile.favoriteHero],
                 ["statTrophies", profile.highestTrophies ? Number(profile.highestTrophies).toLocaleString() : null],
