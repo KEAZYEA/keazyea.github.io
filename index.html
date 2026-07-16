@@ -1307,6 +1307,14 @@ body {
                         <textarea id="profileBioInput" class="profile-name-input" rows="3" maxlength="160"
                             placeholder="Tell other commanders a bit about yourself..."></textarea>
 
+                        <label class="field-label">Server</label>
+                        <select id="profileServerInput" class="profile-name-input">
+                            <option value="">Not set</option>
+                            <option value="ios">iOS</option>
+                            <option value="android">Android</option>
+                            <option value="both">Both</option>
+                        </select>
+
                         <label class="field-label">Favorite Troop</label>
                         <input type="text" id="profileFavTroopInput" class="profile-name-input" list="troopNamesList"
                             placeholder="Start typing...">
@@ -1701,13 +1709,14 @@ body {
             document.getElementById("heroNamesList").innerHTML = HERO_NAMES.map(n => `<option value="${n}">`).join("");
         }
 
-        let profileSnapshot = { name: "", avatar: "", bio: "", favoriteTroop: "", favoriteHero: "", highestTrophies: 0, currentClan: "", currentLevel: 0, currentPower: 0 };
+        let profileSnapshot = { name: "", avatar: "", bio: "", server: "", favoriteTroop: "", favoriteHero: "", highestTrophies: 0, currentClan: "", currentLevel: 0, currentPower: 0 };
 
         async function loadProfileIntoPage() {
             let profile = await AppState.getProfile();
             document.getElementById("profileNameInput").value = profile.name;
             document.getElementById("profileBioInput").value = profile.bio || "";
             await populateNameDatalists();
+            document.getElementById("profileServerInput").value = profile.server || "";
             document.getElementById("profileFavTroopInput").value = profile.favoriteTroop || "";
             document.getElementById("profileFavHeroInput").value = profile.favoriteHero || "";
             document.getElementById("profileTrophiesInput").value = profile.highestTrophies || "";
@@ -1717,7 +1726,7 @@ body {
             buildAvatarGrid(profile.avatar);
             updateAvatarPreview(profile.avatar);
             profileSnapshot = {
-                name: profile.name, avatar: profile.avatar, bio: profile.bio || "",
+                name: profile.name, avatar: profile.avatar, bio: profile.bio || "", server: profile.server || "",
                 favoriteTroop: profile.favoriteTroop || "", favoriteHero: profile.favoriteHero || "",
                 highestTrophies: profile.highestTrophies || 0, currentClan: profile.currentClan || "",
                 currentLevel: profile.currentLevel || 0, currentPower: profile.currentPower || 0
@@ -1729,13 +1738,14 @@ body {
             let bio = document.getElementById("profileBioInput").value.trim();
             let chosen = document.querySelector(".avatar-option.selected");
             let avatar = chosen ? chosen.getAttribute("src") : profileSnapshot.avatar;
+            let server = document.getElementById("profileServerInput").value;
             let favoriteTroop = document.getElementById("profileFavTroopInput").value.trim();
             let favoriteHero = document.getElementById("profileFavHeroInput").value.trim();
             let highestTrophies = parseInt(document.getElementById("profileTrophiesInput").value, 10) || 0;
             let currentClan = document.getElementById("profileClanInput").value.trim();
             let currentLevel = parseInt(document.getElementById("profileLevelInput").value, 10) || 0;
             let currentPower = parseInt(document.getElementById("profilePowerInput").value.replace(/[^\d]/g, ""), 10) || 0;
-            return { name, avatar, bio, favoriteTroop, favoriteHero, highestTrophies, currentClan, currentLevel, currentPower };
+            return { name, avatar, bio, server, favoriteTroop, favoriteHero, highestTrophies, currentClan, currentLevel, currentPower };
         }
 
         function isProfileDirty() {
@@ -1754,12 +1764,13 @@ body {
                 let claimed = await AppState.claimUsername(current.name || "Commander");
                 let updated = await AppState.setProfile({
                     name: claimed.name, usernameKey: claimed.usernameKey, avatar: current.avatar, bio: current.bio,
+                    server: current.server,
                     favoriteTroop: current.favoriteTroop, favoriteHero: current.favoriteHero,
                     highestTrophies: current.highestTrophies, currentClan: current.currentClan,
                     currentLevel: current.currentLevel, currentPower: current.currentPower
                 });
                 profileSnapshot = {
-                    name: updated.name, avatar: updated.avatar, bio: updated.bio || "",
+                    name: updated.name, avatar: updated.avatar, bio: updated.bio || "", server: updated.server || "",
                     favoriteTroop: updated.favoriteTroop || "", favoriteHero: updated.favoriteHero || "",
                     highestTrophies: updated.highestTrophies || 0, currentClan: updated.currentClan || "",
                     currentLevel: updated.currentLevel || 0, currentPower: updated.currentPower || 0
