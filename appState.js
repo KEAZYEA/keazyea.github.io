@@ -1648,8 +1648,21 @@ async function backfillPublicProfileNameLower() {
         if (!banner) {
             banner = document.createElement("div");
             banner.id = MAINTENANCE_BANNER_ID;
-            banner.style.cssText = "background:#4169e1;color:white;padding:12px 16px;border-radius:8px;margin:12px;text-align:center;";
-            document.body.prepend(banner);
+            banner.style.cssText = "background:#4169e1;color:white;padding:12px 16px;border-radius:8px;margin:12px;text-align:center;flex-shrink:0;";
+            // Insert INSIDE .home-shell (as the first child), not into body —
+            // .home-shell is a fixed-height flex column that already fills
+            // the viewport with overflow:hidden on <body>. Prepending to
+            // body instead of the shell pushes .home-shell's own content
+            // past the viewport and gets clipped at the bottom. Inserting
+            // here lets the banner become a normal flex item that the rest
+            // of the shell shrinks around instead of overflowing past it.
+            const shell = document.querySelector(".home-shell");
+            if (shell) {
+                shell.prepend(banner);
+            } else {
+                // Fallback for any page without a .home-shell wrapper.
+                document.body.prepend(banner);
+            }
         }
         banner.textContent = "🛠️ " + (data.message || "Server maintenance is in progress — some features may not work right now.");
     }
