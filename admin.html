@@ -410,12 +410,14 @@
                 if (existing) {
                     drawBtn.disabled = true;
                     drawBtn.textContent = "Already drawn";
+                    drawBtn.style.display = "";
                     alreadyText.style.display = "block";
                     const deviceLabel = existing.device === "ios" ? "iOS 🍎" : existing.device === "android" ? "Android 🤖" : existing.device || "Unknown";
                     alreadyText.textContent = "Winner already drawn: " + existing.winnerName + " (played on " + deviceLabel + ")";
                 } else {
                     drawBtn.disabled = false;
                     drawBtn.textContent = "Pick This Week's Winner";
+                    drawBtn.style.display = "";
                     alreadyText.style.display = "none";
                 }
 
@@ -556,11 +558,16 @@ async function refreshMaintenanceStatus() {
             /* ---------------- POST TIP ---------------- */
             let tipImageFiles = []; // accumulates across multiple "Choose Files" picks
 
+            let tipPreviewObjectUrls = [];
+
             function renderTipImagePreviews() {
+                tipPreviewObjectUrls.forEach(u => URL.revokeObjectURL(u));
+                tipPreviewObjectUrls = tipImageFiles.map(file => URL.createObjectURL(file));
+
                 const list = document.getElementById("newTipImagePreviewList");
                 list.innerHTML = tipImageFiles.map((file, i) => `
                     <div style="position:relative; width:90px; height:90px;">
-                        <img src="${URL.createObjectURL(file)}" style="width:100%; height:100%; object-fit:cover; border-radius:8px;">
+                        <img src="${tipPreviewObjectUrls[i]}" style="width:100%; height:100%; object-fit:cover; border-radius:8px;">
                         <button type="button" onclick="removeTipImageFile(${i})"
                             style="position:absolute; top:-6px; right:-6px; width:22px; height:22px; border-radius:50%; background:#c62828; color:white; border:none; cursor:pointer; font-size:0.8rem; line-height:1;">✕</button>
                     </div>
@@ -741,16 +748,16 @@ async function refreshMaintenanceStatus() {
                     const evidenceUrls = Array.isArray(r.evidenceUrls) ? r.evidenceUrls : (r.evidenceUrl ? [r.evidenceUrl] : []);
                     const evidenceHtml = evidenceUrls.length
                         ? `<div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;">
-            ${evidenceUrls.map(url => `<img src="${escapeHtml(url)}" onclick="window.open('${escapeHtml(url)}', '_blank')" style="width:90px; height:90px; object-fit:cover; border-radius:8px; cursor:pointer; border:1px solid #2a2a4a;">`).join("")}
+            ${evidenceUrls.map(url => `<img src="${escapeHtml(url)}" class="evidence-img" data-url="${escapeHtml(url)}" style="width:90px; height:90px; object-fit:cover; border-radius:8px; cursor:pointer; border:1px solid #2a2a4a;">`).join("")}
         </div>`
                         : "";
                     // Older reports predate reporterName being stored — fall back gracefully.
                     const reporterLabel = r.reporterName || (r.reporterUid ? `uid: ${r.reporterUid}` : "Unknown");
                     const reporterBtn = r.reporterUid
-    ? `<button onclick="openUidLookup('${r.reporterUid}', ${escapeHtml(JSON.stringify(reporterLabel))})" style="background:none; border:none; color:#4169e1; text-decoration:underline; cursor:pointer; font-weight:700; padding:0; font-size:inherit;">${escapeHtml(reporterLabel)}</button>`
+    ? `<button class="uid-lookup-btn" data-uid="${escapeHtml(r.reporterUid)}" data-label="${escapeHtml(reporterLabel)}" style="background:none; border:none; color:#4169e1; text-decoration:underline; cursor:pointer; font-weight:700; padding:0; font-size:inherit;">${escapeHtml(reporterLabel)}</button>`
     : escapeHtml(reporterLabel);
 const targetBtn = r.targetUid
-    ? `<button onclick="openUidLookup('${r.targetUid}', ${escapeHtml(JSON.stringify(r.targetName || "Unknown"))})" style="background:none; border:none; color:#4169e1; text-decoration:underline; cursor:pointer; font-weight:700; padding:0; font-size:inherit;">${escapeHtml(r.targetName || "Unknown")}</button>`
+    ? `<button class="uid-lookup-btn" data-uid="${escapeHtml(r.targetUid)}" data-label="${escapeHtml(r.targetName || "Unknown")}" style="background:none; border:none; color:#4169e1; text-decoration:underline; cursor:pointer; font-weight:700; padding:0; font-size:inherit;">${escapeHtml(r.targetName || "Unknown")}</button>`
     : escapeHtml(r.targetName || "Unknown");
                     return `
     <div style="border:1px solid #2a2a4a; border-radius:10px; padding:14px 16px; margin-bottom:12px;">
@@ -761,13 +768,35 @@ const targetBtn = r.targetUid
         <p class="promo-sub" style="white-space:pre-wrap; margin:0 0 10px;">${escapeHtml(r.contentText)}</p>
         ${evidenceHtml}
         <div style="display:flex; gap:8px; flex-wrap:wrap;">
-            <button onclick="handleViewHistory('${r.targetUid}')" style="background:#4169e1; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">View Name History</button>
-            <button onclick="handleTimeoutFromReport('${r.id}', '${r.targetUid}')" style="background:#aa7a1e; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Timeout...</button>
-            <button onclick="handleBanFromReport('${r.id}', '${r.targetUid}', 0)" style="background:#aa3838; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Ban Permanently</button>
-            <button onclick="handleDismissReport('${r.id}')" style="background:#555; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Dismiss</button>
+            <button class="view-history-btn" data-uid="${escapeHtml(r.targetUid || "")}" style="background:#4169e1; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">View Name History</button>
+            <button class="timeout-report-btn" data-report-id="${escapeHtml(r.id)}" data-uid="${escapeHtml(r.targetUid || "")}" style="background:#aa7a1e; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Timeout...</button>
+            <button class="ban-report-btn" data-report-id="${escapeHtml(r.id)}" data-uid="${escapeHtml(r.targetUid || "")}" style="background:#aa3838; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Ban Permanently</button>
+            <button class="dismiss-report-btn" data-report-id="${escapeHtml(r.id)}" style="background:#555; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Dismiss</button>
         </div>
     </div>`;
                 }).join("");
+
+                // Attach listeners after inserting HTML — avoids building
+                // executable JS strings out of user-controlled data (uids,
+                // names, urls), which the old onclick="..." approach did.
+                list.querySelectorAll(".evidence-img").forEach(img => {
+                    img.addEventListener("click", () => window.open(img.dataset.url, "_blank"));
+                });
+                list.querySelectorAll(".uid-lookup-btn").forEach(btn => {
+                    btn.addEventListener("click", () => openUidLookup(btn.dataset.uid, btn.dataset.label));
+                });
+                list.querySelectorAll(".view-history-btn").forEach(btn => {
+                    btn.addEventListener("click", () => handleViewHistory(btn.dataset.uid));
+                });
+                list.querySelectorAll(".timeout-report-btn").forEach(btn => {
+                    btn.addEventListener("click", () => handleTimeoutFromReport(btn.dataset.reportId, btn.dataset.uid));
+                });
+                list.querySelectorAll(".ban-report-btn").forEach(btn => {
+                    btn.addEventListener("click", () => handleBanFromReport(btn.dataset.reportId, btn.dataset.uid, 0));
+                });
+                list.querySelectorAll(".dismiss-report-btn").forEach(btn => {
+                    btn.addEventListener("click", () => handleDismissReport(btn.dataset.reportId));
+                });
             }
 
             async function handleViewHistory(uid) {
