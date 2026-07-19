@@ -2041,7 +2041,7 @@ document.getElementById("vipStatusText").textContent = AppState.isVipActive(prof
 } else if (n.type === "friendAccepted") {
     button = `<button class="btn-primary" style="margin-top:8px; padding:6px 16px; font-size:0.85rem;" onclick="openInboxFriendChat('${n.fromUid}', '${escapeHomeHtml(n.fromName).replace(/'/g, "\\'")}', '${escapeHomeHtml(n.fromAvatar || "")}')">💬 Message</button>`;
 } else if (n.type === "giveawayWin") {
-    button = `<button class="btn-primary" style="margin-top:8px; padding:6px 16px; font-size:0.85rem;" onclick="goToPage('promo')">🎁 View Code</button>`;
+    button = `<button class="btn-primary view-prize-inbox-btn" data-week="${escapeHomeHtml(n.weekId || "")}" style="margin-top:8px; padding:6px 16px; font-size:0.85rem;">🎁 View Code</button>`;
 }
 // adminMessage needs no button — title + body already contain everything
                 return `
@@ -2053,6 +2053,21 @@ document.getElementById("vipStatusText").textContent = AppState.isVipActive(prof
         </div>
     `;
             }).join("");
+
+            list.querySelectorAll(".view-prize-inbox-btn").forEach(btn => {
+                btn.addEventListener("click", () => openInboxPrizeReveal(btn.dataset.week));
+            });
+        }
+
+        // Jump into the Promo page's Codes tab and open the specific week's
+        // prize reveal directly — bypasses the VIP tab/device/wheel flow
+        // entirely so this still works after VIP has expired.
+        function openInboxPrizeReveal(weekId) {
+            let frame = document.querySelector("#page-promo iframe");
+            let url = new URL(frame.getAttribute("src") || "promo.html", window.location.href);
+            if (weekId) url.searchParams.set("prizeWeek", weekId);
+            frame.src = url.toString();
+            goToPage("promo");
         }
 
         function markInboxSeen() {
