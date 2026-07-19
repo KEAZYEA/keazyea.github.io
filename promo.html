@@ -126,7 +126,15 @@
         <button class="center-modal-btn-cancel" id="historyCloseBtn" style="width:100%;">Close</button>
     </div>
 </div>
-    
+
+    <div class="center-modal-overlay" id="prizeRevealModalOverlay">
+    <div class="center-modal-box" style="max-width:360px;">
+        <div class="center-modal-title">🎉 Your Prize</div>
+        <div id="prizeRevealBody" style="margin-bottom:16px;"></div>
+        <button class="center-modal-btn-cancel" id="prizeRevealCloseBtn" style="width:100%;">Close</button>
+    </div>
+</div>
+
     <div class="tabs">
         <button class="tab-btn active" onclick="switchPromoTab('codes')">Latest Codes</button>
         <button class="tab-btn" id="vipTabBtn" onclick="switchPromoTab('vip')">VIP Giveaway <span
@@ -145,6 +153,14 @@
 
                     <div class="promo-old-list" id="promoCodeList" style="text-align:center;">
                         <p class="promo-sub">Loading codes...</p>
+                    </div>
+
+                    <hr style="border-color:#2a2a4a; margin:32px 0 20px;">
+
+                    <h2 style="font-size:1.4rem;">🎲 My Giveaway Entries</h2>
+                    <p class="promo-sub">Every week you've entered — view your code even if VIP has since expired.</p>
+                    <div id="myGiveawayHistoryList" style="text-align:left; margin-top:12px;">
+                        <p class="promo-sub">Loading...</p>
                     </div>
                 </div>
             </div>
@@ -366,6 +382,81 @@ window.openGiveawayHistory = openGiveawayHistory;
 document.getElementById("historyCloseBtn").addEventListener("click", () => {
     document.getElementById("historyModalOverlay").classList.remove("open");
 });
+
+/* ---------------- PERSONAL PRIZE REVEAL (works regardless of VIP status) ---------------- */
+// Deliberately does NOT check AppState.isVipActive() anywhere — ownership of
+// a past prize is independent of current VIP status. This is what lets a
+// winner whose VIP has since expired still retrieve a code they already won.
+async function openPrizeReveal(weekId) {
+    const overlay = document.getElementById("prizeRevealModalOverlay");
+    const body = document.getElementById("prizeRevealBody");
+    if (!weekId) {
+        body.innerHTML = "<p class='promo-sub'>No week specified.</p>";
+        overlay.classList.add("open");
+        return;
+    }
+    body.innerHTML = "<p class='promo-sub'>Loading...</p>";
+    overlay.classList.add("open");
+
+    try {
+        const prize = await AppState.getMyPrize(weekId);
+        if (!prize) {
+            body.innerHTML = "<p class='promo-sub'>No prize found for that week.</p>";
+            return;
+        }
+        body.innerHTML = `
+            <div style="font-size:1.4rem; margin-bottom:10px;">🏆 You won!</div>
+            <div class="promo-sub" style="margin-bottom:10px;">Week of ${escapeHtml(weekId)}</div>
+            <div class="promo-code-box" style="display:inline-flex; align-items:center; gap:10px; justify-content:center; font-size:1.3rem; padding:14px 20px;">
+                <span>${escapeHtml(prize.prize)}</span>
+                <button class="copy-btn" data-code="${escapeHtml(prize.prize)}" style="font-size:0.9rem; padding:6px 14px;">Copy</button>
+            </div>
+        `;
+        const copyBtn = body.querySelector(".copy-btn");
+        copyBtn.addEventListener("click", () => copyCode(copyBtn.getAttribute("data-code"), copyBtn));
+    } catch (e) {
+        body.innerHTML = `<p class="promo-sub">Couldn't load prize: ${escapeHtml(e.message)}</p>`;
+    }
+}
+window.openPrizeReveal = openPrizeReveal;
+
+document.getElementById("prizeRevealCloseBtn").addEventListener("click", () => {
+    document.getElementById("prizeRevealModalOverlay").classList.remove("open");
+});
+
+/* ---------------- MY GIVEAWAY HISTORY (personal, all-time — not the global "Past Winners" list) ---------------- */
+async function loadMyGiveawayHistory() {
+    const list = document.getElementById("myGiveawayHistoryList");
+    if (!list) return;
+    const user = AppState.getCurrentUser();
+    if (!user) {
+        list.innerHTML = "<p class='promo-sub'>Sign in to see your entry history.</p>";
+        return;
+    }
+    try {
+        const history = await AppState.getMyGiveawayHistory(20);
+        if (!history.length) {
+            list.innerHTML = "<p class='promo-sub'>You haven't entered a giveaway yet.</p>";
+            return;
+        }
+        list.innerHTML = history.map(h => `
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #2a2a4a;">
+                <span class="promo-sub">Week of ${escapeHtml(h.weekId)}</span>
+                <span>
+                    ${h.won
+                        ? `<button class="btn-primary view-my-prize-btn" data-week="${escapeHtml(h.weekId)}" style="padding:6px 14px; font-size:0.85rem;">🎁 View Code</button>`
+                        : `<span class="promo-sub">Didn't win</span>`}
+                </span>
+            </div>
+        `).join("");
+        list.querySelectorAll(".view-my-prize-btn").forEach(btn => {
+            btn.addEventListener("click", () => openPrizeReveal(btn.dataset.week));
+        });
+    } catch (e) {
+        list.innerHTML = `<p class="promo-sub">Couldn't load your history: ${escapeHtml(e.message)}</p>`;
+    }
+}
+
             async function refreshVipState() {
                 const user = AppState.getCurrentUser();
                 if (!user) {
@@ -439,6 +530,10 @@ document.getElementById("historyCloseBtn").addEventListener("click", () => {
 
                 startGiveawayCountdown();
                 await refreshJoinState();
+                // Check for an already-drawn winner right away — not just when
+                // the countdown happens to hit zero — so a VIP who logs in any
+                // day after Sunday's draw still sees the reveal immediately.
+                await tryShowWheel();
                 showState("wheel");
             }
 
@@ -651,8 +746,19 @@ if (user && user.uid === winnerData.winnerUid) {
 
             /* init */
             loadPromoCodes();
+            loadMyGiveawayHistory();
             AppState.waitForAuthReady().then(refreshVipState);
             AppState.onAuthChange(refreshVipState);
+            AppState.onAuthChange(loadMyGiveawayHistory);
+
+            // Deep-link entry point from the inbox "View Code" button — lands
+            // on the neutral Codes tab (not the VIP-gated tab) and opens the
+            // reveal directly, independent of current VIP/device/wheel state.
+            const promoUrlParams = new URLSearchParams(window.location.search);
+            const deepLinkPrizeWeek = promoUrlParams.get("prizeWeek");
+            if (deepLinkPrizeWeek) {
+                AppState.waitForAuthReady().then(() => openPrizeReveal(deepLinkPrizeWeek));
+            }
         </script>
 </body>
 
