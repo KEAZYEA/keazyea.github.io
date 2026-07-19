@@ -1349,6 +1349,16 @@ body {
                 <div class="home-page-content" id="page-inbox">
                     <div class="page-panel">
                         <h1>Inbox</h1>
+                        <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px;">
+                            <label for="inboxFilterSelect" class="settings-sub" style="margin:0;">Filter:</label>
+                            <select id="inboxFilterSelect" class="profile-name-input" style="width:auto; flex:1;">
+                                <option value="all">All</option>
+                                <option value="promo">Promo</option>
+                                <option value="tip">Tips</option>
+                                <option value="social">Social</option>
+                                <option value="general">General</option>
+                            </select>
+                        </div>
                         <div id="inboxList"></div>
                     </div>
                 </div>
@@ -2036,14 +2046,33 @@ document.getElementById("vipStatusText").textContent = AppState.isVipActive(prof
             });
         }
 
+        // Maps a notification's raw type to one of the 4 filter buckets.
+        // Anything not explicitly listed (e.g. adminMessage, or any future
+        // type) falls under "general" by default.
+        function inboxCategoryFor(n) {
+            if (n.type === "promo" || n.type === "giveawayWin") return "promo";
+            if (n.type === "tip") return "tip";
+            if (n.type === "friendAccepted") return "social";
+            return "general";
+        }
+
+        let currentInboxFilter = "all";
+
         function renderInboxList(notifications) {
             let list = document.getElementById("inboxList");
             if (!list) return;
-            if (notifications.length === 0) {
-                list.innerHTML = `<div class="inbox-empty">📭 Nothing here yet.<br>New promo codes, tips, and friend updates will show up here.</div>`;
+
+            const filtered = currentInboxFilter === "all"
+                ? notifications
+                : notifications.filter(n => inboxCategoryFor(n) === currentInboxFilter);
+
+            if (filtered.length === 0) {
+                list.innerHTML = notifications.length === 0
+                    ? `<div class="inbox-empty">📭 Nothing here yet.<br>New promo codes, tips, and friend updates will show up here.</div>`
+                    : `<div class="inbox-empty">Nothing in this category yet.</div>`;
                 return;
             }
-            list.innerHTML = notifications.map(n => {
+            list.innerHTML = filtered.map(n => {
 
                 let button = "";
                 if (n.type === "promo") {
@@ -2168,6 +2197,11 @@ document.getElementById("vipStatusText").textContent = AppState.isVipActive(prof
             badge.textContent = count > 9 ? "9+" : String(count);
             badge.style.display = count > 0 ? "flex" : "none";
         }
+        document.getElementById("inboxFilterSelect").addEventListener("change", (e) => {
+            currentInboxFilter = e.target.value;
+            renderInboxList(mergedNotifications());
+        });
+
         document.addEventListener("DOMContentLoaded", () => {
             AppState.listenToNotifications((notifications) => {
                 latestNotifications = notifications;
