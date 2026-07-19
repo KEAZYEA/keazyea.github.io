@@ -1407,6 +1407,18 @@ body {
             </div>
         </div>
 
+        <!-- Prize code reveal (from inbox "View Code") -->
+        <div class="mini-modal-overlay" id="prizeRevealModalOverlay">
+            <div class="mini-modal-box" style="max-width:340px;">
+                <div style="font-size:1.3rem; font-weight:700; margin-bottom:14px;">🎉 Your Prize</div>
+                <div id="prizeRevealAnimArea" style="min-height:90px; display:flex; align-items:center; justify-content:center; margin-bottom:16px;">
+                    <span id="prizeRevealCodeText" style="font-size:1.5rem; font-weight:800; letter-spacing:1px; opacity:0; transform:scale(0.6); transition:opacity 0.4s ease, transform 0.4s cubic-bezier(0.34,1.56,0.64,1);"></span>
+                </div>
+                <button class="btn-primary" id="prizeRevealCopyBtn" style="width:100%; margin-bottom:10px; padding:12px;">Copy Code</button>
+                <button class="btn-settings-action" id="prizeRevealCloseBtn" style="width:100%;">Close</button>
+            </div>
+        </div>
+
         <!-- Avatar picker popup -->
         <div class="mini-modal-overlay" id="avatarModalOverlay">
             <div class="mini-modal-box" style="max-width:420px;">
@@ -2041,7 +2053,7 @@ document.getElementById("vipStatusText").textContent = AppState.isVipActive(prof
 } else if (n.type === "friendAccepted") {
     button = `<button class="btn-primary" style="margin-top:8px; padding:6px 16px; font-size:0.85rem;" onclick="openInboxFriendChat('${n.fromUid}', '${escapeHomeHtml(n.fromName).replace(/'/g, "\\'")}', '${escapeHomeHtml(n.fromAvatar || "")}')">💬 Message</button>`;
 } else if (n.type === "giveawayWin") {
-    button = `<button class="btn-primary view-prize-inbox-btn" data-week="${escapeHomeHtml(n.weekId || "")}" style="margin-top:8px; padding:6px 16px; font-size:0.85rem;">🎁 View Code</button>`;
+    button = `<button class="btn-primary view-prize-inbox-btn" data-prize="${escapeHomeHtml(n.prize || "")}" style="margin-top:8px; padding:6px 16px; font-size:0.85rem;">🎁 View Code</button>`;
 }
 // adminMessage needs no button — title + body already contain everything
                 return `
@@ -2055,20 +2067,56 @@ document.getElementById("vipStatusText").textContent = AppState.isVipActive(prof
             }).join("");
 
             list.querySelectorAll(".view-prize-inbox-btn").forEach(btn => {
-                btn.addEventListener("click", () => openInboxPrizeReveal(btn.dataset.week));
+                btn.addEventListener("click", () => openPrizeReveal(btn.dataset.prize));
             });
         }
 
-        // Jump into the Promo page's Codes tab and open the specific week's
-        // prize reveal directly — bypasses the VIP tab/device/wheel flow
-        // entirely so this still works after VIP has expired.
-        function openInboxPrizeReveal(weekId) {
-            let frame = document.querySelector("#page-promo iframe");
-            let url = new URL(frame.getAttribute("src") || "promo.html", window.location.href);
-            if (weekId) url.searchParams.set("prizeWeek", weekId);
-            frame.src = url.toString();
-            goToPage("promo");
+        // Animates the code in and lets it be copied — the code already
+        // lives on the notification itself (n.prize), so this needs no
+        // AppState calls, no VIP check, and no dependency on the wheel/day
+        // of week. Works from any inbox notification, any time.
+        function openPrizeReveal(prize) {
+            const overlay = document.getElementById("prizeRevealModalOverlay");
+            const codeText = document.getElementById("prizeRevealCodeText");
+            const copyBtn = document.getElementById("prizeRevealCopyBtn");
+
+            if (!prize) {
+                codeText.textContent = "Code unavailable";
+                codeText.style.opacity = "1";
+                codeText.style.transform = "scale(1)";
+                copyBtn.style.display = "none";
+                overlay.classList.add("open");
+                return;
+            }
+
+            copyBtn.style.display = "block";
+            codeText.textContent = prize;
+            codeText.style.opacity = "0";
+            codeText.style.transform = "scale(0.6)";
+            overlay.classList.add("open");
+
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    codeText.style.opacity = "1";
+                    codeText.style.transform = "scale(1)";
+                });
+            });
+
+            copyBtn.onclick = () => {
+                navigator.clipboard.writeText(prize).then(() => {
+                    const original = copyBtn.textContent;
+                    copyBtn.textContent = "Copied!";
+                    setTimeout(() => { copyBtn.textContent = original; }, 1500);
+                }).catch(() => {
+                    alert("Couldn't copy automatically — the code is: " + prize);
+                });
+            };
         }
+        window.openPrizeReveal = openPrizeReveal;
+
+        document.getElementById("prizeRevealCloseBtn").addEventListener("click", () => {
+            document.getElementById("prizeRevealModalOverlay").classList.remove("open");
+        });
 
         function markInboxSeen() {
             localStorage.setItem("kih_notif_last_seen_at", String(Date.now()));
