@@ -154,14 +154,6 @@
                     <div class="promo-old-list" id="promoCodeList" style="text-align:center;">
                         <p class="promo-sub">Loading codes...</p>
                     </div>
-
-                    <hr style="border-color:#2a2a4a; margin:32px 0 20px;">
-
-                    <h2 style="font-size:1.4rem;">🎲 My Giveaway Entries</h2>
-                    <p class="promo-sub">Every week you've entered — view your code even if VIP has since expired.</p>
-                    <div id="myGiveawayHistoryList" style="text-align:left; margin-top:12px;">
-                        <p class="promo-sub">Loading...</p>
-                    </div>
                 </div>
             </div>
         </div>
@@ -424,40 +416,7 @@ document.getElementById("prizeRevealCloseBtn").addEventListener("click", () => {
     document.getElementById("prizeRevealModalOverlay").classList.remove("open");
 });
 
-/* ---------------- MY GIVEAWAY HISTORY (personal, all-time — not the global "Past Winners" list) ---------------- */
-async function loadMyGiveawayHistory() {
-    const list = document.getElementById("myGiveawayHistoryList");
-    if (!list) return;
-    const user = AppState.getCurrentUser();
-    if (!user) {
-        list.innerHTML = "<p class='promo-sub'>Sign in to see your entry history.</p>";
-        return;
-    }
-    try {
-        const history = await AppState.getMyGiveawayHistory(20);
-        if (!history.length) {
-            list.innerHTML = "<p class='promo-sub'>You haven't entered a giveaway yet.</p>";
-            return;
-        }
-        list.innerHTML = history.map(h => `
-            <div style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #2a2a4a;">
-                <span class="promo-sub">Week of ${escapeHtml(h.weekId)}</span>
-                <span>
-                    ${h.won
-                        ? `<button class="btn-primary view-my-prize-btn" data-week="${escapeHtml(h.weekId)}" style="padding:6px 14px; font-size:0.85rem;">🎁 View Code</button>`
-                        : `<span class="promo-sub">Didn't win</span>`}
-                </span>
-            </div>
-        `).join("");
-        list.querySelectorAll(".view-my-prize-btn").forEach(btn => {
-            btn.addEventListener("click", () => openPrizeReveal(btn.dataset.week));
-        });
-    } catch (e) {
-        list.innerHTML = `<p class="promo-sub">Couldn't load your history: ${escapeHtml(e.message)}</p>`;
-    }
-}
-
-            async function refreshVipState() {
+async function refreshVipState() {
                 const user = AppState.getCurrentUser();
                 if (!user) {
                     document.getElementById("vipTabLockIcon").textContent = "🔒";
@@ -746,19 +705,8 @@ if (user && user.uid === winnerData.winnerUid) {
 
             /* init */
             loadPromoCodes();
-            loadMyGiveawayHistory();
             AppState.waitForAuthReady().then(refreshVipState);
             AppState.onAuthChange(refreshVipState);
-            AppState.onAuthChange(loadMyGiveawayHistory);
-
-            // Deep-link entry point from the inbox "View Code" button — lands
-            // on the neutral Codes tab (not the VIP-gated tab) and opens the
-            // reveal directly, independent of current VIP/device/wheel state.
-            const promoUrlParams = new URLSearchParams(window.location.search);
-            const deepLinkPrizeWeek = promoUrlParams.get("prizeWeek");
-            if (deepLinkPrizeWeek) {
-                AppState.waitForAuthReady().then(() => openPrizeReveal(deepLinkPrizeWeek));
-            }
         </script>
 </body>
 
