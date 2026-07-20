@@ -132,7 +132,9 @@ const AppState = (function () {
             highestTrophies: 0,
             currentClan: "",
             currentLevel: 0,
-            currentPower: 0
+            currentPower: 0,
+            acceptedTermsVersion: null,
+            acceptedTermsAt: 0
 
         };
     }
