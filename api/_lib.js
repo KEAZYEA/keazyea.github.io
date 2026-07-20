@@ -10,18 +10,18 @@ const { getAuth } = require("firebase-admin/auth");
 /* ---------------- Firebase Admin (singleton) ---------------- */
 function getFirebaseAdmin() {
   if (!getApps().length) {
+    const { FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY } = process.env;
+    if (!FIREBASE_PROJECT_ID || !FIREBASE_CLIENT_EMAIL || !FIREBASE_PRIVATE_KEY) {
+      throw new Error("Missing required Firebase Admin env vars (FIREBASE_PROJECT_ID / FIREBASE_CLIENT_EMAIL / FIREBASE_PRIVATE_KEY).");
+    }
     initializeApp({
       credential: cert({
-        projectId: process.env.FIREBASE_PROJECT_ID,
-        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-        // Vercel env vars store literal "\n" as two characters — convert
-        // them back into real newlines or the key won't parse.
-        privateKey: (process.env.FIREBASE_PRIVATE_KEY || "").replace(/\\n/g, "\n")
+        projectId: FIREBASE_PROJECT_ID,
+        clientEmail: FIREBASE_CLIENT_EMAIL,
+        privateKey: FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n")
       })
     });
   }
-  // Backward-compatible shim so existing code calling admin.firestore()
-  // and admin.auth() keeps working without changes to other files.
   return {
     firestore: getFirestore,
     auth: getAuth
@@ -46,8 +46,17 @@ async function getPayPalAccessToken() {
     },
     body: "grant_type=client_credentials"
   });
-  const data = await res.json();
-  if (!data.access_token) throw new Error("PayPal auth failed: " + JSON.stringify(data));
+
+  let data;
+  try {
+    data = await res.json();
+  } catch (e) {
+    throw new Error(`PayPal auth failed: non-JSON response (status ${res.status})`);
+  }
+
+  if (!res.ok || !data.access_token) {
+    throw new Error(`PayPal auth failed (status ${res.status}): ${JSON.stringify(data)}`);
+  }
   return data.access_token;
 }
 
