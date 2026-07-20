@@ -1425,8 +1425,9 @@
             <div class="trophy-tier-list" id="postClanTrophyTierList" style="margin-bottom:16px;"></div>
 
             <label class="modal-field-label">Description (any extra requirements)</label>
-            <textarea id="postClanDescription" class="modal-field-input" maxlength="500" rows="4"></textarea>
-
+            <textarea id="postClanDescription" class="modal-field-input" maxlength="2000" rows="4"></textarea>
+            <div class="compose-hint" id="postClanDescCount" style="text-align:right; margin:-6px 0 12px;">0/500</div>
+            
             <label class="modal-field-label">Clan Traits</label>
             <div class="tag-checkbox-list" id="postClanTagList" style="margin-bottom:16px;"></div>
             <div class="modal-actions" style="flex-direction:row;">
@@ -1926,6 +1927,12 @@
             if (!file) { preview.style.display = "none"; return; }
             preview.src = URL.createObjectURL(file);
             preview.style.display = "block";
+        });
+
+        const postClanDescInput = document.getElementById("postClanDescription");
+        const postClanDescCount = document.getElementById("postClanDescCount");
+        postClanDescInput.addEventListener("input", () => {
+            postClanDescCount.textContent = `${postClanDescInput.value.length}/500`;
         });
 
         window.submitClanPost = async function () {
