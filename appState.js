@@ -580,7 +580,7 @@ async function backfillPublicProfileNameLower() {
 
         if (!clanName) throw new Error("Clan name is required.");
         if (!server) throw new Error("Please select a server.");
-        if (description.length > 500) throw new Error("Description must be 500 characters or fewer.");
+        if (description.length > 1000) throw new Error("Description must be 500 characters or fewer.");
         const profile = await getProfile();
         if (isBannedNow(profile)) {
             showRestrictedNotice(profile.banReason, profile.banUntil);
