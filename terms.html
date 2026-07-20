@@ -220,7 +220,7 @@
         <h2>Contact Us</h2>
         <p>Questions about these Terms? Email us at <a href="mailto:keazyea@gmail.com">keazyea@gmail.com</a>.</p>
 
-        <a class="back-link" href="index.html?goto=settings">← Back to Settings</a>
+        <a class="back-link" id="legalBackLink" href="index.html?goto=settings">← Back to Settings</a>
     </div>
 
     <script>
@@ -231,6 +231,16 @@
                 dropdown.classList.remove("open");
             }
         });
+
+        // Arrived here from the first-visit acceptance gate rather than
+        // Settings — swap the back link so it doesn't imply a Settings
+        // page the user hasn't necessarily ever seen yet.
+        const legalParams = new URLSearchParams(window.location.search);
+        if (legalParams.get("from") === "gate") {
+            const backLink = document.getElementById("legalBackLink");
+            backLink.textContent = "← Back to Sign Up";
+            backLink.href = "index.html";
+        }
     </script>
 </body>
 
