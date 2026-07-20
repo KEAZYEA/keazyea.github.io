@@ -1365,6 +1365,26 @@ body {
 
             </div>
         </div>
+        <!-- First-visit Terms/Privacy acceptance gate — blocks everything until both are agreed to -->
+        <div class="mini-modal-overlay open" id="termsGateOverlay" style="z-index:500;">
+            <div class="mini-modal-box" style="max-width:400px; text-align:left;">
+                <h2 style="text-align:center; margin-top:0;">Before you continue</h2>
+                <p class="settings-sub" style="margin-bottom:18px;">Please review and accept both of the following to use Keazyea's Intelligence Hub.</p>
+
+                <label style="display:flex; align-items:flex-start; gap:10px; margin-bottom:14px; cursor:pointer;">
+                    <input type="checkbox" id="termsGateTosCheck" style="margin-top:3px; width:18px; height:18px; flex-shrink:0;">
+                    <span>I have read and agree to the <a href="terms.html" target="_blank" rel="noopener noreferrer" class="about-link">Terms of Service</a>.</span>
+                </label>
+
+                <label style="display:flex; align-items:flex-start; gap:10px; margin-bottom:22px; cursor:pointer;">
+                    <input type="checkbox" id="termsGatePrivacyCheck" style="margin-top:3px; width:18px; height:18px; flex-shrink:0;">
+                    <span>I have read and agree to the <a href="privacy.html" target="_blank" rel="noopener noreferrer" class="about-link">Privacy Policy</a>.</span>
+                </label>
+
+                <button class="btn-primary btn-block" id="termsGateAgreeBtn" disabled style="font-size:1.05rem; padding:14px;">Continue</button>
+            </div>
+        </div>
+
         <div class="unsaved-modal-overlay" id="unsavedModalOverlay">
     <div class="unsaved-modal">
         <div class="unsaved-modal-title">Unsaved Changes</div>
@@ -1532,6 +1552,63 @@ body {
            sections AND settings/profile/inbox. Each just loads
            its own data right before it's shown. */
         let cameFromAbout = false;
+
+        /* ---------------- TERMS/PRIVACY ACCEPTANCE GATE ---------------- */
+        // Bump this whenever terms.html or privacy.html changes in a way that
+        // requires re-acceptance — previously-accepted users will be
+        // re-prompted automatically since their stored version won't match.
+        const TERMS_VERSION = "2026-07-20";
+        const TERMS_LOCAL_KEY = "kih_terms_accepted_version";
+
+        function hasAcceptedTermsLocally() {
+            return localStorage.getItem(TERMS_LOCAL_KEY) === TERMS_VERSION;
+        }
+        function markAcceptedTermsLocally() {
+            localStorage.setItem(TERMS_LOCAL_KEY, TERMS_VERSION);
+        }
+        function showTermsGate() {
+            document.getElementById("termsGateOverlay").classList.add("open");
+        }
+        function hideTermsGate() {
+            document.getElementById("termsGateOverlay").classList.remove("open");
+        }
+
+        async function checkTermsGate() {
+            const user = AppState.getCurrentUser();
+            if (user) {
+                const profile = await AppState.getProfile();
+                if (profile.acceptedTermsVersion === TERMS_VERSION) {
+                    markAcceptedTermsLocally(); // keep local flag in sync too
+                    hideTermsGate();
+                    return;
+                }
+            } else if (hasAcceptedTermsLocally()) {
+                hideTermsGate();
+                return;
+            }
+            showTermsGate();
+        }
+
+        function updateTermsGateAgreeBtn() {
+            const tosChecked = document.getElementById("termsGateTosCheck").checked;
+            const privChecked = document.getElementById("termsGatePrivacyCheck").checked;
+            document.getElementById("termsGateAgreeBtn").disabled = !(tosChecked && privChecked);
+        }
+        document.getElementById("termsGateTosCheck").addEventListener("change", updateTermsGateAgreeBtn);
+        document.getElementById("termsGatePrivacyCheck").addEventListener("change", updateTermsGateAgreeBtn);
+
+        document.getElementById("termsGateAgreeBtn").addEventListener("click", async () => {
+            markAcceptedTermsLocally();
+            const user = AppState.getCurrentUser();
+            if (user) {
+                try {
+                    await AppState.setProfile({ acceptedTermsVersion: TERMS_VERSION, acceptedTermsAt: Date.now() });
+                } catch (e) {
+                    console.warn("Couldn't save terms acceptance to profile:", e.message);
+                }
+            }
+            hideTermsGate();
+        });
 
         async function goToPage(page, fromAbout) {
             if (page !== "profile" && isProfileDirty()) {
@@ -2216,6 +2293,7 @@ document.getElementById("vipStatusText").textContent = AppState.isVipActive(prof
                 startFriendReqListenerHome();
                 startPersonalNotifListener();
                 startUnreadDmListenerHome();
+                checkTermsGate();
             });
             refreshTopbar();
             AppState.waitForAuthReady().then(() => {
@@ -2224,6 +2302,7 @@ document.getElementById("vipStatusText").textContent = AppState.isVipActive(prof
                 startUnreadDmListenerHome();
                 AppState.touchLastActive();
                 setInterval(() => AppState.touchLastActive(), 5 * 60 * 1000);
+                checkTermsGate();
             });
 
             const urlParams = new URLSearchParams(window.location.search);
