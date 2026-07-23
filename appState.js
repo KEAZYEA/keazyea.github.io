@@ -1502,8 +1502,20 @@ async function backfillPublicProfileNameLower() {
         if (!banner) {
             banner = document.createElement("div");
             banner.id = BAN_BANNER_ID;
-            banner.style.cssText = "background:#aa7a1e;color:white;padding:12px 16px;border-radius:8px;margin:12px;text-align:center;";
-            document.body.prepend(banner);
+            banner.style.cssText = "background:#aa7a1e;color:white;padding:12px 16px;border-radius:8px;margin:12px;text-align:center;flex-shrink:0;";
+            // Insert INSIDE .home-shell (as the first child), not into body —
+            // same reasoning as applyMaintenanceBanner: .home-shell is a
+            // fixed-height flex column that already fills the viewport with
+            // overflow:hidden on <body>. Prepending to body instead pushes
+            // .home-shell's own content (Tips, About, etc.) past the
+            // viewport and clips it at the bottom with no way to scroll to
+            // the rest, since body's overflow is hidden.
+            const shell = document.querySelector(".home-shell");
+            if (shell) {
+                shell.prepend(banner);
+            } else {
+                document.body.prepend(banner);
+            }
         }
         banner.innerHTML = `⏱️ You're temporarily restricted from posting/messaging until <strong>${untilStr}</strong>.
             ${profile.banReason ? "Reason: " + escapeGateHtml(profile.banReason) + ". " : ""}
