@@ -262,17 +262,6 @@ const AppState = (function () {
         return !isNoAdsActive(profile);
     }
 
-    // Returns null if not currently banned/timed-out, otherwise the ban info.
-    async function getBanStatus() {
-        const profile = await getProfile();
-        if (!isBannedNow(profile)) return null;
-        return {
-            permanent: !profile.banUntil,
-            until: profile.banUntil || null,
-            reason: profile.banReason || ""
-        };
-    }
-
     function escapeGateHtml(str) {
         return String(str).replace(/[&<>"']/g, s => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[s]));
     }
@@ -295,51 +284,6 @@ const AppState = (function () {
             </div>`;
         document.body.appendChild(overlay);
         overlay.querySelector("#closeRestrictedNotice").onclick = () => overlay.remove();
-    }
-
-    // Call this once per page, after waitForAuthReady(). Pass the id of your
-    // page's main content container and your contact email for appeals.
-    // Returns { permanent } — if permanent is true, the caller should stop
-    // initializing the rest of the page (the container has already been
-    // replaced with the "banned" screen).
-    async function applyBanGate({ appRootId = "app", mailto = "you@example.com" } = {}) {
-        await waitForAuthReady();
-        if (!currentUser) return { permanent: false };
-
-        const status = await getBanStatus();
-        if (!status) return { permanent: false };
-
-        const root = document.getElementById(appRootId) || document.body;
-
-        if (status.permanent) {
-            root.innerHTML = `
-            <div style="max-width:500px;margin:60px auto;text-align:center;padding:0 20px;">
-                <h2>🚫 You have been banned</h2>
-                <p class="promo-sub">${status.reason ? escapeGateHtml(status.reason) : "Your account has been permanently banned from Keazyea's Intelligence Hub."}</p>
-                <a href="mailto:${mailto}?subject=Ban%20Appeal" class="btn-primary"
-                   style="display:inline-block;margin-top:20px;padding:14px 32px;text-decoration:none;">
-                   I think this is unfair — Email an appeal
-                </a>
-            </div>`;
-            return { permanent: true };
-        }
-
-        // Timeout: page loads normally, just disable messaging/posting controls
-        // and show a banner. Any element with data-requires-not-banned gets disabled.
-        const untilStr = new Date(status.until).toLocaleString();
-        document.querySelectorAll("[data-requires-not-banned]").forEach(el => {
-            el.disabled = true;
-            el.title = "You're timed out until " + untilStr;
-        });
-
-        const banner = document.createElement("div");
-        banner.style.cssText = "background:#aa7a1e;color:white;padding:12px 16px;border-radius:8px;margin-bottom:16px;text-align:center;";
-        banner.innerHTML = `⏱️ You're temporarily restricted from posting/messaging until <strong>${untilStr}</strong>.
-            ${status.reason ? "Reason: " + escapeGateHtml(status.reason) + ". " : ""}
-            If you feel this is unfair, <a href="mailto:keazyea@gmail.com?subject=Timeout%20Appeal" style="color:white;text-decoration:underline;">click here to appeal</a>.`;
-        root.prepend(banner);
-
-        return { permanent: false };
     }
     // Real wall-clock check (bans/cooldowns aren't affected by the
     // giveaway's debug week-offset the way VIP/noAds intentionally are).
@@ -825,21 +769,6 @@ async function backfillPublicProfileNameLower() {
             collection(db, "friendRequests"),
             where("toUid", "==", currentUser.uid),
             where("status", "==", "pending")
-        );
-        return onSnapshot(q, (snap) => {
-            const items = [];
-            snap.forEach(d => items.push({ id: d.id, ...d.data() }));
-            callback(items);
-        });
-    }
-
-    // Live requests I SENT that have just become accepted — used to notify
-    // the sender so they can jump straight into a chat.
-    function listenToAcceptedSentRequests(callback) {
-        const q = query(
-            collection(db, "friendRequests"),
-            where("fromUid", "==", currentUser.uid),
-            where("status", "==", "accepted")
         );
         return onSnapshot(q, (snap) => {
             const items = [];
@@ -1339,17 +1268,7 @@ async function backfillPublicProfileNameLower() {
         });
     }
 
-    async function deleteDmThread(threadId) {
-        await waitForAuthReady();
-        if (!currentUser) throw new Error("Not signed in.");
-        const messagesSnap = await getDocs(collection(db, "dmThreads", threadId, "messages"));
-        const deletions = [];
-        messagesSnap.forEach(d => deletions.push(deleteDoc(doc(db, "dmThreads", threadId, "messages", d.id))));
-        await Promise.all(deletions);
-        await deleteDoc(doc(db, "dmThreads", threadId));
-    }
-
-    // Like deleteDmThread, but keeps the thread doc alive so the DM modal's
+    // Keeps the thread doc alive so the DM modal's
     // live listener just picks up the now-empty messages collection instead
     // of kicking the user out of the chat.
     async function deleteDmMessagesOnly(threadId) {
@@ -2067,13 +1986,6 @@ async function sendAdminMessage(uid, title, body) {
             callback(items);
         });
     }
-    async function getNotifications(maxCount = 50) {
-        const q = query(collection(db, "notifications"), orderBy("createdAt", "desc"), limit(maxCount));
-        const snap = await getDocs(q);
-        const items = [];
-        snap.forEach(d => items.push({ id: d.id, ...d.data() }));
-        return items;
-    }
 
     async function deleteNotificationsBySource(sourceId) {
         const q = query(collection(db, "notifications"), where("sourceId", "==", sourceId));
@@ -2203,7 +2115,7 @@ async function sendAdminMessage(uid, title, body) {
         // tips
         addTip, getTips, getTip, uploadTipImage, deleteTip, updateTip,
         // notifications
-        addNotification, getNotifications, deleteNotificationsBySource, listenToNotifications,
+        addNotification, deleteNotificationsBySource, listenToNotifications,
         addAnnouncement, getAnnouncements, updateAnnouncement, deleteAnnouncement,
         // clan recruitment posts
         postClanRecruitMessage, updateClanPost, listenToClanPosts, deleteClanPost, getClanPostCooldownRemaining,
@@ -2211,12 +2123,12 @@ async function sendAdminMessage(uid, title, body) {
         // friends
         sendFriendRequest, respondToFriendRequest, listenToIncomingFriendRequests, listenToFriends,
         listenToFriendsWithDmMeta, listenToPublicProfilesPresence,
-        listenToAcceptedSentRequests, unfriend, friendshipId, getPublicProfile,
+        unfriend, friendshipId, getPublicProfile,
         searchUsersByName, getSuggestedFriends, touchLastActive,
         // personal notifications (NEW)
         addPersonalNotification, listenToPersonalNotifications, markPersonalNotificationRead, sendAdminMessage,
         // DMs
-        getOrCreateDmThread, sendDmMessage, editDmMessage, listenToDmMessages, listenToMyDmThreads, deleteDmThread, deleteDmMessagesOnly,
+        getOrCreateDmThread, sendDmMessage, editDmMessage, listenToDmMessages, listenToMyDmThreads, deleteDmMessagesOnly,
         markDmThreadRead, listenToUnreadDmCount,
         // blocking
         blockUser, unblockUser, amIBlockedBy, haveIBlocked,
@@ -2224,8 +2136,8 @@ async function sendAdminMessage(uid, title, body) {
         submitReport, uploadReportEvidence,
         // admin: bans + history
         getNameHistory, getReports, closeReport, banUser, unbanUser, getBannedUsers,
-        // ban gate (new)
-        getBanStatus, applyBanGate, showRestrictedNotice,
+        // ban gate
+        showRestrictedNotice,
         // maintenance mode (new)
         getMaintenanceStatus, setMaintenanceMode,
         _firebase: { app, auth, db }
