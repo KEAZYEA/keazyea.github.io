@@ -464,6 +464,31 @@ body {
             font-size: 1rem;
         }
 
+        .profile-name-input.input-valid {
+    border-color: #4caf50 !important;
+}
+
+.profile-name-input.input-invalid {
+    border-color: #ff4d4f !important;
+}
+
+.name-check-msg {
+    font-size: 0.8rem;
+    margin-top: 6px;
+    display: none;
+}
+
+.name-check-msg.show {
+    display: block;
+}
+
+.name-check-msg.msg-invalid {
+    color: #ff4d4f;
+}
+
+.name-check-msg.msg-valid {
+    color: #4caf50;
+}
         .avatar-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -1309,6 +1334,7 @@ body {
                         <label class="field-label">In-game name</label>
                         <input type="text" id="profileNameInput" class="profile-name-input"
                             placeholder="Enter a name" />
+                        <div class="name-check-msg" id="nameCheckMsg"></div>
 
                         <label class="field-label">Avatar</label>
                         <div class="avatar-picker-row">
@@ -1408,6 +1434,15 @@ body {
         <div class="unsaved-modal-actions">
             <button class="btn-secondary" id="unsavedDiscardBtn" style="flex:1; font-size:1.05rem; padding:14px 20px;">Don't Save</button>
             <button class="btn-primary" id="unsavedSaveBtn" style="flex:1; font-size:1.05rem; padding:14px 20px;">Save</button>
+        </div>
+    </div>
+</div>
+        <div class="unsaved-modal-overlay" id="genericErrorModalOverlay">
+    <div class="unsaved-modal">
+        <div class="unsaved-modal-title" id="genericErrorTitle">Heads up</div>
+        <div class="unsaved-modal-body" id="genericErrorBody"></div>
+        <div class="unsaved-modal-actions">
+            <button class="btn-primary" id="genericErrorOkBtn" style="flex:1; font-size:1.05rem; padding:14px 20px;">OK</button>
         </div>
     </div>
 </div>
@@ -1842,8 +1877,97 @@ body {
 
         let profileSnapshot = { name: "", avatar: "", bio: "", server: "", favoriteTroop: "", favoriteHero: "", highestTrophies: 0, currentClan: "", currentLevel: 0, currentPower: 0 };
 
+        /* ---- live name availability check ---- */
+        let nameCheckTimeout = null;
+        let nameCheckToken = 0;
+        let isNameCurrentlyValid = true;
+
+        function normalizeForCheck(name) {
+            return (name || "").trim().toLowerCase();
+        }
+
+        async function checkNameAvailability(name) {
+            const input = document.getElementById("profileNameInput");
+            const msg = document.getElementById("nameCheckMsg");
+            const trimmed = (name || "").trim();
+
+            if (!trimmed) {
+                input.classList.remove("input-valid", "input-invalid");
+                msg.classList.remove("show", "msg-valid", "msg-invalid");
+                isNameCurrentlyValid = true;
+                return;
+            }
+
+            if (trimmed.length > 24) {
+                input.classList.remove("input-valid");
+                input.classList.add("input-invalid");
+                msg.textContent = "Name must be 24 characters or fewer.";
+                msg.classList.remove("msg-valid");
+                msg.classList.add("show", "msg-invalid");
+                isNameCurrentlyValid = false;
+                return;
+            }
+
+            // Unchanged from what's already saved — no need to hit Firestore.
+            if (normalizeForCheck(trimmed) === normalizeForCheck(profileSnapshot.name)) {
+                input.classList.remove("input-invalid");
+                input.classList.add("input-valid");
+                msg.textContent = "Looks good!";
+                msg.classList.remove("msg-invalid");
+                msg.classList.add("show", "msg-valid");
+                isNameCurrentlyValid = true;
+                return;
+            }
+
+            const myToken = ++nameCheckToken;
+            try {
+                const existing = await AppState.findUserByName(trimmed);
+                if (myToken !== nameCheckToken) return; // a newer keystroke already started a check
+
+                const user = AppState.getCurrentUser();
+                const takenByOther = existing && (!user || existing.uid !== user.uid);
+
+                if (takenByOther) {
+                    input.classList.remove("input-valid");
+                    input.classList.add("input-invalid");
+                    msg.textContent = "That name is already taken.";
+                    msg.classList.remove("msg-valid");
+                    msg.classList.add("show", "msg-invalid");
+                    isNameCurrentlyValid = false;
+                } else {
+                    input.classList.remove("input-invalid");
+                    input.classList.add("input-valid");
+                    msg.textContent = "Looks good!";
+                    msg.classList.remove("msg-invalid");
+                    msg.classList.add("show", "msg-valid");
+                    isNameCurrentlyValid = true;
+                }
+            } catch (e) {
+                console.warn("Name availability check failed:", e.message);
+            }
+        }
+
+        document.getElementById("profileNameInput").addEventListener("input", function () {
+            clearTimeout(nameCheckTimeout);
+            const val = this.value;
+            nameCheckTimeout = setTimeout(() => checkNameAvailability(val), 400);
+        });
+
+        /* ---- generic modal, replaces alert() ---- */
+        function showGenericErrorModal(message, title) {
+            document.getElementById("genericErrorTitle").textContent = title || "Heads up";
+            document.getElementById("genericErrorBody").textContent = message;
+            document.getElementById("genericErrorModalOverlay").classList.add("open");
+        }
+        document.getElementById("genericErrorOkBtn").addEventListener("click", () => {
+            document.getElementById("genericErrorModalOverlay").classList.remove("open");
+        });
+
         async function loadProfileIntoPage() {
             let profile = await AppState.getProfile();
+            document.getElementById("profileNameInput").classList.remove("input-valid", "input-invalid");
+            document.getElementById("nameCheckMsg").classList.remove("show", "msg-valid", "msg-invalid");
+            isNameCurrentlyValid = true;
             document.getElementById("profileNameInput").value = profile.name;
             document.getElementById("profileBioInput").value = profile.bio || "";
             await populateNameDatalists();
@@ -1888,7 +2012,11 @@ body {
         async function saveProfile() {
             let current = getCurrentProfileFormValues();
             if (current.currentLevel && (current.currentLevel < 1 || current.currentLevel > 10000)) {
-                alert("Level must be between 1 and 10000.");
+                showGenericErrorModal("Level must be between 1 and 10000.");
+                return;
+            }
+            if (!isNameCurrentlyValid) {
+                showGenericErrorModal("That name isn't valid — check the note under the name field and fix it before saving.");
                 return;
             }
             try {
@@ -1909,7 +2037,7 @@ body {
                 await refreshTopbar();
                 goHome();
             } catch (e) {
-                alert(e.message);
+                showGenericErrorModal(e.message);
             }
         }
         /* ---------------- SETTINGS ---------------- */
