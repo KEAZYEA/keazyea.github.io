@@ -1972,6 +1972,18 @@ async function sendAdminMessage(uid, title, body) {
     }
     /* ---------------- PROMO CODES (admin-posted, from phone or PC) ---------------- */
 
+    async function addAnnouncement(title, body) {
+        await waitForAuthReady();
+        if (!currentUser || currentUser.uid !== ADMIN_UID) {
+            throw new Error("Not authorized.");
+        }
+        const trimmedTitle = (title || "").trim();
+        const trimmedBody = (body || "").trim();
+        if (!trimmedTitle) throw new Error("Title cannot be empty.");
+        if (!trimmedBody) throw new Error("Message cannot be empty.");
+        return addNotification("announcement", trimmedTitle, trimmedBody, null);
+    }
+
     async function addPromoCode(code) {
         await waitForAuthReady();
         if (!currentUser || currentUser.uid !== ADMIN_UID) {
@@ -2152,7 +2164,7 @@ async function sendAdminMessage(uid, title, body) {
         // tips
         addTip, getTips, getTip, uploadTipImage, deleteTip, updateTip,
         // notifications
-        addNotification, getNotifications, deleteNotificationsBySource, listenToNotifications,
+        addNotification, getNotifications, deleteNotificationsBySource, listenToNotifications, addAnnouncement,
         isAdmin, pickWeeklyWinner, finalizeGiveawayPrize, getMyPrize,
         // clan recruitment posts
         postClanRecruitMessage, updateClanPost, listenToClanPosts, deleteClanPost, getClanPostCooldownRemaining,
