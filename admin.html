@@ -228,6 +228,7 @@
                     style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box; font-family:inherit;"></textarea>
                 <button class="btn-primary" id="postAnnouncementBtn" onclick="handlePostAnnouncement()"
                     style="margin-top:12px; padding:12px 28px;">Post Announcement</button>
+                <div id="recentAnnouncementsList" style="margin-top:16px; text-align:left;"></div>
 
                 <hr style="border-color:#2a2a4a; margin:40px 0;">
 
@@ -520,6 +521,8 @@ async function refreshMaintenanceStatus() {
             }
             window.handleSetMaintenance = handleSetMaintenance;
             /* ---------------- POST ANNOUNCEMENT ---------------- */
+            let editingAnnouncementId = null;
+
             async function handlePostAnnouncement() {
                 const titleInput = document.getElementById("newAnnouncementTitleInput");
                 const bodyInput = document.getElementById("newAnnouncementBodyInput");
@@ -531,19 +534,102 @@ async function refreshMaintenanceStatus() {
                 }
                 const btn = document.getElementById("postAnnouncementBtn");
                 btn.disabled = true;
-                btn.textContent = "Posting...";
+
                 try {
-                    await AppState.addAnnouncement(title, body);
-                    titleInput.value = "";
-                    bodyInput.value = "";
-                    showInfoModal("Posted", "Announcement sent — everyone will see it in their Inbox.");
+                    if (editingAnnouncementId) {
+                        btn.textContent = "Saving...";
+                        await AppState.updateAnnouncement(editingAnnouncementId, title, body);
+                    } else {
+                        btn.textContent = "Posting...";
+                        await AppState.addAnnouncement(title, body);
+                    }
+                    cancelAnnouncementEdit();
+                    await refreshRecentAnnouncements();
+                    if (!editingAnnouncementId) {
+                        showInfoModal("Posted", "Announcement sent — everyone will see it in their Inbox.");
+                    }
                 } catch (e) {
-                    showInfoModal("Couldn't post", e.message);
+                    showInfoModal("Couldn't save", e.message);
                 }
                 btn.disabled = false;
-                btn.textContent = "Post Announcement";
+                btn.textContent = editingAnnouncementId ? "Save Changes" : "Post Announcement";
             }
             window.handlePostAnnouncement = handlePostAnnouncement;
+
+            async function handleEditAnnouncement(notifId) {
+                const list = await AppState.getAnnouncements(50);
+                const item = list.find(a => a.id === notifId);
+                if (!item) {
+                    showInfoModal("Couldn't load", "It may have been deleted.");
+                    return;
+                }
+                editingAnnouncementId = notifId;
+                document.getElementById("newAnnouncementTitleInput").value = item.title;
+                document.getElementById("newAnnouncementBodyInput").value = item.body;
+                document.getElementById("postAnnouncementBtn").textContent = "Save Changes";
+                showCancelAnnouncementEditButton();
+                document.getElementById("newAnnouncementTitleInput").scrollIntoView({ behavior: "smooth", block: "center" });
+            }
+            window.handleEditAnnouncement = handleEditAnnouncement;
+
+            function cancelAnnouncementEdit() {
+                editingAnnouncementId = null;
+                document.getElementById("newAnnouncementTitleInput").value = "";
+                document.getElementById("newAnnouncementBodyInput").value = "";
+                document.getElementById("postAnnouncementBtn").textContent = "Post Announcement";
+                hideCancelAnnouncementEditButton();
+            }
+            window.cancelAnnouncementEdit = cancelAnnouncementEdit;
+
+            function showCancelAnnouncementEditButton() {
+                let btn = document.getElementById("cancelAnnouncementEditBtn");
+                if (!btn) {
+                    btn = document.createElement("button");
+                    btn.id = "cancelAnnouncementEditBtn";
+                    btn.textContent = "Cancel Edit";
+                    btn.style.cssText = "margin-top:12px; margin-left:10px; padding:12px 20px; background:#555; color:white; border:none; border-radius:8px; cursor:pointer;";
+                    btn.onclick = cancelAnnouncementEdit;
+                    document.getElementById("postAnnouncementBtn").insertAdjacentElement("afterend", btn);
+                }
+                btn.style.display = "inline-block";
+            }
+
+            function hideCancelAnnouncementEditButton() {
+                const btn = document.getElementById("cancelAnnouncementEditBtn");
+                if (btn) btn.style.display = "none";
+            }
+
+            async function refreshRecentAnnouncements() {
+                const items = await AppState.getAnnouncements(20);
+                const list = document.getElementById("recentAnnouncementsList");
+                if (!items.length) {
+                    list.innerHTML = '<p class="promo-sub">No announcements posted yet.</p>';
+                    return;
+                }
+                list.innerHTML = "<p class='promo-sub'>Recently posted:</p>" + items.map(a =>
+                    `<div style="padding:8px 0; border-bottom:1px solid #2a2a4a;">
+                        <div style="display:flex; align-items:center; justify-content:space-between;">
+                            <span><strong>${escapeHtml(a.title)}</strong> — <span class="promo-sub">${new Date(a.createdAt).toLocaleString()}</span></span>
+                            <span style="flex-shrink:0; display:flex; gap:8px;">
+                                <button onclick="handleEditAnnouncement('${a.id}')" style="background:#4169e1; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Edit</button>
+                                <button onclick="handleDeleteAnnouncement('${a.id}')" style="background:#aa3838; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Delete</button>
+                            </span>
+                        </div>
+                        <p class="promo-sub" style="white-space:pre-wrap; margin:6px 0 0;">${escapeHtml(a.body)}</p>
+                    </div>`
+                ).join("");
+            }
+
+            async function handleDeleteAnnouncement(notifId) {
+                if (!await showConfirmModal("Delete announcement", "Delete this announcement? This can't be undone.")) return;
+                try {
+                    await AppState.deleteAnnouncement(notifId);
+                    await refreshRecentAnnouncements();
+                } catch (e) {
+                    showInfoModal("Couldn't delete", e.message);
+                }
+            }
+            window.handleDeleteAnnouncement = handleDeleteAnnouncement;
 
             /* ---------------- POST PROMO CODE ---------------- */
             async function handlePostCode() {
@@ -1151,6 +1237,7 @@ async function handleLookupUserByUid() {
                 refreshReports();
                 refreshBansAndTimeouts();
                 refreshMaintenanceStatus();
+                refreshRecentAnnouncements();
             });
             AppState.onAuthChange(refreshAdminState);
 
