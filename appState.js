@@ -2197,6 +2197,7 @@ async function sendAdminMessage(uid, title, body) {
         getWeekId, hasJoinedGiveaway, getMyGiveawayEntry, joinGiveaway, getGiveawayEntries,
         getPublicGiveawayEntries, getWeekWinner, getGiveawayHistory, getSimulatedNow, isGiveawayOpen,
         // admin
+        isAdmin, pickWeeklyWinner, finalizeGiveawayPrize, getMyPrize,
         // promo codes
         addPromoCode, getPromoCodes, deletePromoCode,
         // tips
