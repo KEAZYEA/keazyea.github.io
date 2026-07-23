@@ -1366,7 +1366,7 @@ body {
             </div>
         </div>
         <!-- First-visit Terms/Privacy acceptance gate — blocks everything until both are agreed to -->
-        <div class="mini-modal-overlay open" id="termsGateOverlay" style="z-index:500;">
+        <div class="mini-modal-overlay" id="termsGateOverlay" style="z-index:500;">
             <div class="mini-modal-box" style="max-width:400px; text-align:left;">
                 <h2 style="text-align:center; margin-top:0;">Before you continue</h2>
                 <p class="settings-sub" style="margin-bottom:18px;">Please review and accept both of the following to use Keazyea's Intelligence Hub.</p>
@@ -1573,6 +1573,17 @@ body {
             document.getElementById("termsGateOverlay").classList.remove("open");
         }
 
+        // Runs IMMEDIATELY on page load, before auth/profile are ready — a
+        // signed-in returning user still has their acceptance cached in
+        // localStorage from their last visit (set below whenever the async
+        // check confirms it), so this avoids ever flashing the gate open
+        // for someone who's already agreed. Only skips showing it; never
+        // hides it once shown, so a genuinely new/unaccepted user still
+        // sees it right away with no delay either.
+        if (!hasAcceptedTermsLocally()) {
+            showTermsGate();
+        }
+
         async function checkTermsGate() {
             const user = AppState.getCurrentUser();
             if (user) {
@@ -1582,7 +1593,13 @@ body {
                     hideTermsGate();
                     return;
                 }
-            } else if (hasAcceptedTermsLocally()) {
+                // Signed in, but this account hasn't accepted the CURRENT
+                // version (e.g. new device, or terms were updated since they
+                // last agreed) — show it even if some stale local flag exists.
+                showTermsGate();
+                return;
+            }
+            if (hasAcceptedTermsLocally()) {
                 hideTermsGate();
                 return;
             }
