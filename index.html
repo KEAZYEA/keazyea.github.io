@@ -83,12 +83,26 @@ body {
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            /* justify-content: center was clipping the top of the content
+               when it overflowed — centered flex content that's taller than
+               its container overflows symmetrically above AND below center,
+               but scrollTop can never go negative, so the top overflow was
+               permanently unreachable no matter how far you scrolled. Using
+               margin: auto 0 on the content instead achieves the same
+               "centered when it fits" look without that clipping bug. */
+            justify-content: flex-start;
             padding: clamp(8px, 2.5vh, 20px);
             min-height: 0;
             overflow-y: auto;
             overflow-x: hidden;
             overscroll-behavior: contain;
+        }
+
+        .home-landing > *:first-child {
+            margin-top: auto;
+        }
+        .home-landing > *:last-child {
+            margin-bottom: auto;
         }
 
         .home-landing-title {
