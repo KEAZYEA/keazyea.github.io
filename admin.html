@@ -219,6 +219,18 @@
 
                 <hr style="border-color:#2a2a4a; margin:40px 0;">
 
+                <h2>📣 Post an Announcement</h2>
+                <p class="promo-sub">Appears in everyone's Inbox immediately (under "General"). Use for site-wide
+                    updates, downtime notices, etc. — not tied to a specific promo/tip.</p>
+                <input type="text" id="newAnnouncementTitleInput" placeholder="Title, e.g. Site update"
+                    style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box; margin-bottom:10px;">
+                <textarea id="newAnnouncementBodyInput" placeholder="Announcement text..." rows="4"
+                    style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box; font-family:inherit;"></textarea>
+                <button class="btn-primary" id="postAnnouncementBtn" onclick="handlePostAnnouncement()"
+                    style="margin-top:12px; padding:12px 28px;">Post Announcement</button>
+
+                <hr style="border-color:#2a2a4a; margin:40px 0;">
+
                 <h2>🎁 Post a Promo Code</h2>
                 <p class="promo-sub">This appears instantly on the Promo Codes page and notifies everyone via their
                     inbox.
@@ -507,6 +519,32 @@ async function refreshMaintenanceStatus() {
                 }
             }
             window.handleSetMaintenance = handleSetMaintenance;
+            /* ---------------- POST ANNOUNCEMENT ---------------- */
+            async function handlePostAnnouncement() {
+                const titleInput = document.getElementById("newAnnouncementTitleInput");
+                const bodyInput = document.getElementById("newAnnouncementBodyInput");
+                const title = titleInput.value.trim();
+                const body = bodyInput.value.trim();
+                if (!title || !body) {
+                    showInfoModal("Missing info", "Fill in both the title and the announcement text.");
+                    return;
+                }
+                const btn = document.getElementById("postAnnouncementBtn");
+                btn.disabled = true;
+                btn.textContent = "Posting...";
+                try {
+                    await AppState.addAnnouncement(title, body);
+                    titleInput.value = "";
+                    bodyInput.value = "";
+                    showInfoModal("Posted", "Announcement sent — everyone will see it in their Inbox.");
+                } catch (e) {
+                    showInfoModal("Couldn't post", e.message);
+                }
+                btn.disabled = false;
+                btn.textContent = "Post Announcement";
+            }
+            window.handlePostAnnouncement = handlePostAnnouncement;
+
             /* ---------------- POST PROMO CODE ---------------- */
             async function handlePostCode() {
                 const input = document.getElementById("newCodeInput");
