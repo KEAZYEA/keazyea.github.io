@@ -2038,6 +2038,11 @@ body {
 
         async function saveProfile() {
             let current = getCurrentProfileFormValues();
+
+            if (!current.name.trim()) {
+                showGenericErrorModal("Please enter an in-game name — it's the only required field on this page.", "Name required");
+                return;
+            }
             if (current.currentLevel && (current.currentLevel < 1 || current.currentLevel > 10000)) {
                 showGenericErrorModal("Level must be between 1 and 10000.");
                 return;
@@ -2046,15 +2051,35 @@ body {
                 showGenericErrorModal("That name isn't valid — check the note under the name field and fix it before saving.");
                 return;
             }
+
+            const user = AppState.getCurrentUser();
+
             try {
-                let claimed = await AppState.claimUsername(current.name || "Commander");
-                let updated = await AppState.setProfile({
-                    name: claimed.name, usernameKey: claimed.usernameKey, avatar: current.avatar, bio: current.bio,
-                    server: current.server,
-                    favoriteTroop: current.favoriteTroop, favoriteHero: current.favoriteHero,
-                    highestTrophies: current.highestTrophies, currentClan: current.currentClan,
-                    currentLevel: current.currentLevel, currentPower: current.currentPower
-                });
+                let updated;
+                if (user) {
+                    // Signed-in users get a globally unique name reservation.
+                    let claimed = await AppState.claimUsername(current.name);
+                    updated = await AppState.setProfile({
+                        name: claimed.name, usernameKey: claimed.usernameKey, avatar: current.avatar, bio: current.bio,
+                        server: current.server,
+                        favoriteTroop: current.favoriteTroop, favoriteHero: current.favoriteHero,
+                        highestTrophies: current.highestTrophies, currentClan: current.currentClan,
+                        currentLevel: current.currentLevel, currentPower: current.currentPower
+                    });
+                } else {
+                    // Signed-out users only have a local, on-device profile —
+                    // no global name uniqueness to enforce, so skip
+                    // claimUsername (which would otherwise always fail with
+                    // "must sign in") and just save locally.
+                    updated = await AppState.setProfile({
+                        name: current.name, avatar: current.avatar, bio: current.bio,
+                        server: current.server,
+                        favoriteTroop: current.favoriteTroop, favoriteHero: current.favoriteHero,
+                        highestTrophies: current.highestTrophies, currentClan: current.currentClan,
+                        currentLevel: current.currentLevel, currentPower: current.currentPower
+                    });
+                }
+
                 profileSnapshot = {
                     name: updated.name, avatar: updated.avatar, bio: updated.bio || "", server: updated.server || "",
                     favoriteTroop: updated.favoriteTroop || "", favoriteHero: updated.favoriteHero || "",
@@ -2064,8 +2089,7 @@ body {
                 await refreshTopbar();
                 goHome();
             } catch (e) {
-                const needsSignIn = e.message === "You must sign in with Google first.";
-                showGenericErrorModal(e.message, needsSignIn ? "Sign in required" : undefined, needsSignIn);
+                showGenericErrorModal(e.message);
             }
         }
         /* ---------------- SETTINGS ---------------- */
