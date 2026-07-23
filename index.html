@@ -1635,6 +1635,16 @@ body {
         }
 
         async function checkTermsGate() {
+            // This device/browser already has a confirmed acceptance for the
+            // current version — trust that immediately and never re-prompt
+            // here, even if syncing to Firestore is slow, offline, or fails.
+            // (Cross-device sync still happens below via the profile check,
+            // which only ever ADDS an acceptance, never removes one.)
+            if (hasAcceptedTermsLocally()) {
+                hideTermsGate();
+                return;
+            }
+
             const user = AppState.getCurrentUser();
             if (user) {
                 const profile = await AppState.getProfile();
@@ -1643,14 +1653,9 @@ body {
                     hideTermsGate();
                     return;
                 }
-                // Signed in, but this account hasn't accepted the CURRENT
-                // version (e.g. new device, or terms were updated since they
-                // last agreed) — show it even if some stale local flag exists.
+                // Signed in, no local flag, and no matching profile record —
+                // genuinely a new device/browser that hasn't agreed yet.
                 showTermsGate();
-                return;
-            }
-            if (hasAcceptedTermsLocally()) {
-                hideTermsGate();
                 return;
             }
             showTermsGate();
@@ -1666,15 +1671,24 @@ body {
 
         document.getElementById("termsGateAgreeBtn").addEventListener("click", async () => {
             markAcceptedTermsLocally();
+            hideTermsGate(); // hide immediately — don't make the user wait on the network write
             const user = AppState.getCurrentUser();
             if (user) {
                 try {
                     await AppState.setProfile({ acceptedTermsVersion: TERMS_VERSION, acceptedTermsAt: Date.now() });
                 } catch (e) {
-                    console.warn("Couldn't save terms acceptance to profile:", e.message);
+                    console.warn("Couldn't save terms acceptance to profile (will not re-prompt on this device; will retry silently next load):", e.message);
+                    // Best-effort retry shortly after, in case it was a transient
+                    // network blip — doesn't block or re-show the gate either way.
+                    setTimeout(async () => {
+                        try {
+                            await AppState.setProfile({ acceptedTermsVersion: TERMS_VERSION, acceptedTermsAt: Date.now() });
+                        } catch (e2) {
+                            console.warn("Retry also failed:", e2.message);
+                        }
+                    }, 5000);
                 }
             }
-            hideTermsGate();
         });
 
         async function goToPage(page, fromAbout) {
