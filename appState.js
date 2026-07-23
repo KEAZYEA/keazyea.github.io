@@ -465,6 +465,39 @@ async function backfillPublicProfileNameLower() {
 
     return { updated, skipped };
 }
+
+// ONE-TIME TOOL: fixes avatar paths saved with the wrong filename casing
+// (e.g. "images/demonTank.jpg" when the real file is "images/DEMONTANK.jpg").
+// Add more { wrong, correct } pairs here as you find more mismatches.
+async function backfillAvatarCasing() {
+    await waitForAuthReady();
+    if (!currentUser || currentUser.uid !== ADMIN_UID) throw new Error("Not authorized.");
+
+    const CASING_FIXES = [
+        { wrong: "images/demonTank.jpg", correct: "images/DEMONTANK.jpg" }
+        // { wrong: "images/OLDNAME.jpg", correct: "images/NewName.jpg" },
+    ];
+
+    let updated = 0;
+    let skipped = 0;
+
+    for (const collectionName of ["users", "publicProfiles"]) {
+        const snap = await getDocs(collection(db, collectionName));
+        for (const d of snap.docs) {
+            const data = d.data();
+            const fix = CASING_FIXES.find(f => f.wrong === data.avatar);
+            if (!fix) { skipped++; continue; }
+            try {
+                await updateDoc(doc(db, collectionName, d.id), { avatar: fix.correct });
+                updated++;
+            } catch (e) {
+                console.warn(`Couldn't fix avatar casing for ${collectionName}/${d.id}:`, e.message);
+            }
+        }
+    }
+
+    return { updated, skipped };
+}
     /* ======================================================
        NEW IN STAGE 3 — CLAN RECRUITMENT POSTS
        ====================================================== */
@@ -2114,7 +2147,7 @@ async function sendAdminMessage(uid, title, body) {
         getProfile, setProfile, isVipActive, isNoAdsActive, isBannedNow, shouldShowAds,
         // unique names
         claimUsername, findUserByName, findUserByEmail, getUserProfileForAdmin, backfillUsernameReservations,
-        backfillPublicProfileNameLower,
+        backfillPublicProfileNameLower, backfillAvatarCasing,
         // inbox
         getInbox, addInboxMessage, markAllRead, unreadCount,
         // giveaway
