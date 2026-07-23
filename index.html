@@ -1969,13 +1969,25 @@ body {
         });
 
         /* ---- generic modal, replaces alert() ---- */
-        function showGenericErrorModal(message, title) {
+        function showGenericErrorModal(message, title, showSignIn) {
             document.getElementById("genericErrorTitle").textContent = title || "Heads up";
             document.getElementById("genericErrorBody").textContent = message;
+            document.getElementById("genericErrorSignInBtn").style.display = showSignIn ? "block" : "none";
+            document.getElementById("genericErrorOkBtn").textContent = showSignIn ? "Cancel" : "OK";
             document.getElementById("genericErrorModalOverlay").classList.add("open");
         }
         document.getElementById("genericErrorOkBtn").addEventListener("click", () => {
             document.getElementById("genericErrorModalOverlay").classList.remove("open");
+        });
+        document.getElementById("genericErrorSignInBtn").addEventListener("click", async () => {
+            document.getElementById("genericErrorModalOverlay").classList.remove("open");
+            try {
+                await AppState.signIn();
+                await refreshTopbar();
+                await saveProfile(); // retry the save now that they're signed in
+            } catch (e) {
+                console.error("Sign-in error:", e);
+            }
         });
 
         async function loadProfileIntoPage() {
@@ -2052,7 +2064,8 @@ body {
                 await refreshTopbar();
                 goHome();
             } catch (e) {
-                showGenericErrorModal(e.message);
+                const needsSignIn = e.message === "You must sign in with Google first.";
+                showGenericErrorModal(e.message, needsSignIn ? "Sign in required" : undefined, needsSignIn);
             }
         }
         /* ---------------- SETTINGS ---------------- */
