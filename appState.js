@@ -1984,6 +1984,44 @@ async function sendAdminMessage(uid, title, body) {
         return addNotification("announcement", trimmedTitle, trimmedBody, null);
     }
 
+    async function getAnnouncements(maxCount = 20) {
+        await waitForAuthReady();
+        if (!currentUser || currentUser.uid !== ADMIN_UID) {
+            throw new Error("Not authorized.");
+        }
+        const q = query(
+            collection(db, "notifications"),
+            where("type", "==", "announcement"),
+            orderBy("createdAt", "desc"),
+            limit(maxCount)
+        );
+        const snap = await getDocs(q);
+        const items = [];
+        snap.forEach(d => items.push({ id: d.id, ...d.data() }));
+        return items;
+    }
+
+    async function updateAnnouncement(notifId, title, body) {
+        await waitForAuthReady();
+        if (!currentUser || currentUser.uid !== ADMIN_UID) {
+            throw new Error("Not authorized.");
+        }
+        const trimmedTitle = (title || "").trim();
+        const trimmedBody = (body || "").trim();
+        if (!trimmedTitle) throw new Error("Title cannot be empty.");
+        if (!trimmedBody) throw new Error("Message cannot be empty.");
+        await updateDoc(doc(db, "notifications", notifId), { title: trimmedTitle, body: trimmedBody });
+        return notifId;
+    }
+
+    async function deleteAnnouncement(notifId) {
+        await waitForAuthReady();
+        if (!currentUser || currentUser.uid !== ADMIN_UID) {
+            throw new Error("Not authorized.");
+        }
+        await deleteDoc(doc(db, "notifications", notifId));
+    }
+
     async function addPromoCode(code) {
         await waitForAuthReady();
         if (!currentUser || currentUser.uid !== ADMIN_UID) {
@@ -2164,8 +2202,8 @@ async function sendAdminMessage(uid, title, body) {
         // tips
         addTip, getTips, getTip, uploadTipImage, deleteTip, updateTip,
         // notifications
-        addNotification, getNotifications, deleteNotificationsBySource, listenToNotifications, addAnnouncement,
-        isAdmin, pickWeeklyWinner, finalizeGiveawayPrize, getMyPrize,
+        addNotification, getNotifications, deleteNotificationsBySource, listenToNotifications,
+        addAnnouncement, getAnnouncements, updateAnnouncement, deleteAnnouncement,
         // clan recruitment posts
         postClanRecruitMessage, updateClanPost, listenToClanPosts, deleteClanPost, getClanPostCooldownRemaining,
         getPostCooldownMs, NORMAL_POST_COOLDOWN_MS, VIP_POST_COOLDOWN_MS, CLAN_POST_LIFETIME_MS, uploadClanIcon, deleteClanIconSafe,
