@@ -1908,6 +1908,17 @@ async function sendAdminMessage(uid, title, body) {
         body: trimmedBody
     });
 }
+    async function updatePromoCode(codeId, newCode) {
+        await waitForAuthReady();
+        if (!currentUser || currentUser.uid !== ADMIN_UID) {
+            throw new Error("Not authorized.");
+        }
+        const trimmed = (newCode || "").trim();
+        if (!trimmed) throw new Error("Code cannot be empty.");
+        await updateDoc(doc(db, "promoCodes", codeId), { code: trimmed });
+        return codeId;
+    }
+
     async function deletePromoCode(codeId) {
         await waitForAuthReady();
         if (!currentUser || currentUser.uid !== ADMIN_UID) {
@@ -2156,7 +2167,7 @@ async function sendAdminMessage(uid, title, body) {
         // admin
         isAdmin, pickWeeklyWinner, finalizeGiveawayPrize, getMyPrize,
         // promo codes
-        addPromoCode, getPromoCodes, deletePromoCode,
+        addPromoCode, getPromoCodes, updatePromoCode, deletePromoCode,
         // tips
         addTip, getTips, getTip, uploadTipImage, deleteTip, updateTip,
         // notifications
