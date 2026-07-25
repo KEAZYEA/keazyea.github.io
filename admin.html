@@ -727,32 +727,6 @@ async function refreshMaintenanceStatus() {
                 }
             }
             window.handleDeleteCode = handleDeleteCode;
-
-            async function refreshRecentCodes() {
-                const codes = await AppState.getPromoCodes(5);
-                const list = document.getElementById("recentCodesList");
-                if (!codes.length) {
-                    list.innerHTML = '<p class="promo-sub">No codes posted yet.</p>';
-                    return;
-                }
-                list.innerHTML = "<p class='promo-sub'>Recently posted:</p>" + codes.map(c =>
-                    `<div style="display:flex; align-items:center; justify-content:space-between; padding:8px 0; border-bottom:1px solid #2a2a4a;">
-                    <span>${escapeHtml(c.code)} — <span class="promo-sub">${new Date(c.createdAt).toLocaleString()}</span></span>
-                    <button onclick="handleDeleteCode('${c.id}')" style="background:#aa3838; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer; flex-shrink:0; margin-left:10px;">Delete</button>
-                </div>`
-                ).join("");
-            }
-
-            async function handleDeleteCode(codeId) {
-                if (!await showConfirmModal("Delete code", "Delete this promo code? This can't be undone.")) return;
-                try {
-                    await AppState.deletePromoCode(codeId);
-                    await refreshRecentCodes();
-                } catch (e) {
-                    showInfoModal("Couldn't delete", e.message);
-                }
-            }
-            window.handleDeleteCode = handleDeleteCode;
             /* ---------------- POST TIP ---------------- */
             let tipImageFiles = []; // accumulates across multiple "Choose Files" picks
 
