@@ -2922,13 +2922,29 @@ document.getElementById("dmMessages").addEventListener("scroll", updateDmScrollB
 
         let unsubPosts = null, unsubReqs = null, unsubFriends = null, unsubUnreadDm = null;
 
+        // Pending friend requests store the sender's name/avatar as a
+        // SNAPSHOT from when the request was sent — unlike listenToFriends,
+        // which already does a live lookup. This re-fetches each sender's
+        // current public profile so a rename before you respond still shows
+        // up correctly, matching how the Friends tab already behaves.
+        async function enrichFriendRequests(requests) {
+            return Promise.all(requests.map(async (r) => {
+                const pub = await AppState.getPublicProfile(r.fromUid);
+                return pub
+                    ? { ...r, fromName: pub.name || r.fromName, fromAvatar: pub.avatar || r.fromAvatar }
+                    : r;
+            }));
+        }
+
         function startLiveListeners() {
             const user = AppState.getCurrentUser();
             if (unsubReqs) { unsubReqs(); unsubReqs = null; }
             if (unsubFriends) { unsubFriends(); unsubFriends = null; }
             if (unsubUnreadDm) { unsubUnreadDm(); unsubUnreadDm = null; }
             if (user) {
-                unsubReqs = AppState.listenToIncomingFriendRequests(renderFriendRequests);
+                unsubReqs = AppState.listenToIncomingFriendRequests(async (requests) => {
+                    renderFriendRequests(await enrichFriendRequests(requests));
+                });
                 unsubFriends = AppState.listenToFriendsWithDmMeta(renderFriends);
                 unsubUnreadDm = AppState.listenToUnreadDmCount(updateDmUnreadBadge);
             } else {
