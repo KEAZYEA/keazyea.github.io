@@ -2239,11 +2239,26 @@ document.getElementById("vipStatusText").textContent = AppState.isVipActive(prof
             }
         };
 
+        // Same reasoning as social.html — pending requests store a name
+        // SNAPSHOT from send-time, so re-fetch each sender's current public
+        // profile before rendering, keeping this consistent with how the
+        // Friends tab already shows live/current names.
+        async function enrichFriendRequestsHome(requests) {
+            return Promise.all(requests.map(async (r) => {
+                const pub = await AppState.getPublicProfile(r.fromUid);
+                return pub
+                    ? { ...r, fromName: pub.name || r.fromName, fromAvatar: pub.avatar || r.fromAvatar }
+                    : r;
+            }));
+        }
+
         function startFriendReqListenerHome() {
             if (unsubFriendReqsHome) { unsubFriendReqsHome(); unsubFriendReqsHome = null; }
             const user = AppState.getCurrentUser();
             if (user) {
-                unsubFriendReqsHome = AppState.listenToIncomingFriendRequests(renderFriendReqsHome);
+                unsubFriendReqsHome = AppState.listenToIncomingFriendRequests(async (requests) => {
+                    renderFriendReqsHome(await enrichFriendRequestsHome(requests));
+                });
             } else {
                 renderFriendReqsHome([]);
             }
