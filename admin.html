@@ -632,6 +632,8 @@ async function refreshMaintenanceStatus() {
             window.handleDeleteAnnouncement = handleDeleteAnnouncement;
 
             /* ---------------- POST PROMO CODE ---------------- */
+            let editingCodeId = null;
+
             async function handlePostCode() {
                 const input = document.getElementById("newCodeInput");
                 const code = input.value.trim();
@@ -641,18 +643,90 @@ async function refreshMaintenanceStatus() {
                 }
                 const btn = document.getElementById("postCodeBtn");
                 btn.disabled = true;
-                btn.textContent = "Posting...";
+
                 try {
-                    await AppState.addPromoCode(code);
-                    input.value = "";
+                    if (editingCodeId) {
+                        btn.textContent = "Saving...";
+                        await AppState.updatePromoCode(editingCodeId, code);
+                    } else {
+                        btn.textContent = "Posting...";
+                        await AppState.addPromoCode(code);
+                    }
+                    cancelCodeEdit();
                     await refreshRecentCodes();
                 } catch (e) {
-                    showInfoModal("Couldn't post", e.message);
+                    showInfoModal("Couldn't save", e.message);
                 }
                 btn.disabled = false;
-                btn.textContent = "Post Code";
+                btn.textContent = editingCodeId ? "Save Changes" : "Post Code";
             }
             window.handlePostCode = handlePostCode;
+
+            function handleEditCode(codeId, currentCode) {
+                editingCodeId = codeId;
+                const input = document.getElementById("newCodeInput");
+                input.value = currentCode;
+                document.getElementById("postCodeBtn").textContent = "Save Changes";
+                showCancelCodeEditButton();
+                input.scrollIntoView({ behavior: "smooth", block: "center" });
+                input.focus();
+            }
+            window.handleEditCode = handleEditCode;
+
+            function cancelCodeEdit() {
+                editingCodeId = null;
+                document.getElementById("newCodeInput").value = "";
+                document.getElementById("postCodeBtn").textContent = "Post Code";
+                hideCancelCodeEditButton();
+            }
+            window.cancelCodeEdit = cancelCodeEdit;
+
+            function showCancelCodeEditButton() {
+                let btn = document.getElementById("cancelCodeEditBtn");
+                if (!btn) {
+                    btn = document.createElement("button");
+                    btn.id = "cancelCodeEditBtn";
+                    btn.textContent = "Cancel Edit";
+                    btn.style.cssText = "margin-top:12px; margin-left:10px; padding:12px 20px; background:#555; color:white; border:none; border-radius:8px; cursor:pointer;";
+                    btn.onclick = cancelCodeEdit;
+                    document.getElementById("postCodeBtn").insertAdjacentElement("afterend", btn);
+                }
+                btn.style.display = "inline-block";
+            }
+
+            function hideCancelCodeEditButton() {
+                const btn = document.getElementById("cancelCodeEditBtn");
+                if (btn) btn.style.display = "none";
+            }
+
+            async function refreshRecentCodes() {
+                const codes = await AppState.getPromoCodes(5);
+                const list = document.getElementById("recentCodesList");
+                if (!codes.length) {
+                    list.innerHTML = '<p class="promo-sub">No codes posted yet.</p>';
+                    return;
+                }
+                list.innerHTML = "<p class='promo-sub'>Recently posted:</p>" + codes.map(c =>
+                    `<div style="display:flex; align-items:center; justify-content:space-between; padding:8px 0; border-bottom:1px solid #2a2a4a;">
+                    <span>${escapeHtml(c.code)} — <span class="promo-sub">${new Date(c.createdAt).toLocaleString()}</span></span>
+                    <span style="flex-shrink:0; display:flex; gap:8px;">
+                        <button onclick="handleEditCode('${c.id}', ${escapeHtml(JSON.stringify(c.code))})" style="background:#4169e1; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Edit</button>
+                        <button onclick="handleDeleteCode('${c.id}')" style="background:#aa3838; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Delete</button>
+                    </span>
+                </div>`
+                ).join("");
+            }
+
+            async function handleDeleteCode(codeId) {
+                if (!await showConfirmModal("Delete code", "Delete this promo code? This can't be undone.")) return;
+                try {
+                    await AppState.deletePromoCode(codeId);
+                    await refreshRecentCodes();
+                } catch (e) {
+                    showInfoModal("Couldn't delete", e.message);
+                }
+            }
+            window.handleDeleteCode = handleDeleteCode;
 
             async function refreshRecentCodes() {
                 const codes = await AppState.getPromoCodes(5);
