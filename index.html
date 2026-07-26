@@ -2594,24 +2594,33 @@ function injectAdsterraSlot(containerId, htmlContent) {
 
 let adsterraSocialBarLoaded = false;
 
+// Each banner ad needs its own isolated global scope — Adsterra's
+// invoke.js reads a shared `atOptions` global, so loading multiple
+// banners directly on the page causes them to overwrite each other's
+// config before the (async) invoke.js scripts finish loading. An iframe
+// gives each banner its own separate window/global scope, so there's no
+// collision no matter how many banner ads are on the page at once.
+function injectAdsterraBannerIframe(containerId, key, width, height) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    const iframe = document.createElement("iframe");
+    iframe.style.cssText = `width:${width}px; max-width:100%; height:${height}px; border:none; overflow:hidden; display:block;`;
+    iframe.scrolling = "no";
+    iframe.srcdoc = `<!DOCTYPE html><html><body style="margin:0;padding:0;">
+        <script>atOptions = {'key':'${key}','format':'iframe','height':${height},'width':${width},'params':{}};<\/script>
+        <script src="https://www.highperformanceformat.com/${key}/invoke.js"><\/script>
+        </body></html>`;
+    container.innerHTML = "";
+    container.appendChild(iframe);
+}
+
 async function loadAdsterraAdsIfAllowed() {
     const shouldShow = await AppState.shouldShowAds();
     if (!shouldShow) return; // VIP / No-Ads users never get these injected at all
 
-    injectAdsterraSlot("adSlot728x90", `
-        <script>atOptions = {'key':'c02e32dd0c0dfb9dbd1cf836031e1471','format':'iframe','height':90,'width':728,'params':{}};<\/script>
-        <script src="https://www.highperformanceformat.com/c02e32dd0c0dfb9dbd1cf836031e1471/invoke.js"><\/script>
-    `);
-
-    injectAdsterraSlot("adSlot320x50", `
-        <script>atOptions = {'key':'1a13d2820b1d0ab72678a82cc1afed71','format':'iframe','height':50,'width':320,'params':{}};<\/script>
-        <script src="https://www.highperformanceformat.com/1a13d2820b1d0ab72678a82cc1afed71/invoke.js"><\/script>
-    `);
-
-    injectAdsterraSlot("adSlot300x250", `
-        <script>atOptions = {'key':'970e4e741b46aa292eb4fdf1cadd1b59','format':'iframe','height':250,'width':300,'params':{}};<\/script>
-        <script src="https://www.highperformanceformat.com/970e4e741b46aa292eb4fdf1cadd1b59/invoke.js"><\/script>
-    `);
+    injectAdsterraBannerIframe("adSlot728x90", "c02e32dd0c0dfb9dbd1cf836031e1471", 728, 90);
+    injectAdsterraBannerIframe("adSlot320x50", "1a13d2820b1d0ab72678a82cc1afed71", 320, 50);
+    injectAdsterraBannerIframe("adSlot300x250", "970e4e741b46aa292eb4fdf1cadd1b59", 300, 250);
 
     injectAdsterraSlot("adSlotNative", `
         <script async="async" data-cfasync="false" src="https://pl30540489.effectivecpmnetwork.com/ae4d5bd6f1b544b5d1778ee33ba910a9/invoke.js"><\/script>
