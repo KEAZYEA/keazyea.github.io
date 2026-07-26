@@ -194,16 +194,6 @@
                         style="margin-top:14px; padding:12px 28px;">Confirm & Send Prize</button>
                 </div>
 
-                <div id="drawResult"
-                    style="display:none; margin-top:24px; padding:20px; border:1px solid #45aa38; border-radius:12px; text-align:left;">
-                    <h3 style="margin-top:0;">✅ Prize saved</h3>
-                    <p>The winner will see the code the next time they open the giveaway wheel and it's tied only to
-                        their
-                        account.</p>
-                </div>
-
-                <hr style="border-color:#2a2a4a; margin:40px 0;">
-
                 <h2>🛠️ Server Maintenance</h2>
                 <p class="promo-sub" id="maintenanceStatusText">Loading status...</p>
                 <textarea id="maintenanceMessageInput"
@@ -488,6 +478,87 @@
                 }
             }
             window.handleConfirm = handleConfirm;
+
+            /* ---------------- MISSED WEEKS / AUTO-PICK ---------------- */
+            async function refreshMissedWeeks() {
+                try {
+                    const missed = await AppState.getMissedGiveawayWeeks();
+                    const section = document.getElementById("missedWeeksSection");
+                    const list = document.getElementById("missedWeeksList");
+                    if (!missed.length) {
+                        section.style.display = "none";
+                        return;
+                    }
+                    section.style.display = "block";
+                    list.innerHTML = missed.map(m =>
+                        `<p class="promo-sub" style="margin:4px 0;">Week of ${escapeHtml(m.weekId)} — ${m.entryCount} entr${m.entryCount === 1 ? "y" : "ies"}, no winner drawn.</p>`
+                    ).join("");
+                } catch (e) {
+                    console.warn("Couldn't check missed weeks:", e.message);
+                }
+            }
+
+            async function handleAutoPickMissedWinners() {
+                if (!await showConfirmModal("Auto-pick winners", "Randomly pick a winner for every missed week? Each winner will be notified immediately that they won, but no prize code will be sent until you add one below.")) return;
+                const btn = document.getElementById("autoPickBtn");
+                btn.disabled = true;
+                btn.textContent = "Picking...";
+                try {
+                    const results = await AppState.autoPickMissedWinners();
+                    showInfoModal("Done", results.length
+                        ? `Picked winners for ${results.length} week(s):\n` + results.map(r => `${r.weekId}: ${r.winnerName}`).join("\n")
+                        : "No missed weeks needed a winner.");
+                    await refreshMissedWeeks();
+                    await refreshPendingPrizes();
+                } catch (e) {
+                    showInfoModal("Couldn't auto-pick", e.message);
+                }
+                btn.disabled = false;
+                btn.textContent = "🎲 Auto-Pick Winners for All Missed Weeks";
+            }
+            window.handleAutoPickMissedWinners = handleAutoPickMissedWinners;
+
+            /* ---------------- PENDING PRIZES ---------------- */
+            async function refreshPendingPrizes() {
+                const list = document.getElementById("pendingPrizesList");
+                try {
+                    const pending = await AppState.getPendingPrizes();
+                    if (!pending.length) {
+                        list.innerHTML = '<p class="promo-sub">No pending prizes right now. 🎉</p>';
+                        return;
+                    }
+                    list.innerHTML = pending.map(p => `
+                        <div style="border:1px solid #2a2a4a; border-radius:10px; padding:14px 16px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+                            <div>
+                                <p style="margin:0 0 4px;"><strong>${escapeHtml(p.winnerName || "Unknown")}</strong> <span class="promo-sub">(uid: ${escapeHtml(p.uid)})</span></p>
+                                <p class="promo-sub" style="margin:0;">Week of ${escapeHtml(p.weekId)} — played on ${p.device === "ios" ? "iOS 🍎" : p.device === "android" ? "Android 🤖" : (p.device || "Unknown")}</p>
+                            </div>
+                            <button class="send-pending-prize-btn" data-uid="${escapeHtml(p.uid)}" data-week="${escapeHtml(p.weekId)}" style="background:#4169e1; color:white; border:none; border-radius:6px; padding:8px 16px; cursor:pointer; flex-shrink:0;">Send Code</button>
+                        </div>
+                    `).join("");
+                    list.querySelectorAll(".send-pending-prize-btn").forEach(btn => {
+                        btn.addEventListener("click", () => handleSendPendingPrize(btn.dataset.uid, btn.dataset.week));
+                    });
+                } catch (e) {
+                    list.innerHTML = `<p class="promo-sub">Error: ${escapeHtml(e.message)}</p>`;
+                }
+            }
+
+            async function handleSendPendingPrize(uid, weekId) {
+                const code = await showPromptModal("Promo code to send this winner?", "");
+                if (code === null) return;
+                if (!code.trim()) { showInfoModal("Missing code", "Type in a promo code first."); return; }
+                if (!await showConfirmModal("Send prize", `Send "${code.trim()}" to this winner now?`)) return;
+                try {
+                    await AppState.sendPendingPrize(uid, weekId, code.trim());
+                    showInfoModal("Sent", "The code has been delivered to their inbox.");
+                    await refreshPendingPrizes();
+                } catch (e) {
+                    showInfoModal("Couldn't send", e.message);
+                }
+            }
+            window.handleSendPendingPrize = handleSendPendingPrize;
+
 async function refreshMaintenanceStatus() {
                 try {
                     const status = await AppState.getMaintenanceStatus();
@@ -1286,6 +1357,8 @@ async function handleLookupUserByUid() {
                 refreshBansAndTimeouts();
                 refreshMaintenanceStatus();
                 refreshRecentAnnouncements();
+                refreshMissedWeeks();
+                refreshPendingPrizes();
             });
             AppState.onAuthChange(refreshAdminState);
 
