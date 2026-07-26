@@ -123,6 +123,8 @@
     </div>
     <h1>Store</h1>
 
+    <div id="adBannerStore" style="display:none; justify-content:center; margin:16px auto;"></div>
+
     <!-- Signed-out gate: shown instead of the store until signed in -->
     <div class="store-lock-screen" id="storeSignedOutState" style="display:none;">
         <span class="store-lock-icon">🔒</span>
@@ -361,11 +363,19 @@
         }
         window.handleSignInPrompt = handleSignInPrompt;
 
-        AppState.waitForAuthReady().then(refreshPlanButtons);
+        AppState.waitForAuthReady().then(() => {
+            refreshPlanButtons();
+            AppState.maybeRefreshAd("adBannerStore");
+        });
         AppState.onAuthChange(() => {
             renderedKeys = { vip: null, noAds: null };
             refreshPlanButtons();
+            AppState.maybeRefreshAd("adBannerStore");
         });
+        // maybeRefreshAd throttles itself to once per 20s internally — this
+        // interval just keeps nudging it so the banner rotates and reacts
+        // if VIP status changes without a full page reload.
+        setInterval(() => AppState.maybeRefreshAd("adBannerStore"), 25000);
     </script>
 </body>
 
