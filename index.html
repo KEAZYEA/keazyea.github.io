@@ -2386,7 +2386,7 @@ document.getElementById("vipStatusText").textContent = AppState.isVipActive(prof
 } else if (n.type === "friendAccepted") {
     button = `<button class="btn-primary" style="margin-top:8px; padding:6px 16px; font-size:0.85rem;" onclick="openInboxFriendChat('${n.fromUid}', '${escapeHomeHtml(n.fromName).replace(/'/g, "\\'")}', '${escapeHomeHtml(n.fromAvatar || "")}')">💬 Message</button>`;
 } else if (n.type === "giveawayWin") {
-    button = `<button class="btn-primary view-prize-inbox-btn" data-prize="${escapeHomeHtml(n.prize || "")}" style="margin-top:8px; padding:6px 16px; font-size:0.85rem;">🎁 View Code</button>`;
+    button = `<button class="btn-primary view-prize-inbox-btn" data-prize="${escapeHomeHtml(n.prize || "")}" data-pending="${n.pendingPrize ? "1" : "0"}" style="margin-top:8px; padding:6px 16px; font-size:0.85rem;">${n.prize ? "🎁 View Code" : "⏳ Status"}</button>`;
 }
 // adminMessage and announcement need no button — title + body already contain everything
                 return `
@@ -2400,7 +2400,7 @@ document.getElementById("vipStatusText").textContent = AppState.isVipActive(prof
             }).join("");
 
             list.querySelectorAll(".view-prize-inbox-btn").forEach(btn => {
-                btn.addEventListener("click", () => openPrizeReveal(btn.dataset.prize));
+                btn.addEventListener("click", () => openPrizeReveal(btn.dataset.prize, btn.dataset.pending === "1"));
             });
         }
 
@@ -2408,13 +2408,15 @@ document.getElementById("vipStatusText").textContent = AppState.isVipActive(prof
         // lives on the notification itself (n.prize), so this needs no
         // AppState calls, no VIP check, and no dependency on the wheel/day
         // of week. Works from any inbox notification, any time.
-        function openPrizeReveal(prize) {
+        function openPrizeReveal(prize, pending) {
             const overlay = document.getElementById("prizeRevealModalOverlay");
             const codeText = document.getElementById("prizeRevealCodeText");
             const copyBtn = document.getElementById("prizeRevealCopyBtn");
 
             if (!prize) {
-                codeText.textContent = "Code unavailable";
+                codeText.textContent = pending
+                    ? "🎉 You won! Your code is on its way — check back soon."
+                    : "Code unavailable";
                 codeText.style.opacity = "1";
                 codeText.style.transform = "scale(1)";
                 copyBtn.style.display = "none";
