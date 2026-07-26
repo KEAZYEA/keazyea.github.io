@@ -202,7 +202,7 @@
                     <div id="vipWheelState" class="lock-screen" style="display:none;">
                         <h2>VIP Giveaway</h2>
                         <p class="promo-sub" id="deviceConfirmText"></p>
-                        <p class="promo-sub">Entering as <strong id="giveawayPlayerName"></strong></p>
+                        <p class="promo-sub" id="enteringAsLine">Entering as <strong id="giveawayPlayerName"></strong></p>
                         <p class="promo-sub">🗓️ New winner every Sunday. Next draw in: <strong
                                 id="giveawayCountdown"></strong></p>
 
@@ -455,9 +455,12 @@ async function refreshVipState() {
             window.requestUnlock = requestUnlock;
 
             async function chooseDevice(device) {
-                chosenDevice = device;
-                await enterWheelUIForDevice(device, true);
-            }
+    chosenDevice = device;
+    if (!AppState.isGiveawayOpen()) {
+        alert("It's draw day, so entries are closed right now. This won't enter you into a giveaway — you're just viewing this week's result. Come back tomorrow to enter next week's giveaway.");
+    }
+    await enterWheelUIForDevice(device, true);
+}
             window.chooseDevice = chooseDevice;
 
             async function enterWheelUIForDevice(device, shouldJoin) {
@@ -520,13 +523,18 @@ async function refreshVipState() {
 
             /* ---------------- JOIN ---------------- */
             async function refreshJoinState() {
-                currentWeekId = AppState.getWeekId();
-                const joined = await AppState.hasJoinedGiveaway(currentWeekId);
-                const open = AppState.isGiveawayOpen();
+    currentWeekId = AppState.getWeekId();
+    const joined = await AppState.hasJoinedGiveaway(currentWeekId);
+    const open = AppState.isGiveawayOpen();
 
-                document.getElementById("joinedNotice").style.display = joined ? "block" : "none";
-                document.getElementById("entriesClosedNotice").style.display = (!joined && !open) ? "block" : "none";
-            }
+    document.getElementById("joinedNotice").style.display = joined ? "block" : "none";
+    document.getElementById("entriesClosedNotice").style.display = (!joined && !open) ? "block" : "none";
+
+    // Only claim "Entering as X" when they're actually entered — on a
+    // draw day joinGiveaway() is skipped, so this would otherwise
+    // contradict the "entries are closed" notice right below it.
+    document.getElementById("enteringAsLine").style.display = joined ? "block" : "none";
+}
 
             /* ---------------- WEEKLY COUNTDOWN ---------------- */
             let countdownInterval = null;
