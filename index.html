@@ -2559,7 +2559,9 @@ document.getElementById("vipStatusText").textContent = AppState.isVipActive(prof
                 AppState.touchLastActive();
                 setInterval(() => AppState.touchLastActive(), 5 * 60 * 1000);
                 checkTermsGate();
+                loadAdsterraAdsIfAllowed();
             });
+            AppState.onAuthChange(loadAdsterraAdsIfAllowed);
 
             const urlParams = new URLSearchParams(window.location.search);
             const gotoPage = urlParams.get("goto");
@@ -2639,9 +2641,6 @@ async function loadAdsterraAdsIfAllowed() {
 
     document.querySelectorAll(".adsterra-slot").forEach(el => el.classList.add("show-me"));
 }
-
-AppState.waitForAuthReady().then(loadAdsterraAdsIfAllowed);
-AppState.onAuthChange(loadAdsterraAdsIfAllowed);
 
     </script>
 </body>
