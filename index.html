@@ -5,8 +5,8 @@
     <title>Keazyea's Intelligence Hub</title>
     <link rel="icon" href="images/KIH.jpg">
     <link rel="stylesheet" href="style.css">
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7081980567861066"
-     crossorigin="anonymous"></script>
+    <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7081980567861066"
+     crossorigin="anonymous"></script> -->
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
     <meta name="google-site-verification" content="DoN_cJq6IzGT7ZoXinI6S1zk_ZTkc702o555N4wfOf8" />
@@ -1104,6 +1104,27 @@ body {
             color: #4fc3f7;
             text-decoration: underline;
         }
+
+        /* ---- Adsterra ad slots ---- */
+        .adsterra-slot {
+            display: none;
+            justify-content: center;
+            margin: 12px auto;
+            max-width: 100%;
+            overflow: hidden;
+        }
+
+        .adsterra-slot.show-me {
+            display: flex;
+        }
+
+        /* Mobile banner only shows under 600px width */
+        @media (min-width: 600px) {
+            #adSlot320x50 { display: none !important; }
+        }
+        @media (max-width: 599px) {
+            #adSlot728x90 { display: none !important; }
+        }
        
     </style>
 </head>
@@ -1185,6 +1206,12 @@ body {
                 </button>
             </div>
             <button class="about-creator-link" onclick="goToPage('about')">About the Creator</button>
+
+            <!-- Adsterra ad slots — hidden by default, shown via JS if not VIP/No-Ads -->
+            <div class="adsterra-slot" id="adSlot728x90"></div>
+            <div class="adsterra-slot" id="adSlot320x50"></div>
+            <div class="adsterra-slot" id="adSlot300x250"></div>
+            <div class="adsterra-slot" id="adSlotNative"></div>
         </div>
 
         <!-- ===== CONTENT PAGES (shown once something is picked) ===== -->
@@ -2548,6 +2575,64 @@ window.visualViewport?.addEventListener("resize", setAppHeight);
 window.addEventListener("resize", setAppHeight);
 setAppHeight();
 
+/* ---------------- ADSTERRA ADS ---------------- */
+
+function injectAdsterraSlot(containerId, htmlContent) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    // Adsterra's scripts rely on document.write internally — innerHTML
+    // alone won't execute embedded <script> tags, so each one is
+    // recreated manually to actually run.
+    container.innerHTML = htmlContent;
+    container.querySelectorAll("script").forEach(oldScript => {
+        const newScript = document.createElement("script");
+        [...oldScript.attributes].forEach(attr => newScript.setAttribute(attr.name, attr.value));
+        newScript.text = oldScript.text;
+        oldScript.parentNode.replaceChild(newScript, oldScript);
+    });
+}
+
+let adsterraSocialBarLoaded = false;
+
+async function loadAdsterraAdsIfAllowed() {
+    const shouldShow = await AppState.shouldShowAds();
+    if (!shouldShow) return; // VIP / No-Ads users never get these injected at all
+
+    injectAdsterraSlot("adSlot728x90", `
+        <script>atOptions = {'key':'c02e32dd0c0dfb9dbd1cf836031e1471','format':'iframe','height':90,'width':728,'params':{}};<\/script>
+        <script src="https://www.highperformanceformat.com/c02e32dd0c0dfb9dbd1cf836031e1471/invoke.js"><\/script>
+    `);
+
+    injectAdsterraSlot("adSlot320x50", `
+        <script>atOptions = {'key':'1a13d2820b1d0ab72678a82cc1afed71','format':'iframe','height':50,'width':320,'params':{}};<\/script>
+        <script src="https://www.highperformanceformat.com/1a13d2820b1d0ab72678a82cc1afed71/invoke.js"><\/script>
+    `);
+
+    injectAdsterraSlot("adSlot300x250", `
+        <script>atOptions = {'key':'970e4e741b46aa292eb4fdf1cadd1b59','format':'iframe','height':250,'width':300,'params':{}};<\/script>
+        <script src="https://www.highperformanceformat.com/970e4e741b46aa292eb4fdf1cadd1b59/invoke.js"><\/script>
+    `);
+
+    injectAdsterraSlot("adSlotNative", `
+        <script async="async" data-cfasync="false" src="https://pl30540489.effectivecpmnetwork.com/ae4d5bd6f1b544b5d1778ee33ba910a9/invoke.js"><\/script>
+        <div id="container-ae4d5bd6f1b544b5d1778ee33ba910a9"></div>
+    `);
+
+    // Social Bar is a single site-wide floating widget, not tied to a
+    // specific container — only inject it once, even if this function
+    // re-runs on auth changes.
+    if (!adsterraSocialBarLoaded) {
+        adsterraSocialBarLoaded = true;
+        const socialBarScript = document.createElement("script");
+        socialBarScript.src = "https://pl30540490.effectivecpmnetwork.com/0d/11/ae/0d11ae3b80eee08c395da0d0d0375b83.js";
+        document.body.appendChild(socialBarScript);
+    }
+
+    document.querySelectorAll(".adsterra-slot").forEach(el => el.classList.add("show-me"));
+}
+
+AppState.waitForAuthReady().then(loadAdsterraAdsIfAllowed);
+AppState.onAuthChange(loadAdsterraAdsIfAllowed);
 
     </script>
 </body>
