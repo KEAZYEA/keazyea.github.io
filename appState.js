@@ -2425,7 +2425,7 @@ async function maybeRefreshAd(containerId) {
         // ban gate
         showRestrictedNotice,
         // ads
-        maybeRefreshAd, hideAdBanner
+        maybeRefreshAd, hideAdBanner,
         // maintenance mode (new)
         getMaintenanceStatus, setMaintenanceMode,
         _firebase: { app, auth, db }
