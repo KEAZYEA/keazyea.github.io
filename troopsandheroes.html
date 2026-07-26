@@ -78,6 +78,7 @@
                 <div id="troopsBackBtnSlot"></div>
             </div>
             <div id="troopsResults"></div>
+            <div class="adsterra-slot" id="troopsAdSlot" style="display:none; justify-content:center; margin:12px auto; max-width:100%; overflow:hidden;"></div>
             <div id="troopsCard"></div>
         </div>
 
@@ -119,6 +120,63 @@
             <div id="compareCard"></div>
         </div>
 
+        <script type="module" src="appState.js"></script>
+        <script>
+            /* ---------------- ADSTERRA (Troops & Heroes iframe) ---------------- */
+            let troopsAdKeyIndex = 0;
+            const TROOPS_AD_KEYS = [
+                { key: "c02e32dd0c0dfb9dbd1cf836031e1471", w: 728, h: 90 },
+                { key: "970e4e741b46aa292eb4fdf1cadd1b59", w: 300, h: 250 }
+            ];
+
+            function injectTroopsSearchAd() {
+                const container = document.getElementById("troopsAdSlot");
+                if (!container) return;
+
+                const cfg = TROOPS_AD_KEYS[troopsAdKeyIndex % TROOPS_AD_KEYS.length];
+                troopsAdKeyIndex++;
+
+                const iframe = document.createElement("iframe");
+                iframe.style.cssText = `width:${cfg.w}px; max-width:100%; height:${cfg.h}px; border:none; overflow:hidden; display:block; margin:0 auto;`;
+                iframe.scrolling = "no";
+                iframe.srcdoc = `<!DOCTYPE html><html><body style="margin:0;padding:0;">
+                    <script>atOptions = {'key':'${cfg.key}','format':'iframe','height':${cfg.h},'width':${cfg.w},'params':{}};<\/script>
+                    <script src="https://www.highperformanceformat.com/${cfg.key}/invoke.js"><\/script>
+                    </body></html>`;
+                container.innerHTML = "";
+                container.appendChild(iframe);
+                container.style.display = "flex";
+            }
+
+            function hideTroopsAd() {
+                const container = document.getElementById("troopsAdSlot");
+                if (container) {
+                    container.innerHTML = "";
+                    container.style.display = "none";
+                }
+            }
+
+            let lastTroopsAdAt = 0;
+            const TROOPS_AD_MIN_INTERVAL_MS = 20000; // don't refresh more than once per 20s
+
+            async function maybeRefreshTroopsAd() {
+                try {
+                    const shouldShow = await AppState.shouldShowAds();
+                    if (!shouldShow) { hideTroopsAd(); return; }
+                    const now = Date.now();
+                    if (now - lastTroopsAdAt < TROOPS_AD_MIN_INTERVAL_MS) return;
+                    lastTroopsAdAt = now;
+                    injectTroopsSearchAd();
+                } catch (e) {
+                    console.warn("Troops ad check failed:", e.message);
+                }
+            }
+
+            // initial ad on load
+            window.addEventListener("DOMContentLoaded", () => {
+                AppState.waitForAuthReady().then(maybeRefreshTroopsAd);
+            });
+        </script>
         <script src="abilities.js"></script>
         <script src="talents.js"></script>
         <script>
@@ -1397,6 +1455,7 @@ function unlockBackgroundScroll() {
             }
 
             document.getElementById("troopsSearch").addEventListener("input", function () {
+                maybeRefreshTroopsAd();
                 if (this.value === "") {
                     document.getElementById("troopsBackBtnSlot").innerHTML = "";
                     document.getElementById("troopsCard").innerHTML = "";
@@ -1455,6 +1514,7 @@ function unlockBackgroundScroll() {
             function updateTroopsCard() {
 
                 if (!selectTroop) return;
+                maybeRefreshTroopsAd();
                 let renderedSummons = new Set();
                 document.querySelectorAll('[id^="desc-"]').forEach(el => {
                     if (el.style.display !== "none") persistedOpenDescs.add(el.id);
