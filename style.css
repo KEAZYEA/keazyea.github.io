@@ -619,8 +619,8 @@ h1 {
 }
 
 /* top-aligned, centered ability/talent compare column */
-#compareCard .vtop-center {
-    text-align: center;
+#compareCard tr td.vtop-center {
+    text-align: center !important;
     vertical-align: top;
 }
 #compareCard th {
