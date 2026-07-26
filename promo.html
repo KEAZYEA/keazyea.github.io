@@ -118,7 +118,15 @@
             </div>
         </div>
     </div>
-
+<div class="center-modal-overlay" id="drawDayModalOverlay">
+    <div class="center-modal-box">
+        <div class="center-modal-title">🔒 Entries are closed</div>
+        <div class="center-modal-body">It's draw day, so entries are closed right now. This won't enter you into a giveaway — you're just viewing this week's result. Come back tomorrow to enter next week's giveaway.</div>
+        <div class="center-modal-actions">
+            <button class="center-modal-btn-confirm" id="drawDayModalOkBtn" style="flex:none; margin:0 auto; padding:12px 32px;">Got it</button>
+        </div>
+    </div>
+</div>
     <div class="center-modal-overlay" id="historyModalOverlay">
     <div class="center-modal-box" style="max-width:420px;">
         <div class="center-modal-title">🕘 Past Winners</div>
@@ -457,7 +465,7 @@ async function refreshVipState() {
             async function chooseDevice(device) {
     chosenDevice = device;
     if (!AppState.isGiveawayOpen()) {
-        alert("It's draw day, so entries are closed right now. This won't enter you into a giveaway — you're just viewing this week's result. Come back tomorrow to enter next week's giveaway.");
+        await showDrawDayModal();
     }
     await enterWheelUIForDevice(device, true);
 }
@@ -513,7 +521,16 @@ async function refreshVipState() {
                     };
                 });
             }
-
+function showDrawDayModal() {
+    return new Promise(resolve => {
+        const overlay = document.getElementById("drawDayModalOverlay");
+        overlay.classList.add("open");
+        document.getElementById("drawDayModalOkBtn").onclick = () => {
+            overlay.classList.remove("open");
+            resolve();
+        };
+    });
+}
             async function backToDeviceSelect() {
                 const otherDevice = chosenDevice === "ios" ? "android" : "ios";
                 if (countdownInterval) clearInterval(countdownInterval);
