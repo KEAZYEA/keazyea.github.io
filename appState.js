@@ -1737,6 +1737,22 @@ async function backfillAvatarCasing() {
         return `${yyyy}-${mm}-${dd}`;
     }
 
+    // Returns the last `count` Sunday weekIds BEFORE the current one, most
+    // recent first — used to scan backward for weeks that never got drawn.
+    function getPastWeekIds(count) {
+        const ids = [];
+        const current = getNextSunday();
+        for (let i = 1; i <= count; i++) {
+            const d = new Date(current);
+            d.setDate(d.getDate() - 7 * i);
+            const yyyy = d.getFullYear();
+            const mm = String(d.getMonth() + 1).padStart(2, "0");
+            const dd = String(d.getDate()).padStart(2, "0");
+            ids.push(`${yyyy}-${mm}-${dd}`);
+        }
+        return ids;
+    }
+
     function isGiveawayOpen() {
         const now = getSimulatedNow();
         return now.getDay() !== 0;
@@ -1890,6 +1906,131 @@ async function getGiveawayHistory(maxCount = 20) {
 
     return true;
 }
+
+// Scans the past few weeks for ones that had entries but were never drawn —
+// e.g. a Sunday you forgot to pick a winner on. Doesn't touch anything,
+// just reports what's missing.
+async function getMissedGiveawayWeeks(maxWeeksBack = 12) {
+    await waitForAuthReady();
+    if (!currentUser || currentUser.uid !== ADMIN_UID) throw new Error("Not authorized.");
+
+    const weekIds = getPastWeekIds(maxWeeksBack);
+    const missed = [];
+    for (const weekId of weekIds) {
+        const winner = await getWeekWinner(weekId);
+        if (winner) continue;
+        const entries = await getGiveawayEntries(weekId);
+        if (entries.length > 0) missed.push({ weekId, entryCount: entries.length });
+    }
+    return missed;
+}
+
+// Randomly picks a winner for every missed week found above. The winner is
+// notified RIGHT AWAY that they won — but with no prize code yet, since
+// there isn't one to give. It's marked "pending" so admin.html can surface
+// it under Pending Prizes and you can send the actual code whenever you're
+// next free, without needing to remember who won or dig through entries.
+async function autoPickMissedWinners() {
+    await waitForAuthReady();
+    if (!currentUser || currentUser.uid !== ADMIN_UID) throw new Error("Not authorized.");
+
+    const missed = await getMissedGiveawayWeeks();
+    const results = [];
+
+    for (const { weekId } of missed) {
+        // Guard against a race if a winner was drawn between the scan above
+        // and now (e.g. two admin tabs open).
+        const already = await getWeekWinner(weekId);
+        if (already) continue;
+
+        const entries = await getGiveawayEntries(weekId);
+        if (!entries.length) continue;
+
+        const winner = entries[Math.floor(Math.random() * entries.length)];
+
+        await setDoc(doc(db, "giveawayWeeks", weekId), {
+            winnerUid: winner.uid,
+            winnerName: winner.name,
+            device: winner.device,
+            drawnAt: Date.now()
+        });
+
+        // NOTE: giveawayPrizes is keyed by uid alone (one doc per user,
+        // always the latest) — same limitation as finalizeGiveawayPrize.
+        // If this same person somehow has ANOTHER pending prize from an
+        // earlier week that hasn't been sent yet, this overwrites it.
+        await setDoc(doc(db, "giveawayPrizes", winner.uid), {
+            weekId,
+            prize: null,
+            pendingPrize: true,
+            device: winner.device,
+            winnerName: winner.name,
+            drawnAt: Date.now()
+        });
+
+        try {
+            await addPersonalNotification(winner.uid, {
+                type: "giveawayWin",
+                title: "🎉 You won the VIP Giveaway!",
+                body: "Congrats — you were picked as this week's winner! Your prize code is still being finalized — we'll send it to you here shortly.",
+                weekId,
+                prize: null,
+                pendingPrize: true,
+                device: winner.device
+            });
+        } catch (e) {
+            console.warn("Couldn't send pending-win notification:", e.message);
+        }
+
+        results.push({ weekId, winnerUid: winner.uid, winnerName: winner.name });
+    }
+
+    return results;
+}
+
+// Every user currently owed a prize code — for admin.html's Pending Prizes
+// list. Click into one whenever you're free and send the actual code.
+async function getPendingPrizes() {
+    await waitForAuthReady();
+    if (!currentUser || currentUser.uid !== ADMIN_UID) throw new Error("Not authorized.");
+    const q = query(collection(db, "giveawayPrizes"), where("pendingPrize", "==", true));
+    const snap = await getDocs(q);
+    const items = [];
+    snap.forEach(d => items.push({ uid: d.id, ...d.data() }));
+    return items;
+}
+
+// Finally sends the real code to someone who was already told they won.
+async function sendPendingPrize(uid, weekId, code) {
+    await waitForAuthReady();
+    if (!currentUser || currentUser.uid !== ADMIN_UID) throw new Error("Not authorized.");
+    const trimmed = (code || "").trim();
+    if (!trimmed) throw new Error("Prize code cannot be empty.");
+
+    const ref = doc(db, "giveawayPrizes", uid);
+    const snap = await getDoc(ref);
+    if (!snap.exists()) throw new Error("No pending prize found for this user.");
+    const data = snap.data();
+    if (data.weekId !== weekId) throw new Error("Week mismatch — this prize may have already been updated.");
+
+    await updateDoc(ref, { prize: trimmed, pendingPrize: false });
+
+    try {
+        await addPersonalNotification(uid, {
+            type: "giveawayWin",
+            title: "🎁 Your VIP Giveaway code is ready!",
+            body: `Here's your promo code: "${trimmed}". Redeem it in-game.`,
+            weekId,
+            prize: trimmed,
+            device: data.device || null
+        });
+    } catch (e) {
+        console.warn("Couldn't send prize-ready notification:", e.message);
+    }
+
+    return true;
+}
+
 // Admin-only: send a free-form message straight to a specific user's inbox.
 // Useful for correcting a mistake (e.g. sent the wrong promo code) without
 // waiting for the weekly giveaway flow.
@@ -2166,6 +2307,7 @@ async function sendAdminMessage(uid, title, body) {
         getPublicGiveawayEntries, getWeekWinner, getGiveawayHistory, getSimulatedNow, isGiveawayOpen,
         // admin
         isAdmin, pickWeeklyWinner, finalizeGiveawayPrize, getMyPrize,
+        getMissedGiveawayWeeks, autoPickMissedWinners, getPendingPrizes, sendPendingPrize,
         // promo codes
         addPromoCode, getPromoCodes, updatePromoCode, deletePromoCode,
         // tips
