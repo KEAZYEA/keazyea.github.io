@@ -2001,6 +2001,9 @@ async function getPendingPrizes() {
 }
 
 // Finally sends the real code to someone who was already told they won.
+// Updates their ORIGINAL "you won" notification in place instead of adding
+// a second one — otherwise the inbox ends up with a stale "code is on its
+// way" card sitting forever alongside the real code, which is confusing.
 async function sendPendingPrize(uid, weekId, code) {
     await waitForAuthReady();
     if (!currentUser || currentUser.uid !== ADMIN_UID) throw new Error("Not authorized.");
@@ -2016,16 +2019,40 @@ async function sendPendingPrize(uid, weekId, code) {
     await updateDoc(ref, { prize: trimmed, pendingPrize: false });
 
     try {
-        await addPersonalNotification(uid, {
-            type: "giveawayWin",
-            title: "🎁 Your VIP Giveaway code is ready!",
-            body: `Here's your promo code: "${trimmed}". Redeem it in-game.`,
-            weekId,
-            prize: trimmed,
-            device: data.device || null
-        });
+        const q = query(
+            collection(db, "users", uid, "personalNotifications"),
+            where("type", "==", "giveawayWin"),
+            where("weekId", "==", weekId),
+            where("pendingPrize", "==", true),
+            limit(1)
+        );
+        const notifSnap = await getDocs(q);
+
+        if (!notifSnap.empty) {
+            // Found the original "you won" notification — update it in
+            // place so there's still just ONE card in their inbox, now
+            // showing the real code instead of "code is on its way."
+            await updateDoc(doc(db, "users", uid, "personalNotifications", notifSnap.docs[0].id), {
+                title: "🎁 Your VIP Giveaway code is ready!",
+                body: `Here's your promo code: "${trimmed}". Redeem it in-game.`,
+                prize: trimmed,
+                pendingPrize: false
+            });
+        } else {
+            // Fallback — original notification wasn't found for some
+            // reason (e.g. manually deleted), send a fresh one instead
+            // of failing silently.
+            await addPersonalNotification(uid, {
+                type: "giveawayWin",
+                title: "🎁 Your VIP Giveaway code is ready!",
+                body: `Here's your promo code: "${trimmed}". Redeem it in-game.`,
+                weekId,
+                prize: trimmed,
+                device: data.device || null
+            });
+        }
     } catch (e) {
-        console.warn("Couldn't send prize-ready notification:", e.message);
+        console.warn("Couldn't update prize-ready notification:", e.message);
     }
 
     return true;
