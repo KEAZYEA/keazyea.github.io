@@ -216,6 +216,14 @@
 
          <a class="back-link" id="legalBackLink" href="index.html?goto=settings">← Back to Settings</a>
     </div>
+    <script type="module" src="appState.js"></script>
+    <script type="module">
+        AppState.waitForAuthReady().then(() => {
+            AppState.maybeRefreshAd("adBannerLegal");
+        });
+        AppState.onAuthChange(() => AppState.maybeRefreshAd("adBannerLegal"));
+        setInterval(() => AppState.maybeRefreshAd("adBannerLegal"), 25000);
+    </script>
     <script>
         document.addEventListener("click", (e) => {
             const wrapper = document.querySelector(".menu-wrapper");
