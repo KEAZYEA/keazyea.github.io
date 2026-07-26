@@ -2032,11 +2032,17 @@ async function sendPendingPrize(uid, weekId, code) {
             // Found the original "you won" notification — update it in
             // place so there's still just ONE card in their inbox, now
             // showing the real code instead of "code is on its way."
+            // Also reset read:false and bump createdAt so it resurfaces as
+            // a fresh unread item at the top of their inbox — otherwise a
+            // user who already saw/dismissed the "coming soon" card would
+            // have no way of noticing it silently updated behind the scenes.
             await updateDoc(doc(db, "users", uid, "personalNotifications", notifSnap.docs[0].id), {
                 title: "🎁 Your VIP Giveaway code is ready!",
                 body: `Here's your promo code: "${trimmed}". Redeem it in-game.`,
                 prize: trimmed,
-                pendingPrize: false
+                pendingPrize: false,
+                read: false,
+                createdAt: Date.now()
             });
         } else {
             // Fallback — original notification wasn't found for some
