@@ -2324,7 +2324,62 @@ async function sendAdminMessage(uid, title, body) {
         const data = snap.data();
         return data.weekId === weekId ? data : null;
     }
+/* ---------------- SHARED ADSTERRA HELPERS ---------------- */
 
+const ADSTERRA_BANNER_KEYS = [
+    { key: "c02e32dd0c0dfb9dbd1cf836031e1471", w: 728, h: 90 },
+    { key: "1a13d2820b1d0ab72678a82cc1afed71", w: 320, h: 50 },
+    { key: "970e4e741b46aa292eb4fdf1cadd1b59", w: 300, h: 250 }
+];
+
+const _adRefreshState = {}; // per-containerId: { keyIndex, lastAt }
+const AD_MIN_INTERVAL_MS = 20000;
+
+function injectAdBanner(containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    if (!_adRefreshState[containerId]) _adRefreshState[containerId] = { keyIndex: 0, lastAt: 0 };
+    const state = _adRefreshState[containerId];
+    const cfg = ADSTERRA_BANNER_KEYS[state.keyIndex % ADSTERRA_BANNER_KEYS.length];
+    state.keyIndex++;
+
+    const iframe = document.createElement("iframe");
+    iframe.style.cssText = `width:${cfg.w}px; max-width:100%; height:${cfg.h}px; border:none; overflow:hidden; display:block; margin:0 auto;`;
+    iframe.scrolling = "no";
+    iframe.srcdoc = `<!DOCTYPE html><html><body style="margin:0;padding:0;">
+        <script>atOptions = {'key':'${cfg.key}','format':'iframe','height':${cfg.h},'width':${cfg.w},'params':{}};<\/script>
+        <script src="https://www.highperformanceformat.com/${cfg.key}/invoke.js"><\/script>
+        </body></html>`;
+    container.innerHTML = "";
+    container.appendChild(iframe);
+    container.style.display = "flex";
+}
+
+function hideAdBanner(containerId) {
+    const container = document.getElementById(containerId);
+    if (container) {
+        container.innerHTML = "";
+        container.style.display = "none";
+    }
+}
+
+// The one function every page calls. Handles VIP check + 20s throttle
+// + rotation internally — callers don't manage any of that themselves.
+async function maybeRefreshAd(containerId) {
+    try {
+        const shouldShow = await shouldShowAds();
+        if (!shouldShow) { hideAdBanner(containerId); return; }
+        if (!_adRefreshState[containerId]) _adRefreshState[containerId] = { keyIndex: 0, lastAt: 0 };
+        const state = _adRefreshState[containerId];
+        const now = Date.now();
+        if (now - state.lastAt < AD_MIN_INTERVAL_MS) return;
+        state.lastAt = now;
+        injectAdBanner(containerId);
+    } catch (e) {
+        console.warn("Ad refresh check failed for " + containerId + ":", e.message);
+    }
+}
     return {
         // auth
         signIn, signOut: signOutUser, getCurrentUser, onAuthChange, waitForAuthReady, getIdToken,
