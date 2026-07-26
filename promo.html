@@ -162,6 +162,8 @@
                     <div class="promo-old-list" id="promoCodeList" style="text-align:center;">
                         <p class="promo-sub">Loading codes...</p>
                     </div>
+
+                    <div id="promoAdSlot" style="display:none; justify-content:center; margin:16px auto; max-width:100%; overflow:hidden;"></div>
                 </div>
             </div>
         </div>
@@ -254,6 +256,55 @@
         <script type="module" src="appState.js"></script>
         <script type="module">
 
+            /* ---------------- ADSTERRA (Promo iframe) ---------------- */
+            let promoAdKeyIndex = 0;
+            const PROMO_AD_KEYS = [
+                { key: "c02e32dd0c0dfb9dbd1cf836031e1471", w: 728, h: 90 },
+                { key: "970e4e741b46aa292eb4fdf1cadd1b59", w: 300, h: 250 }
+            ];
+
+            function injectPromoAd() {
+                const container = document.getElementById("promoAdSlot");
+                if (!container) return;
+
+                const cfg = PROMO_AD_KEYS[promoAdKeyIndex % PROMO_AD_KEYS.length];
+                promoAdKeyIndex++;
+
+                const iframe = document.createElement("iframe");
+                iframe.style.cssText = `width:${cfg.w}px; max-width:100%; height:${cfg.h}px; border:none; overflow:hidden; display:block; margin:0 auto;`;
+                iframe.scrolling = "no";
+                iframe.srcdoc = `<!DOCTYPE html><html><body style="margin:0;padding:0;">
+                    <script>atOptions = {'key':'${cfg.key}','format':'iframe','height':${cfg.h},'width':${cfg.w},'params':{}};<\/script>
+                    <script src="https://www.highperformanceformat.com/${cfg.key}/invoke.js"><\/script>
+                    </body></html>`;
+                container.innerHTML = "";
+                container.appendChild(iframe);
+                container.style.display = "flex";
+            }
+
+            function hidePromoAd() {
+                const container = document.getElementById("promoAdSlot");
+                if (container) {
+                    container.innerHTML = "";
+                    container.style.display = "none";
+                }
+            }
+
+            let lastPromoAdAt = 0;
+            const PROMO_AD_MIN_INTERVAL_MS = 20000;
+
+            async function maybeRefreshPromoAd() {
+                try {
+                    const shouldShow = await AppState.shouldShowAds();
+                    if (!shouldShow) { hidePromoAd(); return; }
+                    const now = Date.now();
+                    if (now - lastPromoAdAt < PROMO_AD_MIN_INTERVAL_MS) return;
+                    lastPromoAdAt = now;
+                    injectPromoAd();
+                } catch (e) {
+                    console.warn("Promo ad check failed:", e.message);
+                }
+            }
 
             /* ---------------- PROMO CODES (Firestore-backed) ---------------- */
             function escapeHtml(str) {
@@ -309,6 +360,7 @@
                 const codes = await AppState.getPromoCodes();
                 renderPromoCodes(codes);
                 checkForNewCodes(codes);
+                maybeRefreshPromoAd();
             }
 
             /* ---------------- TAB SWITCHING ---------------- */
@@ -318,6 +370,7 @@
                 if (tab === "codes") {
                     document.getElementById("codesPage").classList.add("active");
                     document.querySelectorAll(".tab-btn")[0].classList.add("active");
+                    maybeRefreshPromoAd();
                 } else {
                     document.getElementById("vipPage").classList.add("active");
                     document.querySelectorAll(".tab-btn")[1].classList.add("active");
@@ -339,6 +392,7 @@
                 }).catch(() => {
                     alert("Couldn't copy automatically — the code is: " + code);
                 });
+                maybeRefreshPromoAd();
             }
             window.copyCode = copyCode;
 
