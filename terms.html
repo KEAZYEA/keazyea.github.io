@@ -141,6 +141,8 @@
         <h1>Terms of Service</h1>
         <p class="legal-updated">Last updated: July 4, 2026</p>
 
+        <div id="adBannerLegal" style="display:none; justify-content:center; margin:0 0 24px;"></div>
+
         <p>Welcome to Keazyea's Intelligence Hub ("we", "our", "the site"). By using this site, you agree to these
             Terms of Service. If you don't agree, please don't use the site.</p>
 
@@ -223,6 +225,14 @@
         <a class="back-link" id="legalBackLink" href="index.html?goto=settings">← Back to Settings</a>
     </div>
 
+    <script type="module" src="appState.js"></script>
+    <script type="module">
+        AppState.waitForAuthReady().then(() => {
+            AppState.maybeRefreshAd("adBannerLegal");
+        });
+        AppState.onAuthChange(() => AppState.maybeRefreshAd("adBannerLegal"));
+        setInterval(() => AppState.maybeRefreshAd("adBannerLegal"), 25000);
+    </script>
     <script>
         document.addEventListener("click", (e) => {
             const wrapper = document.querySelector(".menu-wrapper");
