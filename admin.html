@@ -194,6 +194,28 @@
                         style="margin-top:14px; padding:12px 28px;">Confirm & Send Prize</button>
                 </div>
 
+                <div id="drawResult"
+                    style="display:none; margin-top:24px; padding:20px; border:1px solid #45aa38; border-radius:12px; text-align:left;">
+                    <h3 style="margin-top:0;">✅ Prize saved</h3>
+                    <p>The winner will see the code the next time they open the giveaway wheel and it's tied only to
+                        their
+                        account.</p>
+                </div>
+
+                <div id="missedWeeksSection" style="display:none; margin-top:28px; padding:16px; border:1px solid #aa7a1e; border-radius:12px; text-align:left;">
+                    <h3 style="margin-top:0; color:gold;">⏰ Missed Weeks</h3>
+                    <p class="promo-sub">These weeks had entries but no winner was ever drawn.</p>
+                    <div id="missedWeeksList"></div>
+                    <button class="btn-primary" id="autoPickBtn" onclick="handleAutoPickMissedWinners()" style="margin-top:10px; padding:10px 20px;">🎲 Auto-Pick Winners for All Missed Weeks</button>
+                </div>
+
+                <div style="margin-top:28px; text-align:left;">
+                    <h3>🎁 Pending Prizes <span class="promo-sub">(winner picked, code not sent yet)</span></h3>
+                    <div id="pendingPrizesList"></div>
+                </div>
+
+                <hr style="border-color:#2a2a4a; margin:40px 0;">
+
                 <h2>🛠️ Server Maintenance</h2>
                 <p class="promo-sub" id="maintenanceStatusText">Loading status...</p>
                 <textarea id="maintenanceMessageInput"
