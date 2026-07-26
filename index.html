@@ -2595,13 +2595,10 @@ function injectAdsterraSlot(containerId, htmlContent) {
 }
 
 let adsterraSocialBarLoaded = false;
+let adsterraSocialBarScriptEl = null;
+let adsterraSocialBarObserver = null;
+let adsterraSocialBarBodyChildren = null; // snapshot of body's direct children BEFORE the bar loads
 
-// Each banner ad needs its own isolated global scope — Adsterra's
-// invoke.js reads a shared `atOptions` global, so loading multiple
-// banners directly on the page causes them to overwrite each other's
-// config before the (async) invoke.js scripts finish loading. An iframe
-// gives each banner its own separate window/global scope, so there's no
-// collision no matter how many banner ads are on the page at once.
 function injectAdsterraBannerIframe(containerId, key, width, height) {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -2616,9 +2613,45 @@ function injectAdsterraBannerIframe(containerId, key, width, height) {
     container.appendChild(iframe);
 }
 
+// Removes everything loadAdsterraAdsIfAllowed() ever injected — banners,
+// native, AND the Social Bar (which injects itself directly into <body>,
+// so we track new top-level nodes it adds and remove them explicitly).
+function hideAllAdsterraAds() {
+    // banners + native
+    ["adSlot728x90", "adSlot320x50", "adSlot300x250", "adSlotNative"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = "";
+    });
+    document.querySelectorAll(".adsterra-slot").forEach(el => el.classList.remove("show-me"));
+
+    // social bar — remove the script tag itself...
+    if (adsterraSocialBarScriptEl && adsterraSocialBarScriptEl.parentNode) {
+        adsterraSocialBarScriptEl.parentNode.removeChild(adsterraSocialBarScriptEl);
+    }
+    adsterraSocialBarScriptEl = null;
+
+    // ...and any floating widget elements it added directly to <body>.
+    if (adsterraSocialBarBodyChildren) {
+        const before = adsterraSocialBarBodyChildren;
+        Array.from(document.body.children).forEach(node => {
+            if (!before.has(node)) node.remove();
+        });
+    }
+    if (adsterraSocialBarObserver) {
+        adsterraSocialBarObserver.disconnect();
+        adsterraSocialBarObserver = null;
+    }
+
+    adsterraSocialBarLoaded = false; // allow it to reload later if the user signs out again
+}
+
 async function loadAdsterraAdsIfAllowed() {
     const shouldShow = await AppState.shouldShowAds();
-    if (!shouldShow) return; // VIP / No-Ads users never get these injected at all
+
+    if (!shouldShow) {
+        hideAllAdsterraAds(); // <-- the actual fix: tear down existing ads, don't just skip
+        return;
+    }
 
     injectAdsterraBannerIframe("adSlot728x90", "c02e32dd0c0dfb9dbd1cf836031e1471", 728, 90);
     injectAdsterraBannerIframe("adSlot320x50", "1a13d2820b1d0ab72678a82cc1afed71", 320, 50);
@@ -2629,14 +2662,16 @@ async function loadAdsterraAdsIfAllowed() {
         <div id="container-ae4d5bd6f1b544b5d1778ee33ba910a9"></div>
     `);
 
-    // Social Bar is a single site-wide floating widget, not tied to a
-    // specific container — only inject it once, even if this function
-    // re-runs on auth changes.
     if (!adsterraSocialBarLoaded) {
         adsterraSocialBarLoaded = true;
-        const socialBarScript = document.createElement("script");
-        socialBarScript.src = "https://pl30540490.effectivecpmnetwork.com/0d/11/ae/0d11ae3b80eee08c395da0d0d0375b83.js";
-        document.body.appendChild(socialBarScript);
+
+        // snapshot body's current direct children BEFORE loading, so we know
+        // which new top-level nodes the bar adds and can remove just those later
+        adsterraSocialBarBodyChildren = new Set(document.body.children);
+
+        adsterraSocialBarScriptEl = document.createElement("script");
+        adsterraSocialBarScriptEl.src = "https://pl30540490.effectivecpmnetwork.com/0d/11/ae/0d11ae3b80eee08c395da0d0d0375b83.js";
+        document.body.appendChild(adsterraSocialBarScriptEl);
     }
 
     document.querySelectorAll(".adsterra-slot").forEach(el => el.classList.add("show-me"));
