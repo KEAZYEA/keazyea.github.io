@@ -479,7 +479,8 @@
                 "elevateTank_meleeThrow": true,
                 "demonFat_squeeze": true,
                 "magicArcher_range": true,
-                "stunToad_devour": true
+                "stunToad_devour": true,
+                "demonMage_fireballs": true
                 // add more here as you find them e.g.:
                 // "knight_melee": true,
             };
@@ -1986,7 +1987,9 @@ ${abilityDesc ? `
         <tr>
             <td class="vtop-center">
                 ${leftUnitKey ? `
-                    <img class="troop-img" src="images/${leftUnitKey.toUpperCase()}.jpg" alt="${leftDisplayName}" />
+                    <div class="ability-image-slot">
+                        <img class="troop-img" src="images/${leftUnitKey.toUpperCase()}.jpg" alt="${leftDisplayName}" />
+                    </div>
                     <div class="ability-name">${leftDisplayName}</div>
                     <div class="desc-text-loose">Summoned Unit</div>
                 ` : ""}
@@ -1994,7 +1997,9 @@ ${abilityDesc ? `
             <td></td>
             <td class="vtop-center">
                 ${rightUnitKey ? `
-                    <img class="troop-img" src="images/${rightUnitKey.toUpperCase()}.jpg" alt="${rightDisplayName}" />
+                    <div class="ability-image-slot">
+                        <img class="troop-img" src="images/${rightUnitKey.toUpperCase()}.jpg" alt="${rightDisplayName}" />
+                    </div>
                     <div class="ability-name">${rightDisplayName}</div>
                     <div class="desc-text-loose">Summoned Unit</div>
                 ` : ""}
