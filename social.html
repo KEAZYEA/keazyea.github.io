@@ -1247,6 +1247,8 @@
             </div>
         </div>
 
+        <div id="adBannerSocial" style="display:none; justify-content:center; margin:0 0 16px;"></div>
+
         <!-- Signed-out gate: shown instead of tabs/content until signed in -->
         <div class="social-lock-screen" id="socialSignedOutState" style="display:none;">
             <span class="social-lock-icon">🔒</span>
@@ -2967,11 +2969,13 @@ document.getElementById("dmMessages").addEventListener("scroll", updateDmScrollB
             startLiveListeners();
             setupDmViewportHandling();
             unsubPosts = AppState.listenToClanPosts(renderClanPosts);
+            AppState.maybeRefreshAd("adBannerSocial");
             // Presence heartbeat now lives in appState.js and runs on every page,
             // triggered by real activity — nothing to call here anymore.
             // Re-render the friends list periodically so the online dot decays
             // even if no new Firestore snapshot has fired.
             setInterval(() => renderFriends(friends), 30 * 1000);
+            setInterval(() => AppState.maybeRefreshAd("adBannerSocial"), 25000);
             loadSuggestedFriends();
 
             // Arrived here from an inbox notification ("Message" button) — open
@@ -2986,6 +2990,7 @@ document.getElementById("dmMessages").addEventListener("scroll", updateDmScrollB
         AppState.onAuthChange(async () => {
             await refreshComposeBox();
             startLiveListeners();
+            AppState.maybeRefreshAd("adBannerSocial");
         });
     </script>
 </body>
