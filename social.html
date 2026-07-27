@@ -1465,9 +1465,13 @@
 
             <label class="modal-field-label">Clan Icon (optional)</label>
             <input type="file" id="postClanIconInput" accept="image/*" class="modal-field-input" style="padding:8px;">
-            <img id="postClanIconPreview"
-                style="display:none; max-width:100%; max-height:140px; margin-bottom:12px; border-radius:10px;">
-
+            <div style="position:relative; display:none; margin-bottom:12px;" id="postClanIconPreviewWrap">
+                <img id="postClanIconPreview"
+                    style="display:block; max-width:100%; max-height:140px; border-radius:10px;">
+                <button type="button" id="postClanIconRemoveBtn" onclick="removeClanIconPreview()"
+                    style="position:absolute; top:-8px; right:-8px; width:26px; height:26px; border-radius:50%; background:#c62828; color:white; border:none; font-size:0.85rem; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center;"
+                    title="Remove icon">✕</button>
+            </div>
             <label class="modal-field-label">Server</label>
             <select id="postClanServer" class="modal-field-input">
                 <option value="ios">iOS</option>
@@ -1964,7 +1968,14 @@
             document.getElementById("postClanDescription").value = p.description || "";
             buildTagCheckboxes("postClanTagList", p.tags || []);
             document.getElementById("postClanIconInput").value = "";
-            document.getElementById("postClanIconPreview").style.display = "none";
+            clearExistingClanIcon = false;
+            const iconWrap = document.getElementById("postClanIconPreviewWrap");
+            if (p.iconUrl) {
+                document.getElementById("postClanIconPreview").src = p.iconUrl;
+                iconWrap.style.display = "block";
+            } else {
+                iconWrap.style.display = "none";
+            }
             document.getElementById("autofillClanBtn").style.display = "none";
 
             document.getElementById("postClanModalOverlay").classList.add("open");
@@ -1975,13 +1986,27 @@
             editingPostId = null;
         };
 
-        document.getElementById("postClanIconInput").addEventListener("change", (e) => {
-            const file = e.target.files[0];
-            const preview = document.getElementById("postClanIconPreview");
-            if (!file) { preview.style.display = "none"; return; }
-            preview.src = URL.createObjectURL(file);
-            preview.style.display = "block";
-        });
+        let clearExistingClanIcon = false; // true when editing and the user removed the existing icon without picking a new one
+
+document.getElementById("postClanIconInput").addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    const preview = document.getElementById("postClanIconPreview");
+    const wrap = document.getElementById("postClanIconPreviewWrap");
+    if (!file) { wrap.style.display = "none"; return; }
+    clearExistingClanIcon = false; // picking a new file supersedes any pending removal
+    preview.src = URL.createObjectURL(file);
+    wrap.style.display = "block";
+});
+
+window.removeClanIconPreview = function () {
+    document.getElementById("postClanIconInput").value = "";
+            document.getElementById("postClanIconPreviewWrap").style.display = "none";
+            clearExistingClanIcon = false;
+    // If we're editing a post that already had a saved icon, mark it for
+    // removal on save — otherwise this is just clearing an unsaved pick,
+    // nothing to flag.
+    if (editingPostId) clearExistingClanIcon = true;
+};
 
         const postClanDescInput = document.getElementById("postClanDescription");
         const postClanDescCount = document.getElementById("postClanDescCount");
@@ -2011,18 +2036,36 @@
                     const uploadResult = await AppState.uploadClanIcon(iconFile);
                     iconUrl = uploadResult.iconUrl;
                     iconPath = uploadResult.iconPath;
+                } else if (isEditing && clearExistingClanIcon) {
+                    // User explicitly removed the existing icon and didn't
+                    // pick a replacement — save the post with no icon at all.
+                    iconUrl = null;
+                    iconPath = null;
                 }
 
                 if (isEditing) {
                     submitBtn.textContent = "Saving...";
-                    await AppState.updateClanPost(editingPostId, { clanName, server, minTrophies, description, tags, iconUrl, iconPath });
+                    // Only pass icon fields through when something actually
+                    // changed (new file OR explicit removal) — updateClanPost
+                    // only overwrites iconUrl/iconPath when data.iconUrl is
+                    // truthy, so an explicit removal needs its own flag.
+                    const patch = { clanName, server, minTrophies, description, tags };
+                    if (iconFile) {
+                        patch.iconUrl = iconUrl;
+                        patch.iconPath = iconPath;
+                    } else if (clearExistingClanIcon) {
+                        patch.iconUrl = null;
+                        patch.iconPath = null;
+                        patch.clearIcon = true;
+                    }
+                    await AppState.updateClanPost(editingPostId, patch);
                 } else {
                     submitBtn.textContent = "Posting...";
                     await AppState.postClanRecruitMessage({ clanName, server, minTrophies, description, tags, iconUrl, iconPath });
                 }
 
-                // Replaced an existing icon with a new one — clean up the old file.
-                if (iconPath && oldIconPath && oldIconPath !== iconPath) {
+                // Clean up the old Storage file if it was replaced OR removed.
+                if (oldIconPath && ((iconPath && oldIconPath !== iconPath) || (isEditing && clearExistingClanIcon && !iconFile))) {
                     AppState.deleteClanIconSafe(oldIconPath);
                 }
 
