@@ -370,26 +370,21 @@
         }
 
         .social-tab-panel.active {
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-            min-height: 0;
-        }
+    display: flex;
+    flex-direction: column;
+}
 
-        .social-content-inner {
-            flex: 1;
-            min-height: 0;
-            display: flex;
-            flex-direction: column;
-        }
+.social-content-inner {
+    display: flex;
+    flex-direction: column;
+}
 
         .clan-main {
-            flex: 1;
-            min-width: 0;
-            display: flex;
-            flex-direction: column;
-            min-height: 0;
-        }
+    flex: none;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
 
         .clan-toolbar {
             display: flex;
@@ -521,10 +516,8 @@
         }
 
         .clan-list-scroll {
-    flex: 1;
-    min-height: 0;
-    overflow-y: auto;
-    overscroll-behavior: contain;
+    flex: none;
+    overflow-y: visible;
     padding-right: 32px;
 }
 /* On short/landscape viewports (phone rotated sideways), the ad's fixed
@@ -555,6 +548,29 @@
 
     .clan-list-scroll {
         flex: none;
+        max-height: none;
+        overflow-y: visible;
+    }
+
+    /* Same fix for the Friends tab: these containers have overflow-y:auto
+       + overscroll-behavior:contain for their OWN internal scrollbar in
+       portrait. In landscape, once they no longer overflow their own box,
+       that same combo traps touch scrolling instead of passing it through
+       to the page — nothing to scroll internally, but the browser still
+       grabs the gesture and refuses to hand it off. Removing the height
+       caps and switching to overflow-y:visible lets these just flow with
+       the page, which we've already made scrollable above. */
+    #friendsSection,
+    #suggestedFriendsSection,
+    #friendSearchResults {
+        flex: none;
+        max-height: none;
+        min-height: 0;
+    }
+
+    #friendsList,
+    .suggested-friends-scroll,
+    .friend-search-results-scroll {
         max-height: none;
         overflow-y: visible;
     }
