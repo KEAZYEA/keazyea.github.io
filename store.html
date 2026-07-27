@@ -366,6 +366,7 @@
         AppState.waitForAuthReady().then(() => {
             refreshPlanButtons();
             AppState.maybeRefreshAd("adBannerStore");
+            AppState.loadAdsterraAdsIfAllowed();
         });
         AppState.onAuthChange(() => {
             renderedKeys = { vip: null, noAds: null };
