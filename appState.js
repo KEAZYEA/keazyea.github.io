@@ -67,8 +67,14 @@ const AppState = (function () {
     let authReadyResolve;
     const authReady = new Promise(resolve => { authReadyResolve = resolve; });
 
+    // Bumped on every auth change — lets any in-flight ad check (see
+    // maybeRefreshAd / loadAdsterraAdsIfAllowed) detect that it's now stale
+    // and bail out instead of applying outdated show/hide results.
+    let adGeneration = 0;
+
     onAuthStateChanged(auth, (user) => {
         currentUser = user || null;
+        adGeneration++;
         authReadyResolve();
         window.dispatchEvent(new CustomEvent("kih-auth-changed", { detail: { user: currentUser } }));
     });
@@ -2408,7 +2414,9 @@ function hideAllAdsterraAds() {
 }
 
 async function loadAdsterraAdsIfAllowed() {
+    const myGeneration = adGeneration;
     const shouldShow = await shouldShowAds();
+    if (myGeneration !== adGeneration) return; // stale — a newer auth change has since superseded this check
 
     if (!shouldShow) {
         hideAllAdsterraAds();
@@ -2466,7 +2474,16 @@ async function maybeRefreshAd(containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
+    // Snapshot the generation before the async Firestore read. If a newer
+    // auth change happens while shouldShowAds() is still in flight (e.g.
+    // rapid sign-in/sign-out, or overlapping calls from the 25s interval
+    // and onAuthChange firing close together), this call's result is now
+    // stale — apply it anyway and you can undo a more recent, correct
+    // show/hide with an outdated one.
+    const myGeneration = adGeneration;
     const shouldShow = await shouldShowAds();
+    if (myGeneration !== adGeneration) return;
+
     if (!shouldShow) {
         container.innerHTML = "";
         container.style.display = "none";
