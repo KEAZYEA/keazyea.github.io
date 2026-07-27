@@ -642,6 +642,11 @@ async function backfillAvatarCasing() {
         if (data.iconUrl) {
             patch.iconUrl = data.iconUrl;
             patch.iconPath = data.iconPath || null;
+        } else if (data.clearIcon) {
+            // Explicit removal — user cleared their existing icon without
+            // picking a replacement.
+            patch.iconUrl = null;
+            patch.iconPath = null;
         }
         await updateDoc(ref, patch);
 
