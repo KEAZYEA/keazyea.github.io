@@ -136,21 +136,29 @@
                 AppState.loadAdsterraAdsIfAllowed();
             }
 
-            // initial ad on load
+            // Everything that touches AppState must live inside this
+            // DOMContentLoaded callback (or later). appState.js is a
+            // type="module" script, which the browser always defers until
+            // after parsing finishes — but THIS script is a plain classic
+            // script, so the browser runs it immediately, before the module
+            // has executed and before window.AppState exists. Calling
+            // AppState.onAuthChange(...) directly at the top level (outside
+            // any callback) throws a ReferenceError and silently kills every
+            // line after it in this block — which is why the setInterval
+            // below was never actually registering.
             window.addEventListener("DOMContentLoaded", () => {
                 AppState.waitForAuthReady().then(refreshAllTroopsAds);
+
+                // Re-check on every auth change (sign-in, sign-out, VIP
+                // status change) — without this, ads injected before VIP
+                // status was confirmed never get removed.
+                AppState.onAuthChange(refreshAllTroopsAds);
+
+                // Belt-and-suspenders: also recheck periodically in case VIP
+                // status changes mid-session (e.g. subscription just
+                // activated via webhook while the page stays open).
+                setInterval(refreshAllTroopsAds, 25000);
             });
-
-            // Re-check on every auth change (sign-in, sign-out, VIP status
-            // change) — without this, ads injected before VIP status was
-            // confirmed never get removed, since loadAdsterraAdsIfAllowed()
-            // was previously only ever called once at page load.
-            AppState.onAuthChange(refreshAllTroopsAds);
-
-            // Belt-and-suspenders: also recheck periodically in case VIP
-            // status changes mid-session without a full auth event (e.g.
-            // subscription just activated via webhook while page stays open).
-            setInterval(refreshAllTroopsAds, 25000);
         </script>
         <script src="abilities.js"></script>
         <script src="talents.js"></script>
