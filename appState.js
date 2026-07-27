@@ -2324,134 +2324,122 @@ async function sendAdminMessage(uid, title, body) {
         const data = snap.data();
         return data.weekId === weekId ? data : null;
     }
-/* ---------------- SHARED ADSTERRA HELPERS ---------------- */
+/* ---------------- SHARED ADSTERRA HELPERS ----------------
+   Centralized version of what used to live locally inside index.html.
+   Every page includes divs with these exact fixed IDs:
+   adSlot728x90, adSlot320x50, adSlot300x250, adSlotNative — plus a
+   .adsterra-slot CSS class (display:none by default, .show-me to reveal)
+   — and just calls AppState.loadAdsterraAdsIfAllowed() once auth is ready
+   and again on every auth change. No other page-specific setup needed. */
 
-/* ---------------- SHARED ADSTERRA HELPERS ---------------- */
+let adsterraSocialBarLoaded = false;
+let adsterraSocialBarScriptEl = null;
+let adsterraSocialBarObserver = null;
+let adsterraSocialBarBodyChildren = null; // snapshot of body's direct children BEFORE the bar loads
 
-const ADSTERRA_BANNER_KEYS = [
-    { key: "c02e32dd0c0dfb9dbd1cf836031e1471", w: 728, h: 90 },
-    { key: "1a13d2820b1d0ab72678a82cc1afed71", w: 320, h: 50 },
-    { key: "970e4e741b46aa292eb4fdf1cadd1b59", w: 300, h: 250 }
-];
-const ADSTERRA_NATIVE_KEY = "ae4d5bd6f1b544b5d1778ee33ba910a9";
-const ADSTERRA_POPUNDER_URL = "https://pl30553113.effectivecpmnetwork.com/cc/72/0f/cc720f28e916390a79e4dc545a9f04f7.js";
-const ADSTERRA_SOCIALBAR_URL = "https://pl30540490.effectivecpmnetwork.com/0d/11/ae/0d11ae3b80eee08c395da0d0d0375b83.js";
+let adsterraPopunderLoaded = false;
+let adsterraPopunderScriptEl = null;
 
-const _adRefreshState = {}; // per-containerId: { keyIndex, lastAt }
-const AD_MIN_INTERVAL_MS = 20000;
-
-function injectAdBanner(containerId) {
+function injectAdsterraSlot(containerId, htmlContent) {
     const container = document.getElementById(containerId);
     if (!container) return;
+    // Adsterra's scripts rely on document.write internally — innerHTML
+    // alone won't execute embedded <script> tags, so each one is
+    // recreated manually to actually run.
+    container.innerHTML = htmlContent;
+    container.querySelectorAll("script").forEach(oldScript => {
+        const newScript = document.createElement("script");
+        [...oldScript.attributes].forEach(attr => newScript.setAttribute(attr.name, attr.value));
+        newScript.text = oldScript.text;
+        oldScript.parentNode.replaceChild(newScript, oldScript);
+    });
+}
 
-    if (!_adRefreshState[containerId]) _adRefreshState[containerId] = { keyIndex: 0, lastAt: 0 };
-    const state = _adRefreshState[containerId];
-    const cfg = ADSTERRA_BANNER_KEYS[state.keyIndex % ADSTERRA_BANNER_KEYS.length];
-    state.keyIndex++;
-
+function injectAdsterraBannerIframe(containerId, key, width, height) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
     const iframe = document.createElement("iframe");
-    iframe.style.cssText = `width:${cfg.w}px; max-width:100%; height:${cfg.h}px; border:none; overflow:hidden; display:block; margin:0 auto;`;
+    iframe.style.cssText = `width:${width}px; max-width:100%; height:${height}px; border:none; overflow:hidden; display:block;`;
     iframe.scrolling = "no";
     iframe.srcdoc = `<!DOCTYPE html><html><body style="margin:0;padding:0;">
-        <script>atOptions = {'key':'${cfg.key}','format':'iframe','height':${cfg.h},'width':${cfg.w},'params':{}};<\/script>
-        <script src="https://www.highperformanceformat.com/${cfg.key}/invoke.js"><\/script>
+        <script>atOptions = {'key':'${key}','format':'iframe','height':${height},'width':${width},'params':{}};<\/script>
+        <script src="https://www.highperformanceformat.com/${key}/invoke.js"><\/script>
         </body></html>`;
     container.innerHTML = "";
     container.appendChild(iframe);
-    container.style.display = "flex";
 }
 
-function hideAdBanner(containerId) {
-    const container = document.getElementById(containerId);
-    if (container) {
-        container.innerHTML = "";
-        container.style.display = "none";
+// Removes everything loadAdsterraAdsIfAllowed() ever injected — banners,
+// native, popunder, AND the Social Bar (which injects itself directly into
+// <body>, so we track new top-level nodes it adds and remove them explicitly).
+function hideAllAdsterraAds() {
+    // banners + native
+    ["adSlot728x90", "adSlot320x50", "adSlot300x250", "adSlotNative"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = "";
+    });
+    document.querySelectorAll(".adsterra-slot").forEach(el => el.classList.remove("show-me"));
+
+    // social bar — remove the script tag itself...
+    if (adsterraSocialBarScriptEl && adsterraSocialBarScriptEl.parentNode) {
+        adsterraSocialBarScriptEl.parentNode.removeChild(adsterraSocialBarScriptEl);
     }
-}
+    adsterraSocialBarScriptEl = null;
 
-// The one function every page calls. Handles VIP check + 20s throttle
-// + rotation internally — callers don't manage any of that themselves.
-async function maybeRefreshAd(containerId) {
-    try {
-        const shouldShow = await shouldShowAds();
-        if (!shouldShow) { hideAdBanner(containerId); return; }
-        if (!_adRefreshState[containerId]) _adRefreshState[containerId] = { keyIndex: 0, lastAt: 0 };
-        const state = _adRefreshState[containerId];
-        const now = Date.now();
-        if (now - state.lastAt < AD_MIN_INTERVAL_MS) return;
-        state.lastAt = now;
-        injectAdBanner(containerId);
-    } catch (e) {
-        console.warn("Ad refresh check failed for " + containerId + ":", e.message);
+    // ...and any floating widget elements it added directly to <body>.
+    if (adsterraSocialBarBodyChildren) {
+        const before = adsterraSocialBarBodyChildren;
+        Array.from(document.body.children).forEach(node => {
+            if (!before.has(node)) node.remove();
+        });
     }
-}
-
-// Native Banner — different script shape than the iframe banners above
-// (a container div + an async invoke.js that fills it in directly), so it
-// gets its own injector rather than reusing injectAdBanner.
-function injectNativeBanner(containerId) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-    const innerId = "container-" + ADSTERRA_NATIVE_KEY;
-    container.innerHTML = `<div id="${innerId}"></div>`;
-    const script = document.createElement("script");
-    script.async = true;
-    script.dataset.cfasync = "false";
-    script.src = `https://pl30540489.effectivecpmnetwork.com/${ADSTERRA_NATIVE_KEY}/invoke.js`;
-    container.appendChild(script);
-    container.style.display = "block";
-}
-
-async function maybeRefreshNativeBanner(containerId) {
-    try {
-        const shouldShow = await shouldShowAds();
-        if (!shouldShow) { hideAdBanner(containerId); return; }
-        if (!_adRefreshState[containerId]) _adRefreshState[containerId] = { keyIndex: 0, lastAt: 0 };
-        const state = _adRefreshState[containerId];
-        const now = Date.now();
-        if (now - state.lastAt < AD_MIN_INTERVAL_MS) return;
-        state.lastAt = now;
-        injectNativeBanner(containerId);
-    } catch (e) {
-        console.warn("Native banner refresh failed for " + containerId + ":", e.message);
+    if (adsterraSocialBarObserver) {
+        adsterraSocialBarObserver.disconnect();
+        adsterraSocialBarObserver = null;
     }
-}
+    adsterraSocialBarLoaded = false; // allow it to reload later if the user signs out again
 
-// Popunder + SocialBar are page-wide scripts, not tied to any container —
-// they should load AT MOST ONCE per page view (loading twice would stack
-// duplicate popunders/bars). Tracked with simple module-level flags rather
-// than the per-container state used for banners above.
-let _popunderInjected = false;
-let _socialBarInjected = false;
-
-function injectPopunder() {
-    if (_popunderInjected) return;
-    _popunderInjected = true;
-    const script = document.createElement("script");
-    script.src = ADSTERRA_POPUNDER_URL;
-    document.body.appendChild(script);
-}
-
-function injectSocialBar() {
-    if (_socialBarInjected) return;
-    _socialBarInjected = true;
-    const script = document.createElement("script");
-    script.src = ADSTERRA_SOCIALBAR_URL;
-    document.body.appendChild(script);
-}
-
-// Call this once per page (after waitForAuthReady()) alongside
-// maybeRefreshAd — handles the VIP check itself, so callers don't need
-// their own isNoAdsActive check before calling it.
-async function maybeInjectPageWideAds() {
-    try {
-        const shouldShow = await shouldShowAds();
-        if (!shouldShow) return; // VIP/No-Ads subscribers never get these
-        injectPopunder();
-        injectSocialBar();
-    } catch (e) {
-        console.warn("Page-wide ad injection check failed:", e.message);
+    // popunder
+    if (adsterraPopunderScriptEl && adsterraPopunderScriptEl.parentNode) {
+        adsterraPopunderScriptEl.parentNode.removeChild(adsterraPopunderScriptEl);
     }
+    adsterraPopunderScriptEl = null;
+    adsterraPopunderLoaded = false;
+}
+
+async function loadAdsterraAdsIfAllowed() {
+    const shouldShow = await shouldShowAds();
+
+    if (!shouldShow) {
+        hideAllAdsterraAds();
+        return;
+    }
+
+    injectAdsterraBannerIframe("adSlot728x90", "c02e32dd0c0dfb9dbd1cf836031e1471", 728, 90);
+    injectAdsterraBannerIframe("adSlot320x50", "1a13d2820b1d0ab72678a82cc1afed71", 320, 50);
+    injectAdsterraBannerIframe("adSlot300x250", "970e4e741b46aa292eb4fdf1cadd1b59", 300, 250);
+
+    injectAdsterraSlot("adSlotNative", `
+        <script async="async" data-cfasync="false" src="https://pl30540489.effectivecpmnetwork.com/ae4d5bd6f1b544b5d1778ee33ba910a9/invoke.js"><\/script>
+        <div id="container-ae4d5bd6f1b544b5d1778ee33ba910a9"></div>
+    `);
+
+    if (!adsterraSocialBarLoaded) {
+        adsterraSocialBarLoaded = true;
+        adsterraSocialBarBodyChildren = new Set(document.body.children);
+        adsterraSocialBarScriptEl = document.createElement("script");
+        adsterraSocialBarScriptEl.src = "https://pl30540490.effectivecpmnetwork.com/0d/11/ae/0d11ae3b80eee08c395da0d0d0375b83.js";
+        document.body.appendChild(adsterraSocialBarScriptEl);
+    }
+
+    if (!adsterraPopunderLoaded) {
+        adsterraPopunderLoaded = true;
+        adsterraPopunderScriptEl = document.createElement("script");
+        adsterraPopunderScriptEl.src = "https://pl30553113.effectivecpmnetwork.com/cc/72/0f/cc720f28e916390a79e4dc545a9f04f7.js";
+        document.body.appendChild(adsterraPopunderScriptEl);
+    }
+
+    document.querySelectorAll(".adsterra-slot").forEach(el => el.classList.add("show-me"));
 }
     return {
         // auth
@@ -2498,7 +2486,7 @@ async function maybeInjectPageWideAds() {
         // ban gate
         showRestrictedNotice,
         // ads
-        maybeRefreshAd, hideAdBanner, maybeRefreshNativeBanner, maybeInjectPageWideAds,
+        loadAdsterraAdsIfAllowed, hideAllAdsterraAds,
         // maintenance mode (new)
         getMaintenanceStatus, setMaintenanceMode,
         _firebase: { app, auth, db }
