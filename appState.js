@@ -2451,12 +2451,19 @@ async function loadAdsterraAdsIfAllowed() {
     const now = Date.now();
 
     if (!adsterraPopunderLoaded && (now - lastPopunderAt) >= POPUNDER_MIN_INTERVAL_MS) {
-        adsterraPopunderLoaded = true;
-        localStorage.setItem("kih_last_popunder_at", String(now));
-        adsterraPopunderScriptEl = document.createElement("script");
-        adsterraPopunderScriptEl.src = "https://pl30553113.effectivecpmnetwork.com/cc/72/0f/cc720f28e916390a79e4dc545a9f04f7.js";
-        document.body.appendChild(adsterraPopunderScriptEl);
-    }
+    adsterraPopunderLoaded = true;
+    localStorage.setItem("kih_last_popunder_at", String(now));
+    adsterraPopunderScriptEl = document.createElement("script");
+    adsterraPopunderScriptEl.src = "https://pl30553113.effectivecpmnetwork.com/cc/72/0f/cc720f28e916390a79e4dc545a9f04f7.js";
+    document.body.appendChild(adsterraPopunderScriptEl);
+    console.log("[KIH ads] popunder injected at", new Date(now).toLocaleTimeString());
+} else if (!shouldShow) {
+    console.log("[KIH ads] popunder skipped: ads disabled for this user (VIP/noAds active)");
+} else if (adsterraPopunderLoaded) {
+    console.log("[KIH ads] popunder skipped: already loaded this page view");
+} else {
+    console.log("[KIH ads] popunder skipped: cooldown active, retry in", Math.ceil((POPUNDER_MIN_INTERVAL_MS - (now - lastPopunderAt)) / 1000), "s");
+}
 
     document.querySelectorAll(".adsterra-slot").forEach(el => el.classList.add("show-me"));
 }
