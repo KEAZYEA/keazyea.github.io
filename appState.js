@@ -2419,7 +2419,19 @@ async function loadAdsterraAdsIfAllowed() {
     if (myGeneration !== adGeneration) return; // stale — a newer auth change has since superseded this check
 
     if (!shouldShow) {
+        // If the popunder (or social bar) already executed once, it may have
+        // armed a click/tap listener directly on the page that lives on
+        // independently of the <script> tag — removing the tag via
+        // hideAllAdsterraAds() does NOT unregister that listener. The only
+        // way to guarantee a newly-VIP user never sees a stray popunder is a
+        // full reload, which wipes all JS state and starts clean knowing
+        // they're VIP from the very first paint.
+        const hadArmedAds = adsterraPopunderLoaded || adsterraSocialBarLoaded;
         hideAllAdsterraAds();
+        if (hadArmedAds) {
+            window.location.reload();
+            return;
+        }
         return;
     }
 
