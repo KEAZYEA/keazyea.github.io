@@ -521,12 +521,13 @@
         }
 
         .clan-list-scroll {
-            flex: 1;
-            min-height: 0;
-            overflow-y: auto;
-            overscroll-behavior: contain;
-            padding-right: 4px;
-        }
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-right: 4px;
+    padding-bottom: 60px;
+}
 /* On short/landscape viewports (phone rotated sideways), the ad's fixed
    250px height + header/toolbar can eat almost the entire locked
    100%-height flex column, squeezing .clan-list-scroll down to near-zero
@@ -1137,10 +1138,11 @@
         }
 
         .friend-search-results-scroll {
-            overflow-y: auto;
-            overscroll-behavior: contain;
-            padding-right: 4px;
-        }
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-right: 4px;
+    padding-bottom: 60px;
+}
 
         #friendsSection {
             display: flex;
@@ -1150,11 +1152,14 @@
         }
 
         #friendsList {
-            max-height: 190px; /* ~2+ rows before scrolling kicks in */
-            overflow-y: auto;
-            overscroll-behavior: contain;
-            padding-right: 4px;
-        }
+    max-height: 190px; /* ~2+ rows before scrolling kicks in */
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-right: 4px;
+    padding-bottom: 60px; /* empty space below the last friend so users
+                             have somewhere to grab-scroll without tapping
+                             a row */
+}
 
         #suggestedFriendsSection {
             flex: 1; /* grows to absorb whatever space Friends doesn't need */
@@ -1252,12 +1257,13 @@
         }
 
         .suggested-friends-scroll {
-            flex: 1;
-            min-height: 0;
-            overflow-y: auto;
-            overscroll-behavior: contain;
-            padding-right: 4px;
-        }
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-right: 4px;
+    padding-bottom: 60px;
+}
     </style>
 </head>
 
