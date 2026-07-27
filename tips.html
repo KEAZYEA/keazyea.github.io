@@ -282,6 +282,16 @@
         }
 
         loadTips();
+
+        // Ad recheck on auth change + periodic safety net — mirrors the
+        // pattern used on promo.html/social.html/store.html. Safe to call
+        // even while the grid view (not detail view) is showing: the ad
+        // slot's parent (#tipDetailWrap) is separately hidden via
+        // display:none in that case, so forcing the ad slot itself visible
+        // has no effect until a tip is actually opened.
+        AppState.waitForAuthReady().then(() => AppState.maybeRefreshAd("tipsAdSlot"));
+        AppState.onAuthChange(() => AppState.maybeRefreshAd("tipsAdSlot"));
+        setInterval(() => AppState.maybeRefreshAd("tipsAdSlot"), 25000);
     </script>
 </body>
 
