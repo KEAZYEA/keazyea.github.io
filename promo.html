@@ -735,6 +735,7 @@ if (user && user.uid === winnerData.winnerUid) {
             /* init */
             loadPromoCodes();
             AppState.waitForAuthReady().then(refreshVipState);
+            AppState.waitForAuthReady().then(() => AppState.loadAdsterraAdsIfAllowed());
             AppState.onAuthChange(refreshVipState);
         </script>
 </body>
