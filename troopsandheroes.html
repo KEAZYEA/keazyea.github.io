@@ -813,7 +813,7 @@
                 if (!abilityKey || !abilityData) return "";
                 let entry = abilityData[abilityKey];
                 if (!entry) return "";
-                let locKey = entry.description_Localized; // correct spelling
+                let locKey = entry.desctiption_Localized; // correct spelling
                 if (!locKey) return "";
                 let locEntry = localization[locKey];
                 if (!locEntry) return "";
@@ -832,10 +832,10 @@
             function getTalentDescription(unitKey) {
                 if (!unitKey || !heroTalentData) return "";
                 // heroTalent.json entries have heroId matching the unit key
-                // e.g. { "iceMage_talent": { heroId: "iceMage", description_Localized: "Hero_IceMage_Talent_Description" } }
+                // e.g. { "iceMage_talent": { heroId: "iceMage", desctiption_Localized: "Hero_IceMage_Talent_Description" } }
                 let entry = Object.values(heroTalentData).find(t => t.heroId === unitKey);
                 if (!entry) return "";
-                let locKey = entry.description_Localized;
+                let locKey = entry.desctiption_Localized;
                 if (!locKey) return "";
                 let locEntry = localization[locKey];
                 if (!locEntry) return "";

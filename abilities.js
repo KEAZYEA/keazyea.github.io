@@ -254,7 +254,7 @@ function getAbilityDescription(abilityInfoId) {
     if (!abilityInfoId || !abilityData) return "";
     let entry = abilityData[abilityInfoId];
     if (!entry) return "";
-    let locKey = entry.description_Localized;
+    let locKey = entry.desctiption_Localized;
     if (!locKey) return "";
     let locEntry = localization[locKey];
     if (!locEntry) return "";
