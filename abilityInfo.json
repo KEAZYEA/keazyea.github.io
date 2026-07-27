@@ -2,7 +2,7 @@
     "assasin_teleport": {
         "key": "assasin_teleport",
         "title_Localized": "assasin_teleport_title",
-        "description_Localized": "assasin_teleport_description",
+        "desctiption_Localized": "assasin_teleport_description",
         "iconId": "ability_assassin_teleport",
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -15,7 +15,7 @@
     "necromancer_summon": {
         "key": "necromancer_summon",
         "title_Localized": "necromancer_summon_title",
-        "description_Localized": "necromancer_summon_description",
+        "desctiption_Localized": "necromancer_summon_description",
         "iconId": "ability_summon_skeleton",
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -28,7 +28,7 @@
     "alchemist_heal": {
         "key": "alchemist_heal",
         "title_Localized": "alchemist_heal_title",
-        "description_Localized": "alchemist_heal_description",
+        "desctiption_Localized": "alchemist_heal_description",
         "iconId": "ability_alc_heal",
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -41,7 +41,7 @@
     "paladin_defense": {
         "key": "paladin_defense",
         "title_Localized": "paladin_defense_title",
-        "description_Localized": "paladin_defense_description",
+        "desctiption_Localized": "paladin_defense_description",
         "iconId": "ability_Paladin_shield",
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -54,7 +54,7 @@
     "hunter_blast": {
         "key": "hunter_blast",
         "title_Localized": "hunter_blast_title",
-        "description_Localized": "hunter_blast_description",
+        "desctiption_Localized": "hunter_blast_description",
         "iconId": "ability_Hunter_aoe",
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -67,7 +67,7 @@
     "general_AoEDamage": {
         "key": "general_AoEDamage",
         "title_Localized": "general_AoEDamage_title",
-        "description_Localized": "general_AoEDamage_description",
+        "desctiption_Localized": "general_AoEDamage_description",
         "iconId": "ability_General_Iroh_Strike",
         "isActive": true,
         "isImmortalWhenActive": false,
@@ -80,7 +80,7 @@
     "darkKnight_AoEDamage": {
         "key": "darkKnight_AoEDamage",
         "title_Localized": "darkKnight_AoEDamage_title",
-        "description_Localized": "darkKnight_AoEDamage_description",
+        "desctiption_Localized": "darkKnight_AoEDamage_description",
         "iconId": "ability_Dark_knight_vengeance_strike",
         "isActive": true,
         "isImmortalWhenActive": false,
@@ -93,7 +93,7 @@
     "lancer_charge": {
         "key": "lancer_charge",
         "title_Localized": "lancer_charge_title",
-        "description_Localized": "lancer_charge_description",
+        "desctiption_Localized": "lancer_charge_description",
         "iconId": "ability_Lancer_dash",
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -106,7 +106,7 @@
     "dragonRider_Meteor": {
         "key": "dragonRider_Meteor",
         "title_Localized": "dragonRider_Meteor_title",
-        "description_Localized": "dragonRider_Meteor_description",
+        "desctiption_Localized": "dragonRider_Meteor_description",
         "iconId": "ability_Dragon_purifying_flame",
         "isActive": true,
         "isImmortalWhenActive": true,
@@ -119,7 +119,7 @@
     "merida_Powershot": {
         "key": "merida_Powershot",
         "title_Localized": "merida_Powershot_title",
-        "description_Localized": "merida_Powershot_description",
+        "desctiption_Localized": "merida_Powershot_description",
         "iconId": "ability_Merida_Powershot",
         "isActive": true,
         "isImmortalWhenActive": false,
@@ -132,7 +132,7 @@
     "swordmasterHero_fissure": {
         "key": "swordmasterHero_fissure",
         "title_Localized": "swordmasterHero_fissure_title",
-        "description_Localized": "swordmasterHero_fissure_description",
+        "desctiption_Localized": "swordmasterHero_fissure_description",
         "iconId": "ability_SwordmasterHero_fissure",
         "isActive": true,
         "isImmortalWhenActive": false,
@@ -145,7 +145,7 @@
     "baronBenua_goldAbility": {
         "key": "baronBenua_goldAbility",
         "title_Localized": "baronBenua_goldAbility_title",
-        "description_Localized": "baronBenua_goldAbility_description",
+        "desctiption_Localized": "baronBenua_goldAbility_description",
         "iconId": "ability_BaronBenua_goldAbility",
         "isActive": true,
         "isImmortalWhenActive": false,
@@ -158,7 +158,7 @@
     "clericHero_blessing": {
         "key": "clericHero_blessing",
         "title_Localized": "clericHero_blessing_title",
-        "description_Localized": "clericHero_blessing_description",
+        "desctiption_Localized": "clericHero_blessing_description",
         "iconId": "ability_clericHero_blessing",
         "isActive": true,
         "isImmortalWhenActive": false,
@@ -171,7 +171,7 @@
     "ringleaderHero_heavyShake": {
         "key": "ringleaderHero_heavyShake",
         "title_Localized": "ringleaderHero_heavyShake_title",
-        "description_Localized": "ringleaderHero_heavyShake_description",
+        "desctiption_Localized": "ringleaderHero_heavyShake_description",
         "iconId": "ability_RingleaderHero_heavyShake",
         "isActive": true,
         "isImmortalWhenActive": false,
@@ -184,7 +184,7 @@
     "abilityHex": {
         "key": "abilityHex",
         "title_Localized": "abilityHex_title",
-        "description_Localized": "abilityHex_description",
+        "desctiption_Localized": "abilityHex_description",
         "iconId": "ability_abilityHex",
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -197,7 +197,7 @@
     "abilityLightning": {
         "key": "abilityLightning",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -210,7 +210,7 @@
     "abilityRage": {
         "key": "abilityRage",
         "title_Localized": "abilityRage_title",
-        "description_Localized": "abilityRage_description",
+        "desctiption_Localized": "abilityRage_description",
         "iconId": "ability_abilityRage",
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -223,7 +223,7 @@
     "abilityResurrection": {
         "key": "abilityResurrection",
         "title_Localized": "abilityResurrection_title",
-        "description_Localized": "abilityResurrection_description",
+        "desctiption_Localized": "abilityResurrection_description",
         "iconId": "ability_abilityResurrection",
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -236,7 +236,7 @@
     "charmer_summonSpirit": {
         "key": "charmer_summonSpirit",
         "title_Localized": "charmer_summonSpirit_title",
-        "description_Localized": "charmer_summonSpirit_description",
+        "desctiption_Localized": "charmer_summonSpirit_description",
         "iconId": "ability_charmer_summonSpirit",
         "isActive": true,
         "isImmortalWhenActive": false,
@@ -249,7 +249,7 @@
     "charmer_ray": {
         "key": "charmer_ray",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -262,7 +262,7 @@
     "archer_range": {
         "key": "archer_range",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -275,7 +275,7 @@
     "bomber_range": {
         "key": "bomber_range",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -288,7 +288,7 @@
     "catapult_range": {
         "key": "catapult_range",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -301,7 +301,7 @@
     "necromancer_range": {
         "key": "necromancer_range",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -314,7 +314,7 @@
     "undeadMage_range": {
         "key": "undeadMage_range",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -327,7 +327,7 @@
     "alchemist_range": {
         "key": "alchemist_range",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -340,7 +340,7 @@
     "hunter_range": {
         "key": "hunter_range",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -353,7 +353,7 @@
     "imp_range": {
         "key": "imp_range",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -366,7 +366,7 @@
     "shaman_range": {
         "key": "shaman_range",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -379,7 +379,7 @@
     "undeadJavelin_range": {
         "key": "undeadJavelin_range",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -392,7 +392,7 @@
     "infantry_melee": {
         "key": "infantry_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -405,7 +405,7 @@
     "ironGuards_melee": {
         "key": "ironGuards_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -418,7 +418,7 @@
     "assasin_melee": {
         "key": "assasin_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -431,7 +431,7 @@
     "skeleton_melee": {
         "key": "skeleton_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -444,7 +444,7 @@
     "butcher_melee": {
         "key": "butcher_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -457,7 +457,7 @@
     "paladin_melee": {
         "key": "paladin_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -470,7 +470,7 @@
     "lancer_melee": {
         "key": "lancer_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -483,7 +483,7 @@
     "beast_melee": {
         "key": "beast_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -496,7 +496,7 @@
     "mountainsChampion_melee": {
         "key": "mountainsChampion_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -509,7 +509,7 @@
     "monk_melee": {
         "key": "monk_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -522,7 +522,7 @@
     "monkGhost_melee": {
         "key": "monkGhost_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -535,7 +535,7 @@
     "undead_melee": {
         "key": "undead_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -548,7 +548,7 @@
     "undeadInfantry_melee": {
         "key": "undeadInfantry_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -561,7 +561,7 @@
     "miniBossAccurateMerida_range": {
         "key": "miniBossAccurateMerida_range",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -574,7 +574,7 @@
     "miniBossDragonRider_range": {
         "key": "miniBossDragonRider_range",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -587,7 +587,7 @@
     "miniBossGeneral_melee": {
         "key": "miniBossGeneral_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -600,7 +600,7 @@
     "miniBossDarkKnight_melee": {
         "key": "miniBossDarkKnight_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -613,7 +613,7 @@
     "miniBossSwordmasterHero_melee": {
         "key": "miniBossSwordmasterHero_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -626,7 +626,7 @@
     "general_melee": {
         "key": "general_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -639,7 +639,7 @@
     "darkKnight_melee": {
         "key": "darkKnight_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -652,7 +652,7 @@
     "baronBenua_melee": {
         "key": "baronBenua_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -665,7 +665,7 @@
     "swordmasterHero_melee": {
         "key": "swordmasterHero_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -678,7 +678,7 @@
     "ringleaderHero_melee": {
         "key": "ringleaderHero_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -691,7 +691,7 @@
     "clericHero_range": {
         "key": "clericHero_range",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -704,7 +704,7 @@
     "accurateMerida_range": {
         "key": "accurateMerida_range",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -717,7 +717,7 @@
     "dragonRider_range": {
         "key": "dragonRider_range",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -730,7 +730,7 @@
     "nun_melee": {
         "key": "nun_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -743,7 +743,7 @@
     "nun_retribution": {
         "key": "nun_retribution",
         "title_Localized": "nun_retribution_title",
-        "description_Localized": "nun_retribution_description",
+        "desctiption_Localized": "nun_retribution_description",
         "iconId": "ability_nun_retribution",
         "isActive": true,
         "isImmortalWhenActive": false,
@@ -756,7 +756,7 @@
     "forestQueen_roots": {
         "key": "forestQueen_roots",
         "title_Localized": "forestQueen_abilityRoots_title",
-        "description_Localized": "forestQueen_abilityRoots_description",
+        "desctiption_Localized": "forestQueen_abilityRoots_description",
         "iconId": "ability_forestQueen_roots",
         "isActive": true,
         "isImmortalWhenActive": false,
@@ -769,7 +769,7 @@
     "forestQueen_rayPoison": {
         "key": "forestQueen_rayPoison",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -782,7 +782,7 @@
     "undeadHeadless_mindControl": {
         "key": "undeadHeadless_mindControl",
         "title_Localized": "abilityMindControl_title",
-        "description_Localized": "abilityMindControl_description",
+        "desctiption_Localized": "abilityMindControl_description",
         "iconId": "ability_mindControl",
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -795,7 +795,7 @@
     "undeadHeadless_melee": {
         "key": "undeadHeadless_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -808,7 +808,7 @@
     "boneDragon_deathFlight": {
         "key": "boneDragon_deathFlight",
         "title_Localized": "boneDragon_deathFlight_title",
-        "description_Localized": "boneDragon_deathFlight_description",
+        "desctiption_Localized": "boneDragon_deathFlight_description",
         "iconId": "ability_boneDragon_deathFlight",
         "isActive": true,
         "isImmortalWhenActive": true,
@@ -821,7 +821,7 @@
     "boneDragon_range": {
         "key": "boneDragon_range",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -834,7 +834,7 @@
     "spiderBlast_explosion": {
         "key": "spiderBlast_explosion",
         "title_Localized": "spiderBlast_explosion_title",
-        "description_Localized": "spiderBlast_explosion_description",
+        "desctiption_Localized": "spiderBlast_explosion_description",
         "iconId": "ability_spiderBlast_explosion",
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -847,7 +847,7 @@
     "spiderBlast_melee": {
         "key": "spiderBlast_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -860,7 +860,7 @@
     "stoneGolem_bowlder": {
         "key": "stoneGolem_bowlder",
         "title_Localized": "stoneGolem_bowlder_title",
-        "description_Localized": "stoneGolem_bowlder_description",
+        "desctiption_Localized": "stoneGolem_bowlder_description",
         "iconId": "ability_stoneGolem_bowlder",
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -873,7 +873,7 @@
     "stoneGolem_melee": {
         "key": "stoneGolem_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -886,7 +886,7 @@
     "golemInfantry_melee": {
         "key": "golemInfantry_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -899,7 +899,7 @@
     "damnCatapult_skeletonShot": {
         "key": "damnCatapult_skeletonShot",
         "title_Localized": "damnCatapult_skeletonShot_title",
-        "description_Localized": "damnCatapult_skeletonShot_description",
+        "desctiption_Localized": "damnCatapult_skeletonShot_description",
         "iconId": "ability_damnCatapult_skeletonShot",
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -912,7 +912,7 @@
     "damnCatapult_range": {
         "key": "damnCatapult_range",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -925,7 +925,7 @@
     "undeadGunner_nightmare": {
         "key": "undeadGunner_nightmare",
         "title_Localized": "undeadGunner_nightmare_title",
-        "description_Localized": "undeadGunner_nightmare_description",
+        "desctiption_Localized": "undeadGunner_nightmare_description",
         "iconId": "ability_UndeadGunner_Nightmare",
         "isActive": true,
         "isImmortalWhenActive": false,
@@ -938,7 +938,7 @@
     "undeadGunner_range": {
         "key": "undeadGunner_range",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -951,7 +951,7 @@
     "undeadWarrior_melee": {
         "key": "undeadWarrior_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -964,7 +964,7 @@
     "undeadWarrior_cursedArmy": {
         "key": "undeadWarrior_cursedArmy",
         "title_Localized": "undeadWarrior_cursedArmy_title",
-        "description_Localized": "undeadWarrior_cursedArmy_description",
+        "desctiption_Localized": "undeadWarrior_cursedArmy_description",
         "iconId": "ability_UndeadWarrior_summon",
         "isActive": true,
         "isImmortalWhenActive": false,
@@ -977,7 +977,7 @@
     "undeadSkeleton_melee": {
         "key": "undeadSkeleton_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -990,7 +990,7 @@
     "catapultSkeleton_melee": {
         "key": "catapultSkeleton_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1003,7 +1003,7 @@
     "magicArcher_range": {
         "key": "magicArcher_range",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1016,7 +1016,7 @@
     "bossDragon_defaultAoe": {
         "key": "bossDragon_defaultAoe",
         "title_Localized": "undeadWarrior_cursedArmy_title",
-        "description_Localized": "undeadWarrior_cursedArmy_description",
+        "desctiption_Localized": "undeadWarrior_cursedArmy_description",
         "iconId": "ability_UndeadWarrior_summon",
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1029,7 +1029,7 @@
     "bossDragon_passive_melee": {
         "key": "bossDragon_passive_melee",
         "title_Localized": "boss_dragon_passive_ability1_name",
-        "description_Localized": "boss_dragon_passive_ability1_description",
+        "desctiption_Localized": "boss_dragon_passive_ability1_description",
         "iconId": "ability_bossDragon_passive_melee",
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1042,7 +1042,7 @@
     "bossDragon_passive_range": {
         "key": "bossDragon_passive_range",
         "title_Localized": "boss_dragon_passive_ability2_name",
-        "description_Localized": "boss_dragon_passive_ability2_description",
+        "desctiption_Localized": "boss_dragon_passive_ability2_description",
         "iconId": "ability_bossDragon_passive_range",
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1055,7 +1055,7 @@
     "bossDragon_piercingFire": {
         "key": "bossDragon_piercingFire",
         "title_Localized": "boss_dragon_ability1_name",
-        "description_Localized": "boss_dragon_ability1_description",
+        "desctiption_Localized": "boss_dragon_ability1_description",
         "iconId": "ability_bossDragon_piercingFire",
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1068,7 +1068,7 @@
     "bossDragon_levelUp": {
         "key": "bossDragon_levelUp",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1081,7 +1081,7 @@
     "bossDragon_runAway": {
         "key": "bossDragon_runAway",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": "ability_bossDragon_runAway",
         "isActive": true,
         "isImmortalWhenActive": false,
@@ -1094,7 +1094,7 @@
     "bossDragon_pull": {
         "key": "bossDragon_pull",
         "title_Localized": "boss_dragon_ability2_name",
-        "description_Localized": "boss_dragon_ability2_description",
+        "desctiption_Localized": "boss_dragon_ability2_description",
         "iconId": "ability_bossDragon_pull",
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1107,7 +1107,7 @@
     "bossDragon_earthShakeAoe": {
         "key": "bossDragon_earthShakeAoe",
         "title_Localized": "boss_dragon_ability3_name",
-        "description_Localized": "boss_dragon_ability3_description",
+        "desctiption_Localized": "boss_dragon_ability3_description",
         "iconId": "ability_bossDragon_earthQuake",
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1120,7 +1120,7 @@
     "iceMage_rangeStun": {
         "key": "iceMage_rangeStun",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1133,7 +1133,7 @@
     "iceMage_snowball": {
         "key": "iceMage_snowball",
         "title_Localized": "iceMage_snowball_title",
-        "description_Localized": "iceMage_snowball_description",
+        "desctiption_Localized": "iceMage_snowball_description",
         "iconId": "ability_iceMage_snowball",
         "isActive": true,
         "isImmortalWhenActive": false,
@@ -1146,7 +1146,7 @@
     "flyingMonster_fear": {
         "key": "flyingMonster_fear",
         "title_Localized": "flyingMonster_fear_title",
-        "description_Localized": "flyingMonster_fear_description",
+        "desctiption_Localized": "flyingMonster_fear_description",
         "iconId": "ability_flyingMonster_fear",
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1159,7 +1159,7 @@
     "flyingMonster_melee": {
         "key": "flyingMonster_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1172,7 +1172,7 @@
     "darknessMageSkeleton_melee": {
         "key": "darknessMageSkeleton_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1185,7 +1185,7 @@
     "tombSkeleton_melee": {
         "key": "tombSkeleton_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1198,7 +1198,7 @@
     "tomb_summon": {
         "key": "tomb_summon",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1211,7 +1211,7 @@
     "tomb_aoeAggression": {
         "key": "tomb_aoeAggression",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1224,7 +1224,7 @@
     "darknessMage_summon": {
         "key": "darknessMage_summon",
         "title_Localized": "darknessMage_tombstone_title",
-        "description_Localized": "darknessMage_tombstone_description",
+        "desctiption_Localized": "darknessMage_tombstone_description",
         "iconId": "ability_darknessMage_tombstone",
         "isActive": true,
         "isImmortalWhenActive": false,
@@ -1237,7 +1237,7 @@
     "darknessMage_attack": {
         "key": "darknessMage_attack",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1250,7 +1250,7 @@
     "miniStoneGolem_melee": {
         "key": "miniStoneGolem_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1263,7 +1263,7 @@
     "pyrotechnician_range": {
         "key": "pyrotechnician_range",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1276,7 +1276,7 @@
     "storm_teleport": {
         "key": "storm_teleport",
         "title_Localized": "storm_teleport_title",
-        "description_Localized": "storm_teleport_description",
+        "desctiption_Localized": "storm_teleport_description",
         "iconId": "ability_storm_teleport",
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1289,7 +1289,7 @@
     "stormSpearman_melee": {
         "key": "stormSpearman_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1302,7 +1302,7 @@
     "airMage_Tornado": {
         "key": "airMage_Tornado",
         "title_Localized": "airMage_Tornado_title",
-        "description_Localized": "airMage_Tornado_description",
+        "desctiption_Localized": "airMage_Tornado_description",
         "iconId": "ability_airMage_Tornado",
         "isActive": true,
         "isImmortalWhenActive": false,
@@ -1315,7 +1315,7 @@
     "airMage_range": {
         "key": "airMage_range",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1328,7 +1328,7 @@
     "druid_shapeShift": {
         "key": "druid_shapeShift",
         "title_Localized": "druid_shapeShift_title",
-        "description_Localized": "druid_shapeShift_description",
+        "desctiption_Localized": "druid_shapeShift_description",
         "iconId": "ability_druid_shapeShift",
         "isActive": true,
         "isImmortalWhenActive": false,
@@ -1341,7 +1341,7 @@
     "druid_bleeding": {
         "key": "druid_bleeding",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1354,7 +1354,7 @@
     "mageStudent_range": {
         "key": "mageStudent_range",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1367,7 +1367,7 @@
     "vulkanGolem_melee": {
         "key": "vulkanGolem_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1380,7 +1380,7 @@
     "vulkanGolem_fury": {
         "key": "vulkanGolem_fury",
         "title_Localized": "vulkanGolem_fury_title",
-        "description_Localized": "vulkanGolem_fury_description",
+        "desctiption_Localized": "vulkanGolem_fury_description",
         "iconId": "ability_vulkanGolem_fury",
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1393,7 +1393,7 @@
     "eliteWarrior_melee": {
         "key": "eliteWarrior_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1406,7 +1406,7 @@
     "eliteWarrior_powerJump": {
         "key": "eliteWarrior_powerJump",
         "title_Localized": "eliteWarrior_powerJump_title",
-        "description_Localized": "eliteWarrior_powerJump_description",
+        "desctiption_Localized": "eliteWarrior_powerJump_description",
         "iconId": "ability_eliteWarrior_powerJump",
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1419,7 +1419,7 @@
     "gravedigger_melee": {
         "key": "gravedigger_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1432,7 +1432,7 @@
     "gravedigger_undermine": {
         "key": "gravedigger_undermine",
         "title_Localized": "gravedigger_undermine_title",
-        "description_Localized": "gravedigger_undermine_description",
+        "desctiption_Localized": "gravedigger_undermine_description",
         "iconId": "ability_gravedigger_undermine",
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1445,7 +1445,7 @@
     "spiderBang_bang": {
         "key": "spiderBang_bang",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1458,7 +1458,7 @@
     "spiderBang_melee": {
         "key": "spiderBang_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1471,7 +1471,7 @@
     "spiderMelee_melee": {
         "key": "spiderMelee_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1484,7 +1484,7 @@
     "bossSpiderQueen_defaultAoe": {
         "key": "bossSpiderQueen_defaultAoe",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1497,7 +1497,7 @@
     "bossSpiderQueen_poisonPuddles": {
         "key": "bossSpiderQueen_poisonPuddles",
         "title_Localized": "boss_spiderQueen_ability3_name",
-        "description_Localized": "boss_spiderQueen_ability3_description",
+        "desctiption_Localized": "boss_spiderQueen_ability3_description",
         "iconId": "ability_bossSpiderQueen_poisonPuddles",
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1510,7 +1510,7 @@
     "bossSpiderQueen_summon_spiderMelee": {
         "key": "bossSpiderQueen_summon_spiderMelee",
         "title_Localized": "boss_spiderQueen_ability2_name",
-        "description_Localized": "boss_spiderQueen_ability2_description",
+        "desctiption_Localized": "boss_spiderQueen_ability2_description",
         "iconId": "ability_bossSpiderQueen_summon_spiderMelee",
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1523,7 +1523,7 @@
     "bossSpiderQueen_summon_spiderBang": {
         "key": "bossSpiderQueen_summon_spiderBang",
         "title_Localized": "boss_spiderQueen_ability1_name",
-        "description_Localized": "boss_spiderQueen_ability1_description",
+        "desctiption_Localized": "boss_spiderQueen_ability1_description",
         "iconId": "ability_bossSpiderQueen_summon_spiderBang",
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1536,7 +1536,7 @@
     "bossSpiderQueen_levelUp": {
         "key": "bossSpiderQueen_levelUp",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1549,7 +1549,7 @@
     "bossSpiderQueen_passive_melee": {
         "key": "bossSpiderQueen_passive_melee",
         "title_Localized": "boss_spiderQueen_passive_ability1_name",
-        "description_Localized": "boss_spiderQueen_passive_ability1_description",
+        "desctiption_Localized": "boss_spiderQueen_passive_ability1_description",
         "iconId": "ability_bossSpiderQueen_passive_melee",
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1562,7 +1562,7 @@
     "bossSpiderQueen_passive_range": {
         "key": "bossSpiderQueen_passive_range",
         "title_Localized": "boss_spiderQueen_passive_ability2_name",
-        "description_Localized": "boss_spiderQueen_passive_ability2_description",
+        "desctiption_Localized": "boss_spiderQueen_passive_ability2_description",
         "iconId": "ability_bossSpiderQueen_passive_range",
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1575,7 +1575,7 @@
     "flyingMonsterInitial": {
         "key": "flyingMonsterInitial",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1588,7 +1588,7 @@
     "bossSpiderQueen_targetMinions": {
         "key": "bossSpiderQueen_targetMinions",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": "ability_BossSpiderQueen_targetMinions",
         "isActive": true,
         "isImmortalWhenActive": false,
@@ -1601,7 +1601,7 @@
     "fireMage_attack": {
         "key": "fireMage_attack",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1614,7 +1614,7 @@
     "fireMage_rebirth": {
         "key": "fireMage_rebirth",
         "title_Localized": "fireMage_rebirth_title",
-        "description_Localized": "fireMage_rebirth_description",
+        "desctiption_Localized": "fireMage_rebirth_description",
         "iconId": "ability_fireMage_rebirth",
         "isActive": true,
         "isImmortalWhenActive": false,
@@ -1627,7 +1627,7 @@
     "fireMage_sunrise": {
         "key": "fireMage_sunrise",
         "title_Localized": "fireMage_sunrise_title",
-        "description_Localized": "fireMage_sunrise_description",
+        "desctiption_Localized": "fireMage_sunrise_description",
         "iconId": "ability_fireMage_sunrise",
         "isActive": true,
         "isImmortalWhenActive": false,
@@ -1640,7 +1640,7 @@
     "skeletonWarrior_melee": {
         "key": "skeletonWarrior_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1653,7 +1653,7 @@
     "lightningElemental_stormCloud": {
         "key": "lightningElemental_stormCloud",
         "title_Localized": "lightningElemental_stormCloud_title",
-        "description_Localized": "lightningElemental_stormCloud_description",
+        "desctiption_Localized": "lightningElemental_stormCloud_description",
         "iconId": "ability_lightningElemental_stormCloud",
         "isActive": true,
         "isImmortalWhenActive": false,
@@ -1666,7 +1666,7 @@
     "lightningElemental_range": {
         "key": "lightningElemental_range",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1679,7 +1679,7 @@
     "windElemental_melee": {
         "key": "windElemental_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1692,7 +1692,7 @@
     "windElemental_abilityVortex": {
         "key": "windElemental_abilityVortex",
         "title_Localized": "airElemental_abilityVortex_title",
-        "description_Localized": "airElemental_abilityVortex_description",
+        "desctiption_Localized": "airElemental_abilityVortex_description",
         "iconId": "ability_windElemental_abilityVortex",
         "isActive": false,
         "isImmortalWhenActive": true,
@@ -1705,7 +1705,7 @@
     "waterMage_waterPuddles": {
         "key": "waterMage_waterPuddles",
         "title_Localized": "waterMage_waterPuddles_title",
-        "description_Localized": "waterMage_waterPuddles_description",
+        "desctiption_Localized": "waterMage_waterPuddles_description",
         "iconId": "ability_waterMage_waterPuddles",
         "isActive": true,
         "isImmortalWhenActive": false,
@@ -1718,7 +1718,7 @@
     "waterMage_range": {
         "key": "waterMage_range",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1731,7 +1731,7 @@
     "undeadPirate_melee": {
         "key": "undeadPirate_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1744,7 +1744,7 @@
     "undeadPirate_piercingShip": {
         "key": "undeadPirate_piercingShip",
         "title_Localized": "undeadPirate_piercingShip_title",
-        "description_Localized": "undeadPirate_piercingShip_description",
+        "desctiption_Localized": "undeadPirate_piercingShip_description",
         "iconId": "ability_undeadPirate_piercingShip",
         "isActive": true,
         "isImmortalWhenActive": false,
@@ -1757,7 +1757,7 @@
     "sandMage_sleep": {
         "key": "sandMage_sleep",
         "title_Localized": "sandMage_sleep_title",
-        "description_Localized": "sandMage_sleep_description",
+        "desctiption_Localized": "sandMage_sleep_description",
         "iconId": "ability_sandMage_sleep",
         "isActive": true,
         "isImmortalWhenActive": false,
@@ -1770,7 +1770,7 @@
     "sandMage_range": {
         "key": "sandMage_range",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1783,7 +1783,7 @@
     "cursedGiant_pullClaws": {
         "key": "cursedGiant_pullClaws",
         "title_Localized": "cursedGiant_pullClaws_title",
-        "description_Localized": "cursedGiant_pullClaws_description",
+        "desctiption_Localized": "cursedGiant_pullClaws_description",
         "iconId": "ability_cursedGiant_pullClaws",
         "isActive": true,
         "isImmortalWhenActive": false,
@@ -1796,7 +1796,7 @@
     "cursedGiant_melee": {
         "key": "cursedGiant_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1809,7 +1809,7 @@
     "doubleShield_shieldDash": {
         "key": "doubleShield_shieldDash",
         "title_Localized": "doubleShield_shieldDash_title",
-        "description_Localized": "doubleShield_shieldDash_description",
+        "desctiption_Localized": "doubleShield_shieldDash_description",
         "iconId": "ability_doubleShield_shieldDash",
         "isActive": true,
         "isImmortalWhenActive": true,
@@ -1822,7 +1822,7 @@
     "doubleShield_melee": {
         "key": "doubleShield_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1835,7 +1835,7 @@
     "debafferOnMaunt_poisonDebuffPuddles": {
         "key": "debafferOnMaunt_poisonDebuffPuddles",
         "title_Localized": "debafferOnMaunt_poisonDebuffPuddles_title",
-        "description_Localized": "debafferOnMaunt_poisonDebuffPuddles_description",
+        "desctiption_Localized": "debafferOnMaunt_poisonDebuffPuddles_description",
         "iconId": "ability_debafferOnMaunt_poisonDebuffPuddles",
         "isActive": true,
         "isImmortalWhenActive": false,
@@ -1848,7 +1848,7 @@
     "debafferOnMaunt_range": {
         "key": "debafferOnMaunt_range",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1861,7 +1861,7 @@
     "dragonRider_buff": {
         "key": "dragonRider_buff",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1874,7 +1874,7 @@
     "boneDragon_buff": {
         "key": "boneDragon_buff",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1887,7 +1887,7 @@
     "fireMage_buff": {
         "key": "fireMage_buff",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1900,7 +1900,7 @@
     "forestQueen_buff": {
         "key": "forestQueen_buff",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1913,7 +1913,7 @@
     "iceMage_buff": {
         "key": "iceMage_buff",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1926,7 +1926,7 @@
     "airMage_buff": {
         "key": "airMage_buff",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1939,7 +1939,7 @@
     "sandMage_buff": {
         "key": "sandMage_buff",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1952,7 +1952,7 @@
     "darknessMage_buff": {
         "key": "darknessMage_buff",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1965,7 +1965,7 @@
     "charmer_buff": {
         "key": "charmer_buff",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1978,7 +1978,7 @@
     "undeadPirate_buff": {
         "key": "undeadPirate_buff",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -1991,7 +1991,7 @@
     "waterMage_buff": {
         "key": "waterMage_buff",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2004,7 +2004,7 @@
     "stunToad_toadJump": {
         "key": "stunToad_toadJump",
         "title_Localized": "stunToad_toadJump_title",
-        "description_Localized": "stunToad_toadJump_description",
+        "desctiption_Localized": "stunToad_toadJump_description",
         "iconId": "ability_stunToad_toadJump",
         "isActive": false,
         "isImmortalWhenActive": true,
@@ -2017,7 +2017,7 @@
     "stunToad_devour": {
         "key": "stunToad_devour",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2030,7 +2030,7 @@
     "stunToad_melee": {
         "key": "stunToad_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2043,7 +2043,7 @@
     "talentAbility_revengeOfTheFallen": {
         "key": "talentAbility_revengeOfTheFallen",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2056,7 +2056,7 @@
     "talentAbility_boardingParty": {
         "key": "talentAbility_boardingParty",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2069,7 +2069,7 @@
     "talentAbility_powerOfWater": {
         "key": "talentAbility_powerOfWater",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2082,7 +2082,7 @@
     "phoenix_rebirthLimited": {
         "key": "phoenix_rebirthLimited",
         "title_Localized": "phoenix_rebirthLimited_title",
-        "description_Localized": "phoenix_rebirthLimited_description",
+        "desctiption_Localized": "phoenix_rebirthLimited_description",
         "iconId": "ability_phoenix_rebirthLimited",
         "isActive": false,
         "isImmortalWhenActive": true,
@@ -2095,7 +2095,7 @@
     "phoenix_range": {
         "key": "phoenix_range",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2108,7 +2108,7 @@
     "bossKraken_defaultAoe": {
         "key": "bossKraken_defaultAoe",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2121,7 +2121,7 @@
     "bossKraken_tentacle": {
         "key": "bossKraken_tentacle",
         "title_Localized": "boss_kraken_ability2_name",
-        "description_Localized": "boss_kraken_ability2_description",
+        "desctiption_Localized": "boss_kraken_ability2_description",
         "iconId": "ability_bossKraken_tentacle",
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2134,7 +2134,7 @@
     "bossKraken_levelUp": {
         "key": "bossKraken_levelUp",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2147,7 +2147,7 @@
     "bossKraken_krakenCannon": {
         "key": "bossKraken_krakenCannon",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": "ability_BossKraken_krakenCannon",
         "isActive": true,
         "isImmortalWhenActive": false,
@@ -2160,7 +2160,7 @@
     "bossKraken_ability_passive_melee": {
         "key": "bossKraken_ability_passive_melee",
         "title_Localized": "boss_kraken_passive_ability1_name",
-        "description_Localized": "boss_kraken_passive_ability1_description",
+        "desctiption_Localized": "boss_kraken_passive_ability1_description",
         "iconId": "ability_bossKraken_passive_melee",
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2173,7 +2173,7 @@
     "bossKraken_ability_passive_range": {
         "key": "bossKraken_ability_passive_range",
         "title_Localized": "boss_kraken_passive_ability2_name",
-        "description_Localized": "boss_kraken_passive_ability2_description",
+        "desctiption_Localized": "boss_kraken_passive_ability2_description",
         "iconId": "ability_bossKraken_passive_range",
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2186,7 +2186,7 @@
     "monkGhostInitial": {
         "key": "monkGhostInitial",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2199,7 +2199,7 @@
     "bossKraken_tentacleStrikesAoe": {
         "key": "bossKraken_tentacleStrikesAoe",
         "title_Localized": "boss_kraken_ability1_name",
-        "description_Localized": "boss_kraken_ability1_description",
+        "desctiption_Localized": "boss_kraken_ability1_description",
         "iconId": "ability_bossKraken_tentacleStrikesAoe",
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2212,7 +2212,7 @@
     "bossKraken_tentacleThrow": {
         "key": "bossKraken_tentacleThrow",
         "title_Localized": "boss_kraken_ability3_name",
-        "description_Localized": "boss_kraken_ability3_description",
+        "desctiption_Localized": "boss_kraken_ability3_description",
         "iconId": "ability_bossKraken_tentacleThrow",
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2225,7 +2225,7 @@
     "tombInitial": {
         "key": "tombInitial",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2238,7 +2238,7 @@
     "undeadPestilence_undeadRat": {
         "key": "undeadPestilence_undeadRat",
         "title_Localized": "undeadPestilence_undeadRat_title",
-        "description_Localized": "undeadPestilence_undeadRat_description",
+        "desctiption_Localized": "undeadPestilence_undeadRat_description",
         "iconId": "ability_undeadPestilence_undeadRat",
         "isActive": true,
         "isImmortalWhenActive": false,
@@ -2251,7 +2251,7 @@
     "undeadRat_melee": {
         "key": "undeadRat_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2264,7 +2264,7 @@
     "undeadPestilence_melee": {
         "key": "undeadPestilence_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2277,7 +2277,7 @@
     "undeadRat_poisonCloud": {
         "key": "undeadRat_poisonCloud",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2290,7 +2290,7 @@
     "undeadPestilence_buff": {
         "key": "undeadPestilence_buff",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2303,7 +2303,7 @@
     "lordInquisitor_furiousMace": {
         "key": "lordInquisitor_furiousMace",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2316,7 +2316,7 @@
     "lordInquisitor_holyFire": {
         "key": "lordInquisitor_holyFire",
         "title_Localized": "lordInquisitor_holyFire_title",
-        "description_Localized": "lordInquisitor_holyFire_description",
+        "desctiption_Localized": "lordInquisitor_holyFire_description",
         "iconId": "ability_lordInquisitor_holyFire",
         "isActive": true,
         "isImmortalWhenActive": false,
@@ -2329,7 +2329,7 @@
     "drunkTank_barrel": {
         "key": "drunkTank_barrel",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2342,7 +2342,7 @@
     "drunkTank_burp": {
         "key": "drunkTank_burp",
         "title_Localized": "drunkTank_burp_title",
-        "description_Localized": "drunkTank_burp_description",
+        "desctiption_Localized": "drunkTank_burp_description",
         "iconId": "ability_drunkTank_burp",
         "isActive": true,
         "isImmortalWhenActive": false,
@@ -2355,7 +2355,7 @@
     "bardHero_melee": {
         "key": "bardHero_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2368,7 +2368,7 @@
     "bardHero_courageSong": {
         "key": "bardHero_courageSong",
         "title_Localized": "bardHero_courageSong_title",
-        "description_Localized": "bardHero_courageSong_description",
+        "desctiption_Localized": "bardHero_courageSong_description",
         "iconId": "ability_bardHero_courageSong",
         "isActive": true,
         "isImmortalWhenActive": false,
@@ -2381,7 +2381,7 @@
     "bardHero_buff": {
         "key": "bardHero_buff",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2394,7 +2394,7 @@
     "lordInquisitor_buff": {
         "key": "lordInquisitor_buff",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2407,7 +2407,7 @@
     "elevateTank_meleeThrow": {
         "key": "elevateTank_meleeThrow",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2420,7 +2420,7 @@
     "elevateTank_sacredShield": {
         "key": "elevateTank_sacredShield",
         "title_Localized": "elevateTank_sacredShield_title",
-        "description_Localized": "elevateTank_sacredShield_description",
+        "desctiption_Localized": "elevateTank_sacredShield_description",
         "iconId": "ability_elevateTank_sacredShield",
         "isActive": true,
         "isImmortalWhenActive": false,
@@ -2433,7 +2433,7 @@
     "elevateTank_buff": {
         "key": "elevateTank_buff",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2446,7 +2446,7 @@
     "elevateArcher_impale": {
         "key": "elevateArcher_impale",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2459,7 +2459,7 @@
     "elevateArcher_arrowWave": {
         "key": "elevateArcher_arrowWave",
         "title_Localized": "elevateArcher_arrowWave_title",
-        "description_Localized": "elevateArcher_arrowWave_description",
+        "desctiption_Localized": "elevateArcher_arrowWave_description",
         "iconId": "ability_elevateArcher_arrowWave",
         "isActive": true,
         "isImmortalWhenActive": false,
@@ -2472,7 +2472,7 @@
     "elevateArcher_buff": {
         "key": "elevateArcher_buff",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2485,7 +2485,7 @@
     "talentAbility_weakSpot": {
         "key": "talentAbility_weakSpot",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2498,7 +2498,7 @@
     "elevateSupport_healingVeil": {
         "key": "elevateSupport_healingVeil",
         "title_Localized": "elevateSupport_healingVeil_title",
-        "description_Localized": "elevateSupport_healingVeil_description",
+        "desctiption_Localized": "elevateSupport_healingVeil_description",
         "iconId": "ability_elevateSupport_healingVeil",
         "isActive": true,
         "isImmortalWhenActive": false,
@@ -2511,7 +2511,7 @@
     "elevateSupport_range": {
         "key": "elevateSupport_range",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2524,7 +2524,7 @@
     "elevateSupport_giftOfLight": {
         "key": "elevateSupport_giftOfLight",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2537,7 +2537,7 @@
     "talentAbility_giftOfLight": {
         "key": "talentAbility_giftOfLight",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2550,7 +2550,7 @@
     "demonFat_squeeze": {
         "key": "demonFat_squeeze",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2563,7 +2563,7 @@
     "demonFat_hungryFlameball": {
         "key": "demonFat_hungryFlameball",
         "title_Localized": "demonFat_hungryFlameball_title",
-        "description_Localized": "demonFat_hungryFlameball_description",
+        "desctiption_Localized": "demonFat_hungryFlameball_description",
         "iconId": "ability_demonFat_hungryFlameball",
         "isActive": true,
         "isImmortalWhenActive": false,
@@ -2576,7 +2576,7 @@
     "talentAbility_echoOfPain": {
         "key": "talentAbility_echoOfPain",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2589,7 +2589,7 @@
     "demonTank_melee": {
         "key": "demonTank_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2602,7 +2602,7 @@
     "demonTank_primalFear": {
         "key": "demonTank_primalFear",
         "title_Localized": "demonTank_primalFear_title",
-        "description_Localized": "demonTank_primalFear_description",
+        "desctiption_Localized": "demonTank_primalFear_description",
         "iconId": "ability_demonTank_primalFear",
         "isActive": true,
         "isImmortalWhenActive": false,
@@ -2615,7 +2615,7 @@
     "demonTank_buff": {
         "key": "demonTank_buff",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2628,7 +2628,7 @@
     "demonMage_fireballs": {
         "key": "demonMage_fireballs",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2641,7 +2641,7 @@
     "axeThrowers_Rage": {
         "key": "axeThrowers_Rage",
         "title_Localized": "axeThrowers_Rage_title",
-        "description_Localized": "axeThrowers_Rage_description",
+        "desctiption_Localized": "axeThrowers_Rage_description",
         "iconId": "ability_axeThrowers_Rage",
         "isActive": true,
         "isImmortalWhenActive": false,
@@ -2654,7 +2654,7 @@
     "axeThrowers_range": {
         "key": "axeThrowers_range",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2667,7 +2667,7 @@
     "demonMage_meteoricRequiem": {
         "key": "demonMage_meteoricRequiem",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2680,7 +2680,7 @@
     "demonMage_inferno": {
         "key": "demonMage_inferno",
         "title_Localized": "demonMage_inferno_title",
-        "description_Localized": "demonMage_inferno_description",
+        "desctiption_Localized": "demonMage_inferno_description",
         "iconId": "ability_demonMage_inferno",
         "isActive": true,
         "isImmortalWhenActive": false,
@@ -2693,7 +2693,7 @@
     "demonMageGolem_melee": {
         "key": "demonMageGolem_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2706,7 +2706,7 @@
     "demonFat_buff": {
         "key": "demonFat_buff",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2719,7 +2719,7 @@
     "bossDragonNew_DmgLvlUp": {
         "key": "bossDragonNew_DmgLvlUp",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2732,7 +2732,7 @@
     "bossSpiderQueenNew_DmgLvlUp": {
         "key": "bossSpiderQueenNew_DmgLvlUp",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2745,7 +2745,7 @@
     "bossKrakenNew_DmgLvlUp": {
         "key": "bossKrakenNew_DmgLvlUp",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2758,7 +2758,7 @@
     "aoeEvasion": {
         "key": "aoeEvasion",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2771,7 +2771,7 @@
     "attackAfterAoeEvasion": {
         "key": "attackAfterAoeEvasion",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2784,7 +2784,7 @@
     "reflectDamageMultiplier": {
         "key": "reflectDamageMultiplier",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2797,7 +2797,7 @@
     "attackReflectDamageMultiplier": {
         "key": "attackReflectDamageMultiplier",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2810,7 +2810,7 @@
     "evasion_aura_trickster": {
         "key": "evasion_aura_trickster",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2823,7 +2823,7 @@
     "reflect_aura_boss": {
         "key": "reflect_aura_boss",
         "title_Localized": "boss_spiderQueen_passive_ability3_name",
-        "description_Localized": "boss_spiderQueen_passive_ability3_description",
+        "desctiption_Localized": "boss_spiderQueen_passive_ability3_description",
         "iconId": "ability_bossSpiderQueen_passive_reflect_aura",
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2836,7 +2836,7 @@
     "tombLibrary_summon": {
         "key": "tombLibrary_summon",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2849,7 +2849,7 @@
     "darknessMageSquadEvent_summon": {
         "key": "darknessMageSquadEvent_summon",
         "title_Localized": "darknessMage_tombstone_title",
-        "description_Localized": "darknessMage_tombstone_description",
+        "desctiption_Localized": "darknessMage_tombstone_description",
         "iconId": "ability_darknessMage_tombstone",
         "isActive": true,
         "isImmortalWhenActive": false,
@@ -2862,7 +2862,7 @@
     "tombLibraryInitial": {
         "key": "tombLibraryInitial",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2875,7 +2875,7 @@
     "library_axeThrowers_cooldownBuff_hero": {
         "key": "library_axeThrowers_cooldownBuff_hero",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2888,7 +2888,7 @@
     "library_axeThrowers_attackBuff_assassins": {
         "key": "library_axeThrowers_attackBuff_assassins",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2901,7 +2901,7 @@
     "library_axeThrowers_hpBuff": {
         "key": "library_axeThrowers_hpBuff",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2914,7 +2914,7 @@
     "library_axeThrowers_aoeAttackDebuff": {
         "key": "library_axeThrowers_aoeAttackDebuff",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2927,7 +2927,7 @@
     "tombLibrary_aoeAggression": {
         "key": "tombLibrary_aoeAggression",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2940,7 +2940,7 @@
     "bossSand_defaultAoe": {
         "key": "bossSand_defaultAoe",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2953,7 +2953,7 @@
     "bossSand_ulta1": {
         "key": "bossSand_ulta1",
         "title_Localized": "bossSand_ability1_name",
-        "description_Localized": "bossSand_ability1_description",
+        "desctiption_Localized": "bossSand_ability1_description",
         "iconId": "ability_bossSand_areas",
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2966,7 +2966,7 @@
     "bossSand_ulta2": {
         "key": "bossSand_ulta2",
         "title_Localized": "bossSand_ability2_name",
-        "description_Localized": "bossSand_ability2_description",
+        "desctiption_Localized": "bossSand_ability2_description",
         "iconId": "ability_bossSand_hammer",
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2979,7 +2979,7 @@
     "bossSand_ulta3": {
         "key": "bossSand_ulta3",
         "title_Localized": "bossSand_ability3_name",
-        "description_Localized": "bossSand_ability3_description",
+        "desctiption_Localized": "bossSand_ability3_description",
         "iconId": "ability_bossSand_spear",
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -2992,7 +2992,7 @@
     "bossSand_ability_passive_range": {
         "key": "bossSand_ability_passive_range",
         "title_Localized": "bossSand_passive_range_name",
-        "description_Localized": "bossSand_passive_range_description",
+        "desctiption_Localized": "bossSand_passive_range_description",
         "iconId": "ability_bossSand_passive_range",
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -3005,7 +3005,7 @@
     "bossSand_DmgLvlUp": {
         "key": "bossSand_DmgLvlUp",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -3018,7 +3018,7 @@
     "cactus_melee": {
         "key": "cactus_melee",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -3031,7 +3031,7 @@
     "reflect_aura_cactus": {
         "key": "reflect_aura_cactus",
         "title_Localized": "cactus_passive_reflect_name",
-        "description_Localized": "cactus_passive_reflect_description",
+        "desctiption_Localized": "cactus_passive_reflect_description",
         "iconId": "ability_cactus_passive_reflect_aura",
         "isActive": true,
         "isImmortalWhenActive": false,
@@ -3044,7 +3044,7 @@
     "library_cactus_rangeHpDebuff": {
         "key": "library_cactus_rangeHpDebuff",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -3057,7 +3057,7 @@
     "library_cactus_aoeBuff": {
         "key": "library_cactus_aoeBuff",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -3070,7 +3070,7 @@
     "library_cactus_healBuff": {
         "key": "library_cactus_healBuff",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
@@ -3083,7 +3083,7 @@
     "library_cactus_attackBuffHuman": {
         "key": "library_cactus_attackBuffHuman",
         "title_Localized": "",
-        "description_Localized": "",
+        "desctiption_Localized": "",
         "iconId": null,
         "isActive": false,
         "isImmortalWhenActive": false,
