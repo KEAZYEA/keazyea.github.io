@@ -1923,7 +1923,7 @@
             document.getElementById("postClanDescription").value = "";
             buildTagCheckboxes("postClanTagList", []);
             document.getElementById("postClanIconInput").value = "";
-            document.getElementById("postClanIconPreview").style.display = "none";
+            document.getElementById("postClanIconPreviewWrap").style.display = "none";
 
             // Only show Autofill if they've actually posted something before.
             const hasPriorPost = !!(profile.lastClanPostData && profile.lastClanPostData.clanName);
@@ -2072,7 +2072,7 @@ window.removeClanIconPreview = function () {
                 document.getElementById("postClanName").value = "";
                 document.getElementById("postClanDescription").value = "";
                 document.getElementById("postClanIconInput").value = "";
-                document.getElementById("postClanIconPreview").style.display = "none";
+                document.getElementById("postClanIconPreviewWrap").style.display = "none";
                 closePostClanModal();
             } catch (e) {
                 if (e.message !== "__RESTRICTED__") {
