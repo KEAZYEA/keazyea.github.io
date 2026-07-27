@@ -149,8 +149,30 @@ module.exports = async (req, res) => {
       eventType === "BILLING.SUBSCRIPTION.SUSPENDED"
     ) {
       const subscriptionId = resource.id;
-      const planKey = planKeyFromPlanId(resource.plan_id);
-      const uid = resource.custom_id;
+
+      // Same reasoning as the ACTIVATED branch above: resource.custom_id
+      // and resource.plan_id are NOT reliably present on the webhook
+      // payload for these event types. When custom_id is missing, uid was
+      // silently undefined and this whole block was a no-op — Firestore's
+      // subscriptionId never got cleared even though PayPal had already
+      // emailed the user confirming cancellation. Fetching the subscription
+      // directly from PayPal by id guarantees we get both fields.
+      let uid = resource.custom_id;
+      let planKey = planKeyFromPlanId(resource.plan_id);
+
+      if ((!uid || !planKey) && subscriptionId) {
+        try {
+          const token = await getPayPalAccessToken();
+          const subRes = await fetch(`${PAYPAL_API}/v1/billing/subscriptions/${subscriptionId}`, {
+            headers: { "Authorization": `Bearer ${token}` }
+          });
+          const sub = await subRes.json();
+          uid = uid || sub.custom_id;
+          planKey = planKey || planKeyFromPlanId(sub.plan_id);
+        } catch (e) {
+          console.error(`Couldn't fetch subscription ${subscriptionId} to resolve uid/plan:`, e.message);
+        }
+      }
 
       if (uid && planKey) {
         // We intentionally do NOT zero out expiresAt here — the user keeps
@@ -163,6 +185,8 @@ module.exports = async (req, res) => {
           [subscriptionIdField]: null
         }, { merge: true });
         console.log(`Cleared ${subscriptionIdField} for user ${uid} (${eventType}).`);
+      } else {
+        console.warn(`Could not resolve uid/planKey for subscription ${subscriptionId} on ${eventType} — subscriptionId was not cleared.`);
       }
     }
 
