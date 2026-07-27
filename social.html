@@ -2970,6 +2970,7 @@ document.getElementById("dmMessages").addEventListener("scroll", updateDmScrollB
             setupDmViewportHandling();
             unsubPosts = AppState.listenToClanPosts(renderClanPosts);
             AppState.maybeRefreshAd("adBannerSocial");
+            AppState.loadAdsterraAdsIfAllowed();
             // Presence heartbeat now lives in appState.js and runs on every page,
             // triggered by real activity — nothing to call here anymore.
             // Re-render the friends list periodically so the online dot decays
