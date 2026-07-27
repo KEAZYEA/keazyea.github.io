@@ -302,10 +302,33 @@
                 }
             }).render("#" + btnHolderId);
         }
+        // Reloads the whole app (top window, not just this iframe), so every
+        // ad surface — banners, native, Social Bar, popunder — clears
+        // immediately once a purchase goes active. Mirrors the reload
+        // pattern already used in appState.js's loadAdsterraAdsIfAllowed()
+        // (the hadArmedAds branch).
+        function reloadWholeApp() {
+            try {
+                if (window.top && window.top !== window.self) {
+                    window.top.location.reload();
+                    return;
+                }
+            } catch (e) {
+                // Cross-origin top window shouldn't happen here (store.html
+                // is only ever embedded same-origin by home.html) — fall
+                // back safely just in case.
+            }
+            window.location.reload();
+        }
+
         async function pollForActivation(plan, attempts = 0) {
             const profile = await AppState.getProfile();
             const active = plan === "vip" ? AppState.isVipActive(profile) : AppState.isNoAdsActive(profile);
-            if (active || attempts > 10) {
+            if (active) {
+                reloadWholeApp();
+                return;
+            }
+            if (attempts > 10) {
                 await refreshPlanButtons();
                 return;
             }
