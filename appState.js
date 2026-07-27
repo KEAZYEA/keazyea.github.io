@@ -2432,8 +2432,19 @@ async function loadAdsterraAdsIfAllowed() {
         document.body.appendChild(adsterraSocialBarScriptEl);
     }
 
-    if (!adsterraPopunderLoaded) {
+    // Popunder fires at most once per POPUNDER_MIN_INTERVAL_MS, tracked in
+    // localStorage rather than a JS variable — this is a multi-page site,
+    // so every navigation re-runs this function from scratch. Without a
+    // persisted timestamp, adsterraPopunderLoaded resets to false on every
+    // single page load and the popunder fires on every page visited, which
+    // is what was making it feel so intrusive.
+    const POPUNDER_MIN_INTERVAL_MS = 3 * 60 * 1000; // 3 minutes
+    const lastPopunderAt = parseInt(localStorage.getItem("kih_last_popunder_at") || "0", 10);
+    const now = Date.now();
+
+    if (!adsterraPopunderLoaded && (now - lastPopunderAt) >= POPUNDER_MIN_INTERVAL_MS) {
         adsterraPopunderLoaded = true;
+        localStorage.setItem("kih_last_popunder_at", String(now));
         adsterraPopunderScriptEl = document.createElement("script");
         adsterraPopunderScriptEl.src = "https://pl30553113.effectivecpmnetwork.com/cc/72/0f/cc720f28e916390a79e4dc545a9f04f7.js";
         document.body.appendChild(adsterraPopunderScriptEl);
