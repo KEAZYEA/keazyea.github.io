@@ -1157,7 +1157,7 @@
         .friend-search-results-scroll {
     overflow-y: auto;
     overscroll-behavior: contain;
-    padding-right: 32px;
+    margin-right: 32px;
 }
 
         #friendsSection {
@@ -1171,8 +1171,10 @@
     max-height: 190px; /* ~2+ rows before scrolling kicks in */
     overflow-y: auto;
     overscroll-behavior: contain;
-    padding-right: 32px; /* wide dead strip on the right so users can
-                            grab-scroll without tapping a row */
+    margin-right: 32px; /* OUTSIDE the scrollable box now, not inside it —
+                           touching here scrolls the page. Only touching
+                           an actual friend row scrolls this inner list
+                           once there are more friends than fit. */
 }
 
         #suggestedFriendsSection {
@@ -1275,7 +1277,7 @@
     min-height: 0;
     overflow-y: auto;
     overscroll-behavior: contain;
-    padding-right: 32px;
+    margin-right: 32px;
 }
     </style>
 </head>
