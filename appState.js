@@ -1451,7 +1451,53 @@ async function backfillAvatarCasing() {
         const current = snap.exists() ? snap.data() : defaultProfile();
         await setDoc(ref, { ...defaultProfile(), ...current, banned: false, banUntil: 0, banReason: "", bannedAt: 0 });
     }
+// Admin-only manual VIP grant — this is the safe alternative to hand-
+    // editing Firestore. Stacks on top of any time the user already has
+    // left (same rule the PayPal webhook uses), so granting VIP to someone
+    // mid-subscription adds days rather than shortening/resetting them.
+    // Does NOT touch vipSubscriptionId — this is independent of PayPal, so
+    // the Store page will still correctly show "Subscribe" (no live sub)
+    // even while a manual grant is active.
+    async function adminGrantVip(uid, durationDays) {
+        await waitForAuthReady();
+        if (!currentUser || currentUser.uid !== ADMIN_UID) throw new Error("Not authorized.");
+        if (!uid) throw new Error("No uid provided.");
+        const days = parseFloat(durationDays);
+        if (isNaN(days) || days <= 0) throw new Error("Enter a positive number of days.");
 
+        const ref = doc(db, "users", uid);
+        const snap = await getDoc(ref);
+        const current = snap.exists() ? snap.data() : defaultProfile();
+        const currentExpiresAt = current.vipExpiresAt || 0;
+        const baseTime = currentExpiresAt > Date.now() ? currentExpiresAt : Date.now();
+        const newExpiresAt = baseTime + days * 24 * 60 * 60 * 1000;
+
+        await setDoc(ref, { ...defaultProfile(), ...current, vipExpiresAt: newExpiresAt }, { merge: true });
+
+        try {
+            await addPersonalNotification(uid, {
+                type: "adminGrant",
+                title: "👑 You've been granted VIP!",
+                body: `An admin granted you VIP access for ${days} day(s). Enjoy!`
+            });
+        } catch (e) {
+            console.warn("Couldn't send VIP grant notification:", e.message);
+        }
+
+        return newExpiresAt;
+    }
+
+    // Zeroes out VIP immediately — for undoing a mistaken grant, or pulling
+    // VIP from someone regardless of what a live PayPal subscription thinks.
+    // Does not touch vipSubscriptionId — if they have a real live sub, the
+    // webhook's next payment cycle will just re-grant time as normal, so
+    // this is meant for correcting manual grants, not fighting real subs.
+    async function adminRevokeVip(uid) {
+        await waitForAuthReady();
+        if (!currentUser || currentUser.uid !== ADMIN_UID) throw new Error("Not authorized.");
+        if (!uid) throw new Error("No uid provided.");
+        await setDoc(doc(db, "users", uid), { vipExpiresAt: 0 }, { merge: true });
+    }
     // Every currently banned/timed-out user, for admin.html's Active
     // Timeouts / Banned Users lists. expiresAt is a future timestamp for a
     // timeout, or null for a permanent (indefinite) ban.
@@ -2573,6 +2619,7 @@ async function maybeRefreshAd(containerId) {
         submitReport, uploadReportEvidence,
         // admin: bans + history
         getNameHistory, getReports, closeReport, banUser, unbanUser, getBannedUsers,
+        adminGrantVip, adminRevokeVip,
         // ban gate
         showRestrictedNotice,
         // ads
