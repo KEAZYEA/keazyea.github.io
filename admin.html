@@ -1194,18 +1194,30 @@ const targetBtn = r.targetUid
                 lookupCurrentUid = uid;
                 lookupCurrentName = name || "Unknown";
                 try {
-                    const history = await AppState.getNameHistory(uid);
+                    const [history, profile] = await Promise.all([
+                        AppState.getNameHistory(uid),
+                        AppState.getUserProfileForAdmin(uid)
+                    ]);
                     const historyHtml = history.length
                         ? history.map(h => `<div class="promo-sub">${new Date(h.changedAt).toLocaleString()}: "${escapeHtml(h.fromName || "(none)")}" → "${escapeHtml(h.toName)}"</div>`).join("")
                         : "<p class='promo-sub'>No recorded name changes.</p>";
+
+                    const vipActive = profile && profile.vipExpiresAt && profile.vipExpiresAt > Date.now();
+                    const vipStatusHtml = vipActive
+                        ? `<p class="promo-sub" style="margin:0 0 8px; color:gold;">👑 VIP active until ${new Date(profile.vipExpiresAt).toLocaleString()}${profile.vipSubscriptionId ? "" : " (manual grant, no live subscription)"}</p>`
+                        : `<p class="promo-sub" style="margin:0 0 8px;">Not currently VIP.</p>`;
+
                     result.innerHTML = `
                     <div style="border:1px solid #2a2a4a; border-radius:10px; padding:14px 16px;">
                         <p style="margin:0 0 4px;"><strong>${escapeHtml(name || "Unknown")}</strong> <span class="promo-sub">(uid: ${escapeHtml(uid)})</span></p>
                         ${email ? `<p class="promo-sub" style="margin:0 0 8px;">Email: ${escapeHtml(email)}</p>` : ""}
+                        ${vipStatusHtml}
                         <p class="promo-sub" style="margin:0 0 10px;">Name history:</p>
                         ${historyHtml}
                         <div style="display:flex; gap:8px; margin-top:14px; flex-wrap:wrap;">
                             <button onclick="handleSendAdminMessage()" style="background:#4169e1; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">✉️ Send Message</button>
+                            <button onclick="handleGrantVip('${uid}')" style="background:#6c63ff; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">👑 Grant VIP</button>
+                            ${vipActive ? `<button onclick="handleRevokeVip('${uid}')" style="background:#aa7a1e; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Revoke VIP</button>` : ""}
                             <button onclick="handleTimeoutUid('${uid}')" style="background:#aa7a1e; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Timeout...</button>
                             <button onclick="handleBanUid('${uid}', 0)" style="background:#aa3838; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Ban Permanently</button>
                             <button onclick="handleUnbanUid('${uid}')" style="background:#45aa38; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Unban</button>
@@ -1234,7 +1246,33 @@ const targetBtn = r.targetUid
                 }
             }
             window.handleSendAdminMessage = handleSendAdminMessage;
+            async function handleGrantVip(uid) {
+                const daysStr = await showPromptModal("Grant VIP for how many days?", "30");
+                if (daysStr === null) return;
+                const days = parseFloat(daysStr);
+                if (isNaN(days) || days <= 0) { showInfoModal("Invalid duration", "Enter a positive number of days."); return; }
+                if (!await showConfirmModal("Grant VIP", `Grant ${lookupCurrentName} ${days} day(s) of VIP? This stacks on top of any VIP time they already have.`)) return;
+                try {
+                    const newExpiresAt = await AppState.adminGrantVip(uid, days);
+                    showInfoModal("Done", `VIP granted — now expires ${new Date(newExpiresAt).toLocaleString()}.`);
+                    await renderLookupProfile(uid, lookupCurrentName, null);
+                } catch (e) {
+                    showInfoModal("Couldn't grant VIP", e.message);
+                }
+            }
+            window.handleGrantVip = handleGrantVip;
 
+            async function handleRevokeVip(uid) {
+                if (!await showConfirmModal("Revoke VIP", `Remove VIP from ${lookupCurrentName} immediately?`)) return;
+                try {
+                    await AppState.adminRevokeVip(uid);
+                    showInfoModal("Done", "VIP has been revoked.");
+                    await renderLookupProfile(uid, lookupCurrentName, null);
+                } catch (e) {
+                    showInfoModal("Couldn't revoke VIP", e.message);
+                }
+            }
+            window.handleRevokeVip = handleRevokeVip;
             async function handleLookupUser() {
                 const name = document.getElementById("lookupNameInput").value.trim();
                 if (!name) { showInfoModal("Missing name", "Type a name first."); return; }
