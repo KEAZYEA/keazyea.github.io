@@ -268,6 +268,7 @@
 
 
         async function loadTips() {
+            AppState.waitForAuthReady().then(() => AppState.loadAdsterraAdsIfAllowed());
             allTips = await AppState.getTips();
             document.getElementById("tipsSearchWrap").style.display = allTips.length ? "block" : "none";
             renderGrid();
