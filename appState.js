@@ -2326,11 +2326,16 @@ async function sendAdminMessage(uid, title, body) {
     }
 /* ---------------- SHARED ADSTERRA HELPERS ---------------- */
 
+/* ---------------- SHARED ADSTERRA HELPERS ---------------- */
+
 const ADSTERRA_BANNER_KEYS = [
     { key: "c02e32dd0c0dfb9dbd1cf836031e1471", w: 728, h: 90 },
     { key: "1a13d2820b1d0ab72678a82cc1afed71", w: 320, h: 50 },
     { key: "970e4e741b46aa292eb4fdf1cadd1b59", w: 300, h: 250 }
 ];
+const ADSTERRA_NATIVE_KEY = "ae4d5bd6f1b544b5d1778ee33ba910a9";
+const ADSTERRA_POPUNDER_URL = "https://pl30553113.effectivecpmnetwork.com/cc/72/0f/cc720f28e916390a79e4dc545a9f04f7.js";
+const ADSTERRA_SOCIALBAR_URL = "https://pl30540490.effectivecpmnetwork.com/0d/11/ae/0d11ae3b80eee08c395da0d0d0375b83.js";
 
 const _adRefreshState = {}; // per-containerId: { keyIndex, lastAt }
 const AD_MIN_INTERVAL_MS = 20000;
@@ -2380,6 +2385,74 @@ async function maybeRefreshAd(containerId) {
         console.warn("Ad refresh check failed for " + containerId + ":", e.message);
     }
 }
+
+// Native Banner — different script shape than the iframe banners above
+// (a container div + an async invoke.js that fills it in directly), so it
+// gets its own injector rather than reusing injectAdBanner.
+function injectNativeBanner(containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    const innerId = "container-" + ADSTERRA_NATIVE_KEY;
+    container.innerHTML = `<div id="${innerId}"></div>`;
+    const script = document.createElement("script");
+    script.async = true;
+    script.dataset.cfasync = "false";
+    script.src = `https://pl30540489.effectivecpmnetwork.com/${ADSTERRA_NATIVE_KEY}/invoke.js`;
+    container.appendChild(script);
+    container.style.display = "block";
+}
+
+async function maybeRefreshNativeBanner(containerId) {
+    try {
+        const shouldShow = await shouldShowAds();
+        if (!shouldShow) { hideAdBanner(containerId); return; }
+        if (!_adRefreshState[containerId]) _adRefreshState[containerId] = { keyIndex: 0, lastAt: 0 };
+        const state = _adRefreshState[containerId];
+        const now = Date.now();
+        if (now - state.lastAt < AD_MIN_INTERVAL_MS) return;
+        state.lastAt = now;
+        injectNativeBanner(containerId);
+    } catch (e) {
+        console.warn("Native banner refresh failed for " + containerId + ":", e.message);
+    }
+}
+
+// Popunder + SocialBar are page-wide scripts, not tied to any container —
+// they should load AT MOST ONCE per page view (loading twice would stack
+// duplicate popunders/bars). Tracked with simple module-level flags rather
+// than the per-container state used for banners above.
+let _popunderInjected = false;
+let _socialBarInjected = false;
+
+function injectPopunder() {
+    if (_popunderInjected) return;
+    _popunderInjected = true;
+    const script = document.createElement("script");
+    script.src = ADSTERRA_POPUNDER_URL;
+    document.body.appendChild(script);
+}
+
+function injectSocialBar() {
+    if (_socialBarInjected) return;
+    _socialBarInjected = true;
+    const script = document.createElement("script");
+    script.src = ADSTERRA_SOCIALBAR_URL;
+    document.body.appendChild(script);
+}
+
+// Call this once per page (after waitForAuthReady()) alongside
+// maybeRefreshAd — handles the VIP check itself, so callers don't need
+// their own isNoAdsActive check before calling it.
+async function maybeInjectPageWideAds() {
+    try {
+        const shouldShow = await shouldShowAds();
+        if (!shouldShow) return; // VIP/No-Ads subscribers never get these
+        injectPopunder();
+        injectSocialBar();
+    } catch (e) {
+        console.warn("Page-wide ad injection check failed:", e.message);
+    }
+}
     return {
         // auth
         signIn, signOut: signOutUser, getCurrentUser, onAuthChange, waitForAuthReady, getIdToken,
@@ -2425,7 +2498,7 @@ async function maybeRefreshAd(containerId) {
         // ban gate
         showRestrictedNotice,
         // ads
-        maybeRefreshAd, hideAdBanner,
+        maybeRefreshAd, hideAdBanner, maybeRefreshNativeBanner, maybeInjectPageWideAds,
         // maintenance mode (new)
         getMaintenanceStatus, setMaintenanceMode,
         _firebase: { app, auth, db }
