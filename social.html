@@ -527,7 +527,38 @@
             overscroll-behavior: contain;
             padding-right: 4px;
         }
+/* On short/landscape viewports (phone rotated sideways), the ad's fixed
+   250px height + header/toolbar can eat almost the entire locked
+   100%-height flex column, squeezing .clan-list-scroll down to near-zero
+   and hiding all clan posts with no way to reach them. Instead of forcing
+   everything into one screenful, let the page flow naturally and scroll
+   as a whole so nothing gets trapped in a collapsed flex item. */
+@media (max-height: 500px) and (orientation: landscape) {
+    html,
+    body {
+        height: auto;
+        overflow-y: auto;
+    }
 
+    .social-wrap {
+        height: auto;
+        min-height: 100%;
+    }
+
+    #socialSignedInWrap,
+    .social-tab-panel.active,
+    .social-content-inner,
+    .clan-main {
+        flex: none;
+        min-height: 0;
+    }
+
+    .clan-list-scroll {
+        flex: none;
+        max-height: none;
+        overflow-y: visible;
+    }
+}
         .clan-card-server-badge {
             display: inline-block;
             padding: 3px 10px;
