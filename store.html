@@ -338,10 +338,30 @@
         async function pollForDeactivation(plan, attempts = 0) {
             const profile = await AppState.getProfile();
             const stillLive = plan === "vip" ? !!profile.vipSubscriptionId : !!profile.noAdsSubscriptionId;
-            if (!stillLive || attempts > 10) {
-                await refreshPlanButtons();
+
+            if (!stillLive) {
+                // Deactivation confirmed — reload the whole app (same as the
+                // VIP-purchase fix) so ads etc. update cleanly everywhere.
+                reloadWholeApp();
                 return;
             }
+
+            if (attempts > 10) {
+                // PayPal already confirmed the cancellation (that's why the
+                // email arrived), but our Firestore copy only updates once
+                // the webhook fires, which can occasionally lag past this
+                // 20s window. Don't leave the button stuck disabled forever
+                // — reset it and let the user know what's going on.
+                const btnId = plan === "vip" ? "vipCancelBtn" : "noAdsCancelBtn";
+                const btn = document.getElementById(btnId);
+                if (btn) {
+                    btn.disabled = false;
+                    btn.textContent = "Cancel subscription";
+                }
+                alert("PayPal confirmed your cancellation (check your email), but it's taking a little longer than usual to update here. It should reflect within a few minutes — try refreshing if it doesn't.");
+                return;
+            }
+
             setTimeout(() => pollForDeactivation(plan, attempts + 1), 2000);
         }
 
