@@ -2469,21 +2469,25 @@ async function maybeRefreshAd(containerId) {
     const shouldShow = await shouldShowAds();
     if (!shouldShow) {
         container.innerHTML = "";
-        container.classList.remove("show-me");
+        container.style.display = "none";
         return;
     }
 
     const now = Date.now();
     if (lastAdRefreshAt[containerId] && now - lastAdRefreshAt[containerId] < AD_REFRESH_MIN_INTERVAL_MS) {
         // Too soon to reload — just make sure it's visible if it already
-        // has content from a previous call.
-        container.classList.add("show-me");
+        // has content from a previous call. Setting .style.display directly
+        // (not toggling a CSS class) is required here: every ad slot div is
+        // written with an inline style="display:none", and an inline style
+        // always overrides a class-based CSS rule regardless of specificity.
+        // Only actual JS assignment to .style.display can override it.
+        container.style.display = "flex";
         return;
     }
     lastAdRefreshAt[containerId] = now;
 
     injectAdsterraBannerIframe(containerId, "970e4e741b46aa292eb4fdf1cadd1b59", 300, 250);
-    container.classList.add("show-me");
+    container.style.display = "flex";
 }
 
     return {
