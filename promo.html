@@ -735,8 +735,13 @@ if (user && user.uid === winnerData.winnerUid) {
             /* init */
             loadPromoCodes();
             AppState.waitForAuthReady().then(refreshVipState);
-            AppState.waitForAuthReady().then(() => AppState.loadAdsterraAdsIfAllowed());
             AppState.onAuthChange(refreshVipState);
+
+            // Ad recheck — separate from refreshVipState so a VIP status
+            // change (or late-confirmed sign-in) always clears/shows the
+            // promo ad slot, even independent of the wheel/codes UI state.
+            AppState.onAuthChange(() => AppState.maybeRefreshAd("promoAdSlot"));
+            setInterval(() => AppState.maybeRefreshAd("promoAdSlot"), 25000);
         </script>
 </body>
 
