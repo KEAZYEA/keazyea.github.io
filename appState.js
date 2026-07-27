@@ -2441,6 +2441,40 @@ async function loadAdsterraAdsIfAllowed() {
 
     document.querySelectorAll(".adsterra-slot").forEach(el => el.classList.add("show-me"));
 }
+
+// Rate-limited single-slot ad refresh — called from page-specific code on
+// search/select/slider interactions (e.g. troopsandheroes.html's
+// updateTroopsCard()). Unlike loadAdsterraAdsIfAllowed(), this only ever
+// touches ONE container id and won't reload more than once per
+// AD_REFRESH_MIN_INTERVAL_MS for that slot, so rapid typing/slider drags
+// don't spam a fresh ad request on every keystroke.
+const AD_REFRESH_MIN_INTERVAL_MS = 60 * 1000; // 1 minute per slot
+const lastAdRefreshAt = {}; // containerId -> timestamp of last actual reload
+
+async function maybeRefreshAd(containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    const shouldShow = await shouldShowAds();
+    if (!shouldShow) {
+        container.innerHTML = "";
+        container.classList.remove("show-me");
+        return;
+    }
+
+    const now = Date.now();
+    if (lastAdRefreshAt[containerId] && now - lastAdRefreshAt[containerId] < AD_REFRESH_MIN_INTERVAL_MS) {
+        // Too soon to reload — just make sure it's visible if it already
+        // has content from a previous call.
+        container.classList.add("show-me");
+        return;
+    }
+    lastAdRefreshAt[containerId] = now;
+
+    injectAdsterraBannerIframe(containerId, "970e4e741b46aa292eb4fdf1cadd1b59", 300, 250);
+    container.classList.add("show-me");
+}
+
     return {
         // auth
         signIn, signOut: signOutUser, getCurrentUser, onAuthChange, waitForAuthReady, getIdToken,
@@ -2486,7 +2520,7 @@ async function loadAdsterraAdsIfAllowed() {
         // ban gate
         showRestrictedNotice,
         // ads
-        loadAdsterraAdsIfAllowed, hideAllAdsterraAds,
+        loadAdsterraAdsIfAllowed, hideAllAdsterraAds, maybeRefreshAd,
         // maintenance mode (new)
         getMaintenanceStatus, setMaintenanceMode,
         _firebase: { app, auth, db }
