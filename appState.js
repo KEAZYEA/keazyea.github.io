@@ -2446,7 +2446,7 @@ async function loadAdsterraAdsIfAllowed() {
     // persisted timestamp, adsterraPopunderLoaded resets to false on every
     // single page load and the popunder fires on every page visited, which
     // is what was making it feel so intrusive.
-    const POPUNDER_MIN_INTERVAL_MS = 3 * 60 * 1000; // 3 minutes
+    const POPUNDER_MIN_INTERVAL_MS = 60 * 1000; // 1 minute
     const lastPopunderAt = parseInt(localStorage.getItem("kih_last_popunder_at") || "0", 10);
     const now = Date.now();
 
