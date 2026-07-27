@@ -525,8 +525,7 @@
     min-height: 0;
     overflow-y: auto;
     overscroll-behavior: contain;
-    padding-right: 4px;
-    padding-bottom: 60px;
+    padding-right: 32px;
 }
 /* On short/landscape viewports (phone rotated sideways), the ad's fixed
    250px height + header/toolbar can eat almost the entire locked
@@ -1015,16 +1014,18 @@
         }
 
         .friend-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: #16162a;
-            border: 1px solid #2a2a4a;
-            border-radius: 12px;
-            padding: 10px 14px;
-            margin-bottom: 8px;
-            cursor: pointer;
-        }
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #16162a;
+    border: 1px solid #2a2a4a;
+    border-radius: 12px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    box-sizing: border-box;
+    width: 100%;
+}
 
         .friend-row:hover {
             border-color: #4169e1;
@@ -1140,8 +1141,7 @@
         .friend-search-results-scroll {
     overflow-y: auto;
     overscroll-behavior: contain;
-    padding-right: 4px;
-    padding-bottom: 60px;
+    padding-right: 32px;
 }
 
         #friendsSection {
@@ -1155,10 +1155,8 @@
     max-height: 190px; /* ~2+ rows before scrolling kicks in */
     overflow-y: auto;
     overscroll-behavior: contain;
-    padding-right: 4px;
-    padding-bottom: 60px; /* empty space below the last friend so users
-                             have somewhere to grab-scroll without tapping
-                             a row */
+    padding-right: 32px; /* wide dead strip on the right so users can
+                            grab-scroll without tapping a row */
 }
 
         #suggestedFriendsSection {
@@ -1261,8 +1259,7 @@
     min-height: 0;
     overflow-y: auto;
     overscroll-behavior: contain;
-    padding-right: 4px;
-    padding-bottom: 60px;
+    padding-right: 32px;
 }
     </style>
 </head>
