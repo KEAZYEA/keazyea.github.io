@@ -565,7 +565,7 @@ async function backfillAvatarCasing() {
 
         if (!clanName) throw new Error("Clan name is required.");
         if (!server) throw new Error("Please select a server.");
-        if (description.length > 2000) throw new Error("Description must be 200 characters or fewer.");
+        if (description.length > 2000) throw new Error("Description must be 2000 characters or fewer.");
         const profile = await getProfile();
         if (isBannedNow(profile)) {
             showRestrictedNotice(profile.banReason, profile.banUntil);
