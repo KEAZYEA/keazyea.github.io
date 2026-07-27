@@ -2559,9 +2559,9 @@ document.getElementById("vipStatusText").textContent = AppState.isVipActive(prof
                 AppState.touchLastActive();
                 setInterval(() => AppState.touchLastActive(), 5 * 60 * 1000);
                 checkTermsGate();
-                loadAdsterraAdsIfAllowed();
+                AppState.loadAdsterraAdsIfAllowed();
             });
-            AppState.onAuthChange(loadAdsterraAdsIfAllowed);
+            AppState.onAuthChange(() => AppState.loadAdsterraAdsIfAllowed());
 
             const urlParams = new URLSearchParams(window.location.search);
             const gotoPage = urlParams.get("goto");
@@ -2576,106 +2576,6 @@ function setAppHeight() {
 window.visualViewport?.addEventListener("resize", setAppHeight);
 window.addEventListener("resize", setAppHeight);
 setAppHeight();
-
-/* ---------------- ADSTERRA ADS ---------------- */
-
-function injectAdsterraSlot(containerId, htmlContent) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-    // Adsterra's scripts rely on document.write internally — innerHTML
-    // alone won't execute embedded <script> tags, so each one is
-    // recreated manually to actually run.
-    container.innerHTML = htmlContent;
-    container.querySelectorAll("script").forEach(oldScript => {
-        const newScript = document.createElement("script");
-        [...oldScript.attributes].forEach(attr => newScript.setAttribute(attr.name, attr.value));
-        newScript.text = oldScript.text;
-        oldScript.parentNode.replaceChild(newScript, oldScript);
-    });
-}
-
-let adsterraSocialBarLoaded = false;
-let adsterraSocialBarScriptEl = null;
-let adsterraSocialBarObserver = null;
-let adsterraSocialBarBodyChildren = null; // snapshot of body's direct children BEFORE the bar loads
-
-function injectAdsterraBannerIframe(containerId, key, width, height) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-    const iframe = document.createElement("iframe");
-    iframe.style.cssText = `width:${width}px; max-width:100%; height:${height}px; border:none; overflow:hidden; display:block;`;
-    iframe.scrolling = "no";
-    iframe.srcdoc = `<!DOCTYPE html><html><body style="margin:0;padding:0;">
-        <script>atOptions = {'key':'${key}','format':'iframe','height':${height},'width':${width},'params':{}};<\/script>
-        <script src="https://www.highperformanceformat.com/${key}/invoke.js"><\/script>
-        </body></html>`;
-    container.innerHTML = "";
-    container.appendChild(iframe);
-}
-
-// Removes everything loadAdsterraAdsIfAllowed() ever injected — banners,
-// native, AND the Social Bar (which injects itself directly into <body>,
-// so we track new top-level nodes it adds and remove them explicitly).
-function hideAllAdsterraAds() {
-    // banners + native
-    ["adSlot728x90", "adSlot320x50", "adSlot300x250", "adSlotNative"].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.innerHTML = "";
-    });
-    document.querySelectorAll(".adsterra-slot").forEach(el => el.classList.remove("show-me"));
-
-    // social bar — remove the script tag itself...
-    if (adsterraSocialBarScriptEl && adsterraSocialBarScriptEl.parentNode) {
-        adsterraSocialBarScriptEl.parentNode.removeChild(adsterraSocialBarScriptEl);
-    }
-    adsterraSocialBarScriptEl = null;
-
-    // ...and any floating widget elements it added directly to <body>.
-    if (adsterraSocialBarBodyChildren) {
-        const before = adsterraSocialBarBodyChildren;
-        Array.from(document.body.children).forEach(node => {
-            if (!before.has(node)) node.remove();
-        });
-    }
-    if (adsterraSocialBarObserver) {
-        adsterraSocialBarObserver.disconnect();
-        adsterraSocialBarObserver = null;
-    }
-
-    adsterraSocialBarLoaded = false; // allow it to reload later if the user signs out again
-}
-
-async function loadAdsterraAdsIfAllowed() {
-    const shouldShow = await AppState.shouldShowAds();
-
-    if (!shouldShow) {
-        hideAllAdsterraAds(); // <-- the actual fix: tear down existing ads, don't just skip
-        return;
-    }
-
-    injectAdsterraBannerIframe("adSlot728x90", "c02e32dd0c0dfb9dbd1cf836031e1471", 728, 90);
-    injectAdsterraBannerIframe("adSlot320x50", "1a13d2820b1d0ab72678a82cc1afed71", 320, 50);
-    injectAdsterraBannerIframe("adSlot300x250", "970e4e741b46aa292eb4fdf1cadd1b59", 300, 250);
-
-    injectAdsterraSlot("adSlotNative", `
-        <script async="async" data-cfasync="false" src="https://pl30540489.effectivecpmnetwork.com/ae4d5bd6f1b544b5d1778ee33ba910a9/invoke.js"><\/script>
-        <div id="container-ae4d5bd6f1b544b5d1778ee33ba910a9"></div>
-    `);
-
-    if (!adsterraSocialBarLoaded) {
-        adsterraSocialBarLoaded = true;
-
-        // snapshot body's current direct children BEFORE loading, so we know
-        // which new top-level nodes the bar adds and can remove just those later
-        adsterraSocialBarBodyChildren = new Set(document.body.children);
-
-        adsterraSocialBarScriptEl = document.createElement("script");
-        adsterraSocialBarScriptEl.src = "https://pl30540490.effectivecpmnetwork.com/0d/11/ae/0d11ae3b80eee08c395da0d0d0375b83.js";
-        document.body.appendChild(adsterraSocialBarScriptEl);
-    }
-
-    document.querySelectorAll(".adsterra-slot").forEach(el => el.classList.add("show-me"));
-}
 
     </script>
 </body>
