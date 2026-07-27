@@ -131,14 +131,27 @@
 
         <script type="module" src="appState.js"></script>
 <script>
-    // initial ad on load
-    window.addEventListener("DOMContentLoaded", () => {
-        AppState.waitForAuthReady().then(() => {
-            AppState.maybeRefreshAd("troopsAdSlot");
-            AppState.loadAdsterraAdsIfAllowed();
-        });
-    });
-</script>
+            function refreshAllTroopsAds() {
+                AppState.maybeRefreshAd("troopsAdSlot");
+                AppState.loadAdsterraAdsIfAllowed();
+            }
+
+            // initial ad on load
+            window.addEventListener("DOMContentLoaded", () => {
+                AppState.waitForAuthReady().then(refreshAllTroopsAds);
+            });
+
+            // Re-check on every auth change (sign-in, sign-out, VIP status
+            // change) — without this, ads injected before VIP status was
+            // confirmed never get removed, since loadAdsterraAdsIfAllowed()
+            // was previously only ever called once at page load.
+            AppState.onAuthChange(refreshAllTroopsAds);
+
+            // Belt-and-suspenders: also recheck periodically in case VIP
+            // status changes mid-session without a full auth event (e.g.
+            // subscription just activated via webhook while page stays open).
+            setInterval(refreshAllTroopsAds, 25000);
+        </script>
         <script src="abilities.js"></script>
         <script src="talents.js"></script>
         <script>
