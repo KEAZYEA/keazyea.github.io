@@ -329,15 +329,25 @@
             }
 
             // ----- VIP card -----
-            const vipLiveSub = vipActive && !!profile.vipSubscriptionId;
-            const vipCancelledButActive = vipActive && !vipLiveSub;
+            // hasLiveSub reflects an ACTUAL PayPal subscription on file —
+            // independent of whether VIP happens to currently be active.
+            // An admin's adminRevokeVip() only zeroes vipExpiresAt and
+            // deliberately leaves vipSubscriptionId alone, so someone can be
+            // "not VIP" (vipActive === false) while still being billed
+            // monthly. Gating the cancel button on vipActive as well would
+            // hide their only way to cancel on this site, and would also
+            // show them a fresh "Subscribe" button that could create a
+            // SECOND concurrent PayPal subscription if clicked.
+            const hasLiveSub = !!profile.vipSubscriptionId;
+            const vipCancelledButActive = vipActive && !hasLiveSub;
 
-            document.getElementById("vipActiveBox").style.display = vipLiveSub ? "block" : "none";
-            document.getElementById("vipButtonBox").style.display = vipLiveSub ? "none" : "block";
+            document.getElementById("vipActiveBox").style.display = hasLiveSub ? "block" : "none";
+            document.getElementById("vipButtonBox").style.display = hasLiveSub ? "none" : "block";
 
-            if (vipLiveSub) {
-                document.getElementById("vipStatusText").textContent =
-                    `Active — ${daysLeft(profile.vipExpiresAt)} day(s) left`;
+            if (hasLiveSub) {
+                document.getElementById("vipStatusText").textContent = vipActive
+                    ? `Active — ${daysLeft(profile.vipExpiresAt)} day(s) left`
+                    : `Your subscription is still active with PayPal, but VIP perks were manually adjusted on this account. You can still cancel below.`;
             } else if (vipCancelledButActive) {
                 if (user && renderedKeys.vip !== "resubscribe") {
                     renderSubscribeButton("vipButtonBox", VIP_PLAN_ID, "vip",
