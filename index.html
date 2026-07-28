@@ -295,7 +295,113 @@ body {
             .about-list li {
                 padding: 6px 12px;
             }
-            
+            /* ===== TABLET / DESKTOP-WIDTH SCALE-UP =====
+           Everything above is tuned for phone widths. Past 768px (iPad
+           portrait and up), those same clamp()/vh-based sizes and the
+           420px menu cap leave the whole home screen looking tiny and
+           stranded in the middle of a much bigger screen. Scale the key
+           pieces up together instead of just letting empty space grow. */
+        @media (min-width: 768px) {
+            .home-landing-title-img {
+                width: clamp(180px, 20vh, 320px);
+            }
+
+            .home-landing-sub {
+                font-size: 1.1rem;
+            }
+
+            .home-menu {
+                max-width: 560px;
+                gap: 16px;
+            }
+
+            .home-menu-btn {
+                padding: 22px 30px;
+                font-size: 1.15rem;
+            }
+
+            .home-menu-icon {
+                width: 52px;
+                height: 52px;
+                font-size: 1.6rem;
+                border-radius: 14px;
+            }
+
+            .home-menu-text small {
+                font-size: 0.95rem;
+                margin-top: 4px;
+            }
+
+            .about-creator-link {
+                font-size: 1rem;
+                margin-top: 8px;
+            }
+
+            .home-topbar {
+                padding: 10px 32px;
+            }
+
+            .home-topbar .icon-btn {
+                font-size: 2.1rem;
+                min-width: 52px;
+                min-height: 52px;
+                padding: 10px;
+            }
+
+            .topbar-avatar-icon,
+            .topbar-avatar-fallback {
+                width: 36px;
+                height: 36px;
+                font-size: 1.3rem;
+            }
+
+            .badge-dot {
+                font-size: 0.8rem;
+                min-width: 20px;
+                height: 20px;
+            }
+
+            .page-panel {
+                max-width: 760px;
+                padding: 40px;
+            }
+
+            .page-panel h1 {
+                font-size: 2.1rem;
+                margin-bottom: 12px;
+            }
+
+            .settings-row,
+            .field-label,
+            .profile-name-input {
+                font-size: 1.05rem;
+            }
+
+            .friend-req-panel {
+                width: 380px;
+                max-width: 380px;
+            }
+
+            .avatar-grid {
+                grid-template-columns: repeat(6, 1fr);
+            }
+        }
+
+        /* Large tablets / small desktops: push the ceiling a bit further
+           so it keeps growing instead of plateauing right at 768px. */
+        @media (min-width: 1100px) {
+            .home-landing-title-img {
+                width: clamp(200px, 22vh, 380px);
+            }
+
+            .home-menu {
+                max-width: 640px;
+            }
+
+            .page-panel {
+                max-width: 860px;
+            }
+        }
         }
         .about-creator-link:hover {
             color: var(--kih-text);
