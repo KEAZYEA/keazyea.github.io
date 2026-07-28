@@ -301,12 +301,12 @@
             document.getElementById("storePage").style.display = user ? "block" : "none";
         }
 
-        async function refreshPlanButtons() {
-            updateStoreAuthGate();
-            const user = AppState.getCurrentUser();
-            const profile = await AppState.getProfile();
-            const vipActive = AppState.isVipActive(profile);
-            const noAdsActive = AppState.isNoAdsActive(profile);
+        async function refreshPlanButtons(preloadedProfile) {
+    updateStoreAuthGate();
+    const user = AppState.getCurrentUser();
+    const profile = preloadedProfile || await AppState.getProfile();
+    const vipActive = AppState.isVipActive(profile);
+    const noAdsActive = AppState.isNoAdsActive(profile);
 
             // ----- No Ads card (retired — legacy subscribers only) -----
             const noAdsLiveSub = !!profile.noAdsSubscriptionId && noAdsActive;
@@ -479,14 +479,28 @@
         }
         window.handleSignInPrompt = handleSignInPrompt;
 
+        // Live profile listener — so an admin revoking/granting VIP (or a
+        // PayPal webhook confirming a payment) updates this page instantly,
+        // without the user needing to refresh or reopen the Store tab.
+        let unsubMyProfileStore = null;
+        function startProfileListenerStore() {
+            if (unsubMyProfileStore) { unsubMyProfileStore(); unsubMyProfileStore = null; }
+            unsubMyProfileStore = AppState.listenToMyProfile((profile) => {
+                if (!profile) return;
+                refreshPlanButtons(profile);
+            });
+        }
+
         AppState.waitForAuthReady().then(() => {
             refreshPlanButtons();
+            startProfileListenerStore();
             AppState.maybeRefreshAd("adBannerStore");
             AppState.loadAdsterraAdsIfAllowed();
         });
         AppState.onAuthChange(() => {
             renderedKeys = { vip: null, noAds: null };
             refreshPlanButtons();
+            startProfileListenerStore();
             AppState.maybeRefreshAd("adBannerStore");
         });
         // maybeRefreshAd throttles itself to once per 20s internally — this
