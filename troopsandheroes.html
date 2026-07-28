@@ -77,13 +77,20 @@
             <span id="troopsLevel">Level 1</span>
         </div>
 
-        <!-- Adsterra ad slots — now Troops/Heroes-only, placed under the slider.
-             Hidden by default via the .adsterra-slot class;
-             AppState.loadAdsterraAdsIfAllowed() reveals them. -->
-        <div class="adsterra-slot" id="adSlot728x90" style="justify-content:center; margin:10px auto; max-width:100%; overflow:hidden;"></div>
-        <div class="adsterra-slot" id="adSlotNative" style="justify-content:center; margin:10px auto; max-width:100%; overflow:hidden;"></div>
-        <div class="adsterra-slot" id="adSlot320x50" style="justify-content:center; margin:10px auto; max-width:100%; overflow:hidden;"></div>
-        <div class="adsterra-slot" id="adSlot300x250" style="justify-content:center; margin:10px auto; max-width:100%; overflow:hidden;"></div>
+        <!-- Anchor point: sharedAdBlock lives here by default since Troops
+             is the initially-active tab. moveSharedAdBlock() relocates the
+             SAME nodes here or into #compareAdAnchor on tab switch — these
+             are the ONLY real ad slot divs; AppState.loadAdsterraAdsIfAllowed()
+             targets these exact hardcoded IDs, so they must never be
+             duplicated elsewhere. -->
+        <div id="troopsAdAnchor">
+            <div id="sharedAdBlock">
+                <div class="adsterra-slot" id="adSlot728x90" style="justify-content:center; margin:10px auto; max-width:100%; overflow:hidden;"></div>
+                <div class="adsterra-slot" id="adSlotNative" style="justify-content:center; margin:10px auto; max-width:100%; overflow:hidden;"></div>
+                <div class="adsterra-slot" id="adSlot320x50" style="justify-content:center; margin:10px auto; max-width:100%; overflow:hidden;"></div>
+                <div class="adsterra-slot" id="adSlot300x250" style="justify-content:center; margin:10px auto; max-width:100%; overflow:hidden;"></div>
+            </div>
+        </div>
 
         <div id="troopsBackBtnSlot"></div>
     </div>
@@ -127,14 +134,11 @@
             </div>
         </div>
 
-        <!-- Adsterra ad slots for Compare tab — separate IDs from the
-             Troops/Heroes tab's ad slots since an element ID must be
-             unique in the DOM. Hidden by default via .adsterra-slot;
-             AppState.loadAdsterraAdsIfAllowed() reveals them. -->
-        <div class="adsterra-slot" id="compareAdSlot728x90" style="justify-content:center; margin:10px auto; max-width:100%; overflow:hidden;"></div>
-        <div class="adsterra-slot" id="compareAdSlotNative" style="justify-content:center; margin:10px auto; max-width:100%; overflow:hidden;"></div>
-        <div class="adsterra-slot" id="compareAdSlot320x50" style="justify-content:center; margin:10px auto; max-width:100%; overflow:hidden;"></div>
-        <div class="adsterra-slot" id="compareAdSlot300x250" style="justify-content:center; margin:10px auto; max-width:100%; overflow:hidden;"></div>
+        </div>
+
+        <!-- Empty by default. moveSharedAdBlock('compare') relocates the
+             ONE real ad block (#sharedAdBlock) here when this tab is active. -->
+        <div id="compareAdAnchor"></div>
     </div>
     <div id="compareCard"></div>
 </div>
@@ -1259,24 +1263,31 @@ function unlockBackgroundScroll() {
                     window.scrollTo(0, 0);
                 }
             }
-            function switchTab(tab) {
+            function moveSharedAdBlock(tab) {
+    let block = document.getElementById("sharedAdBlock");
+    let target = document.getElementById(tab === "troops" ? "troopsAdAnchor" : "compareAdAnchor");
+    if (block && target) target.appendChild(block); // appendChild MOVES the existing node, doesn't clone it
+}
 
-                document.querySelectorAll(".page").forEach((p) => p.classList.remove("active"));
-                // Same logic as above, so the tab is no longer light blue since no active
-                document.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"));
-                if (tab === "troops") {
-                    // we go to the element with id = troopsPage, then we look at its class = "page active"
-                    // but recall that active has been removed from page. so now we add it back, and we show the page
-                    document.getElementById("troopsPage").classList.add("active");
-                    // as well as the blue tab to indicate. The order is according to the order of html.
-                    // since troops tab is above compare, troops will be tab-btn[0], while compare is tab-btn[1]
-                    document.querySelectorAll(".tab-btn")[0].classList.add("active");
-                } else {
-                    // same logic
-                    document.getElementById("comparePage").classList.add("active");
-                    document.querySelectorAll(".tab-btn")[1].classList.add("active");
-                }
-            }
+function switchTab(tab) {
+
+    document.querySelectorAll(".page").forEach((p) => p.classList.remove("active"));
+    // Same logic as above, so the tab is no longer light blue since no active
+    document.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"));
+    if (tab === "troops") {
+        // we go to the element with id = troopsPage, then we look at its class = "page active"
+        // but recall that active has been removed from page. so now we add it back, and we show the page
+        document.getElementById("troopsPage").classList.add("active");
+        // as well as the blue tab to indicate. The order is according to the order of html.
+        // since troops tab is above compare, troops will be tab-btn[0], while compare is tab-btn[1]
+        document.querySelectorAll(".tab-btn")[0].classList.add("active");
+    } else {
+        // same logic
+        document.getElementById("comparePage").classList.add("active");
+        document.querySelectorAll(".tab-btn")[1].classList.add("active");
+    }
+    moveSharedAdBlock(tab);
+}
 
             function updateTabsHeight() {
                 let tabsEl = document.querySelector(".tabs");
