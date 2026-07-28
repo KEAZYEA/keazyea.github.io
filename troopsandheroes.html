@@ -80,9 +80,15 @@
         <div id="troopsBackBtnSlot"></div>
     </div>
 
-    <!-- Moved OUTSIDE .sticky-controls: this anchor now scrolls normally
-         with the page instead of sticking to the top and covering the
-         gallery/hero card underneath it. -->
+    <div id="troopsResults"></div>
+            <div class="adsterra-slot" id="troopsAdSlot" style="display:none; justify-content:center; margin:12px auto; max-width:100%; overflow:hidden;"></div>
+            <div id="troopsCard"></div>
+
+    <!-- Kept OUTSIDE .sticky-controls so it scrolls normally instead of
+         sticking to the top and covering the gallery/hero card. Placed
+         AFTER troopsResults/troopsCard (same ordering compare.html uses
+         for its own ad anchor) so the search dropdown always renders
+         directly under the search box instead of below this block. -->
     <div id="troopsAdAnchor">
         <div id="sharedAdBlock">
             <div class="adsterra-slot" id="adSlot728x90" style="justify-content:center; margin:10px auto; max-width:100%; overflow:hidden;"></div>
@@ -91,10 +97,6 @@
             <div class="adsterra-slot" id="adSlot300x250" style="justify-content:center; margin:10px auto; max-width:100%; overflow:hidden;"></div>
         </div>
     </div>
-
-    <div id="troopsResults"></div>
-            <div class="adsterra-slot" id="troopsAdSlot" style="display:none; justify-content:center; margin:12px auto; max-width:100%; overflow:hidden;"></div>
-            <div id="troopsCard"></div>
         </div>
 
         <div class="applies-to-modal-overlay" id="appliesToModalOverlay">
