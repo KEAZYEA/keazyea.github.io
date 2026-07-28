@@ -1268,7 +1268,15 @@ function unlockBackgroundScroll() {
     if (block && target) target.appendChild(block); // appendChild MOVES the existing node, doesn't clone it
 }
 
+let troopsScrollY = 0;
+let compareScrollY = 0;
+
 function switchTab(tab) {
+
+    // remember where we were on the tab we're LEAVING
+    let current = document.querySelector(".page.active");
+    if (current && current.id === "troopsPage") troopsScrollY = window.scrollY;
+    if (current && current.id === "comparePage") compareScrollY = window.scrollY;
 
     document.querySelectorAll(".page").forEach((p) => p.classList.remove("active"));
     // Same logic as above, so the tab is no longer light blue since no active
@@ -1280,10 +1288,12 @@ function switchTab(tab) {
         // as well as the blue tab to indicate. The order is according to the order of html.
         // since troops tab is above compare, troops will be tab-btn[0], while compare is tab-btn[1]
         document.querySelectorAll(".tab-btn")[0].classList.add("active");
+        window.scrollTo(0, troopsScrollY);
     } else {
         // same logic
         document.getElementById("comparePage").classList.add("active");
         document.querySelectorAll(".tab-btn")[1].classList.add("active");
+        window.scrollTo(0, compareScrollY);
     }
     moveSharedAdBlock(tab);
 }
