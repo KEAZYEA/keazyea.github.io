@@ -1149,7 +1149,7 @@ body {
                         <div id="newsPreviewListHome">
                             <div class="friend-req-empty">No news yet.</div>
                         </div>
-                        <button class="btn-settings-action btn-block" style="margin-top:10px;" onclick="openNewsModal()">View More</button>
+                        <button class="btn-settings-action btn-block" style="margin-top:10px;" onclick="openNewsModal()">View All News</button>
                     </div>
                 </div>
                 <div class="friend-req-wrapper" id="friendReqWrapperHome">
@@ -2341,20 +2341,51 @@ document.getElementById("vipStatusText").textContent = AppState.isVipActive(prof
             return text.length > maxLen ? text.slice(0, maxLen) + "…" : text;
         }
 
-        function renderNewsPreviewHome(items) {
-            const list = document.getElementById("newsPreviewListHome");
-            const recent = items.slice(0, 3);
-            if (!recent.length) {
-                list.innerHTML = '<div class="friend-req-empty">No news yet.</div>';
-                return;
+        // Tracks which preview items are currently expanded (by news doc id), so
+// state survives re-renders triggered by the live listener while the
+// dropdown is open.
+let expandedNewsIdsHome = new Set();
+
+function renderNewsPreviewHome(items) {
+    const list = document.getElementById("newsPreviewListHome");
+    const recent = items.slice(0, 3);
+    if (!recent.length) {
+        list.innerHTML = '<div class="friend-req-empty">No news yet.</div>';
+        return;
+    }
+    list.innerHTML = recent.map(n => {
+        const isExpanded = expandedNewsIdsHome.has(n.id);
+        // bodyHtml is admin-authored (Firestore rules restrict writes to
+        // the admin uid) — same trust level as the full news modal, which
+        // already renders it unescaped.
+        const bodyBlock = isExpanded
+            ? `<div style="margin:4px 0 0;">${n.bodyHtml}</div>`
+            : `<div class="settings-sub" style="margin:0;">${escapeHomeHtml(stripHtmlForPreview(n.bodyHtml))}</div>`;
+        return `
+            <div class="friend-req-item" style="display:block;">
+                <div class="friend-req-name" style="margin-bottom:2px;">${escapeHomeHtml(n.title)}</div>
+                ${bodyBlock}
+                <button type="button" class="news-item-toggle-btn" data-id="${escapeHomeHtml(n.id)}"
+                    style="background:none; border:none; color:var(--kih-accent); font-size:0.8rem; font-weight:700; padding:6px 0 0; cursor:pointer;">
+                    ${isExpanded ? "View Less ▲" : "View More ▾"}
+                </button>
+            </div>
+        `;
+    }).join("");
+
+    list.querySelectorAll(".news-item-toggle-btn").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const id = btn.dataset.id;
+            if (expandedNewsIdsHome.has(id)) {
+                expandedNewsIdsHome.delete(id);
+            } else {
+                expandedNewsIdsHome.add(id);
             }
-            list.innerHTML = recent.map(n => `
-                <div class="friend-req-item" style="display:block;">
-                    <div class="friend-req-name" style="margin-bottom:2px;">${escapeHomeHtml(n.title)}</div>
-                    <div class="settings-sub" style="margin:0;">${escapeHomeHtml(stripHtmlForPreview(n.bodyHtml))}</div>
-                </div>
-            `).join("");
-        }
+            renderNewsPreviewHome(latestNewsItems);
+        });
+    });
+}
 
         function updateNewsBadgeHome(items) {
             const lastSeenAt = parseInt(localStorage.getItem(NEWS_LAST_SEEN_KEY) || "0", 10);
