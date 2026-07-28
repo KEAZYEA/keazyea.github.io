@@ -302,106 +302,51 @@ body {
            block above — so it applies on tablets/desktops regardless of
            height or orientation. */
         @media (min-width: 768px) {
-            .home-landing-title-img {
-                width: clamp(180px, 20vh, 320px);
-            }
+    /* unchanged — keep as-is, this still covers smaller tablets */
+    .home-landing-title-img { width: clamp(180px, 20vh, 320px); }
+    .home-landing-sub { font-size: 1.1rem; }
+    .home-menu { max-width: 560px; gap: 16px; }
+    .home-menu-btn { padding: 22px 30px; font-size: 1.15rem; }
+    .home-menu-icon { width: 52px; height: 52px; font-size: 1.6rem; border-radius: 14px; }
+    .home-menu-text small { font-size: 0.95rem; margin-top: 4px; }
+    .about-creator-link { font-size: 1rem; margin-top: 8px; }
+    .home-topbar { padding: 10px 32px; }
+    .home-topbar .icon-btn { font-size: 2.1rem; min-width: 52px; min-height: 52px; padding: 10px; }
+    .topbar-avatar-icon, .topbar-avatar-fallback { width: 36px; height: 36px; font-size: 1.3rem; }
+    .badge-dot { font-size: 0.8rem; min-width: 20px; height: 20px; }
+    .page-panel { max-width: 760px; padding: 40px; }
+    .page-panel h1 { font-size: 2.1rem; margin-bottom: 12px; }
+    .settings-row, .field-label, .profile-name-input { font-size: 1.05rem; }
+    .friend-req-panel { width: 380px; max-width: 380px; }
+    .avatar-grid { grid-template-columns: repeat(6, 1fr); }
+}
 
-            .home-landing-sub {
-                font-size: 1.1rem;
-            }
+/* NEW tier — catches iPad Pro 12.9" portrait (1024px) and 11" landscape (1194px) */
+@media (min-width: 1024px) {
+    .home-landing-title-img { width: clamp(220px, 24vh, 420px); }
+    .home-landing-sub { font-size: 1.25rem; }
+    .home-menu { max-width: 680px; gap: 20px; }
+    .home-menu-btn { padding: 26px 36px; font-size: 1.3rem; }
+    .home-menu-icon { width: 60px; height: 60px; font-size: 1.85rem; border-radius: 16px; }
+    .home-menu-text small { font-size: 1.05rem; margin-top: 5px; }
+    .about-creator-link { font-size: 1.1rem; margin-top: 10px; }
+    .home-topbar { padding: 14px 40px; }
+    .home-topbar .icon-btn { font-size: 2.4rem; min-width: 58px; min-height: 58px; padding: 12px; }
+    .topbar-avatar-icon, .topbar-avatar-fallback { width: 42px; height: 42px; font-size: 1.5rem; }
+    .badge-dot { font-size: 0.9rem; min-width: 22px; height: 22px; }
+    .page-panel { max-width: 900px; padding: 48px; }
+    .page-panel h1 { font-size: 2.4rem; margin-bottom: 14px; }
+    .settings-row, .field-label, .profile-name-input { font-size: 1.15rem; }
+    .friend-req-panel { width: 420px; max-width: 420px; }
+    .avatar-grid { grid-template-columns: repeat(7, 1fr); }
+}
 
-            .home-menu {
-                max-width: 560px;
-                gap: 16px;
-            }
-
-            .home-menu-btn {
-                padding: 22px 30px;
-                font-size: 1.15rem;
-            }
-
-            .home-menu-icon {
-                width: 52px;
-                height: 52px;
-                font-size: 1.6rem;
-                border-radius: 14px;
-            }
-
-            .home-menu-text small {
-                font-size: 0.95rem;
-                margin-top: 4px;
-            }
-
-            .about-creator-link {
-                font-size: 1rem;
-                margin-top: 8px;
-            }
-
-            .home-topbar {
-                padding: 10px 32px;
-            }
-
-            .home-topbar .icon-btn {
-                font-size: 2.1rem;
-                min-width: 52px;
-                min-height: 52px;
-                padding: 10px;
-            }
-
-            .topbar-avatar-icon,
-            .topbar-avatar-fallback {
-                width: 36px;
-                height: 36px;
-                font-size: 1.3rem;
-            }
-
-            .badge-dot {
-                font-size: 0.8rem;
-                min-width: 20px;
-                height: 20px;
-            }
-
-            .page-panel {
-                max-width: 760px;
-                padding: 40px;
-            }
-
-            .page-panel h1 {
-                font-size: 2.1rem;
-                margin-bottom: 12px;
-            }
-
-            .settings-row,
-            .field-label,
-            .profile-name-input {
-                font-size: 1.05rem;
-            }
-
-            .friend-req-panel {
-                width: 380px;
-                max-width: 380px;
-            }
-
-            .avatar-grid {
-                grid-template-columns: repeat(6, 1fr);
-            }
-        }
-
-        /* Large tablets / small desktops: push the ceiling a bit further
-           so it keeps growing instead of plateauing right at 768px. */
-        @media (min-width: 1100px) {
-            .home-landing-title-img {
-                width: clamp(200px, 22vh, 380px);
-            }
-
-            .home-menu {
-                max-width: 640px;
-            }
-
-            .page-panel {
-                max-width: 860px;
-            }
-        }
+/* NEW tier — iPad Pro 12.9" landscape (1366px) and small desktops */
+@media (min-width: 1366px) {
+    .home-landing-title-img { width: clamp(240px, 26vh, 460px); }
+    .home-menu { max-width: 760px; }
+    .page-panel { max-width: 1000px; }
+}
         .about-creator-link:hover {
             color: var(--kih-text);
         }
