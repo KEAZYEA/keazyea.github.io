@@ -66,26 +66,27 @@
     <button class="tab-btn" onclick="switchTab('compare')">Compare</button>
 </div>
 
-<!-- Adsterra ad slots — shared across Troops/Heroes and Compare tabs since
-     they live outside the .page containers. Hidden by default via the
-     .adsterra-slot class; AppState.loadAdsterraAdsIfAllowed() reveals them. -->
-<div class="adsterra-slot" id="adSlot728x90" style="justify-content:center; margin:10px auto; max-width:100%; overflow:hidden;"></div>
-<div class="adsterra-slot" id="adSlotNative" style="justify-content:center; margin:10px auto; max-width:100%; overflow:hidden;"></div>
-<div class="adsterra-slot" id="adSlot320x50" style="justify-content:center; margin:10px auto; max-width:100%; overflow:hidden;"></div>
-<div class="adsterra-slot" id="adSlot300x250" style="justify-content:center; margin:10px auto; max-width:100%; overflow:hidden;"></div>
-
 <div id="troopsPage" class="page active">
-            <div class="sticky-controls">
-                <div class="search-row">
-                    <input type="text" id="troopsSearch" placeholder="Search Troop/Hero" />
-                    <button type="button" class="clear-btn" onclick="clearSearch('troopsSearch')">Clear</button>
-                </div>
-                <div class="slider-row">
-                    <input type="range" min="1" max="10" value="1" id="troopsSlider" />
-                    <span id="troopsLevel">Level 1</span>
-                </div>
-                <div id="troopsBackBtnSlot"></div>
-            </div>
+    <div class="sticky-controls">
+        <div class="search-row">
+            <input type="text" id="troopsSearch" placeholder="Search Troop/Hero" />
+            <button type="button" class="clear-btn" onclick="clearSearch('troopsSearch')">Clear</button>
+        </div>
+        <div class="slider-row">
+            <input type="range" min="1" max="10" value="1" id="troopsSlider" />
+            <span id="troopsLevel">Level 1</span>
+        </div>
+
+        <!-- Adsterra ad slots — now Troops/Heroes-only, placed under the slider.
+             Hidden by default via the .adsterra-slot class;
+             AppState.loadAdsterraAdsIfAllowed() reveals them. -->
+        <div class="adsterra-slot" id="adSlot728x90" style="justify-content:center; margin:10px auto; max-width:100%; overflow:hidden;"></div>
+        <div class="adsterra-slot" id="adSlotNative" style="justify-content:center; margin:10px auto; max-width:100%; overflow:hidden;"></div>
+        <div class="adsterra-slot" id="adSlot320x50" style="justify-content:center; margin:10px auto; max-width:100%; overflow:hidden;"></div>
+        <div class="adsterra-slot" id="adSlot300x250" style="justify-content:center; margin:10px auto; max-width:100%; overflow:hidden;"></div>
+
+        <div id="troopsBackBtnSlot"></div>
+    </div>
             <div id="troopsResults"></div>
             <div class="adsterra-slot" id="troopsAdSlot" style="display:none; justify-content:center; margin:12px auto; max-width:100%; overflow:hidden;"></div>
             <div id="troopsCard"></div>
@@ -100,34 +101,43 @@
         </div>
 
         <div id="comparePage" class="page">
-            <div class="sticky-controls">
-                <div class="container">
-                    <div id="left">
-                        <div class="search-row">
-                            <input type="text" id="leftSearch" placeholder="Search Troop/Hero" />
-                            <button type="button" class="clear-btn" onclick="clearSearch('leftSearch')">Clear</button>
-                        </div>
-                        <div class="slider-row">
-                            <input type="range" min="1" max="10" value="1" id="leftSlider" />
-                            <span id="leftLevel">Level 1</span>
-                        </div>
-                        <div id="leftResults"></div>
-                    </div>
-                    <div id="right">
-                        <div class="search-row">
-                            <input type="text" id="rightSearch" placeholder="Search Troop/Hero" />
-                            <button type="button" class="clear-btn" onclick="clearSearch('rightSearch')">Clear</button>
-                        </div>
-                        <div class="slider-row">
-                            <input type="range" min="1" max="10" value="1" id="rightSlider" />
-                            <span id="rightLevel">Level 1</span>
-                        </div>
-                        <div id="rightResults"></div>
-                    </div>
+    <div class="sticky-controls">
+        <div class="container">
+            <div id="left">
+                <div class="search-row">
+                    <input type="text" id="leftSearch" placeholder="Search Troop/Hero" />
+                    <button type="button" class="clear-btn" onclick="clearSearch('leftSearch')">Clear</button>
                 </div>
+                <div class="slider-row">
+                    <input type="range" min="1" max="10" value="1" id="leftSlider" />
+                    <span id="leftLevel">Level 1</span>
+                </div>
+                <div id="leftResults"></div>
             </div>
-            <div id="compareCard"></div>
+            <div id="right">
+                <div class="search-row">
+                    <input type="text" id="rightSearch" placeholder="Search Troop/Hero" />
+                    <button type="button" class="clear-btn" onclick="clearSearch('rightSearch')">Clear</button>
+                </div>
+                <div class="slider-row">
+                    <input type="range" min="1" max="10" value="1" id="rightSlider" />
+                    <span id="rightLevel">Level 1</span>
+                </div>
+                <div id="rightResults"></div>
+            </div>
         </div>
+
+        <!-- Adsterra ad slots for Compare tab — separate IDs from the
+             Troops/Heroes tab's ad slots since an element ID must be
+             unique in the DOM. Hidden by default via .adsterra-slot;
+             AppState.loadAdsterraAdsIfAllowed() reveals them. -->
+        <div class="adsterra-slot" id="compareAdSlot728x90" style="justify-content:center; margin:10px auto; max-width:100%; overflow:hidden;"></div>
+        <div class="adsterra-slot" id="compareAdSlotNative" style="justify-content:center; margin:10px auto; max-width:100%; overflow:hidden;"></div>
+        <div class="adsterra-slot" id="compareAdSlot320x50" style="justify-content:center; margin:10px auto; max-width:100%; overflow:hidden;"></div>
+        <div class="adsterra-slot" id="compareAdSlot300x250" style="justify-content:center; margin:10px auto; max-width:100%; overflow:hidden;"></div>
+    </div>
+    <div id="compareCard"></div>
+</div>
 
         <script type="module" src="appState.js"></script>
 <script>
