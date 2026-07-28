@@ -267,7 +267,23 @@ const AppState = (function () {
         const profile = await getProfile();
         return !isNoAdsActive(profile);
     }
-
+// Live VIP/noAds status for the current page — updates automatically the
+// moment vipExpiresAt/noAdsExpiresAt change (admin revoke/grant, webhook
+// renewal, cancellation), with no need for the user to reload the page.
+// Call once (after waitForAuthReady()); returns an unsubscribe function.
+function listenToMyProfile(callback) {
+    if (!currentUser) { callback(null); return () => {}; }
+    return onSnapshot(
+        doc(db, "users", currentUser.uid),
+        (snap) => {
+            const data = snap.exists() ? snap.data() : {};
+            callback({ ...defaultProfile(), ...data });
+        },
+        (err) => {
+            console.warn("Profile listener error:", err.message);
+        }
+    );
+}
     function escapeGateHtml(str) {
         return String(str).replace(/[&<>"']/g, s => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[s]));
     }
@@ -2668,7 +2684,7 @@ async function maybeRefreshAd(containerId) {
         // auth
         signIn, signOut: signOutUser, getCurrentUser, onAuthChange, waitForAuthReady, getIdToken,
         // profile
-        getProfile, setProfile, isVipActive, isNoAdsActive, isBannedNow, shouldShowAds,
+        getProfile, setProfile, isVipActive, isNoAdsActive, isBannedNow, shouldShowAds, listenToMyProfile,
         // unique names
         claimUsername, findUserByName, findUserByEmail, getUserProfileForAdmin, backfillUsernameReservations,
         backfillPublicProfileNameLower, backfillAvatarCasing,
