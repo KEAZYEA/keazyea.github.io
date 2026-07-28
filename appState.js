@@ -56,7 +56,7 @@ const storage = getStorage(app);
 const googleProvider = new GoogleAuthProvider();
 
 const ADMIN_UID = "Ts92RY0ipMYDRJa2s5toQfDYxtp1"; // your uid — only this account can use admin.html
-
+const BACKEND_BASE = "https://kih-store.vercel.app"; // same Vercel API store.html calls
 const AppState = (function () {
     const KEYS = {
         inbox: "kih_inbox",
@@ -1457,6 +1457,17 @@ async function backfillAvatarCasing() {
             banReason: reason || "",
             bannedAt: Date.now()
         });
+
+        // Banning also ends any live PayPal subscriptions (VIP and the
+        // legacy No Ads plan) — a banned user shouldn't keep being billed
+        // for perks tied to an account that's locked out.
+        for (const plan of ["vip", "noAds"]) {
+            try {
+                await adminCancelSubscription(uid, plan);
+            } catch (e) {
+                console.warn(`Couldn't auto-cancel ${plan} subscription after ban:`, e.message);
+            }
+        }
     }
 
     async function unbanUser(uid) {
@@ -1502,7 +1513,26 @@ async function backfillAvatarCasing() {
 
         return newExpiresAt;
     }
-
+// Admin-only: cancels a user's live PayPal subscription on their behalf.
+    // Used by adminRevokeVip() and banUser() so someone who's had VIP pulled
+    // or been banned doesn't keep getting billed for a perk they no longer
+    // have, with no way to notice or cancel it themselves on-site.
+    // Best-effort — callers should not let a failure here block the
+    // revoke/ban itself (e.g. no subscription existed for that plan).
+    async function adminCancelSubscription(uid, plan) {
+        await waitForAuthReady();
+        if (!currentUser || currentUser.uid !== ADMIN_UID) throw new Error("Not authorized.");
+        const idToken = await getIdToken();
+        const res = await fetch(BACKEND_BASE + "/api/cancel-subscription", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Authorization": "Bearer " + idToken },
+            body: JSON.stringify({ plan, targetUid: uid })
+        });
+        if (!res.ok) {
+            const text = await res.text().catch(() => "");
+            throw new Error(`Cancel request failed (${res.status}): ${text}`);
+        }
+    }
     // Zeroes out VIP immediately — for undoing a mistaken grant, or pulling
     // VIP from someone regardless of what a live PayPal subscription thinks.
     // Does not touch vipSubscriptionId — if they have a real live sub, the
@@ -1513,6 +1543,14 @@ async function backfillAvatarCasing() {
         if (!currentUser || currentUser.uid !== ADMIN_UID) throw new Error("Not authorized.");
         if (!uid) throw new Error("No uid provided.");
         await setDoc(doc(db, "users", uid), { vipExpiresAt: 0 }, { merge: true });
+
+        // Revoking VIP also ends any live PayPal subscription — otherwise
+        // they keep being billed for a perk they no longer have.
+        try {
+            await adminCancelSubscription(uid, "vip");
+        } catch (e) {
+            console.warn("Couldn't auto-cancel VIP subscription after revoke:", e.message);
+        }
     }
     // Every currently banned/timed-out user, for admin.html's Active
     // Timeouts / Banned Users lists. expiresAt is a future timestamp for a
