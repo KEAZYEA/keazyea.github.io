@@ -1139,7 +1139,19 @@ body {
                 <img id="topbarAvatarIcon" src="" alt="Profile" class="topbar-avatar-icon">
                 <span id="topbarAvatarFallback" class="topbar-avatar-fallback">👤</span>
             </button>
-            <div class="topbar-right">
+            <<div class="topbar-right">
+                <div class="friend-req-wrapper" id="newsWrapperHome">
+                    <button class="icon-btn" title="News & Rumours" id="newsBtnHome">
+                        📰<span class="badge-dot" id="newsBadgeHome" style="display:none;"></span>
+                    </button>
+                    <div class="friend-req-panel" id="newsPanelHome">
+                        <div class="friend-req-panel-title">Latest News</div>
+                        <div id="newsPreviewListHome">
+                            <div class="friend-req-empty">No news yet.</div>
+                        </div>
+                        <button class="btn-settings-action btn-block" style="margin-top:10px;" onclick="openNewsModal()">View More</button>
+                    </div>
+                </div>
                 <div class="friend-req-wrapper" id="friendReqWrapperHome">
                     <button class="icon-btn" title="Friend requests" id="friendReqBtnHome">
                         👥<span class="badge-dot" id="friendReqBadgeHome" style="display:none;"></span>
@@ -1534,6 +1546,15 @@ body {
                 <h3 style="margin-top:0;">Choose an avatar</h3>
                 <div class="avatar-grid" id="avatarGrid"></div>
                 <button class="btn-settings-action" style="margin-top:16px;" onclick="closeAvatarModal()">Close</button>
+            </div>
+        </div>
+
+        <!-- Full News & Rumours modal — scrollable list, HTML content rendered as-is -->
+        <div class="mini-modal-overlay" id="newsModalOverlay">
+            <div class="mini-modal-box" style="max-width:560px; max-height:80vh; overflow-y:auto; text-align:left; overscroll-behavior:contain;">
+                <h3 style="margin-top:0; text-align:center;">📰 News & Rumours</h3>
+                <div id="newsModalList"></div>
+                <button class="btn-settings-action btn-block" style="margin-top:16px;" onclick="closeNewsModal()">Close</button>
             </div>
         </div>
 
@@ -2303,6 +2324,107 @@ document.getElementById("vipStatusText").textContent = AppState.isVipActive(prof
             }
         });
 
+        /* ---------------- NEWS (topbar icon + dropdown preview + full modal) ---------------- */
+        const NEWS_LAST_SEEN_KEY = "kih_news_last_seen_at";
+        let latestNewsItems = [];
+
+        // Strips any HTML tags down to plain text, then trims to a short
+        // preview length — used ONLY for the dropdown teaser, since that
+        // shouldn't render embedded images/styling, just give a taste.
+        function stripHtmlForPreview(html, maxLen = 90) {
+            const tmp = document.createElement("div");
+            tmp.innerHTML = html || "";
+            const text = (tmp.textContent || "").trim();
+            return text.length > maxLen ? text.slice(0, maxLen) + "…" : text;
+        }
+
+        function renderNewsPreviewHome(items) {
+            const list = document.getElementById("newsPreviewListHome");
+            const recent = items.slice(0, 3);
+            if (!recent.length) {
+                list.innerHTML = '<div class="friend-req-empty">No news yet.</div>';
+                return;
+            }
+            list.innerHTML = recent.map(n => `
+                <div class="friend-req-item" style="display:block;">
+                    <div class="friend-req-name" style="margin-bottom:2px;">${escapeHomeHtml(n.title)}</div>
+                    <div class="settings-sub" style="margin:0;">${escapeHomeHtml(stripHtmlForPreview(n.bodyHtml))}</div>
+                </div>
+            `).join("");
+        }
+
+        function updateNewsBadgeHome(items) {
+            const lastSeenAt = parseInt(localStorage.getItem(NEWS_LAST_SEEN_KEY) || "0", 10);
+            const unread = items.filter(n => n.createdAt > lastSeenAt).length;
+            const badge = document.getElementById("newsBadgeHome");
+            badge.textContent = unread > 9 ? "9+" : String(unread);
+            badge.style.display = unread > 0 ? "flex" : "none";
+        }
+
+        function startNewsListenerHome() {
+            // Public read (no auth needed) — starts immediately, same as
+            // the shared notifications listener.
+            AppState.listenToNews((items) => {
+                latestNewsItems = items;
+                renderNewsPreviewHome(items);
+                updateNewsBadgeHome(items);
+                // keep the full modal live too, in case it's open when a new post lands
+                if (document.getElementById("newsModalOverlay").classList.contains("open")) {
+                    renderNewsModalList(items);
+                }
+            });
+        }
+
+        function renderNewsModalList(items) {
+            const list = document.getElementById("newsModalList");
+            if (!items.length) {
+                list.innerHTML = '<div class="friend-req-empty">No news yet — check back soon.</div>';
+                return;
+            }
+            // bodyHtml is rendered as-is (innerHTML), not escaped — this is
+            // admin-authored content only (Firestore rules restrict writes
+            // to the admin uid), so this is the same trust level as the
+            // rest of the admin-posted content already using innerHTML.
+            list.innerHTML = items.map(n => `
+                <div style="padding:14px 0; border-bottom:1px solid var(--kih-border);">
+                    <div style="font-weight:700; font-size:1.05rem; margin-bottom:4px;">${escapeHomeHtml(n.title)}</div>
+                    <div class="settings-sub" style="margin-bottom:10px;">${new Date(n.createdAt).toLocaleString()}</div>
+                    <div>${n.bodyHtml}</div>
+                </div>
+            `).join("");
+        }
+
+        function openNewsModal() {
+            document.getElementById("friendReqWrapperHome"); // no-op, keeps intent clear
+            document.getElementById("newsPanelHome").classList.remove("open");
+            renderNewsModalList(latestNewsItems);
+            document.getElementById("newsModalOverlay").classList.add("open");
+            localStorage.setItem(NEWS_LAST_SEEN_KEY, String(Date.now()));
+            updateNewsBadgeHome(latestNewsItems);
+        }
+        window.openNewsModal = openNewsModal;
+
+        function closeNewsModal() {
+            document.getElementById("newsModalOverlay").classList.remove("open");
+        }
+        window.closeNewsModal = closeNewsModal;
+
+        document.getElementById("newsBtnHome").addEventListener("click", (e) => {
+            e.stopPropagation();
+            const panel = document.getElementById("newsPanelHome");
+            panel.classList.toggle("open");
+            if (panel.classList.contains("open")) {
+                localStorage.setItem(NEWS_LAST_SEEN_KEY, String(Date.now()));
+                updateNewsBadgeHome(latestNewsItems);
+            }
+        });
+        document.addEventListener("click", (e) => {
+            const wrapper = document.getElementById("newsWrapperHome");
+            if (wrapper && !wrapper.contains(e.target)) {
+                document.getElementById("newsPanelHome").classList.remove("open");
+            }
+        });
+
         window.openViewProfileModalHome = async function (uid, fallbackName, fallbackAvatar) {
             let overlay = document.getElementById("viewProfileModalOverlayHome");
 
@@ -2537,6 +2659,7 @@ document.getElementById("vipStatusText").textContent = AppState.isVipActive(prof
         });
 
         document.addEventListener("DOMContentLoaded", () => {
+            startNewsListenerHome();
             AppState.listenToNotifications((notifications) => {
                 latestNotifications = notifications;
                 renderInboxBadgeFrom(mergedNotifications());
