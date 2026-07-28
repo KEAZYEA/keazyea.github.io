@@ -246,8 +246,8 @@
     <div class="processing-modal-overlay" id="processingModalOverlay">
         <div class="processing-modal-box">
             <div class="processing-modal-spinner"></div>
-            <div class="processing-modal-title">Activating your subscription...</div>
-            <div class="processing-modal-body">
+            <div class="processing-modal-title" id="processingModalTitle">Activating your subscription...</div>
+            <div class="processing-modal-body" id="processingModalBody">
                 This can take a few minutes to process. Please be patient — you can close this and refresh the page later, and your VIP perks will be active once PayPal confirms the payment.
             </div>
             <button class="btn-settings-action" id="processingModalCloseBtn" style="width:100%;">Close</button>
@@ -287,7 +287,11 @@
             return Math.max(0, Math.ceil((expiresAt - Date.now()) / 86400000));
         }
 
-        function showProcessingModal() {
+        function showProcessingModal(title, body) {
+            document.getElementById("processingModalTitle").textContent =
+                title || "Activating your subscription...";
+            document.getElementById("processingModalBody").textContent =
+                body || "This can take a few minutes to process. Please be patient — you can close this and refresh the page later, and your VIP perks will be active once PayPal confirms the payment.";
             document.getElementById("processingModalOverlay").classList.add("open");
         }
         function hideProcessingModal() {
@@ -419,12 +423,13 @@
                 return;
             }
 
-            if (attempts > 10) {
+            iif (attempts > 10) {
                 // PayPal already confirmed the cancellation (that's why the
                 // email arrived), but our Firestore copy only updates once
                 // the webhook fires, which can occasionally lag past this
                 // 20s window. Don't leave the button stuck disabled forever
                 // — reset it and let the user know what's going on.
+                hideProcessingModal();
                 const btnId = plan === "vip" ? "vipCancelBtn" : "noAdsCancelBtn";
                 const btn = document.getElementById(btnId);
                 if (btn) {
@@ -457,7 +462,10 @@
             body: JSON.stringify({ plan })
         });
         if (!res.ok) throw new Error(await res.text());
-        alert("Cancellation requested. Your access will end when the current billing period closes.");
+        showProcessingModal(
+            "Cancelling your subscription...",
+            "This can take a few minutes to process. Please be patient — you can close this and refresh the page later; your access will continue until the current billing period ends, either way."
+        );
         await pollForDeactivation(plan); // webhook takes a moment to clear the subscriptionId — poll instead of reading stale data immediately
     } catch (e) {
         alert("Couldn't cancel — please try again in a moment.");
