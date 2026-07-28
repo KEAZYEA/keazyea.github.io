@@ -2396,6 +2396,7 @@ let adsterraSocialBarBodyChildren = null; // snapshot of body's direct children 
 
 let adsterraPopunderLoaded = false;
 let adsterraPopunderScriptEl = null;
+const POPUNDER_ENABLED = false; // flip to true to re-enable the popunder ad
 
 function injectAdsterraSlot(containerId, htmlContent) {
     const container = document.getElementById(containerId);
@@ -2509,24 +2510,28 @@ async function loadAdsterraAdsIfAllowed() {
     // persisted timestamp, adsterraPopunderLoaded resets to false on every
     // single page load and the popunder fires on every page visited, which
     // is what was making it feel so intrusive.
-    const POPUNDER_MIN_INTERVAL_MS = 60 * 1000; // 1 minute
-    const lastPopunderAt = parseInt(localStorage.getItem("kih_last_popunder_at") || "0", 10);
-    const now = Date.now();
+    if (!POPUNDER_ENABLED) {
+        console.log("[KIH ads] popunder skipped: disabled via POPUNDER_ENABLED flag");
+    } else {
+        const POPUNDER_MIN_INTERVAL_MS = 60 * 1000; // 1 minute
+        const lastPopunderAt = parseInt(localStorage.getItem("kih_last_popunder_at") || "0", 10);
+        const now = Date.now();
 
-    if (!adsterraPopunderLoaded && (now - lastPopunderAt) >= POPUNDER_MIN_INTERVAL_MS) {
-    adsterraPopunderLoaded = true;
-    localStorage.setItem("kih_last_popunder_at", String(now));
-    adsterraPopunderScriptEl = document.createElement("script");
-    adsterraPopunderScriptEl.src = "https://pl30553113.effectivecpmnetwork.com/cc/72/0f/cc720f28e916390a79e4dc545a9f04f7.js";
-    document.body.appendChild(adsterraPopunderScriptEl);
-    console.log("[KIH ads] popunder injected at", new Date(now).toLocaleTimeString());
-} else if (!shouldShow) {
-    console.log("[KIH ads] popunder skipped: ads disabled for this user (VIP/noAds active)");
-} else if (adsterraPopunderLoaded) {
-    console.log("[KIH ads] popunder skipped: already loaded this page view");
-} else {
-    console.log("[KIH ads] popunder skipped: cooldown active, retry in", Math.ceil((POPUNDER_MIN_INTERVAL_MS - (now - lastPopunderAt)) / 1000), "s");
-}
+        if (!adsterraPopunderLoaded && (now - lastPopunderAt) >= POPUNDER_MIN_INTERVAL_MS) {
+            adsterraPopunderLoaded = true;
+            localStorage.setItem("kih_last_popunder_at", String(now));
+            adsterraPopunderScriptEl = document.createElement("script");
+            adsterraPopunderScriptEl.src = "https://pl30553113.effectivecpmnetwork.com/cc/72/0f/cc720f28e916390a79e4dc545a9f04f7.js";
+            document.body.appendChild(adsterraPopunderScriptEl);
+            console.log("[KIH ads] popunder injected at", new Date(now).toLocaleTimeString());
+        } else if (!shouldShow) {
+            console.log("[KIH ads] popunder skipped: ads disabled for this user (VIP/noAds active)");
+        } else if (adsterraPopunderLoaded) {
+            console.log("[KIH ads] popunder skipped: already loaded this page view");
+        } else {
+            console.log("[KIH ads] popunder skipped: cooldown active, retry in", Math.ceil((POPUNDER_MIN_INTERVAL_MS - (now - lastPopunderAt)) / 1000), "s");
+        }
+    }
 
     document.querySelectorAll(".adsterra-slot").forEach(el => el.classList.add("show-me"));
 }
