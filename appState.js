@@ -2491,10 +2491,10 @@ async function loadAdsterraAdsIfAllowed() {
     injectAdsterraBannerIframe("adSlot320x50", "1a13d2820b1d0ab72678a82cc1afed71", 320, 50);
     injectAdsterraBannerIframe("adSlot300x250", "970e4e741b46aa292eb4fdf1cadd1b59", 300, 250);
 
-    injectAdsterraSlot("adSlotNative", `
-        <script async="async" data-cfasync="false" src="https://pl30540489.effectivecpmnetwork.com/ae4d5bd6f1b544b5d1778ee33ba910a9/invoke.js"><\/script>
-        <div id="container-ae4d5bd6f1b544b5d1778ee33ba910a9"></div>
-    `);
+    // injectAdsterraSlot("adSlotNative", `
+    //     <script async="async" data-cfasync="false" src="https://pl30540489.effectivecpmnetwork.com/ae4d5bd6f1b544b5d1778ee33ba910a9/invoke.js"><\/script>
+    //     <div id="container-ae4d5bd6f1b544b5d1778ee33ba910a9"></div>
+    // `);
 
     if (!adsterraSocialBarLoaded) {
         adsterraSocialBarLoaded = true;
