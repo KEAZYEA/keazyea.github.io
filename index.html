@@ -2485,8 +2485,14 @@ document.getElementById("vipStatusText").textContent = AppState.isVipActive(prof
 
         function closeSingleNewsModal() {
             document.getElementById("singleNewsModalOverlay").classList.remove("open");
-            document.getElementById("newsPanelHome").classList.add("open");
-            document.getElementById("newsPanelBackdrop").classList.add("open");
+            // Deferred with setTimeout so this runs AFTER the current click
+            // event finishes bubbling to document — otherwise the
+            // "click outside newsWrapperHome" listener immediately undoes
+            // this by removing .open again in the same click.
+            setTimeout(() => {
+                document.getElementById("newsPanelHome").classList.add("open");
+                document.getElementById("newsPanelBackdrop").classList.add("open");
+            }, 0);
         }
         window.closeSingleNewsModal = closeSingleNewsModal;
 
