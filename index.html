@@ -198,6 +198,11 @@ body {
                 gap: 6px 10px;
                 max-width: 560px;
             }
+            .friend-req-panel {
+                top: 50px;
+                max-height: calc(100vh - 60px);
+            }
+            
             /* 5 buttons in a 2-col grid packs as 2/2/1 — make the last one
                (Store) span both columns so it centers on its own row
                instead of leaving a gap next to it. */
@@ -677,25 +682,25 @@ body {
         }
 
         .friend-req-panel {
-            display: none;
-            flex-direction: column;
-            position: fixed;
-            top: 72px;
-            right: 8px;
-            left: 8px;
-            width: auto;
-            max-width: 300px;
-            margin-left: auto;
-            max-height: 360px;
-            overflow-y: auto;
-            overscroll-behavior: contain;
-            background: var(--kih-panel);
-            border: 1px solid var(--kih-border);
-            border-radius: 12px;
-            padding: 10px;
-            box-sizing: border-box;
-            z-index: 50;
-        }
+    display: none;
+    flex-direction: column;
+    position: fixed;
+    top: 72px;
+    right: 8px;
+    left: 8px;
+    width: auto;
+    max-width: 300px;
+    margin-left: auto;
+    max-height: min(360px, calc(100vh - 90px));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    background: var(--kih-panel);
+    border: 1px solid var(--kih-border);
+    border-radius: 12px;
+    padding: 10px;
+    box-sizing: border-box;
+    z-index: 50;
+}
 
         .friend-req-panel.open {
             display: flex;
@@ -773,7 +778,10 @@ body {
             font-size: 0.85rem;
             padding: 16px 6px;
         }
-
+.news-preview-item:hover {
+            background: #1c1c36;
+            border-radius: 8px;
+        }
         /* ---- Mini modal (view profile) ---- */
         .mini-modal-overlay {
             display: none;
@@ -2354,24 +2362,19 @@ document.getElementById("vipStatusText").textContent = AppState.isVipActive(prof
         return;
     }
     list.innerHTML = recent.map(n => `
-        <div class="friend-req-item" style="display:block;">
+        <div class="friend-req-item news-preview-item" data-id="${escapeHomeHtml(n.id)}" style="display:block; cursor:pointer;">
             <div class="friend-req-name" style="margin-bottom:2px;">${escapeHomeHtml(n.title)}</div>
             <div class="settings-sub" style="margin:0;">${escapeHomeHtml(stripHtmlForPreview(n.bodyHtml))}</div>
-            <button type="button" class="news-item-view-btn" data-id="${escapeHomeHtml(n.id)}"
-                style="background:none; border:none; color:var(--kih-accent); font-size:0.8rem; font-weight:700; padding:6px 0 0; cursor:pointer;">
-                View More ▾
-            </button>
         </div>
     `).join("");
 
-    list.querySelectorAll(".news-item-view-btn").forEach(btn => {
-        btn.addEventListener("click", (e) => {
+    list.querySelectorAll(".news-preview-item").forEach(item => {
+        item.addEventListener("click", (e) => {
             e.stopPropagation();
-            openSingleNewsModal(btn.dataset.id);
+            openSingleNewsModal(item.dataset.id);
         });
     });
 }
-
         function updateNewsBadgeHome(items) {
             const lastSeenAt = parseInt(localStorage.getItem(NEWS_LAST_SEEN_KEY) || "0", 10);
             const unread = items.filter(n => n.createdAt > lastSeenAt).length;
