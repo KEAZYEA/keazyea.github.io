@@ -780,11 +780,11 @@ body {
         }
 
         .news-preview-item {
-            border: 1px solid var(--kih-border) !important;
+            border: 1px solid var(--kih-accent) !important;
             border-radius: 8px;
             margin-bottom: 8px;
             padding: 10px 12px;
-            transition: border-color 0.12s ease, background 0.12s ease;
+            transition: border-color 0.12s ease, background 0.12s ease, transform 0.12s ease;
         }
 
         .news-preview-item:last-child {
@@ -793,7 +793,8 @@ body {
 
         .news-preview-item:hover {
             background: #1c1c36;
-            border-color: var(--kih-accent);
+            border-color: var(--kih-accent-hover);
+            transform: translateY(-1px);
         }
         /* ---- Mini modal (view profile) ---- */
         .mini-modal-overlay {
@@ -2470,8 +2471,7 @@ document.getElementById("vipStatusText").textContent = AppState.isVipActive(prof
 
         function closeSingleNewsModal() {
             document.getElementById("singleNewsModalOverlay").classList.remove("open");
-            renderNewsModalList(latestNewsItems);
-            document.getElementById("newsModalOverlay").classList.add("open");
+            document.getElementById("newsPanelHome").classList.add("open");
         }
         window.closeSingleNewsModal = closeSingleNewsModal;
 
