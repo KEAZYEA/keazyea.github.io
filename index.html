@@ -80,31 +80,26 @@ body {
 
         /* ---- HOME LANDING SCREEN ---- */
         .home-landing {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            /* justify-content: center was clipping the top of the content
-               when it overflowed — centered flex content that's taller than
-               its container overflows symmetrically above AND below center,
-               but scrollTop can never go negative, so the top overflow was
-               permanently unreachable no matter how far you scrolled. Using
-               margin: auto 0 on the content instead achieves the same
-               "centered when it fits" look without that clipping bug. */
-            justify-content: flex-start;
-            padding: clamp(8px, 2.5vh, 20px);
-            min-height: 0;
-            overflow-y: auto;
-            overflow-x: hidden;
-            overscroll-behavior: contain;
-        }
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: clamp(8px, 2.5vh, 20px);
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain;
+}
 
-        .home-landing > *:first-child {
-            margin-top: auto;
-        }
-        .home-landing > *:last-child {
-            margin-bottom: auto;
-        }
+/* replaces the old :first-child / :last-child rules */
+.home-landing-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin: auto 0; /* centers when content fits, still scrolls safely if it overflows */
+}
 
         .home-landing-title {
             font-size: 2rem;
@@ -1337,6 +1332,7 @@ body {
 
         <!-- ===== HOME LANDING — big vertical centered buttons ===== -->
         <div class="home-landing" id="homeLanding">
+            <div class="home-landing-content">
             <img src="images/KIH_HP.jpg" alt="Keazyea's Intelligence Hub" class="home-landing-title-img">
 
             <div class="home-menu">
@@ -1364,7 +1360,7 @@ body {
                 </button>
             </div>
             <button class="about-creator-link" onclick="goToPage('about')">About the Creator</button>
-
+            </div>
             <!-- Adsterra ad slots — hidden by default, shown via JS if not VIP/No-Ads -->
             <div class="adsterra-slot" id="adSlot728x90"></div>
             <div class="adsterra-slot" id="adSlot320x50"></div>
