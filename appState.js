@@ -2381,6 +2381,88 @@ async function sendAdminMessage(uid, title, body) {
         const data = snap.data();
         return data.weekId === weekId ? data : null;
     }
+
+    /* ---------------- NEWS (admin-posted; body is stored/rendered as raw
+       HTML so you can format it and embed <img> tags — safe here because
+       Firestore rules restrict writes to the admin uid only, so nobody
+       else can ever inject content into this field). ---------------- */
+
+    async function uploadNewsImage(file) {
+        await waitForAuthReady();
+        if (!currentUser || currentUser.uid !== ADMIN_UID) {
+            throw new Error("Not authorized.");
+        }
+        if (!file.type.startsWith("image/")) {
+            throw new Error("File must be an image.");
+        }
+        if (file.size > 5 * 1024 * 1024) {
+            throw new Error("Image must be under 5MB.");
+        }
+        const path = "newsImages/" + Date.now() + "-" + file.name;
+        const storageRef = ref(storage, path);
+        await uploadBytes(storageRef, file);
+        const imageUrl = await getDownloadURL(storageRef);
+        return { imageUrl, imagePath: path };
+    }
+
+    async function addNews(title, bodyHtml) {
+        await waitForAuthReady();
+        if (!currentUser || currentUser.uid !== ADMIN_UID) {
+            throw new Error("Not authorized.");
+        }
+        if (!title || !title.trim()) throw new Error("Title cannot be empty.");
+        if (!bodyHtml || !bodyHtml.trim()) throw new Error("Body cannot be empty.");
+        const docRef = await addDoc(collection(db, "news"), {
+            title: title.trim(),
+            bodyHtml: bodyHtml.trim(),
+            createdAt: Date.now()
+        });
+        return docRef.id;
+    }
+
+    async function updateNews(newsId, title, bodyHtml) {
+        await waitForAuthReady();
+        if (!currentUser || currentUser.uid !== ADMIN_UID) {
+            throw new Error("Not authorized.");
+        }
+        if (!title || !title.trim()) throw new Error("Title cannot be empty.");
+        if (!bodyHtml || !bodyHtml.trim()) throw new Error("Body cannot be empty.");
+        await updateDoc(doc(db, "news", newsId), { title: title.trim(), bodyHtml: bodyHtml.trim() });
+        return newsId;
+    }
+
+    async function deleteNews(newsId) {
+        await waitForAuthReady();
+        if (!currentUser || currentUser.uid !== ADMIN_UID) {
+            throw new Error("Not authorized.");
+        }
+        await deleteDoc(doc(db, "news", newsId));
+    }
+
+    async function getNewsItem(newsId) {
+        const snap = await getDoc(doc(db, "news", newsId));
+        return snap.exists() ? { id: snap.id, ...snap.data() } : null;
+    }
+
+    async function getNews(maxCount = 50) {
+        const q = query(collection(db, "news"), orderBy("createdAt", "desc"), limit(maxCount));
+        const snap = await getDocs(q);
+        const items = [];
+        snap.forEach(d => items.push({ id: d.id, ...d.data() }));
+        return items;
+    }
+
+    // Live feed — used by home.html so the news icon updates without a
+    // page reload as soon as you post something in admin.html.
+    function listenToNews(callback, maxCount = 50) {
+        const q = query(collection(db, "news"), orderBy("createdAt", "desc"), limit(maxCount));
+        return onSnapshot(q, (snap) => {
+            const items = [];
+            snap.forEach(d => items.push({ id: d.id, ...d.data() }));
+            callback(items);
+        });
+    }
+
 /* ---------------- SHARED ADSTERRA HELPERS ----------------
    Centralized version of what used to live locally inside index.html.
    Every page includes divs with these exact fixed IDs:
@@ -2602,6 +2684,8 @@ async function maybeRefreshAd(containerId) {
         addPromoCode, getPromoCodes, updatePromoCode, deletePromoCode,
         // tips
         addTip, getTips, getTip, uploadTipImage, deleteTip, updateTip,
+        // news
+        addNews, getNews, getNewsItem, updateNews, deleteNews, uploadNewsImage, listenToNews,
         // notifications
         addNotification, deleteNotificationsBySource, listenToNotifications,
         addAnnouncement, getAnnouncements, updateAnnouncement, deleteAnnouncement,
