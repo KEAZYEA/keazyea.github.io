@@ -423,7 +423,7 @@
                 return;
             }
 
-            iif (attempts > 10) {
+            if (attempts > 10) {
                 // PayPal already confirmed the cancellation (that's why the
                 // email arrived), but our Firestore copy only updates once
                 // the webhook fires, which can occasionally lag past this
