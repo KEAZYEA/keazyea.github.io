@@ -45,12 +45,23 @@ module.exports = async (req, res) => {
     res.status(401).send("Invalid or expired token");
     return;
   }
-  const uid = decoded.uid;
-
-  const { plan } = req.body || {};
+  const { plan, targetUid } = req.body || {};
   if (plan !== "vip" && plan !== "noAds") {
     res.status(400).send("Body must include plan: 'vip' or 'noAds'");
     return;
+  }
+
+  // Same admin uid used throughout appState.js — only this account may
+  // cancel a subscription on behalf of someone else. Everyone else can
+  // only ever cancel their own (uid comes straight from their own token).
+  const ADMIN_UID = "Ts92RY0ipMYDRJa2s5toQfDYxtp1";
+  let uid = decoded.uid;
+  if (targetUid) {
+    if (decoded.uid !== ADMIN_UID) {
+      res.status(403).send("Not authorized to cancel another user's subscription");
+      return;
+    }
+    uid = targetUid;
   }
 
   const db = admin.firestore();
@@ -59,12 +70,12 @@ module.exports = async (req, res) => {
     res.status(404).send("User profile not found");
     return;
   }
-
   const profile = userSnap.data();
   const subscriptionId = plan === "vip" ? profile.vipSubscriptionId : profile.noAdsSubscriptionId;
-
   if (!subscriptionId) {
-    res.status(400).send("No active subscription found for this plan");
+    // Not an error — admin-triggered revoke/ban calls this for both plans
+    // regardless of whether the user ever subscribed to each one.
+    res.status(200).send("No active subscription for this plan — nothing to cancel");
     return;
   }
 
