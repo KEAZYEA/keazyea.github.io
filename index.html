@@ -1927,9 +1927,23 @@ body {
             this.value = val;
         });
 
+        // Formats digits with thousands-commas WITHOUT parsing through
+        // Number() — Number("00500") collapses to 0 and wipes out leading
+        // zeros the user might still be editing (e.g. deleting the "5" in
+        // "500,000" to retype "600,000" would otherwise blank the field
+        // instead of leaving "00,000" for them to finish typing into).
+        function formatDigitsWithCommas(digits) {
+            return digits.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
         document.getElementById("profilePowerInput").addEventListener("input", function () {
+            let cursorFromEnd = this.value.length - this.selectionStart;
             let digitsOnly = this.value.replace(/[^\d]/g, "");
-            this.value = digitsOnly ? Number(digitsOnly).toLocaleString("en-US") : "";
+            this.value = digitsOnly ? formatDigitsWithCommas(digitsOnly) : "";
+            // keep the cursor the same distance from the end, so typing/
+            // deleting in the middle doesn't jump the caret to the end
+            let pos = Math.max(0, this.value.length - cursorFromEnd);
+            this.setSelectionRange(pos, pos);
         });
         // Real troop/hero display names, loaded straight from the same JSON
         // files troopsAndHeroes.html uses (troops.json/hero.json for the
