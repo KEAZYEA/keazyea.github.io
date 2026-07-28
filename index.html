@@ -292,15 +292,20 @@ body {
                 margin-bottom: 12px;
             }
 
-            .about-list li {
+           .about-list li {
                 padding: 6px 12px;
             }
-            /* ===== TABLET / DESKTOP-WIDTH SCALE-UP =====
-           Everything above is tuned for phone widths. Past 768px (iPad
-           portrait and up), those same clamp()/vh-based sizes and the
-           420px menu cap leave the whole home screen looking tiny and
-           stranded in the middle of a much bigger screen. Scale the key
-           pieces up together instead of just letting empty space grow. */
+        }
+        /* ===== TABLET / DESKTOP-WIDTH SCALE-UP =====
+           Everything above the landscape-phone block is tuned for phone
+           widths. Past 768px (iPad portrait and up), those same clamp()/
+           vh-based sizes and the 420px menu cap leave the whole home
+           screen looking tiny and stranded in the middle of a much bigger
+           screen. Scale the key pieces up together instead of just
+           letting empty space grow. This is intentionally its OWN
+           top-level media query — not nested inside the short-landscape
+           block above — so it applies on tablets/desktops regardless of
+           height or orientation. */
         @media (min-width: 768px) {
             .home-landing-title-img {
                 width: clamp(180px, 20vh, 320px);
@@ -401,7 +406,6 @@ body {
             .page-panel {
                 max-width: 860px;
             }
-        }
         }
         .about-creator-link:hover {
             color: var(--kih-text);
