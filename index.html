@@ -779,6 +779,18 @@ body {
             padding: 16px 6px;
         }
 
+        .news-panel-backdrop {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 45;
+        }
+
+        .news-panel-backdrop.open {
+            display: block;
+        }
+
         .news-preview-item {
             border: 1px solid var(--kih-accent) !important;
             border-radius: 8px;
@@ -1166,6 +1178,7 @@ body {
                     <button class="icon-btn" title="News & Rumours" id="newsBtnHome">
                         📰<span class="badge-dot" id="newsBadgeHome" style="display:none;"></span>
                     </button>
+                    <div class="news-panel-backdrop" id="newsPanelBackdrop"></div>
                     <div class="friend-req-panel" id="newsPanelHome">
                         <div class="friend-req-panel-title">Latest News</div>
                         <div id="newsPreviewListHome">
@@ -2434,6 +2447,7 @@ document.getElementById("vipStatusText").textContent = AppState.isVipActive(prof
         function openNewsModal() {
             document.getElementById("friendReqWrapperHome"); // no-op, keeps intent clear
             document.getElementById("newsPanelHome").classList.remove("open");
+            document.getElementById("newsPanelBackdrop").classList.remove("open");
             renderNewsModalList(latestNewsItems);
             document.getElementById("newsModalOverlay").classList.add("open");
             localStorage.setItem(NEWS_LAST_SEEN_KEY, String(Date.now()));
@@ -2472,6 +2486,7 @@ document.getElementById("vipStatusText").textContent = AppState.isVipActive(prof
         function closeSingleNewsModal() {
             document.getElementById("singleNewsModalOverlay").classList.remove("open");
             document.getElementById("newsPanelHome").classList.add("open");
+            document.getElementById("newsPanelBackdrop").classList.add("open");
         }
         window.closeSingleNewsModal = closeSingleNewsModal;
 
@@ -2483,8 +2498,9 @@ document.getElementById("vipStatusText").textContent = AppState.isVipActive(prof
         document.getElementById("newsBtnHome").addEventListener("click", (e) => {
             e.stopPropagation();
             const panel = document.getElementById("newsPanelHome");
-            panel.classList.toggle("open");
-            if (panel.classList.contains("open")) {
+            const isOpen = panel.classList.toggle("open");
+            document.getElementById("newsPanelBackdrop").classList.toggle("open", isOpen);
+            if (isOpen) {
                 localStorage.setItem(NEWS_LAST_SEEN_KEY, String(Date.now()));
                 updateNewsBadgeHome(latestNewsItems);
             }
@@ -2493,7 +2509,12 @@ document.getElementById("vipStatusText").textContent = AppState.isVipActive(prof
             const wrapper = document.getElementById("newsWrapperHome");
             if (wrapper && !wrapper.contains(e.target)) {
                 document.getElementById("newsPanelHome").classList.remove("open");
+                document.getElementById("newsPanelBackdrop").classList.remove("open");
             }
+        });
+        document.getElementById("newsPanelBackdrop").addEventListener("click", () => {
+            document.getElementById("newsPanelHome").classList.remove("open");
+            document.getElementById("newsPanelBackdrop").classList.remove("open");
         });
 
         window.openViewProfileModalHome = async function (uid, fallbackName, fallbackAvatar) {
