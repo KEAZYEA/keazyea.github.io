@@ -2455,6 +2455,7 @@ window.removeClanIconPreview = function () {
         const SERVER_LABELS = { ios: "iOS 🍎", android: "Android 🤖", both: "iOS & Android" };
 
         window.showProfileModal = function (profile, isFriend) {
+            document.body.style.overflow = "hidden";
             document.getElementById("friendProfileAvatar").innerHTML = avatarHtml(profile.avatar, profile.name, "");
             document.getElementById("friendProfileName").textContent = profile.name;
 
@@ -2499,6 +2500,7 @@ window.removeClanIconPreview = function () {
         };
         window.closeFriendProfileModal = function () {
             document.getElementById("friendProfileModalOverlay").classList.remove("open");
+            document.body.style.overflow = "";
         };
 
         window.confirmUnfriend = async function (uid, name) {
