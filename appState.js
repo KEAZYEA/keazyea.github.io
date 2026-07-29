@@ -2603,6 +2603,15 @@ function hideAllAdsterraAds() {
 }
 
 async function loadAdsterraAdsIfAllowed() {
+    // ---- ADS DISABLED ----
+    // Adsterra CPMs were effectively $0 (6000 impressions ≈ $0.01), so all
+    // ad-serving is commented out site-wide. Every page still calls this
+    // function (via AppState.loadAdsterraAdsIfAllowed()) but it's now a
+    // no-op — nothing breaks, ads just never load. Uncomment the block
+    // below to bring Adsterra back later.
+    return;
+
+    /*
     const myGeneration = adGeneration;
     const shouldShow = await shouldShowAds();
     if (myGeneration !== adGeneration) return; // stale — a newer auth change has since superseded this check
@@ -2641,12 +2650,6 @@ async function loadAdsterraAdsIfAllowed() {
         document.body.appendChild(adsterraSocialBarScriptEl);
     }
 
-    // Popunder fires at most once per POPUNDER_MIN_INTERVAL_MS, tracked in
-    // localStorage rather than a JS variable — this is a multi-page site,
-    // so every navigation re-runs this function from scratch. Without a
-    // persisted timestamp, adsterraPopunderLoaded resets to false on every
-    // single page load and the popunder fires on every page visited, which
-    // is what was making it feel so intrusive.
     if (!POPUNDER_ENABLED) {
         console.log("[KIH ads] popunder skipped: disabled via POPUNDER_ENABLED flag");
     } else {
@@ -2671,8 +2674,8 @@ async function loadAdsterraAdsIfAllowed() {
     }
 
     document.querySelectorAll(".adsterra-slot").forEach(el => el.classList.add("show-me"));
+    */
 }
-
 // Rate-limited single-slot ad refresh — called from page-specific code on
 // search/select/slider interactions (e.g. troopsandheroes.html's
 // updateTroopsCard()). Unlike loadAdsterraAdsIfAllowed(), this only ever
@@ -2683,6 +2686,10 @@ const AD_REFRESH_MIN_INTERVAL_MS = 60 * 1000; // 1 minute per slot
 const lastAdRefreshAt = {}; // containerId -> timestamp of last actual reload
 
 async function maybeRefreshAd(containerId) {
+    // ---- ADS DISABLED ---- (see loadAdsterraAdsIfAllowed above)
+    return;
+
+    /*
     const container = document.getElementById(containerId);
     if (!container) return;
 
@@ -2704,12 +2711,6 @@ async function maybeRefreshAd(containerId) {
 
     const now = Date.now();
     if (lastAdRefreshAt[containerId] && now - lastAdRefreshAt[containerId] < AD_REFRESH_MIN_INTERVAL_MS) {
-        // Too soon to reload — just make sure it's visible if it already
-        // has content from a previous call. Setting .style.display directly
-        // (not toggling a CSS class) is required here: every ad slot div is
-        // written with an inline style="display:none", and an inline style
-        // always overrides a class-based CSS rule regardless of specificity.
-        // Only actual JS assignment to .style.display can override it.
         container.style.display = "flex";
         return;
     }
@@ -2717,6 +2718,7 @@ async function maybeRefreshAd(containerId) {
 
     injectAdsterraBannerIframe(containerId, "970e4e741b46aa292eb4fdf1cadd1b59", 300, 250);
     container.style.display = "flex";
+    */
 }
 
     return {
