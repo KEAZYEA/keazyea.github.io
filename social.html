@@ -768,6 +768,9 @@
             max-width: 520px;
             max-height: 85vh;
             overflow-y: auto;
+            overscroll-behavior: contain; /* stops scroll from "handing off" to
+                                              the page behind once you reach the
+                                              top/bottom of this box */
         }
 
         /* ---- Highlight your own clan post in the list ---- */
@@ -2004,6 +2007,7 @@ function buildCountrySelectOptions(selectId, includeAny) {
             document.getElementById("autofillClanBtn").style.display = hasPriorPost ? "block" : "none";
 
             document.getElementById("postClanModalOverlay").classList.add("open");
+            document.body.style.overflow = "hidden";
         };
 
         window.autofillClanPost = function () {
@@ -2059,10 +2063,12 @@ function buildCountrySelectOptions(selectId, includeAny) {
             document.getElementById("autofillClanBtn").style.display = "none";
 
             document.getElementById("postClanModalOverlay").classList.add("open");
+            document.body.style.overflow = "hidden";
         };
 
         window.closePostClanModal = function () {
             document.getElementById("postClanModalOverlay").classList.remove("open");
+            document.body.style.overflow = "";
             editingPostId = null;
         };
 
@@ -3061,7 +3067,7 @@ document.getElementById("dmMessages").addEventListener("scroll", updateDmScrollB
         // Called by home.html whenever the person navigates away from the
         // Social page — closes any open chat/modal and resets back to the
         // Friends tab so returning later always starts fresh.
-        window.resetSocialView = function () {
+       window.resetSocialView = function () {
             closeDmModal();
             closeActionModal();
             closeReportModal();
@@ -3070,6 +3076,7 @@ document.getElementById("dmMessages").addEventListener("scroll", updateDmScrollB
             closeDeleteConfirmModal();
             closePostAgreeModal();
             closePostCooldownModal();
+            document.body.style.overflow = "";
             document.getElementById("dmActionsMenu")?.classList.remove("open");
             document.getElementById("friendReqPanel")?.classList.remove("open");
             document.getElementById("clanFilterDropdown")?.classList.remove("open");
