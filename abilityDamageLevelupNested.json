@@ -12598,5 +12598,3605 @@
         "abilityDamageLevelUpId": "bossSand_DmgLvlUp",
         "level": 300,
         "damage": 37556733
+    },
+    "bossDragonGold1_DmgLevelUp_1": {
+        "key": "bossDragonGold1_DmgLevelUp_1",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 1,
+        "damage": 0
+    },
+    "bossDragonGold1_DmgLevelUp_2": {
+        "key": "bossDragonGold1_DmgLevelUp_2",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 2,
+        "damage": 20000
+    },
+    "bossDragonGold1_DmgLevelUp_3": {
+        "key": "bossDragonGold1_DmgLevelUp_3",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 3,
+        "damage": 40402
+    },
+    "bossDragonGold1_DmgLevelUp_4": {
+        "key": "bossDragonGold1_DmgLevelUp_4",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 4,
+        "damage": 61008
+    },
+    "bossDragonGold1_DmgLevelUp_5": {
+        "key": "bossDragonGold1_DmgLevelUp_5",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 5,
+        "damage": 81820
+    },
+    "bossDragonGold1_DmgLevelUp_6": {
+        "key": "bossDragonGold1_DmgLevelUp_6",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 6,
+        "damage": 102840
+    },
+    "bossDragonGold1_DmgLevelUp_7": {
+        "key": "bossDragonGold1_DmgLevelUp_7",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 7,
+        "damage": 124071
+    },
+    "bossDragonGold1_DmgLevelUp_8": {
+        "key": "bossDragonGold1_DmgLevelUp_8",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 8,
+        "damage": 145513
+    },
+    "bossDragonGold1_DmgLevelUp_9": {
+        "key": "bossDragonGold1_DmgLevelUp_9",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 9,
+        "damage": 167171
+    },
+    "bossDragonGold1_DmgLevelUp_10": {
+        "key": "bossDragonGold1_DmgLevelUp_10",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 10,
+        "damage": 189044
+    },
+    "bossDragonGold1_DmgLevelUp_11": {
+        "key": "bossDragonGold1_DmgLevelUp_11",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 11,
+        "damage": 211137
+    },
+    "bossDragonGold1_DmgLevelUp_12": {
+        "key": "bossDragonGold1_DmgLevelUp_12",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 12,
+        "damage": 233450
+    },
+    "bossDragonGold1_DmgLevelUp_13": {
+        "key": "bossDragonGold1_DmgLevelUp_13",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 13,
+        "damage": 255987
+    },
+    "bossDragonGold1_DmgLevelUp_14": {
+        "key": "bossDragonGold1_DmgLevelUp_14",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 14,
+        "damage": 278748
+    },
+    "bossDragonGold1_DmgLevelUp_15": {
+        "key": "bossDragonGold1_DmgLevelUp_15",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 15,
+        "damage": 301738
+    },
+    "bossDragonGold1_DmgLevelUp_16": {
+        "key": "bossDragonGold1_DmgLevelUp_16",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 16,
+        "damage": 324957
+    },
+    "bossDragonGold1_DmgLevelUp_17": {
+        "key": "bossDragonGold1_DmgLevelUp_17",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 17,
+        "damage": 348409
+    },
+    "bossDragonGold1_DmgLevelUp_18": {
+        "key": "bossDragonGold1_DmgLevelUp_18",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 18,
+        "damage": 372095
+    },
+    "bossDragonGold1_DmgLevelUp_19": {
+        "key": "bossDragonGold1_DmgLevelUp_19",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 19,
+        "damage": 396018
+    },
+    "bossDragonGold1_DmgLevelUp_20": {
+        "key": "bossDragonGold1_DmgLevelUp_20",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 20,
+        "damage": 420180
+    },
+    "bossDragonGold1_DmgLevelUp_21": {
+        "key": "bossDragonGold1_DmgLevelUp_21",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 21,
+        "damage": 444584
+    },
+    "bossDragonGold1_DmgLevelUp_22": {
+        "key": "bossDragonGold1_DmgLevelUp_22",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 22,
+        "damage": 469232
+    },
+    "bossDragonGold1_DmgLevelUp_23": {
+        "key": "bossDragonGold1_DmgLevelUp_23",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 23,
+        "damage": 494126
+    },
+    "bossDragonGold1_DmgLevelUp_24": {
+        "key": "bossDragonGold1_DmgLevelUp_24",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 24,
+        "damage": 519269
+    },
+    "bossDragonGold1_DmgLevelUp_25": {
+        "key": "bossDragonGold1_DmgLevelUp_25",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 25,
+        "damage": 544664
+    },
+    "bossDragonGold1_DmgLevelUp_26": {
+        "key": "bossDragonGold1_DmgLevelUp_26",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 26,
+        "damage": 570313
+    },
+    "bossDragonGold1_DmgLevelUp_27": {
+        "key": "bossDragonGold1_DmgLevelUp_27",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 27,
+        "damage": 596218
+    },
+    "bossDragonGold1_DmgLevelUp_28": {
+        "key": "bossDragonGold1_DmgLevelUp_28",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 28,
+        "damage": 622382
+    },
+    "bossDragonGold1_DmgLevelUp_29": {
+        "key": "bossDragonGold1_DmgLevelUp_29",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 29,
+        "damage": 648808
+    },
+    "bossDragonGold1_DmgLevelUp_30": {
+        "key": "bossDragonGold1_DmgLevelUp_30",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 30,
+        "damage": 675498
+    },
+    "bossDragonGold1_DmgLevelUp_31": {
+        "key": "bossDragonGold1_DmgLevelUp_31",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 31,
+        "damage": 702455
+    },
+    "bossDragonGold1_DmgLevelUp_32": {
+        "key": "bossDragonGold1_DmgLevelUp_32",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 32,
+        "damage": 729681
+    },
+    "bossDragonGold1_DmgLevelUp_33": {
+        "key": "bossDragonGold1_DmgLevelUp_33",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 33,
+        "damage": 757180
+    },
+    "bossDragonGold1_DmgLevelUp_34": {
+        "key": "bossDragonGold1_DmgLevelUp_34",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 34,
+        "damage": 784954
+    },
+    "bossDragonGold1_DmgLevelUp_35": {
+        "key": "bossDragonGold1_DmgLevelUp_35",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 35,
+        "damage": 813006
+    },
+    "bossDragonGold1_DmgLevelUp_36": {
+        "key": "bossDragonGold1_DmgLevelUp_36",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 36,
+        "damage": 841338
+    },
+    "bossDragonGold1_DmgLevelUp_37": {
+        "key": "bossDragonGold1_DmgLevelUp_37",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 37,
+        "damage": 869953
+    },
+    "bossDragonGold1_DmgLevelUp_38": {
+        "key": "bossDragonGold1_DmgLevelUp_38",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 38,
+        "damage": 898854
+    },
+    "bossDragonGold1_DmgLevelUp_39": {
+        "key": "bossDragonGold1_DmgLevelUp_39",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 39,
+        "damage": 928045
+    },
+    "bossDragonGold1_DmgLevelUp_40": {
+        "key": "bossDragonGold1_DmgLevelUp_40",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 40,
+        "damage": 957527
+    },
+    "bossDragonGold1_DmgLevelUp_41": {
+        "key": "bossDragonGold1_DmgLevelUp_41",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 41,
+        "damage": 987305
+    },
+    "bossDragonGold1_DmgLevelUp_42": {
+        "key": "bossDragonGold1_DmgLevelUp_42",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 42,
+        "damage": 1017380
+    },
+    "bossDragonGold1_DmgLevelUp_43": {
+        "key": "bossDragonGold1_DmgLevelUp_43",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 43,
+        "damage": 1047756
+    },
+    "bossDragonGold1_DmgLevelUp_44": {
+        "key": "bossDragonGold1_DmgLevelUp_44",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 44,
+        "damage": 1078435
+    },
+    "bossDragonGold1_DmgLevelUp_45": {
+        "key": "bossDragonGold1_DmgLevelUp_45",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 45,
+        "damage": 1109421
+    },
+    "bossDragonGold1_DmgLevelUp_46": {
+        "key": "bossDragonGold1_DmgLevelUp_46",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 46,
+        "damage": 1140718
+    },
+    "bossDragonGold1_DmgLevelUp_47": {
+        "key": "bossDragonGold1_DmgLevelUp_47",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 47,
+        "damage": 1172327
+    },
+    "bossDragonGold1_DmgLevelUp_48": {
+        "key": "bossDragonGold1_DmgLevelUp_48",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 48,
+        "damage": 1204252
+    },
+    "bossDragonGold1_DmgLevelUp_49": {
+        "key": "bossDragonGold1_DmgLevelUp_49",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 49,
+        "damage": 1236497
+    },
+    "bossDragonGold1_DmgLevelUp_50": {
+        "key": "bossDragonGold1_DmgLevelUp_50",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 50,
+        "damage": 1269064
+    },
+    "bossDragonGold1_DmgLevelUp_51": {
+        "key": "bossDragonGold1_DmgLevelUp_51",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 51,
+        "damage": 1301956
+    },
+    "bossDragonGold1_DmgLevelUp_52": {
+        "key": "bossDragonGold1_DmgLevelUp_52",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 52,
+        "damage": 1335178
+    },
+    "bossDragonGold1_DmgLevelUp_53": {
+        "key": "bossDragonGold1_DmgLevelUp_53",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 53,
+        "damage": 1368732
+    },
+    "bossDragonGold1_DmgLevelUp_54": {
+        "key": "bossDragonGold1_DmgLevelUp_54",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 54,
+        "damage": 1402621
+    },
+    "bossDragonGold1_DmgLevelUp_55": {
+        "key": "bossDragonGold1_DmgLevelUp_55",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 55,
+        "damage": 1436849
+    },
+    "bossDragonGold1_DmgLevelUp_56": {
+        "key": "bossDragonGold1_DmgLevelUp_56",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 56,
+        "damage": 1471420
+    },
+    "bossDragonGold1_DmgLevelUp_57": {
+        "key": "bossDragonGold1_DmgLevelUp_57",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 57,
+        "damage": 1506336
+    },
+    "bossDragonGold1_DmgLevelUp_58": {
+        "key": "bossDragonGold1_DmgLevelUp_58",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 58,
+        "damage": 1541601
+    },
+    "bossDragonGold1_DmgLevelUp_59": {
+        "key": "bossDragonGold1_DmgLevelUp_59",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 59,
+        "damage": 1577219
+    },
+    "bossDragonGold1_DmgLevelUp_60": {
+        "key": "bossDragonGold1_DmgLevelUp_60",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 60,
+        "damage": 1613193
+    },
+    "bossDragonGold1_DmgLevelUp_61": {
+        "key": "bossDragonGold1_DmgLevelUp_61",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 61,
+        "damage": 1649527
+    },
+    "bossDragonGold1_DmgLevelUp_62": {
+        "key": "bossDragonGold1_DmgLevelUp_62",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 62,
+        "damage": 1686225
+    },
+    "bossDragonGold1_DmgLevelUp_63": {
+        "key": "bossDragonGold1_DmgLevelUp_63",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 63,
+        "damage": 1723289
+    },
+    "bossDragonGold1_DmgLevelUp_64": {
+        "key": "bossDragonGold1_DmgLevelUp_64",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 64,
+        "damage": 1760724
+    },
+    "bossDragonGold1_DmgLevelUp_65": {
+        "key": "bossDragonGold1_DmgLevelUp_65",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 65,
+        "damage": 1798533
+    },
+    "bossDragonGold1_DmgLevelUp_66": {
+        "key": "bossDragonGold1_DmgLevelUp_66",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 66,
+        "damage": 1836720
+    },
+    "bossDragonGold1_DmgLevelUp_67": {
+        "key": "bossDragonGold1_DmgLevelUp_67",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 67,
+        "damage": 1875290
+    },
+    "bossDragonGold1_DmgLevelUp_68": {
+        "key": "bossDragonGold1_DmgLevelUp_68",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 68,
+        "damage": 1914244
+    },
+    "bossDragonGold1_DmgLevelUp_69": {
+        "key": "bossDragonGold1_DmgLevelUp_69",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 69,
+        "damage": 1953589
+    },
+    "bossDragonGold1_DmgLevelUp_70": {
+        "key": "bossDragonGold1_DmgLevelUp_70",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 70,
+        "damage": 1993327
+    },
+    "bossDragonGold1_DmgLevelUp_71": {
+        "key": "bossDragonGold1_DmgLevelUp_71",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 71,
+        "damage": 2033462
+    },
+    "bossDragonGold1_DmgLevelUp_72": {
+        "key": "bossDragonGold1_DmgLevelUp_72",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 72,
+        "damage": 2073999
+    },
+    "bossDragonGold1_DmgLevelUp_73": {
+        "key": "bossDragonGold1_DmgLevelUp_73",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 73,
+        "damage": 2114941
+    },
+    "bossDragonGold1_DmgLevelUp_74": {
+        "key": "bossDragonGold1_DmgLevelUp_74",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 74,
+        "damage": 2156292
+    },
+    "bossDragonGold1_DmgLevelUp_75": {
+        "key": "bossDragonGold1_DmgLevelUp_75",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 75,
+        "damage": 2198057
+    },
+    "bossDragonGold1_DmgLevelUp_76": {
+        "key": "bossDragonGold1_DmgLevelUp_76",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 76,
+        "damage": 2240240
+    },
+    "bossDragonGold1_DmgLevelUp_77": {
+        "key": "bossDragonGold1_DmgLevelUp_77",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 77,
+        "damage": 2282844
+    },
+    "bossDragonGold1_DmgLevelUp_78": {
+        "key": "bossDragonGold1_DmgLevelUp_78",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 78,
+        "damage": 2325874
+    },
+    "bossDragonGold1_DmgLevelUp_79": {
+        "key": "bossDragonGold1_DmgLevelUp_79",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 79,
+        "damage": 2369335
+    },
+    "bossDragonGold1_DmgLevelUp_80": {
+        "key": "bossDragonGold1_DmgLevelUp_80",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 80,
+        "damage": 2413230
+    },
+    "bossDragonGold1_DmgLevelUp_81": {
+        "key": "bossDragonGold1_DmgLevelUp_81",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 81,
+        "damage": 2457565
+    },
+    "bossDragonGold1_DmgLevelUp_82": {
+        "key": "bossDragonGold1_DmgLevelUp_82",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 82,
+        "damage": 2502342
+    },
+    "bossDragonGold1_DmgLevelUp_83": {
+        "key": "bossDragonGold1_DmgLevelUp_83",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 83,
+        "damage": 2547568
+    },
+    "bossDragonGold1_DmgLevelUp_84": {
+        "key": "bossDragonGold1_DmgLevelUp_84",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 84,
+        "damage": 2593245
+    },
+    "bossDragonGold1_DmgLevelUp_85": {
+        "key": "bossDragonGold1_DmgLevelUp_85",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 85,
+        "damage": 2639380
+    },
+    "bossDragonGold1_DmgLevelUp_86": {
+        "key": "bossDragonGold1_DmgLevelUp_86",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 86,
+        "damage": 2685976
+    },
+    "bossDragonGold1_DmgLevelUp_87": {
+        "key": "bossDragonGold1_DmgLevelUp_87",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 87,
+        "damage": 2733037
+    },
+    "bossDragonGold1_DmgLevelUp_88": {
+        "key": "bossDragonGold1_DmgLevelUp_88",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 88,
+        "damage": 2780570
+    },
+    "bossDragonGold1_DmgLevelUp_89": {
+        "key": "bossDragonGold1_DmgLevelUp_89",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 89,
+        "damage": 2828578
+    },
+    "bossDragonGold1_DmgLevelUp_90": {
+        "key": "bossDragonGold1_DmgLevelUp_90",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 90,
+        "damage": 2877065
+    },
+    "bossDragonGold1_DmgLevelUp_91": {
+        "key": "bossDragonGold1_DmgLevelUp_91",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 91,
+        "damage": 2926038
+    },
+    "bossDragonGold1_DmgLevelUp_92": {
+        "key": "bossDragonGold1_DmgLevelUp_92",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 92,
+        "damage": 2975500
+    },
+    "bossDragonGold1_DmgLevelUp_93": {
+        "key": "bossDragonGold1_DmgLevelUp_93",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 93,
+        "damage": 3025457
+    },
+    "bossDragonGold1_DmgLevelUp_94": {
+        "key": "bossDragonGold1_DmgLevelUp_94",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 94,
+        "damage": 3075914
+    },
+    "bossDragonGold1_DmgLevelUp_95": {
+        "key": "bossDragonGold1_DmgLevelUp_95",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 95,
+        "damage": 3126875
+    },
+    "bossDragonGold1_DmgLevelUp_96": {
+        "key": "bossDragonGold1_DmgLevelUp_96",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 96,
+        "damage": 3178346
+    },
+    "bossDragonGold1_DmgLevelUp_97": {
+        "key": "bossDragonGold1_DmgLevelUp_97",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 97,
+        "damage": 3230331
+    },
+    "bossDragonGold1_DmgLevelUp_98": {
+        "key": "bossDragonGold1_DmgLevelUp_98",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 98,
+        "damage": 3282837
+    },
+    "bossDragonGold1_DmgLevelUp_99": {
+        "key": "bossDragonGold1_DmgLevelUp_99",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 99,
+        "damage": 3335867
+    },
+    "bossDragonGold1_DmgLevelUp_100": {
+        "key": "bossDragonGold1_DmgLevelUp_100",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 100,
+        "damage": 3389428
+    },
+    "bossDragonGold1_DmgLevelUp_101": {
+        "key": "bossDragonGold1_DmgLevelUp_101",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 101,
+        "damage": 3443524
+    },
+    "bossDragonGold1_DmgLevelUp_102": {
+        "key": "bossDragonGold1_DmgLevelUp_102",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 102,
+        "damage": 3498161
+    },
+    "bossDragonGold1_DmgLevelUp_103": {
+        "key": "bossDragonGold1_DmgLevelUp_103",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 103,
+        "damage": 3553345
+    },
+    "bossDragonGold1_DmgLevelUp_104": {
+        "key": "bossDragonGold1_DmgLevelUp_104",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 104,
+        "damage": 3609080
+    },
+    "bossDragonGold1_DmgLevelUp_105": {
+        "key": "bossDragonGold1_DmgLevelUp_105",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 105,
+        "damage": 3665373
+    },
+    "bossDragonGold1_DmgLevelUp_106": {
+        "key": "bossDragonGold1_DmgLevelUp_106",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 106,
+        "damage": 3722229
+    },
+    "bossDragonGold1_DmgLevelUp_107": {
+        "key": "bossDragonGold1_DmgLevelUp_107",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 107,
+        "damage": 3779653
+    },
+    "bossDragonGold1_DmgLevelUp_108": {
+        "key": "bossDragonGold1_DmgLevelUp_108",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 108,
+        "damage": 3837652
+    },
+    "bossDragonGold1_DmgLevelUp_109": {
+        "key": "bossDragonGold1_DmgLevelUp_109",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 109,
+        "damage": 3896230
+    },
+    "bossDragonGold1_DmgLevelUp_110": {
+        "key": "bossDragonGold1_DmgLevelUp_110",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 110,
+        "damage": 3955394
+    },
+    "bossDragonGold1_DmgLevelUp_111": {
+        "key": "bossDragonGold1_DmgLevelUp_111",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 111,
+        "damage": 4015150
+    },
+    "bossDragonGold1_DmgLevelUp_112": {
+        "key": "bossDragonGold1_DmgLevelUp_112",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 112,
+        "damage": 4075504
+    },
+    "bossDragonGold1_DmgLevelUp_113": {
+        "key": "bossDragonGold1_DmgLevelUp_113",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 113,
+        "damage": 4136461
+    },
+    "bossDragonGold1_DmgLevelUp_114": {
+        "key": "bossDragonGold1_DmgLevelUp_114",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 114,
+        "damage": 4198027
+    },
+    "bossDragonGold1_DmgLevelUp_115": {
+        "key": "bossDragonGold1_DmgLevelUp_115",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 115,
+        "damage": 4260210
+    },
+    "bossDragonGold1_DmgLevelUp_116": {
+        "key": "bossDragonGold1_DmgLevelUp_116",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 116,
+        "damage": 4323014
+    },
+    "bossDragonGold1_DmgLevelUp_117": {
+        "key": "bossDragonGold1_DmgLevelUp_117",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 117,
+        "damage": 4386446
+    },
+    "bossDragonGold1_DmgLevelUp_118": {
+        "key": "bossDragonGold1_DmgLevelUp_118",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 118,
+        "damage": 4450512
+    },
+    "bossDragonGold1_DmgLevelUp_119": {
+        "key": "bossDragonGold1_DmgLevelUp_119",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 119,
+        "damage": 4515220
+    },
+    "bossDragonGold1_DmgLevelUp_120": {
+        "key": "bossDragonGold1_DmgLevelUp_120",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 120,
+        "damage": 4580574
+    },
+    "bossDragonGold1_DmgLevelUp_121": {
+        "key": "bossDragonGold1_DmgLevelUp_121",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 121,
+        "damage": 4646582
+    },
+    "bossDragonGold1_DmgLevelUp_122": {
+        "key": "bossDragonGold1_DmgLevelUp_122",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 122,
+        "damage": 4713249
+    },
+    "bossDragonGold1_DmgLevelUp_123": {
+        "key": "bossDragonGold1_DmgLevelUp_123",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 123,
+        "damage": 4780584
+    },
+    "bossDragonGold1_DmgLevelUp_124": {
+        "key": "bossDragonGold1_DmgLevelUp_124",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 124,
+        "damage": 4848592
+    },
+    "bossDragonGold1_DmgLevelUp_125": {
+        "key": "bossDragonGold1_DmgLevelUp_125",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 125,
+        "damage": 4917280
+    },
+    "bossDragonGold1_DmgLevelUp_126": {
+        "key": "bossDragonGold1_DmgLevelUp_126",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 126,
+        "damage": 4986654
+    },
+    "bossDragonGold1_DmgLevelUp_127": {
+        "key": "bossDragonGold1_DmgLevelUp_127",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 127,
+        "damage": 5056723
+    },
+    "bossDragonGold1_DmgLevelUp_128": {
+        "key": "bossDragonGold1_DmgLevelUp_128",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 128,
+        "damage": 5127492
+    },
+    "bossDragonGold1_DmgLevelUp_129": {
+        "key": "bossDragonGold1_DmgLevelUp_129",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 129,
+        "damage": 5198969
+    },
+    "bossDragonGold1_DmgLevelUp_130": {
+        "key": "bossDragonGold1_DmgLevelUp_130",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 130,
+        "damage": 5271161
+    },
+    "bossDragonGold1_DmgLevelUp_131": {
+        "key": "bossDragonGold1_DmgLevelUp_131",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 131,
+        "damage": 5344074
+    },
+    "bossDragonGold1_DmgLevelUp_132": {
+        "key": "bossDragonGold1_DmgLevelUp_132",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 132,
+        "damage": 5417717
+    },
+    "bossDragonGold1_DmgLevelUp_133": {
+        "key": "bossDragonGold1_DmgLevelUp_133",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 133,
+        "damage": 5492096
+    },
+    "bossDragonGold1_DmgLevelUp_134": {
+        "key": "bossDragonGold1_DmgLevelUp_134",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 134,
+        "damage": 5567219
+    },
+    "bossDragonGold1_DmgLevelUp_135": {
+        "key": "bossDragonGold1_DmgLevelUp_135",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 135,
+        "damage": 5643093
+    },
+    "bossDragonGold1_DmgLevelUp_136": {
+        "key": "bossDragonGold1_DmgLevelUp_136",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 136,
+        "damage": 5719726
+    },
+    "bossDragonGold1_DmgLevelUp_137": {
+        "key": "bossDragonGold1_DmgLevelUp_137",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 137,
+        "damage": 5797126
+    },
+    "bossDragonGold1_DmgLevelUp_138": {
+        "key": "bossDragonGold1_DmgLevelUp_138",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 138,
+        "damage": 5875299
+    },
+    "bossDragonGold1_DmgLevelUp_139": {
+        "key": "bossDragonGold1_DmgLevelUp_139",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 139,
+        "damage": 5954254
+    },
+    "bossDragonGold1_DmgLevelUp_140": {
+        "key": "bossDragonGold1_DmgLevelUp_140",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 140,
+        "damage": 6033998
+    },
+    "bossDragonGold1_DmgLevelUp_141": {
+        "key": "bossDragonGold1_DmgLevelUp_141",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 141,
+        "damage": 6114540
+    },
+    "bossDragonGold1_DmgLevelUp_142": {
+        "key": "bossDragonGold1_DmgLevelUp_142",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 142,
+        "damage": 6195888
+    },
+    "bossDragonGold1_DmgLevelUp_143": {
+        "key": "bossDragonGold1_DmgLevelUp_143",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 143,
+        "damage": 6278049
+    },
+    "bossDragonGold1_DmgLevelUp_144": {
+        "key": "bossDragonGold1_DmgLevelUp_144",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 144,
+        "damage": 6361031
+    },
+    "bossDragonGold1_DmgLevelUp_145": {
+        "key": "bossDragonGold1_DmgLevelUp_145",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 145,
+        "damage": 6444843
+    },
+    "bossDragonGold1_DmgLevelUp_146": {
+        "key": "bossDragonGold1_DmgLevelUp_146",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 146,
+        "damage": 6529494
+    },
+    "bossDragonGold1_DmgLevelUp_147": {
+        "key": "bossDragonGold1_DmgLevelUp_147",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 147,
+        "damage": 6614991
+    },
+    "bossDragonGold1_DmgLevelUp_148": {
+        "key": "bossDragonGold1_DmgLevelUp_148",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 148,
+        "damage": 6701343
+    },
+    "bossDragonGold1_DmgLevelUp_149": {
+        "key": "bossDragonGold1_DmgLevelUp_149",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 149,
+        "damage": 6788558
+    },
+    "bossDragonGold1_DmgLevelUp_150": {
+        "key": "bossDragonGold1_DmgLevelUp_150",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 150,
+        "damage": 6876646
+    },
+    "bossDragonGold1_DmgLevelUp_151": {
+        "key": "bossDragonGold1_DmgLevelUp_151",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 151,
+        "damage": 6965614
+    },
+    "bossDragonGold1_DmgLevelUp_152": {
+        "key": "bossDragonGold1_DmgLevelUp_152",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 152,
+        "damage": 7055472
+    },
+    "bossDragonGold1_DmgLevelUp_153": {
+        "key": "bossDragonGold1_DmgLevelUp_153",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 153,
+        "damage": 7146229
+    },
+    "bossDragonGold1_DmgLevelUp_154": {
+        "key": "bossDragonGold1_DmgLevelUp_154",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 154,
+        "damage": 7237893
+    },
+    "bossDragonGold1_DmgLevelUp_155": {
+        "key": "bossDragonGold1_DmgLevelUp_155",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 155,
+        "damage": 7330474
+    },
+    "bossDragonGold1_DmgLevelUp_156": {
+        "key": "bossDragonGold1_DmgLevelUp_156",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 156,
+        "damage": 7423981
+    },
+    "bossDragonGold1_DmgLevelUp_157": {
+        "key": "bossDragonGold1_DmgLevelUp_157",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 157,
+        "damage": 7518423
+    },
+    "bossDragonGold1_DmgLevelUp_158": {
+        "key": "bossDragonGold1_DmgLevelUp_158",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 158,
+        "damage": 7613809
+    },
+    "bossDragonGold1_DmgLevelUp_159": {
+        "key": "bossDragonGold1_DmgLevelUp_159",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 159,
+        "damage": 7710149
+    },
+    "bossDragonGold1_DmgLevelUp_160": {
+        "key": "bossDragonGold1_DmgLevelUp_160",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 160,
+        "damage": 7807453
+    },
+    "bossDragonGold1_DmgLevelUp_161": {
+        "key": "bossDragonGold1_DmgLevelUp_161",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 161,
+        "damage": 7905729
+    },
+    "bossDragonGold1_DmgLevelUp_162": {
+        "key": "bossDragonGold1_DmgLevelUp_162",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 162,
+        "damage": 8004989
+    },
+    "bossDragonGold1_DmgLevelUp_163": {
+        "key": "bossDragonGold1_DmgLevelUp_163",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 163,
+        "damage": 8105240
+    },
+    "bossDragonGold1_DmgLevelUp_164": {
+        "key": "bossDragonGold1_DmgLevelUp_164",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 164,
+        "damage": 8206495
+    },
+    "bossDragonGold1_DmgLevelUp_165": {
+        "key": "bossDragonGold1_DmgLevelUp_165",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 165,
+        "damage": 8308762
+    },
+    "bossDragonGold1_DmgLevelUp_166": {
+        "key": "bossDragonGold1_DmgLevelUp_166",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 166,
+        "damage": 8412051
+    },
+    "bossDragonGold1_DmgLevelUp_167": {
+        "key": "bossDragonGold1_DmgLevelUp_167",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 167,
+        "damage": 8516374
+    },
+    "bossDragonGold1_DmgLevelUp_168": {
+        "key": "bossDragonGold1_DmgLevelUp_168",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 168,
+        "damage": 8621740
+    },
+    "bossDragonGold1_DmgLevelUp_169": {
+        "key": "bossDragonGold1_DmgLevelUp_169",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 169,
+        "damage": 8728159
+    },
+    "bossDragonGold1_DmgLevelUp_170": {
+        "key": "bossDragonGold1_DmgLevelUp_170",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 170,
+        "damage": 8835643
+    },
+    "bossDragonGold1_DmgLevelUp_171": {
+        "key": "bossDragonGold1_DmgLevelUp_171",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 171,
+        "damage": 8944201
+    },
+    "bossDragonGold1_DmgLevelUp_172": {
+        "key": "bossDragonGold1_DmgLevelUp_172",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 172,
+        "damage": 9053845
+    },
+    "bossDragonGold1_DmgLevelUp_173": {
+        "key": "bossDragonGold1_DmgLevelUp_173",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 173,
+        "damage": 9164586
+    },
+    "bossDragonGold1_DmgLevelUp_174": {
+        "key": "bossDragonGold1_DmgLevelUp_174",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 174,
+        "damage": 9276433
+    },
+    "bossDragonGold1_DmgLevelUp_175": {
+        "key": "bossDragonGold1_DmgLevelUp_175",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 175,
+        "damage": 9389400
+    },
+    "bossDragonGold1_DmgLevelUp_176": {
+        "key": "bossDragonGold1_DmgLevelUp_176",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 176,
+        "damage": 9503496
+    },
+    "bossDragonGold1_DmgLevelUp_177": {
+        "key": "bossDragonGold1_DmgLevelUp_177",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 177,
+        "damage": 9618733
+    },
+    "bossDragonGold1_DmgLevelUp_178": {
+        "key": "bossDragonGold1_DmgLevelUp_178",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 178,
+        "damage": 9735122
+    },
+    "bossDragonGold1_DmgLevelUp_179": {
+        "key": "bossDragonGold1_DmgLevelUp_179",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 179,
+        "damage": 9852675
+    },
+    "bossDragonGold1_DmgLevelUp_180": {
+        "key": "bossDragonGold1_DmgLevelUp_180",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 180,
+        "damage": 9971404
+    },
+    "bossDragonGold1_DmgLevelUp_181": {
+        "key": "bossDragonGold1_DmgLevelUp_181",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 181,
+        "damage": 10091320
+    },
+    "bossDragonGold1_DmgLevelUp_182": {
+        "key": "bossDragonGold1_DmgLevelUp_182",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 182,
+        "damage": 10212435
+    },
+    "bossDragonGold1_DmgLevelUp_183": {
+        "key": "bossDragonGold1_DmgLevelUp_183",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 183,
+        "damage": 10334762
+    },
+    "bossDragonGold1_DmgLevelUp_184": {
+        "key": "bossDragonGold1_DmgLevelUp_184",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 184,
+        "damage": 10458311
+    },
+    "bossDragonGold1_DmgLevelUp_185": {
+        "key": "bossDragonGold1_DmgLevelUp_185",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 185,
+        "damage": 10583096
+    },
+    "bossDragonGold1_DmgLevelUp_186": {
+        "key": "bossDragonGold1_DmgLevelUp_186",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 186,
+        "damage": 10709129
+    },
+    "bossDragonGold1_DmgLevelUp_187": {
+        "key": "bossDragonGold1_DmgLevelUp_187",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 187,
+        "damage": 10836423
+    },
+    "bossDragonGold1_DmgLevelUp_188": {
+        "key": "bossDragonGold1_DmgLevelUp_188",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 188,
+        "damage": 10964989
+    },
+    "bossDragonGold1_DmgLevelUp_189": {
+        "key": "bossDragonGold1_DmgLevelUp_189",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 189,
+        "damage": 11094841
+    },
+    "bossDragonGold1_DmgLevelUp_190": {
+        "key": "bossDragonGold1_DmgLevelUp_190",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 190,
+        "damage": 11225991
+    },
+    "bossDragonGold1_DmgLevelUp_191": {
+        "key": "bossDragonGold1_DmgLevelUp_191",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 191,
+        "damage": 11358453
+    },
+    "bossDragonGold1_DmgLevelUp_192": {
+        "key": "bossDragonGold1_DmgLevelUp_192",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 192,
+        "damage": 11492239
+    },
+    "bossDragonGold1_DmgLevelUp_193": {
+        "key": "bossDragonGold1_DmgLevelUp_193",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 193,
+        "damage": 11627364
+    },
+    "bossDragonGold1_DmgLevelUp_194": {
+        "key": "bossDragonGold1_DmgLevelUp_194",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 194,
+        "damage": 11763840
+    },
+    "bossDragonGold1_DmgLevelUp_195": {
+        "key": "bossDragonGold1_DmgLevelUp_195",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 195,
+        "damage": 11901680
+    },
+    "bossDragonGold1_DmgLevelUp_196": {
+        "key": "bossDragonGold1_DmgLevelUp_196",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 196,
+        "damage": 12040899
+    },
+    "bossDragonGold1_DmgLevelUp_197": {
+        "key": "bossDragonGold1_DmgLevelUp_197",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 197,
+        "damage": 12181510
+    },
+    "bossDragonGold1_DmgLevelUp_198": {
+        "key": "bossDragonGold1_DmgLevelUp_198",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 198,
+        "damage": 12323527
+    },
+    "bossDragonGold1_DmgLevelUp_199": {
+        "key": "bossDragonGold1_DmgLevelUp_199",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 199,
+        "damage": 12466964
+    },
+    "bossDragonGold1_DmgLevelUp_200": {
+        "key": "bossDragonGold1_DmgLevelUp_200",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 200,
+        "damage": 12611836
+    },
+    "bossDragonGold1_DmgLevelUp_201": {
+        "key": "bossDragonGold1_DmgLevelUp_201",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 201,
+        "damage": 12758156
+    },
+    "bossDragonGold1_DmgLevelUp_202": {
+        "key": "bossDragonGold1_DmgLevelUp_202",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 202,
+        "damage": 12905940
+    },
+    "bossDragonGold1_DmgLevelUp_203": {
+        "key": "bossDragonGold1_DmgLevelUp_203",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 203,
+        "damage": 13055201
+    },
+    "bossDragonGold1_DmgLevelUp_204": {
+        "key": "bossDragonGold1_DmgLevelUp_204",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 204,
+        "damage": 13205955
+    },
+    "bossDragonGold1_DmgLevelUp_205": {
+        "key": "bossDragonGold1_DmgLevelUp_205",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 205,
+        "damage": 13358217
+    },
+    "bossDragonGold1_DmgLevelUp_206": {
+        "key": "bossDragonGold1_DmgLevelUp_206",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 206,
+        "damage": 13512001
+    },
+    "bossDragonGold1_DmgLevelUp_207": {
+        "key": "bossDragonGold1_DmgLevelUp_207",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 207,
+        "damage": 13667323
+    },
+    "bossDragonGold1_DmgLevelUp_208": {
+        "key": "bossDragonGold1_DmgLevelUp_208",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 208,
+        "damage": 13824198
+    },
+    "bossDragonGold1_DmgLevelUp_209": {
+        "key": "bossDragonGold1_DmgLevelUp_209",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 209,
+        "damage": 13982642
+    },
+    "bossDragonGold1_DmgLevelUp_210": {
+        "key": "bossDragonGold1_DmgLevelUp_210",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 210,
+        "damage": 14142670
+    },
+    "bossDragonGold1_DmgLevelUp_211": {
+        "key": "bossDragonGold1_DmgLevelUp_211",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 211,
+        "damage": 14304299
+    },
+    "bossDragonGold1_DmgLevelUp_212": {
+        "key": "bossDragonGold1_DmgLevelUp_212",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 212,
+        "damage": 14467544
+    },
+    "bossDragonGold1_DmgLevelUp_213": {
+        "key": "bossDragonGold1_DmgLevelUp_213",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 213,
+        "damage": 14632422
+    },
+    "bossDragonGold1_DmgLevelUp_214": {
+        "key": "bossDragonGold1_DmgLevelUp_214",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 214,
+        "damage": 14798948
+    },
+    "bossDragonGold1_DmgLevelUp_215": {
+        "key": "bossDragonGold1_DmgLevelUp_215",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 215,
+        "damage": 14967139
+    },
+    "bossDragonGold1_DmgLevelUp_216": {
+        "key": "bossDragonGold1_DmgLevelUp_216",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 216,
+        "damage": 15137013
+    },
+    "bossDragonGold1_DmgLevelUp_217": {
+        "key": "bossDragonGold1_DmgLevelUp_217",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 217,
+        "damage": 15308585
+    },
+    "bossDragonGold1_DmgLevelUp_218": {
+        "key": "bossDragonGold1_DmgLevelUp_218",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 218,
+        "damage": 15481873
+    },
+    "bossDragonGold1_DmgLevelUp_219": {
+        "key": "bossDragonGold1_DmgLevelUp_219",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 219,
+        "damage": 15656893
+    },
+    "bossDragonGold1_DmgLevelUp_220": {
+        "key": "bossDragonGold1_DmgLevelUp_220",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 220,
+        "damage": 15833664
+    },
+    "bossDragonGold1_DmgLevelUp_221": {
+        "key": "bossDragonGold1_DmgLevelUp_221",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 221,
+        "damage": 16012203
+    },
+    "bossDragonGold1_DmgLevelUp_222": {
+        "key": "bossDragonGold1_DmgLevelUp_222",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 222,
+        "damage": 16192527
+    },
+    "bossDragonGold1_DmgLevelUp_223": {
+        "key": "bossDragonGold1_DmgLevelUp_223",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 223,
+        "damage": 16374654
+    },
+    "bossDragonGold1_DmgLevelUp_224": {
+        "key": "bossDragonGold1_DmgLevelUp_224",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 224,
+        "damage": 16558603
+    },
+    "bossDragonGold1_DmgLevelUp_225": {
+        "key": "bossDragonGold1_DmgLevelUp_225",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 225,
+        "damage": 16744391
+    },
+    "bossDragonGold1_DmgLevelUp_226": {
+        "key": "bossDragonGold1_DmgLevelUp_226",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 226,
+        "damage": 16932037
+    },
+    "bossDragonGold1_DmgLevelUp_227": {
+        "key": "bossDragonGold1_DmgLevelUp_227",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 227,
+        "damage": 17121559
+    },
+    "bossDragonGold1_DmgLevelUp_228": {
+        "key": "bossDragonGold1_DmgLevelUp_228",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 228,
+        "damage": 17312977
+    },
+    "bossDragonGold1_DmgLevelUp_229": {
+        "key": "bossDragonGold1_DmgLevelUp_229",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 229,
+        "damage": 17506308
+    },
+    "bossDragonGold1_DmgLevelUp_230": {
+        "key": "bossDragonGold1_DmgLevelUp_230",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 230,
+        "damage": 17701573
+    },
+    "bossDragonGold1_DmgLevelUp_231": {
+        "key": "bossDragonGold1_DmgLevelUp_231",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 231,
+        "damage": 17898791
+    },
+    "bossDragonGold1_DmgLevelUp_232": {
+        "key": "bossDragonGold1_DmgLevelUp_232",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 232,
+        "damage": 18097981
+    },
+    "bossDragonGold1_DmgLevelUp_233": {
+        "key": "bossDragonGold1_DmgLevelUp_233",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 233,
+        "damage": 18299163
+    },
+    "bossDragonGold1_DmgLevelUp_234": {
+        "key": "bossDragonGold1_DmgLevelUp_234",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 234,
+        "damage": 18502357
+    },
+    "bossDragonGold1_DmgLevelUp_235": {
+        "key": "bossDragonGold1_DmgLevelUp_235",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 235,
+        "damage": 18707582
+    },
+    "bossDragonGold1_DmgLevelUp_236": {
+        "key": "bossDragonGold1_DmgLevelUp_236",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 236,
+        "damage": 18914860
+    },
+    "bossDragonGold1_DmgLevelUp_237": {
+        "key": "bossDragonGold1_DmgLevelUp_237",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 237,
+        "damage": 19124211
+    },
+    "bossDragonGold1_DmgLevelUp_238": {
+        "key": "bossDragonGold1_DmgLevelUp_238",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 238,
+        "damage": 19335655
+    },
+    "bossDragonGold1_DmgLevelUp_239": {
+        "key": "bossDragonGold1_DmgLevelUp_239",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 239,
+        "damage": 19549213
+    },
+    "bossDragonGold1_DmgLevelUp_240": {
+        "key": "bossDragonGold1_DmgLevelUp_240",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 240,
+        "damage": 19764907
+    },
+    "bossDragonGold1_DmgLevelUp_241": {
+        "key": "bossDragonGold1_DmgLevelUp_241",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 241,
+        "damage": 19982758
+    },
+    "bossDragonGold1_DmgLevelUp_242": {
+        "key": "bossDragonGold1_DmgLevelUp_242",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 242,
+        "damage": 20202788
+    },
+    "bossDragonGold1_DmgLevelUp_243": {
+        "key": "bossDragonGold1_DmgLevelUp_243",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 243,
+        "damage": 20425018
+    },
+    "bossDragonGold1_DmgLevelUp_244": {
+        "key": "bossDragonGold1_DmgLevelUp_244",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 244,
+        "damage": 20649470
+    },
+    "bossDragonGold1_DmgLevelUp_245": {
+        "key": "bossDragonGold1_DmgLevelUp_245",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 245,
+        "damage": 20876167
+    },
+    "bossDragonGold1_DmgLevelUp_246": {
+        "key": "bossDragonGold1_DmgLevelUp_246",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 246,
+        "damage": 21105130
+    },
+    "bossDragonGold1_DmgLevelUp_247": {
+        "key": "bossDragonGold1_DmgLevelUp_247",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 247,
+        "damage": 21336384
+    },
+    "bossDragonGold1_DmgLevelUp_248": {
+        "key": "bossDragonGold1_DmgLevelUp_248",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 248,
+        "damage": 21569950
+    },
+    "bossDragonGold1_DmgLevelUp_249": {
+        "key": "bossDragonGold1_DmgLevelUp_249",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 249,
+        "damage": 21805851
+    },
+    "bossDragonGold1_DmgLevelUp_250": {
+        "key": "bossDragonGold1_DmgLevelUp_250",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 250,
+        "damage": 22044112
+    },
+    "bossDragonGold1_DmgLevelUp_251": {
+        "key": "bossDragonGold1_DmgLevelUp_251",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 251,
+        "damage": 22284755
+    },
+    "bossDragonGold1_DmgLevelUp_252": {
+        "key": "bossDragonGold1_DmgLevelUp_252",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 252,
+        "damage": 22527804
+    },
+    "bossDragonGold1_DmgLevelUp_253": {
+        "key": "bossDragonGold1_DmgLevelUp_253",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 253,
+        "damage": 22773284
+    },
+    "bossDragonGold1_DmgLevelUp_254": {
+        "key": "bossDragonGold1_DmgLevelUp_254",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 254,
+        "damage": 23021219
+    },
+    "bossDragonGold1_DmgLevelUp_255": {
+        "key": "bossDragonGold1_DmgLevelUp_255",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 255,
+        "damage": 23271633
+    },
+    "bossDragonGold1_DmgLevelUp_256": {
+        "key": "bossDragonGold1_DmgLevelUp_256",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 256,
+        "damage": 23524552
+    },
+    "bossDragonGold1_DmgLevelUp_257": {
+        "key": "bossDragonGold1_DmgLevelUp_257",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 257,
+        "damage": 23779999
+    },
+    "bossDragonGold1_DmgLevelUp_258": {
+        "key": "bossDragonGold1_DmgLevelUp_258",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 258,
+        "damage": 24038001
+    },
+    "bossDragonGold1_DmgLevelUp_259": {
+        "key": "bossDragonGold1_DmgLevelUp_259",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 259,
+        "damage": 24298583
+    },
+    "bossDragonGold1_DmgLevelUp_260": {
+        "key": "bossDragonGold1_DmgLevelUp_260",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 260,
+        "damage": 24561771
+    },
+    "bossDragonGold1_DmgLevelUp_261": {
+        "key": "bossDragonGold1_DmgLevelUp_261",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 261,
+        "damage": 24827591
+    },
+    "bossDragonGold1_DmgLevelUp_262": {
+        "key": "bossDragonGold1_DmgLevelUp_262",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 262,
+        "damage": 25096069
+    },
+    "bossDragonGold1_DmgLevelUp_263": {
+        "key": "bossDragonGold1_DmgLevelUp_263",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 263,
+        "damage": 25367231
+    },
+    "bossDragonGold1_DmgLevelUp_264": {
+        "key": "bossDragonGold1_DmgLevelUp_264",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 264,
+        "damage": 25641106
+    },
+    "bossDragonGold1_DmgLevelUp_265": {
+        "key": "bossDragonGold1_DmgLevelUp_265",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 265,
+        "damage": 25917719
+    },
+    "bossDragonGold1_DmgLevelUp_266": {
+        "key": "bossDragonGold1_DmgLevelUp_266",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 266,
+        "damage": 26197098
+    },
+    "bossDragonGold1_DmgLevelUp_267": {
+        "key": "bossDragonGold1_DmgLevelUp_267",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 267,
+        "damage": 26479271
+    },
+    "bossDragonGold1_DmgLevelUp_268": {
+        "key": "bossDragonGold1_DmgLevelUp_268",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 268,
+        "damage": 26764265
+    },
+    "bossDragonGold1_DmgLevelUp_269": {
+        "key": "bossDragonGold1_DmgLevelUp_269",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 269,
+        "damage": 27052110
+    },
+    "bossDragonGold1_DmgLevelUp_270": {
+        "key": "bossDragonGold1_DmgLevelUp_270",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 270,
+        "damage": 27342833
+    },
+    "bossDragonGold1_DmgLevelUp_271": {
+        "key": "bossDragonGold1_DmgLevelUp_271",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 271,
+        "damage": 27636464
+    },
+    "bossDragonGold1_DmgLevelUp_272": {
+        "key": "bossDragonGold1_DmgLevelUp_272",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 272,
+        "damage": 27933030
+    },
+    "bossDragonGold1_DmgLevelUp_273": {
+        "key": "bossDragonGold1_DmgLevelUp_273",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 273,
+        "damage": 28232563
+    },
+    "bossDragonGold1_DmgLevelUp_274": {
+        "key": "bossDragonGold1_DmgLevelUp_274",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 274,
+        "damage": 28535090
+    },
+    "bossDragonGold1_DmgLevelUp_275": {
+        "key": "bossDragonGold1_DmgLevelUp_275",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 275,
+        "damage": 28840643
+    },
+    "bossDragonGold1_DmgLevelUp_276": {
+        "key": "bossDragonGold1_DmgLevelUp_276",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 276,
+        "damage": 29149251
+    },
+    "bossDragonGold1_DmgLevelUp_277": {
+        "key": "bossDragonGold1_DmgLevelUp_277",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 277,
+        "damage": 29460946
+    },
+    "bossDragonGold1_DmgLevelUp_278": {
+        "key": "bossDragonGold1_DmgLevelUp_278",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 278,
+        "damage": 29775757
+    },
+    "bossDragonGold1_DmgLevelUp_279": {
+        "key": "bossDragonGold1_DmgLevelUp_279",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 279,
+        "damage": 30093717
+    },
+    "bossDragonGold1_DmgLevelUp_280": {
+        "key": "bossDragonGold1_DmgLevelUp_280",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 280,
+        "damage": 30414856
+    },
+    "bossDragonGold1_DmgLevelUp_281": {
+        "key": "bossDragonGold1_DmgLevelUp_281",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 281,
+        "damage": 30739207
+    },
+    "bossDragonGold1_DmgLevelUp_282": {
+        "key": "bossDragonGold1_DmgLevelUp_282",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 282,
+        "damage": 31066801
+    },
+    "bossDragonGold1_DmgLevelUp_283": {
+        "key": "bossDragonGold1_DmgLevelUp_283",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 283,
+        "damage": 31397671
+    },
+    "bossDragonGold1_DmgLevelUp_284": {
+        "key": "bossDragonGold1_DmgLevelUp_284",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 284,
+        "damage": 31731850
+    },
+    "bossDragonGold1_DmgLevelUp_285": {
+        "key": "bossDragonGold1_DmgLevelUp_285",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 285,
+        "damage": 32069370
+    },
+    "bossDragonGold1_DmgLevelUp_286": {
+        "key": "bossDragonGold1_DmgLevelUp_286",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 286,
+        "damage": 32410266
+    },
+    "bossDragonGold1_DmgLevelUp_287": {
+        "key": "bossDragonGold1_DmgLevelUp_287",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 287,
+        "damage": 32754570
+    },
+    "bossDragonGold1_DmgLevelUp_288": {
+        "key": "bossDragonGold1_DmgLevelUp_288",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 288,
+        "damage": 33102318
+    },
+    "bossDragonGold1_DmgLevelUp_289": {
+        "key": "bossDragonGold1_DmgLevelUp_289",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 289,
+        "damage": 33453543
+    },
+    "bossDragonGold1_DmgLevelUp_290": {
+        "key": "bossDragonGold1_DmgLevelUp_290",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 290,
+        "damage": 33808281
+    },
+    "bossDragonGold1_DmgLevelUp_291": {
+        "key": "bossDragonGold1_DmgLevelUp_291",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 291,
+        "damage": 34166566
+    },
+    "bossDragonGold1_DmgLevelUp_292": {
+        "key": "bossDragonGold1_DmgLevelUp_292",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 292,
+        "damage": 34528433
+    },
+    "bossDragonGold1_DmgLevelUp_293": {
+        "key": "bossDragonGold1_DmgLevelUp_293",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 293,
+        "damage": 34893920
+    },
+    "bossDragonGold1_DmgLevelUp_294": {
+        "key": "bossDragonGold1_DmgLevelUp_294",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 294,
+        "damage": 35263061
+    },
+    "bossDragonGold1_DmgLevelUp_295": {
+        "key": "bossDragonGold1_DmgLevelUp_295",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 295,
+        "damage": 35635893
+    },
+    "bossDragonGold1_DmgLevelUp_296": {
+        "key": "bossDragonGold1_DmgLevelUp_296",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 296,
+        "damage": 36012454
+    },
+    "bossDragonGold1_DmgLevelUp_297": {
+        "key": "bossDragonGold1_DmgLevelUp_297",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 297,
+        "damage": 36392781
+    },
+    "bossDragonGold1_DmgLevelUp_298": {
+        "key": "bossDragonGold1_DmgLevelUp_298",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 298,
+        "damage": 36776911
+    },
+    "bossDragonGold1_DmgLevelUp_299": {
+        "key": "bossDragonGold1_DmgLevelUp_299",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 299,
+        "damage": 37164882
+    },
+    "bossDragonGold1_DmgLevelUp_300": {
+        "key": "bossDragonGold1_DmgLevelUp_300",
+        "abilityDamageLevelUpId": "bossDragonGold1_DmgLvlUp",
+        "level": 300,
+        "damage": 37556733
+    },
+    "bossDragonGold2_DmgLevelUp_1": {
+        "key": "bossDragonGold2_DmgLevelUp_1",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 1,
+        "damage": 0
+    },
+    "bossDragonGold2_DmgLevelUp_2": {
+        "key": "bossDragonGold2_DmgLevelUp_2",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 2,
+        "damage": 20000
+    },
+    "bossDragonGold2_DmgLevelUp_3": {
+        "key": "bossDragonGold2_DmgLevelUp_3",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 3,
+        "damage": 40402
+    },
+    "bossDragonGold2_DmgLevelUp_4": {
+        "key": "bossDragonGold2_DmgLevelUp_4",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 4,
+        "damage": 61008
+    },
+    "bossDragonGold2_DmgLevelUp_5": {
+        "key": "bossDragonGold2_DmgLevelUp_5",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 5,
+        "damage": 81820
+    },
+    "bossDragonGold2_DmgLevelUp_6": {
+        "key": "bossDragonGold2_DmgLevelUp_6",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 6,
+        "damage": 102840
+    },
+    "bossDragonGold2_DmgLevelUp_7": {
+        "key": "bossDragonGold2_DmgLevelUp_7",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 7,
+        "damage": 124071
+    },
+    "bossDragonGold2_DmgLevelUp_8": {
+        "key": "bossDragonGold2_DmgLevelUp_8",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 8,
+        "damage": 145513
+    },
+    "bossDragonGold2_DmgLevelUp_9": {
+        "key": "bossDragonGold2_DmgLevelUp_9",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 9,
+        "damage": 167171
+    },
+    "bossDragonGold2_DmgLevelUp_10": {
+        "key": "bossDragonGold2_DmgLevelUp_10",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 10,
+        "damage": 189044
+    },
+    "bossDragonGold2_DmgLevelUp_11": {
+        "key": "bossDragonGold2_DmgLevelUp_11",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 11,
+        "damage": 211137
+    },
+    "bossDragonGold2_DmgLevelUp_12": {
+        "key": "bossDragonGold2_DmgLevelUp_12",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 12,
+        "damage": 233450
+    },
+    "bossDragonGold2_DmgLevelUp_13": {
+        "key": "bossDragonGold2_DmgLevelUp_13",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 13,
+        "damage": 255987
+    },
+    "bossDragonGold2_DmgLevelUp_14": {
+        "key": "bossDragonGold2_DmgLevelUp_14",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 14,
+        "damage": 278748
+    },
+    "bossDragonGold2_DmgLevelUp_15": {
+        "key": "bossDragonGold2_DmgLevelUp_15",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 15,
+        "damage": 301738
+    },
+    "bossDragonGold2_DmgLevelUp_16": {
+        "key": "bossDragonGold2_DmgLevelUp_16",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 16,
+        "damage": 324957
+    },
+    "bossDragonGold2_DmgLevelUp_17": {
+        "key": "bossDragonGold2_DmgLevelUp_17",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 17,
+        "damage": 348409
+    },
+    "bossDragonGold2_DmgLevelUp_18": {
+        "key": "bossDragonGold2_DmgLevelUp_18",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 18,
+        "damage": 372095
+    },
+    "bossDragonGold2_DmgLevelUp_19": {
+        "key": "bossDragonGold2_DmgLevelUp_19",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 19,
+        "damage": 396018
+    },
+    "bossDragonGold2_DmgLevelUp_20": {
+        "key": "bossDragonGold2_DmgLevelUp_20",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 20,
+        "damage": 420180
+    },
+    "bossDragonGold2_DmgLevelUp_21": {
+        "key": "bossDragonGold2_DmgLevelUp_21",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 21,
+        "damage": 444584
+    },
+    "bossDragonGold2_DmgLevelUp_22": {
+        "key": "bossDragonGold2_DmgLevelUp_22",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 22,
+        "damage": 469232
+    },
+    "bossDragonGold2_DmgLevelUp_23": {
+        "key": "bossDragonGold2_DmgLevelUp_23",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 23,
+        "damage": 494126
+    },
+    "bossDragonGold2_DmgLevelUp_24": {
+        "key": "bossDragonGold2_DmgLevelUp_24",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 24,
+        "damage": 519269
+    },
+    "bossDragonGold2_DmgLevelUp_25": {
+        "key": "bossDragonGold2_DmgLevelUp_25",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 25,
+        "damage": 544664
+    },
+    "bossDragonGold2_DmgLevelUp_26": {
+        "key": "bossDragonGold2_DmgLevelUp_26",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 26,
+        "damage": 570313
+    },
+    "bossDragonGold2_DmgLevelUp_27": {
+        "key": "bossDragonGold2_DmgLevelUp_27",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 27,
+        "damage": 596218
+    },
+    "bossDragonGold2_DmgLevelUp_28": {
+        "key": "bossDragonGold2_DmgLevelUp_28",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 28,
+        "damage": 622382
+    },
+    "bossDragonGold2_DmgLevelUp_29": {
+        "key": "bossDragonGold2_DmgLevelUp_29",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 29,
+        "damage": 648808
+    },
+    "bossDragonGold2_DmgLevelUp_30": {
+        "key": "bossDragonGold2_DmgLevelUp_30",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 30,
+        "damage": 675498
+    },
+    "bossDragonGold2_DmgLevelUp_31": {
+        "key": "bossDragonGold2_DmgLevelUp_31",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 31,
+        "damage": 702455
+    },
+    "bossDragonGold2_DmgLevelUp_32": {
+        "key": "bossDragonGold2_DmgLevelUp_32",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 32,
+        "damage": 729681
+    },
+    "bossDragonGold2_DmgLevelUp_33": {
+        "key": "bossDragonGold2_DmgLevelUp_33",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 33,
+        "damage": 757180
+    },
+    "bossDragonGold2_DmgLevelUp_34": {
+        "key": "bossDragonGold2_DmgLevelUp_34",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 34,
+        "damage": 784954
+    },
+    "bossDragonGold2_DmgLevelUp_35": {
+        "key": "bossDragonGold2_DmgLevelUp_35",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 35,
+        "damage": 813006
+    },
+    "bossDragonGold2_DmgLevelUp_36": {
+        "key": "bossDragonGold2_DmgLevelUp_36",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 36,
+        "damage": 841338
+    },
+    "bossDragonGold2_DmgLevelUp_37": {
+        "key": "bossDragonGold2_DmgLevelUp_37",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 37,
+        "damage": 869953
+    },
+    "bossDragonGold2_DmgLevelUp_38": {
+        "key": "bossDragonGold2_DmgLevelUp_38",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 38,
+        "damage": 898854
+    },
+    "bossDragonGold2_DmgLevelUp_39": {
+        "key": "bossDragonGold2_DmgLevelUp_39",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 39,
+        "damage": 928045
+    },
+    "bossDragonGold2_DmgLevelUp_40": {
+        "key": "bossDragonGold2_DmgLevelUp_40",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 40,
+        "damage": 957527
+    },
+    "bossDragonGold2_DmgLevelUp_41": {
+        "key": "bossDragonGold2_DmgLevelUp_41",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 41,
+        "damage": 987305
+    },
+    "bossDragonGold2_DmgLevelUp_42": {
+        "key": "bossDragonGold2_DmgLevelUp_42",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 42,
+        "damage": 1017380
+    },
+    "bossDragonGold2_DmgLevelUp_43": {
+        "key": "bossDragonGold2_DmgLevelUp_43",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 43,
+        "damage": 1047756
+    },
+    "bossDragonGold2_DmgLevelUp_44": {
+        "key": "bossDragonGold2_DmgLevelUp_44",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 44,
+        "damage": 1078435
+    },
+    "bossDragonGold2_DmgLevelUp_45": {
+        "key": "bossDragonGold2_DmgLevelUp_45",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 45,
+        "damage": 1109421
+    },
+    "bossDragonGold2_DmgLevelUp_46": {
+        "key": "bossDragonGold2_DmgLevelUp_46",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 46,
+        "damage": 1140718
+    },
+    "bossDragonGold2_DmgLevelUp_47": {
+        "key": "bossDragonGold2_DmgLevelUp_47",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 47,
+        "damage": 1172327
+    },
+    "bossDragonGold2_DmgLevelUp_48": {
+        "key": "bossDragonGold2_DmgLevelUp_48",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 48,
+        "damage": 1204252
+    },
+    "bossDragonGold2_DmgLevelUp_49": {
+        "key": "bossDragonGold2_DmgLevelUp_49",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 49,
+        "damage": 1236497
+    },
+    "bossDragonGold2_DmgLevelUp_50": {
+        "key": "bossDragonGold2_DmgLevelUp_50",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 50,
+        "damage": 1269064
+    },
+    "bossDragonGold2_DmgLevelUp_51": {
+        "key": "bossDragonGold2_DmgLevelUp_51",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 51,
+        "damage": 1301956
+    },
+    "bossDragonGold2_DmgLevelUp_52": {
+        "key": "bossDragonGold2_DmgLevelUp_52",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 52,
+        "damage": 1335178
+    },
+    "bossDragonGold2_DmgLevelUp_53": {
+        "key": "bossDragonGold2_DmgLevelUp_53",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 53,
+        "damage": 1368732
+    },
+    "bossDragonGold2_DmgLevelUp_54": {
+        "key": "bossDragonGold2_DmgLevelUp_54",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 54,
+        "damage": 1402621
+    },
+    "bossDragonGold2_DmgLevelUp_55": {
+        "key": "bossDragonGold2_DmgLevelUp_55",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 55,
+        "damage": 1436849
+    },
+    "bossDragonGold2_DmgLevelUp_56": {
+        "key": "bossDragonGold2_DmgLevelUp_56",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 56,
+        "damage": 1471420
+    },
+    "bossDragonGold2_DmgLevelUp_57": {
+        "key": "bossDragonGold2_DmgLevelUp_57",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 57,
+        "damage": 1506336
+    },
+    "bossDragonGold2_DmgLevelUp_58": {
+        "key": "bossDragonGold2_DmgLevelUp_58",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 58,
+        "damage": 1541601
+    },
+    "bossDragonGold2_DmgLevelUp_59": {
+        "key": "bossDragonGold2_DmgLevelUp_59",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 59,
+        "damage": 1577219
+    },
+    "bossDragonGold2_DmgLevelUp_60": {
+        "key": "bossDragonGold2_DmgLevelUp_60",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 60,
+        "damage": 1613193
+    },
+    "bossDragonGold2_DmgLevelUp_61": {
+        "key": "bossDragonGold2_DmgLevelUp_61",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 61,
+        "damage": 1649527
+    },
+    "bossDragonGold2_DmgLevelUp_62": {
+        "key": "bossDragonGold2_DmgLevelUp_62",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 62,
+        "damage": 1686225
+    },
+    "bossDragonGold2_DmgLevelUp_63": {
+        "key": "bossDragonGold2_DmgLevelUp_63",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 63,
+        "damage": 1723289
+    },
+    "bossDragonGold2_DmgLevelUp_64": {
+        "key": "bossDragonGold2_DmgLevelUp_64",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 64,
+        "damage": 1760724
+    },
+    "bossDragonGold2_DmgLevelUp_65": {
+        "key": "bossDragonGold2_DmgLevelUp_65",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 65,
+        "damage": 1798533
+    },
+    "bossDragonGold2_DmgLevelUp_66": {
+        "key": "bossDragonGold2_DmgLevelUp_66",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 66,
+        "damage": 1836720
+    },
+    "bossDragonGold2_DmgLevelUp_67": {
+        "key": "bossDragonGold2_DmgLevelUp_67",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 67,
+        "damage": 1875290
+    },
+    "bossDragonGold2_DmgLevelUp_68": {
+        "key": "bossDragonGold2_DmgLevelUp_68",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 68,
+        "damage": 1914244
+    },
+    "bossDragonGold2_DmgLevelUp_69": {
+        "key": "bossDragonGold2_DmgLevelUp_69",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 69,
+        "damage": 1953589
+    },
+    "bossDragonGold2_DmgLevelUp_70": {
+        "key": "bossDragonGold2_DmgLevelUp_70",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 70,
+        "damage": 1993327
+    },
+    "bossDragonGold2_DmgLevelUp_71": {
+        "key": "bossDragonGold2_DmgLevelUp_71",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 71,
+        "damage": 2033462
+    },
+    "bossDragonGold2_DmgLevelUp_72": {
+        "key": "bossDragonGold2_DmgLevelUp_72",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 72,
+        "damage": 2073999
+    },
+    "bossDragonGold2_DmgLevelUp_73": {
+        "key": "bossDragonGold2_DmgLevelUp_73",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 73,
+        "damage": 2114941
+    },
+    "bossDragonGold2_DmgLevelUp_74": {
+        "key": "bossDragonGold2_DmgLevelUp_74",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 74,
+        "damage": 2156292
+    },
+    "bossDragonGold2_DmgLevelUp_75": {
+        "key": "bossDragonGold2_DmgLevelUp_75",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 75,
+        "damage": 2198057
+    },
+    "bossDragonGold2_DmgLevelUp_76": {
+        "key": "bossDragonGold2_DmgLevelUp_76",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 76,
+        "damage": 2240240
+    },
+    "bossDragonGold2_DmgLevelUp_77": {
+        "key": "bossDragonGold2_DmgLevelUp_77",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 77,
+        "damage": 2282844
+    },
+    "bossDragonGold2_DmgLevelUp_78": {
+        "key": "bossDragonGold2_DmgLevelUp_78",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 78,
+        "damage": 2325874
+    },
+    "bossDragonGold2_DmgLevelUp_79": {
+        "key": "bossDragonGold2_DmgLevelUp_79",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 79,
+        "damage": 2369335
+    },
+    "bossDragonGold2_DmgLevelUp_80": {
+        "key": "bossDragonGold2_DmgLevelUp_80",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 80,
+        "damage": 2413230
+    },
+    "bossDragonGold2_DmgLevelUp_81": {
+        "key": "bossDragonGold2_DmgLevelUp_81",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 81,
+        "damage": 2457565
+    },
+    "bossDragonGold2_DmgLevelUp_82": {
+        "key": "bossDragonGold2_DmgLevelUp_82",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 82,
+        "damage": 2502342
+    },
+    "bossDragonGold2_DmgLevelUp_83": {
+        "key": "bossDragonGold2_DmgLevelUp_83",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 83,
+        "damage": 2547568
+    },
+    "bossDragonGold2_DmgLevelUp_84": {
+        "key": "bossDragonGold2_DmgLevelUp_84",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 84,
+        "damage": 2593245
+    },
+    "bossDragonGold2_DmgLevelUp_85": {
+        "key": "bossDragonGold2_DmgLevelUp_85",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 85,
+        "damage": 2639380
+    },
+    "bossDragonGold2_DmgLevelUp_86": {
+        "key": "bossDragonGold2_DmgLevelUp_86",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 86,
+        "damage": 2685976
+    },
+    "bossDragonGold2_DmgLevelUp_87": {
+        "key": "bossDragonGold2_DmgLevelUp_87",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 87,
+        "damage": 2733037
+    },
+    "bossDragonGold2_DmgLevelUp_88": {
+        "key": "bossDragonGold2_DmgLevelUp_88",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 88,
+        "damage": 2780570
+    },
+    "bossDragonGold2_DmgLevelUp_89": {
+        "key": "bossDragonGold2_DmgLevelUp_89",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 89,
+        "damage": 2828578
+    },
+    "bossDragonGold2_DmgLevelUp_90": {
+        "key": "bossDragonGold2_DmgLevelUp_90",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 90,
+        "damage": 2877065
+    },
+    "bossDragonGold2_DmgLevelUp_91": {
+        "key": "bossDragonGold2_DmgLevelUp_91",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 91,
+        "damage": 2926038
+    },
+    "bossDragonGold2_DmgLevelUp_92": {
+        "key": "bossDragonGold2_DmgLevelUp_92",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 92,
+        "damage": 2975500
+    },
+    "bossDragonGold2_DmgLevelUp_93": {
+        "key": "bossDragonGold2_DmgLevelUp_93",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 93,
+        "damage": 3025457
+    },
+    "bossDragonGold2_DmgLevelUp_94": {
+        "key": "bossDragonGold2_DmgLevelUp_94",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 94,
+        "damage": 3075914
+    },
+    "bossDragonGold2_DmgLevelUp_95": {
+        "key": "bossDragonGold2_DmgLevelUp_95",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 95,
+        "damage": 3126875
+    },
+    "bossDragonGold2_DmgLevelUp_96": {
+        "key": "bossDragonGold2_DmgLevelUp_96",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 96,
+        "damage": 3178346
+    },
+    "bossDragonGold2_DmgLevelUp_97": {
+        "key": "bossDragonGold2_DmgLevelUp_97",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 97,
+        "damage": 3230331
+    },
+    "bossDragonGold2_DmgLevelUp_98": {
+        "key": "bossDragonGold2_DmgLevelUp_98",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 98,
+        "damage": 3282837
+    },
+    "bossDragonGold2_DmgLevelUp_99": {
+        "key": "bossDragonGold2_DmgLevelUp_99",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 99,
+        "damage": 3335867
+    },
+    "bossDragonGold2_DmgLevelUp_100": {
+        "key": "bossDragonGold2_DmgLevelUp_100",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 100,
+        "damage": 3389428
+    },
+    "bossDragonGold2_DmgLevelUp_101": {
+        "key": "bossDragonGold2_DmgLevelUp_101",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 101,
+        "damage": 3443524
+    },
+    "bossDragonGold2_DmgLevelUp_102": {
+        "key": "bossDragonGold2_DmgLevelUp_102",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 102,
+        "damage": 3498161
+    },
+    "bossDragonGold2_DmgLevelUp_103": {
+        "key": "bossDragonGold2_DmgLevelUp_103",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 103,
+        "damage": 3553345
+    },
+    "bossDragonGold2_DmgLevelUp_104": {
+        "key": "bossDragonGold2_DmgLevelUp_104",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 104,
+        "damage": 3609080
+    },
+    "bossDragonGold2_DmgLevelUp_105": {
+        "key": "bossDragonGold2_DmgLevelUp_105",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 105,
+        "damage": 3665373
+    },
+    "bossDragonGold2_DmgLevelUp_106": {
+        "key": "bossDragonGold2_DmgLevelUp_106",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 106,
+        "damage": 3722229
+    },
+    "bossDragonGold2_DmgLevelUp_107": {
+        "key": "bossDragonGold2_DmgLevelUp_107",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 107,
+        "damage": 3779653
+    },
+    "bossDragonGold2_DmgLevelUp_108": {
+        "key": "bossDragonGold2_DmgLevelUp_108",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 108,
+        "damage": 3837652
+    },
+    "bossDragonGold2_DmgLevelUp_109": {
+        "key": "bossDragonGold2_DmgLevelUp_109",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 109,
+        "damage": 3896230
+    },
+    "bossDragonGold2_DmgLevelUp_110": {
+        "key": "bossDragonGold2_DmgLevelUp_110",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 110,
+        "damage": 3955394
+    },
+    "bossDragonGold2_DmgLevelUp_111": {
+        "key": "bossDragonGold2_DmgLevelUp_111",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 111,
+        "damage": 4015150
+    },
+    "bossDragonGold2_DmgLevelUp_112": {
+        "key": "bossDragonGold2_DmgLevelUp_112",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 112,
+        "damage": 4075504
+    },
+    "bossDragonGold2_DmgLevelUp_113": {
+        "key": "bossDragonGold2_DmgLevelUp_113",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 113,
+        "damage": 4136461
+    },
+    "bossDragonGold2_DmgLevelUp_114": {
+        "key": "bossDragonGold2_DmgLevelUp_114",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 114,
+        "damage": 4198027
+    },
+    "bossDragonGold2_DmgLevelUp_115": {
+        "key": "bossDragonGold2_DmgLevelUp_115",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 115,
+        "damage": 4260210
+    },
+    "bossDragonGold2_DmgLevelUp_116": {
+        "key": "bossDragonGold2_DmgLevelUp_116",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 116,
+        "damage": 4323014
+    },
+    "bossDragonGold2_DmgLevelUp_117": {
+        "key": "bossDragonGold2_DmgLevelUp_117",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 117,
+        "damage": 4386446
+    },
+    "bossDragonGold2_DmgLevelUp_118": {
+        "key": "bossDragonGold2_DmgLevelUp_118",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 118,
+        "damage": 4450512
+    },
+    "bossDragonGold2_DmgLevelUp_119": {
+        "key": "bossDragonGold2_DmgLevelUp_119",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 119,
+        "damage": 4515220
+    },
+    "bossDragonGold2_DmgLevelUp_120": {
+        "key": "bossDragonGold2_DmgLevelUp_120",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 120,
+        "damage": 4580574
+    },
+    "bossDragonGold2_DmgLevelUp_121": {
+        "key": "bossDragonGold2_DmgLevelUp_121",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 121,
+        "damage": 4646582
+    },
+    "bossDragonGold2_DmgLevelUp_122": {
+        "key": "bossDragonGold2_DmgLevelUp_122",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 122,
+        "damage": 4713249
+    },
+    "bossDragonGold2_DmgLevelUp_123": {
+        "key": "bossDragonGold2_DmgLevelUp_123",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 123,
+        "damage": 4780584
+    },
+    "bossDragonGold2_DmgLevelUp_124": {
+        "key": "bossDragonGold2_DmgLevelUp_124",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 124,
+        "damage": 4848592
+    },
+    "bossDragonGold2_DmgLevelUp_125": {
+        "key": "bossDragonGold2_DmgLevelUp_125",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 125,
+        "damage": 4917280
+    },
+    "bossDragonGold2_DmgLevelUp_126": {
+        "key": "bossDragonGold2_DmgLevelUp_126",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 126,
+        "damage": 4986654
+    },
+    "bossDragonGold2_DmgLevelUp_127": {
+        "key": "bossDragonGold2_DmgLevelUp_127",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 127,
+        "damage": 5056723
+    },
+    "bossDragonGold2_DmgLevelUp_128": {
+        "key": "bossDragonGold2_DmgLevelUp_128",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 128,
+        "damage": 5127492
+    },
+    "bossDragonGold2_DmgLevelUp_129": {
+        "key": "bossDragonGold2_DmgLevelUp_129",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 129,
+        "damage": 5198969
+    },
+    "bossDragonGold2_DmgLevelUp_130": {
+        "key": "bossDragonGold2_DmgLevelUp_130",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 130,
+        "damage": 5271161
+    },
+    "bossDragonGold2_DmgLevelUp_131": {
+        "key": "bossDragonGold2_DmgLevelUp_131",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 131,
+        "damage": 5344074
+    },
+    "bossDragonGold2_DmgLevelUp_132": {
+        "key": "bossDragonGold2_DmgLevelUp_132",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 132,
+        "damage": 5417717
+    },
+    "bossDragonGold2_DmgLevelUp_133": {
+        "key": "bossDragonGold2_DmgLevelUp_133",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 133,
+        "damage": 5492096
+    },
+    "bossDragonGold2_DmgLevelUp_134": {
+        "key": "bossDragonGold2_DmgLevelUp_134",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 134,
+        "damage": 5567219
+    },
+    "bossDragonGold2_DmgLevelUp_135": {
+        "key": "bossDragonGold2_DmgLevelUp_135",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 135,
+        "damage": 5643093
+    },
+    "bossDragonGold2_DmgLevelUp_136": {
+        "key": "bossDragonGold2_DmgLevelUp_136",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 136,
+        "damage": 5719726
+    },
+    "bossDragonGold2_DmgLevelUp_137": {
+        "key": "bossDragonGold2_DmgLevelUp_137",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 137,
+        "damage": 5797126
+    },
+    "bossDragonGold2_DmgLevelUp_138": {
+        "key": "bossDragonGold2_DmgLevelUp_138",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 138,
+        "damage": 5875299
+    },
+    "bossDragonGold2_DmgLevelUp_139": {
+        "key": "bossDragonGold2_DmgLevelUp_139",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 139,
+        "damage": 5954254
+    },
+    "bossDragonGold2_DmgLevelUp_140": {
+        "key": "bossDragonGold2_DmgLevelUp_140",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 140,
+        "damage": 6033998
+    },
+    "bossDragonGold2_DmgLevelUp_141": {
+        "key": "bossDragonGold2_DmgLevelUp_141",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 141,
+        "damage": 6114540
+    },
+    "bossDragonGold2_DmgLevelUp_142": {
+        "key": "bossDragonGold2_DmgLevelUp_142",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 142,
+        "damage": 6195888
+    },
+    "bossDragonGold2_DmgLevelUp_143": {
+        "key": "bossDragonGold2_DmgLevelUp_143",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 143,
+        "damage": 6278049
+    },
+    "bossDragonGold2_DmgLevelUp_144": {
+        "key": "bossDragonGold2_DmgLevelUp_144",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 144,
+        "damage": 6361031
+    },
+    "bossDragonGold2_DmgLevelUp_145": {
+        "key": "bossDragonGold2_DmgLevelUp_145",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 145,
+        "damage": 6444843
+    },
+    "bossDragonGold2_DmgLevelUp_146": {
+        "key": "bossDragonGold2_DmgLevelUp_146",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 146,
+        "damage": 6529494
+    },
+    "bossDragonGold2_DmgLevelUp_147": {
+        "key": "bossDragonGold2_DmgLevelUp_147",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 147,
+        "damage": 6614991
+    },
+    "bossDragonGold2_DmgLevelUp_148": {
+        "key": "bossDragonGold2_DmgLevelUp_148",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 148,
+        "damage": 6701343
+    },
+    "bossDragonGold2_DmgLevelUp_149": {
+        "key": "bossDragonGold2_DmgLevelUp_149",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 149,
+        "damage": 6788558
+    },
+    "bossDragonGold2_DmgLevelUp_150": {
+        "key": "bossDragonGold2_DmgLevelUp_150",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 150,
+        "damage": 6876646
+    },
+    "bossDragonGold2_DmgLevelUp_151": {
+        "key": "bossDragonGold2_DmgLevelUp_151",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 151,
+        "damage": 6965614
+    },
+    "bossDragonGold2_DmgLevelUp_152": {
+        "key": "bossDragonGold2_DmgLevelUp_152",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 152,
+        "damage": 7055472
+    },
+    "bossDragonGold2_DmgLevelUp_153": {
+        "key": "bossDragonGold2_DmgLevelUp_153",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 153,
+        "damage": 7146229
+    },
+    "bossDragonGold2_DmgLevelUp_154": {
+        "key": "bossDragonGold2_DmgLevelUp_154",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 154,
+        "damage": 7237893
+    },
+    "bossDragonGold2_DmgLevelUp_155": {
+        "key": "bossDragonGold2_DmgLevelUp_155",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 155,
+        "damage": 7330474
+    },
+    "bossDragonGold2_DmgLevelUp_156": {
+        "key": "bossDragonGold2_DmgLevelUp_156",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 156,
+        "damage": 7423981
+    },
+    "bossDragonGold2_DmgLevelUp_157": {
+        "key": "bossDragonGold2_DmgLevelUp_157",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 157,
+        "damage": 7518423
+    },
+    "bossDragonGold2_DmgLevelUp_158": {
+        "key": "bossDragonGold2_DmgLevelUp_158",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 158,
+        "damage": 7613809
+    },
+    "bossDragonGold2_DmgLevelUp_159": {
+        "key": "bossDragonGold2_DmgLevelUp_159",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 159,
+        "damage": 7710149
+    },
+    "bossDragonGold2_DmgLevelUp_160": {
+        "key": "bossDragonGold2_DmgLevelUp_160",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 160,
+        "damage": 7807453
+    },
+    "bossDragonGold2_DmgLevelUp_161": {
+        "key": "bossDragonGold2_DmgLevelUp_161",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 161,
+        "damage": 7905729
+    },
+    "bossDragonGold2_DmgLevelUp_162": {
+        "key": "bossDragonGold2_DmgLevelUp_162",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 162,
+        "damage": 8004989
+    },
+    "bossDragonGold2_DmgLevelUp_163": {
+        "key": "bossDragonGold2_DmgLevelUp_163",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 163,
+        "damage": 8105240
+    },
+    "bossDragonGold2_DmgLevelUp_164": {
+        "key": "bossDragonGold2_DmgLevelUp_164",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 164,
+        "damage": 8206495
+    },
+    "bossDragonGold2_DmgLevelUp_165": {
+        "key": "bossDragonGold2_DmgLevelUp_165",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 165,
+        "damage": 8308762
+    },
+    "bossDragonGold2_DmgLevelUp_166": {
+        "key": "bossDragonGold2_DmgLevelUp_166",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 166,
+        "damage": 8412051
+    },
+    "bossDragonGold2_DmgLevelUp_167": {
+        "key": "bossDragonGold2_DmgLevelUp_167",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 167,
+        "damage": 8516374
+    },
+    "bossDragonGold2_DmgLevelUp_168": {
+        "key": "bossDragonGold2_DmgLevelUp_168",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 168,
+        "damage": 8621740
+    },
+    "bossDragonGold2_DmgLevelUp_169": {
+        "key": "bossDragonGold2_DmgLevelUp_169",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 169,
+        "damage": 8728159
+    },
+    "bossDragonGold2_DmgLevelUp_170": {
+        "key": "bossDragonGold2_DmgLevelUp_170",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 170,
+        "damage": 8835643
+    },
+    "bossDragonGold2_DmgLevelUp_171": {
+        "key": "bossDragonGold2_DmgLevelUp_171",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 171,
+        "damage": 8944201
+    },
+    "bossDragonGold2_DmgLevelUp_172": {
+        "key": "bossDragonGold2_DmgLevelUp_172",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 172,
+        "damage": 9053845
+    },
+    "bossDragonGold2_DmgLevelUp_173": {
+        "key": "bossDragonGold2_DmgLevelUp_173",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 173,
+        "damage": 9164586
+    },
+    "bossDragonGold2_DmgLevelUp_174": {
+        "key": "bossDragonGold2_DmgLevelUp_174",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 174,
+        "damage": 9276433
+    },
+    "bossDragonGold2_DmgLevelUp_175": {
+        "key": "bossDragonGold2_DmgLevelUp_175",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 175,
+        "damage": 9389400
+    },
+    "bossDragonGold2_DmgLevelUp_176": {
+        "key": "bossDragonGold2_DmgLevelUp_176",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 176,
+        "damage": 9503496
+    },
+    "bossDragonGold2_DmgLevelUp_177": {
+        "key": "bossDragonGold2_DmgLevelUp_177",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 177,
+        "damage": 9618733
+    },
+    "bossDragonGold2_DmgLevelUp_178": {
+        "key": "bossDragonGold2_DmgLevelUp_178",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 178,
+        "damage": 9735122
+    },
+    "bossDragonGold2_DmgLevelUp_179": {
+        "key": "bossDragonGold2_DmgLevelUp_179",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 179,
+        "damage": 9852675
+    },
+    "bossDragonGold2_DmgLevelUp_180": {
+        "key": "bossDragonGold2_DmgLevelUp_180",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 180,
+        "damage": 9971404
+    },
+    "bossDragonGold2_DmgLevelUp_181": {
+        "key": "bossDragonGold2_DmgLevelUp_181",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 181,
+        "damage": 10091320
+    },
+    "bossDragonGold2_DmgLevelUp_182": {
+        "key": "bossDragonGold2_DmgLevelUp_182",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 182,
+        "damage": 10212435
+    },
+    "bossDragonGold2_DmgLevelUp_183": {
+        "key": "bossDragonGold2_DmgLevelUp_183",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 183,
+        "damage": 10334762
+    },
+    "bossDragonGold2_DmgLevelUp_184": {
+        "key": "bossDragonGold2_DmgLevelUp_184",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 184,
+        "damage": 10458311
+    },
+    "bossDragonGold2_DmgLevelUp_185": {
+        "key": "bossDragonGold2_DmgLevelUp_185",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 185,
+        "damage": 10583096
+    },
+    "bossDragonGold2_DmgLevelUp_186": {
+        "key": "bossDragonGold2_DmgLevelUp_186",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 186,
+        "damage": 10709129
+    },
+    "bossDragonGold2_DmgLevelUp_187": {
+        "key": "bossDragonGold2_DmgLevelUp_187",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 187,
+        "damage": 10836423
+    },
+    "bossDragonGold2_DmgLevelUp_188": {
+        "key": "bossDragonGold2_DmgLevelUp_188",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 188,
+        "damage": 10964989
+    },
+    "bossDragonGold2_DmgLevelUp_189": {
+        "key": "bossDragonGold2_DmgLevelUp_189",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 189,
+        "damage": 11094841
+    },
+    "bossDragonGold2_DmgLevelUp_190": {
+        "key": "bossDragonGold2_DmgLevelUp_190",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 190,
+        "damage": 11225991
+    },
+    "bossDragonGold2_DmgLevelUp_191": {
+        "key": "bossDragonGold2_DmgLevelUp_191",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 191,
+        "damage": 11358453
+    },
+    "bossDragonGold2_DmgLevelUp_192": {
+        "key": "bossDragonGold2_DmgLevelUp_192",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 192,
+        "damage": 11492239
+    },
+    "bossDragonGold2_DmgLevelUp_193": {
+        "key": "bossDragonGold2_DmgLevelUp_193",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 193,
+        "damage": 11627364
+    },
+    "bossDragonGold2_DmgLevelUp_194": {
+        "key": "bossDragonGold2_DmgLevelUp_194",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 194,
+        "damage": 11763840
+    },
+    "bossDragonGold2_DmgLevelUp_195": {
+        "key": "bossDragonGold2_DmgLevelUp_195",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 195,
+        "damage": 11901680
+    },
+    "bossDragonGold2_DmgLevelUp_196": {
+        "key": "bossDragonGold2_DmgLevelUp_196",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 196,
+        "damage": 12040899
+    },
+    "bossDragonGold2_DmgLevelUp_197": {
+        "key": "bossDragonGold2_DmgLevelUp_197",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 197,
+        "damage": 12181510
+    },
+    "bossDragonGold2_DmgLevelUp_198": {
+        "key": "bossDragonGold2_DmgLevelUp_198",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 198,
+        "damage": 12323527
+    },
+    "bossDragonGold2_DmgLevelUp_199": {
+        "key": "bossDragonGold2_DmgLevelUp_199",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 199,
+        "damage": 12466964
+    },
+    "bossDragonGold2_DmgLevelUp_200": {
+        "key": "bossDragonGold2_DmgLevelUp_200",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 200,
+        "damage": 12611836
+    },
+    "bossDragonGold2_DmgLevelUp_201": {
+        "key": "bossDragonGold2_DmgLevelUp_201",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 201,
+        "damage": 12758156
+    },
+    "bossDragonGold2_DmgLevelUp_202": {
+        "key": "bossDragonGold2_DmgLevelUp_202",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 202,
+        "damage": 12905940
+    },
+    "bossDragonGold2_DmgLevelUp_203": {
+        "key": "bossDragonGold2_DmgLevelUp_203",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 203,
+        "damage": 13055201
+    },
+    "bossDragonGold2_DmgLevelUp_204": {
+        "key": "bossDragonGold2_DmgLevelUp_204",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 204,
+        "damage": 13205955
+    },
+    "bossDragonGold2_DmgLevelUp_205": {
+        "key": "bossDragonGold2_DmgLevelUp_205",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 205,
+        "damage": 13358217
+    },
+    "bossDragonGold2_DmgLevelUp_206": {
+        "key": "bossDragonGold2_DmgLevelUp_206",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 206,
+        "damage": 13512001
+    },
+    "bossDragonGold2_DmgLevelUp_207": {
+        "key": "bossDragonGold2_DmgLevelUp_207",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 207,
+        "damage": 13667323
+    },
+    "bossDragonGold2_DmgLevelUp_208": {
+        "key": "bossDragonGold2_DmgLevelUp_208",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 208,
+        "damage": 13824198
+    },
+    "bossDragonGold2_DmgLevelUp_209": {
+        "key": "bossDragonGold2_DmgLevelUp_209",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 209,
+        "damage": 13982642
+    },
+    "bossDragonGold2_DmgLevelUp_210": {
+        "key": "bossDragonGold2_DmgLevelUp_210",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 210,
+        "damage": 14142670
+    },
+    "bossDragonGold2_DmgLevelUp_211": {
+        "key": "bossDragonGold2_DmgLevelUp_211",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 211,
+        "damage": 14304299
+    },
+    "bossDragonGold2_DmgLevelUp_212": {
+        "key": "bossDragonGold2_DmgLevelUp_212",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 212,
+        "damage": 14467544
+    },
+    "bossDragonGold2_DmgLevelUp_213": {
+        "key": "bossDragonGold2_DmgLevelUp_213",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 213,
+        "damage": 14632422
+    },
+    "bossDragonGold2_DmgLevelUp_214": {
+        "key": "bossDragonGold2_DmgLevelUp_214",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 214,
+        "damage": 14798948
+    },
+    "bossDragonGold2_DmgLevelUp_215": {
+        "key": "bossDragonGold2_DmgLevelUp_215",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 215,
+        "damage": 14967139
+    },
+    "bossDragonGold2_DmgLevelUp_216": {
+        "key": "bossDragonGold2_DmgLevelUp_216",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 216,
+        "damage": 15137013
+    },
+    "bossDragonGold2_DmgLevelUp_217": {
+        "key": "bossDragonGold2_DmgLevelUp_217",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 217,
+        "damage": 15308585
+    },
+    "bossDragonGold2_DmgLevelUp_218": {
+        "key": "bossDragonGold2_DmgLevelUp_218",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 218,
+        "damage": 15481873
+    },
+    "bossDragonGold2_DmgLevelUp_219": {
+        "key": "bossDragonGold2_DmgLevelUp_219",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 219,
+        "damage": 15656893
+    },
+    "bossDragonGold2_DmgLevelUp_220": {
+        "key": "bossDragonGold2_DmgLevelUp_220",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 220,
+        "damage": 15833664
+    },
+    "bossDragonGold2_DmgLevelUp_221": {
+        "key": "bossDragonGold2_DmgLevelUp_221",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 221,
+        "damage": 16012203
+    },
+    "bossDragonGold2_DmgLevelUp_222": {
+        "key": "bossDragonGold2_DmgLevelUp_222",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 222,
+        "damage": 16192527
+    },
+    "bossDragonGold2_DmgLevelUp_223": {
+        "key": "bossDragonGold2_DmgLevelUp_223",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 223,
+        "damage": 16374654
+    },
+    "bossDragonGold2_DmgLevelUp_224": {
+        "key": "bossDragonGold2_DmgLevelUp_224",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 224,
+        "damage": 16558603
+    },
+    "bossDragonGold2_DmgLevelUp_225": {
+        "key": "bossDragonGold2_DmgLevelUp_225",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 225,
+        "damage": 16744391
+    },
+    "bossDragonGold2_DmgLevelUp_226": {
+        "key": "bossDragonGold2_DmgLevelUp_226",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 226,
+        "damage": 16932037
+    },
+    "bossDragonGold2_DmgLevelUp_227": {
+        "key": "bossDragonGold2_DmgLevelUp_227",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 227,
+        "damage": 17121559
+    },
+    "bossDragonGold2_DmgLevelUp_228": {
+        "key": "bossDragonGold2_DmgLevelUp_228",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 228,
+        "damage": 17312977
+    },
+    "bossDragonGold2_DmgLevelUp_229": {
+        "key": "bossDragonGold2_DmgLevelUp_229",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 229,
+        "damage": 17506308
+    },
+    "bossDragonGold2_DmgLevelUp_230": {
+        "key": "bossDragonGold2_DmgLevelUp_230",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 230,
+        "damage": 17701573
+    },
+    "bossDragonGold2_DmgLevelUp_231": {
+        "key": "bossDragonGold2_DmgLevelUp_231",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 231,
+        "damage": 17898791
+    },
+    "bossDragonGold2_DmgLevelUp_232": {
+        "key": "bossDragonGold2_DmgLevelUp_232",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 232,
+        "damage": 18097981
+    },
+    "bossDragonGold2_DmgLevelUp_233": {
+        "key": "bossDragonGold2_DmgLevelUp_233",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 233,
+        "damage": 18299163
+    },
+    "bossDragonGold2_DmgLevelUp_234": {
+        "key": "bossDragonGold2_DmgLevelUp_234",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 234,
+        "damage": 18502357
+    },
+    "bossDragonGold2_DmgLevelUp_235": {
+        "key": "bossDragonGold2_DmgLevelUp_235",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 235,
+        "damage": 18707582
+    },
+    "bossDragonGold2_DmgLevelUp_236": {
+        "key": "bossDragonGold2_DmgLevelUp_236",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 236,
+        "damage": 18914860
+    },
+    "bossDragonGold2_DmgLevelUp_237": {
+        "key": "bossDragonGold2_DmgLevelUp_237",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 237,
+        "damage": 19124211
+    },
+    "bossDragonGold2_DmgLevelUp_238": {
+        "key": "bossDragonGold2_DmgLevelUp_238",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 238,
+        "damage": 19335655
+    },
+    "bossDragonGold2_DmgLevelUp_239": {
+        "key": "bossDragonGold2_DmgLevelUp_239",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 239,
+        "damage": 19549213
+    },
+    "bossDragonGold2_DmgLevelUp_240": {
+        "key": "bossDragonGold2_DmgLevelUp_240",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 240,
+        "damage": 19764907
+    },
+    "bossDragonGold2_DmgLevelUp_241": {
+        "key": "bossDragonGold2_DmgLevelUp_241",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 241,
+        "damage": 19982758
+    },
+    "bossDragonGold2_DmgLevelUp_242": {
+        "key": "bossDragonGold2_DmgLevelUp_242",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 242,
+        "damage": 20202788
+    },
+    "bossDragonGold2_DmgLevelUp_243": {
+        "key": "bossDragonGold2_DmgLevelUp_243",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 243,
+        "damage": 20425018
+    },
+    "bossDragonGold2_DmgLevelUp_244": {
+        "key": "bossDragonGold2_DmgLevelUp_244",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 244,
+        "damage": 20649470
+    },
+    "bossDragonGold2_DmgLevelUp_245": {
+        "key": "bossDragonGold2_DmgLevelUp_245",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 245,
+        "damage": 20876167
+    },
+    "bossDragonGold2_DmgLevelUp_246": {
+        "key": "bossDragonGold2_DmgLevelUp_246",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 246,
+        "damage": 21105130
+    },
+    "bossDragonGold2_DmgLevelUp_247": {
+        "key": "bossDragonGold2_DmgLevelUp_247",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 247,
+        "damage": 21336384
+    },
+    "bossDragonGold2_DmgLevelUp_248": {
+        "key": "bossDragonGold2_DmgLevelUp_248",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 248,
+        "damage": 21569950
+    },
+    "bossDragonGold2_DmgLevelUp_249": {
+        "key": "bossDragonGold2_DmgLevelUp_249",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 249,
+        "damage": 21805851
+    },
+    "bossDragonGold2_DmgLevelUp_250": {
+        "key": "bossDragonGold2_DmgLevelUp_250",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 250,
+        "damage": 22044112
+    },
+    "bossDragonGold2_DmgLevelUp_251": {
+        "key": "bossDragonGold2_DmgLevelUp_251",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 251,
+        "damage": 22284755
+    },
+    "bossDragonGold2_DmgLevelUp_252": {
+        "key": "bossDragonGold2_DmgLevelUp_252",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 252,
+        "damage": 22527804
+    },
+    "bossDragonGold2_DmgLevelUp_253": {
+        "key": "bossDragonGold2_DmgLevelUp_253",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 253,
+        "damage": 22773284
+    },
+    "bossDragonGold2_DmgLevelUp_254": {
+        "key": "bossDragonGold2_DmgLevelUp_254",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 254,
+        "damage": 23021219
+    },
+    "bossDragonGold2_DmgLevelUp_255": {
+        "key": "bossDragonGold2_DmgLevelUp_255",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 255,
+        "damage": 23271633
+    },
+    "bossDragonGold2_DmgLevelUp_256": {
+        "key": "bossDragonGold2_DmgLevelUp_256",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 256,
+        "damage": 23524552
+    },
+    "bossDragonGold2_DmgLevelUp_257": {
+        "key": "bossDragonGold2_DmgLevelUp_257",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 257,
+        "damage": 23779999
+    },
+    "bossDragonGold2_DmgLevelUp_258": {
+        "key": "bossDragonGold2_DmgLevelUp_258",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 258,
+        "damage": 24038001
+    },
+    "bossDragonGold2_DmgLevelUp_259": {
+        "key": "bossDragonGold2_DmgLevelUp_259",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 259,
+        "damage": 24298583
+    },
+    "bossDragonGold2_DmgLevelUp_260": {
+        "key": "bossDragonGold2_DmgLevelUp_260",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 260,
+        "damage": 24561771
+    },
+    "bossDragonGold2_DmgLevelUp_261": {
+        "key": "bossDragonGold2_DmgLevelUp_261",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 261,
+        "damage": 24827591
+    },
+    "bossDragonGold2_DmgLevelUp_262": {
+        "key": "bossDragonGold2_DmgLevelUp_262",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 262,
+        "damage": 25096069
+    },
+    "bossDragonGold2_DmgLevelUp_263": {
+        "key": "bossDragonGold2_DmgLevelUp_263",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 263,
+        "damage": 25367231
+    },
+    "bossDragonGold2_DmgLevelUp_264": {
+        "key": "bossDragonGold2_DmgLevelUp_264",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 264,
+        "damage": 25641106
+    },
+    "bossDragonGold2_DmgLevelUp_265": {
+        "key": "bossDragonGold2_DmgLevelUp_265",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 265,
+        "damage": 25917719
+    },
+    "bossDragonGold2_DmgLevelUp_266": {
+        "key": "bossDragonGold2_DmgLevelUp_266",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 266,
+        "damage": 26197098
+    },
+    "bossDragonGold2_DmgLevelUp_267": {
+        "key": "bossDragonGold2_DmgLevelUp_267",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 267,
+        "damage": 26479271
+    },
+    "bossDragonGold2_DmgLevelUp_268": {
+        "key": "bossDragonGold2_DmgLevelUp_268",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 268,
+        "damage": 26764265
+    },
+    "bossDragonGold2_DmgLevelUp_269": {
+        "key": "bossDragonGold2_DmgLevelUp_269",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 269,
+        "damage": 27052110
+    },
+    "bossDragonGold2_DmgLevelUp_270": {
+        "key": "bossDragonGold2_DmgLevelUp_270",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 270,
+        "damage": 27342833
+    },
+    "bossDragonGold2_DmgLevelUp_271": {
+        "key": "bossDragonGold2_DmgLevelUp_271",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 271,
+        "damage": 27636464
+    },
+    "bossDragonGold2_DmgLevelUp_272": {
+        "key": "bossDragonGold2_DmgLevelUp_272",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 272,
+        "damage": 27933030
+    },
+    "bossDragonGold2_DmgLevelUp_273": {
+        "key": "bossDragonGold2_DmgLevelUp_273",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 273,
+        "damage": 28232563
+    },
+    "bossDragonGold2_DmgLevelUp_274": {
+        "key": "bossDragonGold2_DmgLevelUp_274",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 274,
+        "damage": 28535090
+    },
+    "bossDragonGold2_DmgLevelUp_275": {
+        "key": "bossDragonGold2_DmgLevelUp_275",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 275,
+        "damage": 28840643
+    },
+    "bossDragonGold2_DmgLevelUp_276": {
+        "key": "bossDragonGold2_DmgLevelUp_276",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 276,
+        "damage": 29149251
+    },
+    "bossDragonGold2_DmgLevelUp_277": {
+        "key": "bossDragonGold2_DmgLevelUp_277",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 277,
+        "damage": 29460946
+    },
+    "bossDragonGold2_DmgLevelUp_278": {
+        "key": "bossDragonGold2_DmgLevelUp_278",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 278,
+        "damage": 29775757
+    },
+    "bossDragonGold2_DmgLevelUp_279": {
+        "key": "bossDragonGold2_DmgLevelUp_279",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 279,
+        "damage": 30093717
+    },
+    "bossDragonGold2_DmgLevelUp_280": {
+        "key": "bossDragonGold2_DmgLevelUp_280",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 280,
+        "damage": 30414856
+    },
+    "bossDragonGold2_DmgLevelUp_281": {
+        "key": "bossDragonGold2_DmgLevelUp_281",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 281,
+        "damage": 30739207
+    },
+    "bossDragonGold2_DmgLevelUp_282": {
+        "key": "bossDragonGold2_DmgLevelUp_282",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 282,
+        "damage": 31066801
+    },
+    "bossDragonGold2_DmgLevelUp_283": {
+        "key": "bossDragonGold2_DmgLevelUp_283",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 283,
+        "damage": 31397671
+    },
+    "bossDragonGold2_DmgLevelUp_284": {
+        "key": "bossDragonGold2_DmgLevelUp_284",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 284,
+        "damage": 31731850
+    },
+    "bossDragonGold2_DmgLevelUp_285": {
+        "key": "bossDragonGold2_DmgLevelUp_285",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 285,
+        "damage": 32069370
+    },
+    "bossDragonGold2_DmgLevelUp_286": {
+        "key": "bossDragonGold2_DmgLevelUp_286",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 286,
+        "damage": 32410266
+    },
+    "bossDragonGold2_DmgLevelUp_287": {
+        "key": "bossDragonGold2_DmgLevelUp_287",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 287,
+        "damage": 32754570
+    },
+    "bossDragonGold2_DmgLevelUp_288": {
+        "key": "bossDragonGold2_DmgLevelUp_288",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 288,
+        "damage": 33102318
+    },
+    "bossDragonGold2_DmgLevelUp_289": {
+        "key": "bossDragonGold2_DmgLevelUp_289",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 289,
+        "damage": 33453543
+    },
+    "bossDragonGold2_DmgLevelUp_290": {
+        "key": "bossDragonGold2_DmgLevelUp_290",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 290,
+        "damage": 33808281
+    },
+    "bossDragonGold2_DmgLevelUp_291": {
+        "key": "bossDragonGold2_DmgLevelUp_291",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 291,
+        "damage": 34166566
+    },
+    "bossDragonGold2_DmgLevelUp_292": {
+        "key": "bossDragonGold2_DmgLevelUp_292",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 292,
+        "damage": 34528433
+    },
+    "bossDragonGold2_DmgLevelUp_293": {
+        "key": "bossDragonGold2_DmgLevelUp_293",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 293,
+        "damage": 34893920
+    },
+    "bossDragonGold2_DmgLevelUp_294": {
+        "key": "bossDragonGold2_DmgLevelUp_294",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 294,
+        "damage": 35263061
+    },
+    "bossDragonGold2_DmgLevelUp_295": {
+        "key": "bossDragonGold2_DmgLevelUp_295",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 295,
+        "damage": 35635893
+    },
+    "bossDragonGold2_DmgLevelUp_296": {
+        "key": "bossDragonGold2_DmgLevelUp_296",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 296,
+        "damage": 36012454
+    },
+    "bossDragonGold2_DmgLevelUp_297": {
+        "key": "bossDragonGold2_DmgLevelUp_297",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 297,
+        "damage": 36392781
+    },
+    "bossDragonGold2_DmgLevelUp_298": {
+        "key": "bossDragonGold2_DmgLevelUp_298",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 298,
+        "damage": 36776911
+    },
+    "bossDragonGold2_DmgLevelUp_299": {
+        "key": "bossDragonGold2_DmgLevelUp_299",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 299,
+        "damage": 37164882
+    },
+    "bossDragonGold2_DmgLevelUp_300": {
+        "key": "bossDragonGold2_DmgLevelUp_300",
+        "abilityDamageLevelUpId": "bossDragonGold2_DmgLvlUp",
+        "level": 300,
+        "damage": 37556733
     }
 }

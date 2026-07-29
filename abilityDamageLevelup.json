@@ -26,5 +26,13 @@
     "bossSand_DmgLvlUp": {
         "key": "bossSand_DmgLvlUp",
         "abilityInfoId": "bossSand_DmgLvlUp"
+    },
+    "bossDragonGold1_DmgLvlUp": {
+        "key": "bossDragonGold1_DmgLvlUp",
+        "abilityInfoId": "bossDragonGold_DmgLvlUp"
+    },
+    "bossDragonGold2_DmgLvlUp": {
+        "key": "bossDragonGold2_DmgLvlUp",
+        "abilityInfoId": "bossDragonGold_DmgLvlUp"
     }
 }
