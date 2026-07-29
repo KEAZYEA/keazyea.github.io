@@ -9986,5 +9986,277 @@
     "description_battle_validation_error_background": {
         "key": "description_battle_validation_error_background",
         "value": "2496"
+    },
+    "troop_get_from_summon": {
+        "key": "troop_get_from_summon",
+        "value": "2497"
+    },
+    "caption_clan_members_members": {
+        "key": "caption_clan_members_members",
+        "value": "2498"
+    },
+    "caption_clan_members_clash": {
+        "key": "caption_clan_members_clash",
+        "value": "2499"
+    },
+    "caption_clan_members_activity": {
+        "key": "caption_clan_members_activity",
+        "value": "2500"
+    },
+    "caption_clan_members_sort": {
+        "key": "caption_clan_members_sort",
+        "value": "2501"
+    },
+    "description_clan_members_tab_members": {
+        "key": "description_clan_members_tab_members",
+        "value": "2502"
+    },
+    "description_clan_members_tab_clan_clash": {
+        "key": "description_clan_members_tab_clan_clash",
+        "value": "2503"
+    },
+    "description_clan_members_tab_activity": {
+        "key": "description_clan_members_tab_activity",
+        "value": "2504"
+    },
+    "caption_clan_members_arena_rating": {
+        "key": "caption_clan_members_arena_rating",
+        "value": "2505"
+    },
+    "caption_clan_members_last_online": {
+        "key": "caption_clan_members_last_online",
+        "value": "2506"
+    },
+    "caption_clan_members_power": {
+        "key": "caption_clan_members_power",
+        "value": "2507"
+    },
+    "caption_clan_members_days_in_clan": {
+        "key": "caption_clan_members_days_in_clan",
+        "value": "2508"
+    },
+    "caption_clan_members_clan_clash": {
+        "key": "caption_clan_members_clan_clash",
+        "value": "2509"
+    },
+    "caption_clan_members_clan_clash_hunt": {
+        "key": "caption_clan_members_clan_clash_hunt",
+        "value": "2510"
+    },
+    "caption_clan_members_arena_fights": {
+        "key": "caption_clan_members_arena_fights",
+        "value": "2511"
+    },
+    "caption_clan_members_boss_fights": {
+        "key": "caption_clan_members_boss_fights",
+        "value": "2512"
+    },
+    "caption_clan_members_chest_points": {
+        "key": "caption_clan_members_chest_points",
+        "value": "2513"
+    },
+    "caption_clan_members_today": {
+        "key": "caption_clan_members_today",
+        "value": "2514"
+    },
+    "caption_clan_members_yesterday": {
+        "key": "caption_clan_members_yesterday",
+        "value": "2515"
+    },
+    "caption_clan_members_days_ago_format": {
+        "key": "caption_clan_members_days_ago_format",
+        "value": "2516"
+    },
+    "caption_clan_members_more_month_ago": {
+        "key": "caption_clan_members_more_month_ago",
+        "value": "2517"
+    },
+    "caption_extended_info_window_caption": {
+        "key": "caption_extended_info_window_caption",
+        "value": "2518"
+    },
+    "caption_extended_info_last_online_format_dots": {
+        "key": "caption_extended_info_last_online_format_dots",
+        "value": "2519"
+    },
+    "caption_extended_info_days_in_clan_format_dots": {
+        "key": "caption_extended_info_days_in_clan_format_dots",
+        "value": "2520"
+    },
+    "caption_extended_info_attribute": {
+        "key": "caption_extended_info_attribute",
+        "value": "2521"
+    },
+    "caption_extended_info_value": {
+        "key": "caption_extended_info_value",
+        "value": "2522"
+    },
+    "caption_extended_info_information": {
+        "key": "caption_extended_info_information",
+        "value": "2523"
+    },
+    "caption_extended_info_power": {
+        "key": "caption_extended_info_power",
+        "value": "2524"
+    },
+    "caption_extended_info_trophies": {
+        "key": "caption_extended_info_trophies",
+        "value": "2525"
+    },
+    "caption_extended_info_last_clan_events": {
+        "key": "caption_extended_info_last_clan_events",
+        "value": "2526"
+    },
+    "caption_extended_info_event": {
+        "key": "caption_extended_info_event",
+        "value": "2527"
+    },
+    "caption_extended_info_clan_hunt": {
+        "key": "caption_extended_info_clan_hunt",
+        "value": "2528"
+    },
+    "caption_extended_info_clan_clash": {
+        "key": "caption_extended_info_clan_clash",
+        "value": "2529"
+    },
+    "caption_extended_info_last_activity": {
+        "key": "caption_extended_info_last_activity",
+        "value": "2530"
+    },
+    "caption_extended_info_arena_fights": {
+        "key": "caption_extended_info_arena_fights",
+        "value": "2531"
+    },
+    "caption_extended_info_boss_fights": {
+        "key": "caption_extended_info_boss_fights",
+        "value": "2532"
+    },
+    "caption_extended_info_chest_points": {
+        "key": "caption_extended_info_chest_points",
+        "value": "2533"
+    },
+    "caption_chain_offer_troops_rare": {
+        "key": "caption_chain_offer_troops_rare",
+        "value": "2534"
+    },
+    "caption_chain_offer_troops_epic": {
+        "key": "caption_chain_offer_troops_epic",
+        "value": "2535"
+    },
+    "caption_chain_offer_troops_legs": {
+        "key": "caption_chain_offer_troops_legs",
+        "value": "2536"
+    },
+    "caption_arena_rewards_window": {
+        "key": "caption_arena_rewards_window",
+        "value": "2537"
+    },
+    "caption_honor_hunt_history_rewards_window": {
+        "key": "caption_honor_hunt_history_rewards_window",
+        "value": "2538"
+    },
+    "clan_pvp_clash_end": {
+        "key": "clan_pvp_clash_end",
+        "value": "2539"
+    },
+    "boss_dragon_gold_name": {
+        "key": "boss_dragon_gold_name",
+        "value": "2540"
+    },
+    "boss_gold_name_description": {
+        "key": "boss_gold_name_description",
+        "value": "2541"
+    },
+    "caption_gold_keeper": {
+        "key": "caption_gold_keeper",
+        "value": "2542"
+    },
+    "caption_gold_keeper_approach": {
+        "key": "caption_gold_keeper_approach",
+        "value": "2543"
+    },
+    "caption_gold_keeper_summon": {
+        "key": "caption_gold_keeper_summon",
+        "value": "2544"
+    },
+    "description_gold_keeper_summon_confirmation_format": {
+        "key": "description_gold_keeper_summon_confirmation_format",
+        "value": "2545"
+    },
+    "description_gold_keeper_completed": {
+        "key": "description_gold_keeper_completed",
+        "value": "2546"
+    },
+    "description_gold_keeper_unavailable": {
+        "key": "description_gold_keeper_unavailable",
+        "value": "2547"
+    },
+    "description_gold_keeper_rules": {
+        "key": "description_gold_keeper_rules",
+        "value": "2548"
+    },
+    "completed_button_name": {
+        "key": "completed_button_name",
+        "value": "2549"
+    },
+    "caption_gold_keeper_summon_level_format": {
+        "key": "caption_gold_keeper_summon_level_format",
+        "value": "2550"
+    },
+    "caption_boss_healthbar_level_format": {
+        "key": "caption_boss_healthbar_level_format",
+        "value": "2551"
+    },
+    "caption_gold_keeper_chat_level_format": {
+        "key": "caption_gold_keeper_chat_level_format",
+        "value": "2552"
+    },
+    "caption_gold_keeper_level_reached_format": {
+        "key": "caption_gold_keeper_level_reached_format",
+        "value": "2553"
+    },
+    "caption_gold_keeper_chat_deleted_in_format": {
+        "key": "caption_gold_keeper_chat_deleted_in_format",
+        "value": "2554"
+    },
+    "description_gold_keeper_wait_for_refresh": {
+        "key": "description_gold_keeper_wait_for_refresh",
+        "value": "2555"
+    },
+    "caption_session_expired": {
+        "key": "caption_session_expired",
+        "value": "2556"
+    },
+    "description_session_expired": {
+        "key": "description_session_expired",
+        "value": "2557"
+    },
+    "description_battle_in_auto_mode": {
+        "key": "description_battle_in_auto_mode",
+        "value": "2558"
+    },
+    "caption_no": {
+        "key": "caption_no",
+        "value": "2559"
+    },
+    "caption_actual_refresh_in": {
+        "key": "caption_actual_refresh_in",
+        "value": "2560"
+    },
+    "description_gold_keeper_summon_failed": {
+        "key": "description_gold_keeper_summon_failed",
+        "value": "2561"
+    },
+    "clan_revenge_in_progress": {
+        "key": "clan_revenge_in_progress",
+        "value": "2562"
+    },
+    "clan_revenge_in_progress_hint": {
+        "key": "clan_revenge_in_progress_hint",
+        "value": "2563"
+    },
+    "clan_message_revenge_helping": {
+        "key": "clan_message_revenge_helping",
+        "value": "2564"
     }
 }

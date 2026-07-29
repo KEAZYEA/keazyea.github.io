@@ -40,5 +40,17 @@
         "abilityInfoId": "bossSand_ability_passive_range",
         "meleeDamageMultiplier": 1,
         "rangeDamageMultiplier": 0.7
+    },
+    "bossDragonGold_ability_passive_melee": {
+        "key": "bossDragonGold_ability_passive_melee",
+        "abilityInfoId": "bossDragonGold_passive_melee",
+        "meleeDamageMultiplier": 0.7,
+        "rangeDamageMultiplier": 1
+    },
+    "bossDragonGold_ability_passive_range": {
+        "key": "bossDragonGold_ability_passive_range",
+        "abilityInfoId": "bossDragonGold_passive_range",
+        "meleeDamageMultiplier": 1,
+        "rangeDamageMultiplier": 0.7
     }
 }

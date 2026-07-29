@@ -1,484 +1,4 @@
 {
-    "bossDragon_defaultAoe_1": {
-        "key": "bossDragon_defaultAoe_1",
-        "abilityInfoId": "bossDragon_defaultAoe",
-        "aspd": 7.2,
-        "cooldown": 2,
-        "animationType": "Attack",
-        "isDefaultDamage": true
-    },
-    "bossDragon_defaultAoe_2": {
-        "key": "bossDragon_defaultAoe_2",
-        "abilityInfoId": "bossDragon_defaultAoe",
-        "aspd": 7.2,
-        "cooldown": 2,
-        "animationType": "Attack",
-        "isDefaultDamage": true
-    },
-    "bossDragon_defaultAoe_3": {
-        "key": "bossDragon_defaultAoe_3",
-        "abilityInfoId": "bossDragon_defaultAoe",
-        "aspd": 7.2,
-        "cooldown": 2,
-        "animationType": "Attack",
-        "isDefaultDamage": true
-    },
-    "bossDragon_defaultAoe_4": {
-        "key": "bossDragon_defaultAoe_4",
-        "abilityInfoId": "bossDragon_defaultAoe",
-        "aspd": 7.2,
-        "cooldown": 2,
-        "animationType": "Attack",
-        "isDefaultDamage": true
-    },
-    "bossDragon_defaultAoe_5": {
-        "key": "bossDragon_defaultAoe_5",
-        "abilityInfoId": "bossDragon_defaultAoe",
-        "aspd": 7.2,
-        "cooldown": 2,
-        "animationType": "Attack",
-        "isDefaultDamage": true
-    },
-    "bossDragon_defaultAoe_6": {
-        "key": "bossDragon_defaultAoe_6",
-        "abilityInfoId": "bossDragon_defaultAoe",
-        "aspd": 7.2,
-        "cooldown": 2,
-        "animationType": "Attack",
-        "isDefaultDamage": true
-    },
-    "bossDragon_defaultAoe_7": {
-        "key": "bossDragon_defaultAoe_7",
-        "abilityInfoId": "bossDragon_defaultAoe",
-        "aspd": 7.2,
-        "cooldown": 2,
-        "animationType": "Attack",
-        "isDefaultDamage": true
-    },
-    "bossDragon_defaultAoe_8": {
-        "key": "bossDragon_defaultAoe_8",
-        "abilityInfoId": "bossDragon_defaultAoe",
-        "aspd": 7.2,
-        "cooldown": 2,
-        "animationType": "Attack",
-        "isDefaultDamage": true
-    },
-    "bossDragon_defaultAoe_9": {
-        "key": "bossDragon_defaultAoe_9",
-        "abilityInfoId": "bossDragon_defaultAoe",
-        "aspd": 7.2,
-        "cooldown": 2,
-        "animationType": "Attack",
-        "isDefaultDamage": true
-    },
-    "bossDragon_defaultAoe_10": {
-        "key": "bossDragon_defaultAoe_10",
-        "abilityInfoId": "bossDragon_defaultAoe",
-        "aspd": 7.2,
-        "cooldown": 2,
-        "animationType": "Attack",
-        "isDefaultDamage": true
-    },
-    "bossDragon_earthShakeAoe_1": {
-        "key": "bossDragon_earthShakeAoe_1",
-        "abilityInfoId": "bossDragon_earthShakeAoe",
-        "aspd": 3.9,
-        "cooldown": 32,
-        "animationType": "Ulta3",
-        "isDefaultDamage": false
-    },
-    "bossDragon_earthShakeAoe_2": {
-        "key": "bossDragon_earthShakeAoe_2",
-        "abilityInfoId": "bossDragon_earthShakeAoe",
-        "aspd": 3.9,
-        "cooldown": 32,
-        "animationType": "Ulta3",
-        "isDefaultDamage": false
-    },
-    "bossDragon_earthShakeAoe_3": {
-        "key": "bossDragon_earthShakeAoe_3",
-        "abilityInfoId": "bossDragon_earthShakeAoe",
-        "aspd": 3.9,
-        "cooldown": 32,
-        "animationType": "Ulta3",
-        "isDefaultDamage": false
-    },
-    "bossDragon_earthShakeAoe_4": {
-        "key": "bossDragon_earthShakeAoe_4",
-        "abilityInfoId": "bossDragon_earthShakeAoe",
-        "aspd": 3.9,
-        "cooldown": 32,
-        "animationType": "Ulta3",
-        "isDefaultDamage": false
-    },
-    "bossDragon_earthShakeAoe_5": {
-        "key": "bossDragon_earthShakeAoe_5",
-        "abilityInfoId": "bossDragon_earthShakeAoe",
-        "aspd": 3.9,
-        "cooldown": 32,
-        "animationType": "Ulta3",
-        "isDefaultDamage": false
-    },
-    "bossDragon_earthShakeAoe_6": {
-        "key": "bossDragon_earthShakeAoe_6",
-        "abilityInfoId": "bossDragon_earthShakeAoe",
-        "aspd": 3.9,
-        "cooldown": 32,
-        "animationType": "Ulta3",
-        "isDefaultDamage": false
-    },
-    "bossDragon_earthShakeAoe_7": {
-        "key": "bossDragon_earthShakeAoe_7",
-        "abilityInfoId": "bossDragon_earthShakeAoe",
-        "aspd": 3.9,
-        "cooldown": 32,
-        "animationType": "Ulta3",
-        "isDefaultDamage": false
-    },
-    "bossDragon_earthShakeAoe_8": {
-        "key": "bossDragon_earthShakeAoe_8",
-        "abilityInfoId": "bossDragon_earthShakeAoe",
-        "aspd": 3.9,
-        "cooldown": 32,
-        "animationType": "Ulta3",
-        "isDefaultDamage": false
-    },
-    "bossDragon_earthShakeAoe_9": {
-        "key": "bossDragon_earthShakeAoe_9",
-        "abilityInfoId": "bossDragon_earthShakeAoe",
-        "aspd": 3.9,
-        "cooldown": 32,
-        "animationType": "Ulta3",
-        "isDefaultDamage": false
-    },
-    "bossDragon_earthShakeAoe_10": {
-        "key": "bossDragon_earthShakeAoe_10",
-        "abilityInfoId": "bossDragon_earthShakeAoe",
-        "aspd": 3.9,
-        "cooldown": 32,
-        "animationType": "Ulta3",
-        "isDefaultDamage": false
-    },
-    "bossSpiderQueen_defaultAoe_1": {
-        "key": "bossSpiderQueen_defaultAoe_1",
-        "abilityInfoId": "bossSpiderQueen_defaultAoe",
-        "aspd": 2.333,
-        "cooldown": 3,
-        "animationType": "Attack",
-        "isDefaultDamage": true
-    },
-    "bossSpiderQueen_defaultAoe_2": {
-        "key": "bossSpiderQueen_defaultAoe_2",
-        "abilityInfoId": "bossSpiderQueen_defaultAoe",
-        "aspd": 2.333,
-        "cooldown": 3,
-        "animationType": "Attack",
-        "isDefaultDamage": true
-    },
-    "bossSpiderQueen_defaultAoe_3": {
-        "key": "bossSpiderQueen_defaultAoe_3",
-        "abilityInfoId": "bossSpiderQueen_defaultAoe",
-        "aspd": 2.333,
-        "cooldown": 3,
-        "animationType": "Attack",
-        "isDefaultDamage": true
-    },
-    "bossSpiderQueen_defaultAoe_4": {
-        "key": "bossSpiderQueen_defaultAoe_4",
-        "abilityInfoId": "bossSpiderQueen_defaultAoe",
-        "aspd": 2.333,
-        "cooldown": 3,
-        "animationType": "Attack",
-        "isDefaultDamage": true
-    },
-    "bossSpiderQueen_defaultAoe_5": {
-        "key": "bossSpiderQueen_defaultAoe_5",
-        "abilityInfoId": "bossSpiderQueen_defaultAoe",
-        "aspd": 2.333,
-        "cooldown": 3,
-        "animationType": "Attack",
-        "isDefaultDamage": true
-    },
-    "bossSpiderQueen_defaultAoe_6": {
-        "key": "bossSpiderQueen_defaultAoe_6",
-        "abilityInfoId": "bossSpiderQueen_defaultAoe",
-        "aspd": 2.333,
-        "cooldown": 3,
-        "animationType": "Attack",
-        "isDefaultDamage": true
-    },
-    "bossSpiderQueen_defaultAoe_7": {
-        "key": "bossSpiderQueen_defaultAoe_7",
-        "abilityInfoId": "bossSpiderQueen_defaultAoe",
-        "aspd": 2.333,
-        "cooldown": 3,
-        "animationType": "Attack",
-        "isDefaultDamage": true
-    },
-    "bossSpiderQueen_defaultAoe_8": {
-        "key": "bossSpiderQueen_defaultAoe_8",
-        "abilityInfoId": "bossSpiderQueen_defaultAoe",
-        "aspd": 2.333,
-        "cooldown": 3,
-        "animationType": "Attack",
-        "isDefaultDamage": true
-    },
-    "bossSpiderQueen_defaultAoe_9": {
-        "key": "bossSpiderQueen_defaultAoe_9",
-        "abilityInfoId": "bossSpiderQueen_defaultAoe",
-        "aspd": 2.333,
-        "cooldown": 3,
-        "animationType": "Attack",
-        "isDefaultDamage": true
-    },
-    "bossSpiderQueen_defaultAoe_10": {
-        "key": "bossSpiderQueen_defaultAoe_10",
-        "abilityInfoId": "bossSpiderQueen_defaultAoe",
-        "aspd": 2.333,
-        "cooldown": 3,
-        "animationType": "Attack",
-        "isDefaultDamage": true
-    },
-    "bossKraken_defaultAoe_1": {
-        "key": "bossKraken_defaultAoe_1",
-        "abilityInfoId": "bossKraken_defaultAoe",
-        "aspd": 2.667,
-        "cooldown": 3,
-        "animationType": "Attack",
-        "isDefaultDamage": true
-    },
-    "bossKraken_defaultAoe_2": {
-        "key": "bossKraken_defaultAoe_2",
-        "abilityInfoId": "bossKraken_defaultAoe",
-        "aspd": 2.667,
-        "cooldown": 3,
-        "animationType": "Attack",
-        "isDefaultDamage": true
-    },
-    "bossKraken_defaultAoe_3": {
-        "key": "bossKraken_defaultAoe_3",
-        "abilityInfoId": "bossKraken_defaultAoe",
-        "aspd": 2.667,
-        "cooldown": 3,
-        "animationType": "Attack",
-        "isDefaultDamage": true
-    },
-    "bossKraken_defaultAoe_4": {
-        "key": "bossKraken_defaultAoe_4",
-        "abilityInfoId": "bossKraken_defaultAoe",
-        "aspd": 2.667,
-        "cooldown": 3,
-        "animationType": "Attack",
-        "isDefaultDamage": true
-    },
-    "bossKraken_defaultAoe_5": {
-        "key": "bossKraken_defaultAoe_5",
-        "abilityInfoId": "bossKraken_defaultAoe",
-        "aspd": 2.667,
-        "cooldown": 3,
-        "animationType": "Attack",
-        "isDefaultDamage": true
-    },
-    "bossKraken_defaultAoe_6": {
-        "key": "bossKraken_defaultAoe_6",
-        "abilityInfoId": "bossKraken_defaultAoe",
-        "aspd": 2.667,
-        "cooldown": 3,
-        "animationType": "Attack",
-        "isDefaultDamage": true
-    },
-    "bossKraken_defaultAoe_7": {
-        "key": "bossKraken_defaultAoe_7",
-        "abilityInfoId": "bossKraken_defaultAoe",
-        "aspd": 2.667,
-        "cooldown": 3,
-        "animationType": "Attack",
-        "isDefaultDamage": true
-    },
-    "bossKraken_defaultAoe_8": {
-        "key": "bossKraken_defaultAoe_8",
-        "abilityInfoId": "bossKraken_defaultAoe",
-        "aspd": 2.667,
-        "cooldown": 3,
-        "animationType": "Attack",
-        "isDefaultDamage": true
-    },
-    "bossKraken_defaultAoe_9": {
-        "key": "bossKraken_defaultAoe_9",
-        "abilityInfoId": "bossKraken_defaultAoe",
-        "aspd": 2.667,
-        "cooldown": 3,
-        "animationType": "Attack",
-        "isDefaultDamage": true
-    },
-    "bossKraken_defaultAoe_10": {
-        "key": "bossKraken_defaultAoe_10",
-        "abilityInfoId": "bossKraken_defaultAoe",
-        "aspd": 2.667,
-        "cooldown": 3,
-        "animationType": "Attack",
-        "isDefaultDamage": true
-    },
-    "bossKraken_tentacleStrikesAoe_1": {
-        "key": "bossKraken_tentacleStrikesAoe_1",
-        "abilityInfoId": "bossKraken_tentacleStrikesAoe",
-        "aspd": 6.35,
-        "cooldown": 18,
-        "animationType": "Ulta",
-        "isDefaultDamage": false
-    },
-    "bossKraken_tentacleStrikesAoe_2": {
-        "key": "bossKraken_tentacleStrikesAoe_2",
-        "abilityInfoId": "bossKraken_tentacleStrikesAoe",
-        "aspd": 6.35,
-        "cooldown": 18,
-        "animationType": "Ulta",
-        "isDefaultDamage": false
-    },
-    "bossKraken_tentacleStrikesAoe_3": {
-        "key": "bossKraken_tentacleStrikesAoe_3",
-        "abilityInfoId": "bossKraken_tentacleStrikesAoe",
-        "aspd": 6.35,
-        "cooldown": 18,
-        "animationType": "Ulta",
-        "isDefaultDamage": false
-    },
-    "bossKraken_tentacleStrikesAoe_4": {
-        "key": "bossKraken_tentacleStrikesAoe_4",
-        "abilityInfoId": "bossKraken_tentacleStrikesAoe",
-        "aspd": 6.35,
-        "cooldown": 18,
-        "animationType": "Ulta",
-        "isDefaultDamage": false
-    },
-    "bossKraken_tentacleStrikesAoe_5": {
-        "key": "bossKraken_tentacleStrikesAoe_5",
-        "abilityInfoId": "bossKraken_tentacleStrikesAoe",
-        "aspd": 6.35,
-        "cooldown": 18,
-        "animationType": "Ulta",
-        "isDefaultDamage": false
-    },
-    "bossKraken_tentacleStrikesAoe_6": {
-        "key": "bossKraken_tentacleStrikesAoe_6",
-        "abilityInfoId": "bossKraken_tentacleStrikesAoe",
-        "aspd": 6.35,
-        "cooldown": 18,
-        "animationType": "Ulta",
-        "isDefaultDamage": false
-    },
-    "bossKraken_tentacleStrikesAoe_7": {
-        "key": "bossKraken_tentacleStrikesAoe_7",
-        "abilityInfoId": "bossKraken_tentacleStrikesAoe",
-        "aspd": 6.35,
-        "cooldown": 18,
-        "animationType": "Ulta",
-        "isDefaultDamage": false
-    },
-    "bossKraken_tentacleStrikesAoe_8": {
-        "key": "bossKraken_tentacleStrikesAoe_8",
-        "abilityInfoId": "bossKraken_tentacleStrikesAoe",
-        "aspd": 6.35,
-        "cooldown": 18,
-        "animationType": "Ulta",
-        "isDefaultDamage": false
-    },
-    "bossKraken_tentacleStrikesAoe_9": {
-        "key": "bossKraken_tentacleStrikesAoe_9",
-        "abilityInfoId": "bossKraken_tentacleStrikesAoe",
-        "aspd": 6.35,
-        "cooldown": 18,
-        "animationType": "Ulta",
-        "isDefaultDamage": false
-    },
-    "bossKraken_tentacleStrikesAoe_10": {
-        "key": "bossKraken_tentacleStrikesAoe_10",
-        "abilityInfoId": "bossKraken_tentacleStrikesAoe",
-        "aspd": 6.35,
-        "cooldown": 18,
-        "animationType": "Ulta",
-        "isDefaultDamage": false
-    },
-    "bossKraken_tentacleThrow_1": {
-        "key": "bossKraken_tentacleThrow_1",
-        "abilityInfoId": "bossKraken_tentacleThrow",
-        "aspd": 5.833,
-        "cooldown": 24,
-        "animationType": "Ulta3",
-        "isDefaultDamage": false
-    },
-    "bossKraken_tentacleThrow_2": {
-        "key": "bossKraken_tentacleThrow_2",
-        "abilityInfoId": "bossKraken_tentacleThrow",
-        "aspd": 5.833,
-        "cooldown": 24,
-        "animationType": "Ulta3",
-        "isDefaultDamage": false
-    },
-    "bossKraken_tentacleThrow_3": {
-        "key": "bossKraken_tentacleThrow_3",
-        "abilityInfoId": "bossKraken_tentacleThrow",
-        "aspd": 5.833,
-        "cooldown": 24,
-        "animationType": "Ulta3",
-        "isDefaultDamage": false
-    },
-    "bossKraken_tentacleThrow_4": {
-        "key": "bossKraken_tentacleThrow_4",
-        "abilityInfoId": "bossKraken_tentacleThrow",
-        "aspd": 5.833,
-        "cooldown": 24,
-        "animationType": "Ulta3",
-        "isDefaultDamage": false
-    },
-    "bossKraken_tentacleThrow_5": {
-        "key": "bossKraken_tentacleThrow_5",
-        "abilityInfoId": "bossKraken_tentacleThrow",
-        "aspd": 5.833,
-        "cooldown": 24,
-        "animationType": "Ulta3",
-        "isDefaultDamage": false
-    },
-    "bossKraken_tentacleThrow_6": {
-        "key": "bossKraken_tentacleThrow_6",
-        "abilityInfoId": "bossKraken_tentacleThrow",
-        "aspd": 5.833,
-        "cooldown": 24,
-        "animationType": "Ulta3",
-        "isDefaultDamage": false
-    },
-    "bossKraken_tentacleThrow_7": {
-        "key": "bossKraken_tentacleThrow_7",
-        "abilityInfoId": "bossKraken_tentacleThrow",
-        "aspd": 5.833,
-        "cooldown": 24,
-        "animationType": "Ulta3",
-        "isDefaultDamage": false
-    },
-    "bossKraken_tentacleThrow_8": {
-        "key": "bossKraken_tentacleThrow_8",
-        "abilityInfoId": "bossKraken_tentacleThrow",
-        "aspd": 5.833,
-        "cooldown": 24,
-        "animationType": "Ulta3",
-        "isDefaultDamage": false
-    },
-    "bossKraken_tentacleThrow_9": {
-        "key": "bossKraken_tentacleThrow_9",
-        "abilityInfoId": "bossKraken_tentacleThrow",
-        "aspd": 5.833,
-        "cooldown": 24,
-        "animationType": "Ulta3",
-        "isDefaultDamage": false
-    },
-    "bossKraken_tentacleThrow_10": {
-        "key": "bossKraken_tentacleThrow_10",
-        "abilityInfoId": "bossKraken_tentacleThrow",
-        "aspd": 5.833,
-        "cooldown": 24,
-        "animationType": "Ulta3",
-        "isDefaultDamage": false
-    },
     "bossDragonNew_defaultAoe_1": {
         "key": "bossDragonNew_defaultAoe_1",
         "abilityInfoId": "bossDragon_defaultAoe",
@@ -19676,6 +19196,4806 @@
         "abilityInfoId": "bossSand_ulta3",
         "aspd": 2,
         "cooldown": 15,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_defaultAoe_1": {
+        "key": "bossDragonGold_defaultAoe_1",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_2": {
+        "key": "bossDragonGold_defaultAoe_2",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_3": {
+        "key": "bossDragonGold_defaultAoe_3",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_4": {
+        "key": "bossDragonGold_defaultAoe_4",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_5": {
+        "key": "bossDragonGold_defaultAoe_5",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_6": {
+        "key": "bossDragonGold_defaultAoe_6",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_7": {
+        "key": "bossDragonGold_defaultAoe_7",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_8": {
+        "key": "bossDragonGold_defaultAoe_8",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_9": {
+        "key": "bossDragonGold_defaultAoe_9",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_10": {
+        "key": "bossDragonGold_defaultAoe_10",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_11": {
+        "key": "bossDragonGold_defaultAoe_11",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_12": {
+        "key": "bossDragonGold_defaultAoe_12",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_13": {
+        "key": "bossDragonGold_defaultAoe_13",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_14": {
+        "key": "bossDragonGold_defaultAoe_14",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_15": {
+        "key": "bossDragonGold_defaultAoe_15",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_16": {
+        "key": "bossDragonGold_defaultAoe_16",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_17": {
+        "key": "bossDragonGold_defaultAoe_17",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_18": {
+        "key": "bossDragonGold_defaultAoe_18",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_19": {
+        "key": "bossDragonGold_defaultAoe_19",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_20": {
+        "key": "bossDragonGold_defaultAoe_20",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_21": {
+        "key": "bossDragonGold_defaultAoe_21",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_22": {
+        "key": "bossDragonGold_defaultAoe_22",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_23": {
+        "key": "bossDragonGold_defaultAoe_23",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_24": {
+        "key": "bossDragonGold_defaultAoe_24",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_25": {
+        "key": "bossDragonGold_defaultAoe_25",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_26": {
+        "key": "bossDragonGold_defaultAoe_26",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_27": {
+        "key": "bossDragonGold_defaultAoe_27",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_28": {
+        "key": "bossDragonGold_defaultAoe_28",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_29": {
+        "key": "bossDragonGold_defaultAoe_29",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_30": {
+        "key": "bossDragonGold_defaultAoe_30",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_31": {
+        "key": "bossDragonGold_defaultAoe_31",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_32": {
+        "key": "bossDragonGold_defaultAoe_32",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_33": {
+        "key": "bossDragonGold_defaultAoe_33",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_34": {
+        "key": "bossDragonGold_defaultAoe_34",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_35": {
+        "key": "bossDragonGold_defaultAoe_35",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_36": {
+        "key": "bossDragonGold_defaultAoe_36",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_37": {
+        "key": "bossDragonGold_defaultAoe_37",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_38": {
+        "key": "bossDragonGold_defaultAoe_38",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_39": {
+        "key": "bossDragonGold_defaultAoe_39",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_40": {
+        "key": "bossDragonGold_defaultAoe_40",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_41": {
+        "key": "bossDragonGold_defaultAoe_41",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_42": {
+        "key": "bossDragonGold_defaultAoe_42",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_43": {
+        "key": "bossDragonGold_defaultAoe_43",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_44": {
+        "key": "bossDragonGold_defaultAoe_44",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_45": {
+        "key": "bossDragonGold_defaultAoe_45",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_46": {
+        "key": "bossDragonGold_defaultAoe_46",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_47": {
+        "key": "bossDragonGold_defaultAoe_47",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_48": {
+        "key": "bossDragonGold_defaultAoe_48",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_49": {
+        "key": "bossDragonGold_defaultAoe_49",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_50": {
+        "key": "bossDragonGold_defaultAoe_50",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_51": {
+        "key": "bossDragonGold_defaultAoe_51",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_52": {
+        "key": "bossDragonGold_defaultAoe_52",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_53": {
+        "key": "bossDragonGold_defaultAoe_53",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_54": {
+        "key": "bossDragonGold_defaultAoe_54",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_55": {
+        "key": "bossDragonGold_defaultAoe_55",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_56": {
+        "key": "bossDragonGold_defaultAoe_56",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_57": {
+        "key": "bossDragonGold_defaultAoe_57",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_58": {
+        "key": "bossDragonGold_defaultAoe_58",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_59": {
+        "key": "bossDragonGold_defaultAoe_59",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_60": {
+        "key": "bossDragonGold_defaultAoe_60",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_61": {
+        "key": "bossDragonGold_defaultAoe_61",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_62": {
+        "key": "bossDragonGold_defaultAoe_62",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_63": {
+        "key": "bossDragonGold_defaultAoe_63",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_64": {
+        "key": "bossDragonGold_defaultAoe_64",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_65": {
+        "key": "bossDragonGold_defaultAoe_65",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_66": {
+        "key": "bossDragonGold_defaultAoe_66",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_67": {
+        "key": "bossDragonGold_defaultAoe_67",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_68": {
+        "key": "bossDragonGold_defaultAoe_68",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_69": {
+        "key": "bossDragonGold_defaultAoe_69",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_70": {
+        "key": "bossDragonGold_defaultAoe_70",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_71": {
+        "key": "bossDragonGold_defaultAoe_71",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_72": {
+        "key": "bossDragonGold_defaultAoe_72",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_73": {
+        "key": "bossDragonGold_defaultAoe_73",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_74": {
+        "key": "bossDragonGold_defaultAoe_74",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_75": {
+        "key": "bossDragonGold_defaultAoe_75",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_76": {
+        "key": "bossDragonGold_defaultAoe_76",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_77": {
+        "key": "bossDragonGold_defaultAoe_77",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_78": {
+        "key": "bossDragonGold_defaultAoe_78",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_79": {
+        "key": "bossDragonGold_defaultAoe_79",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_80": {
+        "key": "bossDragonGold_defaultAoe_80",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_81": {
+        "key": "bossDragonGold_defaultAoe_81",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_82": {
+        "key": "bossDragonGold_defaultAoe_82",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_83": {
+        "key": "bossDragonGold_defaultAoe_83",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_84": {
+        "key": "bossDragonGold_defaultAoe_84",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_85": {
+        "key": "bossDragonGold_defaultAoe_85",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_86": {
+        "key": "bossDragonGold_defaultAoe_86",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_87": {
+        "key": "bossDragonGold_defaultAoe_87",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_88": {
+        "key": "bossDragonGold_defaultAoe_88",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_89": {
+        "key": "bossDragonGold_defaultAoe_89",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_90": {
+        "key": "bossDragonGold_defaultAoe_90",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_91": {
+        "key": "bossDragonGold_defaultAoe_91",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_92": {
+        "key": "bossDragonGold_defaultAoe_92",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_93": {
+        "key": "bossDragonGold_defaultAoe_93",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_94": {
+        "key": "bossDragonGold_defaultAoe_94",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_95": {
+        "key": "bossDragonGold_defaultAoe_95",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_96": {
+        "key": "bossDragonGold_defaultAoe_96",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_97": {
+        "key": "bossDragonGold_defaultAoe_97",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_98": {
+        "key": "bossDragonGold_defaultAoe_98",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_99": {
+        "key": "bossDragonGold_defaultAoe_99",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_100": {
+        "key": "bossDragonGold_defaultAoe_100",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_101": {
+        "key": "bossDragonGold_defaultAoe_101",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_102": {
+        "key": "bossDragonGold_defaultAoe_102",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_103": {
+        "key": "bossDragonGold_defaultAoe_103",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_104": {
+        "key": "bossDragonGold_defaultAoe_104",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_105": {
+        "key": "bossDragonGold_defaultAoe_105",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_106": {
+        "key": "bossDragonGold_defaultAoe_106",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_107": {
+        "key": "bossDragonGold_defaultAoe_107",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_108": {
+        "key": "bossDragonGold_defaultAoe_108",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_109": {
+        "key": "bossDragonGold_defaultAoe_109",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_110": {
+        "key": "bossDragonGold_defaultAoe_110",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_111": {
+        "key": "bossDragonGold_defaultAoe_111",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_112": {
+        "key": "bossDragonGold_defaultAoe_112",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_113": {
+        "key": "bossDragonGold_defaultAoe_113",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_114": {
+        "key": "bossDragonGold_defaultAoe_114",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_115": {
+        "key": "bossDragonGold_defaultAoe_115",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_116": {
+        "key": "bossDragonGold_defaultAoe_116",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_117": {
+        "key": "bossDragonGold_defaultAoe_117",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_118": {
+        "key": "bossDragonGold_defaultAoe_118",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_119": {
+        "key": "bossDragonGold_defaultAoe_119",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_120": {
+        "key": "bossDragonGold_defaultAoe_120",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_121": {
+        "key": "bossDragonGold_defaultAoe_121",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_122": {
+        "key": "bossDragonGold_defaultAoe_122",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_123": {
+        "key": "bossDragonGold_defaultAoe_123",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_124": {
+        "key": "bossDragonGold_defaultAoe_124",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_125": {
+        "key": "bossDragonGold_defaultAoe_125",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_126": {
+        "key": "bossDragonGold_defaultAoe_126",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_127": {
+        "key": "bossDragonGold_defaultAoe_127",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_128": {
+        "key": "bossDragonGold_defaultAoe_128",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_129": {
+        "key": "bossDragonGold_defaultAoe_129",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_130": {
+        "key": "bossDragonGold_defaultAoe_130",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_131": {
+        "key": "bossDragonGold_defaultAoe_131",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_132": {
+        "key": "bossDragonGold_defaultAoe_132",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_133": {
+        "key": "bossDragonGold_defaultAoe_133",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_134": {
+        "key": "bossDragonGold_defaultAoe_134",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_135": {
+        "key": "bossDragonGold_defaultAoe_135",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_136": {
+        "key": "bossDragonGold_defaultAoe_136",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_137": {
+        "key": "bossDragonGold_defaultAoe_137",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_138": {
+        "key": "bossDragonGold_defaultAoe_138",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_139": {
+        "key": "bossDragonGold_defaultAoe_139",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_140": {
+        "key": "bossDragonGold_defaultAoe_140",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_141": {
+        "key": "bossDragonGold_defaultAoe_141",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_142": {
+        "key": "bossDragonGold_defaultAoe_142",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_143": {
+        "key": "bossDragonGold_defaultAoe_143",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_144": {
+        "key": "bossDragonGold_defaultAoe_144",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_145": {
+        "key": "bossDragonGold_defaultAoe_145",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_146": {
+        "key": "bossDragonGold_defaultAoe_146",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_147": {
+        "key": "bossDragonGold_defaultAoe_147",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_148": {
+        "key": "bossDragonGold_defaultAoe_148",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_149": {
+        "key": "bossDragonGold_defaultAoe_149",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_150": {
+        "key": "bossDragonGold_defaultAoe_150",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_151": {
+        "key": "bossDragonGold_defaultAoe_151",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_152": {
+        "key": "bossDragonGold_defaultAoe_152",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_153": {
+        "key": "bossDragonGold_defaultAoe_153",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_154": {
+        "key": "bossDragonGold_defaultAoe_154",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_155": {
+        "key": "bossDragonGold_defaultAoe_155",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_156": {
+        "key": "bossDragonGold_defaultAoe_156",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_157": {
+        "key": "bossDragonGold_defaultAoe_157",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_158": {
+        "key": "bossDragonGold_defaultAoe_158",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_159": {
+        "key": "bossDragonGold_defaultAoe_159",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_160": {
+        "key": "bossDragonGold_defaultAoe_160",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_161": {
+        "key": "bossDragonGold_defaultAoe_161",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_162": {
+        "key": "bossDragonGold_defaultAoe_162",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_163": {
+        "key": "bossDragonGold_defaultAoe_163",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_164": {
+        "key": "bossDragonGold_defaultAoe_164",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_165": {
+        "key": "bossDragonGold_defaultAoe_165",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_166": {
+        "key": "bossDragonGold_defaultAoe_166",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_167": {
+        "key": "bossDragonGold_defaultAoe_167",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_168": {
+        "key": "bossDragonGold_defaultAoe_168",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_169": {
+        "key": "bossDragonGold_defaultAoe_169",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_170": {
+        "key": "bossDragonGold_defaultAoe_170",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_171": {
+        "key": "bossDragonGold_defaultAoe_171",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_172": {
+        "key": "bossDragonGold_defaultAoe_172",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_173": {
+        "key": "bossDragonGold_defaultAoe_173",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_174": {
+        "key": "bossDragonGold_defaultAoe_174",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_175": {
+        "key": "bossDragonGold_defaultAoe_175",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_176": {
+        "key": "bossDragonGold_defaultAoe_176",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_177": {
+        "key": "bossDragonGold_defaultAoe_177",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_178": {
+        "key": "bossDragonGold_defaultAoe_178",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_179": {
+        "key": "bossDragonGold_defaultAoe_179",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_180": {
+        "key": "bossDragonGold_defaultAoe_180",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_181": {
+        "key": "bossDragonGold_defaultAoe_181",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_182": {
+        "key": "bossDragonGold_defaultAoe_182",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_183": {
+        "key": "bossDragonGold_defaultAoe_183",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_184": {
+        "key": "bossDragonGold_defaultAoe_184",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_185": {
+        "key": "bossDragonGold_defaultAoe_185",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_186": {
+        "key": "bossDragonGold_defaultAoe_186",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_187": {
+        "key": "bossDragonGold_defaultAoe_187",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_188": {
+        "key": "bossDragonGold_defaultAoe_188",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_189": {
+        "key": "bossDragonGold_defaultAoe_189",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_190": {
+        "key": "bossDragonGold_defaultAoe_190",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_191": {
+        "key": "bossDragonGold_defaultAoe_191",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_192": {
+        "key": "bossDragonGold_defaultAoe_192",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_193": {
+        "key": "bossDragonGold_defaultAoe_193",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_194": {
+        "key": "bossDragonGold_defaultAoe_194",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_195": {
+        "key": "bossDragonGold_defaultAoe_195",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_196": {
+        "key": "bossDragonGold_defaultAoe_196",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_197": {
+        "key": "bossDragonGold_defaultAoe_197",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_198": {
+        "key": "bossDragonGold_defaultAoe_198",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_199": {
+        "key": "bossDragonGold_defaultAoe_199",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_200": {
+        "key": "bossDragonGold_defaultAoe_200",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_201": {
+        "key": "bossDragonGold_defaultAoe_201",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_202": {
+        "key": "bossDragonGold_defaultAoe_202",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_203": {
+        "key": "bossDragonGold_defaultAoe_203",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_204": {
+        "key": "bossDragonGold_defaultAoe_204",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_205": {
+        "key": "bossDragonGold_defaultAoe_205",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_206": {
+        "key": "bossDragonGold_defaultAoe_206",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_207": {
+        "key": "bossDragonGold_defaultAoe_207",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_208": {
+        "key": "bossDragonGold_defaultAoe_208",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_209": {
+        "key": "bossDragonGold_defaultAoe_209",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_210": {
+        "key": "bossDragonGold_defaultAoe_210",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_211": {
+        "key": "bossDragonGold_defaultAoe_211",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_212": {
+        "key": "bossDragonGold_defaultAoe_212",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_213": {
+        "key": "bossDragonGold_defaultAoe_213",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_214": {
+        "key": "bossDragonGold_defaultAoe_214",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_215": {
+        "key": "bossDragonGold_defaultAoe_215",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_216": {
+        "key": "bossDragonGold_defaultAoe_216",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_217": {
+        "key": "bossDragonGold_defaultAoe_217",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_218": {
+        "key": "bossDragonGold_defaultAoe_218",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_219": {
+        "key": "bossDragonGold_defaultAoe_219",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_220": {
+        "key": "bossDragonGold_defaultAoe_220",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_221": {
+        "key": "bossDragonGold_defaultAoe_221",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_222": {
+        "key": "bossDragonGold_defaultAoe_222",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_223": {
+        "key": "bossDragonGold_defaultAoe_223",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_224": {
+        "key": "bossDragonGold_defaultAoe_224",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_225": {
+        "key": "bossDragonGold_defaultAoe_225",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_226": {
+        "key": "bossDragonGold_defaultAoe_226",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_227": {
+        "key": "bossDragonGold_defaultAoe_227",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_228": {
+        "key": "bossDragonGold_defaultAoe_228",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_229": {
+        "key": "bossDragonGold_defaultAoe_229",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_230": {
+        "key": "bossDragonGold_defaultAoe_230",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_231": {
+        "key": "bossDragonGold_defaultAoe_231",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_232": {
+        "key": "bossDragonGold_defaultAoe_232",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_233": {
+        "key": "bossDragonGold_defaultAoe_233",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_234": {
+        "key": "bossDragonGold_defaultAoe_234",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_235": {
+        "key": "bossDragonGold_defaultAoe_235",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_236": {
+        "key": "bossDragonGold_defaultAoe_236",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_237": {
+        "key": "bossDragonGold_defaultAoe_237",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_238": {
+        "key": "bossDragonGold_defaultAoe_238",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_239": {
+        "key": "bossDragonGold_defaultAoe_239",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_240": {
+        "key": "bossDragonGold_defaultAoe_240",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_241": {
+        "key": "bossDragonGold_defaultAoe_241",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_242": {
+        "key": "bossDragonGold_defaultAoe_242",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_243": {
+        "key": "bossDragonGold_defaultAoe_243",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_244": {
+        "key": "bossDragonGold_defaultAoe_244",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_245": {
+        "key": "bossDragonGold_defaultAoe_245",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_246": {
+        "key": "bossDragonGold_defaultAoe_246",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_247": {
+        "key": "bossDragonGold_defaultAoe_247",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_248": {
+        "key": "bossDragonGold_defaultAoe_248",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_249": {
+        "key": "bossDragonGold_defaultAoe_249",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_250": {
+        "key": "bossDragonGold_defaultAoe_250",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_251": {
+        "key": "bossDragonGold_defaultAoe_251",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_252": {
+        "key": "bossDragonGold_defaultAoe_252",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_253": {
+        "key": "bossDragonGold_defaultAoe_253",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_254": {
+        "key": "bossDragonGold_defaultAoe_254",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_255": {
+        "key": "bossDragonGold_defaultAoe_255",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_256": {
+        "key": "bossDragonGold_defaultAoe_256",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_257": {
+        "key": "bossDragonGold_defaultAoe_257",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_258": {
+        "key": "bossDragonGold_defaultAoe_258",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_259": {
+        "key": "bossDragonGold_defaultAoe_259",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_260": {
+        "key": "bossDragonGold_defaultAoe_260",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_261": {
+        "key": "bossDragonGold_defaultAoe_261",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_262": {
+        "key": "bossDragonGold_defaultAoe_262",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_263": {
+        "key": "bossDragonGold_defaultAoe_263",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_264": {
+        "key": "bossDragonGold_defaultAoe_264",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_265": {
+        "key": "bossDragonGold_defaultAoe_265",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_266": {
+        "key": "bossDragonGold_defaultAoe_266",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_267": {
+        "key": "bossDragonGold_defaultAoe_267",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_268": {
+        "key": "bossDragonGold_defaultAoe_268",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_269": {
+        "key": "bossDragonGold_defaultAoe_269",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_270": {
+        "key": "bossDragonGold_defaultAoe_270",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_271": {
+        "key": "bossDragonGold_defaultAoe_271",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_272": {
+        "key": "bossDragonGold_defaultAoe_272",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_273": {
+        "key": "bossDragonGold_defaultAoe_273",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_274": {
+        "key": "bossDragonGold_defaultAoe_274",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_275": {
+        "key": "bossDragonGold_defaultAoe_275",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_276": {
+        "key": "bossDragonGold_defaultAoe_276",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_277": {
+        "key": "bossDragonGold_defaultAoe_277",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_278": {
+        "key": "bossDragonGold_defaultAoe_278",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_279": {
+        "key": "bossDragonGold_defaultAoe_279",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_280": {
+        "key": "bossDragonGold_defaultAoe_280",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_281": {
+        "key": "bossDragonGold_defaultAoe_281",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_282": {
+        "key": "bossDragonGold_defaultAoe_282",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_283": {
+        "key": "bossDragonGold_defaultAoe_283",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_284": {
+        "key": "bossDragonGold_defaultAoe_284",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_285": {
+        "key": "bossDragonGold_defaultAoe_285",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_286": {
+        "key": "bossDragonGold_defaultAoe_286",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_287": {
+        "key": "bossDragonGold_defaultAoe_287",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_288": {
+        "key": "bossDragonGold_defaultAoe_288",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_289": {
+        "key": "bossDragonGold_defaultAoe_289",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_290": {
+        "key": "bossDragonGold_defaultAoe_290",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_291": {
+        "key": "bossDragonGold_defaultAoe_291",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_292": {
+        "key": "bossDragonGold_defaultAoe_292",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_293": {
+        "key": "bossDragonGold_defaultAoe_293",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_294": {
+        "key": "bossDragonGold_defaultAoe_294",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_295": {
+        "key": "bossDragonGold_defaultAoe_295",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_296": {
+        "key": "bossDragonGold_defaultAoe_296",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_297": {
+        "key": "bossDragonGold_defaultAoe_297",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_298": {
+        "key": "bossDragonGold_defaultAoe_298",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_299": {
+        "key": "bossDragonGold_defaultAoe_299",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_defaultAoe_300": {
+        "key": "bossDragonGold_defaultAoe_300",
+        "abilityInfoId": "bossDragonGold_defaultAoe",
+        "aspd": 7.2,
+        "cooldown": 2,
+        "animationType": "Attack",
+        "isDefaultDamage": true
+    },
+    "bossDragonGold_earthShakeAoe_1": {
+        "key": "bossDragonGold_earthShakeAoe_1",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_2": {
+        "key": "bossDragonGold_earthShakeAoe_2",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_3": {
+        "key": "bossDragonGold_earthShakeAoe_3",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_4": {
+        "key": "bossDragonGold_earthShakeAoe_4",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_5": {
+        "key": "bossDragonGold_earthShakeAoe_5",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_6": {
+        "key": "bossDragonGold_earthShakeAoe_6",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_7": {
+        "key": "bossDragonGold_earthShakeAoe_7",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_8": {
+        "key": "bossDragonGold_earthShakeAoe_8",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_9": {
+        "key": "bossDragonGold_earthShakeAoe_9",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_10": {
+        "key": "bossDragonGold_earthShakeAoe_10",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_11": {
+        "key": "bossDragonGold_earthShakeAoe_11",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_12": {
+        "key": "bossDragonGold_earthShakeAoe_12",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_13": {
+        "key": "bossDragonGold_earthShakeAoe_13",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_14": {
+        "key": "bossDragonGold_earthShakeAoe_14",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_15": {
+        "key": "bossDragonGold_earthShakeAoe_15",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_16": {
+        "key": "bossDragonGold_earthShakeAoe_16",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_17": {
+        "key": "bossDragonGold_earthShakeAoe_17",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_18": {
+        "key": "bossDragonGold_earthShakeAoe_18",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_19": {
+        "key": "bossDragonGold_earthShakeAoe_19",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_20": {
+        "key": "bossDragonGold_earthShakeAoe_20",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_21": {
+        "key": "bossDragonGold_earthShakeAoe_21",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_22": {
+        "key": "bossDragonGold_earthShakeAoe_22",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_23": {
+        "key": "bossDragonGold_earthShakeAoe_23",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_24": {
+        "key": "bossDragonGold_earthShakeAoe_24",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_25": {
+        "key": "bossDragonGold_earthShakeAoe_25",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_26": {
+        "key": "bossDragonGold_earthShakeAoe_26",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_27": {
+        "key": "bossDragonGold_earthShakeAoe_27",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_28": {
+        "key": "bossDragonGold_earthShakeAoe_28",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_29": {
+        "key": "bossDragonGold_earthShakeAoe_29",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_30": {
+        "key": "bossDragonGold_earthShakeAoe_30",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_31": {
+        "key": "bossDragonGold_earthShakeAoe_31",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_32": {
+        "key": "bossDragonGold_earthShakeAoe_32",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_33": {
+        "key": "bossDragonGold_earthShakeAoe_33",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_34": {
+        "key": "bossDragonGold_earthShakeAoe_34",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_35": {
+        "key": "bossDragonGold_earthShakeAoe_35",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_36": {
+        "key": "bossDragonGold_earthShakeAoe_36",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_37": {
+        "key": "bossDragonGold_earthShakeAoe_37",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_38": {
+        "key": "bossDragonGold_earthShakeAoe_38",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_39": {
+        "key": "bossDragonGold_earthShakeAoe_39",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_40": {
+        "key": "bossDragonGold_earthShakeAoe_40",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_41": {
+        "key": "bossDragonGold_earthShakeAoe_41",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_42": {
+        "key": "bossDragonGold_earthShakeAoe_42",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_43": {
+        "key": "bossDragonGold_earthShakeAoe_43",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_44": {
+        "key": "bossDragonGold_earthShakeAoe_44",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_45": {
+        "key": "bossDragonGold_earthShakeAoe_45",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_46": {
+        "key": "bossDragonGold_earthShakeAoe_46",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_47": {
+        "key": "bossDragonGold_earthShakeAoe_47",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_48": {
+        "key": "bossDragonGold_earthShakeAoe_48",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_49": {
+        "key": "bossDragonGold_earthShakeAoe_49",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_50": {
+        "key": "bossDragonGold_earthShakeAoe_50",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_51": {
+        "key": "bossDragonGold_earthShakeAoe_51",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_52": {
+        "key": "bossDragonGold_earthShakeAoe_52",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_53": {
+        "key": "bossDragonGold_earthShakeAoe_53",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_54": {
+        "key": "bossDragonGold_earthShakeAoe_54",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_55": {
+        "key": "bossDragonGold_earthShakeAoe_55",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_56": {
+        "key": "bossDragonGold_earthShakeAoe_56",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_57": {
+        "key": "bossDragonGold_earthShakeAoe_57",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_58": {
+        "key": "bossDragonGold_earthShakeAoe_58",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_59": {
+        "key": "bossDragonGold_earthShakeAoe_59",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_60": {
+        "key": "bossDragonGold_earthShakeAoe_60",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_61": {
+        "key": "bossDragonGold_earthShakeAoe_61",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_62": {
+        "key": "bossDragonGold_earthShakeAoe_62",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_63": {
+        "key": "bossDragonGold_earthShakeAoe_63",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_64": {
+        "key": "bossDragonGold_earthShakeAoe_64",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_65": {
+        "key": "bossDragonGold_earthShakeAoe_65",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_66": {
+        "key": "bossDragonGold_earthShakeAoe_66",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_67": {
+        "key": "bossDragonGold_earthShakeAoe_67",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_68": {
+        "key": "bossDragonGold_earthShakeAoe_68",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_69": {
+        "key": "bossDragonGold_earthShakeAoe_69",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_70": {
+        "key": "bossDragonGold_earthShakeAoe_70",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_71": {
+        "key": "bossDragonGold_earthShakeAoe_71",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_72": {
+        "key": "bossDragonGold_earthShakeAoe_72",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_73": {
+        "key": "bossDragonGold_earthShakeAoe_73",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_74": {
+        "key": "bossDragonGold_earthShakeAoe_74",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_75": {
+        "key": "bossDragonGold_earthShakeAoe_75",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_76": {
+        "key": "bossDragonGold_earthShakeAoe_76",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_77": {
+        "key": "bossDragonGold_earthShakeAoe_77",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_78": {
+        "key": "bossDragonGold_earthShakeAoe_78",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_79": {
+        "key": "bossDragonGold_earthShakeAoe_79",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_80": {
+        "key": "bossDragonGold_earthShakeAoe_80",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_81": {
+        "key": "bossDragonGold_earthShakeAoe_81",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_82": {
+        "key": "bossDragonGold_earthShakeAoe_82",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_83": {
+        "key": "bossDragonGold_earthShakeAoe_83",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_84": {
+        "key": "bossDragonGold_earthShakeAoe_84",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_85": {
+        "key": "bossDragonGold_earthShakeAoe_85",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_86": {
+        "key": "bossDragonGold_earthShakeAoe_86",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_87": {
+        "key": "bossDragonGold_earthShakeAoe_87",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_88": {
+        "key": "bossDragonGold_earthShakeAoe_88",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_89": {
+        "key": "bossDragonGold_earthShakeAoe_89",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_90": {
+        "key": "bossDragonGold_earthShakeAoe_90",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_91": {
+        "key": "bossDragonGold_earthShakeAoe_91",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_92": {
+        "key": "bossDragonGold_earthShakeAoe_92",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_93": {
+        "key": "bossDragonGold_earthShakeAoe_93",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_94": {
+        "key": "bossDragonGold_earthShakeAoe_94",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_95": {
+        "key": "bossDragonGold_earthShakeAoe_95",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_96": {
+        "key": "bossDragonGold_earthShakeAoe_96",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_97": {
+        "key": "bossDragonGold_earthShakeAoe_97",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_98": {
+        "key": "bossDragonGold_earthShakeAoe_98",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_99": {
+        "key": "bossDragonGold_earthShakeAoe_99",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_100": {
+        "key": "bossDragonGold_earthShakeAoe_100",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_101": {
+        "key": "bossDragonGold_earthShakeAoe_101",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_102": {
+        "key": "bossDragonGold_earthShakeAoe_102",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_103": {
+        "key": "bossDragonGold_earthShakeAoe_103",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_104": {
+        "key": "bossDragonGold_earthShakeAoe_104",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_105": {
+        "key": "bossDragonGold_earthShakeAoe_105",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_106": {
+        "key": "bossDragonGold_earthShakeAoe_106",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_107": {
+        "key": "bossDragonGold_earthShakeAoe_107",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_108": {
+        "key": "bossDragonGold_earthShakeAoe_108",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_109": {
+        "key": "bossDragonGold_earthShakeAoe_109",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_110": {
+        "key": "bossDragonGold_earthShakeAoe_110",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_111": {
+        "key": "bossDragonGold_earthShakeAoe_111",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_112": {
+        "key": "bossDragonGold_earthShakeAoe_112",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_113": {
+        "key": "bossDragonGold_earthShakeAoe_113",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_114": {
+        "key": "bossDragonGold_earthShakeAoe_114",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_115": {
+        "key": "bossDragonGold_earthShakeAoe_115",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_116": {
+        "key": "bossDragonGold_earthShakeAoe_116",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_117": {
+        "key": "bossDragonGold_earthShakeAoe_117",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_118": {
+        "key": "bossDragonGold_earthShakeAoe_118",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_119": {
+        "key": "bossDragonGold_earthShakeAoe_119",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_120": {
+        "key": "bossDragonGold_earthShakeAoe_120",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_121": {
+        "key": "bossDragonGold_earthShakeAoe_121",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_122": {
+        "key": "bossDragonGold_earthShakeAoe_122",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_123": {
+        "key": "bossDragonGold_earthShakeAoe_123",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_124": {
+        "key": "bossDragonGold_earthShakeAoe_124",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_125": {
+        "key": "bossDragonGold_earthShakeAoe_125",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_126": {
+        "key": "bossDragonGold_earthShakeAoe_126",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_127": {
+        "key": "bossDragonGold_earthShakeAoe_127",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_128": {
+        "key": "bossDragonGold_earthShakeAoe_128",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_129": {
+        "key": "bossDragonGold_earthShakeAoe_129",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_130": {
+        "key": "bossDragonGold_earthShakeAoe_130",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_131": {
+        "key": "bossDragonGold_earthShakeAoe_131",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_132": {
+        "key": "bossDragonGold_earthShakeAoe_132",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_133": {
+        "key": "bossDragonGold_earthShakeAoe_133",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_134": {
+        "key": "bossDragonGold_earthShakeAoe_134",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_135": {
+        "key": "bossDragonGold_earthShakeAoe_135",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_136": {
+        "key": "bossDragonGold_earthShakeAoe_136",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_137": {
+        "key": "bossDragonGold_earthShakeAoe_137",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_138": {
+        "key": "bossDragonGold_earthShakeAoe_138",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_139": {
+        "key": "bossDragonGold_earthShakeAoe_139",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_140": {
+        "key": "bossDragonGold_earthShakeAoe_140",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_141": {
+        "key": "bossDragonGold_earthShakeAoe_141",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_142": {
+        "key": "bossDragonGold_earthShakeAoe_142",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_143": {
+        "key": "bossDragonGold_earthShakeAoe_143",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_144": {
+        "key": "bossDragonGold_earthShakeAoe_144",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_145": {
+        "key": "bossDragonGold_earthShakeAoe_145",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_146": {
+        "key": "bossDragonGold_earthShakeAoe_146",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_147": {
+        "key": "bossDragonGold_earthShakeAoe_147",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_148": {
+        "key": "bossDragonGold_earthShakeAoe_148",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_149": {
+        "key": "bossDragonGold_earthShakeAoe_149",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_150": {
+        "key": "bossDragonGold_earthShakeAoe_150",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_151": {
+        "key": "bossDragonGold_earthShakeAoe_151",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_152": {
+        "key": "bossDragonGold_earthShakeAoe_152",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_153": {
+        "key": "bossDragonGold_earthShakeAoe_153",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_154": {
+        "key": "bossDragonGold_earthShakeAoe_154",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_155": {
+        "key": "bossDragonGold_earthShakeAoe_155",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_156": {
+        "key": "bossDragonGold_earthShakeAoe_156",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_157": {
+        "key": "bossDragonGold_earthShakeAoe_157",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_158": {
+        "key": "bossDragonGold_earthShakeAoe_158",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_159": {
+        "key": "bossDragonGold_earthShakeAoe_159",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_160": {
+        "key": "bossDragonGold_earthShakeAoe_160",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_161": {
+        "key": "bossDragonGold_earthShakeAoe_161",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_162": {
+        "key": "bossDragonGold_earthShakeAoe_162",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_163": {
+        "key": "bossDragonGold_earthShakeAoe_163",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_164": {
+        "key": "bossDragonGold_earthShakeAoe_164",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_165": {
+        "key": "bossDragonGold_earthShakeAoe_165",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_166": {
+        "key": "bossDragonGold_earthShakeAoe_166",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_167": {
+        "key": "bossDragonGold_earthShakeAoe_167",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_168": {
+        "key": "bossDragonGold_earthShakeAoe_168",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_169": {
+        "key": "bossDragonGold_earthShakeAoe_169",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_170": {
+        "key": "bossDragonGold_earthShakeAoe_170",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_171": {
+        "key": "bossDragonGold_earthShakeAoe_171",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_172": {
+        "key": "bossDragonGold_earthShakeAoe_172",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_173": {
+        "key": "bossDragonGold_earthShakeAoe_173",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_174": {
+        "key": "bossDragonGold_earthShakeAoe_174",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_175": {
+        "key": "bossDragonGold_earthShakeAoe_175",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_176": {
+        "key": "bossDragonGold_earthShakeAoe_176",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_177": {
+        "key": "bossDragonGold_earthShakeAoe_177",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_178": {
+        "key": "bossDragonGold_earthShakeAoe_178",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_179": {
+        "key": "bossDragonGold_earthShakeAoe_179",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_180": {
+        "key": "bossDragonGold_earthShakeAoe_180",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_181": {
+        "key": "bossDragonGold_earthShakeAoe_181",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_182": {
+        "key": "bossDragonGold_earthShakeAoe_182",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_183": {
+        "key": "bossDragonGold_earthShakeAoe_183",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_184": {
+        "key": "bossDragonGold_earthShakeAoe_184",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_185": {
+        "key": "bossDragonGold_earthShakeAoe_185",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_186": {
+        "key": "bossDragonGold_earthShakeAoe_186",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_187": {
+        "key": "bossDragonGold_earthShakeAoe_187",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_188": {
+        "key": "bossDragonGold_earthShakeAoe_188",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_189": {
+        "key": "bossDragonGold_earthShakeAoe_189",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_190": {
+        "key": "bossDragonGold_earthShakeAoe_190",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_191": {
+        "key": "bossDragonGold_earthShakeAoe_191",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_192": {
+        "key": "bossDragonGold_earthShakeAoe_192",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_193": {
+        "key": "bossDragonGold_earthShakeAoe_193",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_194": {
+        "key": "bossDragonGold_earthShakeAoe_194",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_195": {
+        "key": "bossDragonGold_earthShakeAoe_195",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_196": {
+        "key": "bossDragonGold_earthShakeAoe_196",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_197": {
+        "key": "bossDragonGold_earthShakeAoe_197",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_198": {
+        "key": "bossDragonGold_earthShakeAoe_198",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_199": {
+        "key": "bossDragonGold_earthShakeAoe_199",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_200": {
+        "key": "bossDragonGold_earthShakeAoe_200",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_201": {
+        "key": "bossDragonGold_earthShakeAoe_201",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_202": {
+        "key": "bossDragonGold_earthShakeAoe_202",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_203": {
+        "key": "bossDragonGold_earthShakeAoe_203",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_204": {
+        "key": "bossDragonGold_earthShakeAoe_204",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_205": {
+        "key": "bossDragonGold_earthShakeAoe_205",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_206": {
+        "key": "bossDragonGold_earthShakeAoe_206",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_207": {
+        "key": "bossDragonGold_earthShakeAoe_207",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_208": {
+        "key": "bossDragonGold_earthShakeAoe_208",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_209": {
+        "key": "bossDragonGold_earthShakeAoe_209",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_210": {
+        "key": "bossDragonGold_earthShakeAoe_210",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_211": {
+        "key": "bossDragonGold_earthShakeAoe_211",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_212": {
+        "key": "bossDragonGold_earthShakeAoe_212",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_213": {
+        "key": "bossDragonGold_earthShakeAoe_213",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_214": {
+        "key": "bossDragonGold_earthShakeAoe_214",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_215": {
+        "key": "bossDragonGold_earthShakeAoe_215",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_216": {
+        "key": "bossDragonGold_earthShakeAoe_216",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_217": {
+        "key": "bossDragonGold_earthShakeAoe_217",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_218": {
+        "key": "bossDragonGold_earthShakeAoe_218",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_219": {
+        "key": "bossDragonGold_earthShakeAoe_219",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_220": {
+        "key": "bossDragonGold_earthShakeAoe_220",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_221": {
+        "key": "bossDragonGold_earthShakeAoe_221",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_222": {
+        "key": "bossDragonGold_earthShakeAoe_222",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_223": {
+        "key": "bossDragonGold_earthShakeAoe_223",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_224": {
+        "key": "bossDragonGold_earthShakeAoe_224",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_225": {
+        "key": "bossDragonGold_earthShakeAoe_225",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_226": {
+        "key": "bossDragonGold_earthShakeAoe_226",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_227": {
+        "key": "bossDragonGold_earthShakeAoe_227",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_228": {
+        "key": "bossDragonGold_earthShakeAoe_228",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_229": {
+        "key": "bossDragonGold_earthShakeAoe_229",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_230": {
+        "key": "bossDragonGold_earthShakeAoe_230",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_231": {
+        "key": "bossDragonGold_earthShakeAoe_231",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_232": {
+        "key": "bossDragonGold_earthShakeAoe_232",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_233": {
+        "key": "bossDragonGold_earthShakeAoe_233",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_234": {
+        "key": "bossDragonGold_earthShakeAoe_234",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_235": {
+        "key": "bossDragonGold_earthShakeAoe_235",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_236": {
+        "key": "bossDragonGold_earthShakeAoe_236",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_237": {
+        "key": "bossDragonGold_earthShakeAoe_237",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_238": {
+        "key": "bossDragonGold_earthShakeAoe_238",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_239": {
+        "key": "bossDragonGold_earthShakeAoe_239",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_240": {
+        "key": "bossDragonGold_earthShakeAoe_240",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_241": {
+        "key": "bossDragonGold_earthShakeAoe_241",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_242": {
+        "key": "bossDragonGold_earthShakeAoe_242",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_243": {
+        "key": "bossDragonGold_earthShakeAoe_243",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_244": {
+        "key": "bossDragonGold_earthShakeAoe_244",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_245": {
+        "key": "bossDragonGold_earthShakeAoe_245",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_246": {
+        "key": "bossDragonGold_earthShakeAoe_246",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_247": {
+        "key": "bossDragonGold_earthShakeAoe_247",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_248": {
+        "key": "bossDragonGold_earthShakeAoe_248",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_249": {
+        "key": "bossDragonGold_earthShakeAoe_249",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_250": {
+        "key": "bossDragonGold_earthShakeAoe_250",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_251": {
+        "key": "bossDragonGold_earthShakeAoe_251",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_252": {
+        "key": "bossDragonGold_earthShakeAoe_252",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_253": {
+        "key": "bossDragonGold_earthShakeAoe_253",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_254": {
+        "key": "bossDragonGold_earthShakeAoe_254",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_255": {
+        "key": "bossDragonGold_earthShakeAoe_255",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_256": {
+        "key": "bossDragonGold_earthShakeAoe_256",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_257": {
+        "key": "bossDragonGold_earthShakeAoe_257",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_258": {
+        "key": "bossDragonGold_earthShakeAoe_258",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_259": {
+        "key": "bossDragonGold_earthShakeAoe_259",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_260": {
+        "key": "bossDragonGold_earthShakeAoe_260",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_261": {
+        "key": "bossDragonGold_earthShakeAoe_261",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_262": {
+        "key": "bossDragonGold_earthShakeAoe_262",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_263": {
+        "key": "bossDragonGold_earthShakeAoe_263",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_264": {
+        "key": "bossDragonGold_earthShakeAoe_264",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_265": {
+        "key": "bossDragonGold_earthShakeAoe_265",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_266": {
+        "key": "bossDragonGold_earthShakeAoe_266",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_267": {
+        "key": "bossDragonGold_earthShakeAoe_267",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_268": {
+        "key": "bossDragonGold_earthShakeAoe_268",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_269": {
+        "key": "bossDragonGold_earthShakeAoe_269",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_270": {
+        "key": "bossDragonGold_earthShakeAoe_270",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_271": {
+        "key": "bossDragonGold_earthShakeAoe_271",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_272": {
+        "key": "bossDragonGold_earthShakeAoe_272",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_273": {
+        "key": "bossDragonGold_earthShakeAoe_273",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_274": {
+        "key": "bossDragonGold_earthShakeAoe_274",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_275": {
+        "key": "bossDragonGold_earthShakeAoe_275",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_276": {
+        "key": "bossDragonGold_earthShakeAoe_276",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_277": {
+        "key": "bossDragonGold_earthShakeAoe_277",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_278": {
+        "key": "bossDragonGold_earthShakeAoe_278",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_279": {
+        "key": "bossDragonGold_earthShakeAoe_279",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_280": {
+        "key": "bossDragonGold_earthShakeAoe_280",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_281": {
+        "key": "bossDragonGold_earthShakeAoe_281",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_282": {
+        "key": "bossDragonGold_earthShakeAoe_282",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_283": {
+        "key": "bossDragonGold_earthShakeAoe_283",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_284": {
+        "key": "bossDragonGold_earthShakeAoe_284",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_285": {
+        "key": "bossDragonGold_earthShakeAoe_285",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_286": {
+        "key": "bossDragonGold_earthShakeAoe_286",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_287": {
+        "key": "bossDragonGold_earthShakeAoe_287",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_288": {
+        "key": "bossDragonGold_earthShakeAoe_288",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_289": {
+        "key": "bossDragonGold_earthShakeAoe_289",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_290": {
+        "key": "bossDragonGold_earthShakeAoe_290",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_291": {
+        "key": "bossDragonGold_earthShakeAoe_291",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_292": {
+        "key": "bossDragonGold_earthShakeAoe_292",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_293": {
+        "key": "bossDragonGold_earthShakeAoe_293",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_294": {
+        "key": "bossDragonGold_earthShakeAoe_294",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_295": {
+        "key": "bossDragonGold_earthShakeAoe_295",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_296": {
+        "key": "bossDragonGold_earthShakeAoe_296",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_297": {
+        "key": "bossDragonGold_earthShakeAoe_297",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_298": {
+        "key": "bossDragonGold_earthShakeAoe_298",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_299": {
+        "key": "bossDragonGold_earthShakeAoe_299",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
+        "animationType": "Ulta3",
+        "isDefaultDamage": false
+    },
+    "bossDragonGold_earthShakeAoe_300": {
+        "key": "bossDragonGold_earthShakeAoe_300",
+        "abilityInfoId": "bossDragonGold_earthShakeAoe",
+        "aspd": 3.9,
+        "cooldown": 32,
         "animationType": "Ulta3",
         "isDefaultDamage": false
     }
