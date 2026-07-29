@@ -2448,7 +2448,7 @@ document.getElementById("vipStatusText").textContent = AppState.isVipActive(prof
 
        function renderNewsPreviewHome(items) {
     const list = document.getElementById("newsPreviewListHome");
-    const recent = items.slice(0, 3);
+    const recent = items;
     if (!recent.length) {
         list.innerHTML = '<div class="friend-req-empty">No news yet.</div>';
         return;
