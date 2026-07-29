@@ -97,8 +97,8 @@ function getAbilityTalents(unitKey, level) {
 
       // collect all extra stats from abilityData (skip metadata keys)
       let skipAbilityKeys = ["key", "abilityInfoId", "iconId", "isActive", "isImmortalWhenActive",
-        "sourceRestrictionId", "targetRestrictionId", "sourceEffectId", "targetEffectId", "showInLobbyUi",
-        "title_Localized", "desctiption_Localized"];
+    "sourceRestrictionId", "targetRestrictionId", "sourceEffectId", "targetEffectId", "showInLobbyUi",
+    "title_Localized", "desctiption_Localized", "description_Localized"];
       let extraStats = {};
       if (abilityEntry) {
         for (let k in abilityEntry) {
@@ -211,9 +211,9 @@ function getHeroIconTalents(unitKey, level) {
   if (!abilityEntry) return [];
 
   // skip metadata keys
-  let skipKeys = ["key", "abilityInfoId", "iconId", "isActive", "isImmortalWhenActive",
+let skipKeys = ["key", "abilityInfoId", "iconId", "isActive", "isImmortalWhenActive",
     "sourceRestrictionId", "targetRestrictionId", "sourceEffectId", "targetEffectId",
-    "showInLobbyUi", "title_Localized", "desctiption_Localized"];
+    "showInLobbyUi", "title_Localized", "desctiption_Localized", "description_Localized"];
 
   let statFields = {};
   for (let k in abilityEntry) {
