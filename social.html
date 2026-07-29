@@ -1330,12 +1330,28 @@
                                         style="display:none;"></span>
                                 </button>
                                 <div class="clan-filter-dropdown" id="clanFilterDropdown">
+                                    <div class="clan-filter-section-title">Clan Name</div>
+                                    <input type="text" id="filterClanName" class="modal-field-input"
+                                        placeholder="Search by clan name..." style="margin-bottom:0;"
+                                        oninput="onClanFilterChange()">
+
                                     <div class="clan-filter-section-title">Server</div>
                                     <select id="filterServer" class="modal-field-input" style="margin-bottom:0;"
                                         onchange="onClanFilterChange()">
                                         <option value="">Any</option>
                                         <option value="ios">iOS</option>
                                         <option value="android">Android</option>
+                                    </select>
+
+                                    <div class="clan-filter-section-title">Minimum Clan Rank</div>
+                                    <input type="number" id="filterClanRank" class="modal-field-input" min="0" max="20"
+                                        step="1" placeholder="e.g. 9 (shows 9 and above)" style="margin-bottom:0;"
+                                        oninput="onClanFilterChange()">
+
+                                    <div class="clan-filter-section-title">Preferred Country</div>
+                                    <select id="filterCountry" class="modal-field-input" style="margin-bottom:0;"
+                                        onchange="onClanFilterChange()">
+                                        <option value="">Any</option>
                                     </select>
 
                                     <div class="clan-filter-section-title">Clan Traits</div>
@@ -1481,6 +1497,17 @@
 
             <label class="modal-field-label">Looking for members around how many trophies?</label>
             <div class="trophy-tier-list" id="postClanTrophyTierList" style="margin-bottom:16px;"></div>
+
+            <label class="modal-field-label">Clan Rank (0-20)</label>
+            <input type="number" id="postClanRank" class="modal-field-input" min="0" max="20" step="1" placeholder="e.g. 9">
+
+            <label class="modal-field-label">Looking for members from which country?</label>
+            <select id="postClanCountry" class="modal-field-input">
+                <option value="">Any</option>
+            </select>
+
+            <label class="modal-field-label">How many members does your clan have? (1-50)</label>
+            <input type="number" id="postClanMemberCount" class="modal-field-input" min="1" max="50" step="1" placeholder="e.g. 30">
 
             <label class="modal-field-label">Description (any extra requirements)</label>
             <textarea id="postClanDescription" class="modal-field-input" maxlength="2000" rows="4"></textarea>
@@ -1666,13 +1693,55 @@
     <script type="module" src="appState.js"></script>
     <script type="module">
         const CLAN_TAGS = [
-            { id: "active", label: "Active Clan" },
-            { id: "clanClash", label: "Plays Clan Clash" },
-            { id: "clanHunt", label: "Plays Clan Hunt" },
-            { id: "goldFarming", label: "Gold Farming" },
-            { id: "tips", label: "Shares tips and tricks" },
-            { id: "rev", label: "Clears revenges" }
-        ];
+    { id: "active", label: "Active Clan" },
+    { id: "clanClash", label: "Plays Clan Clash" },
+    { id: "clanHunt", label: "Plays Clan Hunt" },
+    { id: "goldFarming", label: "Gold Farming" },
+    { id: "goldKeeper", label: "Plays Gold Keeper" },
+    { id: "tips", label: "Shares tips and tricks" },
+    { id: "rev", label: "Clears revenges" }
+];
+
+const COUNTRIES = [
+    "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda",
+    "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain",
+    "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bhutan",
+    "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria",
+    "Burkina Faso", "Burundi", "Cabo Verde", "Cambodia", "Cameroon", "Canada",
+    "Central African Republic", "Chad", "Chile", "China", "Colombia", "Comoros",
+    "Congo", "Congo (Democratic Republic)", "Costa Rica", "Croatia", "Cuba", "Cyprus",
+    "Czechia", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "Ecuador",
+    "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Eswatini",
+    "Ethiopia", "Fiji", "Finland", "France", "Gabon", "Gambia", "Georgia", "Germany",
+    "Ghana", "Greece", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana",
+    "Haiti", "Honduras", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq",
+    "Ireland", "Israel", "Italy", "Jamaica", "Japan", "Jordan", "Kazakhstan", "Kenya",
+    "Kiribati", "Kuwait", "Kyrgyzstan", "laos", "Latvia", "Lebanon", "Lesotho",
+    "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Madagascar",
+    "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands",
+    "Mauritania", "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco",
+    "Mongolia", "Montenegro", "Morocco", "Mozambique", "Myanmar", "Namibia",
+    "Nauru", "Nepal", "Netherlands", "New Zealand", "Nicaragua", "Niger",
+    "Nigeria", "North Korea", "North Macedonia", "Norway", "Oman", "Pakistan",
+    "Palau", "Palestine", "Panama", "Papua New Guinea", "Paraguay", "Peru",
+    "Philippines", "Poland", "Portugal", "Qatar", "Romania", "Russia", "Rwanda",
+    "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent and the Grenadines",
+    "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal",
+    "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia",
+    "Solomon Islands", "Somalia", "South Africa", "South Korea", "South Sudan",
+    "Spain", "Sri Lanka", "Sudan", "Suriname", "Sweden", "Switzerland", "Syria",
+    "Taiwan", "Tajikistan", "Tanzania", "Thailand", "Timor-Leste", "Togo", "Tonga",
+    "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu", "Uganda",
+    "Ukraine", "UAE", "United Kingdom", "United States", "Uruguay", "Uzbekistan",
+    "Vanuatu", "Vatican City", "Venezuela", "Vietnam", "Yemen", "Zambia",
+    "Zimbabwe"
+];
+
+function buildCountrySelectOptions(selectId, includeAny) {
+    const select = document.getElementById(selectId);
+    const optionsHtml = COUNTRIES.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
+    select.innerHTML = (includeAny ? `<option value="">Any</option>` : "") + optionsHtml;
+}
 
         function buildTagCheckboxes(containerId, checkedIds) {
             const container = document.getElementById(containerId);
@@ -1718,7 +1787,9 @@
                 return `<span class="clan-tag-pill">${escapeHtml(found ? found.label : t)}</span>`;
             }).join("");
         }
-
+        
+        buildCountrySelectOptions("postClanCountry", true);
+        buildCountrySelectOptions("filterCountry", true);
         let myProfile = null;
         let incomingRequests = [];
         let friends = [];
@@ -1920,6 +1991,9 @@
             document.getElementById("postClanName").value = "";
             document.getElementById("postClanServer").value = "ios";
             buildTrophyTierPicker("postClanTrophyTierList", 0);
+            document.getElementById("postClanRank").value = "";
+            document.getElementById("postClanCountry").value = "";
+            document.getElementById("postClanMemberCount").value = "";
             document.getElementById("postClanDescription").value = "";
             buildTagCheckboxes("postClanTagList", []);
             document.getElementById("postClanIconInput").value = "";
@@ -1933,15 +2007,18 @@
         };
 
         window.autofillClanPost = function () {
-            if (!myProfile || !myProfile.lastClanPostData) return;
-            const d = myProfile.lastClanPostData;
-            document.getElementById("postClanName").value = d.clanName || "";
-            document.getElementById("postClanServer").value = d.server || "ios";
-            buildTrophyTierPicker("postClanTrophyTierList", d.minTrophies || 0);
-            document.getElementById("postClanDescription").value = d.description || "";
-            buildTagCheckboxes("postClanTagList", d.tags || []);
-            showToast("Filled in from your last post.");
-        };
+    if (!myProfile || !myProfile.lastClanPostData) return;
+    const d = myProfile.lastClanPostData;
+    document.getElementById("postClanName").value = d.clanName || "";
+    document.getElementById("postClanServer").value = d.server || "ios";
+    buildTrophyTierPicker("postClanTrophyTierList", d.minTrophies || 0);
+    document.getElementById("postClanRank").value = (d.clanRank !== undefined && d.clanRank !== null) ? d.clanRank : "";
+    document.getElementById("postClanCountry").value = d.country || "";
+    document.getElementById("postClanMemberCount").value = d.memberCount || "";
+    document.getElementById("postClanDescription").value = d.description || "";
+    buildTagCheckboxes("postClanTagList", d.tags || []);
+    showToast("Filled in from your last post.");
+};
 
 
         window.openEditClanModal = async function (postId) {
@@ -1965,6 +2042,9 @@
             document.getElementById("postClanName").value = p.clanName || "";
             document.getElementById("postClanServer").value = p.server || "ios";
             buildTrophyTierPicker("postClanTrophyTierList", p.minTrophies || 0);
+            document.getElementById("postClanRank").value = (p.clanRank !== undefined && p.clanRank !== null) ? p.clanRank : "";
+            document.getElementById("postClanCountry").value = p.country || "";
+            document.getElementById("postClanMemberCount").value = p.memberCount || "";
             document.getElementById("postClanDescription").value = p.description || "";
             buildTagCheckboxes("postClanTagList", p.tags || []);
             document.getElementById("postClanIconInput").value = "";
@@ -2015,12 +2095,17 @@ window.removeClanIconPreview = function () {
         });
 
         window.submitClanPost = async function () {
-            const clanName = document.getElementById("postClanName").value;
-            const server = document.getElementById("postClanServer").value;
-            const minTrophies = getSelectedTrophyTier("postClanTrophyTierList");
-            const description = document.getElementById("postClanDescription").value;
-            const tags = getCheckedTags("postClanTagList");
-            const iconFile = document.getElementById("postClanIconInput").files[0];
+    const clanName = document.getElementById("postClanName").value;
+    const server = document.getElementById("postClanServer").value;
+    const minTrophies = getSelectedTrophyTier("postClanTrophyTierList");
+    const clanRankRaw = document.getElementById("postClanRank").value;
+    const clanRank = clanRankRaw === "" ? null : Math.max(0, Math.min(20, parseInt(clanRankRaw, 10) || 0));
+    const country = document.getElementById("postClanCountry").value;
+    const memberCountRaw = document.getElementById("postClanMemberCount").value;
+    const memberCount = memberCountRaw === "" ? null : Math.max(1, Math.min(50, parseInt(memberCountRaw, 10) || 1));
+    const description = document.getElementById("postClanDescription").value;
+    const tags = getCheckedTags("postClanTagList");
+    const iconFile = document.getElementById("postClanIconInput").files[0];
 
             const submitBtn = document.getElementById("submitPostClanBtn");
             submitBtn.disabled = true;
@@ -2045,11 +2130,7 @@ window.removeClanIconPreview = function () {
 
                 if (isEditing) {
                     submitBtn.textContent = "Saving...";
-                    // Only pass icon fields through when something actually
-                    // changed (new file OR explicit removal) — updateClanPost
-                    // only overwrites iconUrl/iconPath when data.iconUrl is
-                    // truthy, so an explicit removal needs its own flag.
-                    const patch = { clanName, server, minTrophies, description, tags };
+                    const patch = { clanName, server, minTrophies, clanRank, country, memberCount, description, tags };
                     if (iconFile) {
                         patch.iconUrl = iconUrl;
                         patch.iconPath = iconPath;
@@ -2061,7 +2142,7 @@ window.removeClanIconPreview = function () {
                     await AppState.updateClanPost(editingPostId, patch);
                 } else {
                     submitBtn.textContent = "Posting...";
-                    await AppState.postClanRecruitMessage({ clanName, server, minTrophies, description, tags, iconUrl, iconPath });
+                    await AppState.postClanRecruitMessage({ clanName, server, minTrophies, clanRank, country, memberCount, description, tags, iconUrl, iconPath });
                 }
 
                 // Clean up the old Storage file if it was replaced OR removed.
@@ -2140,45 +2221,58 @@ window.removeClanIconPreview = function () {
         }
 
         function loadClanFiltersIntoUI() {
-            const filters = getClanFilters();
-            document.getElementById("filterServer").value = filters.server || "";
-            buildTagCheckboxes("filterTagList", filters.tags || []);
-            document.querySelectorAll('#filterTagList input[type="checkbox"]').forEach(cb => {
-                cb.addEventListener("change", onClanFilterChange);
-            });
-            updateClanFilterCount();
-        }
+    const filters = getClanFilters();
+    document.getElementById("filterClanName").value = filters.clanName || "";
+    document.getElementById("filterServer").value = filters.server || "";
+    document.getElementById("filterClanRank").value = (filters.minClanRank ?? "") === null ? "" : (filters.minClanRank ?? "");
+    document.getElementById("filterCountry").value = filters.country || "";
+    buildTagCheckboxes("filterTagList", filters.tags || []);
+    document.querySelectorAll('#filterTagList input[type="checkbox"]').forEach(cb => {
+        cb.addEventListener("change", onClanFilterChange);
+    });
+    updateClanFilterCount();
+}
 
         function updateClanFilterCount() {
-            const filters = getClanFilters();
-            let count = 0;
-            if (filters.server) count++;
-            if (filters.tags && filters.tags.length) count += filters.tags.length;
-            const badge = document.getElementById("clanFilterCount");
-            badge.textContent = count;
-            badge.style.display = count > 0 ? "inline-block" : "none";
-        }
+    const filters = getClanFilters();
+    let count = 0;
+    if (filters.clanName) count++;
+    if (filters.server) count++;
+    if (filters.minClanRank !== undefined && filters.minClanRank !== null && filters.minClanRank !== "") count++;
+    if (filters.country) count++;
+    if (filters.tags && filters.tags.length) count += filters.tags.length;
+    const badge = document.getElementById("clanFilterCount");
+    badge.textContent = count;
+    badge.style.display = count > 0 ? "inline-block" : "none";
+}
 
         window.onClanFilterChange = function () {
-            const filters = {
-                server: document.getElementById("filterServer").value,
-                tags: getCheckedTags("filterTagList")
-            };
-            saveClanFilters(filters);
-            updateClanFilterCount();
-            applyClanFiltersAndRender();
-        };
+    const rankRaw = document.getElementById("filterClanRank").value;
+    const filters = {
+        clanName: document.getElementById("filterClanName").value.trim(),
+        server: document.getElementById("filterServer").value,
+        minClanRank: rankRaw === "" ? null : Math.max(0, Math.min(20, parseInt(rankRaw, 10) || 0)),
+        country: document.getElementById("filterCountry").value,
+        tags: getCheckedTags("filterTagList")
+    };
+    saveClanFilters(filters);
+    updateClanFilterCount();
+    applyClanFiltersAndRender();
+};
 
         window.clearAllClanFilters = function () {
-            saveClanFilters({});
-            document.getElementById("filterServer").value = "";
-            buildTagCheckboxes("filterTagList", []);
-            document.querySelectorAll('#filterTagList input[type="checkbox"]').forEach(cb => {
-                cb.addEventListener("change", onClanFilterChange);
-            });
-            updateClanFilterCount();
-            applyClanFiltersAndRender();
-        };
+    saveClanFilters({});
+    document.getElementById("filterClanName").value = "";
+    document.getElementById("filterServer").value = "";
+    document.getElementById("filterClanRank").value = "";
+    document.getElementById("filterCountry").value = "";
+    buildTagCheckboxes("filterTagList", []);
+    document.querySelectorAll('#filterTagList input[type="checkbox"]').forEach(cb => {
+        cb.addEventListener("change", onClanFilterChange);
+    });
+    updateClanFilterCount();
+    applyClanFiltersAndRender();
+};
 
         function serverBadgeHtml(server) {
             const map = {
@@ -2196,16 +2290,21 @@ window.removeClanIconPreview = function () {
         }
 
         function applyClanFiltersAndRender() {
-            const filters = getClanFilters();
-            let filtered = allClanPosts.filter(p => {
-                if (filters.server && p.server !== filters.server) return false;
-                if (filters.tags && filters.tags.length) {
-                    const postTags = p.tags || [];
-                    const hasAll = filters.tags.every(t => postTags.includes(t));
-                    if (!hasAll) return false;
-                }
-                return true;
-            });
+    const filters = getClanFilters();
+    let filtered = allClanPosts.filter(p => {
+        if (filters.clanName && !(p.clanName || "").toLowerCase().includes(filters.clanName.toLowerCase())) return false;
+        if (filters.server && p.server !== filters.server) return false;
+        if (filters.minClanRank !== undefined && filters.minClanRank !== null && filters.minClanRank !== "") {
+            if ((p.clanRank ?? -1) < filters.minClanRank) return false;
+        }
+        if (filters.country && p.country !== filters.country) return false;
+        if (filters.tags && filters.tags.length) {
+            const postTags = p.tags || [];
+            const hasAll = filters.tags.every(t => postTags.includes(t));
+            if (!hasAll) return false;
+        }
+        return true;
+    });
 
             const list = document.getElementById("clanPostsList");
             if (!filtered.length) {
@@ -2229,6 +2328,11 @@ window.removeClanIconPreview = function () {
                                 ${serverBadgeHtml(p.server)}
                             </div>
                             <div class="clan-card-trophies" style="margin-top:4px;">🏆 Looking for ${p.minTrophies ? Number(p.minTrophies).toLocaleString() + "+" : "any"} trophies</div>
+                            <div class="compose-hint" style="margin-top:2px;">
+                                ${(p.clanRank !== undefined && p.clanRank !== null) ? `🏅 Rank ${escapeHtml(String(p.clanRank))}` : ""}
+                                ${p.memberCount ? ` &middot; 👥 ${escapeHtml(String(p.memberCount))} members` : ""}
+                                ${p.country ? ` &middot; 🌍 ${escapeHtml(p.country)}` : ""}
+                            </div>
                             ${(p.tags && p.tags.length) ? `<div>${tagPillsHtml(p.tags)}</div>` : ""}
                         </div>
                     </div>
@@ -2256,7 +2360,10 @@ window.removeClanIconPreview = function () {
             document.getElementById("clanDetailServer").innerHTML = serverBadgeHtml(p.server);
 
             document.getElementById("clanDetailTrophies").textContent =
-                `🏆 Looking for ${p.minTrophies ? Number(p.minTrophies).toLocaleString() + "+" : "any"} trophies`;
+                `🏆 Looking for ${p.minTrophies ? Number(p.minTrophies).toLocaleString() + "+" : "any"} trophies`
+                + ((p.clanRank !== undefined && p.clanRank !== null) ? ` · 🏅 Rank ${p.clanRank}` : "")
+                + (p.memberCount ? ` · 👥 ${p.memberCount} members` : "")
+                + (p.country ? ` · 🌍 ${p.country}` : "");
             document.getElementById("clanDetailTags").innerHTML = tagPillsHtml(p.tags);
             document.getElementById("clanDetailDescription").textContent = p.description || "No additional description.";
             document.getElementById("clanDetailAvatar").src = p.avatar;
