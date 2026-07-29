@@ -568,37 +568,22 @@ async function backfillAvatarCasing() {
     }
 
     async function postClanRecruitMessage(data) {
-        await waitForAuthReady();
-        if (!currentUser) throw new Error("You must sign in with Google first to post.");
+    await waitForAuthReady();
+    if (!currentUser) throw new Error("You must sign in with Google first to post.");
 
-        const clanName = (data.clanName || "").trim();
-        const server = data.server || "";
-        const minTrophies = parseInt(data.minTrophies, 10) || 0;
-        const description = (data.description || "").trim();
-        const tags = Array.isArray(data.tags) ? data.tags : [];
-        const iconUrl = data.iconUrl || null;
-        const iconPath = data.iconPath || null;
-
-        if (!clanName) throw new Error("Clan name is required.");
-        if (!server) throw new Error("Please select a server.");
-        if (description.length > 2000) throw new Error("Description must be 2000 characters or fewer.");
-        const profile = await getProfile();
-        if (isBannedNow(profile)) {
-            showRestrictedNotice(profile.banReason, profile.banUntil);
-            throw new Error("__RESTRICTED__");
-        }
-        if (!profile.name) throw new Error("Set an in-game name in your profile before posting.");
-
-        const remaining = await getClanPostCooldownRemaining();
-        if (remaining > 0) {
-            const days = Math.ceil(remaining / (24 * 60 * 60 * 1000));
-            throw new Error(`You can post again in about ${days} day(s).`);
-        }
-
-        // One post per user: docId is the poster's own uid, so reposting
-        // overwrites their previous clan post instead of leaving old copies
-        // sitting in the feed.
-        const postId = currentUser.uid;
+    const clanName = (data.clanName || "").trim();
+    const server = data.server || "";
+    const minTrophies = parseInt(data.minTrophies, 10) || 0;
+    const clanRank = (data.clanRank === null || data.clanRank === undefined || data.clanRank === "")
+        ? null : Math.max(0, Math.min(20, parseInt(data.clanRank, 10) || 0));
+    const country = (data.country || "").trim();
+    const memberCount = (data.memberCount === null || data.memberCount === undefined || data.memberCount === "")
+        ? null : Math.max(1, Math.min(50, parseInt(data.memberCount, 10) || 1));
+    const description = (data.description || "").trim();
+    const tags = Array.isArray(data.tags) ? data.tags : [];
+    const iconUrl = data.iconUrl || null;
+    const iconPath = data.iconPath || null;
+    ...
         await setDoc(doc(db, "clanPosts", postId), {
             uid: currentUser.uid,
             name: profile.name,
@@ -606,26 +591,23 @@ async function backfillAvatarCasing() {
             clanName,
             server,
             minTrophies,
+            clanRank,
+            country,
+            memberCount,
             description,
             tags,
             iconUrl,
             iconPath,
             createdAt: Date.now(),
-            // A Firestore TTL policy (set up in the console, not in rules)
-            // watches this field and auto-deletes the doc once it's past.
             expiresAt: Timestamp.fromMillis(Date.now() + CLAN_POST_LIFETIME_MS)
         });
 
-        // Stored separately from the live post so Autofill still works even
-        // after this post expires or is deleted (icon is intentionally left
-        // out — a stale blob/URL isn't worth re-uploading automatically).
         await setProfile({
             lastClanPostAt: Date.now(),
-            lastClanPostData: { clanName, server, minTrophies, description, tags }
+            lastClanPostData: { clanName, server, minTrophies, clanRank, country, memberCount, description, tags }
         });
         return postId;
     }
-
     // Edits an existing clan post's content without touching the posting
     // cooldown (lastClanPostAt) — lets a user fix their post without
     // waiting for the cooldown to reset.
@@ -641,10 +623,15 @@ async function backfillAvatarCasing() {
         }
 
         const clanName = (data.clanName || "").trim();
-        const server = data.server || "";
-        const minTrophies = parseInt(data.minTrophies, 10) || 0;
-        const description = (data.description || "").trim();
-        const tags = Array.isArray(data.tags) ? data.tags : [];
+    const server = data.server || "";
+    const minTrophies = parseInt(data.minTrophies, 10) || 0;
+    const clanRank = (data.clanRank === null || data.clanRank === undefined || data.clanRank === "")
+        ? null : Math.max(0, Math.min(20, parseInt(data.clanRank, 10) || 0));
+    const country = (data.country || "").trim();
+    const memberCount = (data.memberCount === null || data.memberCount === undefined || data.memberCount === "")
+        ? null : Math.max(1, Math.min(50, parseInt(data.memberCount, 10) || 1));
+    const description = (data.description || "").trim();
+    const tags = Array.isArray(data.tags) ? data.tags : [];
 
         if (!clanName) throw new Error("Clan name is required.");
         if (!server) throw new Error("Please select a server.");
@@ -654,7 +641,7 @@ async function backfillAvatarCasing() {
         const snap = await getDoc(ref);
         if (!snap.exists()) throw new Error("Post not found.");
 
-        const patch = { clanName, server, minTrophies, description, tags };
+        const patch = { clanName, server, minTrophies, clanRank, country, memberCount, description, tags };
         if (data.iconUrl) {
             patch.iconUrl = data.iconUrl;
             patch.iconPath = data.iconPath || null;
@@ -667,8 +654,8 @@ async function backfillAvatarCasing() {
         await updateDoc(ref, patch);
 
         // Keep the autofill snapshot in sync with edits too.
-        await setProfile({ lastClanPostData: { clanName, server, minTrophies, description, tags } });
-        return postId;
+        await setProfile({ lastClanPostData: { clanName, server, minTrophies, clanRank, country, memberCount, description, tags } });
+    return postId;
     }
 
     function listenToClanPosts(callback, maxCount = 100) {
