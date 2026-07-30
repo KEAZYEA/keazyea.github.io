@@ -1985,9 +1985,11 @@ function buildCountrySelectOptions(selectId, includeAny) {
             const profile = await AppState.getProfile();
             myProfile = profile;
             const note = document.getElementById("postClanCooldownNote");
-            const vip = AppState.isVipActive(profile);
-            note.textContent = vip ? "VIP: you can post once every 24 hours." : "You can post once every 7 days.";
-
+            // VIP-tiered cooldown text commented out — see appState.js. Everyone
+            // gets the same daily-reset cooldown while VIP is paused.
+            // const vip = AppState.isVipActive(profile);
+            // note.textContent = vip ? "VIP: you can post once every 24 hours." : "You can post once every 7 days.";
+            note.textContent = "You can post once per day — resets at midnight.";
             document.getElementById("postClanModalTitle").textContent = "Post Your Clan";
             document.getElementById("submitPostClanBtn").textContent = "Post";
             document.getElementById("submitPostClanBtn").disabled = false;
