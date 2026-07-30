@@ -1969,6 +1969,8 @@ function buildCountrySelectOptions(selectId, includeAny) {
             }
 
             document.getElementById("postAgreeModalOverlay").classList.add("open");
+            document.body.style.overflow = "hidden";
+            document.documentElement.style.overflow = "hidden";
         };
 
         window.closePostCooldownModal = function () {
@@ -1977,10 +1979,17 @@ function buildCountrySelectOptions(selectId, includeAny) {
 
         window.closePostAgreeModal = function () {
             document.getElementById("postAgreeModalOverlay").classList.remove("open");
+            document.body.style.overflow = "";
+            document.documentElement.style.overflow = "";
         };
 
         window.confirmPostAgreement = async function () {
             document.getElementById("postAgreeModalOverlay").classList.remove("open");
+            // Don't clear body/documentElement overflow here — the Post Your
+            // Clan form modal opens right below and needs the lock to stay on.
+            // It already sets document.body.style.overflow = "hidden" itself
+            // further down; just make sure documentElement matches too.
+            document.documentElement.style.overflow = "hidden";
 
             const profile = await AppState.getProfile();
             myProfile = profile;
@@ -2010,6 +2019,7 @@ function buildCountrySelectOptions(selectId, includeAny) {
 
             document.getElementById("postClanModalOverlay").classList.add("open");
             document.body.style.overflow = "hidden";
+            document.documentElement.style.overflow = "hidden";
         };
 
         window.autofillClanPost = function () {
@@ -2071,6 +2081,7 @@ function buildCountrySelectOptions(selectId, includeAny) {
         window.closePostClanModal = function () {
             document.getElementById("postClanModalOverlay").classList.remove("open");
             document.body.style.overflow = "";
+            document.documentElement.style.overflow = "";
             editingPostId = null;
         };
 
