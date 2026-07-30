@@ -2648,16 +2648,18 @@ window.removeClanIconPreview = function () {
         /* ---------------- ACTION SHEET (click a poster) ---------------- */
 
         window.openPersonActionSheet = function (uid, name, profile, isFriend) {
-            document.getElementById("actionModalTitle").textContent = name;
-            window._lastActionSheetProfile = profile;
-            document.getElementById("actionModalActions").innerHTML = `
-                <button class="btn-primary" onclick="closeActionModal(); showProfileModal(window._lastActionSheetProfile, ${isFriend})">👤 View Profile</button>
-                ${isFriend
-                    ? `<button class="btn-primary" onclick="closeActionModal(); openDmWith('${uid}', '${escapeHtml(name).replace(/'/g, "\\'")}', '${escapeHtml(profile.avatar || "")}')">💬 Message</button>`
-                    : `<button class="btn-primary" onclick="closeActionModal(); sendFriendReqTo('${uid}', '${escapeHtml(name).replace(/'/g, "\\'")}')">➕ Add Friend</button>`}
-            `;
-            document.getElementById("actionModalOverlay").classList.add("open");
-        };
+    document.getElementById("actionModalTitle").textContent = name;
+    window._lastActionSheetProfile = profile;
+    document.getElementById("actionModalActions").innerHTML = `
+        <button class="btn-primary" onclick="closeActionModal(); showProfileModal(window._lastActionSheetProfile, ${isFriend})">👤 View Profile</button>
+        ${isFriend
+            ? `<button class="btn-primary" onclick="closeActionModal(); openDmWith('${uid}', '${escapeHtml(name).replace(/'/g, "\\'")}', '${escapeHtml(profile.avatar || "")}')">💬 Message</button>`
+            : `<button class="btn-primary" onclick="closeActionModal(); sendFriendReqTo('${uid}', '${escapeHtml(name).replace(/'/g, "\\'")}')">➕ Add Friend</button>`}
+    `;
+    document.getElementById("actionModalOverlay").classList.add("open");
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
+};
 
         window.onPosterClick = async function (uid, name) {
             const user = AppState.getCurrentUser();
@@ -2677,8 +2679,10 @@ window.removeClanIconPreview = function () {
         };
 
         window.closeActionModal = function () {
-            document.getElementById("actionModalOverlay").classList.remove("open");
-        };
+    document.getElementById("actionModalOverlay").classList.remove("open");
+    document.body.style.overflow = "";
+    document.documentElement.style.overflow = "";
+};
 
         window.sendFriendReqTo = async function (uid, name) {
     try {
