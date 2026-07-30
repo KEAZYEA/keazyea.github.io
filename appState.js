@@ -524,21 +524,40 @@ async function backfillAvatarCasing() {
        NEW IN STAGE 3 — CLAN RECRUITMENT POSTS
        ====================================================== */
 
-    const NORMAL_POST_COOLDOWN_MS = 7 * 24 * 60 * 60 * 1000;
-    const VIP_POST_COOLDOWN_MS = 24 * 60 * 60 * 1000;
-    const CLAN_POST_LIFETIME_MS = 30 * 24 * 60 * 60 * 1000; // posts auto-expire after ~1 month
+    /* ============================================================
+   VIP-TIERED POSTING COOLDOWN — DISABLED 2026-07-31.
+   Previously: VIP could post once every 24h, everyone else once
+   every 7 days. VIP is paused site-wide right now (see store.html),
+   so everyone gets the SAME cooldown: one clan post per calendar
+   day, resetting at midnight — not a rolling time window.
+   To bring the old VIP/normal split back, delete the daily-reset
+   block below and uncomment these three lines + swap
+   getClanPostCooldownRemaining() back to the ms-window version.
+   ============================================================ */
+// const NORMAL_POST_COOLDOWN_MS = 7 * 24 * 60 * 60 * 1000;
+// const VIP_POST_COOLDOWN_MS = 24 * 60 * 60 * 1000;
+// function getPostCooldownMs(profile) {
+//     return isVipActive(profile) ? VIP_POST_COOLDOWN_MS : NORMAL_POST_COOLDOWN_MS;
+// }
 
-    function getPostCooldownMs(profile) {
-        return isVipActive(profile) ? VIP_POST_COOLDOWN_MS : NORMAL_POST_COOLDOWN_MS;
-    }
+const CLAN_POST_LIFETIME_MS = 30 * 24 * 60 * 60 * 1000; // posts auto-expire after ~1 month
 
-    // Returns 0 if the user can post right now, otherwise ms remaining.
-    async function getClanPostCooldownRemaining() {
-        const profile = await getProfile();
-        if (!profile.lastClanPostAt) return 0;
-        const remaining = profile.lastClanPostAt + getPostCooldownMs(profile) - Date.now();
-        return remaining > 0 ? remaining : 0;
-    }
+function isSameCalendarDay(tsA, tsB) {
+    const a = new Date(tsA), b = new Date(tsB);
+    return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+}
+
+// Returns 0 if the user can post right now, otherwise ms remaining until
+// midnight (the daily reset), instead of a rolling 24h/7-day window.
+async function getClanPostCooldownRemaining() {
+    const profile = await getProfile();
+    if (!profile.lastClanPostAt) return 0;
+    if (!isSameCalendarDay(profile.lastClanPostAt, Date.now())) return 0;
+    const nextMidnight = new Date();
+    nextMidnight.setHours(24, 0, 0, 0);
+    const remaining = nextMidnight.getTime() - Date.now();
+    return remaining > 0 ? remaining : 0;
+}
 
     async function uploadClanIcon(file) {
         await waitForAuthReady();
@@ -596,8 +615,8 @@ async function backfillAvatarCasing() {
 
         const remaining = await getClanPostCooldownRemaining();
         if (remaining > 0) {
-            const days = Math.ceil(remaining / (24 * 60 * 60 * 1000));
-            throw new Error(`You can post again in about ${days} day(s).`);
+            const hours = Math.max(1, Math.ceil(remaining / (60 * 60 * 1000)));
+            throw new Error(`You've already posted today — try again in about ${hours} hour(s) (resets at midnight).`);
         }
 
         const postId = currentUser.uid;
@@ -2748,7 +2767,9 @@ async function maybeRefreshAd(containerId) {
         addAnnouncement, getAnnouncements, updateAnnouncement, deleteAnnouncement,
         // clan recruitment posts
         postClanRecruitMessage, updateClanPost, listenToClanPosts, deleteClanPost, getClanPostCooldownRemaining,
-        getPostCooldownMs, NORMAL_POST_COOLDOWN_MS, VIP_POST_COOLDOWN_MS, CLAN_POST_LIFETIME_MS, uploadClanIcon, deleteClanIconSafe,
+        // getPostCooldownMs, NORMAL_POST_COOLDOWN_MS, VIP_POST_COOLDOWN_MS — commented out with the VIP
+        // cooldown split above. CLAN_POST_LIFETIME_MS is unrelated to VIP, so it stays exported.
+        CLAN_POST_LIFETIME_MS, uploadClanIcon, deleteClanIconSafe,
         // friends
         sendFriendRequest, respondToFriendRequest, listenToIncomingFriendRequests, listenToFriends,
         listenToFriendsWithDmMeta, listenToPublicProfilesPresence,
