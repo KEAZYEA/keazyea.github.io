@@ -182,7 +182,8 @@
                         <button class="btn-primary vip-unlock-btn" onclick="handleSignIn()"
                             style="font-size:1.2rem; padding:16px 32px; margin-top:12px;">Sign in with Google</button>
                     </div>
-                    <!-- STATE 1: LOCKED (non-VIP) -->
+                    <!-- STATE 1: LOCKED (non-VIP) — currently unreachable; refreshVipState() no
+                         longer routes here while the VIP gate is disabled (see the <script> below) -->
                     <div id="vipLockedState" class="lock-screen">
                         <span class="vip-lock-icon-big">🔒</span>
                         <h2>VIP Giveaway</h2>
@@ -429,21 +430,31 @@ document.getElementById("prizeRevealCloseBtn").addEventListener("click", () => {
     document.getElementById("prizeRevealModalOverlay").classList.remove("open");
 });
 
-async function refreshVipState() {
+/* ============================================================
+               VIP GATE ON THE GIVEAWAY — DISABLED 2026-07-31.
+               The wheel used to be locked to VIP Pass holders. It's now
+               open to every signed-in user while the site builds an
+               audience. To restore the VIP requirement, delete the
+               pass-through version below and uncomment the block beneath it.
+               ============================================================ */
+            async function refreshVipState() {
                 const user = AppState.getCurrentUser();
                 if (!user) {
                     document.getElementById("vipTabLockIcon").textContent = "🔒";
                     showState("signedout");
                     return;
                 }
+                document.getElementById("vipTabLockIcon").textContent = "🔓";
+
+                /* --- ORIGINAL VIP-GATED VERSION (commented out) ---
                 const profile = await AppState.getProfile();
                 const vipActive = AppState.isVipActive(profile);
                 document.getElementById("vipTabLockIcon").textContent = vipActive ? "🔓" : "🔒";
-
                 if (!vipActive) {
                     showState("locked");
                     return;
                 }
+                --- end original --- */
 
                 currentWeekId = AppState.getWeekId();
                 const existingEntry = await AppState.getMyGiveawayEntry(currentWeekId);
