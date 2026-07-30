@@ -1846,6 +1846,36 @@ body {
             }
         });
 
+        /* ---------------- GIVEAWAY SIGN-IN NUDGE ----------------
+           Popup encouraging signed-out visitors to sign in for the free
+           giveaway, now that it's open to everyone instead of VIP-only.
+           Shows at most once per day per browser. */
+        const GIVEAWAY_PROMPT_KEY = "kih_giveaway_prompt_last_shown";
+        const GIVEAWAY_PROMPT_INTERVAL_MS = 24 * 60 * 60 * 1000;
+
+        function maybeShowGiveawaySigninPrompt() {
+            if (AppState.getCurrentUser()) return; // only for signed-out visitors
+            if (document.getElementById("termsGateOverlay").classList.contains("open")) return; // don't stack on the terms gate
+            const lastShown = parseInt(localStorage.getItem(GIVEAWAY_PROMPT_KEY) || "0", 10);
+            if (Date.now() - lastShown < GIVEAWAY_PROMPT_INTERVAL_MS) return;
+            document.getElementById("giveawaySigninModalOverlay").classList.add("open");
+            localStorage.setItem(GIVEAWAY_PROMPT_KEY, String(Date.now()));
+        }
+
+        window.dismissGiveawaySigninModal = function () {
+            document.getElementById("giveawaySigninModalOverlay").classList.remove("open");
+        };
+
+        window.signInFromGiveawayPrompt = async function () {
+            try {
+                await AppState.signIn();
+                document.getElementById("giveawaySigninModalOverlay").classList.remove("open");
+                goToPage("promo"); // drop them straight into the giveaway tab
+            } catch (e) {
+                console.warn("Sign-in from giveaway prompt failed:", e.message);
+            }
+        };
+
         async function goToPage(page, fromAbout) {
             if (page !== "profile" && isProfileDirty()) {
                 let choice = await showUnsavedModal();
