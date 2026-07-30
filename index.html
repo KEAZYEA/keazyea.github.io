@@ -1552,7 +1552,17 @@ body {
                 <button class="btn-primary btn-block" id="termsGateAgreeBtn" disabled style="font-size:1.05rem; padding:14px;">Continue</button>
             </div>
         </div>
-
+<!-- Giveaway sign-in nudge — shown occasionally to signed-out visitors,
+     since the giveaway is now free for everyone (VIP paused). -->
+<div class="mini-modal-overlay" id="giveawaySigninModalOverlay">
+    <div class="mini-modal-box" style="max-width:360px;">
+        <div style="font-size:2.5rem; margin-bottom:10px;">🎁</div>
+        <h3 style="margin-top:0;">Free Weekly Giveaway!</h3>
+        <p class="settings-sub" style="margin-bottom:20px;">Sign in with Google for a free chance to win exclusive promo codes — no VIP pass needed.</p>
+        <button class="btn-primary btn-block" onclick="signInFromGiveawayPrompt()" style="font-size:1.05rem; padding:14px;">Sign in with Google</button>
+        <button class="about-creator-link" onclick="dismissGiveawaySigninModal()" style="margin-top:10px;">Maybe later</button>
+    </div>
+</div>
         <div class="unsaved-modal-overlay" id="unsavedModalOverlay">
     <div class="unsaved-modal">
         <div class="unsaved-modal-title">Unsaved Changes</div>
@@ -2848,6 +2858,7 @@ document.getElementById("vipStatusText").textContent = AppState.isVipActive(prof
                 setInterval(() => AppState.touchLastActive(), 5 * 60 * 1000);
                 checkTermsGate();
                 AppState.loadAdsterraAdsIfAllowed();
+                setTimeout(maybeShowGiveawaySigninPrompt, 1500); // slight delay so it doesn't collide with the terms gate
             });
             AppState.onAuthChange(() => AppState.loadAdsterraAdsIfAllowed());
 
