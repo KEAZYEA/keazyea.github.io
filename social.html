@@ -2366,7 +2366,6 @@ window.removeClanIconPreview = function () {
             document.getElementById("clanDetailIcon").src = p.iconUrl || "images/KIH.jpg";
             document.getElementById("clanDetailName").textContent = p.clanName || "Unnamed Clan";
             document.getElementById("clanDetailServer").innerHTML = serverBadgeHtml(p.server);
-
             document.getElementById("clanDetailTrophies").textContent =
                 `🏆 Looking for ${p.minTrophies ? Number(p.minTrophies).toLocaleString() + "+" : "any"} trophies`
                 + ((p.clanRank !== undefined && p.clanRank !== null) ? ` · 🏅 Rank ${p.clanRank}` : "")
@@ -2400,10 +2399,14 @@ window.removeClanIconPreview = function () {
             }
 
             document.getElementById("clanDetailModalOverlay").classList.add("open");
+            document.body.style.overflow = "hidden";
+            document.documentElement.style.overflow = "hidden";
         };
 
         window.closeClanDetailModal = function () {
             document.getElementById("clanDetailModalOverlay").classList.remove("open");
+            document.body.style.overflow = "";
+            document.documentElement.style.overflow = "";
         };
 
         /* ---------------- FRIEND REQUEST PANEL ---------------- */
@@ -3097,6 +3100,7 @@ document.getElementById("dmMessages").addEventListener("scroll", updateDmScrollB
             closePostAgreeModal();
             closePostCooldownModal();
             document.body.style.overflow = "";
+            document.documentElement.style.overflow = "";
             document.getElementById("dmActionsMenu")?.classList.remove("open");
             document.getElementById("friendReqPanel")?.classList.remove("open");
             document.getElementById("clanFilterDropdown")?.classList.remove("open");
