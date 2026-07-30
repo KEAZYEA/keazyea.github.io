@@ -209,8 +209,9 @@
                 </div>
             </div>
 
-            <!-- VIP PLAN -->
-            <div class="plan-card vip"
+            <!-- VIP PLAN — new sign-ups disabled 2026-07-31, see refreshPlanButtons() below.
+                 Existing subscribers still see this card so they can check status / cancel. -->
+            <div class="plan-card vip" id="vipPlanCard"
                 style="text-align:center; border:1px solid #6c63ff; border-radius:16px; padding:28px 24px; width:280px; display:flex; flex-direction:column; justify-content:space-between;">
                 <h3>👑 VIP Pass</h3>
                 <div class="plan-price">USD $2<span>/month</span></div>
@@ -336,12 +337,33 @@
             const vipLiveSub = vipActive && !!profile.vipSubscriptionId;
             const vipCancelledButActive = vipActive && !vipLiveSub;
 
+            /* ============================================================
+               VIP SIGN-UPS — DISABLED 2026-07-31.
+               Traffic/sign-ups are still very low, so the giveaway + daily
+               clan posting are free for everyone rather than gated behind
+               a $2/mo pass. Existing subscribers (vipLiveSub or
+               vipCancelledButActive) still see their card so they can
+               check status or cancel — only brand-new sign-ups and
+               resubscribes are turned off below.
+               To bring VIP back: delete this comment block, remove the
+               "new sign-ups disabled" branch below, and uncomment the
+               original renderSubscribeButton() calls beneath it.
+               ============================================================ */
+            const vipCard = document.getElementById("vipPlanCard");
+            vipCard.style.display = (vipLiveSub || vipCancelledButActive) ? "flex" : "none";
+
             document.getElementById("vipActiveBox").style.display = vipLiveSub ? "block" : "none";
-            document.getElementById("vipButtonBox").style.display = vipLiveSub ? "none" : "block";
+            document.getElementById("vipButtonBox").style.display = "none";
 
             if (vipLiveSub) {
                 document.getElementById("vipStatusText").textContent =
                     `Active — ${daysLeft(profile.vipExpiresAt)} day(s) left`;
+            } else if (vipCancelledButActive) {
+                document.getElementById("vipButtonBox").style.display = "block";
+                document.getElementById("vipButtonBox").innerHTML =
+                    `<p class="promo-sub">Cancelled — ${daysLeft(profile.vipExpiresAt)} day(s) left. New VIP sign-ups are paused for now.</p>`;
+            }
+            /* --- ORIGINAL VIP SUBSCRIBE FLOW (commented out) ---
             } else if (vipCancelledButActive) {
                 if (user && renderedKeys.vip !== "resubscribe") {
                     renderSubscribeButton("vipButtonBox", VIP_PLAN_ID, "vip",
@@ -352,6 +374,7 @@
                 renderSubscribeButton("vipButtonBox", VIP_PLAN_ID, "vip");
                 renderedKeys.vip = "subscribe";
             }
+            --- end original --- */
         }
 
        function renderSubscribeButton(containerId, planId, plan, noticeText) {
