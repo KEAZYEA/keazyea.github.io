@@ -1181,11 +1181,10 @@
 }
 
         #suggestedFriendsSection {
-            flex: 1; /* grows to absorb whatever space Friends doesn't need */
-            min-height: 130px;
-            display: flex;
-            flex-direction: column;
-        }
+    display: flex;
+    flex-direction: column;
+    margin-top: 4px;
+}
 
         /* dark-themed scrollbar so it blends with the page instead of white */
         ::-webkit-scrollbar {
@@ -1276,8 +1275,9 @@
         }
 
         .suggested-friends-scroll {
-    flex: 1;
-    min-height: 0;
+    max-height: 320px; /* real, fixed cap — same working pattern as #friendsList,
+                           instead of depending on flex:1 inside an ancestor
+                           that never actually stretches */
     overflow-y: auto;
     overscroll-behavior: contain;
     margin-right: 32px;
@@ -2455,7 +2455,8 @@ window.removeClanIconPreview = function () {
         const SERVER_LABELS = { ios: "iOS 🍎", android: "Android 🤖", both: "iOS & Android" };
 
         window.showProfileModal = function (profile, isFriend) {
-            document.body.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
             document.getElementById("friendProfileAvatar").innerHTML = avatarHtml(profile.avatar, profile.name, "");
             document.getElementById("friendProfileName").textContent = profile.name;
 
@@ -2499,9 +2500,10 @@ window.removeClanIconPreview = function () {
             document.getElementById("friendProfileModalOverlay").classList.add("open");
         };
         window.closeFriendProfileModal = function () {
-            document.getElementById("friendProfileModalOverlay").classList.remove("open");
-            document.body.style.overflow = "";
-        };
+    document.getElementById("friendProfileModalOverlay").classList.remove("open");
+    document.body.style.overflow = "";
+    document.documentElement.style.overflow = "";
+};
 
         window.confirmUnfriend = async function (uid, name) {
             if (!await showConfirmModal("Remove friend", `Remove ${name} from your friends? You can always send another friend request later.`)) return;
@@ -2679,11 +2681,21 @@ window.removeClanIconPreview = function () {
         };
 
         window.sendFriendReqTo = async function (uid, name) {
-            try {
-                await AppState.sendFriendRequest(uid, name);
-                closeActionModal();
-                showToast("Friend request sent to " + name + "!");
-            } catch (e) {
+    try {
+        await AppState.sendFriendRequest(uid, name);
+        closeActionModal();
+        showToast("Friend request sent to " + name + "!");
+        // Pull them out of Suggested Friends immediately instead of waiting
+        // for the next refresh.
+        if (window._lastSuggestions) {
+            window._lastSuggestions = window._lastSuggestions.filter(s => s.uid !== uid);
+            if (!window._lastSuggestions.length) {
+                document.getElementById("suggestedFriendsSection").style.display = "none";
+            } else {
+                loadSuggestedFriends(); // simplest way to re-render the trimmed list cleanly
+            }
+        }
+    } catch (e) {
                 if (e.message !== "__RESTRICTED__") {
                     showInfoModal("Couldn't send request", e.message);
                 }
