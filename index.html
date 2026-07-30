@@ -1833,8 +1833,6 @@ body {
                     await AppState.setProfile({ acceptedTermsVersion: TERMS_VERSION, acceptedTermsAt: Date.now() });
                 } catch (e) {
                     console.warn("Couldn't save terms acceptance to profile (will not re-prompt on this device; will retry silently next load):", e.message);
-                    // Best-effort retry shortly after, in case it was a transient
-                    // network blip — doesn't block or re-show the gate either way.
                     setTimeout(async () => {
                         try {
                             await AppState.setProfile({ acceptedTermsVersion: TERMS_VERSION, acceptedTermsAt: Date.now() });
@@ -1844,6 +1842,9 @@ body {
                     }, 5000);
                 }
             }
+            // Terms gate just closed — this is the first moment it's safe to
+            // show the giveaway sign-in popup for a brand-new visitor.
+            setTimeout(maybeShowGiveawaySigninPrompt, 400);
         });
 
         /* ---------------- GIVEAWAY SIGN-IN NUDGE ----------------
@@ -1855,12 +1856,14 @@ body {
 
         function maybeShowGiveawaySigninPrompt() {
             if (AppState.getCurrentUser()) return; // only for signed-out visitors
-            if (document.getElementById("termsGateOverlay").classList.contains("open")) return; // don't stack on the terms gate
+            if (document.getElementById("termsGateOverlay").classList.contains("open")) return; // don't stack on the terms gate — re-called once it closes, see below
             const lastShown = parseInt(localStorage.getItem(GIVEAWAY_PROMPT_KEY) || "0", 10);
             if (Date.now() - lastShown < GIVEAWAY_PROMPT_INTERVAL_MS) return;
             document.getElementById("giveawaySigninModalOverlay").classList.add("open");
             localStorage.setItem(GIVEAWAY_PROMPT_KEY, String(Date.now()));
         }
+        // TESTING HELPER: run AppState/localStorage.removeItem("kih_giveaway_prompt_last_shown")
+        // in the browser console, then reload, to force the popup to show again immediately.
 
         window.dismissGiveawaySigninModal = function () {
             document.getElementById("giveawaySigninModalOverlay").classList.remove("open");
@@ -2888,7 +2891,10 @@ document.getElementById("vipStatusText").textContent = AppState.isVipActive(prof
                 setInterval(() => AppState.touchLastActive(), 5 * 60 * 1000);
                 checkTermsGate();
                 AppState.loadAdsterraAdsIfAllowed();
-                setTimeout(maybeShowGiveawaySigninPrompt, 1500); // slight delay so it doesn't collide with the terms gate
+                // Only fires here if the terms gate was ALREADY accepted (so it's
+                // not currently open) — first-time visitors instead get it right
+                // after clicking "Continue" on the terms gate, see that handler.
+                setTimeout(maybeShowGiveawaySigninPrompt, 1500);
             });
             AppState.onAuthChange(() => AppState.loadAdsterraAdsIfAllowed());
 
