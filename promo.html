@@ -183,7 +183,7 @@
                     </div>
                     <!-- STATE 1: LOCKED (non-VIP) — currently unreachable; refreshVipState() no
                          longer routes here while the VIP gate is disabled (see the <script> below) -->
-                    <div id="vipLockedState" class="lock-screen">
+                    <div id="vipLockedState" class="lock-screen" style="display:none;">
                         <span class="vip-lock-icon-big">🔒</span>
                         <h2>VIP Giveaway</h2>
                         <p class="promo-sub">This wheel is reserved for VIP Pass holders — a chance to win exclusive
@@ -439,11 +439,11 @@ document.getElementById("prizeRevealCloseBtn").addEventListener("click", () => {
             async function refreshVipState() {
                 const user = AppState.getCurrentUser();
                 if (!user) {
-                    document.getElementById("vipTabLockIcon").textContent = "🔒";
+                    // vipTabLockIcon span was removed from the tab button HTML
+                    // along with the VIP gate — nothing to update here anymore.
                     showState("signedout");
                     return;
                 }
-                document.getElementById("vipTabLockIcon").textContent = "🔓";
 
                 /* --- ORIGINAL VIP-GATED VERSION (commented out) ---
                 const profile = await AppState.getProfile();
