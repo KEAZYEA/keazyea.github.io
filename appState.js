@@ -1159,7 +1159,7 @@ async function getClanPostCooldownRemaining() {
                 throw new Error("You can't message this user.");
             }
             if (otherUid && await haveIBlocked(otherUid)) {
-                throw new Error("__BLOCKED_BY_ME__");
+                throw new Error("You have blocked this user. Unblock them before sending messages.");
             }
         }
 
