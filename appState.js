@@ -169,17 +169,28 @@ const AppState = (function () {
         }
         const ref = doc(db, "users", currentUser.uid);
         const snap = await getDoc(ref);
-        if (!snap.exists()) {
-            const fresh = {
-                ...defaultProfile(),
-                name: currentUser.displayName || "",
-                email: currentUser.email ? currentUser.email.toLowerCase() : "",
-                avatar: currentUser.photoURL || defaultProfile().avatar
-            };
-            await setDoc(ref, fresh);
-            await mirrorPublicProfile(fresh);
-            return fresh;
-        }
+        
+if (!snap.exists()) {
+    const local = getLocalProfile();
+    const fresh = {
+        ...defaultProfile(),
+        // carry over anything the user filled in while signed out
+        bio: local.bio || "",
+        server: local.server || "",
+        favoriteTroop: local.favoriteTroop || "",
+        favoriteHero: local.favoriteHero || "",
+        highestTrophies: local.highestTrophies || 0,
+        currentClan: local.currentClan || "",
+        currentLevel: local.currentLevel || 0,
+        currentPower: local.currentPower || 0,
+        name: local.name || currentUser.displayName || "",
+        email: currentUser.email ? currentUser.email.toLowerCase() : "",
+        avatar: local.avatar || currentUser.photoURL || defaultProfile().avatar
+    };
+    await setDoc(ref, fresh);
+    await mirrorPublicProfile(fresh);
+    return fresh;
+}
         const data = snap.data();
         if (!data.email && currentUser.email) {
             const email = currentUser.email.toLowerCase();
