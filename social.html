@@ -1900,9 +1900,21 @@ function buildCountrySelectOptions(selectId, includeAny) {
 
         async function updateDmInputBlockedState() {
             if (!currentDmOtherUid) return;
-            const blocked = await AppState.haveIBlocked(currentDmOtherUid);
-            document.getElementById("dmBlockedNotice").style.display = blocked ? "block" : "none";
-            document.getElementById("dmInputRow").style.display = blocked ? "none" : "flex";
+            const [iBlockedThem, theyBlockedMe] = await Promise.all([
+                AppState.haveIBlocked(currentDmOtherUid),
+                AppState.amIBlockedBy(currentDmOtherUid)
+            ]);
+            const notice = document.getElementById("dmBlockedNotice");
+            if (iBlockedThem) {
+                notice.textContent = "🚫 You've blocked this user. Unblock them to send messages.";
+                notice.style.display = "block";
+            } else if (theyBlockedMe) {
+                notice.textContent = "🚫 You can't message this user right now.";
+                notice.style.display = "block";
+            } else {
+                notice.style.display = "none";
+            }
+            document.getElementById("dmInputRow").style.display = (iBlockedThem || theyBlockedMe) ? "none" : "flex";
         }
         function formatCooldown(ms) {
             const hours = Math.ceil(ms / (60 * 60 * 1000));
