@@ -705,13 +705,14 @@ if (user && user.uid === winnerData.winnerUid) {
     const myPrize = await AppState.getMyPrize(currentWeekId);
     if (myPrize) {
                         resultDiv.innerHTML +=
-                            '<br><br><strong style="font-size:1.3rem;">🏆 Congrats, you won!</strong>' +
-                            '<br><div style="margin-top:14px; font-size:1rem; color:#9a9ab0;">Your Promo Code</div>' +
-                            '<div style="font-size:1.4rem; margin-top:2px;">⬇️</div>' +
-                            '<div class="promo-code-box" style="display:inline-flex; align-items:center; gap:10px; justify-content:center; font-size:1.3rem; padding:14px 20px; margin-top:6px;">' +
-                            '<span>' + escapeHtml(myPrize.prize) + '</span>' +
-                            '<button class="copy-btn" data-code="' + escapeHtml(myPrize.prize) + '" style="font-size:0.9rem; padding:6px 14px;">Copy</button>' +
-                            '</div>';
+    '<br><br><strong style="font-size:1.3rem;">🏆 Congrats, you won!</strong>' +
+    '<br><div style="margin-top:14px; font-size:1rem; color:#9a9ab0;">Your Promo Code</div>' +
+    '<div style="font-size:1.4rem; margin-top:2px;">⬇️</div>' +
+    '<div class="promo-code-box" style="display:inline-flex; align-items:center; gap:10px; justify-content:center; font-size:1.3rem; padding:14px 20px; margin-top:6px;">' +
+    '<span>' + escapeHtml(myPrize.prize) + '</span>' +
+    '<button class="copy-btn" data-code="' + escapeHtml(myPrize.prize) + '" style="font-size:0.9rem; padding:6px 14px;">Copy</button>' +
+    '</div>' +
+    '<div style="margin-top:12px; font-size:0.85rem; color:#ff9b6b;">⚠️ Please note that sharing of promo codes can result in potential consequences. So please keep them to yourself and use them only once.</div>';
 
                         const newCopyBtn = resultDiv.querySelector(".copy-btn");
                         newCopyBtn.addEventListener("click", () => copyCode(newCopyBtn.getAttribute("data-code"), newCopyBtn));
