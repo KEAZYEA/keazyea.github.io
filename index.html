@@ -1632,6 +1632,7 @@ body {
                 <div id="prizeRevealAnimArea" style="min-height:90px; display:flex; align-items:center; justify-content:center; margin-bottom:16px;">
                     <span id="prizeRevealCodeText" style="font-size:1.5rem; font-weight:800; letter-spacing:1px; opacity:0; transform:scale(0.6); transition:opacity 0.4s ease, transform 0.4s cubic-bezier(0.34,1.56,0.64,1);"></span>
                 </div>
+                <div id="prizeRevealWarningNote" style="display:none; color:#ff9b6b; font-size:0.8rem; margin-bottom:14px;">⚠️ Please note that sharing of promo codes can result in potential consequences. So please keep them to yourself and use them only once.</div>
                 <button class="btn-primary" id="prizeRevealCopyBtn" style="width:100%; margin-bottom:10px; padding:12px;">Copy Code</button>
                 <button class="btn-settings-action" id="prizeRevealCloseBtn" style="width:100%;">Close</button>
             </div>
@@ -2766,23 +2767,26 @@ document.getElementById("vipStatusText").textContent = AppState.isVipActive(prof
         // AppState calls, no VIP check, and no dependency on the wheel/day
         // of week. Works from any inbox notification, any time.
         function openPrizeReveal(prize, pending) {
-            const overlay = document.getElementById("prizeRevealModalOverlay");
-            const codeText = document.getElementById("prizeRevealCodeText");
-            const copyBtn = document.getElementById("prizeRevealCopyBtn");
+    const overlay = document.getElementById("prizeRevealModalOverlay");
+    const codeText = document.getElementById("prizeRevealCodeText");
+    const copyBtn = document.getElementById("prizeRevealCopyBtn");
+    const warningNote = document.getElementById("prizeRevealWarningNote");
 
-            if (!prize) {
-                codeText.textContent = pending
-                    ? "🎉 You won! Your code is on its way — check back soon."
-                    : "Code unavailable";
-                codeText.style.opacity = "1";
-                codeText.style.transform = "scale(1)";
-                copyBtn.style.display = "none";
-                overlay.classList.add("open");
-                return;
-            }
+    if (!prize) {
+        codeText.textContent = pending
+            ? "🎉 You won! Your code is on its way — check back soon."
+            : "Code unavailable";
+        codeText.style.opacity = "1";
+        codeText.style.transform = "scale(1)";
+        copyBtn.style.display = "none";
+        warningNote.style.display = "none";
+        overlay.classList.add("open");
+        return;
+    }
 
-            copyBtn.style.display = "block";
-            codeText.textContent = prize;
+    copyBtn.style.display = "block";
+    warningNote.style.display = "block";
+    codeText.textContent = prize;
             codeText.style.opacity = "0";
             codeText.style.transform = "scale(0.6)";
             overlay.classList.add("open");
