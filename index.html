@@ -1427,13 +1427,13 @@ body {
                                 in</button>
                         </div>
 
-                        <div class="settings-row">
+                        <!-- <div class="settings-row">
                             <div>
                                 <div class="settings-label">VIP Pass</div>
                                 <div class="settings-sub" id="vipStatusText">Inactive</div>
                             </div>
                             <button class="btn-settings-action" onclick="goToPage('store')">Manage</button>
-                        </div>
+                        </div> -->
 
                         <div class="settings-row">
                             <div>
@@ -2305,7 +2305,7 @@ body {
             document.getElementById("googleSignInBtn").textContent = user ? "Sign out" : "Sign in";
 
             let vipActive = profile.vipExpiresAt && profile.vipExpiresAt > Date.now();
-document.getElementById("vipStatusText").textContent = AppState.isVipActive(profile) ? "Active ✓" : "Inactive";
+let vipStatusEl = document.getElementById("vipStatusText"); if (vipStatusEl) vipStatusEl.textContent = AppState.isVipActive(profile) ? "Active ✓" : "Inactive";
         }
 
         async function toggleGoogleSignIn() {
