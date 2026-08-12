@@ -765,18 +765,18 @@
                     .replace(/\b\w/g, c => c.toUpperCase()); // Title Case
             }
 
-            function formatStatValue(key, val) {
-                if (key === "upgradeCurrency" && val === "TalentSphere") {
-                    return "Books";
-                }
-                if ((key === "units" || key === "appliesTo") && isClickableAppliesToValue(val)) {
-                    return `<span class="applies-to-link" onclick="openAppliesToList('${String(val).replace(/'/g, "\\'")}')">${val} 🔍</span>`;
-                }
-                if (percentageKeys.has(key) && typeof val === "number") {
-                    return parseFloat((val * 100).toFixed(2)) + "%";
-                }
-                return val;
-            }
+            function formatStatValue(key, val, context = "troops") {
+    if (key === "upgradeCurrency" && val === "TalentSphere") {
+        return "Books";
+    }
+    if ((key === "units" || key === "appliesTo") && isClickableAppliesToValue(val)) {
+        return `<span class="applies-to-link" onclick="openAppliesToList('${String(val).replace(/'/g, "\\'")}', '${context}')">${val} 🔍</span>`;
+    }
+    if (percentageKeys.has(key) && typeof val === "number") {
+        return parseFloat((val * 100).toFixed(2)) + "%";
+    }
+    return val;
+}
 
             function getStatLabel(key, abilityInfoId) {
                 if (key === "damageMultiplier" && damageReceivedAbilities[abilityInfoId]) {
@@ -974,7 +974,7 @@ function unlockBackgroundScroll() {
     document.body.style.width = "";
     window.scrollTo(0, scrollLockY);
 }
-            function openAppliesToList(value) {
+            function openAppliesToList(value, context = "troops") {
     let units = getUnitsByAppliesTo(value);
     document.getElementById("appliesToModalTitle").textContent = `Applies to: ${value}`;
     let body = document.getElementById("appliesToModalBody");
@@ -995,7 +995,7 @@ function unlockBackgroundScroll() {
         <div style="font-weight:bold; font-size:16px; margin:12px 0 6px; color:#fff;">${label}</div>
         <div class="applies-to-grid">
             ${group.map(u => `
-                <div class="applies-to-item" onclick="selectUnitFromAppliesTo('${u.key}', '${u.unitType}')">
+                <div class="applies-to-item" onclick="selectUnitFromAppliesTo('${u.key}', '${u.unitType}', '${context}')">
                     <img src="images/${u.key.toUpperCase()}.jpg" alt="${u.displayName}" onerror="this.style.visibility='hidden'">
                     <span>${u.displayName}</span>
                 </div>
@@ -1012,21 +1012,44 @@ function unlockBackgroundScroll() {
     document.getElementById("appliesToModalOverlay").classList.remove("open");
     unlockBackgroundScroll();
 }
-            function selectUnitFromAppliesTo(key, unitType) {
-                let target = (unitType === "hero" ? heroList : troopList).find(u => u.key === key);
-                if (!target) return;
-                if (selectTroop) {
-                    troopNavStack.push({ unit: selectTroop, level: parseInt(troopsLevel), scrollY: window.scrollY });
-                }
-                closeAppliesToList();
-                selectTroop = target;
-                troopType = unitType;
-                troopsLevel = 1;
-                document.getElementById("troopsSlider").value = 1;
-                document.getElementById("troopsLevel").textContent = "Level 1";
-                updateTroopsCard();
-                window.scrollTo(0, 0);
-            }
+            function selectUnitFromAppliesTo(key, unitType, context = "troops") {
+    let target = (unitType === "hero" ? heroList : troopList).find(u => u.key === key);
+    if (!target) return;
+
+    if (context === "left" || context === "right") {
+        if (context === "left") {
+            selectleft = target;
+            leftType = unitType;
+            leftLevel = 1;
+            document.getElementById("leftSlider").value = 1;
+            document.getElementById("leftLevel").textContent = "Level 1";
+            document.getElementById("leftSearch").value = target.displayName;
+        } else {
+            selectright = target;
+            rightType = unitType;
+            rightLevel = 1;
+            document.getElementById("rightSlider").value = 1;
+            document.getElementById("rightLevel").textContent = "Level 1";
+            document.getElementById("rightSearch").value = target.displayName;
+        }
+        closeAppliesToList();
+        updateCards();
+        window.scrollTo(0, 0);
+        return;
+    }
+
+    if (selectTroop) {
+        troopNavStack.push({ unit: selectTroop, level: parseInt(troopsLevel), scrollY: window.scrollY });
+    }
+    closeAppliesToList();
+    selectTroop = target;
+    troopType = unitType;
+    troopsLevel = 1;
+    document.getElementById("troopsSlider").value = 1;
+    document.getElementById("troopsLevel").textContent = "Level 1";
+    updateTroopsCard();
+    window.scrollTo(0, 0);
+}
             function renderUnitImageWithVideo(unitKey, imgSrc, altText) {
                 let hasVideo = !!unitVideoMap[unitKey];
                 let overlay = hasVideo
@@ -1882,8 +1905,8 @@ ${desc ? `<tr id="${descId}" style="display:none;"><td colspan="2" class="desc-t
                             }
                         }
 
-                        let leftDisplay = leftVal === "—" ? "—" : formatStatValue(key, leftVal);
-                        let rightDisplay = rightVal === "—" ? "—" : formatStatValue(key, rightVal);
+                        let leftDisplay = leftVal === "—" ? "—" : formatStatValue(key, leftVal, "left");
+let rightDisplay = rightVal === "—" ? "—" : formatStatValue(key, rightVal, "right");
 
                         let abilityDesc = getStatDescription(key, leftAbility.abilityInfoId || rightAbility.abilityInfoId);
                         html += `
@@ -1989,8 +2012,8 @@ ${abilityDesc ? `
                             rightColor = rightVal > leftVal ? "stat-better" : rightVal < leftVal ? "stat-worse" : "stat-neutral";
                         }
 
-                        let leftDisplay = leftVal === "—" ? "—" : formatStatValue(key, leftVal);
-                        let rightDisplay = rightVal === "—" ? "—" : formatStatValue(key, rightVal);
+                        let leftDisplay = leftVal === "—" ? "—" : formatStatValue(key, leftVal, "left");
+let rightDisplay = rightVal === "—" ? "—" : formatStatValue(key, rightVal, "right");
 
                         let desc = statDescriptions[key];
                         html += `
@@ -2240,8 +2263,8 @@ ${abilityDesc ? `
                         } else {
                             colors = getColor(key, leftVal, rightVal);
                         }
-                        let leftDisplay = formatStatValue(key, leftVal);
-                        let rightDisplay = rightVal === "—" ? rightVal : formatStatValue(key, rightVal);
+                        let leftDisplay = formatStatValue(key, leftVal, "left");
+                        let rightDisplay = rightVal === "—" ? rightVal : formatStatValue(key, rightVal, "right");
                         let desc = statDescriptions[key];
                         html += `
               <tr>
@@ -2397,7 +2420,7 @@ ${desc ? `
                     for (let key in levelData) {
                         if (ignoreKeys.includes(key)) continue;
 
-                        let displayVal = formatStatValue(key, levelData[key]);
+                        let displayVal = formatStatValue(key, levelData[key], isLeft ? "left" : "right");
 
                         let desc = statDescriptions[key];
                         html += `
@@ -2514,7 +2537,7 @@ ${desc ? `
                                     let d = document.getElementById('desc-single-cmp-ability-${key}');
                                     d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
                                 " class="info-btn">i</button>` : ""}</td>
-                                <td class="ta-center">${formatStatValue(key, ability[key])}</td>
+                                <td class="ta-center">${formatStatValue(key, ability[key], isLeft ? "left" : "right")}</td>
                               </tr>
                               ${desc ? `
                               <tr id="desc-single-cmp-ability-${key}" style="display:none;">
@@ -2587,7 +2610,7 @@ ${desc ? `
             ">🔗 ${troopName}</span>`;
                                     }
                                 } else {
-                                    displayVal = formatStatValue(safeKey, val);
+                                    displayVal = formatStatValue(safeKey, val, isLeft ? "left" : "right");
                                 }
 
                                 let btn = desc ? ' <button onclick="let d = document.getElementById(\'desc-troop-talent-' + talentIndex + '-' + key + '\'); d.style.display = d.style.display === \'none\' ? \'table-row\' : \'none\';" class="info-btn">i</button>' : "";
