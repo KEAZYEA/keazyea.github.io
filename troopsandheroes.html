@@ -2013,11 +2013,13 @@ ${abilityDesc ? `
 
                     // appliesTo always last
                     if (lt.appliesTo || rt.appliesTo) {
+                        let leftDisplay = lt.appliesTo ? formatStatValue("appliesTo", lt.appliesTo) : "—";
+                        let rightDisplay = rt.appliesTo ? formatStatValue("appliesTo", rt.appliesTo) : "—";
                         html += `
               <tr>
-                <td style="text-align:right">${lt.appliesTo || "—"}</td>
+                <td style="text-align:right">${leftDisplay}</td>
                 <td class="stat-label">Applies To</td>
-                <td style="text-align:left">${rt.appliesTo || "—"}</td>
+                <td style="text-align:left">${rightDisplay}</td>
               </tr>
             `;
                     }
