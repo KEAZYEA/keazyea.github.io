@@ -206,10 +206,11 @@
             let rightType = null;
 
             let troopsLevel = 1;
-            let selectTroop = null;
-            let troopType = null;
-            let troopNavStack = [];
-            let galleryScrollY = 0;
+let selectTroop = null;
+let troopType = null;
+let troopNavStack = [];
+let galleryScrollY = 0;
+let troopsCameFromCompare = false;
 
 
             let heroTalentData = {};
@@ -1017,23 +1018,18 @@ function unlockBackgroundScroll() {
     if (!target) return;
 
     if (context === "left" || context === "right") {
-        if (context === "left") {
-            selectleft = target;
-            leftType = unitType;
-            leftLevel = 1;
-            document.getElementById("leftSlider").value = 1;
-            document.getElementById("leftLevel").textContent = "Level 1";
-            document.getElementById("leftSearch").value = target.displayName;
-        } else {
-            selectright = target;
-            rightType = unitType;
-            rightLevel = 1;
-            document.getElementById("rightSlider").value = 1;
-            document.getElementById("rightLevel").textContent = "Level 1";
-            document.getElementById("rightSearch").value = target.displayName;
-        }
+        // Always show the clicked unit on the Troops & Heroes tab — avoids
+        // troop/hero mismatch errors and overwriting the other compare side.
         closeAppliesToList();
-        updateCards();
+        troopNavStack = [];
+        troopsCameFromCompare = true;
+        selectTroop = target;
+        troopType = unitType;
+        troopsLevel = 1;
+        document.getElementById("troopsSlider").value = 1;
+        document.getElementById("troopsLevel").textContent = "Level 1";
+        switchTab("troops");
+        updateTroopsCard();
         window.scrollTo(0, 0);
         return;
     }
@@ -1423,15 +1419,27 @@ function switchTab(tab) {
                 return html;
             }
             function goBackToGallery() {
-                selectTroop = null;
-                troopType = null;
-                troopNavStack = [];
-                document.getElementById("troopsCard").innerHTML = "";
-                document.getElementById("troopsBackBtnSlot").innerHTML = "";
-                document.getElementById("troopsSearch").value = "";
-                showTroopsGallery();
-                window.scrollTo(0, galleryScrollY);
-            }
+    selectTroop = null;
+    troopType = null;
+    troopNavStack = [];
+    troopsCameFromCompare = false;
+    document.getElementById("troopsCard").innerHTML = "";
+    document.getElementById("troopsBackBtnSlot").innerHTML = "";
+    document.getElementById("troopsSearch").value = "";
+    showTroopsGallery();
+    window.scrollTo(0, galleryScrollY);
+}
+
+function goBackToCompareTab() {
+    troopsCameFromCompare = false;
+    selectTroop = null;
+    troopType = null;
+    troopNavStack = [];
+    document.getElementById("troopsCard").innerHTML = "";
+    document.getElementById("troopsBackBtnSlot").innerHTML = "";
+    document.getElementById("troopsSearch").value = "";
+    switchTab("compare");
+}
             // troops page search — searches both troops and heroes together
             function showTroopsGallery() {
                 let resultsDiv = document.getElementById("troopsResults");
@@ -1452,6 +1460,7 @@ function switchTab(tab) {
                         item.addEventListener("click", function () {
                             galleryScrollY = window.scrollY;
                             troopNavStack = [];
+                            troopsCameFromCompare = false;
                             selectTroop = troop;
                             troopType = "troop";
                             resultsDiv.innerHTML = "";
@@ -1472,19 +1481,21 @@ function switchTab(tab) {
                     let heroRow = document.createElement("div");
                     heroRow.className = "unit-gallery";
                     heroList.forEach(function (hero) {
-                        let item = document.createElement("div");
-                        item.className = "gallery-item " + hero.rarity;
-                        item.innerHTML = `<img src="images/${hero.key.toUpperCase()}.jpg" alt="${hero.displayName}"><span>${hero.displayName}</span>`;
-                        item.addEventListener("click", function () {
-                            galleryScrollY = window.scrollY;
-                            selectTroop = hero;
-                            troopType = "hero";
-                            resultsDiv.innerHTML = "";
-                            updateTroopsCard();
-                            window.scrollTo(0, 0);
-                        });
-                        heroRow.appendChild(item);
-                    });
+    let item = document.createElement("div");
+    item.className = "gallery-item " + hero.rarity;
+    item.innerHTML = `<img src="images/${hero.key.toUpperCase()}.jpg" alt="${hero.displayName}"><span>${hero.displayName}</span>`;
+    item.addEventListener("click", function () {
+        galleryScrollY = window.scrollY;
+        troopNavStack = [];
+        troopsCameFromCompare = false;
+        selectTroop = hero;
+        troopType = "hero";
+        resultsDiv.innerHTML = "";
+        updateTroopsCard();
+        window.scrollTo(0, 0);
+    });
+    heroRow.appendChild(item);
+});
                     resultsDiv.appendChild(heroRow);
                 }
             }
@@ -1497,6 +1508,7 @@ function switchTab(tab) {
                     selectTroop = null;
                     troopType = null;
                     troopNavStack = [];
+                    troopsCameFromCompare = false;
                     showTroopsGallery();
                     return;
                 }
@@ -1530,6 +1542,7 @@ function switchTab(tab) {
                     item.classList.add(hero.rarity.toLowerCase());
                     item.classList.add("search-result-item");
                     item.addEventListener("click", function () {
+                        troopsCameFromCompare = false;
                         selectTroop = hero;
                         troopType = "hero";
                         resultsDiv.innerHTML = "";
@@ -1584,6 +1597,9 @@ function switchTab(tab) {
       updateTroopsCard();
       window.scrollTo(0, prev.scrollY || 0);
     ">← Back to ${backLabel}</button>
+` : troopsCameFromCompare ? `
+  <button class="troops-back-btn" style="font-size:15px; padding:6px 18px; background:white; color:#000; border:2px solid gray;font-weight: bold; border-radius:6px; cursor:pointer;"
+    onclick="goBackToCompareTab()">← Back to Compare</button>
 ` : `
   <button class="troops-back-btn" style="font-size:15px; padding:6px 18px; background:white; color:#000; border:2px solid gray;font-weight: bold; border-radius:6px; cursor:pointer;"
     onclick="goBackToGallery()">← Back to all Troops & Heroes</button>
@@ -2036,8 +2052,8 @@ let rightDisplay = rightVal === "—" ? "—" : formatStatValue(key, rightVal, "
 
                     // appliesTo always last
                     if (lt.appliesTo || rt.appliesTo) {
-                        let leftDisplay = lt.appliesTo ? formatStatValue("appliesTo", lt.appliesTo) : "—";
-                        let rightDisplay = rt.appliesTo ? formatStatValue("appliesTo", rt.appliesTo) : "—";
+                       let leftDisplay = lt.appliesTo ? formatStatValue("appliesTo", lt.appliesTo, "left") : "—";
+let rightDisplay = rt.appliesTo ? formatStatValue("appliesTo", rt.appliesTo, "right") : "—";
                         html += `
               <tr>
                 <td style="text-align:right">${leftDisplay}</td>
@@ -2120,8 +2136,8 @@ let rightDisplay = rightVal === "—" ? "—" : formatStatValue(key, rightVal, "
                         colors = getColor(key, leftVal, rightVal);
                     }
 
-                    let leftDisplay = leftVal === "—" ? "—" : formatStatValue(key, leftVal);
-                    let rightDisplay = rightVal === "—" ? "—" : formatStatValue(key, rightVal);
+                    let leftDisplay = leftVal === "—" ? "—" : formatStatValue(key, leftVal, "left");
+let rightDisplay = rightVal === "—" ? "—" : formatStatValue(key, rightVal, "right");
                     let desc = statDescriptions[key];
                     let descId = `desc-cmp-summon-${key}`;
 
@@ -2661,11 +2677,12 @@ ${desc ? `
                     item.classList.add(troop.rarity.toLowerCase());
                     item.classList.add("search-result-item");
                     item.addEventListener("click", function () {
-                        selectleft = troop;
-                        leftType = "troop";
-                        document.getElementById("leftSearch").value = troop.displayName;
+                        troopNavStack = [];
+                        troopsCameFromCompare = false;
+                        selectTroop = troop;
+                        troopType = "troop";
                         resultsDiv.innerHTML = "";
-                        updateCards();
+                        updateTroopsCard();
                         window.scrollTo(0, 0);
                     });
                     resultsDiv.appendChild(item);
@@ -2677,11 +2694,12 @@ ${desc ? `
                     item.classList.add(hero.rarity.toLowerCase());
                     item.classList.add("search-result-item");
                     item.addEventListener("click", function () {
-                        selectleft = hero;
-                        leftType = "hero";
-                        document.getElementById("leftSearch").value = hero.displayName;
+                        troopNavStack = [];
+                        troopsCameFromCompare = false;
+                        selectTroop = hero;
+                        troopType = "hero";
                         resultsDiv.innerHTML = "";
-                        updateCards();
+                        updateTroopsCard();
                         window.scrollTo(0, 0);
                     });
                     resultsDiv.appendChild(item);
