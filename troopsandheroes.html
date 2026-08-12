@@ -1526,11 +1526,11 @@ function goBackToCompareTab() {
                     item.classList.add(troop.rarity.toLowerCase());
                     item.classList.add("search-result-item");
                     item.addEventListener("click", function () {
-                        troopNavStack = [];
-                        selectTroop = troop;
-                        troopType = "troop";
+                        selectleft = troop;
+                        leftType = "troop";
+                        document.getElementById("leftSearch").value = troop.displayName;
                         resultsDiv.innerHTML = "";
-                        updateTroopsCard();
+                        updateCards();
                         window.scrollTo(0, 0);
                     });
                     resultsDiv.appendChild(item);
@@ -1542,16 +1542,15 @@ function goBackToCompareTab() {
                     item.classList.add(hero.rarity.toLowerCase());
                     item.classList.add("search-result-item");
                     item.addEventListener("click", function () {
-                        troopsCameFromCompare = false;
-                        selectTroop = hero;
-                        troopType = "hero";
+                        selectleft = hero;
+                        leftType = "hero";
+                        document.getElementById("leftSearch").value = hero.displayName;
                         resultsDiv.innerHTML = "";
-                        updateTroopsCard();
+                        updateCards();
                         window.scrollTo(0, 0);
                     });
                     resultsDiv.appendChild(item);
                 });
-            });
 
             document.getElementById("troopsSlider").addEventListener("input", function () {
                 troopsLevel = this.value;
