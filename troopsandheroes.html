@@ -1500,7 +1500,7 @@ function goBackToCompareTab() {
                 }
             }
 
-            document.getElementById("troopsSearch").addEventListener("input", function () {
+           document.getElementById("troopsSearch").addEventListener("input", function () {
                 AppState.maybeRefreshAd("troopsAdSlot");
                 if (this.value === "") {
                     document.getElementById("troopsBackBtnSlot").innerHTML = "";
@@ -1526,11 +1526,12 @@ function goBackToCompareTab() {
                     item.classList.add(troop.rarity.toLowerCase());
                     item.classList.add("search-result-item");
                     item.addEventListener("click", function () {
-                        selectleft = troop;
-                        leftType = "troop";
-                        document.getElementById("leftSearch").value = troop.displayName;
+                        troopNavStack = [];
+                        troopsCameFromCompare = false;
+                        selectTroop = troop;
+                        troopType = "troop";
                         resultsDiv.innerHTML = "";
-                        updateCards();
+                        updateTroopsCard();
                         window.scrollTo(0, 0);
                     });
                     resultsDiv.appendChild(item);
@@ -1542,15 +1543,17 @@ function goBackToCompareTab() {
                     item.classList.add(hero.rarity.toLowerCase());
                     item.classList.add("search-result-item");
                     item.addEventListener("click", function () {
-                        selectleft = hero;
-                        leftType = "hero";
-                        document.getElementById("leftSearch").value = hero.displayName;
+                        troopNavStack = [];
+                        troopsCameFromCompare = false;
+                        selectTroop = hero;
+                        troopType = "hero";
                         resultsDiv.innerHTML = "";
-                        updateCards();
+                        updateTroopsCard();
                         window.scrollTo(0, 0);
                     });
                     resultsDiv.appendChild(item);
                 });
+            });
 
             document.getElementById("troopsSlider").addEventListener("input", function () {
                 troopsLevel = this.value;
