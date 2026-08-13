@@ -2477,15 +2477,18 @@ let vipStatusEl = document.getElementById("vipStatusText"); if (vipStatusEl) vip
         }
 
         document.getElementById("friendReqBtnHome").addEventListener("click", (e) => {
-            e.stopPropagation();
-            document.getElementById("friendReqPanelHome").classList.toggle("open");
-        });
-        document.addEventListener("click", (e) => {
-            const wrapper = document.getElementById("friendReqWrapperHome");
-            if (wrapper && !wrapper.contains(e.target)) {
-                document.getElementById("friendReqPanelHome").classList.remove("open");
-            }
-        });
+    e.stopPropagation();
+    // Close the news panel first so the two dropdowns never overlap.
+    document.getElementById("newsPanelHome").classList.remove("open");
+    document.getElementById("newsPanelBackdrop").classList.remove("open");
+    document.getElementById("friendReqPanelHome").classList.toggle("open");
+});
+document.addEventListener("click", (e) => {
+    const wrapper = document.getElementById("friendReqWrapperHome");
+    if (wrapper && !wrapper.contains(e.target)) {
+        document.getElementById("friendReqPanelHome").classList.remove("open");
+    }
+});
 
         /* ---------------- NEWS (topbar icon + dropdown preview + full modal) ---------------- */
         const NEWS_LAST_SEEN_KEY = "kih_news_last_seen_at";
@@ -2622,15 +2625,17 @@ let vipStatusEl = document.getElementById("vipStatusText"); if (vipStatusEl) vip
         window.closeNewsModal = closeNewsModal;
 
         document.getElementById("newsBtnHome").addEventListener("click", (e) => {
-            e.stopPropagation();
-            const panel = document.getElementById("newsPanelHome");
-            const isOpen = panel.classList.toggle("open");
-            document.getElementById("newsPanelBackdrop").classList.toggle("open", isOpen);
-            if (isOpen) {
-                localStorage.setItem(NEWS_LAST_SEEN_KEY, String(Date.now()));
-                updateNewsBadgeHome(latestNewsItems);
-            }
-        });
+    e.stopPropagation();
+    // Close the friend requests panel first so the two dropdowns never overlap.
+    document.getElementById("friendReqPanelHome").classList.remove("open");
+    const panel = document.getElementById("newsPanelHome");
+    const isOpen = panel.classList.toggle("open");
+    document.getElementById("newsPanelBackdrop").classList.toggle("open", isOpen);
+    if (isOpen) {
+        localStorage.setItem(NEWS_LAST_SEEN_KEY, String(Date.now()));
+        updateNewsBadgeHome(latestNewsItems);
+    }
+});
         document.addEventListener("click", (e) => {
             const wrapper = document.getElementById("newsWrapperHome");
             if (wrapper && !wrapper.contains(e.target)) {
