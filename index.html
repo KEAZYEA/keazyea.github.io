@@ -1649,24 +1649,28 @@ body {
 
         <!-- Full News & Rumours modal — scrollable list, HTML content rendered as-is -->
 <div class="mini-modal-overlay" id="newsModalOverlay">
-    <div class="mini-modal-box" style="max-width:560px; max-height:80vh; overflow-y:auto; text-align:left; overscroll-behavior:contain;">
-        <div style="position:sticky; top:0; display:flex; justify-content:flex-end; margin:-24px -24px 0; padding:8px 8px 0; background:var(--kih-panel); z-index:5;">
+    <div class="mini-modal-box" style="max-width:560px; max-height:80vh; display:flex; flex-direction:column; text-align:left; padding:0; overflow:hidden;">
+        <div style="display:flex; justify-content:flex-end; flex-shrink:0; padding:10px 10px 0;">
             <button onclick="closeNewsModal()" aria-label="Close" style="background:none; border:none; color:var(--kih-text-dim); font-size:1.5rem; line-height:1; cursor:pointer; padding:4px 8px;">✕</button>
         </div>
-        <h3 style="margin-top:0; text-align:center;">📰 News & Rumours</h3>
-        <div id="newsModalList"></div>
-        <button class="btn-settings-action btn-block" style="margin-top:16px;" onclick="closeNewsModal()">Close</button>
+        <div style="overflow-y:auto; overscroll-behavior:contain; padding:0 24px 24px;">
+            <h3 style="margin-top:0; text-align:center;">📰 News & Rumours</h3>
+            <div id="newsModalList"></div>
+            <button class="btn-settings-action btn-block" style="margin-top:16px;" onclick="closeNewsModal()">Close</button>
+        </div>
     </div>
 </div>
 
         <!-- Single news item modal — opened from a preview item's "View More" -->
 <div class="mini-modal-overlay" id="singleNewsModalOverlay">
-    <div class="mini-modal-box" style="max-width:560px; max-height:80vh; overflow-y:auto; text-align:left; overscroll-behavior:contain;">
-        <div style="position:sticky; top:0; display:flex; justify-content:flex-end; margin:-24px -24px 0; padding:8px 8px 0; background:var(--kih-panel); z-index:5;">
+    <div class="mini-modal-box" style="max-width:560px; max-height:80vh; display:flex; flex-direction:column; text-align:left; padding:0; overflow:hidden;">
+        <div style="display:flex; justify-content:flex-end; flex-shrink:0; padding:10px 10px 0;">
             <button onclick="closeSingleNewsModal()" aria-label="Close" style="background:none; border:none; color:var(--kih-text-dim); font-size:1.5rem; line-height:1; cursor:pointer; padding:4px 8px;">✕</button>
         </div>
-        <div id="singleNewsModalContent"></div>
-        <button class="btn-settings-action btn-block" style="margin-top:16px;" onclick="closeSingleNewsModal()">Close</button>
+        <div style="overflow-y:auto; overscroll-behavior:contain; padding:0 24px 24px;">
+            <div id="singleNewsModalContent"></div>
+            <button class="btn-settings-action btn-block" style="margin-top:16px;" onclick="closeSingleNewsModal()">Close</button>
+        </div>
     </div>
 </div>
 
