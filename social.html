@@ -973,7 +973,23 @@
             gap: 8px;
             margin-top: 6px;
         }
+.dm-date-separator {
+    text-align: center;
+    color: #9a9ab0;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    margin: 16px 0 8px;
+}
 
+.dm-msg-time {
+    display: block;
+    font-size: 0.65rem;
+    opacity: 0.65;
+    margin-top: 4px;
+    text-align: right;
+}
         .dm-reply-bar {
             display: none;
             align-items: center;
@@ -1838,6 +1854,24 @@ function buildCountrySelectOptions(selectId, includeAny) {
         function timeAgo(ts) {
             return new Date(ts).toLocaleString();
         }
+        function formatDmTime(ts) {
+    return new Date(ts).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+}
+
+function formatDmDateSeparator(ts) {
+    const d = new Date(ts);
+    const now = new Date();
+    const startOfDay = (date) => new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+    const diffDays = Math.round((startOfDay(now) - startOfDay(d)) / 86400000);
+
+    if (diffDays === 0) return "Today";
+    if (diffDays === 1) return "Yesterday";
+    if (diffDays > 1 && diffDays < 7) return d.toLocaleDateString([], { weekday: "long" });
+    return d.toLocaleDateString([], {
+        month: "long", day: "numeric",
+        year: d.getFullYear() !== now.getFullYear() ? "numeric" : undefined
+    });
+}
 
         function showToast(message) {
             const toast = document.createElement("div");
@@ -2938,7 +2972,17 @@ document.getElementById("dmActionsMenu").classList.remove("open");
     window._lastDmMessages = messages; // so edit/cancel can re-render without a fresh snapshot
     const user = AppState.getCurrentUser();
     const box = document.getElementById("dmMessages");
-    box.innerHTML = messages.map(m => {
+
+    let html = "";
+    let lastDateKey = null;
+
+    messages.forEach(m => {
+        const dateKey = new Date(m.createdAt).toDateString();
+        if (dateKey !== lastDateKey) {
+            html += `<div class="dm-date-separator">${formatDmDateSeparator(m.createdAt)}</div>`;
+            lastDateKey = dateKey;
+        }
+
         const mine = m.senderUid === user.uid;
 
         // Only make the quote clickable if the original message still
@@ -2949,10 +2993,11 @@ document.getElementById("dmActionsMenu").classList.remove("open");
             ? `<span class="dm-msg-quote"${targetExists ? ` style="cursor:pointer;" onclick='scrollToDmMessage("${m.replyToId}")'` : ""}>${escapeHtml((m.replyToText || "").slice(0, 200))}</span>`
             : "";
         const editedTag = m.editedAt ? `<span class="dm-msg-edited-tag">(edited)</span>` : "";
+        const timeHtml = `<span class="dm-msg-time">${formatDmTime(m.createdAt)}</span>`;
 
         // Inline edit mode: swap the bubble body for a textarea + Save/Cancel.
         if (editingMsgId === m.id) {
-            return `<div class="dm-msg ${mine ? "mine" : "theirs"}" id="dmMsgRow_${m.id}">
+            html += `<div class="dm-msg ${mine ? "mine" : "theirs"}" id="dmMsgRow_${m.id}">
                 ${quoteHtml}
                 <textarea class="dm-msg-edit-box" id="dmEditBox_${m.id}">${escapeHtml(m.text)}</textarea>
                 <div class="dm-msg-edit-actions">
@@ -2960,6 +3005,7 @@ document.getElementById("dmActionsMenu").classList.remove("open");
                     <button class="mini-btn decline" onclick="cancelEditMessage()">Cancel</button>
                 </div>
             </div>`;
+            return;
         }
 
         const replyBtn = `<button class="dm-msg-action-link" onclick='startReplyToMessage("${m.id}", "${m.senderUid}", ${JSON.stringify((m.text || "").slice(0, 200))})'>↩ Reply</button>`;
@@ -2969,14 +3015,17 @@ document.getElementById("dmActionsMenu").classList.remove("open");
         const reportBtn = mine ? "" :
             `<button class="dm-msg-action-link" onclick='openReportModal("message", "${m.senderUid}", "${currentDmOtherName.replace(/"/g, '')}", "${m.id}", ${JSON.stringify(m.text)})'>🚩 Report</button>`;
 
-        return `<div class="dm-msg ${mine ? "mine" : "theirs"}" id="dmMsgRow_${m.id}">
+        html += `<div class="dm-msg ${mine ? "mine" : "theirs"}" id="dmMsgRow_${m.id}">
             ${quoteHtml}
             ${escapeHtml(m.text)}${editedTag}
+            ${timeHtml}
             <div class="dm-msg-actions">
                 ${replyBtn}${editBtn}${reportBtn}
             </div>
         </div>`;
-    }).join("");
+    });
+
+    box.innerHTML = html;
     box.scrollTop = box.scrollHeight;
     updateDmScrollBottomBtn();
 }
@@ -3130,24 +3179,40 @@ document.getElementById("dmMessages").addEventListener("scroll", updateDmScrollB
             switchSocialTab("friends");
         };
 
-        window.sendDmFromInput = async function () {
-            const input = document.getElementById("dmInput");
-            const text = input.value;
-            if (!text.trim()) return;
-            try {
-                await AppState.sendDmMessage(currentDmThreadId, text, replyingToMsg);
-                input.value = "";
-                cancelReplyToMessage();
-                input.focus(); // keep the keyboard open for the next message
-            } catch (e) {
-                if (e.message === "__RESTRICTED__") return;
-                if (e.message === "__BLOCKED_BY_ME__") {
-                    showInfoModal("User blocked", "You've blocked this user. Unblock them to send a message.");
-                    return;
-                }
-                showInfoModal("Couldn't send message", e.message);
-            }
-        };
+        let isDmSending = false; // blocks re-entrant sends while one is still in flight
+
+window.sendDmFromInput = async function () {
+    if (isDmSending) return; // already sending — ignore extra taps/lag-mashing
+    const input = document.getElementById("dmInput");
+    const text = input.value;
+    if (!text.trim()) return;
+
+    isDmSending = true;
+    const sendBtn = document.getElementById("dmSendBtn");
+    sendBtn.disabled = true;
+
+    // Clear immediately, before the network call resolves — this is what
+    // stops mashing Send from firing the same message multiple times,
+    // since there's nothing left in the box to re-send after the first tap.
+    input.value = "";
+    const replyContext = replyingToMsg;
+    cancelReplyToMessage();
+
+    try {
+        await AppState.sendDmMessage(currentDmThreadId, text, replyContext);
+        input.focus(); // keep the keyboard open for the next message
+    } catch (e) {
+        // Send actually failed — put the text back so nothing is lost.
+        input.value = text;
+        if (e.message === "__BLOCKED_BY_ME__") {
+            showInfoModal("User blocked", "You've blocked this user. Unblock them to send a message.");
+        } else if (e.message !== "__RESTRICTED__") {
+            showInfoModal("Couldn't send message", e.message);
+        }
+    }
+    isDmSending = false;
+    sendBtn.disabled = false;
+};
         document.getElementById("dmInput").addEventListener("keydown", (e) => {
             if (e.key === "Enter") window.sendDmFromInput();
         });
