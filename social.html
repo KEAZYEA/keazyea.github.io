@@ -984,11 +984,13 @@
 }
 
 .dm-msg-time {
-    display: block;
+    display: inline-block;
+    float: right;
+    clear: both;
     font-size: 0.65rem;
     opacity: 0.65;
-    margin-top: 4px;
-    text-align: right;
+    margin: 4px 0 0 10px;
+    white-space: nowrap;
 }
         .dm-reply-bar {
             display: none;
@@ -2998,13 +3000,12 @@ document.getElementById("dmActionsMenu").classList.remove("open");
         // Inline edit mode: swap the bubble body for a textarea + Save/Cancel.
         if (editingMsgId === m.id) {
             html += `<div class="dm-msg ${mine ? "mine" : "theirs"}" id="dmMsgRow_${m.id}">
-                ${quoteHtml}
-                <textarea class="dm-msg-edit-box" id="dmEditBox_${m.id}">${escapeHtml(m.text)}</textarea>
-                <div class="dm-msg-edit-actions">
-                    <button class="mini-btn accept" onclick="saveEditMessage('${m.id}')">Save</button>
-                    <button class="mini-btn decline" onclick="cancelEditMessage()">Cancel</button>
-                </div>
-            </div>`;
+    ${quoteHtml}
+    ${escapeHtml(m.text)}${editedTag}${timeHtml}
+    <div class="dm-msg-actions" style="clear:both;">
+        ${replyBtn}${editBtn}${reportBtn}
+    </div>
+</div>`;
             return;
         }
 
