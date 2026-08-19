@@ -62,7 +62,8 @@
 <body>
     <div id="pageScroll">
         <h1>Troops & Heroes</h1>
-        <div class="tabs">
+<div id="loadingMsg" style="text-align:center; padding:20px; font-size:16px;"></div>
+<div class="tabs">
     <button class="tab-btn active" onclick="switchTab('troops')">Troops & Heroes</button>
     <button class="tab-btn" onclick="switchTab('compare')">Compare</button>
 </div>
@@ -1120,8 +1121,17 @@ function unlockBackgroundScroll() {
                heroList / summonMap, then kicks off the initial render.
                ================================================================ */
 
-            function loadJSON(path) {
-                return fetch(path).then(r => r.json());
+                        function loadJSON(path, retries = 2) {
+                return fetch(path).then(r => {
+                    if (!r.ok) throw new Error(`${path} returned ${r.status}`);
+                    return r.json();
+                }).catch(err => {
+                    if (retries > 0) {
+                        return new Promise(resolve => setTimeout(resolve, 500))
+                            .then(() => loadJSON(path, retries - 1));
+                    }
+                    throw err;
+                });
             }
             //promise.all loads in all the json files at the same time
             Promise.all([
@@ -1258,9 +1268,14 @@ function unlockBackgroundScroll() {
                     }
                 }
 
-            }).catch(function (err) {
-                document.getElementById("loadingMsg").textContent =
-                    "❌ Failed to load game data. Make sure all JSON files are in the same folder. (" + err.message + ")";
+                        }).catch(function (err) {
+                let msgEl = document.getElementById("loadingMsg");
+                if (msgEl) {
+                    msgEl.textContent =
+                        "❌ Failed to load game data. Make sure all JSON files are in the same folder. (" + err.message + ")";
+                } else {
+                    console.error("loadingMsg element not found; error was:", err.message);
+                }
                 console.error(err);
             });
 
