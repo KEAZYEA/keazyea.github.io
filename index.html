@@ -2341,9 +2341,27 @@ let vipStatusEl = document.getElementById("vipStatusText"); if (vipStatusEl) vip
 
 
 
-        /* ---------------- TOPBAR ---------------- */
-        async function refreshTopbar() {
-            let profile = await AppState.getProfile();
+                /* ---------------- TOPBAR ---------------- */
+        async function refreshTopbar(retriesLeft = 3) {
+            let profile;
+            try {
+                profile = await AppState.getProfile();
+            } catch (e) {
+                console.warn("refreshTopbar: getProfile failed:", e.message);
+                if (retriesLeft > 0) setTimeout(() => refreshTopbar(retriesLeft - 1), 700);
+                return;
+            }
+
+            // A signed-in user showing up completely blank (no name, still
+            // on the default avatar) right after load is more likely a
+            // momentary read race than a genuinely brand-new account —
+            // retry a few times before accepting it, instead of leaving
+            // the topbar stuck on a stale/default result.
+            let looksBlank = !profile.name && profile.avatar === "images/BOMBER.jpg";
+            if (looksBlank && AppState.getCurrentUser() && retriesLeft > 0) {
+                setTimeout(() => refreshTopbar(retriesLeft - 1), 700);
+                return;
+            }
 
             let iconImg = document.getElementById("topbarAvatarIcon");
             let iconFallback = document.getElementById("topbarAvatarFallback");
