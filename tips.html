@@ -267,7 +267,8 @@
         });
 
 
-        async function loadTips() {
+                async function loadTips() {
+            document.getElementById("tipsGrid").innerHTML = '<div class="tips-empty" style="grid-column:1/-1;">⏳ Loading tips...</div>';
             AppState.waitForAuthReady().then(() => AppState.loadAdsterraAdsIfAllowed());
             allTips = await AppState.getTips();
             document.getElementById("tipsSearchWrap").style.display = allTips.length ? "block" : "none";
