@@ -1509,7 +1509,7 @@ body {
                         <input type="text" inputmode="numeric" id="profilePowerInput" class="profile-name-input"
                             placeholder="e.g. 6,700,000">
 
-                        <button class="btn-primary btn-block" onclick="saveProfile()" style="font-size:1.15rem; padding:16px 24px;">Save profile</button>
+                                               <button class="btn-primary btn-block" id="saveProfileBtn" onclick="saveProfile()" style="font-size:1.15rem; padding:16px 24px;">Save profile</button>
                     </div>
                 </div>
 
@@ -2247,7 +2247,7 @@ body {
             return Object.keys(current).some(k => current[k] !== profileSnapshot[k]);
         }
 
-        async function saveProfile() {
+                async function saveProfile() {
             let current = getCurrentProfileFormValues();
 
             if (!current.name.trim()) {
@@ -2264,8 +2264,10 @@ body {
             }
 
             const user = AppState.getCurrentUser();
+            let btn = document.getElementById("saveProfileBtn");
 
             try {
+                setButtonLoading(btn, true, "Saving...");
                 let updated;
                 if (user) {
                     // Signed-in users get a globally unique name reservation.
@@ -2297,12 +2299,36 @@ body {
                     highestTrophies: updated.highestTrophies || 0, currentClan: updated.currentClan || "",
                     currentLevel: updated.currentLevel || 0, currentPower: updated.currentPower || 0
                 };
-                await refreshTopbar();
+                                await refreshTopbar();
                 goHome();
             } catch (e) {
                 showGenericErrorModal(e.message);
+            } finally {
+                setButtonLoading(btn, false);
             }
         }
+        /* ---------------- SETTINGS ---------------- */
+                /* ---------------- SHARED: BUTTON LOADING STATE ---------------- */
+        // Call setButtonLoading(btn, true, "Saving...") before an async action,
+        // and setButtonLoading(btn, false) in a finally block once it's done.
+        // Stores the button's original text so it can be restored exactly.
+        function setButtonLoading(btn, loading, loadingText) {
+            if (!btn) return;
+            if (loading) {
+                if (btn.dataset.originalText === undefined) {
+                    btn.dataset.originalText = btn.textContent;
+                }
+                btn.textContent = loadingText || "Loading...";
+                btn.disabled = true;
+            } else {
+                if (btn.dataset.originalText !== undefined) {
+                    btn.textContent = btn.dataset.originalText;
+                    delete btn.dataset.originalText;
+                }
+                btn.disabled = false;
+            }
+        }
+
         /* ---------------- SETTINGS ---------------- */
         async function loadSettingsIntoPage() {
     await AppState.waitForAuthReady();   // ← wait for Firebase to restore the session first
@@ -2318,20 +2344,25 @@ body {
 let vipStatusEl = document.getElementById("vipStatusText"); if (vipStatusEl) vipStatusEl.textContent = AppState.isVipActive(profile) ? "Active ✓" : "Inactive";
         }
 
-        async function toggleGoogleSignIn() {
+                async function toggleGoogleSignIn() {
             let user = AppState.getCurrentUser();
+            let btn = document.getElementById("googleSignInBtn");
             try {
                 if (user) {
                     if (!confirm("Sign out of your Google account?")) return;
+                    setButtonLoading(btn, true, "Signing out...");
                     await AppState.signOut();
                 } else {
+                    setButtonLoading(btn, true, "Signing in...");
                     await AppState.signIn();
                 }
-                await loadSettingsIntoPage();
+                await loadSettingsIntoPage(); // sets the button's final correct text (Sign in / Sign out)
                 await refreshTopbar();
             } catch (err) {
                 console.error("Google sign-in error:", err);
                 alert("Sign-in failed or was cancelled.");
+            } finally {
+                if (btn) btn.disabled = false; // loadSettingsIntoPage already restored the right label
             }
         }
 
