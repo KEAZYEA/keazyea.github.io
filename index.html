@@ -1913,15 +1913,17 @@ body {
     target.classList.add("active");
     target.scrollTop = 0;
 
-    // NEW: first time this tab is opened, load its iframe now (not on page load)
+        // First time this tab is opened, load its iframe now (not on page load).
+    // For promo/tips specifically, also force a refresh on every later visit,
+    // since admin posts (new codes/tips) should always show up immediately.
     let frame = target.querySelector("iframe[data-src]");
     if (frame) {
         frame.src = frame.dataset.src;
         frame.removeAttribute("data-src");
+    } else if (page === "promo" || page === "tips") {
+        let existingFrame = target.querySelector("iframe");
+        if (existingFrame) existingFrame.src = existingFrame.src;
     }
-
-    // (promo/tips "force refresh on every visit" logic removed —
-    // see note below on whether you still want that)
 
     if (page === "profile") await loadProfileIntoPage();
     if (page === "settings") await loadSettingsIntoPage();
