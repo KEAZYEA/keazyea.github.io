@@ -1322,6 +1322,11 @@
 
         <div id="adBannerSocial" style="display:none; justify-content:center; margin:0 0 16px;"></div>
 
+                <!-- Loading gate: shown briefly while auth/session state is being determined -->
+        <div class="social-lock-screen" id="socialLoadingState">
+            <p class="compose-hint" style="font-size:0.95rem;">⏳ Loading...</p>
+        </div>
+
         <!-- Signed-out gate: shown instead of tabs/content until signed in -->
         <div class="social-lock-screen" id="socialSignedOutState" style="display:none;">
             <span class="social-lock-icon">🔒</span>
@@ -1331,7 +1336,7 @@
             <button class="btn-primary social-signin-btn" onclick="doSignIn()">Sign in with Google</button>
         </div>
 
-        <div id="socialSignedInWrap">
+                <div id="socialSignedInWrap" style="display:none;">
             <div class="social-tabs">
                 <button class="social-tab-btn active" id="tabBtnFriends"
                     onclick="switchSocialTab('friends')">Friends<span class="clan-filter-count" id="dmUnreadBadge"
@@ -1961,7 +1966,8 @@ function formatDmDateSeparator(ts) {
 
         /* ---------------- COMPOSE ---------------- */
 
-        function updateSocialAuthGate() {
+                function updateSocialAuthGate() {
+            document.getElementById("socialLoadingState").style.display = "none";
             const user = AppState.getCurrentUser();
             document.getElementById("socialSignedOutState").style.display = user ? "none" : "block";
             document.getElementById("socialSignedInWrap").style.display = user ? "flex" : "none";
