@@ -38,7 +38,9 @@ import {
     signInWithPopup,
     GoogleAuthProvider,
     signOut as firebaseSignOut,
-    onAuthStateChanged
+    onAuthStateChanged,
+    setPersistence,
+    browserLocalPersistence
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
 const firebaseConfig = {
     apiKey: "AIzaSyBYaZg000g9wxMIzDLONsSXLUgZIoJ4GNQ",
@@ -51,6 +53,9 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+setPersistence(auth, browserLocalPersistence).catch(e =>
+    console.warn("Couldn't set auth persistence:", e.message)
+);
 const db = getFirestore(app);
 const storage = getStorage(app);
 const googleProvider = new GoogleAuthProvider();
