@@ -2303,13 +2303,14 @@ body {
         }
         /* ---------------- SETTINGS ---------------- */
         async function loadSettingsIntoPage() {
-            let user = AppState.getCurrentUser();
-            let profile = await AppState.getProfile();
+    await AppState.waitForAuthReady();   // ← wait for Firebase to restore the session first
+    let user = AppState.getCurrentUser();
+    let profile = await AppState.getProfile();
 
-            document.getElementById("googleStatusText").textContent = user
-                ? "Signed in as " + user.email
-                : "Not signed in — sign in to save progress & unlock VIP";
-            document.getElementById("googleSignInBtn").textContent = user ? "Sign out" : "Sign in";
+    document.getElementById("googleStatusText").textContent = user
+        ? "Signed in as " + user.email
+        : "Not signed in — sign in to save progress & unlock VIP";
+    document.getElementById("googleSignInBtn").textContent = user ? "Sign out" : "Sign in";
 
             let vipActive = profile.vipExpiresAt && profile.vipExpiresAt > Date.now();
 let vipStatusEl = document.getElementById("vipStatusText"); if (vipStatusEl) vipStatusEl.textContent = AppState.isVipActive(profile) ? "Active ✓" : "Inactive";
@@ -2915,10 +2916,11 @@ document.addEventListener("click", (e) => {
             AppState.onAuthChange(() => AppState.loadAdsterraAdsIfAllowed());
 
             const urlParams = new URLSearchParams(window.location.search);
-            const gotoPage = urlParams.get("goto");
-            if (gotoPage) {
-                goToPage(gotoPage);
-            }
+const gotoPage = urlParams.get("goto");
+if (gotoPage) {
+    goToPage(gotoPage);
+    history.replaceState(null, "", window.location.pathname); // consume it — refresh won't re-trigger this
+}
         });
 function setAppHeight() {
     let vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
