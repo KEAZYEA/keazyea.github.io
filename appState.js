@@ -197,7 +197,7 @@ const AppState = (function () {
             return { ...defaultProfile(), ...data };
         }
 
-        console.warn("[KIH] Confirmed: no profile exists on the server for uid", currentUser.uid, "— creating a fresh one now.");
+                console.warn("[KIH] No profile found on the server for uid", currentUser.uid, "— returning defaults WITHOUT writing to Firestore. A real profile doc, if one exists, is never touched by a mere read; it will only be created/overwritten when the user explicitly saves via saveProfile().");
         const local = getLocalProfile();
         const fresh = {
             ...defaultProfile(),
@@ -213,8 +213,13 @@ const AppState = (function () {
             email: currentUser.email ? currentUser.email.toLowerCase() : "",
             avatar: local.avatar || currentUser.photoURL || defaultProfile().avatar
         };
-        await setDoc(ref, fresh);
-        await mirrorPublicProfile(fresh);
+        // NOTE: intentionally NOT calling setDoc/mirrorPublicProfile here.
+        // This is a READ function — it must never have the side effect of
+        // writing/overwriting Firestore. If this "not found" determination
+        // is ever wrong (network blip, auth timing race, etc.), the worst
+        // case is now a blank-looking profile for one session — never a
+        // permanently destroyed one. Firestore only gets written to when
+        // the user actually saves (see saveProfile() -> setProfile()).
         return fresh;
     }
         const data = snap.data();
