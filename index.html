@@ -4,6 +4,7 @@
 <head>
     <title>Keazyea's Intelligence Hub</title>
     <link rel="icon" href="images/KIH.jpg">
+    <link rel="preload" as="image" href="images/KIH_HP.jpg" fetchpriority="high">
     <link rel="stylesheet" href="style.css">
     <link rel="canonical" href="https://keazyea.github.io/" />
     <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7081980567861066"
@@ -1279,7 +1280,8 @@ body {
         <!-- ===== HOME LANDING — big vertical centered buttons ===== -->
         <div class="home-landing" id="homeLanding">
             <div class="home-landing-content">
-            <img src="images/KIH_HP.jpg" alt="Keazyea's Intelligence Hub" class="home-landing-title-img">
+            <img src="images/KIH_HP.jpg" alt="Keazyea's Intelligence Hub" class="home-landing-title-img"
+     fetchpriority="high" width="220" height="220">
 
             <div class="home-menu">
                 <button class="home-menu-btn" onclick="goToPage('troops')">
@@ -1321,31 +1323,29 @@ body {
             <div class="home-main">
 
                 <!-- TROOPS & HEROES -->
-                <div class="home-page-content" id="page-troops">
+<div class="home-page-content" id="page-troops">
+    <iframe data-src="troopsandheroes.html"></iframe>
+</div>
 
+<!-- PROMO CODES -->
+<div class="home-page-content" id="page-promo">
+    <iframe data-src="promo.html"></iframe>
+</div>
 
-                    <iframe src="troopsandheroes.html"></iframe>
-                </div>
+<!-- TIPS -->
+<div class="home-page-content" id="page-tips">
+    <iframe data-src="tips.html"></iframe>
+</div>
 
-                <!-- PROMO CODES -->
-                <div class="home-page-content" id="page-promo">
-                    <iframe src="promo.html"></iframe>
-                </div>
+<!-- SOCIAL -->
+<div class="home-page-content" id="page-social">
+    <iframe data-src="social.html"></iframe>
+</div>
 
-                <!-- TIPS -->
-                <div class="home-page-content" id="page-tips">
-                    <iframe src="tips.html"></iframe>
-                </div>
-
-                <!-- SOCIAL -->
-                <div class="home-page-content" id="page-social">
-                    <iframe src="social.html"></iframe>
-                </div>
-
-                <!-- STORE -->
-                <div class="home-page-content" id="page-store">
-                    <iframe src="store.html"></iframe>
-                </div>
+<!-- STORE -->
+<div class="home-page-content" id="page-store">
+    <iframe data-src="store.html"></iframe>
+</div>
 
                 <!-- ABOUT THE CREATOR -->
                 <div class="home-page-content" id="page-about">
@@ -1890,47 +1890,44 @@ body {
             }
         };
 
-        async function goToPage(page, fromAbout) {
-            if (page !== "profile" && isProfileDirty()) {
-                let choice = await showUnsavedModal();
-                if (choice === "save") await saveProfile();
-            }
+       async function goToPage(page, fromAbout) {
+    if (page !== "profile" && isProfileDirty()) {
+        let choice = await showUnsavedModal();
+        if (choice === "save") await saveProfile();
+    }
 
-            if (page !== "social") {
-                resetSocialIframeIfActive();
-            }
+    if (page !== "social") {
+        resetSocialIframeIfActive();
+    }
 
-            // "About" itself is never reached "from About", and any normal
-            // navigation (home menu, inbox, etc.) that doesn't pass the flag
-            // clears it so the back button only shows for pages opened via
-            // an About Creator list item.
-            cameFromAbout = page !== "about" && !!fromAbout;
-            document.getElementById("backToAboutBtn").style.display = cameFromAbout ? "flex" : "none";
+    cameFromAbout = page !== "about" && !!fromAbout;
+    document.getElementById("backToAboutBtn").style.display = cameFromAbout ? "flex" : "none";
 
-            document.getElementById("homeLanding").classList.add("hidden");
-            document.getElementById("homeContentWrap").classList.add("active");
-            document.getElementById("homeTopbar").style.display = "none";
-            document.getElementById("pageTopbar").style.display = "flex";
+    document.getElementById("homeLanding").classList.add("hidden");
+    document.getElementById("homeContentWrap").classList.add("active");
+    document.getElementById("homeTopbar").style.display = "none";
+    document.getElementById("pageTopbar").style.display = "flex";
 
-            document.querySelectorAll(".home-page-content").forEach(p => p.classList.remove("active"));
-            let target = document.getElementById("page-" + page);
-            target.classList.add("active");
-            target.scrollTop = 0;
+    document.querySelectorAll(".home-page-content").forEach(p => p.classList.remove("active"));
+    let target = document.getElementById("page-" + page);
+    target.classList.add("active");
+    target.scrollTop = 0;
 
-            if (page === "promo") {
-                let promoFrame = target.querySelector("iframe");
-                if (promoFrame) promoFrame.src = promoFrame.src;
-            }
-            if (page === "tips") {
-                let tipsFrame = target.querySelector("iframe");
-                if (tipsFrame) tipsFrame.src = tipsFrame.src;
-            }
+    // NEW: first time this tab is opened, load its iframe now (not on page load)
+    let frame = target.querySelector("iframe[data-src]");
+    if (frame) {
+        frame.src = frame.dataset.src;
+        frame.removeAttribute("data-src");
+    }
 
-            if (page === "profile") await loadProfileIntoPage();
-            if (page === "settings") await loadSettingsIntoPage();
-            if (page === "inbox") { renderInboxList(mergedNotifications()); markInboxSeen(); }
-            setTimeout(updateScrollBottomBtn, 50);
-        }
+    // (promo/tips "force refresh on every visit" logic removed —
+    // see note below on whether you still want that)
+
+    if (page === "profile") await loadProfileIntoPage();
+    if (page === "settings") await loadSettingsIntoPage();
+    if (page === "inbox") { renderInboxList(mergedNotifications()); markInboxSeen(); }
+    setTimeout(updateScrollBottomBtn, 50);
+}
 
         function showUnsavedModal() {
             return new Promise(resolve => {
