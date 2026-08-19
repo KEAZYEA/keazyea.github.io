@@ -258,7 +258,7 @@
 
                     <!-- STATE 3: JOIN / COUNTDOWN / REVEAL -->
                     <div id="vipWheelState" class="lock-screen" style="display:none;">
-                        <h2>VIP Giveaway</h2>
+                        <h2>Weekly Giveaway</h2>
                         <p class="promo-sub" id="deviceConfirmText"></p>
                         <p class="promo-sub" id="enteringAsLine">Entering as <strong id="giveawayPlayerName"></strong></p>
                         <p class="promo-sub">🗓️ New winner every Sunday. Next draw in: <strong
@@ -570,10 +570,8 @@ document.getElementById("prizeRevealCloseBtn").addEventListener("click", () => {
             async function enterWheelUIForDevice(device, shouldJoin) {
                 const otherDevice = device === "ios" ? "Android" : "iOS";
                 document.getElementById("deviceConfirmText").innerHTML =
-                    '<div style="display:inline-block; background:#2a2a4a; border:2px solid #4169e1; border-radius:10px; ' +
-                    'padding:10px 20px; margin-bottom:10px;">' +
-                    '<strong style="font-size:1.3rem; text-decoration:underline;">Playing on ' +
-                    (device === "ios" ? "iOS 🍎" : "Android 🤖") + '</strong></div>' +
+    '<span style="font-size:1.15rem; font-weight:700; color:#6c9bff;">Playing on ' +
+    (device === "ios" ? "iOS 🍎" : "Android 🤖") + '</span>' +
                     (isDrawDay() ? "" :
                         "<br><strong style=\"color:#ff4444;\">Wrong device? Use \"Change to " + otherDevice + "\" below.</strong>");
                 document.getElementById("switchDeviceBtn").textContent = "🔄 Change to " + otherDevice;
