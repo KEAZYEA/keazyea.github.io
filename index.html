@@ -293,6 +293,21 @@ body {
                 padding: 6px 12px;
             }
         }
+
+        .kih-spinner {
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: kih-spin 0.7s linear infinite;
+    vertical-align: middle;
+}
+
+@keyframes kih-spin {
+    to { transform: rotate(360deg); }
+}
         /* ===== TABLET / DESKTOP-WIDTH SCALE-UP =====
            Everything above the landscape-phone block is tuned for phone
            widths. Past 768px (iPad portrait and up), those same clamp()/
@@ -2313,21 +2328,21 @@ body {
         // and setButtonLoading(btn, false) in a finally block once it's done.
         // Stores the button's original text so it can be restored exactly.
         function setButtonLoading(btn, loading, loadingText) {
-            if (!btn) return;
-            if (loading) {
-                if (btn.dataset.originalText === undefined) {
-                    btn.dataset.originalText = btn.textContent;
-                }
-                btn.textContent = loadingText || "Loading...";
-                btn.disabled = true;
-            } else {
-                if (btn.dataset.originalText !== undefined) {
-                    btn.textContent = btn.dataset.originalText;
-                    delete btn.dataset.originalText;
-                }
-                btn.disabled = false;
-            }
+    if (!btn) return;
+    if (loading) {
+        if (btn.dataset.originalText === undefined) {
+            btn.dataset.originalHtml = btn.innerHTML;
         }
+        btn.innerHTML = '<span class="kih-spinner"></span>';
+        btn.disabled = true;
+    } else {
+        if (btn.dataset.originalHtml !== undefined) {
+            btn.innerHTML = btn.dataset.originalHtml;
+            delete btn.dataset.originalHtml;
+        }
+        btn.disabled = false;
+    }
+}
 
         /* ---------------- SETTINGS ---------------- */
         async function loadSettingsIntoPage() {
