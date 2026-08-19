@@ -1133,6 +1133,7 @@ function unlockBackgroundScroll() {
                     throw err;
                 });
             }
+                        document.getElementById("loadingMsg").textContent = "⏳ Loading troop & hero data...";
             //promise.all loads in all the json files at the same time
             Promise.all([
                 loadJSON("troops.json"),
@@ -1256,8 +1257,9 @@ function unlockBackgroundScroll() {
                     });
                 }
 
-                // Sort heroes by order field so the list is predictable
+                                // Sort heroes by order field so the list is predictable
                 troopList.sort((a, b) => (a.meta.order || 99) - (b.meta.order || 99));
+                document.getElementById("loadingMsg").textContent = "";
                 showTroopsGallery();
 
                 // build summon map now that troopMeta is loaded
