@@ -219,6 +219,11 @@
         <div id="vipPage" class="page">
             <div class="promo-grid">
                 <div class="promo-panel" style="max-width:600px; margin:0 auto; text-align:center; font-size:1.1rem;">
+                                        <!-- STATE -1: LOADING -->
+                    <div id="vipLoadingState" class="lock-screen" style="display:none; text-align:center;">
+                        <p class="promo-sub">⏳ Loading giveaway status...</p>
+                    </div>
+
                     <!-- STATE 0: SIGNED OUT -->
                     <div id="vipSignedOutState" class="lock-screen" style="display:none;">
                         <span class="vip-lock-icon-big">🔒</span>
@@ -403,9 +408,10 @@
                     document.getElementById("codesPage").classList.add("active");
                     document.querySelectorAll(".tab-btn")[0].classList.add("active");
                     AppState.maybeRefreshAd("promoAdSlot");
-                } else {
+                                } else {
                     document.getElementById("vipPage").classList.add("active");
                     document.querySelectorAll(".tab-btn")[1].classList.add("active");
+                    showState("loading");
                     refreshVipState();
                 }
             }
@@ -546,7 +552,8 @@ document.getElementById("prizeRevealCloseBtn").addEventListener("click", () => {
                 }
             }
 
-            function showState(state) {
+                        function showState(state) {
+                document.getElementById("vipLoadingState").style.display = state === "loading" ? "block" : "none";
                 document.getElementById("vipSignedOutState").style.display = state === "signedout" ? "block" : "none";
                 document.getElementById("vipLockedState").style.display = state === "locked" ? "block" : "none";
                 document.getElementById("vipDeviceState").style.display = state === "device" ? "block" : "none";
