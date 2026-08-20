@@ -875,6 +875,32 @@ body {
             border-color: var(--kih-accent-hover);
             transform: translateY(-1px);
         }
+        .news-preview-item.type-leak {
+    border-color: #ff6b6b !important;
+    box-shadow: 0 0 8px rgba(255, 107, 107, 0.25);
+}
+
+.news-preview-item.type-confirmed {
+    border-color: #4caf50 !important;
+}
+
+.news-preview-item.type-rumour {
+    border-color: #ffc439 !important;
+}
+
+.news-tag {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    padding: 2px 7px;
+    border-radius: 5px;
+    margin-bottom: 4px;
+}
+
+.news-tag.type-leak { background: rgba(255, 107, 107, 0.18); color: #ff6b6b; }
+.news-tag.type-confirmed { background: rgba(76, 175, 80, 0.18); color: #6bd672; }
+.news-tag.type-rumour { background: rgba(255, 196, 57, 0.18); color: #ffd76b; }
         /* ---- Mini modal (view profile) ---- */
         .mini-modal-overlay {
             display: none;
@@ -2567,7 +2593,13 @@ document.addEventListener("click", (e) => {
             const text = (tmp.textContent || "").trim();
             return text.length > maxLen ? text.slice(0, maxLen) + "…" : text;
         }
-
+function getNewsTypeInfo(title) {
+    const t = (title || "").toLowerCase();
+    if (t.includes("leak")) return { cls: "type-leak", label: "🔥 LEAK" };
+    if (t.includes("confirmed") || t.includes("new update") || t.includes("official")) return { cls: "type-confirmed", label: "✅ CONFIRMED" };
+    if (t.includes("rumour") || t.includes("rumor")) return { cls: "type-rumour", label: "👀 RUMOUR" };
+    return { cls: "", label: "" };
+}
        function renderNewsPreviewHome(items) {
     const list = document.getElementById("newsPreviewListHome");
     const recent = items;
@@ -2575,12 +2607,16 @@ document.addEventListener("click", (e) => {
         list.innerHTML = '<div class="friend-req-empty">No news yet.</div>';
         return;
     }
-    list.innerHTML = recent.map(n => `
-        <div class="friend-req-item news-preview-item" data-id="${escapeHomeHtml(n.id)}" style="display:block; cursor:pointer;">
+    list.innerHTML = recent.map(n => {
+        const typeInfo = getNewsTypeInfo(n.title);
+        return `
+        <div class="friend-req-item news-preview-item ${typeInfo.cls}" data-id="${escapeHomeHtml(n.id)}" style="display:block; cursor:pointer;">
+            ${typeInfo.label ? `<span class="news-tag ${typeInfo.cls}">${typeInfo.label}</span><br>` : ""}
             <div class="friend-req-name" style="margin-bottom:2px;">${escapeHomeHtml(n.title)}</div>
             <div class="settings-sub" style="margin:0;">${escapeHomeHtml(stripHtmlForPreview(n.bodyHtml))}</div>
         </div>
-    `).join("");
+    `;
+    }).join("");
 
     list.querySelectorAll(".news-preview-item").forEach(item => {
         item.addEventListener("click", (e) => {
