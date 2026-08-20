@@ -280,8 +280,16 @@
                     no sign-in needed to view. The body field accepts <strong>raw HTML</strong>, so you can bold
                     text, add line breaks, links, or embed an image with an <code>&lt;img&gt;</code> tag pointing
                     at an uploaded image URL below.</p>
-                <input type="text" id="newNewsTitleInput" placeholder="Title, e.g. Season 12 Rumours"
-                    style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box; margin-bottom:10px;">
+               <input type="text" id="newNewsTitleInput" placeholder="Title, e.g. Season 12 Rumours"
+    style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box; margin-bottom:10px;">
+
+<label for="newNewsTypeInput" style="display:block; text-align:left; margin-bottom:6px; color:#9a9ab0; font-size:0.85rem;">Type — controls the color/tag shown on the site</label>
+<select id="newNewsTypeInput" style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box; margin-bottom:10px;">
+    <option value="general">General</option>
+    <option value="leak">🔥 Leak</option>
+    <option value="confirmed">✅ Confirmed</option>
+    <option value="rumour">👀 Rumour</option>
+</select>
                 <textarea id="newNewsBodyInput" placeholder="Write your update here. HTML is allowed, e.g.:&#10;&lt;p&gt;Some &lt;strong&gt;bold&lt;/strong&gt; text&lt;/p&gt;&#10;&lt;img src=&quot;PASTE_UPLOADED_IMAGE_URL_HERE&quot; style=&quot;max-width:100%;border-radius:8px;&quot;&gt;"
                     rows="8"
                     style="width:100%; padding:10px; font-size:0.95rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box; font-family:monospace; margin-bottom:10px;"></textarea>
@@ -1045,59 +1053,61 @@ async function refreshMaintenanceStatus() {
             let editingNewsId = null;
 
             async function handlePostNews() {
-                const titleInput = document.getElementById("newNewsTitleInput");
-                const bodyInput = document.getElementById("newNewsBodyInput");
-                const title = titleInput.value.trim();
-                const bodyHtml = bodyInput.value.trim();
-                if (!title || !bodyHtml) {
-                    showInfoModal("Missing info", "Fill in both the title and the news content.");
-                    return;
-                }
-                const btn = document.getElementById("postNewsBtn");
-                btn.disabled = true;
-                const scrollY = window.scrollY;
+    const titleInput = document.getElementById("newNewsTitleInput");
+    const bodyInput = document.getElementById("newNewsBodyInput");
+    const typeInput = document.getElementById("newNewsTypeInput");
+    const title = titleInput.value.trim();
+    const bodyHtml = bodyInput.value.trim();
+    const type = typeInput.value;
+    if (!title || !bodyHtml) {
+        showInfoModal("Missing info", "Fill in both the title and the news content.");
+        return;
+    }
+    const btn = document.getElementById("postNewsBtn");
+    btn.disabled = true;
+    const scrollY = window.scrollY;
 
-                try {
-                    if (editingNewsId) {
-                        btn.textContent = "Saving...";
-                        await AppState.updateNews(editingNewsId, title, bodyHtml);
-                    } else {
-                        btn.textContent = "Posting...";
-                        await AppState.addNews(title, bodyHtml);
-                    }
-                    cancelNewsEdit();
-                    await refreshRecentNews();
-                } catch (e) {
-                    showInfoModal("Couldn't save", e.message);
-                }
-                btn.disabled = false;
-                btn.textContent = editingNewsId ? "Save Changes" : "Post News";
-                requestAnimationFrame(() => window.scrollTo(0, scrollY));
-            }
-            window.handlePostNews = handlePostNews;
+    try {
+        if (editingNewsId) {
+            btn.textContent = "Saving...";
+            await AppState.updateNews(editingNewsId, title, bodyHtml, type);
+        } else {
+            btn.textContent = "Posting...";
+            await AppState.addNews(title, bodyHtml, type);
+        }
+        cancelNewsEdit();
+        await refreshRecentNews();
+    } catch (e) {
+        showInfoModal("Couldn't save", e.message);
+    }
+    btn.disabled = false;
+    btn.textContent = editingNewsId ? "Save Changes" : "Post News";
+    requestAnimationFrame(() => window.scrollTo(0, scrollY));
+}
 
             async function handleEditNews(newsId) {
-                const item = await AppState.getNewsItem(newsId);
-                if (!item) {
-                    showInfoModal("Couldn't load", "It may have been deleted.");
-                    return;
-                }
-                editingNewsId = newsId;
-                document.getElementById("newNewsTitleInput").value = item.title;
-                document.getElementById("newNewsBodyInput").value = item.bodyHtml;
-                document.getElementById("postNewsBtn").textContent = "Save Changes";
-                showCancelNewsEditButton();
-                document.getElementById("newNewsTitleInput").scrollIntoView({ behavior: "smooth", block: "center" });
-            }
-            window.handleEditNews = handleEditNews;
+    const item = await AppState.getNewsItem(newsId);
+    if (!item) {
+        showInfoModal("Couldn't load", "It may have been deleted.");
+        return;
+    }
+    editingNewsId = newsId;
+    document.getElementById("newNewsTitleInput").value = item.title;
+    document.getElementById("newNewsBodyInput").value = item.bodyHtml;
+    document.getElementById("newNewsTypeInput").value = item.type || "general";
+    document.getElementById("postNewsBtn").textContent = "Save Changes";
+    showCancelNewsEditButton();
+    document.getElementById("newNewsTitleInput").scrollIntoView({ behavior: "smooth", block: "center" });
+}
 
             function cancelNewsEdit() {
-                editingNewsId = null;
-                document.getElementById("newNewsTitleInput").value = "";
-                document.getElementById("newNewsBodyInput").value = "";
-                document.getElementById("postNewsBtn").textContent = "Post News";
-                hideCancelNewsEditButton();
-            }
+    editingNewsId = null;
+    document.getElementById("newNewsTitleInput").value = "";
+    document.getElementById("newNewsBodyInput").value = "";
+    document.getElementById("newNewsTypeInput").value = "general";
+    document.getElementById("postNewsBtn").textContent = "Post News";
+    hideCancelNewsEditButton();
+}
             window.cancelNewsEdit = cancelNewsEdit;
 
             function showCancelNewsEditButton() {
