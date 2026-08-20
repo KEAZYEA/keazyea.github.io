@@ -2593,11 +2593,10 @@ document.addEventListener("click", (e) => {
             const text = (tmp.textContent || "").trim();
             return text.length > maxLen ? text.slice(0, maxLen) + "…" : text;
         }
-function getNewsTypeInfo(title) {
-    const t = (title || "").toLowerCase();
-    if (t.includes("leak")) return { cls: "type-leak", label: "🔥 LEAK" };
-    if (t.includes("confirmed") || t.includes("new update") || t.includes("official")) return { cls: "type-confirmed", label: "✅ CONFIRMED" };
-    if (t.includes("rumour") || t.includes("rumor")) return { cls: "type-rumour", label: "👀 RUMOUR" };
+function getNewsTypeInfo(type) {
+    if (type === "leak") return { cls: "type-leak", label: "🔥 LEAK" };
+    if (type === "confirmed") return { cls: "type-confirmed", label: "✅ CONFIRMED" };
+    if (type === "rumour") return { cls: "type-rumour", label: "👀 RUMOUR" };
     return { cls: "", label: "" };
 }
        function renderNewsPreviewHome(items) {
@@ -2608,8 +2607,8 @@ function getNewsTypeInfo(title) {
         return;
     }
     list.innerHTML = recent.map(n => {
-        const typeInfo = getNewsTypeInfo(n.title);
-        return `
+    const typeInfo = getNewsTypeInfo(n.type);
+    return `
         <div class="friend-req-item news-preview-item ${typeInfo.cls}" data-id="${escapeHomeHtml(n.id)}" style="display:block; cursor:pointer;">
             ${typeInfo.label ? `<span class="news-tag ${typeInfo.cls}">${typeInfo.label}</span><br>` : ""}
             <div class="friend-req-name" style="margin-bottom:2px;">${escapeHomeHtml(n.title)}</div>
