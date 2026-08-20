@@ -2521,32 +2521,32 @@ async function sendAdminMessage(uid, title, body) {
         return { imageUrl, imagePath: path };
     }
 
-    async function addNews(title, bodyHtml) {
-        await waitForAuthReady();
-        if (!currentUser || currentUser.uid !== ADMIN_UID) {
-            throw new Error("Not authorized.");
-        }
-        if (!title || !title.trim()) throw new Error("Title cannot be empty.");
-        if (!bodyHtml || !bodyHtml.trim()) throw new Error("Body cannot be empty.");
-        const docRef = await addDoc(collection(db, "news"), {
-            title: title.trim(),
-            bodyHtml: bodyHtml.trim(),
-            createdAt: Date.now()
-        });
-        return docRef.id;
+    async function addNews(title, bodyHtml, type) {
+    await waitForAuthReady();
+    if (!currentUser || currentUser.uid !== ADMIN_UID) {
+        throw new Error("Not authorized.");
     }
+    if (!title || !title.trim()) throw new Error("Title cannot be empty.");
+    if (!bodyHtml || !bodyHtml.trim()) throw new Error("Body cannot be empty.");
+    const docRef = await addDoc(collection(db, "news"), {
+        title: title.trim(),
+        bodyHtml: bodyHtml.trim(),
+        type: type || "general",
+        createdAt: Date.now()
+    });
+    return docRef.id;
+}
 
-    async function updateNews(newsId, title, bodyHtml) {
-        await waitForAuthReady();
-        if (!currentUser || currentUser.uid !== ADMIN_UID) {
-            throw new Error("Not authorized.");
-        }
-        if (!title || !title.trim()) throw new Error("Title cannot be empty.");
-        if (!bodyHtml || !bodyHtml.trim()) throw new Error("Body cannot be empty.");
-        await updateDoc(doc(db, "news", newsId), { title: title.trim(), bodyHtml: bodyHtml.trim() });
-        return newsId;
+async function updateNews(newsId, title, bodyHtml, type) {
+    await waitForAuthReady();
+    if (!currentUser || currentUser.uid !== ADMIN_UID) {
+        throw new Error("Not authorized.");
     }
-
+    if (!title || !title.trim()) throw new Error("Title cannot be empty.");
+    if (!bodyHtml || !bodyHtml.trim()) throw new Error("Body cannot be empty.");
+    await updateDoc(doc(db, "news", newsId), { title: title.trim(), bodyHtml: bodyHtml.trim(), type: type || "general" });
+    return newsId;
+}
     async function deleteNews(newsId) {
         await waitForAuthReady();
         if (!currentUser || currentUser.uid !== ADMIN_UID) {
