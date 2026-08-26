@@ -1477,20 +1477,20 @@ body {
                         </div> -->
 
                         <div class="settings-row">
-                            <div>
-                                <div class="settings-label">Privacy Policy</div>
-                                <div class="settings-sub">How your data is used</div>
-                            </div>
-                            <a class="btn-settings-action" href="privacy.html">View</a>
-                        </div>
+    <div>
+        <div class="settings-label">Privacy Policy</div>
+        <div class="settings-sub">How your data is used</div>
+    </div>
+    <button class="btn-settings-action" onclick="openLegalModal('privacy.html')">View</button>
+</div>
 
-                        <div class="settings-row">
-                            <div>
-                                <div class="settings-label">Terms of Service</div>
-                                <div class="settings-sub">Rules for using this app</div>
-                            </div>
-                            <a class="btn-settings-action" href="terms.html">View</a>
-                        </div>
+<div class="settings-row">
+    <div>
+        <div class="settings-label">Terms of Service</div>
+        <div class="settings-sub">Rules for using this app</div>
+    </div>
+    <button class="btn-settings-action" onclick="openLegalModal('terms.html')">View</button>
+</div>
                     </div>
                 </div>
 
@@ -1582,12 +1582,12 @@ body {
 
                 <label style="display:flex; align-items:flex-start; gap:10px; margin-bottom:14px; cursor:pointer;">
                     <input type="checkbox" id="termsGateTosCheck" style="margin-top:3px; width:18px; height:18px; flex-shrink:0;">
-                    <span>I have read and agree to the <a href="terms.html?from=gate" target="_blank" rel="noopener noreferrer" class="about-link">Terms of Service</a>.</span>
+                    <span>I have read and agree to the <a href="#" onclick="event.preventDefault(); openLegalModal('terms.html?from=gate')" class="about-link">Terms of Service</a>.</span>
                 </label>
 
                 <label style="display:flex; align-items:flex-start; gap:10px; margin-bottom:22px; cursor:pointer;">
                     <input type="checkbox" id="termsGatePrivacyCheck" style="margin-top:3px; width:18px; height:18px; flex-shrink:0;">
-                    <span>I have read and agree to the <a href="privacy.html?from=gate" target="_blank" rel="noopener noreferrer" class="about-link">Privacy Policy</a>.</span>
+                    <span>I have read and agree to the <a href="#" onclick="event.preventDefault(); openLegalModal('privacy.html?from=gate')" class="about-link">Privacy Policy</a>.</span>
                 </label>
 
                 <button class="btn-primary btn-block" id="termsGateAgreeBtn" disabled style="font-size:1.05rem; padding:14px;">Continue</button>
@@ -1687,7 +1687,15 @@ body {
                 <button class="btn-settings-action" style="margin-top:16px;" onclick="closeAvatarModal()">Close</button>
             </div>
         </div>
-
+<!-- Legal document viewer (Terms / Privacy) — shown inline instead of navigating away or opening a new tab -->
+<div class="mini-modal-overlay" id="legalModalOverlay" style="z-index:600;">
+    <div class="mini-modal-box" style="max-width:700px; width:92vw; height:85vh; display:flex; flex-direction:column; padding:0; overflow:hidden;">
+        <div style="display:flex; justify-content:flex-end; flex-shrink:0; padding:10px 10px 0;">
+            <button onclick="closeLegalModal()" aria-label="Close" style="background:none; border:none; color:var(--kih-text-dim); font-size:1.5rem; line-height:1; cursor:pointer; padding:4px 8px;">✕</button>
+        </div>
+        <iframe id="legalModalFrame" src="" style="flex:1; width:100%; border:none; background:var(--kih-bg);"></iframe>
+    </div>
+</div>
         <!-- Full News & Rumours modal — scrollable list, HTML content rendered as-is -->
 <div class="mini-modal-overlay" id="newsModalOverlay">
     <div class="mini-modal-box" style="max-width:560px; max-height:80vh; display:flex; flex-direction:column; text-align:left; padding:0; overflow:hidden;">
@@ -2061,7 +2069,17 @@ body {
         function closeAvatarModal() {
             document.getElementById("avatarModalOverlay").classList.remove("open");
         }
+function openLegalModal(url) {
+    document.getElementById("legalModalFrame").src = url;
+    document.getElementById("legalModalOverlay").classList.add("open");
+}
+window.openLegalModal = openLegalModal;
 
+function closeLegalModal() {
+    document.getElementById("legalModalOverlay").classList.remove("open");
+    document.getElementById("legalModalFrame").src = ""; // stop it running/loaded in the background
+}
+window.closeLegalModal = closeLegalModal;
         // Auto-clamp Current Level to 1–10000 as soon as the user leaves
         // the field, instead of just rejecting it on save.
         document.getElementById("profileLevelInput").addEventListener("blur", function () {
