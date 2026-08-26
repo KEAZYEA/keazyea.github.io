@@ -1052,7 +1052,7 @@ async function refreshMaintenanceStatus() {
 
             let editingNewsId = null;
 
-            async function handlePostNews() {
+                        async function handlePostNews() {
     const titleInput = document.getElementById("newNewsTitleInput");
     const bodyInput = document.getElementById("newNewsBodyInput");
     const typeInput = document.getElementById("newNewsTypeInput");
@@ -1084,8 +1084,9 @@ async function refreshMaintenanceStatus() {
     btn.textContent = editingNewsId ? "Save Changes" : "Post News";
     requestAnimationFrame(() => window.scrollTo(0, scrollY));
 }
+window.handlePostNews = handlePostNews;
 
-            async function handleEditNews(newsId) {
+                        async function handleEditNews(newsId) {
     const item = await AppState.getNewsItem(newsId);
     if (!item) {
         showInfoModal("Couldn't load", "It may have been deleted.");
@@ -1099,6 +1100,7 @@ async function refreshMaintenanceStatus() {
     showCancelNewsEditButton();
     document.getElementById("newNewsTitleInput").scrollIntoView({ behavior: "smooth", block: "center" });
 }
+window.handleEditNews = handleEditNews;
 
             function cancelNewsEdit() {
     editingNewsId = null;
