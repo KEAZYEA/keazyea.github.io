@@ -69,39 +69,77 @@ const AppState = (function () {
     };
 
     let currentUser = null;
-    let authReadyResolve;
-    const authReady = new Promise(resolve => { authReadyResolve = resolve; });
+let authReadyResolve;
+const authReady = new Promise(resolve => { authReadyResolve = resolve; });
 
-    // Bumped on every auth change — lets any in-flight ad check (see
-    // maybeRefreshAd / loadAdsterraAdsIfAllowed) detect that it's now stale
-    // and bail out instead of applying outdated show/hide results.
-    let adGeneration = 0;
+let adGeneration = 0;
 
-    onAuthStateChanged(auth, (user) => {
-        currentUser = user || null;
-        adGeneration++;
-        authReadyResolve();
-        window.dispatchEvent(new CustomEvent("kih-auth-changed", { detail: { user: currentUser } }));
+// ---- CROSS-IFRAME SIGN-IN SYNC ----
+// Every page (home.html + every iframe: promo/social/tips/troops/store)
+// loads its OWN copy of appState.js, each with its OWN Firebase Auth
+// instance. Firebase syncs a signed-in session across these via
+// localStorage, but that sync can lag a couple seconds — long enough
+// that a page you're ALREADY on (e.g. Social, opened before you signed
+// in on Promo) keeps showing "Sign in with Google" until something
+// forces it to recheck. Instead of waiting on Firebase's own timing,
+// broadcast our own signal the moment sign-in succeeds, and have any
+// OTHER already-open page reload itself the instant it sees that
+// signal — a reload guarantees a clean re-read of the now fully
+// persisted session, no race possible.
+//
+// Guarded to iframes only (window.self !== window.top) — we never want
+// this to reload home.html itself, since that would kick the user back
+// to the landing screen and reload every other iframe with it.
+const AUTH_BROADCAST_KEY = "kih_auth_broadcast_at";
+if (window.self !== window.top) {
+    window.addEventListener("storage", (e) => {
+        if (e.key !== AUTH_BROADCAST_KEY) return;
+        if (!currentUser) {
+            window.location.reload();
+        }
     });
+}
 
-    /* ---------------- AUTH ---------------- */
+onAuthStateChanged(auth, (user) => {
+    currentUser = user || null;
+    adGeneration++;
+    authReadyResolve();
+    window.dispatchEvent(new CustomEvent("kih-auth-changed", { detail: { user: currentUser } }));
+});
 
-    function waitForAuthReady() {
-        return authReady;
+/* ---------------- AUTH ---------------- */
+
+function waitForAuthReady() {
+    return authReady;
+}
+
+function getCurrentUser() {
+    return currentUser;
+}
+
+function broadcastAuthChange() {
+    try {
+        localStorage.setItem(AUTH_BROADCAST_KEY, String(Date.now()));
+    } catch (e) {
+        console.warn("Couldn't broadcast auth change:", e.message);
     }
+}
 
-    function getCurrentUser() {
-        return currentUser;
-    }
+async function signIn() {
+    const result = await signInWithPopup(auth, googleProvider);
+    // Tell every other open iframe a sign-in just happened, so any of
+    // them still showing a signed-out gate reload and pick it up
+    // immediately instead of waiting on Firebase's own cross-tab timing.
+    broadcastAuthChange();
+    return result.user;
+}
 
-    async function signIn() {
-        const result = await signInWithPopup(auth, googleProvider);
-        return result.user;
-    }
-
-    async function signOutUser() {
-        await firebaseSignOut(auth);
-    }
+async function signOutUser() {
+    await firebaseSignOut(auth);
+    // Same idea in reverse — keeps other open iframes from staying
+    // "signed in" looking after you actually sign out somewhere else.
+    broadcastAuthChange();
+}
 
     function onAuthChange(callback) {
         window.addEventListener("kih-auth-changed", (e) => callback(e.detail.user));
