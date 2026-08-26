@@ -38,9 +38,7 @@ import {
     signInWithPopup,
     GoogleAuthProvider,
     signOut as firebaseSignOut,
-    onAuthStateChanged,
-    setPersistence,
-    browserLocalPersistence
+    onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
 const firebaseConfig = {
     apiKey: "AIzaSyBYaZg000g9wxMIzDLONsSXLUgZIoJ4GNQ",
@@ -53,9 +51,16 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-setPersistence(auth, browserLocalPersistence).catch(e =>
-    console.warn("Couldn't set auth persistence:", e.message)
-);
+// browserLocalPersistence is already the default for web apps — calling
+// setPersistence() explicitly here forces Firebase Auth to re-verify its
+// session internally, which can fire onAuthStateChanged an extra time
+// with user=null BEFORE the real restored user comes through. Since
+// waitForAuthReady() below only resolves on the FIRST onAuthStateChanged
+// callback, that spurious null firing wins the race — currentUser looks
+// signed-out for a moment, and getProfile() falls back to the local
+// default profile (Bomber avatar) until the real callback (and manual
+// refreshTopbar() from onAuthChange) catches up. Removing this call
+// avoids the extra internal reset entirely.
 const db = getFirestore(app);
 const storage = getStorage(app);
 const googleProvider = new GoogleAuthProvider();
