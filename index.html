@@ -2679,23 +2679,27 @@ function getNewsTypeInfo(type) {
         }
 
         function renderNewsModalList(items) {
-            const list = document.getElementById("newsModalList");
-            if (!items.length) {
-                list.innerHTML = '<div class="friend-req-empty">No news yet — check back soon.</div>';
-                return;
-            }
-            // bodyHtml is rendered as-is (innerHTML), not escaped — this is
-            // admin-authored content only (Firestore rules restrict writes
-            // to the admin uid), so this is the same trust level as the
-            // rest of the admin-posted content already using innerHTML.
-            list.innerHTML = items.map(n => `
-                <div style="padding:14px 0; border-bottom:1px solid var(--kih-border);">
-                    <div style="font-weight:700; font-size:1.05rem; margin-bottom:4px;">${escapeHomeHtml(n.title)}</div>
-                    <div class="settings-sub" style="margin-bottom:10px;">${new Date(n.createdAt).toLocaleString()}</div>
-                    <div>${n.bodyHtml}</div>
-                </div>
-            `).join("");
-        }
+    const list = document.getElementById("newsModalList");
+    if (!items.length) {
+        list.innerHTML = '<div class="friend-req-empty">No news yet — check back soon.</div>';
+        return;
+    }
+    // bodyHtml is rendered as-is (innerHTML), not escaped — this is
+    // admin-authored content only (Firestore rules restrict writes
+    // to the admin uid), so this is the same trust level as the
+    // rest of the admin-posted content already using innerHTML.
+    list.innerHTML = items.map(n => {
+        const typeInfo = getNewsTypeInfo(n.type);
+        return `
+            <div class="news-preview-item ${typeInfo.cls}" style="padding:14px 0; margin-bottom:10px; border-bottom:none;">
+                ${typeInfo.label ? `<span class="news-tag ${typeInfo.cls}">${typeInfo.label}</span><br>` : ""}
+                <div style="font-weight:700; font-size:1.05rem; margin-bottom:4px;">${escapeHomeHtml(n.title)}</div>
+                <div class="settings-sub" style="margin-bottom:10px;">${new Date(n.createdAt).toLocaleString()}</div>
+                <div>${n.bodyHtml}</div>
+            </div>
+        `;
+    }).join("");
+}
 
         function openNewsModal() {
             document.getElementById("friendReqWrapperHome"); // no-op, keeps intent clear
@@ -2711,29 +2715,33 @@ function getNewsTypeInfo(type) {
         // Opens a single news item, centered, same treatment as the full
         // "View All News" modal but scoped to just this one post.
         function openSingleNewsModal(newsId) {
-            const item = latestNewsItems.find(n => n.id === newsId);
-            const content = document.getElementById("singleNewsModalContent");
-            if (!item) {
-                content.innerHTML = '<div class="friend-req-empty">This post is no longer available.</div>';
-            } else {
-                // bodyHtml is admin-authored (Firestore rules restrict writes
-                // to the admin uid) — same trust level as the full news
-                // modal, which already renders it unescaped.
-                content.innerHTML = `
-                    <div style="font-weight:700; font-size:1.15rem; margin-bottom:4px;">${escapeHomeHtml(item.title)}</div>
-                    <div class="settings-sub" style="margin-bottom:14px;">${new Date(item.createdAt).toLocaleString()}</div>
-                    <div>${item.bodyHtml}</div>
-                `;
-            }
-            document.getElementById("newsPanelHome").classList.remove("open");
-            const overlay = document.getElementById("singleNewsModalOverlay");
-            overlay.classList.add("open");
-            const box = overlay.querySelector(".mini-modal-box");
-            if (box) box.scrollTop = 0;
-            window.scrollTo(0, 0);
-            localStorage.setItem(NEWS_LAST_SEEN_KEY, String(Date.now()));
-            updateNewsBadgeHome(latestNewsItems);
-        }
+    const item = latestNewsItems.find(n => n.id === newsId);
+    const content = document.getElementById("singleNewsModalContent");
+    if (!item) {
+        content.innerHTML = '<div class="friend-req-empty">This post is no longer available.</div>';
+    } else {
+        // bodyHtml is admin-authored (Firestore rules restrict writes
+        // to the admin uid) — same trust level as the full news
+        // modal, which already renders it unescaped.
+        const typeInfo = getNewsTypeInfo(item.type);
+        content.innerHTML = `
+            <div class="news-preview-item ${typeInfo.cls}" style="border-bottom:none;">
+                ${typeInfo.label ? `<span class="news-tag ${typeInfo.cls}">${typeInfo.label}</span><br>` : ""}
+                <div style="font-weight:700; font-size:1.15rem; margin-bottom:4px;">${escapeHomeHtml(item.title)}</div>
+                <div class="settings-sub" style="margin-bottom:14px;">${new Date(item.createdAt).toLocaleString()}</div>
+                <div>${item.bodyHtml}</div>
+            </div>
+        `;
+    }
+    document.getElementById("newsPanelHome").classList.remove("open");
+    const overlay = document.getElementById("singleNewsModalOverlay");
+    overlay.classList.add("open");
+    const box = overlay.querySelector(".mini-modal-box");
+    if (box) box.scrollTop = 0;
+    window.scrollTo(0, 0);
+    localStorage.setItem(NEWS_LAST_SEEN_KEY, String(Date.now()));
+    updateNewsBadgeHome(latestNewsItems);
+}
         window.openSingleNewsModal = openSingleNewsModal;
 
         function closeSingleNewsModal() {
