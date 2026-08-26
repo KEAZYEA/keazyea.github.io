@@ -2432,58 +2432,71 @@ let vipStatusEl = document.getElementById("vipStatusText"); if (vipStatusEl) vip
 
 
                 /* ---------------- TOPBAR ---------------- */
-        async function refreshTopbar(retriesLeft = 3) {
-            let profile;
-            try {
-                profile = await AppState.getProfile();
-            } catch (e) {
-                console.warn("refreshTopbar: getProfile failed:", e.message);
-                if (retriesLeft > 0) setTimeout(() => refreshTopbar(retriesLeft - 1), 700);
-                return;
-            }
+        // Pure DOM-update step — takes a profile object and paints the topbar.
+// Shared by refreshTopbar() (one-shot read, used as a fallback / for the
+// signed-out case) and the live listenToMyProfile() subscription set up
+// in startTopbarProfileListener() below, so a profile change (avatar,
+// name) from ANYWHERE — this tab, another tab, an admin action — repaints
+// the topbar immediately without needing a manual refresh.
+function applyTopbarProfile(profile) {
+    let iconImg = document.getElementById("topbarAvatarIcon");
+    let iconFallback = document.getElementById("topbarAvatarFallback");
+    if (profile.avatar) {
+        iconImg.src = profile.avatar;
+        iconImg.style.display = "block";
+        iconFallback.style.display = "none";
+        iconImg.onerror = function () {
+            iconImg.style.display = "none";
+            iconFallback.style.display = "flex";
+        };
+    } else {
+        iconImg.style.display = "none";
+        iconFallback.style.display = "flex";
+    }
 
-            // A signed-in user showing up completely blank (no name, still
-            // on the default avatar) right after load is more likely a
-            // momentary read race than a genuinely brand-new account —
-            // retry a few times before accepting it, instead of leaving
-            // the topbar stuck on a stale/default result.
-            let looksBlank = !profile.name && profile.avatar === "images/BOMBER.jpg";
-            if (looksBlank && AppState.getCurrentUser() && retriesLeft > 0) {
-                setTimeout(() => refreshTopbar(retriesLeft - 1), 700);
-                return;
-            }
+    let dropdownIcon = document.getElementById("topbarAvatar");
+    let dropdownFallback = document.getElementById("topbarAvatarFallback2");
+    if (profile.avatar) {
+        dropdownIcon.src = profile.avatar;
+        dropdownIcon.style.display = "block";
+        dropdownFallback.style.display = "none";
+        dropdownIcon.onerror = function () {
+            dropdownIcon.style.display = "none";
+            dropdownFallback.style.display = "flex";
+        };
+    } else {
+        dropdownIcon.style.display = "none";
+        dropdownFallback.style.display = "flex";
+    }
+    document.getElementById("topbarName").textContent = "Profile";
+}
 
-            let iconImg = document.getElementById("topbarAvatarIcon");
-            let iconFallback = document.getElementById("topbarAvatarFallback");
-            if (profile.avatar) {
-                iconImg.src = profile.avatar;
-                iconImg.style.display = "block";
-                iconFallback.style.display = "none";
-                iconImg.onerror = function () {
-                    iconImg.style.display = "none";
-                    iconFallback.style.display = "flex";
-                };
-            } else {
-                iconImg.style.display = "none";
-                iconFallback.style.display = "flex";
-            }
+// One-shot read with retries — used on initial page load before the live
+// listener (see startTopbarProfileListener) has been set up, and as the
+// path taken for signed-out visitors (who have no Firestore doc to listen to).
+async function refreshTopbar(retriesLeft = 3) {
+    let profile;
+    try {
+        profile = await AppState.getProfile();
+    } catch (e) {
+        console.warn("refreshTopbar: getProfile failed:", e.message);
+        if (retriesLeft > 0) setTimeout(() => refreshTopbar(retriesLeft - 1), 700);
+        return;
+    }
 
-            let dropdownIcon = document.getElementById("topbarAvatar");
-            let dropdownFallback = document.getElementById("topbarAvatarFallback2");
-            if (profile.avatar) {
-                dropdownIcon.src = profile.avatar;
-                dropdownIcon.style.display = "block";
-                dropdownFallback.style.display = "none";
-                dropdownIcon.onerror = function () {
-                    dropdownIcon.style.display = "none";
-                    dropdownFallback.style.display = "flex";
-                };
-            } else {
-                dropdownIcon.style.display = "none";
-                dropdownFallback.style.display = "flex";
-            }
-            document.getElementById("topbarName").textContent = "Profile";
-        }
+    // A signed-in user showing up completely blank (no name, still
+    // on the default avatar) right after load is more likely a
+    // momentary read race than a genuinely brand-new account —
+    // retry a few times before accepting it, instead of leaving
+    // the topbar stuck on a stale/default result.
+    let looksBlank = !profile.name && profile.avatar === "images/BOMBER.jpg";
+    if (looksBlank && AppState.getCurrentUser() && retriesLeft > 0) {
+        setTimeout(() => refreshTopbar(retriesLeft - 1), 700);
+        return;
+    }
+
+    applyTopbarProfile(profile);
+}
         function scrollActivePageToBottom() {
             let active = document.querySelector(".home-page-content.active");
             if (active) active.scrollTo({ top: active.scrollHeight, behavior: "smooth" });
@@ -3018,20 +3031,28 @@ function getNewsTypeInfo(type) {
                 startUnreadDmListenerHome();
                 checkTermsGate();
             });
-            refreshTopbar();
-            AppState.waitForAuthReady().then(() => {
-                startFriendReqListenerHome();
-                startPersonalNotifListener();
-                startUnreadDmListenerHome();
-                AppState.touchLastActive();
-                setInterval(() => AppState.touchLastActive(), 5 * 60 * 1000);
-                checkTermsGate();
-                AppState.loadAdsterraAdsIfAllowed();
-                // Only fires here if the terms gate was ALREADY accepted (so it's
-                // not currently open) — first-time visitors instead get it right
-                // after clicking "Continue" on the terms gate, see that handler.
-                setTimeout(maybeShowGiveawaySigninPrompt, 1500);
-            });
+            let unsubTopbarProfile = null;
+function startTopbarProfileListener() {
+    if (unsubTopbarProfile) { unsubTopbarProfile(); unsubTopbarProfile = null; }
+    if (!AppState.getCurrentUser()) { refreshTopbar(0); return; } // 0 retries — signed out, nothing to wait on
+    unsubTopbarProfile = AppState.listenToMyProfile((profile) => {
+        if (profile) applyTopbarProfile(profile);
+    });
+}
+
+refreshTopbar();
+AppState.waitForAuthReady().then(() => {
+    startTopbarProfileListener();
+    startFriendReqListenerHome();
+    startPersonalNotifListener();
+    startUnreadDmListenerHome();
+    AppState.touchLastActive();
+    setInterval(() => AppState.touchLastActive(), 5 * 60 * 1000);
+    checkTermsGate();
+    AppState.loadAdsterraAdsIfAllowed();
+    setTimeout(maybeShowGiveawaySigninPrompt, 1500);
+});
+AppState.onAuthChange(() => startTopbarProfileListener());
             AppState.onAuthChange(() => AppState.loadAdsterraAdsIfAllowed());
 
             const urlParams = new URLSearchParams(window.location.search);
