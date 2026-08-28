@@ -2922,13 +2922,16 @@ function getNewsTypeInfo(type) {
 }
 // adminMessage and announcement need no button — title + body already contain everything
 
-                const isLong = (n.body || "").length > 100;
+                                const isLong = (n.body || "").length > 100;
+                const readMoreBtn = isLong
+                    ? `<button class="inbox-read-more-btn" data-index="${i}" style="margin-top:8px; margin-left:8px; padding:6px 16px; font-size:0.85rem; background:none; border:1px solid var(--kih-border); color:var(--kih-accent); border-radius:6px; cursor:pointer; font-weight:600;">Read More</button>`
+                    : "";
                 return `
         <div class="inbox-item${isLong ? " inbox-item-expandable" : ""}" ${isLong ? `data-index="${i}" style="cursor:pointer;"` : ""}>
             <div class="inbox-title">${n.title}</div>
             <div class="inbox-body">${truncateInboxBody(n.body)}</div>
             <div class="inbox-time">${new Date(n.createdAt).toLocaleString()}</div>
-            ${button}
+            <div>${button}${readMoreBtn}</div>
         </div>
     `;
             }).join("");
@@ -2941,9 +2944,15 @@ function getNewsTypeInfo(type) {
             });
 
             // Stop a button click inside an expandable item from also
-            // triggering the "open full text" click on the item itself.
-            list.querySelectorAll(".inbox-item-expandable .btn-primary").forEach(btn => {
+            // triggering the "open full text" click on the item itself
+            // (applies to both the action button, e.g. "View Promo Codes",
+            // and the explicit "Read More" button).
+            list.querySelectorAll(".inbox-item-expandable button").forEach(btn => {
                 btn.addEventListener("click", (e) => e.stopPropagation());
+            });
+
+            list.querySelectorAll(".inbox-read-more-btn").forEach(btn => {
+                btn.addEventListener("click", () => openInboxItemModal(parseInt(btn.dataset.index, 10)));
             });
 
             list.querySelectorAll(".inbox-item-expandable").forEach(item => {
