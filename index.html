@@ -2910,28 +2910,35 @@ function getNewsTypeInfo(type) {
             }
             list.innerHTML = filtered.map((n, i) => {
 
-                let button = "";
+                                let button = "";
                 if (n.type === "promo") {
-    button = `<button class="btn-primary" style="margin-top:8px; padding:6px 16px; font-size:0.85rem;" onclick="goToPage('promo')">View Promo Codes</button>`;
+    button = `<button class="btn-primary" style="padding:6px 16px; font-size:0.85rem;" onclick="goToPage('promo')">View Promo Codes</button>`;
 } else if (n.type === "tip") {
-    button = `<button class="btn-primary" style="margin-top:8px; padding:6px 16px; font-size:0.85rem;" onclick="openInboxTip('${n.sourceId}')">View Tip</button>`;
+    button = `<button class="btn-primary" style="padding:6px 16px; font-size:0.85rem;" onclick="openInboxTip('${n.sourceId}')">View Tip</button>`;
 } else if (n.type === "friendAccepted") {
-    button = `<button class="btn-primary" style="margin-top:8px; padding:6px 16px; font-size:0.85rem;" onclick="openInboxFriendChat('${n.fromUid}', '${escapeHomeHtml(n.fromName).replace(/'/g, "\\'")}', '${escapeHomeHtml(n.fromAvatar || "")}')">💬 Message</button>`;
+    button = `<button class="btn-primary" style="padding:6px 16px; font-size:0.85rem;" onclick="openInboxFriendChat('${n.fromUid}', '${escapeHomeHtml(n.fromName).replace(/'/g, "\\'")}', '${escapeHomeHtml(n.fromAvatar || "")}')">💬 Message</button>`;
 } else if (n.type === "giveawayWin") {
-    button = `<button class="btn-primary view-prize-inbox-btn" data-prize="${escapeHomeHtml(n.prize || "")}" data-pending="${n.pendingPrize ? "1" : "0"}" style="margin-top:8px; padding:6px 16px; font-size:0.85rem;">${n.prize ? "🎁 View Code" : "⏳ Status"}</button>`;
+    button = `<button class="btn-primary view-prize-inbox-btn" data-prize="${escapeHomeHtml(n.prize || "")}" data-pending="${n.pendingPrize ? "1" : "0"}" style="padding:6px 16px; font-size:0.85rem;">${n.prize ? "🎁 View Code" : "⏳ Status"}</button>`;
 }
 // adminMessage and announcement need no button — title + body already contain everything
 
-                                                const isLong = (n.body || "").length > 100;
+                // Preview text is stripped of any HTML tags (announcements/
+                // adminMessage can now contain raw HTML) so slicing it for
+                // the truncated preview can't cut a tag in half and break
+                // rendering. The full modal below still shows the raw HTML.
+                const plainBody = stripHtmlForPreview(n.body || "", 100000);
+                const isLong = plainBody.length > 100;
                 const readMoreBtn = isLong
-                    ? `<button class="btn-primary inbox-read-more-btn" data-index="${i}" style="margin-top:8px; margin-left:8px; padding:6px 16px; font-size:0.85rem;">Read More</button>`
+                    ? `<button class="btn-primary inbox-read-more-btn" data-index="${i}" style="padding:6px 16px; font-size:0.85rem;">Read More</button>`
                     : "";
+                const hasButtons = button || readMoreBtn;
+
                 return `
         <div class="inbox-item${isLong ? " inbox-item-expandable" : ""}" ${isLong ? `data-index="${i}" style="cursor:pointer;"` : ""}>
             <div class="inbox-title">${n.title}</div>
-            <div class="inbox-body">${truncateInboxBody(n.body)}</div>
+            <div class="inbox-body">${truncateInboxBody(plainBody)}</div>
             <div class="inbox-time">${new Date(n.createdAt).toLocaleString()}</div>
-            <div>${button}${readMoreBtn}</div>
+            ${hasButtons ? `<div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;">${button}${readMoreBtn}</div>` : ""}
         </div>
     `;
             }).join("");
