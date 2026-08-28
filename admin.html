@@ -724,26 +724,31 @@ async function refreshMaintenanceStatus() {
                 if (btn) btn.style.display = "none";
             }
 
-            async function refreshRecentAnnouncements() {
-                const items = await AppState.getAnnouncements(20);
-                const list = document.getElementById("recentAnnouncementsList");
-                if (!items.length) {
-                    list.innerHTML = '<p class="promo-sub">No announcements posted yet.</p>';
-                    return;
-                }
-                list.innerHTML = "<p class='promo-sub'>Recently posted:</p>" + items.map(a =>
-                    `<div style="padding:8px 0; border-bottom:1px solid #2a2a4a;">
-                        <div style="display:flex; align-items:center; justify-content:space-between;">
-                            <span><strong>${escapeHtml(a.title)}</strong> — <span class="promo-sub">${new Date(a.createdAt).toLocaleString()}</span></span>
-                            <span style="flex-shrink:0; display:flex; gap:8px;">
-                                <button onclick="handleEditAnnouncement('${a.id}')" style="background:#4169e1; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Edit</button>
-                                <button onclick="handleDeleteAnnouncement('${a.id}')" style="background:#aa3838; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Delete</button>
-                            </span>
-                        </div>
-                        <p class="promo-sub" style="white-space:pre-wrap; margin:6px 0 0;">${escapeHtml(a.body)}</p>
-                    </div>`
-                ).join("");
-            }
+            function truncateText(str, maxLen) {
+    if (str.length <= maxLen) return str;
+    return str.slice(0, maxLen).trimEnd() + "…";
+}
+
+async function refreshRecentAnnouncements() {
+    const items = await AppState.getAnnouncements(20);
+    const list = document.getElementById("recentAnnouncementsList");
+    if (!items.length) {
+        list.innerHTML = '<p class="promo-sub">No announcements posted yet.</p>';
+        return;
+    }
+    list.innerHTML = "<p class='promo-sub'>Recently posted:</p>" + items.map(a =>
+        `<div style="padding:8px 0; border-bottom:1px solid #2a2a4a;">
+            <div style="display:flex; align-items:center; justify-content:space-between;">
+                <span><strong>${escapeHtml(a.title)}</strong> — <span class="promo-sub">${new Date(a.createdAt).toLocaleString()}</span></span>
+                <span style="flex-shrink:0; display:flex; gap:8px;">
+                    <button onclick="handleEditAnnouncement('${a.id}')" style="background:#4169e1; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Edit</button>
+                    <button onclick="handleDeleteAnnouncement('${a.id}')" style="background:#aa3838; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Delete</button>
+                </span>
+            </div>
+            <p class="promo-sub" style="margin:6px 0 0;">${escapeHtml(truncateText(a.body, 80))}</p>
+        </div>`
+    ).join("");
+}
 
             async function handleDeleteAnnouncement(notifId) {
                 if (!await showConfirmModal("Delete announcement", "Delete this announcement? This can't be undone.")) return;
