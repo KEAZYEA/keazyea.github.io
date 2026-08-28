@@ -232,14 +232,17 @@
                 <hr style="border-color:#2a2a4a; margin:40px 0;">
 
                 <h2>📣 Post an Announcement</h2>
-                <p class="promo-sub">Appears in everyone's Inbox immediately (under "General"). Use for site-wide
-                    updates, downtime notices, etc. — not tied to a specific promo/tip.</p>
-                <input type="text" id="newAnnouncementTitleInput" placeholder="Title, e.g. Site update"
-                    style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box; margin-bottom:10px;">
-                <textarea id="newAnnouncementBodyInput" placeholder="Announcement text..." rows="4"
-                    style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box; font-family:inherit;"></textarea>
-                <button class="btn-primary" id="postAnnouncementBtn" onclick="handlePostAnnouncement()"
-                    style="margin-top:12px; padding:12px 28px;">Post Announcement</button>
+<p class="promo-sub">Appears in everyone's Inbox immediately (under "General"). Use for site-wide
+    updates, downtime notices, etc. — not tied to a specific promo/tip. The body field accepts
+    <strong>raw HTML</strong>, so you can bold text, add line breaks, or add links.</p>
+<input type="text" id="newAnnouncementTitleInput" placeholder="Title, e.g. Site update"
+    style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box; margin-bottom:10px;">
+<textarea id="newAnnouncementBodyInput"
+    placeholder="Write your announcement here. HTML is allowed, e.g.:&#10;&lt;p&gt;Some &lt;strong&gt;bold&lt;/strong&gt; text&lt;/p&gt;"
+    rows="4"
+    style="width:100%; padding:10px; font-size:0.95rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box; font-family:monospace;"></textarea>
+<button class="btn-primary" id="postAnnouncementBtn" onclick="handlePostAnnouncement()"
+    style="margin-top:12px; padding:12px 28px;">Post Announcement</button>
                 <div id="recentAnnouncementsList" style="margin-top:16px; text-align:left;"></div>
 
                 <hr style="border-color:#2a2a4a; margin:40px 0;">
