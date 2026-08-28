@@ -1722,7 +1722,17 @@ body {
         </div>
     </div>
 </div>
-
+<!-- Inbox item full view — opened when a truncated notification is tapped -->
+<div class="mini-modal-overlay" id="inboxItemModalOverlay">
+    <div class="mini-modal-box" style="max-width:420px; max-height:80vh; display:flex; flex-direction:column; text-align:left; padding:0; overflow:hidden;">
+        <div style="display:flex; justify-content:flex-end; flex-shrink:0; padding:10px 10px 0;">
+            <button onclick="closeInboxItemModal()" aria-label="Close" style="background:none; border:none; color:var(--kih-text-dim); font-size:1.5rem; line-height:1; cursor:pointer; padding:4px 8px;">✕</button>
+        </div>
+        <div style="overflow-y:auto; overscroll-behavior:contain; padding:0 24px 24px;">
+            <div id="inboxItemModalContent"></div>
+        </div>
+    </div>
+</div>
         <button class="scroll-bottom-btn" id="scrollBottomBtn" onclick="scrollActivePageToBottom()">↓</button>
 
         </div>
@@ -2538,8 +2548,17 @@ async function refreshTopbar(retriesLeft = 3) {
         let unsubFriendReqsHome = null;
 
         function escapeHomeHtml(str) {
-            return String(str || "").replace(/[&<>"']/g, s => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[s]));
-        }
+    return String(str || "").replace(/[&<>"']/g, s => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[s]));
+}
+
+function truncateInboxBody(str, maxLen = 100) {
+    str = str || "";
+    return str.length > maxLen ? str.slice(0, maxLen).trimEnd() + "…" : str;
+}
+
+// Keeps the currently-rendered (filtered) notifications around so a click
+// on an item can look itself up by index and show the full text.
+let currentInboxItems = [];
 
         function renderFriendReqsHome(requests) {
             const badge = document.getElementById("friendReqBadgeHome");
@@ -2873,7 +2892,7 @@ function getNewsTypeInfo(type) {
 
         let currentInboxFilter = "all";
 
-        function renderInboxList(notifications) {
+                function renderInboxList(notifications) {
             let list = document.getElementById("inboxList");
             if (!list) return;
 
@@ -2881,13 +2900,15 @@ function getNewsTypeInfo(type) {
                 ? notifications
                 : notifications.filter(n => inboxCategoryFor(n) === currentInboxFilter);
 
+            currentInboxItems = filtered; // so the expand modal can look items up by index
+
             if (filtered.length === 0) {
                 list.innerHTML = notifications.length === 0
                     ? `<div class="inbox-empty">📭 Nothing here yet.<br>New promo codes, tips, and friend updates will show up here.</div>`
                     : `<div class="inbox-empty">Nothing in this category yet.</div>`;
                 return;
             }
-            list.innerHTML = filtered.map(n => {
+            list.innerHTML = filtered.map((n, i) => {
 
                 let button = "";
                 if (n.type === "promo") {
@@ -2900,10 +2921,12 @@ function getNewsTypeInfo(type) {
     button = `<button class="btn-primary view-prize-inbox-btn" data-prize="${escapeHomeHtml(n.prize || "")}" data-pending="${n.pendingPrize ? "1" : "0"}" style="margin-top:8px; padding:6px 16px; font-size:0.85rem;">${n.prize ? "🎁 View Code" : "⏳ Status"}</button>`;
 }
 // adminMessage and announcement need no button — title + body already contain everything
+
+                const isLong = (n.body || "").length > 100;
                 return `
-        <div class="inbox-item">
+        <div class="inbox-item${isLong ? " inbox-item-expandable" : ""}" ${isLong ? `data-index="${i}" style="cursor:pointer;"` : ""}>
             <div class="inbox-title">${n.title}</div>
-            <div class="inbox-body">${n.body}</div>
+            <div class="inbox-body">${truncateInboxBody(n.body)}</div>
             <div class="inbox-time">${new Date(n.createdAt).toLocaleString()}</div>
             ${button}
         </div>
@@ -2911,10 +2934,57 @@ function getNewsTypeInfo(type) {
             }).join("");
 
             list.querySelectorAll(".view-prize-inbox-btn").forEach(btn => {
-                btn.addEventListener("click", () => openPrizeReveal(btn.dataset.prize, btn.dataset.pending === "1"));
+                btn.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    openPrizeReveal(btn.dataset.prize, btn.dataset.pending === "1");
+                });
+            });
+
+            // Stop a button click inside an expandable item from also
+            // triggering the "open full text" click on the item itself.
+            list.querySelectorAll(".inbox-item-expandable .btn-primary").forEach(btn => {
+                btn.addEventListener("click", (e) => e.stopPropagation());
+            });
+
+            list.querySelectorAll(".inbox-item-expandable").forEach(item => {
+                item.addEventListener("click", () => openInboxItemModal(parseInt(item.dataset.index, 10)));
             });
         }
+        function openInboxItemModal(index) {
+    const n = currentInboxItems[index];
+    const content = document.getElementById("inboxItemModalContent");
+    if (!content || !n) return;
 
+    let button = "";
+    if (n.type === "promo") {
+        button = `<button class="btn-primary" style="margin-top:14px; padding:10px 20px; font-size:0.9rem;" onclick="goToPage('promo')">View Promo Codes</button>`;
+    } else if (n.type === "tip") {
+        button = `<button class="btn-primary" style="margin-top:14px; padding:10px 20px; font-size:0.9rem;" onclick="openInboxTip('${n.sourceId}')">View Tip</button>`;
+    } else if (n.type === "friendAccepted") {
+        button = `<button class="btn-primary" style="margin-top:14px; padding:10px 20px; font-size:0.9rem;" onclick="openInboxFriendChat('${n.fromUid}', '${escapeHomeHtml(n.fromName).replace(/'/g, "\\'")}', '${escapeHomeHtml(n.fromAvatar || "")}')">💬 Message</button>`;
+    } else if (n.type === "giveawayWin") {
+        button = `<button class="btn-primary view-prize-inbox-btn" data-prize="${escapeHomeHtml(n.prize || "")}" data-pending="${n.pendingPrize ? "1" : "0"}" style="margin-top:14px; padding:10px 20px; font-size:0.9rem;">${n.prize ? "🎁 View Code" : "⏳ Status"}</button>`;
+    }
+
+    content.innerHTML = `
+        <div style="font-weight:700; font-size:1.1rem; margin-bottom:6px;">${n.title}</div>
+        <div class="settings-sub" style="margin-bottom:12px;">${new Date(n.createdAt).toLocaleString()}</div>
+        <div style="white-space:pre-wrap;">${n.body}</div>
+        ${button}
+    `;
+
+    content.querySelectorAll(".view-prize-inbox-btn").forEach(btn => {
+        btn.addEventListener("click", () => openPrizeReveal(btn.dataset.prize, btn.dataset.pending === "1"));
+    });
+
+    document.getElementById("inboxItemModalOverlay").classList.add("open");
+}
+window.openInboxItemModal = openInboxItemModal;
+
+function closeInboxItemModal() {
+    document.getElementById("inboxItemModalOverlay").classList.remove("open");
+}
+window.closeInboxItemModal = closeInboxItemModal;
         // Animates the code in and lets it be copied — the code already
         // lives on the notification itself (n.prize), so this needs no
         // AppState calls, no VIP check, and no dependency on the wheel/day
