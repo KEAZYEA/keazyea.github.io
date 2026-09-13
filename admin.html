@@ -263,6 +263,16 @@
                 <p class="promo-sub">This appears on the Tips page and notifies everyone via their inbox.</p>
                 <input type="text" id="newTipTitleInput" placeholder="Tip title, e.g. IRON GUARDS"
                     style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box; margin-bottom:10px;">
+                <label for="newTipTagSelect"
+                    style="display:block; text-align:left; margin-bottom:6px; color:#9a9ab0; font-size:0.85rem;">Category</label>
+                <select id="newTipTagSelect"
+                    style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box; margin-bottom:10px;">
+                    <option value="hero">Hero</option>
+                    <option value="troop">Troop</option>
+                    <option value="passes">Passes</option>
+                    <option value="formation">Formation</option>
+                    <option value="others" selected>Others</option>
+                </select>
                 <textarea id="newTipBodyInput" placeholder="Paste your full tip text here..." rows="10"
                     style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box; font-family:inherit; margin-bottom:10px;"></textarea>
 
@@ -896,6 +906,7 @@ async function refreshRecentAnnouncements() {
            async function handlePostTip() {
                 const titleInput = document.getElementById("newTipTitleInput");
                 const bodyInput = document.getElementById("newTipBodyInput");
+                const tag = document.getElementById("newTipTagSelect").value;
                 const title = titleInput.value.trim();
                 const body = bodyInput.value.trim();
                 if (!title || !body) {
@@ -923,10 +934,10 @@ async function refreshRecentAnnouncements() {
 
                     if (editingTipId) {
                         btn.textContent = "Saving...";
-                        await AppState.updateTip(editingTipId, title, body, imageUrls, imagePaths);
+                        await AppState.updateTip(editingTipId, title, body, imageUrls, imagePaths, tag);
                     } else {
                         btn.textContent = "Posting...";
-                        await AppState.addTip(title, body, imageUrls, imagePaths);
+                        await AppState.addTip(title, body, imageUrls, imagePaths, tag);
                     }
 
                     cancelTipEdit();
@@ -952,6 +963,7 @@ async function refreshRecentAnnouncements() {
                 }
                 editingTipId = tipId;
                 document.getElementById("newTipTitleInput").value = tip.title;
+                document.getElementById("newTipTagSelect").value = tip.tag || "others";
                 document.getElementById("newTipBodyInput").value = tip.body;
                 document.getElementById("newTipImageInput").value = "";
                 tipImageFiles = []; // don't carry over queued files from a previous post
@@ -974,6 +986,7 @@ async function refreshRecentAnnouncements() {
             function cancelTipEdit() {
                 editingTipId = null;
                 document.getElementById("newTipTitleInput").value = "";
+                document.getElementById("newTipTagSelect").value = "others";
                 document.getElementById("newTipBodyInput").value = "";
                 document.getElementById("newTipImageInput").value = "";
                 tipImageFiles = [];
@@ -1175,7 +1188,7 @@ window.handleEditNews = handleEditNews;
                 }
                 list.innerHTML = "<p class='promo-sub'>Recently posted:</p>" + tips.map(t =>
                     `<div style="display:flex; align-items:center; justify-content:space-between; padding:8px 0; border-bottom:1px solid #2a2a4a;">
-                    <span><strong>${escapeHtml(t.title)}</strong> — <span class="promo-sub">${new Date(t.createdAt).toLocaleString()}</span></span>
+                    <span><strong>${escapeHtml(t.title)}</strong> <span class="promo-sub" style="background:#2a2a4a; border-radius:4px; padding:1px 6px; margin:0 4px;">${escapeHtml(t.tag || "others")}</span> — <span class="promo-sub">${new Date(t.createdAt).toLocaleString()}</span></span>
                     <span style="flex-shrink:0; display:flex; gap:8px;">
                         <button onclick="handleEditTip('${t.id}')" style="background:#4169e1; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Edit</button>
                         <button onclick="handleDeleteTip('${t.id}')" style="background:#aa3838; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Delete</button>
