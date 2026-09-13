@@ -2524,12 +2524,33 @@ async function refreshTopbar(retriesLeft = 3) {
             btn.classList.toggle("visible", hasOverflow && !nearBottom);
         }
 
+        // Coalesces rapid-fire scroll/resize callbacks to once per animation
+        // frame, avoiding repeated forced-layout reads (scrollHeight/clientHeight)
+        // during momentum scrolling or a resize drag.
+        function rafThrottle(fn) {
+            let scheduled = false;
+            return function (...args) {
+                if (scheduled) return;
+                scheduled = true;
+                requestAnimationFrame(() => {
+                    scheduled = false;
+                    fn.apply(this, args);
+                });
+            };
+        }
+
+        const throttledUpdateScrollBottomBtn = rafThrottle(updateScrollBottomBtn);
         document.querySelectorAll(".home-page-content").forEach(page => {
-            page.addEventListener("scroll", updateScrollBottomBtn);
+            page.addEventListener("scroll", throttledUpdateScrollBottomBtn);
         });
 
         function loadNotificationsIntoPage() {
-            let prefs = JSON.parse(localStorage.getItem("kih_notifications") || "{}");
+            let prefs;
+            try {
+                prefs = JSON.parse(localStorage.getItem("kih_notifications") || "{}");
+            } catch (e) {
+                prefs = {};
+            }
             document.getElementById("notifyPromo").checked = prefs.promo !== false;
             document.getElementById("notifyInbox").checked = prefs.inbox !== false;
             document.getElementById("notifyClan").checked = prefs.clan !== false;
@@ -3164,8 +3185,9 @@ function setAppHeight() {
     let vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
     document.querySelector(".home-shell").style.height = vh + "px";
 }
-window.visualViewport?.addEventListener("resize", setAppHeight);
-window.addEventListener("resize", setAppHeight);
+const throttledSetAppHeight = rafThrottle(setAppHeight);
+window.visualViewport?.addEventListener("resize", throttledSetAppHeight);
+window.addEventListener("resize", throttledSetAppHeight);
 setAppHeight();
 
     </script>
