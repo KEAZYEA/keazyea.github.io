@@ -2638,11 +2638,15 @@ document.addEventListener("click", (e) => {
         // preview length — used ONLY for the dropdown teaser, since that
         // shouldn't render embedded images/styling, just give a taste.
         function stripHtmlForPreview(html, maxLen = 90) {
-            const tmp = document.createElement("div");
-            tmp.innerHTML = html || "";
-            const text = (tmp.textContent || "").trim();
-            return text.length > maxLen ? text.slice(0, maxLen) + "…" : text;
-        }
+    const tmp = document.createElement("div");
+    tmp.innerHTML = html || "";
+    // Remove <style>/<script> before reading textContent — their contents
+    // are still text nodes even though they don't render, so textContent
+    // would otherwise pull in raw CSS/JS like "body { font-family: ...".
+    tmp.querySelectorAll("style, script").forEach(el => el.remove());
+    const text = (tmp.textContent || "").trim();
+    return text.length > maxLen ? text.slice(0, maxLen) + "…" : text;
+}
 function getNewsTypeInfo(type) {
     if (type === "leak") return { cls: "type-leak", label: "🔥 LEAK" };
     if (type === "confirmed") return { cls: "type-confirmed", label: "✅ CONFIRMED" };
