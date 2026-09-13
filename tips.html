@@ -157,6 +157,43 @@
             color: #9a9ab0;
             padding: 40px 16px;
         }
+
+        .tips-pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            max-width: 640px;
+            margin: 20px auto 0;
+            padding: 0 16px;
+        }
+
+        .tips-page-btn {
+            padding: 10px 18px;
+            font-size: 0.9rem;
+            border-radius: 10px;
+            border: 1px solid #2a2a4a;
+            background: #16162a;
+            color: white;
+            cursor: pointer;
+        }
+
+        .tips-page-btn:hover:not(:disabled) {
+            border-color: #4169e1;
+            background: #1c1c36;
+        }
+
+        .tips-page-btn:disabled {
+            opacity: 0.4;
+            cursor: default;
+        }
+
+        .tips-page-label {
+            color: #9a9ab0;
+            font-size: 0.85rem;
+            min-width: 60px;
+            text-align: center;
+        }
     </style>
 </head>
 
@@ -169,6 +206,12 @@
 
     <div class="tips-grid" id="tipsGrid"></div>
 
+    <div class="tips-pagination" id="tipsPagination" style="display:none;">
+        <button id="tipsPrevBtn" class="tips-page-btn">← Previous</button>
+        <span id="tipsPageLabel" class="tips-page-label"></span>
+        <button id="tipsNextBtn" class="tips-page-btn">Next →</button>
+    </div>
+
     <div class="tip-detail-wrap" id="tipDetailWrap" style="display:none;">
     <button class="back-to-tips-btn" id="backToTipsBtn">← Back</button>
     <div id="tipsAdSlot" style="display:none; justify-content:center; margin:0 auto 16px; max-width:100%; overflow:hidden;"></div>
@@ -177,8 +220,14 @@
 
     <script type="module" src="appState.js"></script>
     <script type="module">
-        let allTips = [];
+        const PAGE_SIZE = 10;
+        let currentPageTips = [];   // tips shown on the current page
+        let pageCursors = [null];   // pageCursors[i] = cursor doc to fetch page i (page 0 needs none)
+        let currentPage = 0;
+        let hasNextPage = false;
+        let searchAllTips = null;   // full tip list, fetched lazily only once a search is actually typed
         let currentFilter = "";
+        let noTipsAtAll = false;    // true once page 0 comes back empty with no next page
 
         function escapeHtml(str) {
             return String(str).replace(/[&<>"']/g, s => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[s]));
@@ -205,21 +254,22 @@
         function renderGrid() {
             const grid = document.getElementById("tipsGrid");
 
-            if (!allTips.length) {
-                grid.innerHTML = '<div class="tips-empty" style="grid-column:1/-1;">No tips posted yet — check back soon!</div>';
+            // While actively searching, match against every tip (fetched
+            // lazily, once) instead of just the current page — otherwise a
+            // search box that only sees 10 loaded tips would miss almost
+            // everything.
+            const list = currentFilter
+                ? (searchAllTips || []).filter(t => t.title.toLowerCase().includes(currentFilter.toLowerCase()))
+                : currentPageTips;
+
+            if (!list.length) {
+                grid.innerHTML = currentFilter
+                    ? '<div class="tips-empty" style="grid-column:1/-1;">No tips match your search.</div>'
+                    : '<div class="tips-empty" style="grid-column:1/-1;">No tips posted yet — check back soon!</div>';
                 return;
             }
 
-            const filtered = currentFilter
-                ? allTips.filter(t => t.title.toLowerCase().includes(currentFilter.toLowerCase()))
-                : allTips;
-
-            if (!filtered.length) {
-                grid.innerHTML = '<div class="tips-empty" style="grid-column:1/-1;">No tips match your search.</div>';
-                return;
-            }
-
-            grid.innerHTML = filtered.map(t => `
+            grid.innerHTML = list.map(t => `
                 <div class="tip-card-preview" data-id="${t.id}">
                     <div class="tip-card-preview-title">${t.imageUrl ? "🖼️ " : "💡 "}${escapeHtml(t.title)}</div>
                     <div class="tip-card-preview-time">${new Date(t.createdAt).toLocaleString()}</div>
@@ -228,15 +278,48 @@
 
             grid.querySelectorAll(".tip-card-preview").forEach(card => {
                 card.addEventListener("click", () => {
-                    const tip = allTips.find(t => t.id === card.getAttribute("data-id"));
+                    const tip = list.find(t => t.id === card.getAttribute("data-id"));
                     if (tip) showTipDetail(tip);
                 });
             });
+        }
+
+        function updatePaginationControls() {
+            const pagination = document.getElementById("tipsPagination");
+            if (currentFilter || (currentPageTips.length === 0 && currentPage === 0 && !hasNextPage)) {
+                pagination.style.display = "none";
+                return;
+            }
+            pagination.style.display = "flex";
+            document.getElementById("tipsPrevBtn").disabled = currentPage === 0;
+            document.getElementById("tipsNextBtn").disabled = !hasNextPage;
+            document.getElementById("tipsPageLabel").textContent = `Page ${currentPage + 1}`;
+        }
+
+        async function loadPage(pageIndex) {
+            document.getElementById("tipsGrid").innerHTML = '<div class="tips-empty" style="grid-column:1/-1;">⏳ Loading tips...</div>';
+            document.getElementById("tipsPagination").style.display = "none";
+
+            const { tips, lastDoc, hasMore } = await AppState.getTipsPage(PAGE_SIZE, pageCursors[pageIndex]);
+            currentPageTips = tips;
+            hasNextPage = hasMore;
+            currentPage = pageIndex;
+            if (hasMore) pageCursors[pageIndex + 1] = lastDoc;
+
+            if (pageIndex === 0) {
+                noTipsAtAll = tips.length === 0 && !hasMore;
+            }
+            document.getElementById("tipsSearchWrap").style.display = noTipsAtAll ? "none" : "block";
+
+            renderGrid();
+            updatePaginationControls();
+            window.scrollTo({ top: 0, left: 0, behavior: "instant" });
         }
         function showTipDetail(tip) {
             document.getElementById("tipsPageTitle").style.display = "none";
             document.getElementById("tipsGrid").style.display = "none";
             document.getElementById("tipsSearchWrap").style.display = "none";
+            document.getElementById("tipsPagination").style.display = "none";
             document.getElementById("tipDetailWrap").style.display = "block";
 
             document.getElementById("tipDetailContent").innerHTML = `
@@ -255,34 +338,45 @@
             document.getElementById("tipDetailWrap").style.display = "none";
             document.getElementById("tipsPageTitle").style.display = "block";
             document.getElementById("tipsGrid").style.display = "flex";
-            document.getElementById("tipsSearchWrap").style.display = allTips.length ? "block" : "none";
+            document.getElementById("tipsSearchWrap").style.display = noTipsAtAll ? "none" : "block";
+            renderGrid();
+            updatePaginationControls();
             window.scrollTo({ top: 0, left: 0, behavior: "instant" });
         }
         document.getElementById("backToTipsBtn").addEventListener("click", showGrid);
 
-        document.getElementById("tipsSearchInput").addEventListener("input", (e) => {
+        document.getElementById("tipsSearchInput").addEventListener("input", async (e) => {
             AppState.maybeRefreshAd("tipsAdSlot");
-            currentFilter = e.target.value;
+            currentFilter = e.target.value.trim();
+            if (currentFilter && !searchAllTips) {
+                document.getElementById("tipsGrid").innerHTML = '<div class="tips-empty" style="grid-column:1/-1;">⏳ Searching...</div>';
+                searchAllTips = await AppState.getTips();
+            }
             renderGrid();
+            updatePaginationControls();
         });
 
+        document.getElementById("tipsNextBtn").addEventListener("click", () => {
+            if (hasNextPage) loadPage(currentPage + 1);
+        });
+        document.getElementById("tipsPrevBtn").addEventListener("click", () => {
+            if (currentPage > 0) loadPage(currentPage - 1);
+        });
 
-                async function loadTips() {
-            document.getElementById("tipsGrid").innerHTML = '<div class="tips-empty" style="grid-column:1/-1;">⏳ Loading tips...</div>';
+        async function init() {
             AppState.waitForAuthReady().then(() => AppState.loadAdsterraAdsIfAllowed());
-            allTips = await AppState.getTips();
-            document.getElementById("tipsSearchWrap").style.display = allTips.length ? "block" : "none";
-            renderGrid();
 
             const params = new URLSearchParams(window.location.search);
             const requestedTipId = params.get("tipId");
-            if (requestedTipId) {
-                const tip = allTips.find(t => t.id === requestedTipId);
-                if (tip) showTipDetail(tip);
-            }
+            const tipPromise = requestedTipId ? AppState.getTip(requestedTipId) : Promise.resolve(null);
+
+            await loadPage(0);
+
+            const tip = await tipPromise;
+            if (tip) showTipDetail(tip);
         }
 
-        loadTips();
+        init();
 
         // Ad recheck on auth change + periodic safety net — mirrors the
         // pattern used on promo.html/social.html/store.html. Safe to call

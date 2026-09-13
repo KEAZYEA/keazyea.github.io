@@ -19,6 +19,7 @@ import {
     where,
     orderBy,
     limit,
+    startAfter,
     getDocs,
     onSnapshot,
     Timestamp,
@@ -2531,6 +2532,23 @@ async function sendAdminMessage(uid, title, body) {
         snap.forEach(d => tips.push({ id: d.id, ...d.data() }));
         return tips;
     }
+    // Fetches one page of tips (latest first) instead of the whole
+    // collection — pass the previous page's `lastDoc` as `afterDoc` to get
+    // the next page. Requests one extra doc beyond pageSize so callers can
+    // tell whether another page exists without a separate count query.
+    async function getTipsPage(pageSize, afterDoc) {
+        const constraints = [orderBy("createdAt", "desc")];
+        if (afterDoc) constraints.push(startAfter(afterDoc));
+        constraints.push(limit(pageSize + 1));
+        const q = query(collection(db, "tips"), ...constraints);
+        const snap = await getDocs(q);
+        const docs = snap.docs;
+        const hasMore = docs.length > pageSize;
+        const pageDocs = hasMore ? docs.slice(0, pageSize) : docs;
+        const tips = pageDocs.map(d => ({ id: d.id, ...d.data() }));
+        const lastDoc = pageDocs.length ? pageDocs[pageDocs.length - 1] : null;
+        return { tips, lastDoc, hasMore };
+    }
     async function getMyPrize(weekId) {
         await waitForAuthReady();
         if (!currentUser) return null;
@@ -2844,7 +2862,7 @@ async function maybeRefreshAd(containerId) {
         // promo codes
         addPromoCode, getPromoCodes, updatePromoCode, deletePromoCode,
         // tips
-        addTip, getTips, getTip, uploadTipImage, deleteTip, updateTip,
+        addTip, getTips, getTipsPage, getTip, uploadTipImage, deleteTip, updateTip,
         // news
         addNews, getNews, getNewsItem, updateNews, deleteNews, uploadNewsImage, listenToNews,
         // notifications
