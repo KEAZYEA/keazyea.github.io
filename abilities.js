@@ -233,7 +233,6 @@ function getAbilitiesForUnit(unitKey, level) {
 
    if (abilityLevel > level) continue;
     if ((abilityName === "range" || abilityName === "melee") && !showBasicAttackAsAbility[lookupKey]) continue;
-    console.log("MATCH:", key, "-> name:", abilityName, "level:", abilityLevel, entry);
 
 if (!bestAbilities[abilityName] || abilityLevel > bestAbilities[abilityName].level) {
       let cleaned = cleanAbility(entry);
