@@ -2464,7 +2464,7 @@ async function sendAdminMessage(uid, title, body) {
     // Fixed category set for tips — kept in sync with the filter dropdown
     // on tips.html and the tag <select> on admin.html. Anything else
     // (missing, old data, bad input) falls back to "others".
-    const TIP_TAGS = ["hero", "troop", "passes", "formation", "others"];
+    const TIP_TAGS = ["hero", "troop", "bosses", "packs", "formation", "others"];
     function normalizeTipTag(tag) {
         return TIP_TAGS.includes(tag) ? tag : "others";
     }
