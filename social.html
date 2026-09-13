@@ -3136,7 +3136,22 @@ window.scrollDmToBottom = function () {
     if (box) box.scrollTo({ top: box.scrollHeight, behavior: "smooth" });
 };
 
-document.getElementById("dmMessages").addEventListener("scroll", updateDmScrollBottomBtn);
+// Coalesces rapid-fire scroll/resize callbacks to once per animation frame,
+// avoiding repeated forced-layout reads/writes during momentum scrolling or
+// the mobile keyboard's resize/scroll bursts.
+function rafThrottle(fn) {
+    let scheduled = false;
+    return function (...args) {
+        if (scheduled) return;
+        scheduled = true;
+        requestAnimationFrame(() => {
+            scheduled = false;
+            fn.apply(this, args);
+        });
+    };
+}
+
+document.getElementById("dmMessages").addEventListener("scroll", rafThrottle(updateDmScrollBottomBtn));
         function setupDmViewportHandling() {
             if (!window.visualViewport) return;
             const overlay = document.getElementById("dmModalOverlay");
@@ -3155,9 +3170,10 @@ document.getElementById("dmMessages").addEventListener("scroll", updateDmScrollB
                 dmBox.style.height = vv.height + "px";
                 requestAnimationFrame(pinDmScrollToBottom);
             }
+            const throttledHandleViewportChange = rafThrottle(handleViewportChange);
 
-            window.visualViewport.addEventListener("resize", handleViewportChange);
-            window.visualViewport.addEventListener("scroll", handleViewportChange);
+            window.visualViewport.addEventListener("resize", throttledHandleViewportChange);
+            window.visualViewport.addEventListener("scroll", throttledHandleViewportChange);
         }
 
         // Also re-pin on focus — covers the moment the keyboard is still

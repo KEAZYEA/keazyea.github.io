@@ -998,7 +998,7 @@ function unlockBackgroundScroll() {
         <div class="applies-to-grid">
             ${group.map(u => `
                 <div class="applies-to-item" onclick="selectUnitFromAppliesTo('${u.key}', '${u.unitType}', '${context}')">
-                    <img src="images/${u.key.toUpperCase()}.jpg" alt="${u.displayName}" onerror="this.style.visibility='hidden'">
+                    <img src="images/${u.key.toUpperCase()}.jpg" alt="${u.displayName}" loading="lazy" onerror="this.style.visibility='hidden'">
                     <span>${u.displayName}</span>
                 </div>
             `).join("")}
@@ -1333,6 +1333,20 @@ function switchTab(tab) {
     moveSharedAdBlock(tab);
 }
 
+            // Coalesces rapid resize events to once per animation frame, avoiding
+            // repeated forced-layout reads (offsetHeight) during a resize drag.
+            function rafThrottle(fn) {
+                let scheduled = false;
+                return function (...args) {
+                    if (scheduled) return;
+                    scheduled = true;
+                    requestAnimationFrame(() => {
+                        scheduled = false;
+                        fn.apply(this, args);
+                    });
+                };
+            }
+
             function updateTabsHeight() {
                 let tabsEl = document.querySelector(".tabs");
                 if (tabsEl) {
@@ -1340,7 +1354,7 @@ function switchTab(tab) {
                 }
             }
             updateTabsHeight();
-            window.addEventListener("resize", updateTabsHeight);
+            window.addEventListener("resize", rafThrottle(updateTabsHeight));
             if (window.ResizeObserver) {
                 new ResizeObserver(updateTabsHeight).observe(document.querySelector(".tabs"));
             }
@@ -1352,7 +1366,7 @@ function switchTab(tab) {
                 }
             }
             updateStickyControlsHeight();
-            window.addEventListener("resize", updateStickyControlsHeight);
+            window.addEventListener("resize", rafThrottle(updateStickyControlsHeight));
             if (window.ResizeObserver) {
                 new ResizeObserver(updateStickyControlsHeight).observe(document.querySelector("#troopsPage .sticky-controls"));
             }
