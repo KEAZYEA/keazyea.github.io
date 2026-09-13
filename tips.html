@@ -231,7 +231,8 @@
             <option value="all">All categories</option>
             <option value="hero">Hero</option>
             <option value="troop">Troop</option>
-            <option value="passes">Passes</option>
+            <option value="bosses">Bosses</option>
+            <option value="packs">Packs & Deals</option>
             <option value="formation">Formation</option>
             <option value="others">Others</option>
         </select>
@@ -254,7 +255,7 @@
     <script type="module" src="appState.js"></script>
     <script type="module">
         const PAGE_SIZE = 10;
-        const TAG_LABELS = { hero: "Hero", troop: "Troop", passes: "Passes", formation: "Formation", others: "Others" };
+        const TAG_LABELS = { hero: "Hero", troop: "Troop", bosses: "Bosses", packs: "Packs & Deals", formation: "Formation", others: "Others" };
         let currentPageTips = [];   // tips shown on the current page (fast path, tag="all" + no search)
         let pageCursors = [null];   // pageCursors[i] = cursor doc to fetch page i (page 0 needs none)
         let currentPage = 0;
