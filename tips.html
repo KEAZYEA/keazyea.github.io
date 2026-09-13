@@ -18,10 +18,13 @@
             max-width: 640px;
             margin: 0 auto 20px;
             padding: 0 16px;
+            display: flex;
+            gap: 10px;
         }
 
         .tips-search-input {
-            width: 100%;
+            flex: 1;
+            min-width: 0;
             padding: 12px 16px;
             font-size: 1rem;
             border-radius: 10px;
@@ -33,6 +36,28 @@
 
         .tips-search-input::placeholder {
             color: #9a9ab0;
+        }
+
+        .tips-tag-select {
+            flex-shrink: 0;
+            padding: 12px 10px;
+            font-size: 0.95rem;
+            border-radius: 10px;
+            border: 1px solid #2a2a4a;
+            background: #16162a;
+            color: white;
+            box-sizing: border-box;
+        }
+
+        .tip-tag-badge {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: normal;
+            color: #9a9ab0;
+            background: #22223f;
+            border-radius: 5px;
+            padding: 2px 7px;
+            flex-shrink: 0;
         }
 
         /* ---- GRID VIEW ---- */
@@ -202,6 +227,14 @@
 
     <div class="tips-search-wrap" id="tipsSearchWrap" style="display:none;">
         <input type="text" id="tipsSearchInput" class="tips-search-input" placeholder="Search tips by title...">
+        <select id="tipsTagSelect" class="tips-tag-select">
+            <option value="all">All categories</option>
+            <option value="hero">Hero</option>
+            <option value="troop">Troop</option>
+            <option value="passes">Passes</option>
+            <option value="formation">Formation</option>
+            <option value="others">Others</option>
+        </select>
     </div>
 
     <div class="tips-grid" id="tipsGrid"></div>
@@ -221,13 +254,27 @@
     <script type="module" src="appState.js"></script>
     <script type="module">
         const PAGE_SIZE = 10;
-        let currentPageTips = [];   // tips shown on the current page
+        const TAG_LABELS = { hero: "Hero", troop: "Troop", passes: "Passes", formation: "Formation", others: "Others" };
+        let currentPageTips = [];   // tips shown on the current page (fast path, tag="all" + no search)
         let pageCursors = [null];   // pageCursors[i] = cursor doc to fetch page i (page 0 needs none)
         let currentPage = 0;
         let hasNextPage = false;
-        let searchAllTips = null;   // full tip list, fetched lazily only once a search is actually typed
+        let allTipsCache = null;    // full tip list, fetched lazily only once a search or tag filter is actually used
         let currentFilter = "";
+        let tagFilter = "all";
+        let clientPage = 0;         // page index within the client-side filtered list (search/tag mode)
         let noTipsAtAll = false;    // true once page 0 comes back empty with no next page
+
+        function isFiltering() {
+            return !!currentFilter || tagFilter !== "all";
+        }
+
+        function getFilteredList() {
+            let list = allTipsCache || [];
+            if (tagFilter !== "all") list = list.filter(t => (t.tag || "others") === tagFilter);
+            if (currentFilter) list = list.filter(t => t.title.toLowerCase().includes(currentFilter.toLowerCase()));
+            return list;
+        }
 
         function escapeHtml(str) {
             return String(str).replace(/[&<>"']/g, s => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[s]));
@@ -254,17 +301,21 @@
         function renderGrid() {
             const grid = document.getElementById("tipsGrid");
 
-            // While actively searching, match against every tip (fetched
-            // lazily, once) instead of just the current page — otherwise a
-            // search box that only sees 10 loaded tips would miss almost
-            // everything.
-            const list = currentFilter
-                ? (searchAllTips || []).filter(t => t.title.toLowerCase().includes(currentFilter.toLowerCase()))
-                : currentPageTips;
+            // While a search or tag filter is active, match against every
+            // tip (fetched lazily, once) instead of just the current page —
+            // otherwise a filter that only sees 10 loaded tips would miss
+            // almost everything. Paginate the filtered results client-side.
+            let list;
+            if (isFiltering()) {
+                const filtered = getFilteredList();
+                list = filtered.slice(clientPage * PAGE_SIZE, clientPage * PAGE_SIZE + PAGE_SIZE);
+            } else {
+                list = currentPageTips;
+            }
 
             if (!list.length) {
-                grid.innerHTML = currentFilter
-                    ? '<div class="tips-empty" style="grid-column:1/-1;">No tips match your search.</div>'
+                grid.innerHTML = isFiltering()
+                    ? '<div class="tips-empty" style="grid-column:1/-1;">No tips match your filters.</div>'
                     : '<div class="tips-empty" style="grid-column:1/-1;">No tips posted yet — check back soon!</div>';
                 return;
             }
@@ -272,7 +323,10 @@
             grid.innerHTML = list.map(t => `
                 <div class="tip-card-preview" data-id="${t.id}">
                     <div class="tip-card-preview-title">${t.imageUrl ? "🖼️ " : "💡 "}${escapeHtml(t.title)}</div>
-                    <div class="tip-card-preview-time">${new Date(t.createdAt).toLocaleString()}</div>
+                    <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
+                        <span class="tip-tag-badge">${escapeHtml(TAG_LABELS[t.tag] || TAG_LABELS.others)}</span>
+                        <span class="tip-card-preview-time">${new Date(t.createdAt).toLocaleString()}</span>
+                    </div>
                 </div>
             `).join("");
 
@@ -286,7 +340,22 @@
 
         function updatePaginationControls() {
             const pagination = document.getElementById("tipsPagination");
-            if (currentFilter || (currentPageTips.length === 0 && currentPage === 0 && !hasNextPage)) {
+
+            if (isFiltering()) {
+                const totalMatches = getFilteredList().length;
+                if (!totalMatches) {
+                    pagination.style.display = "none";
+                    return;
+                }
+                const totalPages = Math.ceil(totalMatches / PAGE_SIZE);
+                pagination.style.display = "flex";
+                document.getElementById("tipsPrevBtn").disabled = clientPage === 0;
+                document.getElementById("tipsNextBtn").disabled = clientPage >= totalPages - 1;
+                document.getElementById("tipsPageLabel").textContent = `Page ${clientPage + 1} of ${totalPages}`;
+                return;
+            }
+
+            if (currentPageTips.length === 0 && currentPage === 0 && !hasNextPage) {
                 pagination.style.display = "none";
                 return;
             }
@@ -345,22 +414,56 @@
         }
         document.getElementById("backToTipsBtn").addEventListener("click", showGrid);
 
+        // Ensures the full tip list is loaded (once) before switching into
+        // filtered mode — needed the first time a search or tag filter is used.
+        async function ensureAllTipsCache() {
+            if (allTipsCache) return;
+            document.getElementById("tipsGrid").innerHTML = '<div class="tips-empty" style="grid-column:1/-1;">⏳ Loading...</div>';
+            allTipsCache = await AppState.getTips();
+        }
+
         document.getElementById("tipsSearchInput").addEventListener("input", async (e) => {
             AppState.maybeRefreshAd("tipsAdSlot");
             currentFilter = e.target.value.trim();
-            if (currentFilter && !searchAllTips) {
-                document.getElementById("tipsGrid").innerHTML = '<div class="tips-empty" style="grid-column:1/-1;">⏳ Searching...</div>';
-                searchAllTips = await AppState.getTips();
-            }
+            clientPage = 0;
+            if (isFiltering()) await ensureAllTipsCache();
+            renderGrid();
+            updatePaginationControls();
+        });
+
+        document.getElementById("tipsTagSelect").addEventListener("change", async (e) => {
+            AppState.maybeRefreshAd("tipsAdSlot");
+            tagFilter = e.target.value;
+            clientPage = 0;
+            if (isFiltering()) await ensureAllTipsCache();
             renderGrid();
             updatePaginationControls();
         });
 
         document.getElementById("tipsNextBtn").addEventListener("click", () => {
-            if (hasNextPage) loadPage(currentPage + 1);
+            if (isFiltering()) {
+                const totalPages = Math.ceil(getFilteredList().length / PAGE_SIZE);
+                if (clientPage < totalPages - 1) {
+                    clientPage++;
+                    renderGrid();
+                    updatePaginationControls();
+                    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+                }
+            } else if (hasNextPage) {
+                loadPage(currentPage + 1);
+            }
         });
         document.getElementById("tipsPrevBtn").addEventListener("click", () => {
-            if (currentPage > 0) loadPage(currentPage - 1);
+            if (isFiltering()) {
+                if (clientPage > 0) {
+                    clientPage--;
+                    renderGrid();
+                    updatePaginationControls();
+                    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+                }
+            } else if (currentPage > 0) {
+                loadPage(currentPage - 1);
+            }
         });
 
         async function init() {

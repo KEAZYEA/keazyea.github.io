@@ -2461,7 +2461,15 @@ async function sendAdminMessage(uid, title, body) {
         return { imageUrl, imagePath: path };
     }
 
-    async function addTip(title, body, imageUrls, imagePaths) {
+    // Fixed category set for tips — kept in sync with the filter dropdown
+    // on tips.html and the tag <select> on admin.html. Anything else
+    // (missing, old data, bad input) falls back to "others".
+    const TIP_TAGS = ["hero", "troop", "passes", "formation", "others"];
+    function normalizeTipTag(tag) {
+        return TIP_TAGS.includes(tag) ? tag : "others";
+    }
+
+    async function addTip(title, body, imageUrls, imagePaths, tag) {
         await waitForAuthReady();
         if (!currentUser || currentUser.uid !== ADMIN_UID) {
             throw new Error("Not authorized.");
@@ -2478,6 +2486,7 @@ async function sendAdminMessage(uid, title, body) {
         const docRef = await addDoc(ref2, {
             title: title.trim(),
             body: body.trim(),
+            tag: normalizeTipTag(tag),
             // Keep imageUrl/imagePath as the FIRST image for backward
             // compatibility with any page still reading the old single-image
             // fields; imageUrls/imagePaths carries the full set.
@@ -2490,7 +2499,7 @@ async function sendAdminMessage(uid, title, body) {
         await addNotification("tip", "💡 New Tip: " + title.trim(), body.trim().slice(0, 100), docRef.id);
         return docRef.id;
     }
-    async function updateTip(tipId, title, body, imageUrls, imagePaths) {
+    async function updateTip(tipId, title, body, imageUrls, imagePaths, tag) {
         await waitForAuthReady();
         if (!currentUser || currentUser.uid !== ADMIN_UID) {
             throw new Error("Not authorized.");
@@ -2504,7 +2513,8 @@ async function sendAdminMessage(uid, title, body) {
         const tipRef = doc(db, "tips", tipId);
         const patch = {
             title: title.trim(),
-            body: body.trim()
+            body: body.trim(),
+            tag: normalizeTipTag(tag)
         };
         // Only touch image fields if new images were actually provided —
         // otherwise leave the existing images untouched.
@@ -2862,7 +2872,7 @@ async function maybeRefreshAd(containerId) {
         // promo codes
         addPromoCode, getPromoCodes, updatePromoCode, deletePromoCode,
         // tips
-        addTip, getTips, getTipsPage, getTip, uploadTipImage, deleteTip, updateTip,
+        addTip, getTips, getTipsPage, getTip, uploadTipImage, deleteTip, updateTip, TIP_TAGS,
         // news
         addNews, getNews, getNewsItem, updateNews, deleteNews, uploadNewsImage, listenToNews,
         // notifications
