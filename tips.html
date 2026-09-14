@@ -102,12 +102,6 @@
             text-overflow: ellipsis;
         }
 
-        .tip-card-preview-time {
-            color: #9a9ab0;
-            font-size: 0.75rem;
-            flex-shrink: 0;
-        }
-
         /* ---- DETAIL VIEW ---- */
         .tip-detail-wrap {
             max-width: 640px;
@@ -162,12 +156,6 @@
             white-space: pre-wrap;
             color: #d0d0da;
             line-height: 1.5;
-        }
-
-        .tip-time {
-            color: #9a9ab0;
-            font-size: 0.8rem;
-            margin-top: 12px;
         }
 
         .tip-image {
@@ -326,7 +314,6 @@
                     <div class="tip-card-preview-title">${t.imageUrl ? "🖼️ " : "💡 "}${escapeHtml(t.title)}</div>
                     <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
                         <span class="tip-tag-badge">${escapeHtml(TAG_LABELS[t.tag] || TAG_LABELS.others)}</span>
-                        <span class="tip-card-preview-time">${new Date(t.createdAt).toLocaleString()}</span>
                     </div>
                 </div>
             `).join("");
@@ -397,7 +384,6 @@
             <div class="tip-title">${escapeHtml(tip.title)}</div>
             <div class="tip-body">${linkifyText(tip.body)}</div>
             ${tip.imageUrl ? `<img class="tip-image" src="${escapeHtml(tip.imageUrl)}" alt="${escapeHtml(tip.title)}">` : ""}
-            <div class="tip-time">${new Date(tip.createdAt).toLocaleString()}</div>
         </div>
     `;
             window.scrollTo({ top: 0, left: 0, behavior: "instant" });
