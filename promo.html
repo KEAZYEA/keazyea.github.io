@@ -834,6 +834,12 @@ if (user && user.uid === winnerData.winnerUid) {
             AppState.waitForAuthReady().then(refreshVipState);
             AppState.onAuthChange(refreshVipState);
 
+            // ?tab=vip lets callers (e.g. the giveaway sign-in prompt on
+            // index.html) drop the visitor straight into the Weekly
+            // Giveaway tab instead of the default Latest Codes tab.
+            const requestedTab = new URLSearchParams(window.location.search).get("tab");
+            if (requestedTab === "vip") switchPromoTab("vip");
+
             // Ad recheck — separate from refreshVipState so a VIP status
             // change (or late-confirmed sign-in) always clears/shows the
             // promo ad slot, even independent of the wheel/codes UI state.

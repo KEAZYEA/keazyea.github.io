@@ -22,10 +22,15 @@
             gap: 10px;
         }
 
-        .tips-search-input {
+        .tips-search-input-wrap {
+            position: relative;
             flex: 1;
             min-width: 0;
-            padding: 12px 16px;
+        }
+
+        .tips-search-input {
+            width: 100%;
+            padding: 12px 36px 12px 16px;
             font-size: 1rem;
             border-radius: 10px;
             border: 1px solid #2a2a4a;
@@ -36,6 +41,28 @@
 
         .tips-search-input::placeholder {
             color: #9a9ab0;
+        }
+
+        .tips-search-clear-btn {
+            display: none;
+            position: absolute;
+            right: 6px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 26px;
+            height: 26px;
+            border: none;
+            border-radius: 50%;
+            background: none;
+            color: #9a9ab0;
+            font-size: 1rem;
+            line-height: 1;
+            cursor: pointer;
+        }
+
+        .tips-search-clear-btn:hover {
+            background: #2a2a4a;
+            color: white;
         }
 
         .tips-tag-select {
@@ -214,7 +241,10 @@
     <h1 id="tipsPageTitle">Tips</h1>
 
     <div class="tips-search-wrap" id="tipsSearchWrap" style="display:none;">
-        <input type="text" id="tipsSearchInput" class="tips-search-input" placeholder="Search tips by title...">
+        <div class="tips-search-input-wrap">
+            <input type="text" id="tipsSearchInput" class="tips-search-input" placeholder="Search tips by title...">
+            <button type="button" id="tipsSearchClearBtn" class="tips-search-clear-btn" aria-label="Clear search">✕</button>
+        </div>
         <select id="tipsTagSelect" class="tips-tag-select">
             <option value="all">All categories</option>
             <option value="hero">Hero</option>
@@ -366,7 +396,7 @@
             if (pageIndex === 0) {
                 noTipsAtAll = tips.length === 0 && !hasMore;
             }
-            document.getElementById("tipsSearchWrap").style.display = noTipsAtAll ? "none" : "block";
+            document.getElementById("tipsSearchWrap").style.display = noTipsAtAll ? "none" : "flex";
 
             renderGrid();
             updatePaginationControls();
@@ -394,7 +424,7 @@
             document.getElementById("tipDetailWrap").style.display = "none";
             document.getElementById("tipsPageTitle").style.display = "block";
             document.getElementById("tipsGrid").style.display = "flex";
-            document.getElementById("tipsSearchWrap").style.display = noTipsAtAll ? "none" : "block";
+            document.getElementById("tipsSearchWrap").style.display = noTipsAtAll ? "none" : "flex";
             renderGrid();
             updatePaginationControls();
             window.scrollTo({ top: 0, left: 0, behavior: "instant" });
@@ -409,11 +439,25 @@
             allTipsCache = await AppState.getTips();
         }
 
-        document.getElementById("tipsSearchInput").addEventListener("input", async (e) => {
+        const tipsSearchInput = document.getElementById("tipsSearchInput");
+        const tipsSearchClearBtn = document.getElementById("tipsSearchClearBtn");
+
+        tipsSearchInput.addEventListener("input", async (e) => {
             AppState.maybeRefreshAd("tipsAdSlot");
             currentFilter = e.target.value.trim();
+            tipsSearchClearBtn.style.display = currentFilter ? "block" : "none";
             clientPage = 0;
             if (isFiltering()) await ensureAllTipsCache();
+            renderGrid();
+            updatePaginationControls();
+        });
+
+        tipsSearchClearBtn.addEventListener("click", () => {
+            tipsSearchInput.value = "";
+            tipsSearchInput.focus();
+            tipsSearchClearBtn.style.display = "none";
+            currentFilter = "";
+            clientPage = 0;
             renderGrid();
             updatePaginationControls();
         });
