@@ -1274,10 +1274,10 @@ body {
                     <div class="news-panel-backdrop" id="newsPanelBackdrop"></div>
                     <div class="friend-req-panel" id="newsPanelHome">
                         <div class="friend-req-panel-title">Latest News</div>
+                        <button class="btn-settings-action btn-block" style="margin-bottom:10px;" onclick="openNewsModal()">View All News</button>
                         <div id="newsPreviewListHome">
                             <div class="friend-req-empty">No news yet.</div>
                         </div>
-                        <button class="btn-settings-action btn-block" style="margin-top:10px;" onclick="openNewsModal()">View All News</button>
                     </div>
                 </div>
                 <div class="friend-req-wrapper" id="friendReqWrapperHome">
@@ -1943,11 +1943,26 @@ body {
             try {
                 await AppState.signIn();
                 document.getElementById("giveawaySigninModalOverlay").classList.remove("open");
-                goToPage("promo"); // drop them straight into the giveaway tab
+                openPromoTab("vip"); // drop them straight into the giveaway tab
             } catch (e) {
                 console.warn("Sign-in from giveaway prompt failed:", e.message);
             }
         };
+
+        // Jump into the Promo page and land directly on a specific tab
+        // ("vip" for the giveaway, "codes" for the default codes list).
+        function openPromoTab(tab) {
+            let frame = document.querySelector("#page-promo iframe");
+            let url = new URL(frame.getAttribute("src") || "promo.html", window.location.href);
+            if (tab) url.searchParams.set("tab", tab);
+            // The iframe may still be un-loaded (data-src, not yet src) if
+            // this is the visitor's first trip to the Promo tab — clear it
+            // here so goToPage()'s lazy-load logic below doesn't stomp the
+            // URL we just built back down to a bare "promo.html".
+            frame.removeAttribute("data-src");
+            frame.src = url.toString();
+            goToPage("promo");
+        }
 
        async function goToPage(page, fromAbout) {
     if (page !== "profile" && isProfileDirty()) {
@@ -2735,7 +2750,7 @@ function getNewsTypeInfo(type) {
     list.innerHTML = items.map(n => {
         const typeInfo = getNewsTypeInfo(n.type);
         return `
-            <div class="news-preview-item ${typeInfo.cls}" style="padding:14px 0; margin-bottom:10px; border-bottom:none;">
+            <div class="news-preview-item ${typeInfo.cls}" style="padding:14px 0; margin-bottom:20px; border-bottom:none;">
                 ${typeInfo.label ? `<span class="news-tag ${typeInfo.cls}">${typeInfo.label}</span><br>` : ""}
                 <div style="font-weight:700; font-size:1.05rem; margin-bottom:4px;">${escapeHomeHtml(n.title)}</div>
                 <div class="settings-sub" style="margin-bottom:10px;">${new Date(n.createdAt).toLocaleString()}</div>
@@ -3091,7 +3106,10 @@ window.closeInboxItemModal = closeInboxItemModal;
         // then navigate there. Used by the home-menu Tips button.
         function openTipsFresh() {
             let frame = document.querySelector("#page-tips iframe");
-            if (frame) frame.src = "tips.html";
+            if (frame) {
+                frame.removeAttribute("data-src"); // see openInboxTip's comment below
+                frame.src = "tips.html";
+            }
             goToPage("tips");
         }
 
@@ -3100,6 +3118,11 @@ window.closeInboxItemModal = closeInboxItemModal;
             let frame = document.querySelector("#page-tips iframe");
             let url = new URL(frame.getAttribute("src") || "tips.html", window.location.href);
             if (tipId) url.searchParams.set("tipId", tipId);
+            // The iframe may still be un-loaded (data-src, not yet src) if
+            // this is the visitor's first trip to the Tips tab — clear it
+            // here so goToPage()'s lazy-load logic below doesn't stomp the
+            // ?tipId= URL we just built back down to a bare "tips.html".
+            frame.removeAttribute("data-src");
             frame.src = url.toString();
             goToPage("tips");
         }
@@ -3111,6 +3134,7 @@ window.closeInboxItemModal = closeInboxItemModal;
             url.searchParams.set("dmUid", uid);
             url.searchParams.set("dmName", name);
             if (avatar) url.searchParams.set("dmAvatar", avatar);
+            frame.removeAttribute("data-src"); // see openInboxTip's comment above
             frame.src = url.toString();
             goToPage("social");
         }
