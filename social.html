@@ -20,21 +20,30 @@
         .social-tabs {
             display: flex;
             justify-content: center;
-            gap: 10px;
+            align-items: stretch;
+            gap: 6px;
             margin-bottom: 20px;
             flex-shrink: 0;
         }
 
         .social-tab-btn {
             flex: 1;
+            min-width: 0; /* lets the button actually shrink to its share of
+                             the row instead of overflowing it — the old
+                             40px side padding plus no min-width is why 3
+                             tabs got cut off on a phone screen */
             max-width: 300px;
-            padding: 10px 40px;
-            font-size: 16px;
+            padding: 10px 6px;
+            font-size: 14px;
+            line-height: 1.25;
             border: none;
             border-radius: 6px;
             cursor: pointer;
             background: #2a2a4a;
             color: white;
+            text-align: center;
+            white-space: normal;
+            word-break: break-word;
         }
 
         .social-tab-btn.active {
@@ -843,12 +852,12 @@
         }
 
         .formation-needs-help-toggle:hover {
-            border-color: #4169e1;
+            border-color: #2e7d32;
         }
 
         .formation-needs-help-toggle.active {
-            background: #4169e1;
-            border-color: #4169e1;
+            background: #2e7d32;
+            border-color: #2e7d32;
             color: white;
         }
 
@@ -1615,7 +1624,7 @@
                                 <option value="">All categories</option>
                             </select>
                             <button type="button" class="formation-needs-help-toggle" id="formationNeedsHelpToggle"
-                                onclick="toggleFormationAwaitingFeedback()">🙋 Awaiting Feedback Only</button>
+                                onclick="toggleFormationAwaitingFeedback()">🙋 Awaiting Feedback</button>
                         </div>
                         <div class="clan-toolbar" style="margin-top:-4px;">
                             <div class="signin-prompt" id="formationSigninPrompt" style="display:none;">
