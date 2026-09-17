@@ -801,6 +801,243 @@ async function getClanPostCooldownRemaining() {
     }
 
     /* ======================================================
+       FORMATION SHARING — Instagram-style feed under Social.
+       Unlimited posts per user (unlike clanPosts' one-per-uid),
+       up to 3 images + a description, comments with an optional
+       image, and a "needs help" filter (commentCount === 0) so
+       unanswered posts surface. Posts auto-expire after 30 days:
+       listenToFormations() only ever queries non-expired posts,
+       sweepExpiredFormations() best-effort deletes expired ones
+       (+ their images + comment subcollection) whenever anyone
+       loads the feed, and a Firestore TTL policy on `expiresAt`
+       (set up separately in the Firebase console, not in code)
+       is the backstop for posts nobody's client ever sweeps.
+       ====================================================== */
+
+    const FORMATION_POST_LIFETIME_MS = 30 * 24 * 60 * 60 * 1000;
+
+    // Kept in sync with the category <select> in social.html.
+    const FORMATION_CATEGORIES = [
+        { id: "arena", label: "Arena" },
+        { id: "goldFarming", label: "Gold Farming" },
+        { id: "dragonMelee", label: "Dragon Boss (Melee)" },
+        { id: "dragonRanged", label: "Dragon Boss (Ranged)" },
+        { id: "sandMelee", label: "Sand Boss (Melee)" },
+        { id: "octopusMelee", label: "Octopus Boss (Melee)" },
+        { id: "octopusRanged", label: "Octopus Boss (Ranged)" },
+        { id: "spiderMelee", label: "Spider Boss (Melee)" },
+        { id: "spiderRanged", label: "Spider Boss (Ranged)" },
+        { id: "other", label: "Other" }
+    ];
+    function normalizeFormationCategory(cat) {
+        return FORMATION_CATEGORIES.some(c => c.id === cat) ? cat : "other";
+    }
+
+    async function uploadFormationImage(file) {
+        await waitForAuthReady();
+        if (!currentUser) throw new Error("You must sign in with Google first.");
+        if (!file.type.startsWith("image/")) {
+            throw new Error("File must be an image.");
+        }
+        if (file.size > 5 * 1024 * 1024) {
+            throw new Error("Image must be under 5MB.");
+        }
+        const path = "formationImages/" + currentUser.uid + "-" + Date.now() + "-" + file.name;
+        const storageRef = ref(storage, path);
+        await uploadBytes(storageRef, file);
+        const imageUrl = await getDownloadURL(storageRef);
+        return { imageUrl, imagePath: path };
+    }
+
+    // Best-effort cleanup — never throws.
+    async function deleteFormationImageSafe(path) {
+        if (!path) return;
+        try {
+            await deleteObject(ref(storage, path));
+        } catch (e) {
+            console.warn("Couldn't delete formation image:", e.message);
+        }
+    }
+
+    async function postFormation(data) {
+        await waitForAuthReady();
+        if (!currentUser) throw new Error("You must sign in with Google first to post.");
+
+        const category = normalizeFormationCategory(data.category);
+        const description = (data.description || "").trim();
+        const imageUrls = Array.isArray(data.imageUrls) ? data.imageUrls.slice(0, 3) : [];
+        const imagePaths = Array.isArray(data.imagePaths) ? data.imagePaths.slice(0, 3) : [];
+
+        if (!imageUrls.length) throw new Error("Add at least one screenshot of your formation.");
+        if (description.length > 5000) throw new Error("Description must be 5000 characters or fewer.");
+
+        const profile = await getProfile();
+        if (isBannedNow(profile)) {
+            showRestrictedNotice(profile.banReason, profile.banUntil);
+            throw new Error("__RESTRICTED__");
+        }
+        if (!profile.name) throw new Error("Set an in-game name in your profile before posting.");
+
+        const docRef = await addDoc(collection(db, "formationPosts"), {
+            uid: currentUser.uid,
+            name: profile.name,
+            avatar: profile.avatar || "",
+            category,
+            description,
+            imageUrls,
+            imagePaths,
+            commentCount: 0,
+            createdAt: Date.now(),
+            expiresAt: Timestamp.fromMillis(Date.now() + FORMATION_POST_LIFETIME_MS)
+        });
+        return docRef.id;
+    }
+
+    // Edits an existing formation post's category/description/images —
+    // callers pass the FULL final imageUrls/imagePaths arrays (existing
+    // images the user kept + any newly-uploaded ones); this does not
+    // delete replaced/removed images itself, that's the caller's job
+    // (via deleteFormationImageSafe) once the doc update succeeds.
+    async function updateFormation(postId, data) {
+        await waitForAuthReady();
+        if (!currentUser) throw new Error("You must sign in with Google first.");
+
+        const profile = await getProfile();
+        if (isBannedNow(profile)) {
+            showRestrictedNotice(profile.banReason, profile.banUntil);
+            throw new Error("__RESTRICTED__");
+        }
+
+        const category = normalizeFormationCategory(data.category);
+        const description = (data.description || "").trim();
+        const imageUrls = Array.isArray(data.imageUrls) ? data.imageUrls.slice(0, 3) : [];
+        const imagePaths = Array.isArray(data.imagePaths) ? data.imagePaths.slice(0, 3) : [];
+
+        if (!imageUrls.length) throw new Error("Add at least one screenshot of your formation.");
+        if (description.length > 5000) throw new Error("Description must be 5000 characters or fewer.");
+
+        const postRef = doc(db, "formationPosts", postId);
+        const snap = await getDoc(postRef);
+        if (!snap.exists()) throw new Error("Post not found.");
+        if (snap.data().uid !== currentUser.uid) throw new Error("You can only edit your own post.");
+
+        await updateDoc(postRef, { category, description, imageUrls, imagePaths });
+        return postId;
+    }
+
+    // Only ever returns non-expired posts, ordered newest-first. Ordering by
+    // expiresAt (instead of createdAt) lets this stay a single-field query —
+    // every post shares the same lifetime, so expiresAt order == createdAt
+    // order, and Firestore requires the first orderBy to match a range-
+    // filtered field.
+    function listenToFormations(callback, maxCount = 200) {
+        const q = query(
+            collection(db, "formationPosts"),
+            where("expiresAt", ">", Timestamp.now()),
+            orderBy("expiresAt", "desc"),
+            limit(maxCount)
+        );
+        return onSnapshot(q, (snap) => {
+            const items = [];
+            snap.forEach(d => items.push({ id: d.id, ...d.data() }));
+            callback(items);
+        });
+    }
+
+    // Deletes a formation post's images, its comment subcollection (+ THEIR
+    // images — Firestore doesn't cascade-delete subcollections on its own),
+    // and finally the post doc itself.
+    async function deleteFormationPostCascade(postId, imagePaths) {
+        const deletions = (imagePaths || []).map(p => deleteFormationImageSafe(p));
+        try {
+            const commentsSnap = await getDocs(collection(db, "formationPosts", postId, "comments"));
+            commentsSnap.forEach(c => {
+                const cd = c.data();
+                if (cd.imagePath) deletions.push(deleteFormationImageSafe(cd.imagePath));
+                deletions.push(deleteDoc(doc(db, "formationPosts", postId, "comments", c.id)));
+            });
+        } catch (e) {
+            console.warn("Couldn't clean up formation comments:", e.message);
+        }
+        deletions.push(deleteDoc(doc(db, "formationPosts", postId)));
+        await Promise.all(deletions);
+    }
+
+    async function deleteFormation(postId) {
+        await waitForAuthReady();
+        if (!currentUser) throw new Error("Not signed in.");
+        let imagePaths = [];
+        try {
+            const snap = await getDoc(doc(db, "formationPosts", postId));
+            if (snap.exists()) imagePaths = snap.data().imagePaths || [];
+        } catch (e) {
+            console.warn("Couldn't read formation post before delete:", e.message);
+        }
+        await deleteFormationPostCascade(postId, imagePaths);
+    }
+
+    // Best-effort: deletes a small batch of already-expired posts whenever
+    // called (see the section comment above for the full cleanup story).
+    async function sweepExpiredFormations() {
+        try {
+            const q = query(collection(db, "formationPosts"), where("expiresAt", "<=", Timestamp.now()), limit(10));
+            const snap = await getDocs(q);
+            await Promise.all(snap.docs.map(d => deleteFormationPostCascade(d.id, d.data().imagePaths || [])));
+        } catch (e) {
+            console.warn("Couldn't sweep expired formation posts:", e.message);
+        }
+    }
+
+    async function addFormationComment(postId, data) {
+        await waitForAuthReady();
+        if (!currentUser) throw new Error("You must sign in with Google first to comment.");
+        const text = (data.text || "").trim();
+        const imageUrl = data.imageUrl || null;
+        const imagePath = data.imagePath || null;
+        if (!text && !imageUrl) throw new Error("Write something or attach a picture.");
+        if (text.length > 2000) throw new Error("Comment must be 2000 characters or fewer.");
+
+        const profile = await getProfile();
+        if (isBannedNow(profile)) {
+            showRestrictedNotice(profile.banReason, profile.banUntil);
+            throw new Error("__RESTRICTED__");
+        }
+        if (!profile.name) throw new Error("Set an in-game name in your profile before commenting.");
+
+        const docRef = await addDoc(collection(db, "formationPosts", postId, "comments"), {
+            uid: currentUser.uid,
+            name: profile.name,
+            avatar: profile.avatar || "",
+            text,
+            imageUrl,
+            imagePath,
+            createdAt: Date.now()
+        });
+        await updateDoc(doc(db, "formationPosts", postId), { commentCount: increment(1) });
+        return docRef.id;
+    }
+
+    function listenToFormationComments(postId, callback) {
+        const q = query(collection(db, "formationPosts", postId, "comments"), orderBy("createdAt", "asc"));
+        return onSnapshot(q, (snap) => {
+            const items = [];
+            snap.forEach(d => items.push({ id: d.id, ...d.data() }));
+            callback(items);
+        });
+    }
+
+    async function deleteFormationComment(postId, commentId) {
+        await waitForAuthReady();
+        if (!currentUser) throw new Error("Not signed in.");
+        const snap = await getDoc(doc(db, "formationPosts", postId, "comments", commentId));
+        if (!snap.exists()) return;
+        const data = snap.data();
+        if (data.imagePath) await deleteFormationImageSafe(data.imagePath);
+        await deleteDoc(doc(db, "formationPosts", postId, "comments", commentId));
+        await updateDoc(doc(db, "formationPosts", postId), { commentCount: increment(-1) });
+    }
+
+    /* ======================================================
        NEW IN STAGE 3 — FRIEND REQUESTS
        (An accepted request IS the friendship — no separate collection.)
        ====================================================== */
@@ -2883,6 +3120,10 @@ async function maybeRefreshAd(containerId) {
         // getPostCooldownMs, NORMAL_POST_COOLDOWN_MS, VIP_POST_COOLDOWN_MS — commented out with the VIP
         // cooldown split above. CLAN_POST_LIFETIME_MS is unrelated to VIP, so it stays exported.
         CLAN_POST_LIFETIME_MS, uploadClanIcon, deleteClanIconSafe,
+        // formation sharing
+        postFormation, updateFormation, listenToFormations, deleteFormation, sweepExpiredFormations,
+        addFormationComment, listenToFormationComments, deleteFormationComment,
+        uploadFormationImage, deleteFormationImageSafe, FORMATION_CATEGORIES, FORMATION_POST_LIFETIME_MS,
         // friends
         sendFriendRequest, respondToFriendRequest, listenToIncomingFriendRequests, listenToFriends,
         listenToFriendsWithDmMeta, listenToPublicProfilesPresence,
