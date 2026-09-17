@@ -844,7 +844,16 @@ async function getClanPostCooldownRemaining() {
         }
         const path = "formationImages/" + currentUser.uid + "-" + Date.now() + "-" + file.name;
         const storageRef = ref(storage, path);
-        await uploadBytes(storageRef, file);
+        // contentDisposition: "attachment" makes the browser download this
+        // file on a plain navigation (e.g. the Download button in social.html)
+        // instead of just opening it in a new tab — this only affects direct
+        // navigations, not <img> loads, so it still displays normally
+        // everywhere else in the feed/carousel.
+        const safeName = (file.name || "formation.jpg").replace(/[^\w.\-]/g, "_");
+        await uploadBytes(storageRef, file, {
+            contentType: file.type,
+            contentDisposition: `attachment; filename="${safeName}"`
+        });
         const imageUrl = await getDownloadURL(storageRef);
         return { imageUrl, imagePath: path };
     }
@@ -953,7 +962,7 @@ async function getClanPostCooldownRemaining() {
             const commentsSnap = await getDocs(collection(db, "formationPosts", postId, "comments"));
             commentsSnap.forEach(c => {
                 const cd = c.data();
-                if (cd.imagePath) deletions.push(deleteFormationImageSafe(cd.imagePath));
+                (cd.imagePaths || []).forEach(p => deletions.push(deleteFormationImageSafe(p)));
                 deletions.push(deleteDoc(doc(db, "formationPosts", postId, "comments", c.id)));
             });
         } catch (e) {
@@ -992,9 +1001,9 @@ async function getClanPostCooldownRemaining() {
         await waitForAuthReady();
         if (!currentUser) throw new Error("You must sign in with Google first to comment.");
         const text = (data.text || "").trim();
-        const imageUrl = data.imageUrl || null;
-        const imagePath = data.imagePath || null;
-        if (!text && !imageUrl) throw new Error("Write something or attach a picture.");
+        const imageUrls = Array.isArray(data.imageUrls) ? data.imageUrls.slice(0, 3) : [];
+        const imagePaths = Array.isArray(data.imagePaths) ? data.imagePaths.slice(0, 3) : [];
+        if (!text && !imageUrls.length) throw new Error("Write something or attach a picture.");
         if (text.length > 2000) throw new Error("Comment must be 2000 characters or fewer.");
 
         const profile = await getProfile();
@@ -1009,12 +1018,42 @@ async function getClanPostCooldownRemaining() {
             name: profile.name,
             avatar: profile.avatar || "",
             text,
-            imageUrl,
-            imagePath,
+            imageUrls,
+            imagePaths,
             createdAt: Date.now()
         });
         await updateDoc(doc(db, "formationPosts", postId), { commentCount: increment(1) });
         return docRef.id;
+    }
+
+    // Edits an existing comment's text/images — caller passes the FULL final
+    // imageUrls/imagePaths (existing images kept + any newly-uploaded ones);
+    // doesn't touch commentCount and doesn't delete replaced images itself
+    // (that's the caller's job via deleteFormationImageSafe, same pattern
+    // as updateFormation).
+    async function updateFormationComment(postId, commentId, data) {
+        await waitForAuthReady();
+        if (!currentUser) throw new Error("You must sign in with Google first.");
+
+        const profile = await getProfile();
+        if (isBannedNow(profile)) {
+            showRestrictedNotice(profile.banReason, profile.banUntil);
+            throw new Error("__RESTRICTED__");
+        }
+
+        const text = (data.text || "").trim();
+        const imageUrls = Array.isArray(data.imageUrls) ? data.imageUrls.slice(0, 3) : [];
+        const imagePaths = Array.isArray(data.imagePaths) ? data.imagePaths.slice(0, 3) : [];
+        if (!text && !imageUrls.length) throw new Error("Write something or attach a picture.");
+        if (text.length > 2000) throw new Error("Comment must be 2000 characters or fewer.");
+
+        const commentRef = doc(db, "formationPosts", postId, "comments", commentId);
+        const snap = await getDoc(commentRef);
+        if (!snap.exists()) throw new Error("Comment not found.");
+        if (snap.data().uid !== currentUser.uid) throw new Error("You can only edit your own comment.");
+
+        await updateDoc(commentRef, { text, imageUrls, imagePaths });
+        return commentId;
     }
 
     function listenToFormationComments(postId, callback) {
@@ -1032,7 +1071,7 @@ async function getClanPostCooldownRemaining() {
         const snap = await getDoc(doc(db, "formationPosts", postId, "comments", commentId));
         if (!snap.exists()) return;
         const data = snap.data();
-        if (data.imagePath) await deleteFormationImageSafe(data.imagePath);
+        await Promise.all((data.imagePaths || []).map(p => deleteFormationImageSafe(p)));
         await deleteDoc(doc(db, "formationPosts", postId, "comments", commentId));
         await updateDoc(doc(db, "formationPosts", postId), { commentCount: increment(-1) });
     }
@@ -3122,7 +3161,7 @@ async function maybeRefreshAd(containerId) {
         CLAN_POST_LIFETIME_MS, uploadClanIcon, deleteClanIconSafe,
         // formation sharing
         postFormation, updateFormation, listenToFormations, deleteFormation, sweepExpiredFormations,
-        addFormationComment, listenToFormationComments, deleteFormationComment,
+        addFormationComment, updateFormationComment, listenToFormationComments, deleteFormationComment,
         uploadFormationImage, deleteFormationImageSafe, FORMATION_CATEGORIES, FORMATION_POST_LIFETIME_MS,
         // friends
         sendFriendRequest, respondToFriendRequest, listenToIncomingFriendRequests, listenToFriends,

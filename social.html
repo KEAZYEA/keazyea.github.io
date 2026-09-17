@@ -828,13 +828,28 @@
 
         /* ---- Formation sharing ---- */
         .formation-needs-help-toggle {
-            display: flex;
+            display: inline-flex;
             align-items: center;
             gap: 6px;
             font-size: 0.9rem;
+            font-weight: 700;
             color: #eaeaf0;
             cursor: pointer;
             white-space: nowrap;
+            background: #2a2a4a;
+            border: 2px solid #3a3a5c;
+            border-radius: 20px;
+            padding: 9px 16px;
+        }
+
+        .formation-needs-help-toggle:hover {
+            border-color: #4169e1;
+        }
+
+        .formation-needs-help-toggle.active {
+            background: #4169e1;
+            border-color: #4169e1;
+            color: white;
         }
 
         .formation-card-images {
@@ -852,12 +867,13 @@
             object-fit: cover;
             border-radius: 10px;
             background: #2a2a4a;
+            cursor: pointer;
         }
 
         .formation-needs-help-badge {
             display: inline-block;
-            background: #c62828;
-            color: white;
+            background: #6c4b00;
+            color: #ffd76b;
             font-weight: 800;
             font-size: 0.7rem;
             text-transform: uppercase;
@@ -867,19 +883,95 @@
             margin-left: 8px;
         }
 
-        .formation-detail-images {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
+        /* ---- Swipeable carousel (used inline for the main post gallery,
+               and again inside the lightbox for comment photos) ---- */
+        .formation-carousel {
+            position: relative;
+            background: #0d0d1a;
+            border-radius: 10px;
+            overflow: hidden;
         }
 
-        .formation-detail-images img {
-            width: 100%;
-            max-height: 320px;
+        .fc-stage {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            touch-action: pan-y;
+            min-height: 200px;
+        }
+
+        .fc-stage img {
+            max-width: 100%;
+            max-height: 380px;
             object-fit: contain;
+            display: block;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        .fc-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.55);
+            color: white;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 1.3rem;
+            line-height: 1;
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        .fc-prev {
+            left: 8px;
+        }
+
+        .fc-next {
+            right: 8px;
+        }
+
+        .fc-counter {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.55);
+            color: white;
+            font-size: 0.75rem;
+            padding: 2px 10px;
             border-radius: 10px;
-            background: #0d0d1a;
-            flex-shrink: 0;
+        }
+
+        .fc-actions {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            display: flex;
+            gap: 6px;
+        }
+
+        .fc-action-btn {
+            background: rgba(0, 0, 0, 0.55);
+            color: white;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 0.95rem;
+            cursor: pointer;
+        }
+
+        .fc-action-btn:hover {
+            background: #4169e1;
+        }
+
+        /* ---- Lightbox for tapping a comment's photo ---- */
+        .image-viewer-box {
+            max-width: 560px;
+            width: 100%;
         }
 
         .formation-comment-item {
@@ -889,12 +981,20 @@
             border-top: 1px solid #2a2a4a;
         }
 
-        .formation-comment-item img.formation-comment-img {
-            width: 100%;
-            max-width: 220px;
-            border-radius: 8px;
+        .formation-comment-images {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
             margin-top: 6px;
-            display: block;
+        }
+
+        .formation-comment-images img {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            background: #2a2a4a;
         }
 
         .formation-comment-input-row {
@@ -902,6 +1002,25 @@
             align-items: center;
             gap: 8px;
             margin-top: 12px;
+        }
+
+        /* Clearly a "add a photo" control — a plain + circle instead of an
+           emoji glyph that can render inconsistently across fonts. */
+        .formation-attach-btn {
+            flex-shrink: 0;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 2px dashed #4169e1;
+            background: transparent;
+            color: #6c9bff;
+            font-size: 1.3rem;
+            line-height: 1;
+            cursor: pointer;
+        }
+
+        .formation-attach-btn:hover {
+            background: #1b1b3a;
         }
 
         .dm-header {
@@ -1495,11 +1614,10 @@
                                 style="max-width:220px; margin-bottom:0;" onchange="onFormationFilterChange()">
                                 <option value="">All categories</option>
                             </select>
-                            <label class="formation-needs-help-toggle">
-                                <input type="checkbox" id="formationNeedsHelpFilter" onchange="onFormationFilterChange()">
-                                🆘 Needs help only
-                            </label>
-
+                            <button type="button" class="formation-needs-help-toggle" id="formationNeedsHelpToggle"
+                                onclick="toggleFormationAwaitingFeedback()">🙋 Awaiting Feedback Only</button>
+                        </div>
+                        <div class="clan-toolbar" style="margin-top:-4px;">
                             <div class="signin-prompt" id="formationSigninPrompt" style="display:none;">
                                 <button class="btn-primary clan-post-btn-big" onclick="doSignIn()">Sign in with Google
                                     to
@@ -1510,8 +1628,8 @@
                                 Share Formation</button>
                         </div>
 
-                        <p class="compose-hint" style="margin:-6px 0 12px;">Share your Arena, farming, or boss-fight
-                            formations for feedback — posts are visible for 30 days.</p>
+                        <p class="compose-hint" style="margin:-6px 0 12px; text-align:center;">Share your Arena,
+                            farming, or boss-fight formations for feedback — posts are visible for 30 days.</p>
 
                         <div class="clan-list-scroll" id="formationPostsList"></div>
                     </div>
@@ -1690,7 +1808,17 @@
     <!-- Formation detail modal (with comments) -->
     <div class="modal-overlay" id="formationDetailModalOverlay">
         <div class="modal-box postclan-box" style="max-width:520px; text-align:left;">
-            <div id="formationDetailImages" class="formation-detail-images"></div>
+            <div class="formation-carousel" id="formationCarousel">
+                <button type="button" class="fc-nav fc-prev" id="fcPrevBtn" onclick="formationDetailPrevImage()">‹</button>
+                <div class="fc-stage" id="fcStage">
+                    <img id="formationCarouselImg" class="fc-img">
+                </div>
+                <button type="button" class="fc-nav fc-next" id="fcNextBtn" onclick="formationDetailNextImage()">›</button>
+                <div class="fc-counter" id="fcCounter"></div>
+                <div class="fc-actions">
+                    <button type="button" class="fc-action-btn" onclick="downloadCurrentFormationImage()" title="Download this photo">⬇</button>
+                </div>
+            </div>
 
             <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin:12px 0 6px;">
                 <span id="formationDetailCategory" class="clan-card-server-badge badge-both"></span>
@@ -1712,24 +1840,44 @@
                 <div class="friends-section-title" style="margin-top:18px;">Comments</div>
                 <div id="formationCommentsList"></div>
 
-                <div id="formationCommentImagePreviewWrap" style="display:none; margin-top:10px;">
-                    <img id="formationCommentImagePreview" style="width:70px; height:70px; object-fit:cover; border-radius:8px;">
-                    <button type="button" onclick="removeFormationCommentImage()" class="field-clear-btn"
-                        style="margin-left:8px;">✕ Remove image</button>
+                <div id="formationCommentEditingNote" class="compose-hint" style="display:none; margin-top:10px;">
+                    Editing your comment —
+                    <button type="button" class="field-clear-btn" onclick="cancelEditFormationComment()">Cancel</button>
                 </div>
+                <div id="formationCommentImagePreviews" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;"></div>
                 <div class="formation-comment-input-row">
-                    <input type="file" id="formationCommentImageInput" accept="image/*" style="display:none;">
-                    <button type="button" class="mini-btn" onclick="document.getElementById('formationCommentImageInput').click()"
-                        title="Attach a picture">📎</button>
+                    <input type="file" id="formationCommentImageInput" accept="image/*" multiple style="display:none;">
+                    <button type="button" class="formation-attach-btn" onclick="triggerFormationCommentImagePick()"
+                        title="Attach up to 3 photos">+</button>
                     <input type="text" id="formationCommentTextInput" class="modal-field-input"
                         placeholder="Suggest a formation, give tips..." style="margin-bottom:0; flex:1;"
                         onkeydown="if(event.key==='Enter') submitFormationComment();">
-                    <button class="btn-primary" onclick="submitFormationComment()" style="flex-shrink:0;">Send</button>
+                    <button class="btn-primary" id="formationCommentSendBtn" onclick="submitFormationComment()" style="flex-shrink:0;">Send</button>
                 </div>
             </div>
 
             <div class="modal-actions" style="margin-top:14px;">
                 <button class="modal-cancel" onclick="closeFormationDetailModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image viewer lightbox: opened when tapping a comment's photo -->
+    <div class="modal-overlay" id="imageViewerOverlay" style="z-index:260;">
+        <div class="modal-box image-viewer-box">
+            <div class="formation-carousel" id="ivCarousel">
+                <button type="button" class="fc-nav fc-prev" id="ivPrevBtn" onclick="imageViewerPrev()">‹</button>
+                <div class="fc-stage" id="ivStage">
+                    <img id="imageViewerImg" class="fc-img">
+                </div>
+                <button type="button" class="fc-nav fc-next" id="ivNextBtn" onclick="imageViewerNext()">›</button>
+                <div class="fc-counter" id="ivCounter"></div>
+                <div class="fc-actions">
+                    <button type="button" class="fc-action-btn" onclick="downloadCurrentViewerImage()" title="Download this photo">⬇</button>
+                </div>
+            </div>
+            <div class="modal-actions" style="margin-top:14px;">
+                <button class="modal-cancel" onclick="closeImageViewer()">Close</button>
             </div>
         </div>
     </div>
@@ -2678,7 +2826,18 @@ window.removeClanIconPreview = function () {
         let editingFormationPostId = null; // set when the post modal is open in "edit" mode
         let currentFormationDetailId = null;
         let unsubFormations = null, unsubFormationComments = null;
-        let formationCommentImageFile = null;
+        let formationDetailImages = []; // the open post's image URLs, for the inline carousel
+        let formationDetailImageIndex = 0;
+        let formationCommentImageFiles = []; // up to 3 newly-picked File objects for the comment being composed/edited
+        let formationCommentExistingImages = []; // [{url, path}] — images already saved on the comment being edited
+        let editingFormationCommentId = null; // set when the composer is in "edit an existing comment" mode
+        let formationCommentsById = {}; // last-rendered comments, keyed by id — for the lightbox
+        // Reentrancy guards: disabling a button alone doesn't stop a rapid
+        // double-Enter on the comment text input from calling the submit
+        // function again before the first call's await chain finishes — an
+        // explicit in-flight flag does, regardless of what triggered the call.
+        let formationPostSubmitting = false;
+        let formationCommentSubmitting = false;
         const FORMATION_FILTER_KEY = "kih_formation_filters";
 
         function formationCategoryLabel(id) {
@@ -2807,6 +2966,8 @@ window.removeClanIconPreview = function () {
         });
 
         window.submitFormationPost = async function () {
+            if (formationPostSubmitting) return;
+
             const category = document.getElementById("postFormationCategory").value;
             const description = document.getElementById("postFormationDescription").value;
             const isEditing = !!editingFormationPostId;
@@ -2816,6 +2977,7 @@ window.removeClanIconPreview = function () {
                 return;
             }
 
+            formationPostSubmitting = true;
             const submitBtn = document.getElementById("submitPostFormationBtn");
             submitBtn.disabled = true;
             const oldPost = isEditing ? allFormationPosts.find(p => p.id === editingFormationPostId) : null;
@@ -2852,6 +3014,7 @@ window.removeClanIconPreview = function () {
                     showInfoModal("Couldn't post", e.message);
                 }
             }
+            formationPostSubmitting = false;
             submitBtn.disabled = false;
             submitBtn.textContent = isEditing ? "Save Changes" : "Post";
         };
@@ -2873,15 +3036,21 @@ window.removeClanIconPreview = function () {
         function loadFormationFiltersIntoUI() {
             const filters = getFormationFilters();
             document.getElementById("formationCategoryFilter").value = filters.category || "";
-            document.getElementById("formationNeedsHelpFilter").checked = !!filters.needsHelpOnly;
+            document.getElementById("formationNeedsHelpToggle").classList.toggle("active", !!filters.needsHelpOnly);
         }
 
         window.onFormationFilterChange = function () {
-            const filters = {
-                category: document.getElementById("formationCategoryFilter").value,
-                needsHelpOnly: document.getElementById("formationNeedsHelpFilter").checked
-            };
+            const filters = getFormationFilters();
+            filters.category = document.getElementById("formationCategoryFilter").value;
             saveFormationFilters(filters);
+            applyFormationFiltersAndRender();
+        };
+
+        window.toggleFormationAwaitingFeedback = function () {
+            const filters = getFormationFilters();
+            filters.needsHelpOnly = !filters.needsHelpOnly;
+            saveFormationFilters(filters);
+            document.getElementById("formationNeedsHelpToggle").classList.toggle("active", filters.needsHelpOnly);
             applyFormationFiltersAndRender();
         };
 
@@ -2889,10 +3058,16 @@ window.removeClanIconPreview = function () {
             allFormationPosts = posts;
             applyFormationFiltersAndRender();
             // Keep the open detail modal (if any) in sync with live updates
-            // (e.g. commentCount changing while a viewer has the post open).
+            // (e.g. commentCount changing, or an edit changing the images,
+            // while a viewer has the post open).
             if (currentFormationDetailId) {
                 const p = allFormationPosts.find(x => x.id === currentFormationDetailId);
-                if (p) renderFormationDetailStatic(p);
+                if (p) {
+                    renderFormationDetailStatic(p);
+                    formationDetailImages = p.imageUrls || [];
+                    formationDetailImageIndex = Math.min(formationDetailImageIndex, Math.max(formationDetailImages.length - 1, 0));
+                    renderFormationCarousel();
+                }
             }
         }
 
@@ -2912,7 +3087,7 @@ window.removeClanIconPreview = function () {
             const myUid = AppState.getCurrentUser()?.uid;
             list.innerHTML = filtered.map(p => {
                 const isMine = p.uid === myUid;
-                const needsHelp = !(p.commentCount > 0);
+                const awaitingFeedback = !(p.commentCount > 0);
                 const footer = isMine
                     ? `<button class="edit-post-link" onclick="event.stopPropagation(); openEditFormationModal('${p.id}')">✏️ Edit</button>
                        <button class="delete-post-link" onclick="event.stopPropagation(); deleteFormationPostConfirm('${p.id}')">🗑️ Delete</button>`
@@ -2920,11 +3095,11 @@ window.removeClanIconPreview = function () {
                 return `
                 <div class="clan-post${isMine ? " my-post" : ""}" onclick="openFormationDetailModal('${p.id}')">
                     <div class="formation-card-images">
-                        ${(p.imageUrls || []).map(u => `<img src="${escapeHtml(u)}" onerror="this.style.opacity='0.2'">`).join("")}
+                        ${(p.imageUrls || []).map((u, idx) => `<img src="${escapeHtml(u)}" onerror="this.style.opacity='0.2'" onclick="event.stopPropagation(); openFormationDetailModal('${p.id}', ${idx})">`).join("")}
                     </div>
                     <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
                         <span class="clan-card-server-badge badge-both">${escapeHtml(formationCategoryLabel(p.category))}</span>
-                        <span class="compose-hint">${(p.commentCount || 0) > 0 ? `💬 ${p.commentCount} comment${p.commentCount === 1 ? "" : "s"}` : ""}${needsHelp ? '<span class="formation-needs-help-badge">Needs Help</span>' : ""}</span>
+                        <span class="compose-hint">${(p.commentCount || 0) > 0 ? `💬 ${p.commentCount} comment${p.commentCount === 1 ? "" : "s"}` : ""}${awaitingFeedback ? '<span class="formation-needs-help-badge">Awaiting Feedback</span>' : ""}</span>
                     </div>
                     ${p.description ? `<div class="clan-post-body" style="margin-top:8px; max-height:4.2em; overflow:hidden;">${escapeHtml(p.description)}</div>` : ""}
 
@@ -2954,8 +3129,6 @@ window.removeClanIconPreview = function () {
         /* ---- Detail modal + comments ---- */
 
         function renderFormationDetailStatic(p) {
-            document.getElementById("formationDetailImages").innerHTML =
-                (p.imageUrls || []).map(u => `<img src="${escapeHtml(u)}" onerror="this.style.opacity='0.2'">`).join("");
             document.getElementById("formationDetailCategory").textContent = formationCategoryLabel(p.category);
             document.getElementById("formationDetailDescription").textContent = p.description || "No description.";
             document.getElementById("formationDetailAvatar").src = p.avatar;
@@ -2988,14 +3161,25 @@ window.removeClanIconPreview = function () {
             }
         }
 
-        window.openFormationDetailModal = function (postId) {
+        window.openFormationDetailModal = function (postId, startIndex) {
             const p = allFormationPosts.find(x => x.id === postId);
             if (!p) return;
             currentFormationDetailId = postId;
             renderFormationDetailStatic(p);
 
+            formationDetailImages = p.imageUrls || [];
+            formationDetailImageIndex = Math.min(Math.max(startIndex || 0, 0), Math.max(formationDetailImages.length - 1, 0));
+            renderFormationCarousel();
+
+            formationCommentSubmitting = false;
+            document.getElementById("formationCommentSendBtn").disabled = false;
             document.getElementById("formationCommentTextInput").value = "";
-            removeFormationCommentImage();
+            formationCommentImageFiles = [];
+            formationCommentExistingImages = [];
+            editingFormationCommentId = null;
+            document.getElementById("formationCommentEditingNote").style.display = "none";
+            document.getElementById("formationCommentSendBtn").textContent = "Send";
+            renderFormationCommentImagePreviews();
             document.getElementById("formationCommentsList").innerHTML = "";
 
             if (unsubFormationComments) { unsubFormationComments(); unsubFormationComments = null; }
@@ -3014,7 +3198,125 @@ window.removeClanIconPreview = function () {
             currentFormationDetailId = null;
         };
 
+        /* ---- Swipeable carousel (main post gallery) ---- */
+
+        function renderFormationCarousel() {
+            const urls = formationDetailImages;
+            document.getElementById("formationCarouselImg").src = urls[formationDetailImageIndex] || "";
+            document.getElementById("fcCounter").textContent = urls.length > 1 ? `${formationDetailImageIndex + 1}/${urls.length}` : "";
+            document.getElementById("fcCounter").style.display = urls.length > 1 ? "block" : "none";
+            document.getElementById("fcPrevBtn").style.display = formationDetailImageIndex > 0 ? "flex" : "none";
+            document.getElementById("fcNextBtn").style.display = formationDetailImageIndex < urls.length - 1 ? "flex" : "none";
+        }
+
+        window.formationDetailNextImage = function () {
+            if (formationDetailImageIndex < formationDetailImages.length - 1) {
+                formationDetailImageIndex++;
+                renderFormationCarousel();
+            }
+        };
+        window.formationDetailPrevImage = function () {
+            if (formationDetailImageIndex > 0) {
+                formationDetailImageIndex--;
+                renderFormationCarousel();
+            }
+        };
+        window.downloadCurrentFormationImage = function () {
+            downloadImageUrl(formationDetailImages[formationDetailImageIndex]);
+        };
+
+        (function setupSwipe(stageId, prevFn, nextFn) {
+            const stage = document.getElementById(stageId);
+            let startX = null;
+            stage.addEventListener("touchstart", (e) => { startX = e.touches[0].clientX; }, { passive: true });
+            stage.addEventListener("touchend", (e) => {
+                if (startX === null) return;
+                const deltaX = e.changedTouches[0].clientX - startX;
+                if (Math.abs(deltaX) > 40) {
+                    if (deltaX < 0) nextFn(); else prevFn();
+                }
+                startX = null;
+            });
+        })("fcStage", () => window.formationDetailPrevImage(), () => window.formationDetailNextImage());
+
+        // Formation images are uploaded with a Content-Disposition: attachment
+        // header (see uploadFormationImage in appState.js), so the browser
+        // downloads them on a plain navigation regardless of cross-origin —
+        // no fetch/blob/CORS involved. <img> tags still render them normally
+        // since that header only applies to navigations, not resource loads.
+        function downloadImageUrl(url) {
+            if (!url) return;
+            const a = document.createElement("a");
+            a.href = url;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+        }
+
+        /* ---- Image viewer lightbox (comment photos) ---- */
+
+        let imageViewerUrls = [];
+        let imageViewerIndex = 0;
+
+        window.openImageViewer = function (urls, startIndex) {
+            imageViewerUrls = urls || [];
+            imageViewerIndex = Math.min(Math.max(startIndex || 0, 0), Math.max(imageViewerUrls.length - 1, 0));
+            renderImageViewer();
+            document.getElementById("imageViewerOverlay").classList.add("open");
+        };
+
+        window.openImageViewerForComment = function (commentId, index) {
+            const c = formationCommentsById[commentId];
+            if (!c) return;
+            openImageViewer(c.imageUrls || [], index);
+        };
+
+        window.closeImageViewer = function () {
+            document.getElementById("imageViewerOverlay").classList.remove("open");
+        };
+
+        function renderImageViewer() {
+            document.getElementById("imageViewerImg").src = imageViewerUrls[imageViewerIndex] || "";
+            document.getElementById("ivCounter").textContent = imageViewerUrls.length > 1 ? `${imageViewerIndex + 1}/${imageViewerUrls.length}` : "";
+            document.getElementById("ivCounter").style.display = imageViewerUrls.length > 1 ? "block" : "none";
+            document.getElementById("ivPrevBtn").style.display = imageViewerIndex > 0 ? "flex" : "none";
+            document.getElementById("ivNextBtn").style.display = imageViewerIndex < imageViewerUrls.length - 1 ? "flex" : "none";
+        }
+
+        window.imageViewerNext = function () {
+            if (imageViewerIndex < imageViewerUrls.length - 1) {
+                imageViewerIndex++;
+                renderImageViewer();
+            }
+        };
+        window.imageViewerPrev = function () {
+            if (imageViewerIndex > 0) {
+                imageViewerIndex--;
+                renderImageViewer();
+            }
+        };
+        window.downloadCurrentViewerImage = function () {
+            downloadImageUrl(imageViewerUrls[imageViewerIndex]);
+        };
+
+        (function setupSwipe(stageId, prevFn, nextFn) {
+            const stage = document.getElementById(stageId);
+            let startX = null;
+            stage.addEventListener("touchstart", (e) => { startX = e.touches[0].clientX; }, { passive: true });
+            stage.addEventListener("touchend", (e) => {
+                if (startX === null) return;
+                const deltaX = e.changedTouches[0].clientX - startX;
+                if (Math.abs(deltaX) > 40) {
+                    if (deltaX < 0) nextFn(); else prevFn();
+                }
+                startX = null;
+            });
+        })("ivStage", () => window.imageViewerPrev(), () => window.imageViewerNext());
+
         function renderFormationComments(comments) {
+            formationCommentsById = {};
+            comments.forEach(c => { formationCommentsById[c.id] = c; });
+
             const list = document.getElementById("formationCommentsList");
             if (!comments.length) {
                 list.innerHTML = '<div class="compose-hint" style="padding:10px 0;">No comments yet — be the first to help!</div>';
@@ -3023,60 +3325,151 @@ window.removeClanIconPreview = function () {
             const myUid = AppState.getCurrentUser()?.uid;
             list.innerHTML = comments.map(c => `
                 <div class="formation-comment-item">
-                    <img class="clan-post-avatar" src="${escapeHtml(c.avatar)}" onerror="this.style.visibility='hidden'">
+                    <img class="clan-post-avatar" src="${escapeHtml(c.avatar)}" onerror="this.style.visibility='hidden'"
+                        style="cursor:pointer;" onclick="closeFormationDetailModal(); onPosterClick('${c.uid}', '${escapeHtml(c.name).replace(/'/g, "\\'")}');">
                     <div style="flex:1; min-width:0;">
                         <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-                            <span class="clan-post-name">${escapeHtml(c.name)}</span>
+                            <span class="clan-post-name" style="cursor:pointer;" onclick="closeFormationDetailModal(); onPosterClick('${c.uid}', '${escapeHtml(c.name).replace(/'/g, "\\'")}');">${escapeHtml(c.name)}</span>
                             <span class="clan-post-time" style="margin-left:0;">${timeAgo(c.createdAt)}</span>
                         </div>
                         ${c.text ? `<div style="margin-top:4px; white-space:pre-wrap;">${escapeHtml(c.text)}</div>` : ""}
-                        ${c.imageUrl ? `<img class="formation-comment-img" src="${escapeHtml(c.imageUrl)}" onerror="this.remove();">` : ""}
+                        ${(c.imageUrls && c.imageUrls.length) ? `<div class="formation-comment-images">${c.imageUrls.map((u, i) => `<img src="${escapeHtml(u)}" onerror="this.remove();" onclick="openImageViewerForComment('${c.id}', ${i})">`).join("")}</div>` : ""}
                         ${c.uid === myUid
-                            ? `<button class="delete-post-link" style="margin-top:4px;" onclick="deleteFormationCommentConfirm('${c.id}')">🗑️ Delete</button>`
+                            ? `<button class="edit-post-link" style="margin-top:4px;" onclick="startEditFormationComment('${c.id}')">✏️ Edit</button>
+                               <button class="delete-post-link" style="margin-top:4px;" onclick="deleteFormationCommentConfirm('${c.id}')">🗑️ Delete</button>`
                             : `<button class="report-link" style="margin-top:4px;" onclick="openReportModal('post', '${c.uid}', '${escapeHtml(c.name).replace(/'/g, "\\'")}', '${c.id}', ${escapeHtml(JSON.stringify(c.text || ""))})">🚩 Report</button>`}
                     </div>
                 </div>
             `).join("");
         }
 
+        // Renders existing (already-saved) images first, then newly-picked
+        // files — removal is index-based into that combined order, same
+        // pattern as the post composer's image picker.
+        function renderFormationCommentImagePreviews() {
+            const wrap = document.getElementById("formationCommentImagePreviews");
+            const items = [
+                ...formationCommentExistingImages.map(img => img.url),
+                ...formationCommentImageFiles.map(file => URL.createObjectURL(file))
+            ];
+            wrap.innerHTML = items.map((src, i) => `
+                <div style="position:relative; width:64px; height:64px;">
+                    <img src="${escapeHtml(src)}" style="width:100%; height:100%; object-fit:cover; border-radius:8px; background:#1a1a2e;">
+                    <button type="button" onclick="removeFormationCommentImageAt(${i})"
+                        style="position:absolute; top:-6px; right:-6px; width:20px; height:20px; border-radius:50%; background:#c62828; color:white; border:none; font-size:0.7rem; cursor:pointer;"
+                        title="Remove">✕</button>
+                </div>
+            `).join("");
+        }
+
+        window.removeFormationCommentImageAt = function (index) {
+            if (index < formationCommentExistingImages.length) {
+                formationCommentExistingImages.splice(index, 1);
+            } else {
+                formationCommentImageFiles.splice(index - formationCommentExistingImages.length, 1);
+            }
+            renderFormationCommentImagePreviews();
+        };
+
+        window.triggerFormationCommentImagePick = function () {
+            if (formationCommentExistingImages.length + formationCommentImageFiles.length >= 3) {
+                showToast("You can attach up to 3 images per reply.");
+                return;
+            }
+            document.getElementById("formationCommentImageInput").click();
+        };
+
         document.getElementById("formationCommentImageInput").addEventListener("change", (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            formationCommentImageFile = file;
-            document.getElementById("formationCommentImagePreview").src = URL.createObjectURL(file);
-            document.getElementById("formationCommentImagePreviewWrap").style.display = "block";
+            const newFiles = [...e.target.files];
+            if (!newFiles.length) return;
+            const remainingSlots = 3 - formationCommentExistingImages.length - formationCommentImageFiles.length;
+            if (remainingSlots <= 0) {
+                showToast("You can attach up to 3 images per reply.");
+                e.target.value = "";
+                return;
+            }
+            if (newFiles.length > remainingSlots) {
+                showToast("You can attach up to 3 images per reply.");
+            }
+            formationCommentImageFiles = [...formationCommentImageFiles, ...newFiles.slice(0, remainingSlots)];
+            e.target.value = "";
+            renderFormationCommentImagePreviews();
         });
 
-        window.removeFormationCommentImage = function () {
-            formationCommentImageFile = null;
-            document.getElementById("formationCommentImageInput").value = "";
-            document.getElementById("formationCommentImagePreviewWrap").style.display = "none";
+        window.startEditFormationComment = function (commentId) {
+            const c = formationCommentsById[commentId];
+            if (!c) return;
+            editingFormationCommentId = commentId;
+            formationCommentImageFiles = [];
+            formationCommentExistingImages = (c.imageUrls || []).map((url, i) => ({ url, path: (c.imagePaths || [])[i] || null }));
+            document.getElementById("formationCommentTextInput").value = c.text || "";
+            renderFormationCommentImagePreviews();
+            document.getElementById("formationCommentEditingNote").style.display = "block";
+            document.getElementById("formationCommentSendBtn").textContent = "Save";
+            document.getElementById("formationCommentTextInput").focus();
+        };
+
+        window.cancelEditFormationComment = function () {
+            editingFormationCommentId = null;
+            formationCommentExistingImages = [];
+            formationCommentImageFiles = [];
+            document.getElementById("formationCommentTextInput").value = "";
+            renderFormationCommentImagePreviews();
+            document.getElementById("formationCommentEditingNote").style.display = "none";
+            document.getElementById("formationCommentSendBtn").textContent = "Send";
         };
 
         window.submitFormationComment = async function () {
+            // Guards against rapid Enter-key presses or double-clicks firing
+            // this multiple times before the first call finishes — disabling
+            // the button alone doesn't stop the Enter-key path, since that
+            // calls this function directly rather than clicking the button.
+            if (formationCommentSubmitting) return;
+
             const user = AppState.getCurrentUser();
             if (!user) { showInfoModal("Sign in required", "Sign in with Google first to comment."); return; }
             if (!currentFormationDetailId) return;
 
+            const isEditing = !!editingFormationCommentId;
             const textInput = document.getElementById("formationCommentTextInput");
             const text = textInput.value.trim();
-            if (!text && !formationCommentImageFile) return;
+            if (!text && !formationCommentImageFiles.length && !(isEditing && formationCommentExistingImages.length)) return;
+
+            formationCommentSubmitting = true;
+            const sendBtn = document.getElementById("formationCommentSendBtn");
+            sendBtn.disabled = true;
+            const oldComment = isEditing ? formationCommentsById[editingFormationCommentId] : null;
+            const oldImagePaths = oldComment ? (oldComment.imagePaths || []) : [];
 
             try {
-                let imageUrl = null, imagePath = null;
-                if (formationCommentImageFile) {
-                    const result = await AppState.uploadFormationImage(formationCommentImageFile);
-                    imageUrl = result.imageUrl;
-                    imagePath = result.imagePath;
+                const newImageUrls = [];
+                const newImagePaths = [];
+                for (const file of formationCommentImageFiles) {
+                    const result = await AppState.uploadFormationImage(file);
+                    newImageUrls.push(result.imageUrl);
+                    newImagePaths.push(result.imagePath);
                 }
-                await AppState.addFormationComment(currentFormationDetailId, { text, imageUrl, imagePath });
-                textInput.value = "";
-                removeFormationCommentImage();
+
+                if (isEditing) {
+                    const imageUrls = [...formationCommentExistingImages.map(img => img.url), ...newImageUrls];
+                    const imagePaths = [...formationCommentExistingImages.map(img => img.path), ...newImagePaths];
+                    await AppState.updateFormationComment(currentFormationDetailId, editingFormationCommentId, { text, imageUrls, imagePaths });
+                    const keptPaths = new Set(imagePaths);
+                    oldImagePaths.filter(p => p && !keptPaths.has(p)).forEach(p => AppState.deleteFormationImageSafe(p));
+                    cancelEditFormationComment();
+                } else {
+                    await AppState.addFormationComment(currentFormationDetailId, { text, imageUrls: newImageUrls, imagePaths: newImagePaths });
+                    textInput.value = "";
+                    formationCommentImageFiles = [];
+                    renderFormationCommentImagePreviews();
+                }
             } catch (e) {
                 if (e.message !== "__RESTRICTED__") {
                     showInfoModal("Couldn't comment", e.message);
                 }
             }
+            formationCommentSubmitting = false;
+            sendBtn.disabled = false;
         };
 
         window.deleteFormationCommentConfirm = async function (commentId) {
@@ -3085,6 +3478,7 @@ window.removeClanIconPreview = function () {
             if (!ok) return;
             try {
                 await AppState.deleteFormationComment(currentFormationDetailId, commentId);
+                if (editingFormationCommentId === commentId) cancelEditFormationComment();
             } catch (e) {
                 showInfoModal("Couldn't delete", e.message);
             }
