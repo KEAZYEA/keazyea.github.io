@@ -1183,6 +1183,290 @@ async function getClanPostCooldownRemaining() {
     }
 
     /* ======================================================
+       TIER LISTS — drag-and-drop hero/troop rankings.
+       Same Instagram-style social pattern as formation sharing
+       (unlimited posts/user, threaded comments w/ up to 3 images
+       each), but no user-uploaded photos on the post itself —
+       just unit keys per tier — and voting is upvote/downvote
+       instead of a single like. No expiry: a tier list is just
+       short string keys, tiny compared to formation photos, so
+       these are kept indefinitely rather than auto-expiring.
+       ====================================================== */
+
+    const TIER_KEYS = ["S", "A", "B", "C", "D", "E", "F"];
+    const TIER_LIST_UNIT_TYPES = ["hero", "troop", "both"];
+
+    function normalizeTierListTiers(rawTiers) {
+        const tiers = {};
+        TIER_KEYS.forEach(k => {
+            tiers[k] = Array.isArray(rawTiers && rawTiers[k]) ? rawTiers[k].slice(0, 200) : [];
+        });
+        return tiers;
+    }
+
+    async function postTierList(data) {
+        await waitForAuthReady();
+        if (!currentUser) throw new Error("You must sign in with Google first to post.");
+
+        const title = (data.title || "").trim();
+        const description = (data.description || "").trim();
+        const unitType = TIER_LIST_UNIT_TYPES.includes(data.unitType) ? data.unitType : "both";
+        const tiers = normalizeTierListTiers(data.tiers);
+
+        if (!title) throw new Error("Give your tier list a title.");
+        if (title.length > 100) throw new Error("Title must be 100 characters or fewer.");
+        if (description.length > 2000) throw new Error("Description must be 2000 characters or fewer.");
+        const totalPlaced = TIER_KEYS.reduce((sum, k) => sum + tiers[k].length, 0);
+        if (!totalPlaced) throw new Error("Place at least one hero or troop in a tier.");
+
+        const profile = await getProfile();
+        if (isBannedNow(profile)) {
+            showRestrictedNotice(profile.banReason, profile.banUntil);
+            throw new Error("__RESTRICTED__");
+        }
+        if (!profile.name) throw new Error("Set an in-game name in your profile before posting.");
+
+        const docRef = await addDoc(collection(db, "tierLists"), {
+            uid: currentUser.uid,
+            name: profile.name,
+            avatar: profile.avatar || "",
+            title,
+            description,
+            unitType,
+            tiers,
+            commentCount: 0,
+            upvotes: 0,
+            downvotes: 0,
+            createdAt: Date.now()
+        });
+        return docRef.id;
+    }
+
+    async function updateTierList(tierListId, data) {
+        await waitForAuthReady();
+        if (!currentUser) throw new Error("You must sign in with Google first.");
+        const profile = await getProfile();
+        if (isBannedNow(profile)) {
+            showRestrictedNotice(profile.banReason, profile.banUntil);
+            throw new Error("__RESTRICTED__");
+        }
+
+        const title = (data.title || "").trim();
+        const description = (data.description || "").trim();
+        const unitType = TIER_LIST_UNIT_TYPES.includes(data.unitType) ? data.unitType : "both";
+        const tiers = normalizeTierListTiers(data.tiers);
+
+        if (!title) throw new Error("Give your tier list a title.");
+        if (title.length > 100) throw new Error("Title must be 100 characters or fewer.");
+        if (description.length > 2000) throw new Error("Description must be 2000 characters or fewer.");
+        const totalPlaced = TIER_KEYS.reduce((sum, k) => sum + tiers[k].length, 0);
+        if (!totalPlaced) throw new Error("Place at least one hero or troop in a tier.");
+
+        const ref = doc(db, "tierLists", tierListId);
+        const snap = await getDoc(ref);
+        if (!snap.exists()) throw new Error("Tier list not found.");
+        if (snap.data().uid !== currentUser.uid) throw new Error("You can only edit your own tier list.");
+
+        await updateDoc(ref, { title, description, unitType, tiers });
+        return tierListId;
+    }
+
+    function listenToTierLists(callback, maxCount = 200) {
+        const q = query(collection(db, "tierLists"), orderBy("createdAt", "desc"), limit(maxCount));
+        return onSnapshot(q, (snap) => {
+            const items = [];
+            snap.forEach(d => items.push({ id: d.id, ...d.data() }));
+            callback(items);
+        });
+    }
+
+    async function deleteTierListCascade(tierListId) {
+        const deletions = [];
+        try {
+            const commentsSnap = await getDocs(collection(db, "tierLists", tierListId, "comments"));
+            commentsSnap.forEach(c => {
+                const cd = c.data();
+                (cd.imagePaths || []).forEach(p => deletions.push(deleteFormationImageSafe(p)));
+                deletions.push(deleteDoc(doc(db, "tierLists", tierListId, "comments", c.id)));
+            });
+        } catch (e) {
+            console.warn("Couldn't clean up tier list comments:", e.message);
+        }
+        try {
+            const votesSnap = await getDocs(collection(db, "tierLists", tierListId, "votes"));
+            votesSnap.forEach(v => deletions.push(deleteDoc(doc(db, "tierLists", tierListId, "votes", v.id))));
+        } catch (e) {
+            console.warn("Couldn't clean up tier list votes:", e.message);
+        }
+        deletions.push(deleteDoc(doc(db, "tierLists", tierListId)));
+        await Promise.all(deletions);
+    }
+
+    async function deleteTierList(tierListId) {
+        await waitForAuthReady();
+        if (!currentUser) throw new Error("Not signed in.");
+        await deleteTierListCascade(tierListId);
+    }
+
+    // Reddit-style toggle: voting the same direction again removes your
+    // vote; voting the opposite direction switches it. Transactional so
+    // the vote doc and the upvotes/downvotes counters can never drift
+    // apart the way formation likes briefly could before that was fixed.
+    async function voteOnTierList(tierListId, direction) {
+        await waitForAuthReady();
+        if (!currentUser) throw new Error("You must sign in with Google first to vote.");
+        const profile = await getProfile();
+        if (isBannedNow(profile)) {
+            showRestrictedNotice(profile.banReason, profile.banUntil);
+            throw new Error("__RESTRICTED__");
+        }
+
+        const voteRef = doc(db, "tierLists", tierListId, "votes", currentUser.uid);
+        const listRef = doc(db, "tierLists", tierListId);
+        const uid = currentUser.uid;
+
+        return await runTransaction(db, async (tx) => {
+            const voteSnap = await tx.get(voteRef);
+            const prev = voteSnap.exists() ? voteSnap.data().value : 0;
+            const next = (prev === direction) ? 0 : direction;
+
+            if (next === 0) {
+                tx.delete(voteRef);
+            } else {
+                tx.set(voteRef, { uid, value: next, createdAt: Date.now() });
+            }
+            const deltaUp = (next === 1 ? 1 : 0) - (prev === 1 ? 1 : 0);
+            const deltaDown = (next === -1 ? 1 : 0) - (prev === -1 ? 1 : 0);
+            const patch = {};
+            if (deltaUp !== 0) patch.upvotes = increment(deltaUp);
+            if (deltaDown !== 0) patch.downvotes = increment(deltaDown);
+            if (Object.keys(patch).length) tx.update(listRef, patch);
+            return next;
+        });
+    }
+
+    async function getMyTierListVote(tierListId) {
+        await waitForAuthReady();
+        if (!currentUser) return 0;
+        const snap = await getDoc(doc(db, "tierLists", tierListId, "votes", currentUser.uid));
+        return snap.exists() ? snap.data().value : 0;
+    }
+
+    async function addTierListComment(tierListId, data) {
+        await waitForAuthReady();
+        if (!currentUser) throw new Error("You must sign in with Google first to comment.");
+        const text = (data.text || "").trim();
+        const imageUrls = Array.isArray(data.imageUrls) ? data.imageUrls.slice(0, 3) : [];
+        const imagePaths = Array.isArray(data.imagePaths) ? data.imagePaths.slice(0, 3) : [];
+        const parentId = data.parentId || null;
+        if (!text && !imageUrls.length) throw new Error("Write something or attach a picture.");
+        if (text.length > 2000) throw new Error("Comment must be 2000 characters or fewer.");
+
+        const profile = await getProfile();
+        if (isBannedNow(profile)) {
+            showRestrictedNotice(profile.banReason, profile.banUntil);
+            throw new Error("__RESTRICTED__");
+        }
+        if (!profile.name) throw new Error("Set an in-game name in your profile before commenting.");
+
+        const docRef = await addDoc(collection(db, "tierLists", tierListId, "comments"), {
+            uid: currentUser.uid,
+            name: profile.name,
+            avatar: profile.avatar || "",
+            text,
+            imageUrls,
+            imagePaths,
+            parentId,
+            createdAt: Date.now()
+        });
+        await updateDoc(doc(db, "tierLists", tierListId), { commentCount: increment(1) });
+
+        try {
+            if (parentId) {
+                const parentSnap = await getDoc(doc(db, "tierLists", tierListId, "comments", parentId));
+                if (parentSnap.exists()) {
+                    const parentAuthorUid = parentSnap.data().uid;
+                    if (parentAuthorUid && parentAuthorUid !== currentUser.uid) {
+                        await addPersonalNotification(parentAuthorUid, {
+                            type: "tierListReply",
+                            title: `💬 ${profile.name} replied to your comment`,
+                            body: text ? text.slice(0, 100) : "Sent a photo.",
+                            fromUid: currentUser.uid,
+                            fromName: profile.name,
+                            fromAvatar: profile.avatar || "",
+                            tierListId
+                        });
+                    }
+                }
+            } else {
+                const listSnap = await getDoc(doc(db, "tierLists", tierListId));
+                if (listSnap.exists()) {
+                    const ownerUid = listSnap.data().uid;
+                    if (ownerUid && ownerUid !== currentUser.uid) {
+                        await addPersonalNotification(ownerUid, {
+                            type: "tierListComment",
+                            title: `💬 ${profile.name} commented on your tier list`,
+                            body: text ? text.slice(0, 100) : "Sent a photo.",
+                            fromUid: currentUser.uid,
+                            fromName: profile.name,
+                            fromAvatar: profile.avatar || "",
+                            tierListId
+                        });
+                    }
+                }
+            }
+        } catch (e) {
+            console.warn("Couldn't send tier list comment notification:", e.message);
+        }
+
+        return docRef.id;
+    }
+
+    async function updateTierListComment(tierListId, commentId, data) {
+        await waitForAuthReady();
+        if (!currentUser) throw new Error("You must sign in with Google first.");
+        const profile = await getProfile();
+        if (isBannedNow(profile)) {
+            showRestrictedNotice(profile.banReason, profile.banUntil);
+            throw new Error("__RESTRICTED__");
+        }
+
+        const text = (data.text || "").trim();
+        const imageUrls = Array.isArray(data.imageUrls) ? data.imageUrls.slice(0, 3) : [];
+        const imagePaths = Array.isArray(data.imagePaths) ? data.imagePaths.slice(0, 3) : [];
+        if (!text && !imageUrls.length) throw new Error("Write something or attach a picture.");
+        if (text.length > 2000) throw new Error("Comment must be 2000 characters or fewer.");
+
+        const ref = doc(db, "tierLists", tierListId, "comments", commentId);
+        const snap = await getDoc(ref);
+        if (!snap.exists()) throw new Error("Comment not found.");
+        if (snap.data().uid !== currentUser.uid) throw new Error("You can only edit your own comment.");
+
+        await updateDoc(ref, { text, imageUrls, imagePaths });
+        return commentId;
+    }
+
+    function listenToTierListComments(tierListId, callback) {
+        const q = query(collection(db, "tierLists", tierListId, "comments"), orderBy("createdAt", "asc"));
+        return onSnapshot(q, (snap) => {
+            const items = [];
+            snap.forEach(d => items.push({ id: d.id, ...d.data() }));
+            callback(items);
+        });
+    }
+
+    async function deleteTierListComment(tierListId, commentId) {
+        await waitForAuthReady();
+        if (!currentUser) throw new Error("Not signed in.");
+        const snap = await getDoc(doc(db, "tierLists", tierListId, "comments", commentId));
+        if (!snap.exists()) return;
+        const data = snap.data();
+        await Promise.all((data.imagePaths || []).map(p => deleteFormationImageSafe(p)));
+        await deleteDoc(doc(db, "tierLists", tierListId, "comments", commentId));
+        await updateDoc(doc(db, "tierLists", tierListId), { commentCount: increment(-1) });
+    }
+
+    /* ======================================================
        NEW IN STAGE 3 — FRIEND REQUESTS
        (An accepted request IS the friendship — no separate collection.)
        ====================================================== */
@@ -3269,6 +3553,10 @@ async function maybeRefreshAd(containerId) {
         postFormation, updateFormation, listenToFormations, deleteFormation, sweepExpiredFormations,
         addFormationComment, updateFormationComment, listenToFormationComments, deleteFormationComment,
         toggleFormationLike, likeFormation, hasLikedFormation,
+        // tier lists
+        TIER_KEYS, postTierList, updateTierList, listenToTierLists, deleteTierList,
+        voteOnTierList, getMyTierListVote,
+        addTierListComment, updateTierListComment, listenToTierListComments, deleteTierListComment,
         uploadFormationImage, deleteFormationImageSafe, FORMATION_CATEGORIES, FORMATION_POST_LIFETIME_MS,
         // friends
         sendFriendRequest, respondToFriendRequest, listenToIncomingFriendRequests, listenToFriends,

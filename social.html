@@ -1013,6 +1013,292 @@
             100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
         }
 
+        /* ---- Tier lists ---- */
+        .tier-board {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-bottom: 14px;
+        }
+
+        /* Only in the create/edit modal: bounded + independently scrollable
+           so a long board doesn't push the sticky pool far out of reach —
+           the read-only board in the feed/detail view is left unbounded. */
+        #tierBoardEditor {
+            /* No height cap — a tier row with 30 units just grows taller
+               (flex-wrap) instead of clipping some of them off. The whole
+               modal (.tier-editor-box) scrolls to cover it; the pool and
+               action buttons below stay reachable via position:sticky
+               regardless of how tall this gets. */
+            padding-right: 2px;
+        }
+
+        .tier-row {
+            display: flex;
+            align-items: stretch;
+            min-height: 56px;
+            background: #16162a;
+            border: 1px solid #2a2a4a;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .tier-row-label {
+            flex-shrink: 0;
+            width: 64px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 1.3rem;
+            color: #16162a;
+            text-align: center;
+            line-height: 1.1;
+        }
+
+        .tier-row-label small {
+            font-weight: 700;
+            font-size: 0.6rem;
+            text-transform: uppercase;
+        }
+
+        .tier-row-dropzone {
+            flex: 1;
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            gap: 6px;
+            padding: 6px;
+            min-width: 0;
+        }
+
+        .tier-row-dropzone.drag-over {
+            background: #1b1b3a;
+            outline: 2px dashed #4169e1;
+            outline-offset: -2px;
+        }
+
+        .tier-unit-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: #2a2a4a;
+            cursor: grab;
+            touch-action: none;
+            border: 2px solid transparent;
+        }
+
+        .tier-unit-icon:active {
+            cursor: grabbing;
+        }
+
+        .unit-drag-ghost {
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            object-fit: cover;
+            opacity: 0.85;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+        }
+
+        .tier-pool-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 4px;
+        }
+
+        .tier-pool-type-btns {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .tier-pool-type-btn {
+            background: #2a2a4a;
+            border: 2px solid #3a3a5c;
+            color: #eaeaf0;
+            border-radius: 16px;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .tier-pool-type-btn.active {
+            background: #4169e1;
+            border-color: #4169e1;
+            color: white;
+        }
+
+        .tier-pool {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            max-height: 220px;
+            overflow-y: auto;
+            background: #0d0d1a;
+            border-radius: 10px;
+            padding: 10px;
+            margin-top: 8px;
+        }
+
+        .tier-pool-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            width: 52px;
+        }
+
+        .tier-pool-item span {
+            font-size: 0.6rem;
+            color: #9a9ab0;
+            text-align: center;
+            max-width: 52px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .tier-vote-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .tier-vote-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #2a2a4a;
+            border: none;
+            border-radius: 20px;
+            padding: 8px 14px;
+            color: #eaeaf0;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .tier-vote-btn.active-up {
+            background: #1b3a24;
+            color: #4ade80;
+        }
+
+        .tier-vote-btn.active-down {
+            background: #4a1620;
+            color: #ff6b6b;
+        }
+
+        .tier-vote-score {
+            font-weight: 800;
+            color: #eaeaf0;
+        }
+
+        /* ---- Tier list editor: the board and the pool both need to stay
+           on screen together while dragging, so instead of one long
+           scrolling modal, this splits into independently-scrolling
+           regions — a compact header, the board, then the pool pinned
+           below it — so neither ever scrolls out of view mid-drag. ---- */
+        /* A fixed height budget for header+pool+actions can add up to more
+           than the viewport on a short/real phone screen — and since
+           nothing here should ever get silently clipped, this uses
+           position:sticky instead: the whole modal scrolls normally as one
+           unit, but the pool pins itself to the bottom of that scroll once
+           you scroll down to it, so it stays visible without needing to
+           predict how tall anything else is. */
+        .tier-editor-box {
+            max-width: 680px;
+            max-height: 88vh;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .tier-editor-header {
+            padding: 0;
+        }
+
+        .tier-editor-board-scroll {
+            padding: 0;
+        }
+
+        /* The pool and the action bar are stacked INSIDE one shared sticky
+           wrapper (.tier-editor-sticky-footer below) rather than each being
+           independently sticky — two separately-positioned sticky elements
+           need their offsets to line up exactly or a gap opens between them
+           that the scrolling board shows through. One opaque wrapper can't
+           have that gap by construction. */
+        .tier-editor-sticky-footer {
+            position: sticky;
+            bottom: -20px;
+            margin: 14px -20px -20px;
+            background: #16162a;
+            box-shadow: 0 -8px 16px -8px rgba(0, 0, 0, 0.6);
+            z-index: 2;
+        }
+
+        .tier-editor-pool-fixed {
+            padding: 8px 20px 12px;
+            border-top: 3px solid #4169e1;
+        }
+
+        .tier-editor-pool-heading {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 800;
+            font-size: 0.85rem;
+            color: #6c9bff;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            padding: 10px 0 6px;
+            background: #16162a;
+        }
+
+        /* Smaller icons here specifically (not the board/detail view) so
+           the pool takes up less vertical room, leaving more of the modal
+           for the tier board above it. */
+        .tier-editor-pool-fixed .tier-pool {
+            height: 92px; /* ~2 compact rows — extra units scroll within this instead of adding a 3rd+ row */
+            overflow-y: auto;
+            gap: 6px;
+            padding: 6px;
+        }
+
+        .tier-editor-pool-fixed .tier-pool-item {
+            width: 40px;
+        }
+
+        .tier-editor-pool-fixed .tier-unit-icon {
+            width: 30px;
+            height: 30px;
+        }
+
+        .tier-editor-pool-fixed .tier-pool-item span {
+            max-width: 40px;
+            font-size: 0.52rem;
+        }
+
+        /* Stacked directly under the pool inside the same sticky wrapper —
+           so Post/Save is always on screen instead of something you have
+           to scroll down to discover. Visually bolder too, since it's now
+           the one button that's permanently visible. */
+        .tier-editor-actions {
+            padding: 10px 20px 20px;
+            border-top: 2px solid #2a2a4a;
+        }
+
+        .tier-editor-actions .btn-primary {
+            font-size: 1.05rem;
+            padding: 14px;
+            box-shadow: 0 2px 10px rgba(65, 105, 225, 0.5);
+        }
+
         /* ---- Lightbox for tapping a comment's photo ---- */
         .image-viewer-box {
             max-width: 560px;
@@ -1587,6 +1873,8 @@
                     Recruitment</button>
                 <button class="social-tab-btn" id="tabBtnFormation" onclick="switchSocialTab('formation')">Formation
                     Help</button>
+                <button class="social-tab-btn" id="tabBtnTierList" onclick="switchSocialTab('tierlist')">Tier
+                    List</button>
             </div>
 
             <!-- CLAN RECRUITMENT TAB -->
@@ -1677,6 +1965,43 @@
                             farming, or boss-fight formations for feedback — posts are visible for 30 days.</p>
 
                         <div class="clan-list-scroll" id="formationPostsList"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TIER LIST TAB -->
+            <div class="social-tab-panel" id="tabPanelTierList">
+                <div class="social-content-inner">
+                    <div class="clan-main">
+                        <div class="clan-toolbar">
+                            <select id="tierListTypeFilter" class="modal-field-input"
+                                style="max-width:200px; margin-bottom:0;" onchange="onTierListFilterChange()">
+                                <option value="">All types</option>
+                                <option value="hero">Heroes</option>
+                                <option value="troop">Troops</option>
+                                <option value="both">Heroes and Troops</option>
+                            </select>
+                            <select id="tierListSortOrder" class="modal-field-input"
+                                style="max-width:160px; margin-bottom:0;" onchange="onTierListFilterChange()">
+                                <option value="recent">Most Recent</option>
+                                <option value="top">Highest Votes</option>
+                            </select>
+                        </div>
+                        <div class="clan-toolbar" style="margin-top:-4px;">
+                            <div class="signin-prompt" id="tierListSigninPrompt" style="display:none;">
+                                <button class="btn-primary clan-post-btn-big" onclick="doSignIn()">Sign in with Google
+                                    to
+                                    post</button>
+                            </div>
+                            <button class="btn-primary clan-post-btn-big" id="openPostTierListModalBtn"
+                                onclick="openPostTierListModal()" style="display:none;" data-requires-not-banned>🏆
+                                Create Tier List</button>
+                        </div>
+
+                        <p class="compose-hint" style="margin:-6px 0 12px; text-align:center;">Rank heroes and troops
+                            S through F, and get feedback from the community — tier lists never expire.</p>
+
+                        <div class="clan-list-scroll" id="tierListPostsList"></div>
                     </div>
                 </div>
             </div>
@@ -1927,6 +2252,118 @@
             </div>
         </div>
     </div>
+
+    <!-- Post/Edit Tier List modal -->
+    <div class="modal-overlay" id="postTierListModalOverlay">
+        <div class="modal-box tier-editor-box">
+            <div class="tier-editor-header">
+                <div class="modal-title" id="postTierListModalTitle">Create Tier List</div>
+
+                <label class="modal-field-label">Title</label>
+                <input type="text" id="postTierListTitleInput" class="modal-field-input" maxlength="100"
+                    placeholder="e.g. Best Arena Heroes">
+
+                <label class="modal-field-label">Type</label>
+                <select id="postTierListUnitType" class="modal-field-input" style="margin-bottom:10px;"
+                    onchange="onTierListEditorTypeChange()">
+                    <option value="hero">Heroes</option>
+                    <option value="troop">Troops</option>
+                    <option value="both" selected>Heroes and Troops</option>
+                </select>
+
+                <label class="modal-field-label">Description (optional)</label>
+                <textarea id="postTierListDescriptionInput" class="modal-field-input" maxlength="2000" rows="2"
+                    placeholder="Explain your reasoning, what this tier list is for, etc."></textarea>
+                <div class="compose-hint" id="postTierListDescCount" style="text-align:right; margin:-6px 0 10px;">0/2000</div>
+            </div>
+
+            <div class="tier-editor-pool-heading" style="background:transparent; padding-top:2px; justify-content:space-between;">
+                <span>📋 Your Tier List — scrolls up here</span>
+                <button type="button" class="delete-post-link" style="text-transform:none; letter-spacing:normal; font-weight:700;"
+                    onclick="clearTierBoardConfirm()">🗑️ Clear All</button>
+            </div>
+            <div class="tier-editor-board-scroll">
+                <div id="tierBoardEditorLoading" class="clan-empty" style="display:none;">Loading heroes and troops...</div>
+                <div class="tier-board" id="tierBoardEditor"></div>
+            </div>
+
+            <div class="tier-editor-sticky-footer">
+                <div class="tier-editor-pool-fixed">
+                    <div class="tier-pool-toolbar">
+                        <div class="tier-pool-type-btns" id="tierPoolTypeBtns"></div>
+                        <input type="text" id="tierPoolSearchInput" class="modal-field-input"
+                            placeholder="Search by name or rarity..." style="margin-bottom:0; flex:1; min-width:140px;"
+                            oninput="renderTierPool()">
+                    </div>
+                    <div class="tier-pool" id="tierPoolContainer"></div>
+                </div>
+
+                <div class="tier-editor-actions modal-actions" style="flex-direction:row;">
+                    <button class="modal-cancel" onclick="closePostTierListModal()" style="flex:1;">Cancel</button>
+                    <button class="btn-primary" id="submitPostTierListBtn" onclick="submitTierList()" style="flex:1;">Post</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tier List detail modal -->
+    <div class="modal-overlay" id="tierListDetailModalOverlay">
+        <div class="modal-box postclan-box" style="max-width:680px; text-align:left;">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px;">
+                <div id="tierListDetailTitle" style="font-weight:800; font-size:1.25rem;"></div>
+                <span id="tierListDetailTypeBadge" class="clan-card-server-badge badge-both"></span>
+            </div>
+
+            <div class="tier-board" id="tierBoardDetail"></div>
+
+            <div id="tierListDetailDescription" class="clan-post-body" style="margin-top:10px;"></div>
+
+            <div class="tier-vote-row">
+                <button type="button" class="tier-vote-btn" id="tierListUpvoteBtn" onclick="voteOnCurrentTierList(1)">▲
+                    <span id="tierListUpvoteCount">0</span></button>
+                <span class="tier-vote-score" id="tierListNetScore">0</span>
+                <button type="button" class="tier-vote-btn" id="tierListDownvoteBtn" onclick="voteOnCurrentTierList(-1)">▼
+                    <span id="tierListDownvoteCount">0</span></button>
+                <button type="button" class="fc-action-btn" style="margin-left:auto; position:static;"
+                    onclick="downloadCurrentTierListImage()" title="Download as image">⬇</button>
+            </div>
+
+            <div class="clan-post-head" id="tierListDetailPosterRow" style="margin-top:12px; cursor:pointer;">
+                <img class="clan-post-avatar" id="tierListDetailAvatar" onerror="this.style.visibility='hidden'">
+                <span class="clan-post-name" id="tierListDetailPosterName"></span>
+                <span class="clan-post-time" id="tierListDetailTime"></span>
+            </div>
+            <div class="clan-post-footer">
+                <button class="edit-post-link" id="tierListDetailEditBtn" style="display:none;">✏️ Edit</button>
+                <button class="delete-post-link" id="tierListDetailDeleteBtn" style="display:none;">🗑️ Delete</button>
+                <button class="report-link" id="tierListDetailReportBtn" style="display:none;">🚩 Report</button>
+            </div>
+
+            <div class="formation-comments-section">
+                <div class="friends-section-title" style="margin-top:18px;">Comments</div>
+                <div id="tierListCommentsList"></div>
+
+                <div id="tierListCommentEditingNote" class="compose-hint" style="display:none; margin-top:10px;"></div>
+                <div id="tierListCommentImagePreviews" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;"></div>
+                <div class="formation-comment-input-row">
+                    <input type="file" id="tierListCommentImageInput" accept="image/*" multiple style="display:none;">
+                    <button type="button" class="formation-attach-btn" onclick="triggerTierListCommentImagePick()"
+                        title="Attach up to 3 photos">+</button>
+                    <input type="text" id="tierListCommentTextInput" class="modal-field-input"
+                        placeholder="Give feedback on this tier list..." style="margin-bottom:0; flex:1;"
+                        onkeydown="if(event.key==='Enter') submitTierListComment();">
+                    <button class="btn-primary" id="tierListCommentSendBtn" onclick="submitTierListComment()" style="flex-shrink:0;">Send</button>
+                </div>
+            </div>
+
+            <div class="modal-actions" style="margin-top:14px;">
+                <button class="modal-cancel" onclick="closeTierListDetailModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden canvas used to render a tier list to a downloadable PNG -->
+    <canvas id="tierListExportCanvas" style="display:none;"></canvas>
 
     <!-- Post agreement modal: must Agree before the post form opens -->
     <div class="modal-overlay" id="postAgreeModalOverlay">
@@ -2215,11 +2652,14 @@ function buildCountrySelectOptions(selectId, includeAny) {
         window.switchSocialTab = function (tab) {
             document.getElementById("tabBtnClan").classList.toggle("active", tab === "clan");
             document.getElementById("tabBtnFormation").classList.toggle("active", tab === "formation");
+            document.getElementById("tabBtnTierList").classList.toggle("active", tab === "tierlist");
             document.getElementById("tabBtnFriends").classList.toggle("active", tab === "friends");
             document.getElementById("tabPanelClan").classList.toggle("active", tab === "clan");
             document.getElementById("tabPanelFormation").classList.toggle("active", tab === "formation");
+            document.getElementById("tabPanelTierList").classList.toggle("active", tab === "tierlist");
             document.getElementById("tabPanelFriends").classList.toggle("active", tab === "friends");
             if (tab === "friends") loadSuggestedFriends();
+            if (tab === "tierlist") ensureUnitDataLoaded();
         };
         function avatarColorFor(name) {
             const colors = ["#4169e1", "#aa7a1e", "#2e7d32", "#c62828", "#6c63ff", "#00897b", "#d81b60", "#ef6c00"];
@@ -2366,17 +2806,23 @@ function formatDmDateSeparator(ts) {
             const postBtn = document.getElementById("openPostModalBtn");
             const formationSigninPrompt = document.getElementById("formationSigninPrompt");
             const formationPostBtn = document.getElementById("openPostFormationModalBtn");
+            const tierListSigninPrompt = document.getElementById("tierListSigninPrompt");
+            const tierListPostBtn = document.getElementById("openPostTierListModalBtn");
             if (!user) {
                 signinPrompt.style.display = "block";
                 postBtn.style.display = "none";
                 formationSigninPrompt.style.display = "block";
                 formationPostBtn.style.display = "none";
+                tierListSigninPrompt.style.display = "block";
+                tierListPostBtn.style.display = "none";
                 return;
             }
             signinPrompt.style.display = "none";
             postBtn.style.display = "inline-block";
             formationSigninPrompt.style.display = "none";
             formationPostBtn.style.display = "inline-block";
+            tierListSigninPrompt.style.display = "none";
+            tierListPostBtn.style.display = "inline-block";
             myProfile = await AppState.getProfile();
         }
 
@@ -3686,6 +4132,897 @@ window.removeClanIconPreview = function () {
             }
         };
 
+        /* ================= TIER LISTS ================= */
+
+        const TIER_META = [
+            { key: "S", label: "Broken", color: "#ff4d4d" },
+            { key: "A", label: "Excellent", color: "#ff9f43" },
+            { key: "B", label: "Good", color: "#ffd76b" },
+            { key: "C", label: "Decent", color: "#7bd88f" },
+            { key: "D", label: "Mediocre", color: "#6c9bff" },
+            { key: "E", label: "Poor", color: "#a389d4" },
+            { key: "F", label: "Bad", color: "#9a9ab0" }
+        ];
+
+        let allTierUnits = null; // [{key,type,displayName,rarity,attackType,icon}] once loaded
+        let unitDataLoadingPromise = null;
+        let allTierListPosts = [];
+        let editingTierListId = null;
+        let tierBoardState = null; // {S:[],A:[],...} while the create/edit modal is open
+        let tierPoolTypeFilter = "";
+        let unsubTierLists = null, unsubTierListComments = null;
+        let currentTierListDetailId = null;
+        let tierListCommentImageFiles = [];
+        let tierListCommentExistingImages = [];
+        let editingTierListCommentId = null;
+        let replyingToTierListCommentId = null;
+        let tierListCommentsById = {};
+        let tierListPostSubmitting = false;
+        let tierListCommentSubmitting = false;
+        let tierListVoteInFlight = false;
+        const TIER_LIST_FILTER_KEY = "kih_tierlist_filters";
+
+        function emptyTierBoard() {
+            const board = {};
+            AppState.TIER_KEYS.forEach(k => board[k] = []);
+            return board;
+        }
+
+        // Fetches hero.json/troops.json (+ the localization two-hop lookup
+        // troopsandheroes.html already uses) once and caches the merged
+        // list — cheap and local, but no reason to do it more than once
+        // or for visitors who never open this tab.
+        async function ensureUnitDataLoaded() {
+            if (allTierUnits) return allTierUnits;
+            if (unitDataLoadingPromise) return unitDataLoadingPromise;
+            unitDataLoadingPromise = (async () => {
+                const [heroMeta, troopMeta, localization, en] = await Promise.all([
+                    fetch("hero.json").then(r => r.json()),
+                    fetch("troops.json").then(r => r.json()),
+                    fetch("localization.json").then(r => r.json()),
+                    fetch("en.json").then(r => r.json())
+                ]);
+                function resolveName(meta, key) {
+                    const nameKey = meta.name;
+                    const locEntry = localization[nameKey];
+                    return locEntry ? (en[locEntry.value] || nameKey) : (nameKey || key);
+                }
+                function buildList(meta, type) {
+                    const list = [];
+                    for (const key in meta) {
+                        const m = meta[key];
+                        if (m.isDisplayed === false) continue;
+                        list.push({
+                            key,
+                            type,
+                            displayName: resolveName(m, key),
+                            rarity: (m.rarityId || "common").toLowerCase(),
+                            attackType: m.attackType || "",
+                            icon: "images/" + key.toUpperCase() + ".jpg"
+                        });
+                    }
+                    return list;
+                }
+                const units = [...buildList(heroMeta, "hero"), ...buildList(troopMeta, "troop")];
+                units.sort((a, b) => a.displayName.localeCompare(b.displayName));
+                allTierUnits = units;
+                return units;
+            })();
+            const result = await unitDataLoadingPromise;
+            // Unit data may resolve after the feed already rendered with
+            // placeholder icons — refresh it now that real icons/names exist.
+            applyTierListFiltersAndRender();
+            return result;
+        }
+
+        function tierUnitByKey(key) {
+            return (allTierUnits || []).find(u => u.key === key);
+        }
+
+        function tierUnitIconHtml(key) {
+            const u = tierUnitByKey(key);
+            const icon = u ? u.icon : "images/KIH.jpg"; // placeholder until unit data resolves
+            const title = u ? u.displayName : key;
+            return `<img class="tier-unit-icon" src="${escapeHtml(icon)}" data-unit-key="${escapeHtml(key)}" title="${escapeHtml(title)}" onerror="this.style.opacity='0.15'">`;
+        }
+
+        /* ---- Tier board editor: drag & drop (Pointer Events — one code
+           path for mouse, touch, and pen) ---- */
+
+        function assignUnitToTier(key, targetTier) {
+            AppState.TIER_KEYS.forEach(k => {
+                const idx = tierBoardState[k].indexOf(key);
+                if (idx !== -1) tierBoardState[k].splice(idx, 1);
+            });
+            if (targetTier && AppState.TIER_KEYS.includes(targetTier)) {
+                tierBoardState[targetTier].push(key);
+            }
+            renderTierBoardEditor();
+            renderTierPool();
+        }
+
+        window.clearTierBoardConfirm = async function () {
+            if (!tierBoardState) return;
+            const totalPlaced = AppState.TIER_KEYS.reduce((sum, k) => sum + tierBoardState[k].length, 0);
+            if (!totalPlaced) return;
+            const ok = await showConfirmModal("Clear this tier list?", "This removes every hero and troop from every tier — they'll go back to the pool below. This can't be undone.");
+            if (!ok) return;
+            tierBoardState = emptyTierBoard();
+            renderTierBoardEditor();
+            renderTierPool();
+        };
+
+        function onTierUnitPointerDown(e) {
+            e.preventDefault();
+            const key = e.currentTarget.dataset.unitKey;
+            if (!key) return;
+            const ghost = e.currentTarget.cloneNode(true);
+            ghost.className = "unit-drag-ghost";
+            ghost.style.position = "fixed";
+            ghost.style.left = (e.clientX - 22) + "px";
+            ghost.style.top = (e.clientY - 22) + "px";
+            ghost.style.zIndex = "9999";
+            ghost.style.pointerEvents = "none";
+            document.body.appendChild(ghost);
+
+            function onMove(ev) {
+                ghost.style.left = (ev.clientX - 22) + "px";
+                ghost.style.top = (ev.clientY - 22) + "px";
+                document.querySelectorAll(".tier-row-dropzone.drag-over, .tier-pool.drag-over").forEach(z => z.classList.remove("drag-over"));
+                const target = document.elementFromPoint(ev.clientX, ev.clientY);
+                const zone = target && (target.closest(".tier-row-dropzone") || target.closest(".tier-pool"));
+                if (zone) zone.classList.add("drag-over");
+            }
+            function onUp(ev) {
+                window.removeEventListener("pointermove", onMove);
+                window.removeEventListener("pointerup", onUp);
+                document.querySelectorAll(".tier-row-dropzone.drag-over, .tier-pool.drag-over").forEach(z => z.classList.remove("drag-over"));
+                ghost.remove();
+                const target = document.elementFromPoint(ev.clientX, ev.clientY);
+                const tierZone = target && target.closest(".tier-row-dropzone");
+                const poolZone = target && target.closest(".tier-pool");
+                if (tierZone && tierZone.dataset.tier) {
+                    assignUnitToTier(key, tierZone.dataset.tier);
+                } else if (poolZone) {
+                    assignUnitToTier(key, null);
+                }
+            }
+            window.addEventListener("pointermove", onMove);
+            window.addEventListener("pointerup", onUp);
+        }
+
+        function wireTierUnitDrag(root) {
+            root.querySelectorAll(".tier-unit-icon").forEach(el => {
+                el.addEventListener("pointerdown", onTierUnitPointerDown);
+            });
+        }
+
+        function renderTierBoardEditor() {
+            const container = document.getElementById("tierBoardEditor");
+            container.innerHTML = TIER_META.map(t => `
+                <div class="tier-row">
+                    <div class="tier-row-label" style="background:${t.color};">${t.key}<small>${t.label}</small></div>
+                    <div class="tier-row-dropzone" data-tier="${t.key}">
+                        ${(tierBoardState[t.key] || []).map(key => tierUnitIconHtml(key)).join("")}
+                    </div>
+                </div>
+            `).join("");
+            wireTierUnitDrag(container);
+        }
+
+        function tierPoolTypeBtnDefs() {
+            return [
+                { id: "", label: "Heroes and Troops" },
+                { id: "hero", label: "Heroes" },
+                { id: "troop", label: "Troops" },
+                { id: "other", label: "Others" }
+            ];
+        }
+
+        function renderTierPoolTypeButtons() {
+            const wrap = document.getElementById("tierPoolTypeBtns");
+            wrap.innerHTML = tierPoolTypeBtnDefs().map(b => `
+                <button type="button" class="tier-pool-type-btn${tierPoolTypeFilter === b.id ? " active" : ""}"
+                    onclick="setTierPoolTypeFilter('${b.id}')">${b.label}</button>
+            `).join("");
+        }
+
+        window.setTierPoolTypeFilter = function (id) {
+            tierPoolTypeFilter = id;
+            renderTierPoolTypeButtons();
+            renderTierPool();
+        };
+
+        window.onTierListEditorTypeChange = function () {
+            const val = document.getElementById("postTierListUnitType").value;
+            tierPoolTypeFilter = val === "both" ? "" : val;
+            renderTierPoolTypeButtons();
+            renderTierPool();
+        };
+
+        function renderTierPool() {
+            const container = document.getElementById("tierPoolContainer");
+            if (!allTierUnits) { container.innerHTML = ""; return; }
+            const placed = new Set();
+            AppState.TIER_KEYS.forEach(k => tierBoardState[k].forEach(key => placed.add(key)));
+
+            const search = (document.getElementById("tierPoolSearchInput").value || "").trim().toLowerCase();
+
+            let pool;
+            if (tierPoolTypeFilter === "other") {
+                pool = []; // heroes/troops are the only unit types this site has data for right now
+            } else {
+                pool = allTierUnits.filter(u => {
+                    if (placed.has(u.key)) return false;
+                    if (tierPoolTypeFilter === "hero" && u.type !== "hero") return false;
+                    if (tierPoolTypeFilter === "troop" && u.type !== "troop") return false;
+                    if (search) {
+                        const haystack = `${u.displayName} ${u.rarity} ${u.attackType}`.toLowerCase();
+                        if (!haystack.includes(search)) return false;
+                    }
+                    return true;
+                });
+            }
+
+            if (!pool.length) {
+                container.innerHTML = `<div class="compose-hint" style="padding:10px;">${tierPoolTypeFilter === "other" ? "No other unit types yet — just heroes and troops for now." : "No units match your filter."}</div>`;
+                return;
+            }
+
+            container.innerHTML = pool.map(u => `
+                <div class="tier-pool-item">
+                    <img class="tier-unit-icon" src="${escapeHtml(u.icon)}" data-unit-key="${escapeHtml(u.key)}" title="${escapeHtml(u.displayName)}" onerror="this.style.opacity='0.15'">
+                    <span>${escapeHtml(u.displayName)}</span>
+                </div>
+            `).join("");
+            wireTierUnitDrag(container);
+        }
+
+        /* ---- Create / Edit modal ---- */
+
+        window.openPostTierListModal = async function () {
+            const user = AppState.getCurrentUser();
+            if (!user) { showInfoModal("Sign in required", "Sign in with Google first."); return; }
+            const profile = await AppState.getProfile();
+            if (AppState.isBannedNow(profile)) {
+                AppState.showRestrictedNotice(profile.banReason, profile.banUntil);
+                return;
+            }
+            if (!profile.name) { showInfoModal("Set your name", "Set an in-game name in your profile before posting."); return; }
+
+            editingTierListId = null;
+            tierBoardState = emptyTierBoard();
+            document.getElementById("postTierListModalTitle").textContent = "Create Tier List";
+            document.getElementById("postTierListTitleInput").value = "";
+            document.getElementById("postTierListUnitType").value = "both";
+            document.getElementById("postTierListDescriptionInput").value = "";
+            document.getElementById("postTierListDescCount").textContent = "0/2000";
+            document.getElementById("submitPostTierListBtn").disabled = false;
+            document.getElementById("submitPostTierListBtn").textContent = "Post";
+            tierPoolTypeFilter = "";
+            document.getElementById("tierPoolSearchInput").value = "";
+
+            document.getElementById("postTierListModalOverlay").classList.add("open");
+            document.body.style.overflow = "hidden";
+            document.documentElement.style.overflow = "hidden";
+
+            document.getElementById("tierBoardEditorLoading").style.display = allTierUnits ? "none" : "block";
+            await ensureUnitDataLoaded();
+            document.getElementById("tierBoardEditorLoading").style.display = "none";
+            renderTierBoardEditor();
+            renderTierPoolTypeButtons();
+            renderTierPool();
+        };
+
+        window.openEditTierListModal = async function (tierListId) {
+            const t = allTierListPosts.find(x => x.id === tierListId);
+            if (!t) return;
+            const profile = await AppState.getProfile();
+            if (AppState.isBannedNow(profile)) {
+                AppState.showRestrictedNotice(profile.banReason, profile.banUntil);
+                return;
+            }
+
+            editingTierListId = tierListId;
+            tierBoardState = emptyTierBoard();
+            AppState.TIER_KEYS.forEach(k => {
+                tierBoardState[k] = Array.isArray(t.tiers && t.tiers[k]) ? [...t.tiers[k]] : [];
+            });
+            document.getElementById("postTierListModalTitle").textContent = "Edit Tier List";
+            document.getElementById("postTierListTitleInput").value = t.title || "";
+            document.getElementById("postTierListUnitType").value = t.unitType || "both";
+            document.getElementById("postTierListDescriptionInput").value = t.description || "";
+            document.getElementById("postTierListDescCount").textContent = `${(t.description || "").length}/2000`;
+            document.getElementById("submitPostTierListBtn").disabled = false;
+            document.getElementById("submitPostTierListBtn").textContent = "Save Changes";
+            tierPoolTypeFilter = "";
+            document.getElementById("tierPoolSearchInput").value = "";
+
+            document.getElementById("postTierListModalOverlay").classList.add("open");
+            document.body.style.overflow = "hidden";
+            document.documentElement.style.overflow = "hidden";
+
+            document.getElementById("tierBoardEditorLoading").style.display = allTierUnits ? "none" : "block";
+            await ensureUnitDataLoaded();
+            document.getElementById("tierBoardEditorLoading").style.display = "none";
+            renderTierBoardEditor();
+            renderTierPoolTypeButtons();
+            renderTierPool();
+        };
+
+        window.closePostTierListModal = function () {
+            document.getElementById("postTierListModalOverlay").classList.remove("open");
+            document.body.style.overflow = "";
+            document.documentElement.style.overflow = "";
+            editingTierListId = null;
+            tierBoardState = null;
+        };
+
+        const postTierListDescInput = document.getElementById("postTierListDescriptionInput");
+        postTierListDescInput.addEventListener("input", () => {
+            document.getElementById("postTierListDescCount").textContent = `${postTierListDescInput.value.length}/2000`;
+        });
+
+        window.submitTierList = async function () {
+            if (tierListPostSubmitting) return;
+            const title = document.getElementById("postTierListTitleInput").value.trim();
+            const unitType = document.getElementById("postTierListUnitType").value;
+            const description = document.getElementById("postTierListDescriptionInput").value;
+            const isEditing = !!editingTierListId;
+
+            if (!title) { showInfoModal("Missing title", "Give your tier list a title."); return; }
+            const totalPlaced = AppState.TIER_KEYS.reduce((sum, k) => sum + tierBoardState[k].length, 0);
+            if (!totalPlaced) { showInfoModal("Empty tier list", "Place at least one hero or troop in a tier."); return; }
+
+            tierListPostSubmitting = true;
+            const submitBtn = document.getElementById("submitPostTierListBtn");
+            submitBtn.disabled = true;
+            submitBtn.textContent = isEditing ? "Saving..." : "Posting...";
+            try {
+                if (isEditing) {
+                    await AppState.updateTierList(editingTierListId, { title, unitType, description, tiers: tierBoardState });
+                    showToast("Tier list updated.");
+                } else {
+                    await AppState.postTierList({ title, unitType, description, tiers: tierBoardState });
+                    showToast("Tier list posted!");
+                }
+                closePostTierListModal();
+            } catch (e) {
+                if (e.message !== "__RESTRICTED__") showInfoModal("Couldn't post", e.message);
+            }
+            tierListPostSubmitting = false;
+            submitBtn.disabled = false;
+            submitBtn.textContent = isEditing ? "Save Changes" : "Post";
+        };
+
+        /* ---- Feed + filters ---- */
+
+        function getTierListFilters() {
+            try { return JSON.parse(localStorage.getItem(TIER_LIST_FILTER_KEY) || "{}"); }
+            catch (e) { return {}; }
+        }
+        function saveTierListFilters(filters) {
+            localStorage.setItem(TIER_LIST_FILTER_KEY, JSON.stringify(filters));
+        }
+        function loadTierListFiltersIntoUI() {
+            const filters = getTierListFilters();
+            document.getElementById("tierListTypeFilter").value = filters.unitType || "";
+            document.getElementById("tierListSortOrder").value = filters.sort || "recent";
+        }
+        window.onTierListFilterChange = function () {
+            saveTierListFilters({
+                unitType: document.getElementById("tierListTypeFilter").value,
+                sort: document.getElementById("tierListSortOrder").value
+            });
+            applyTierListFiltersAndRender();
+        };
+
+        function tierListTypeLabel(type) {
+            if (type === "hero") return "Heroes";
+            if (type === "troop") return "Troops";
+            return "Heroes and Troops";
+        }
+
+        function renderTierListPosts(posts) {
+            allTierListPosts = posts;
+            applyTierListFiltersAndRender();
+            if (currentTierListDetailId) {
+                const t = allTierListPosts.find(x => x.id === currentTierListDetailId);
+                if (t) renderTierListDetailStatic(t);
+            }
+        }
+
+        // Compact read-only tier rows for a feed card — caps each row to a
+        // handful of icons (plus a "+N" note) so a packed list doesn't blow
+        // out the card's height.
+        function tierBoardPreviewHtml(tiers, maxPerRow) {
+            maxPerRow = maxPerRow || 8;
+            return TIER_META.map(meta => {
+                const keys = (tiers && tiers[meta.key]) || [];
+                if (!keys.length) return "";
+                const shown = keys.slice(0, maxPerRow);
+                const extra = keys.length - shown.length;
+                return `
+                <div class="tier-row">
+                    <div class="tier-row-label" style="background:${meta.color};">${meta.key}<small>${meta.label}</small></div>
+                    <div class="tier-row-dropzone">
+                        ${shown.map(k => tierUnitIconHtml(k)).join("")}
+                        ${extra > 0 ? `<span class="compose-hint" style="align-self:center;">+${extra} more</span>` : ""}
+                    </div>
+                </div>`;
+            }).join("");
+        }
+
+        function applyTierListFiltersAndRender() {
+            const filters = getTierListFilters();
+            let filtered = allTierListPosts.filter(t => {
+                if (filters.unitType && t.unitType !== filters.unitType) return false;
+                return true;
+            });
+            const sort = filters.sort || "recent";
+            filtered = [...filtered].sort((a, b) => {
+                if (sort === "top") {
+                    const scoreA = (a.upvotes || 0) - (a.downvotes || 0);
+                    const scoreB = (b.upvotes || 0) - (b.downvotes || 0);
+                    if (scoreB !== scoreA) return scoreB - scoreA;
+                }
+                return (b.createdAt || 0) - (a.createdAt || 0);
+            });
+
+            const list = document.getElementById("tierListPostsList");
+            if (!filtered.length) {
+                list.innerHTML = '<div class="clan-empty">📭 No tier lists match your filters.</div>';
+                return;
+            }
+            const myUid = AppState.getCurrentUser()?.uid;
+            list.innerHTML = filtered.map(t => {
+                const isMine = t.uid === myUid;
+                const score = (t.upvotes || 0) - (t.downvotes || 0);
+                const nameEscaped = escapeHtml(t.name).replace(/'/g, "\\'");
+                const footer = isMine
+                    ? `<button class="edit-post-link" onclick="event.stopPropagation(); openEditTierListModal('${t.id}')">✏️ Edit</button>
+                       <button class="delete-post-link" onclick="event.stopPropagation(); deleteTierListConfirm('${t.id}')">🗑️ Delete</button>`
+                    : `<button class="report-link" onclick="event.stopPropagation(); openReportModal('post', '${t.uid}', '${nameEscaped}', '${t.id}', ${escapeHtml(JSON.stringify(t.description || t.title || ""))})">🚩 Report</button>`;
+                return `
+                <div class="clan-post${isMine ? " my-post" : ""}" onclick="openTierListDetailModal('${t.id}')">
+                    <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap;">
+                        <span style="font-weight:800; font-size:1.1rem;">${escapeHtml(t.title || "Untitled")}</span>
+                        <span class="clan-card-server-badge badge-both">${escapeHtml(tierListTypeLabel(t.unitType))}</span>
+                    </div>
+                    <div class="tier-board" style="margin-top:10px; pointer-events:none;">
+                        ${tierBoardPreviewHtml(t.tiers)}
+                    </div>
+                    <div class="compose-hint" style="margin-top:8px;">
+                        ${score >= 0 ? "▲" : "▼"} ${score} net votes${(t.commentCount || 0) > 0 ? ` &middot; 💬 ${t.commentCount} comment${t.commentCount === 1 ? "" : "s"}` : ""}
+                    </div>
+                    <div class="clan-post-head" style="margin-top:12px; padding-top:10px; border-top:1px solid #2a2a4a; cursor:pointer;" onclick="event.stopPropagation(); onPosterClick('${t.uid}', '${nameEscaped}')">
+                        <img class="clan-post-avatar" src="${escapeHtml(t.avatar)}" onerror="this.style.visibility='hidden'">
+                        <span class="clan-post-name">${escapeHtml(t.name)}${isMine ? '<span class="my-post-badge">Your Post</span>' : ""}</span>
+                        <span class="clan-post-time">${timeAgo(t.createdAt)}</span>
+                    </div>
+                    <div class="clan-post-footer">${footer}</div>
+                </div>`;
+            }).join("");
+        }
+
+        window.deleteTierListConfirm = async function (tierListId) {
+            const ok = await showConfirmModal("Delete this tier list?", "This will permanently delete your tier list and its comments.");
+            if (!ok) return;
+            try {
+                await AppState.deleteTierList(tierListId);
+                if (currentTierListDetailId === tierListId) closeTierListDetailModal();
+            } catch (e) {
+                showInfoModal("Couldn't delete", e.message);
+            }
+        };
+
+        /* ---- Detail modal ---- */
+
+        function renderTierBoardReadOnly(containerId, tiers) {
+            document.getElementById(containerId).innerHTML = TIER_META.map(meta => {
+                const keys = (tiers && tiers[meta.key]) || [];
+                return `
+                <div class="tier-row">
+                    <div class="tier-row-label" style="background:${meta.color};">${meta.key}<small>${meta.label}</small></div>
+                    <div class="tier-row-dropzone">
+                        ${keys.length ? keys.map(k => tierUnitIconHtml(k)).join("") : '<span class="compose-hint" style="align-self:center;">Empty</span>'}
+                    </div>
+                </div>`;
+            }).join("");
+        }
+
+        function renderTierListDetailStatic(t) {
+            document.getElementById("tierListDetailTitle").textContent = t.title || "Untitled";
+            document.getElementById("tierListDetailTypeBadge").textContent = tierListTypeLabel(t.unitType);
+            document.getElementById("tierListDetailDescription").textContent = t.description || "";
+            renderTierBoardReadOnly("tierBoardDetail", t.tiers);
+
+            document.getElementById("tierListUpvoteCount").textContent = t.upvotes || 0;
+            document.getElementById("tierListDownvoteCount").textContent = t.downvotes || 0;
+            document.getElementById("tierListNetScore").textContent = (t.upvotes || 0) - (t.downvotes || 0);
+
+            document.getElementById("tierListDetailAvatar").src = t.avatar;
+            document.getElementById("tierListDetailPosterName").textContent = t.name;
+            document.getElementById("tierListDetailTime").textContent = timeAgo(t.createdAt);
+            document.getElementById("tierListDetailPosterRow").onclick = () => {
+                closeTierListDetailModal();
+                onPosterClick(t.uid, t.name);
+            };
+
+            const myUid = AppState.getCurrentUser()?.uid;
+            const editBtn = document.getElementById("tierListDetailEditBtn");
+            const deleteBtn = document.getElementById("tierListDetailDeleteBtn");
+            const reportBtn = document.getElementById("tierListDetailReportBtn");
+            if (t.uid === myUid) {
+                editBtn.style.display = "inline-block";
+                deleteBtn.style.display = "inline-block";
+                reportBtn.style.display = "none";
+                editBtn.onclick = () => { closeTierListDetailModal(); openEditTierListModal(t.id); };
+                deleteBtn.onclick = () => deleteTierListConfirm(t.id);
+            } else {
+                editBtn.style.display = "none";
+                deleteBtn.style.display = "none";
+                reportBtn.style.display = "inline-block";
+                reportBtn.onclick = () => {
+                    closeTierListDetailModal();
+                    openReportModal("post", t.uid, t.name, t.id, t.description || t.title || "");
+                };
+            }
+        }
+
+        function updateTierListVoteButtonsUI(myVote) {
+            document.getElementById("tierListUpvoteBtn").classList.toggle("active-up", myVote === 1);
+            document.getElementById("tierListDownvoteBtn").classList.toggle("active-down", myVote === -1);
+        }
+
+        window.openTierListDetailModal = async function (tierListId) {
+            const t = allTierListPosts.find(x => x.id === tierListId);
+            if (!t) return;
+            currentTierListDetailId = tierListId;
+            await ensureUnitDataLoaded();
+            renderTierListDetailStatic(t);
+            updateTierListVoteButtonsUI(0);
+            AppState.getMyTierListVote(tierListId).then(v => {
+                if (currentTierListDetailId === tierListId) updateTierListVoteButtonsUI(v);
+            });
+
+            document.getElementById("tierListCommentTextInput").value = "";
+            tierListCommentImageFiles = [];
+            tierListCommentExistingImages = [];
+            editingTierListCommentId = null;
+            replyingToTierListCommentId = null;
+            tierListCommentSubmitting = false;
+            document.getElementById("tierListCommentSendBtn").disabled = false;
+            document.getElementById("tierListCommentEditingNote").style.display = "none";
+            document.getElementById("tierListCommentSendBtn").textContent = "Send";
+            renderTierListCommentImagePreviews();
+            document.getElementById("tierListCommentsList").innerHTML = "";
+
+            if (unsubTierListComments) { unsubTierListComments(); unsubTierListComments = null; }
+            unsubTierListComments = AppState.listenToTierListComments(tierListId, renderTierListComments);
+
+            document.getElementById("tierListDetailModalOverlay").classList.add("open");
+            document.body.style.overflow = "hidden";
+            document.documentElement.style.overflow = "hidden";
+        };
+
+        window.closeTierListDetailModal = function () {
+            document.getElementById("tierListDetailModalOverlay").classList.remove("open");
+            document.body.style.overflow = "";
+            document.documentElement.style.overflow = "";
+            if (unsubTierListComments) { unsubTierListComments(); unsubTierListComments = null; }
+            currentTierListDetailId = null;
+        };
+
+        window.voteOnCurrentTierList = async function (direction) {
+            if (tierListVoteInFlight) return;
+            const user = AppState.getCurrentUser();
+            if (!user) { showInfoModal("Sign in required", "Sign in with Google first to vote."); return; }
+            if (!currentTierListDetailId) return;
+            tierListVoteInFlight = true;
+            try {
+                const newVote = await AppState.voteOnTierList(currentTierListDetailId, direction);
+                updateTierListVoteButtonsUI(newVote);
+            } catch (e) {
+                if (e.message !== "__RESTRICTED__") showInfoModal("Couldn't vote", e.message);
+            }
+            tierListVoteInFlight = false;
+        };
+
+        /* ---- Comments (same threaded/editable/multi-image pattern as
+           Formation Help's comments) ---- */
+
+        function buildTierListCommentThread(comments) {
+            const byId = {};
+            comments.forEach(c => { byId[c.id] = { ...c, children: [] }; });
+            const roots = [];
+            comments.forEach(c => {
+                const node = byId[c.id];
+                if (c.parentId && byId[c.parentId]) byId[c.parentId].children.push(node);
+                else roots.push(node);
+            });
+            const flat = [];
+            (function visit(nodes, depth) {
+                nodes.forEach(node => { flat.push({ node, depth }); visit(node.children, depth + 1); });
+            })(roots, 0);
+            return flat;
+        }
+
+        window.openImageViewerForTierListComment = function (commentId, index) {
+            const c = tierListCommentsById[commentId];
+            if (!c) return;
+            openImageViewer(c.imageUrls || [], index);
+        };
+
+        function renderTierListComments(comments) {
+            tierListCommentsById = {};
+            comments.forEach(c => { tierListCommentsById[c.id] = c; });
+
+            const list = document.getElementById("tierListCommentsList");
+            if (!comments.length) {
+                list.innerHTML = '<div class="compose-hint" style="padding:10px 0;">No comments yet — be the first to give feedback!</div>';
+                return;
+            }
+            const myUid = AppState.getCurrentUser()?.uid;
+            const thread = buildTierListCommentThread(comments);
+            list.innerHTML = thread.map(({ node: c, depth }) => {
+                const indent = Math.min(depth * 18, 72);
+                const nameEscaped = escapeHtml(c.name).replace(/'/g, "\\'");
+                return `
+                <div class="formation-comment-item" style="margin-left:${indent}px;">
+                    <img class="clan-post-avatar" src="${escapeHtml(c.avatar)}" onerror="this.style.visibility='hidden'"
+                        style="cursor:pointer;" onclick="closeTierListDetailModal(); onPosterClick('${c.uid}', '${nameEscaped}');">
+                    <div style="flex:1; min-width:0;">
+                        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                            <span class="clan-post-name" style="cursor:pointer;" onclick="closeTierListDetailModal(); onPosterClick('${c.uid}', '${nameEscaped}');">${escapeHtml(c.name)}</span>
+                            <span class="clan-post-time" style="margin-left:0;">${timeAgo(c.createdAt)}</span>
+                        </div>
+                        ${c.text ? `<div style="margin-top:4px; white-space:pre-wrap;">${escapeHtml(c.text)}</div>` : ""}
+                        ${(c.imageUrls && c.imageUrls.length) ? `<div class="formation-comment-images">${c.imageUrls.map((u, i) => `<img src="${escapeHtml(u)}" onerror="this.remove();" onclick="openImageViewerForTierListComment('${c.id}', ${i})">`).join("")}</div>` : ""}
+                        <div style="margin-top:4px;">
+                            <button class="edit-post-link" onclick="startReplyTierListComment('${c.id}', '${nameEscaped}')">↩ Reply</button>
+                            ${c.uid === myUid
+                                ? `<button class="edit-post-link" onclick="startEditTierListComment('${c.id}')">✏️ Edit</button>
+                                   <button class="delete-post-link" onclick="deleteTierListCommentConfirm('${c.id}')">🗑️ Delete</button>`
+                                : `<button class="report-link" onclick="openReportModal('post', '${c.uid}', '${nameEscaped}', '${c.id}', ${escapeHtml(JSON.stringify(c.text || ""))})">🚩 Report</button>`}
+                        </div>
+                    </div>
+                </div>`;
+            }).join("");
+        }
+
+        function renderTierListCommentImagePreviews() {
+            const wrap = document.getElementById("tierListCommentImagePreviews");
+            const items = [
+                ...tierListCommentExistingImages.map(img => img.url),
+                ...tierListCommentImageFiles.map(file => URL.createObjectURL(file))
+            ];
+            wrap.innerHTML = items.map((src, i) => `
+                <div style="position:relative; width:64px; height:64px;">
+                    <img src="${escapeHtml(src)}" style="width:100%; height:100%; object-fit:cover; border-radius:8px; background:#1a1a2e;">
+                    <button type="button" onclick="removeTierListCommentImageAt(${i})"
+                        style="position:absolute; top:-6px; right:-6px; width:20px; height:20px; border-radius:50%; background:#c62828; color:white; border:none; font-size:0.7rem; cursor:pointer;"
+                        title="Remove">✕</button>
+                </div>
+            `).join("");
+        }
+
+        window.removeTierListCommentImageAt = function (index) {
+            if (index < tierListCommentExistingImages.length) {
+                tierListCommentExistingImages.splice(index, 1);
+            } else {
+                tierListCommentImageFiles.splice(index - tierListCommentExistingImages.length, 1);
+            }
+            renderTierListCommentImagePreviews();
+        };
+
+        window.triggerTierListCommentImagePick = function () {
+            if (tierListCommentExistingImages.length + tierListCommentImageFiles.length >= 3) {
+                showToast("You can attach up to 3 images per reply.");
+                return;
+            }
+            document.getElementById("tierListCommentImageInput").click();
+        };
+
+        document.getElementById("tierListCommentImageInput").addEventListener("change", (e) => {
+            const newFiles = [...e.target.files];
+            if (!newFiles.length) return;
+            const remainingSlots = 3 - tierListCommentExistingImages.length - tierListCommentImageFiles.length;
+            if (remainingSlots <= 0) {
+                showToast("You can attach up to 3 images per reply.");
+                e.target.value = "";
+                return;
+            }
+            if (newFiles.length > remainingSlots) showToast("You can attach up to 3 images per reply.");
+            tierListCommentImageFiles = [...tierListCommentImageFiles, ...newFiles.slice(0, remainingSlots)];
+            e.target.value = "";
+            renderTierListCommentImagePreviews();
+        });
+
+        window.startEditTierListComment = function (commentId) {
+            const c = tierListCommentsById[commentId];
+            if (!c) return;
+            replyingToTierListCommentId = null;
+            editingTierListCommentId = commentId;
+            tierListCommentImageFiles = [];
+            tierListCommentExistingImages = (c.imageUrls || []).map((url, i) => ({ url, path: (c.imagePaths || [])[i] || null }));
+            document.getElementById("tierListCommentTextInput").value = c.text || "";
+            renderTierListCommentImagePreviews();
+            const note = document.getElementById("tierListCommentEditingNote");
+            note.innerHTML = 'Editing your comment — <button type="button" class="field-clear-btn" onclick="cancelEditTierListComment()">Cancel</button>';
+            note.style.display = "block";
+            document.getElementById("tierListCommentSendBtn").textContent = "Save";
+            document.getElementById("tierListCommentTextInput").focus();
+        };
+
+        window.cancelEditTierListComment = function () {
+            editingTierListCommentId = null;
+            tierListCommentExistingImages = [];
+            tierListCommentImageFiles = [];
+            document.getElementById("tierListCommentTextInput").value = "";
+            renderTierListCommentImagePreviews();
+            document.getElementById("tierListCommentEditingNote").style.display = "none";
+            document.getElementById("tierListCommentSendBtn").textContent = "Send";
+        };
+
+        window.startReplyTierListComment = function (commentId, name) {
+            editingTierListCommentId = null;
+            tierListCommentExistingImages = [];
+            tierListCommentImageFiles = [];
+            replyingToTierListCommentId = commentId;
+            document.getElementById("tierListCommentTextInput").value = "";
+            renderTierListCommentImagePreviews();
+            const note = document.getElementById("tierListCommentEditingNote");
+            note.innerHTML = `Replying to <strong>${escapeHtml(name)}</strong> — <button type="button" class="field-clear-btn" onclick="cancelReplyTierListComment()">Cancel</button>`;
+            note.style.display = "block";
+            document.getElementById("tierListCommentSendBtn").textContent = "Reply";
+            document.getElementById("tierListCommentTextInput").focus();
+        };
+
+        window.cancelReplyTierListComment = function () {
+            replyingToTierListCommentId = null;
+            document.getElementById("tierListCommentEditingNote").style.display = "none";
+            document.getElementById("tierListCommentSendBtn").textContent = "Send";
+        };
+
+        window.submitTierListComment = async function () {
+            if (tierListCommentSubmitting) return;
+            const user = AppState.getCurrentUser();
+            if (!user) { showInfoModal("Sign in required", "Sign in with Google first to comment."); return; }
+            if (!currentTierListDetailId) return;
+
+            const isEditing = !!editingTierListCommentId;
+            const textInput = document.getElementById("tierListCommentTextInput");
+            const text = textInput.value.trim();
+            if (!text && !tierListCommentImageFiles.length && !(isEditing && tierListCommentExistingImages.length)) return;
+
+            tierListCommentSubmitting = true;
+            const sendBtn = document.getElementById("tierListCommentSendBtn");
+            sendBtn.disabled = true;
+            const oldComment = isEditing ? tierListCommentsById[editingTierListCommentId] : null;
+            const oldImagePaths = oldComment ? (oldComment.imagePaths || []) : [];
+
+            try {
+                const newImageUrls = [];
+                const newImagePaths = [];
+                for (const file of tierListCommentImageFiles) {
+                    const result = await AppState.uploadFormationImage(file);
+                    newImageUrls.push(result.imageUrl);
+                    newImagePaths.push(result.imagePath);
+                }
+
+                if (isEditing) {
+                    const imageUrls = [...tierListCommentExistingImages.map(img => img.url), ...newImageUrls];
+                    const imagePaths = [...tierListCommentExistingImages.map(img => img.path), ...newImagePaths];
+                    await AppState.updateTierListComment(currentTierListDetailId, editingTierListCommentId, { text, imageUrls, imagePaths });
+                    const keptPaths = new Set(imagePaths);
+                    oldImagePaths.filter(p => p && !keptPaths.has(p)).forEach(p => AppState.deleteFormationImageSafe(p));
+                    cancelEditTierListComment();
+                } else {
+                    await AppState.addTierListComment(currentTierListDetailId, {
+                        text, imageUrls: newImageUrls, imagePaths: newImagePaths,
+                        parentId: replyingToTierListCommentId
+                    });
+                    textInput.value = "";
+                    tierListCommentImageFiles = [];
+                    renderTierListCommentImagePreviews();
+                    if (replyingToTierListCommentId) cancelReplyTierListComment();
+                }
+            } catch (e) {
+                if (e.message !== "__RESTRICTED__") showInfoModal("Couldn't comment", e.message);
+            }
+            tierListCommentSubmitting = false;
+            sendBtn.disabled = false;
+        };
+
+        window.deleteTierListCommentConfirm = async function (commentId) {
+            if (!currentTierListDetailId) return;
+            const ok = await showConfirmModal("Delete this comment?", "This can't be undone.");
+            if (!ok) return;
+            try {
+                await AppState.deleteTierListComment(currentTierListDetailId, commentId);
+                if (editingTierListCommentId === commentId) cancelEditTierListComment();
+                if (replyingToTierListCommentId === commentId) cancelReplyTierListComment();
+            } catch (e) {
+                showInfoModal("Couldn't delete", e.message);
+            }
+        };
+
+        /* ---- Download as image — icons are same-origin local files, so
+           unlike formation photos there's no CORS concern drawing them to
+           a canvas. ---- */
+
+        window.downloadCurrentTierListImage = async function () {
+            if (!currentTierListDetailId) return;
+            const t = allTierListPosts.find(x => x.id === currentTierListDetailId);
+            if (!t) return;
+            await ensureUnitDataLoaded();
+
+            const canvas = document.getElementById("tierListExportCanvas");
+            const ctx = canvas.getContext("2d");
+            const rowH = 64, labelW = 90, padding = 12, iconSize = 48, iconGap = 6, titleH = 50;
+
+            let maxUnitsInRow = 1;
+            TIER_META.forEach(m => { maxUnitsInRow = Math.max(maxUnitsInRow, ((t.tiers && t.tiers[m.key]) || []).length); });
+            const rowContentWidth = Math.max(400, maxUnitsInRow * (iconSize + iconGap));
+            const width = labelW + rowContentWidth + padding * 2;
+            const height = titleH + TIER_META.length * rowH + padding * 2;
+
+            canvas.width = width;
+            canvas.height = height;
+            ctx.fillStyle = "#0d0d1a";
+            ctx.fillRect(0, 0, width, height);
+            ctx.fillStyle = "#eaeaf0";
+            ctx.font = "bold 22px sans-serif";
+            ctx.fillText(t.title || "Tier List", padding, 32);
+
+            const allKeys = [];
+            TIER_META.forEach(m => ((t.tiers && t.tiers[m.key]) || []).forEach(k => allKeys.push(k)));
+            const images = {};
+            await Promise.all(allKeys.map(key => new Promise((resolve) => {
+                const u = tierUnitByKey(key);
+                const img = new Image();
+                img.onload = () => { images[key] = img; resolve(); };
+                img.onerror = () => resolve(); // skip a missing icon rather than fail the whole export
+                img.src = u ? u.icon : "images/KIH.jpg";
+            })));
+
+            let y = titleH + padding;
+            TIER_META.forEach(meta => {
+                ctx.fillStyle = meta.color;
+                ctx.fillRect(padding, y, labelW, rowH - 4);
+                ctx.fillStyle = "#16162a";
+                ctx.font = "bold 20px sans-serif";
+                ctx.textAlign = "center";
+                ctx.fillText(meta.key, padding + labelW / 2, y + rowH / 2 - 2);
+                ctx.font = "bold 9px sans-serif";
+                ctx.fillText(meta.label.toUpperCase(), padding + labelW / 2, y + rowH / 2 + 14);
+                ctx.textAlign = "left";
+
+                ctx.fillStyle = "#16162a";
+                ctx.fillRect(padding + labelW, y, rowContentWidth, rowH - 4);
+
+                const keys = (t.tiers && t.tiers[meta.key]) || [];
+                keys.forEach((key, i) => {
+                    const img = images[key];
+                    const x = padding + labelW + iconGap + i * (iconSize + iconGap);
+                    if (img) ctx.drawImage(img, x, y + (rowH - 4 - iconSize) / 2, iconSize, iconSize);
+                });
+
+                y += rowH;
+            });
+
+            canvas.toBlob((blob) => {
+                if (!blob) { showToast("Couldn't export this tier list."); return; }
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = (t.title || "tier-list").replace(/[^\w.\-]/g, "_") + ".png";
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+        };
+
         /* ---------------- FRIEND REQUEST PANEL ---------------- */
 
         window.toggleFriendReqPanel = function () {
@@ -4413,6 +5750,8 @@ document.getElementById("dmMessages").addEventListener("scroll", rafThrottle(upd
             closePostFormationModal();
             closeFormationDetailModal();
             closeImageViewer();
+            closePostTierListModal();
+            closeTierListDetailModal();
             document.body.style.overflow = "";
             document.documentElement.style.overflow = "";
             document.getElementById("dmActionsMenu")?.classList.remove("open");
@@ -4529,11 +5868,13 @@ window.sendDmFromInput = async function () {
         AppState.waitForAuthReady().then(async () => {
             loadClanFiltersIntoUI();
             loadFormationFiltersIntoUI();
+            loadTierListFiltersIntoUI();
             await refreshComposeBox();
             startLiveListeners();
             setupDmViewportHandling();
             unsubPosts = AppState.listenToClanPosts(renderClanPosts);
             unsubFormations = AppState.listenToFormations(renderFormationPosts);
+            unsubTierLists = AppState.listenToTierLists(renderTierListPosts);
             AppState.sweepExpiredFormations();
             AppState.maybeRefreshAd("adBannerSocial");
             AppState.loadAdsterraAdsIfAllowed();
