@@ -2908,7 +2908,7 @@ function getNewsTypeInfo(type) {
             let inboxOpen = document.getElementById("page-inbox").classList.contains("active");
             let unread = inboxOpen ? 0 : notifications.filter(n => {
                 // Personal notifications track their own read state per-doc.
-                if (n.type === "friendAccepted") return !n.read;
+                if (n.type === "friendAccepted" || n.type === "formationComment" || n.type === "formationReply") return !n.read;
                 return n.createdAt > lastSeenAt;
             }).length;
             let show = unread > 0;
@@ -2926,7 +2926,7 @@ function getNewsTypeInfo(type) {
         function inboxCategoryFor(n) {
             if (n.type === "promo" || n.type === "giveawayWin") return "promo";
             if (n.type === "tip") return "tip";
-            if (n.type === "friendAccepted") return "social";
+            if (n.type === "friendAccepted" || n.type === "formationComment" || n.type === "formationReply") return "social";
             return "general";
         }
 
@@ -2959,6 +2959,8 @@ function getNewsTypeInfo(type) {
     button = `<button class="btn-primary" style="padding:6px 16px; font-size:0.85rem;" onclick="openInboxFriendChat('${n.fromUid}', '${escapeHomeHtml(n.fromName).replace(/'/g, "\\'")}', '${escapeHomeHtml(n.fromAvatar || "")}')">💬 Message</button>`;
 } else if (n.type === "giveawayWin") {
     button = `<button class="btn-primary view-prize-inbox-btn" data-prize="${escapeHomeHtml(n.prize || "")}" data-pending="${n.pendingPrize ? "1" : "0"}" style="padding:6px 16px; font-size:0.85rem;">${n.prize ? "🎁 View Code" : "⏳ Status"}</button>`;
+} else if (n.type === "formationComment" || n.type === "formationReply") {
+    button = `<button class="btn-primary" style="padding:6px 16px; font-size:0.85rem;" onclick="openInboxFormationPost('${n.postId}')">💬 View</button>`;
 }
 // adminMessage and announcement need no button — title + body already contain everything
 
@@ -3020,6 +3022,8 @@ function getNewsTypeInfo(type) {
         button = `<button class="btn-primary" style="margin-top:14px; padding:10px 20px; font-size:0.9rem;" onclick="openInboxFriendChat('${n.fromUid}', '${escapeHomeHtml(n.fromName).replace(/'/g, "\\'")}', '${escapeHomeHtml(n.fromAvatar || "")}')">💬 Message</button>`;
     } else if (n.type === "giveawayWin") {
         button = `<button class="btn-primary view-prize-inbox-btn" data-prize="${escapeHomeHtml(n.prize || "")}" data-pending="${n.pendingPrize ? "1" : "0"}" style="margin-top:14px; padding:10px 20px; font-size:0.9rem;">${n.prize ? "🎁 View Code" : "⏳ Status"}</button>`;
+    } else if (n.type === "formationComment" || n.type === "formationReply") {
+        button = `<button class="btn-primary" style="margin-top:14px; padding:10px 20px; font-size:0.9rem;" onclick="openInboxFormationPost('${n.postId}')">💬 View</button>`;
     }
 
     content.innerHTML = `
@@ -3134,6 +3138,17 @@ window.closeInboxItemModal = closeInboxItemModal;
             url.searchParams.set("dmUid", uid);
             url.searchParams.set("dmName", name);
             if (avatar) url.searchParams.set("dmAvatar", avatar);
+            frame.removeAttribute("data-src"); // see openInboxTip's comment above
+            frame.src = url.toString();
+            goToPage("social");
+        }
+
+        // Jump into Social's Formation Help tab and open this specific post
+        // (used by "commented on your post" / "replied to your comment").
+        function openInboxFormationPost(postId) {
+            let frame = document.querySelector("#page-social iframe");
+            let url = new URL(frame.getAttribute("src") || "social.html", window.location.href);
+            url.searchParams.set("formationPostId", postId);
             frame.removeAttribute("data-src"); // see openInboxTip's comment above
             frame.src = url.toString();
             goToPage("social");

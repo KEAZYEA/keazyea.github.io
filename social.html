@@ -977,6 +977,42 @@
             background: #4169e1;
         }
 
+        .formation-like-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #2a2a4a;
+            border: none;
+            border-radius: 20px;
+            padding: 6px 14px;
+            color: #eaeaf0;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .formation-like-btn.liked {
+            background: #4a1620;
+            color: #ff4d6d;
+        }
+
+        .formation-heart-pop {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            font-size: 5rem;
+            pointer-events: none;
+            z-index: 5;
+            animation: formationHeartPop 0.8s ease-out forwards;
+        }
+
+        @keyframes formationHeartPop {
+            0% { transform: translate(-50%, -50%) scale(0.3); opacity: 0; }
+            30% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+            45% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+        }
+
         /* ---- Lightbox for tapping a comment's photo ---- */
         .image-viewer-box {
             max-width: 560px;
@@ -1831,6 +1867,10 @@
 
             <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin:12px 0 6px;">
                 <span id="formationDetailCategory" class="clan-card-server-badge badge-both"></span>
+                <button type="button" class="formation-like-btn" id="formationDetailLikeBtn" onclick="toggleFormationDetailLike()"
+                    title="Double-tap the photo to like it too">
+                    <span id="formationDetailLikeIcon">🤍</span> <span id="formationDetailLikeCount">0</span>
+                </button>
             </div>
             <div class="clan-post-body" id="formationDetailDescription"></div>
 
@@ -1849,10 +1889,7 @@
                 <div class="friends-section-title" style="margin-top:18px;">Comments</div>
                 <div id="formationCommentsList"></div>
 
-                <div id="formationCommentEditingNote" class="compose-hint" style="display:none; margin-top:10px;">
-                    Editing your comment —
-                    <button type="button" class="field-clear-btn" onclick="cancelEditFormationComment()">Cancel</button>
-                </div>
+                <div id="formationCommentEditingNote" class="compose-hint" style="display:none; margin-top:10px;"></div>
                 <div id="formationCommentImagePreviews" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;"></div>
                 <div class="formation-comment-input-row">
                     <input type="file" id="formationCommentImageInput" accept="image/*" multiple style="display:none;">
@@ -2830,6 +2867,7 @@ window.removeClanIconPreview = function () {
         /* ================= FORMATION SHARING ================= */
 
         let allFormationPosts = [];
+        let pendingFormationPostIdFromUrl = null; // set from ?formationPostId=... until that post shows up in a snapshot
         let formationImageFiles = []; // up to 3 newly-picked File objects, in post-modal order
         let formationExistingImages = []; // [{url, path}] — images already saved on the post being edited
         let editingFormationPostId = null; // set when the post modal is open in "edit" mode
@@ -2840,6 +2878,7 @@ window.removeClanIconPreview = function () {
         let formationCommentImageFiles = []; // up to 3 newly-picked File objects for the comment being composed/edited
         let formationCommentExistingImages = []; // [{url, path}] — images already saved on the comment being edited
         let editingFormationCommentId = null; // set when the composer is in "edit an existing comment" mode
+        let replyingToFormationCommentId = null; // set when the composer is in "reply to a specific comment/reply" mode
         let formationCommentsById = {}; // last-rendered comments, keyed by id — for the lightbox
         // Reentrancy guards: disabling a button alone doesn't stop a rapid
         // double-Enter on the comment text input from calling the submit
@@ -3078,6 +3117,18 @@ window.removeClanIconPreview = function () {
                     renderFormationCarousel();
                 }
             }
+
+            // Deep-linked here from a comment/reply notification — open the
+            // post the moment it actually shows up in a snapshot (only once).
+            if (pendingFormationPostIdFromUrl) {
+                const target = allFormationPosts.find(x => x.id === pendingFormationPostIdFromUrl);
+                if (target) {
+                    const targetId = pendingFormationPostIdFromUrl;
+                    pendingFormationPostIdFromUrl = null;
+                    switchSocialTab("formation");
+                    openFormationDetailModal(targetId);
+                }
+            }
         }
 
         function applyFormationFiltersAndRender() {
@@ -3108,7 +3159,7 @@ window.removeClanIconPreview = function () {
                     </div>
                     <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
                         <span class="clan-card-server-badge badge-both">${escapeHtml(formationCategoryLabel(p.category))}</span>
-                        <span class="compose-hint">${(p.commentCount || 0) > 0 ? `💬 ${p.commentCount} comment${p.commentCount === 1 ? "" : "s"}` : ""}${awaitingFeedback ? '<span class="formation-needs-help-badge">Awaiting Feedback</span>' : ""}</span>
+                        <span class="compose-hint">${Math.max(0, p.likeCount || 0) > 0 ? `❤️ ${Math.max(0, p.likeCount)} ` : ""}${(p.commentCount || 0) > 0 ? `💬 ${p.commentCount} comment${p.commentCount === 1 ? "" : "s"}` : ""}${awaitingFeedback ? '<span class="formation-needs-help-badge">Awaiting Feedback</span>' : ""}</span>
                     </div>
                     ${p.description ? `<div class="clan-post-body" style="margin-top:8px; max-height:4.2em; overflow:hidden;">${escapeHtml(p.description)}</div>` : ""}
 
@@ -3139,6 +3190,7 @@ window.removeClanIconPreview = function () {
 
         function renderFormationDetailStatic(p) {
             document.getElementById("formationDetailCategory").textContent = formationCategoryLabel(p.category);
+            document.getElementById("formationDetailLikeCount").textContent = Math.max(0, p.likeCount || 0);
             document.getElementById("formationDetailDescription").textContent = p.description || "No description.";
             document.getElementById("formationDetailAvatar").src = p.avatar;
             document.getElementById("formationDetailPosterName").textContent = p.name;
@@ -3180,12 +3232,22 @@ window.removeClanIconPreview = function () {
             formationDetailImageIndex = Math.min(Math.max(startIndex || 0, 0), Math.max(formationDetailImages.length - 1, 0));
             renderFormationCarousel();
 
+            // "Have I liked this" isn't on the post doc itself (it'd need
+            // recomputing for every viewer), so it's one extra read here on
+            // open rather than per-snapshot — my own like state only ever
+            // changes from my own actions, which already update it inline.
+            updateFormationDetailLikeUI(false);
+            AppState.hasLikedFormation(postId).then(liked => {
+                if (currentFormationDetailId === postId) updateFormationDetailLikeUI(liked);
+            });
+
             formationCommentSubmitting = false;
             document.getElementById("formationCommentSendBtn").disabled = false;
             document.getElementById("formationCommentTextInput").value = "";
             formationCommentImageFiles = [];
             formationCommentExistingImages = [];
             editingFormationCommentId = null;
+            replyingToFormationCommentId = null;
             document.getElementById("formationCommentEditingNote").style.display = "none";
             document.getElementById("formationCommentSendBtn").textContent = "Send";
             renderFormationCommentImagePreviews();
@@ -3233,6 +3295,69 @@ window.removeClanIconPreview = function () {
         window.downloadCurrentFormationImage = function () {
             downloadImageUrl(formationDetailImages[formationDetailImageIndex]);
         };
+
+        /* ---- Likes: a heart button, plus Instagram-style double-tap on
+           the photo itself. Double-tap always ends in the liked state
+           (never toggles it off) — only the explicit button toggles. ---- */
+
+        function updateFormationDetailLikeUI(liked) {
+            document.getElementById("formationDetailLikeBtn").classList.toggle("liked", liked);
+            document.getElementById("formationDetailLikeIcon").textContent = liked ? "❤️" : "🤍";
+        }
+
+        // Shared by the heart button and the double-tap gesture — both
+        // hit the same underlying toggle, so one guard covers a rapid
+        // double-click on the button as well as a button-click racing a
+        // double-tap on the photo.
+        let formationLikeInFlight = false;
+
+        window.toggleFormationDetailLike = async function () {
+            if (formationLikeInFlight) return;
+            const user = AppState.getCurrentUser();
+            if (!user) { showInfoModal("Sign in required", "Sign in with Google first to like a post."); return; }
+            if (!currentFormationDetailId) return;
+            formationLikeInFlight = true;
+            try {
+                const liked = await AppState.toggleFormationLike(currentFormationDetailId);
+                updateFormationDetailLikeUI(liked);
+            } catch (e) {
+                if (e.message !== "__RESTRICTED__") showInfoModal("Couldn't like", e.message);
+            }
+            formationLikeInFlight = false;
+        };
+
+        function showFormationHeartPop() {
+            const stage = document.getElementById("fcStage");
+            const heart = document.createElement("div");
+            heart.className = "formation-heart-pop";
+            heart.textContent = "❤️";
+            stage.appendChild(heart);
+            setTimeout(() => heart.remove(), 800);
+        }
+
+        // Click fires from both a mouse click and a tap (browsers synthesize
+        // it either way), so timing two of them ourselves works for both
+        // input types instead of relying on the sometimes-flaky native
+        // dblclick-from-touch behavior.
+        let lastFormationStageClickTime = 0;
+        document.getElementById("fcStage").addEventListener("click", async () => {
+            const now = Date.now();
+            const isDoubleTap = now - lastFormationStageClickTime < 350;
+            lastFormationStageClickTime = isDoubleTap ? 0 : now;
+            if (!isDoubleTap || !currentFormationDetailId || formationLikeInFlight) return;
+
+            showFormationHeartPop();
+            const user = AppState.getCurrentUser();
+            if (!user) { showInfoModal("Sign in required", "Sign in with Google first to like a post."); return; }
+            formationLikeInFlight = true;
+            try {
+                await AppState.likeFormation(currentFormationDetailId);
+                updateFormationDetailLikeUI(true); // double-tap always ends up liked, whether or not this call actually changed anything
+            } catch (e) {
+                if (e.message !== "__RESTRICTED__") showInfoModal("Couldn't like", e.message);
+            }
+            formationLikeInFlight = false;
+        });
 
         (function setupSwipe(stageId, prevFn, nextFn) {
             const stage = document.getElementById(stageId);
@@ -3322,6 +3447,37 @@ window.removeClanIconPreview = function () {
             });
         })("ivStage", () => window.imageViewerPrev(), () => window.imageViewerNext());
 
+        // Comments are stored flat with an optional parentId — this builds
+        // a tree from that (a reply whose parent got deleted just falls
+        // back to top-level, since its parentId no longer resolves) and
+        // flattens it depth-first so replies render right under their
+        // parent. Indentation is capped so deep threads stay readable on a
+        // phone screen instead of marching off the right edge.
+        const FORMATION_COMMENT_MAX_INDENT_PX = 72;
+        const FORMATION_COMMENT_INDENT_STEP_PX = 18;
+
+        function buildFormationCommentThread(comments) {
+            const byId = {};
+            comments.forEach(c => { byId[c.id] = { ...c, children: [] }; });
+            const roots = [];
+            comments.forEach(c => {
+                const node = byId[c.id];
+                if (c.parentId && byId[c.parentId]) {
+                    byId[c.parentId].children.push(node);
+                } else {
+                    roots.push(node);
+                }
+            });
+            const flat = [];
+            (function visit(nodes, depth) {
+                nodes.forEach(node => {
+                    flat.push({ node, depth });
+                    visit(node.children, depth + 1);
+                });
+            })(roots, 0);
+            return flat;
+        }
+
         function renderFormationComments(comments) {
             formationCommentsById = {};
             comments.forEach(c => { formationCommentsById[c.id] = c; });
@@ -3332,24 +3488,31 @@ window.removeClanIconPreview = function () {
                 return;
             }
             const myUid = AppState.getCurrentUser()?.uid;
-            list.innerHTML = comments.map(c => `
-                <div class="formation-comment-item">
+            const thread = buildFormationCommentThread(comments);
+            list.innerHTML = thread.map(({ node: c, depth }) => {
+                const indent = Math.min(depth * FORMATION_COMMENT_INDENT_STEP_PX, FORMATION_COMMENT_MAX_INDENT_PX);
+                const nameEscaped = escapeHtml(c.name).replace(/'/g, "\\'");
+                return `
+                <div class="formation-comment-item" style="margin-left:${indent}px;">
                     <img class="clan-post-avatar" src="${escapeHtml(c.avatar)}" onerror="this.style.visibility='hidden'"
-                        style="cursor:pointer;" onclick="closeFormationDetailModal(); onPosterClick('${c.uid}', '${escapeHtml(c.name).replace(/'/g, "\\'")}');">
+                        style="cursor:pointer;" onclick="closeFormationDetailModal(); onPosterClick('${c.uid}', '${nameEscaped}');">
                     <div style="flex:1; min-width:0;">
                         <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-                            <span class="clan-post-name" style="cursor:pointer;" onclick="closeFormationDetailModal(); onPosterClick('${c.uid}', '${escapeHtml(c.name).replace(/'/g, "\\'")}');">${escapeHtml(c.name)}</span>
+                            <span class="clan-post-name" style="cursor:pointer;" onclick="closeFormationDetailModal(); onPosterClick('${c.uid}', '${nameEscaped}');">${escapeHtml(c.name)}</span>
                             <span class="clan-post-time" style="margin-left:0;">${timeAgo(c.createdAt)}</span>
                         </div>
                         ${c.text ? `<div style="margin-top:4px; white-space:pre-wrap;">${escapeHtml(c.text)}</div>` : ""}
                         ${(c.imageUrls && c.imageUrls.length) ? `<div class="formation-comment-images">${c.imageUrls.map((u, i) => `<img src="${escapeHtml(u)}" onerror="this.remove();" onclick="openImageViewerForComment('${c.id}', ${i})">`).join("")}</div>` : ""}
-                        ${c.uid === myUid
-                            ? `<button class="edit-post-link" style="margin-top:4px;" onclick="startEditFormationComment('${c.id}')">✏️ Edit</button>
-                               <button class="delete-post-link" style="margin-top:4px;" onclick="deleteFormationCommentConfirm('${c.id}')">🗑️ Delete</button>`
-                            : `<button class="report-link" style="margin-top:4px;" onclick="openReportModal('post', '${c.uid}', '${escapeHtml(c.name).replace(/'/g, "\\'")}', '${c.id}', ${escapeHtml(JSON.stringify(c.text || ""))})">🚩 Report</button>`}
+                        <div style="margin-top:4px;">
+                            <button class="edit-post-link" onclick="startReplyFormationComment('${c.id}', '${nameEscaped}')">↩ Reply</button>
+                            ${c.uid === myUid
+                                ? `<button class="edit-post-link" onclick="startEditFormationComment('${c.id}')">✏️ Edit</button>
+                                   <button class="delete-post-link" onclick="deleteFormationCommentConfirm('${c.id}')">🗑️ Delete</button>`
+                                : `<button class="report-link" onclick="openReportModal('post', '${c.uid}', '${nameEscaped}', '${c.id}', ${escapeHtml(JSON.stringify(c.text || ""))})">🚩 Report</button>`}
+                        </div>
                     </div>
-                </div>
-            `).join("");
+                </div>`;
+            }).join("");
         }
 
         // Renders existing (already-saved) images first, then newly-picked
@@ -3405,15 +3568,20 @@ window.removeClanIconPreview = function () {
             renderFormationCommentImagePreviews();
         });
 
+        // Editing and replying are mutually exclusive composer states —
+        // starting one cancels the other.
         window.startEditFormationComment = function (commentId) {
             const c = formationCommentsById[commentId];
             if (!c) return;
+            replyingToFormationCommentId = null;
             editingFormationCommentId = commentId;
             formationCommentImageFiles = [];
             formationCommentExistingImages = (c.imageUrls || []).map((url, i) => ({ url, path: (c.imagePaths || [])[i] || null }));
             document.getElementById("formationCommentTextInput").value = c.text || "";
             renderFormationCommentImagePreviews();
-            document.getElementById("formationCommentEditingNote").style.display = "block";
+            const note = document.getElementById("formationCommentEditingNote");
+            note.innerHTML = 'Editing your comment — <button type="button" class="field-clear-btn" onclick="cancelEditFormationComment()">Cancel</button>';
+            note.style.display = "block";
             document.getElementById("formationCommentSendBtn").textContent = "Save";
             document.getElementById("formationCommentTextInput").focus();
         };
@@ -3424,6 +3592,26 @@ window.removeClanIconPreview = function () {
             formationCommentImageFiles = [];
             document.getElementById("formationCommentTextInput").value = "";
             renderFormationCommentImagePreviews();
+            document.getElementById("formationCommentEditingNote").style.display = "none";
+            document.getElementById("formationCommentSendBtn").textContent = "Send";
+        };
+
+        window.startReplyFormationComment = function (commentId, name) {
+            editingFormationCommentId = null;
+            formationCommentExistingImages = [];
+            formationCommentImageFiles = [];
+            replyingToFormationCommentId = commentId;
+            document.getElementById("formationCommentTextInput").value = "";
+            renderFormationCommentImagePreviews();
+            const note = document.getElementById("formationCommentEditingNote");
+            note.innerHTML = `Replying to <strong>${escapeHtml(name)}</strong> — <button type="button" class="field-clear-btn" onclick="cancelReplyFormationComment()">Cancel</button>`;
+            note.style.display = "block";
+            document.getElementById("formationCommentSendBtn").textContent = "Reply";
+            document.getElementById("formationCommentTextInput").focus();
+        };
+
+        window.cancelReplyFormationComment = function () {
+            replyingToFormationCommentId = null;
             document.getElementById("formationCommentEditingNote").style.display = "none";
             document.getElementById("formationCommentSendBtn").textContent = "Send";
         };
@@ -3467,10 +3655,14 @@ window.removeClanIconPreview = function () {
                     oldImagePaths.filter(p => p && !keptPaths.has(p)).forEach(p => AppState.deleteFormationImageSafe(p));
                     cancelEditFormationComment();
                 } else {
-                    await AppState.addFormationComment(currentFormationDetailId, { text, imageUrls: newImageUrls, imagePaths: newImagePaths });
+                    await AppState.addFormationComment(currentFormationDetailId, {
+                        text, imageUrls: newImageUrls, imagePaths: newImagePaths,
+                        parentId: replyingToFormationCommentId
+                    });
                     textInput.value = "";
                     formationCommentImageFiles = [];
                     renderFormationCommentImagePreviews();
+                    if (replyingToFormationCommentId) cancelReplyFormationComment();
                 }
             } catch (e) {
                 if (e.message !== "__RESTRICTED__") {
@@ -3488,6 +3680,7 @@ window.removeClanIconPreview = function () {
             try {
                 await AppState.deleteFormationComment(currentFormationDetailId, commentId);
                 if (editingFormationCommentId === commentId) cancelEditFormationComment();
+                if (replyingToFormationCommentId === commentId) cancelReplyFormationComment();
             } catch (e) {
                 showInfoModal("Couldn't delete", e.message);
             }
@@ -4213,6 +4406,13 @@ document.getElementById("dmMessages").addEventListener("scroll", rafThrottle(upd
             closeDeleteConfirmModal();
             closePostAgreeModal();
             closePostCooldownModal();
+            // Formation Help's own modals — without these, leaving Social
+            // with a post open just hides the tab underneath while the
+            // modal overlay (which lives outside the tab panels) stays
+            // visibly open, so it's still there when you come back.
+            closePostFormationModal();
+            closeFormationDetailModal();
+            closeImageViewer();
             document.body.style.overflow = "";
             document.documentElement.style.overflow = "";
             document.getElementById("dmActionsMenu")?.classList.remove("open");
@@ -4352,6 +4552,15 @@ window.sendDmFromInput = async function () {
             if (dmUid) {
                 switchSocialTab("friends");
                 openDmWith(dmUid, params.get("dmName") || "Commander", params.get("dmAvatar") || "");
+            }
+
+            // Arrived here from a "commented on your post" / "replied to
+            // your comment" notification — the post list may not have
+            // loaded yet (listenToFormations is async), so this is picked
+            // up by renderFormationPosts() once the post actually shows up.
+            const formationPostId = params.get("formationPostId");
+            if (formationPostId) {
+                pendingFormationPostIdFromUrl = formationPostId;
             }
         });
         AppState.onAuthChange(async () => {

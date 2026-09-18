@@ -24,7 +24,8 @@ import {
     onSnapshot,
     Timestamp,
     documentId,
-    increment
+    increment,
+    runTransaction
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
 import {
@@ -896,6 +897,7 @@ async function getClanPostCooldownRemaining() {
             imageUrls,
             imagePaths,
             commentCount: 0,
+            likeCount: 0,
             createdAt: Date.now(),
             expiresAt: Timestamp.fromMillis(Date.now() + FORMATION_POST_LIFETIME_MS)
         });
@@ -1003,6 +1005,9 @@ async function getClanPostCooldownRemaining() {
         const text = (data.text || "").trim();
         const imageUrls = Array.isArray(data.imageUrls) ? data.imageUrls.slice(0, 3) : [];
         const imagePaths = Array.isArray(data.imagePaths) ? data.imagePaths.slice(0, 3) : [];
+        // A reply just points back at the comment/reply it's under — same
+        // flat collection either way, rendered as a tree client-side.
+        const parentId = data.parentId || null;
         if (!text && !imageUrls.length) throw new Error("Write something or attach a picture.");
         if (text.length > 2000) throw new Error("Comment must be 2000 characters or fewer.");
 
@@ -1020,9 +1025,54 @@ async function getClanPostCooldownRemaining() {
             text,
             imageUrls,
             imagePaths,
+            parentId,
             createdAt: Date.now()
         });
         await updateDoc(doc(db, "formationPosts", postId), { commentCount: increment(1) });
+
+        // Notify whoever should know about this — best-effort, never lets a
+        // notification failure block the comment/reply itself from landing.
+        // A reply notifies the parent comment's author (whoever they are,
+        // even if that's also the post owner); a top-level comment notifies
+        // the post's own author. Never notify yourself.
+        try {
+            if (parentId) {
+                const parentSnap = await getDoc(doc(db, "formationPosts", postId, "comments", parentId));
+                if (parentSnap.exists()) {
+                    const parentAuthorUid = parentSnap.data().uid;
+                    if (parentAuthorUid && parentAuthorUid !== currentUser.uid) {
+                        await addPersonalNotification(parentAuthorUid, {
+                            type: "formationReply",
+                            title: `💬 ${profile.name} replied to your comment`,
+                            body: text ? text.slice(0, 100) : "Sent a photo.",
+                            fromUid: currentUser.uid,
+                            fromName: profile.name,
+                            fromAvatar: profile.avatar || "",
+                            postId
+                        });
+                    }
+                }
+            } else {
+                const postSnap = await getDoc(doc(db, "formationPosts", postId));
+                if (postSnap.exists()) {
+                    const postAuthorUid = postSnap.data().uid;
+                    if (postAuthorUid && postAuthorUid !== currentUser.uid) {
+                        await addPersonalNotification(postAuthorUid, {
+                            type: "formationComment",
+                            title: `💬 ${profile.name} commented on your formation post`,
+                            body: text ? text.slice(0, 100) : "Sent a photo.",
+                            fromUid: currentUser.uid,
+                            fromName: profile.name,
+                            fromAvatar: profile.avatar || "",
+                            postId
+                        });
+                    }
+                }
+            }
+        } catch (e) {
+            console.warn("Couldn't send comment notification:", e.message);
+        }
+
         return docRef.id;
     }
 
@@ -1074,6 +1124,62 @@ async function getClanPostCooldownRemaining() {
         await Promise.all((data.imagePaths || []).map(p => deleteFormationImageSafe(p)));
         await deleteDoc(doc(db, "formationPosts", postId, "comments", commentId));
         await updateDoc(doc(db, "formationPosts", postId), { commentCount: increment(-1) });
+    }
+
+    // Toggles the current user's like on a formation post — one doc per
+    // (post, uid) keyed by uid, so "did I like this" is a single getDoc
+    // and double-liking is impossible by construction. Returns the new
+    // liked state (true = now liked).
+    //
+    // Runs as a transaction so the like-doc write and the likeCount bump
+    // either both land or neither does — previously these were two
+    // separate calls, and if the second one failed (as it did under the
+    // old, buggy rules) the like doc was left behind with no matching
+    // count change, so the next toggle "corrected" a count that was never
+    // actually incremented and went negative.
+    async function toggleFormationLike(postId) {
+        await waitForAuthReady();
+        if (!currentUser) throw new Error("You must sign in with Google first to like a post.");
+        const profile = await getProfile();
+        if (isBannedNow(profile)) {
+            showRestrictedNotice(profile.banReason, profile.banUntil);
+            throw new Error("__RESTRICTED__");
+        }
+
+        const likeRef = doc(db, "formationPosts", postId, "likes", currentUser.uid);
+        const postRef = doc(db, "formationPosts", postId);
+        const uid = currentUser.uid;
+
+        return await runTransaction(db, async (tx) => {
+            const likeSnap = await tx.get(likeRef);
+            if (likeSnap.exists()) {
+                tx.delete(likeRef);
+                tx.update(postRef, { likeCount: increment(-1) });
+                return false;
+            }
+            tx.set(likeRef, { uid, createdAt: Date.now() });
+            tx.update(postRef, { likeCount: increment(1) });
+            return true;
+        });
+    }
+
+    // Double-tap/double-click "like" always ends in the liked state (never
+    // toggles it off) — matches the Instagram convention this was modeled
+    // on. A no-op if already liked.
+    async function likeFormation(postId) {
+        await waitForAuthReady();
+        if (!currentUser) throw new Error("You must sign in with Google first to like a post.");
+        const likeRef = doc(db, "formationPosts", postId, "likes", currentUser.uid);
+        const likeSnap = await getDoc(likeRef);
+        if (likeSnap.exists()) return false; // already liked — nothing changed
+        return await toggleFormationLike(postId);
+    }
+
+    async function hasLikedFormation(postId) {
+        await waitForAuthReady();
+        if (!currentUser) return false;
+        const snap = await getDoc(doc(db, "formationPosts", postId, "likes", currentUser.uid));
+        return snap.exists();
     }
 
     /* ======================================================
@@ -3162,6 +3268,7 @@ async function maybeRefreshAd(containerId) {
         // formation sharing
         postFormation, updateFormation, listenToFormations, deleteFormation, sweepExpiredFormations,
         addFormationComment, updateFormationComment, listenToFormationComments, deleteFormationComment,
+        toggleFormationLike, likeFormation, hasLikedFormation,
         uploadFormationImage, deleteFormationImageSafe, FORMATION_CATEGORIES, FORMATION_POST_LIFETIME_MS,
         // friends
         sendFriendRequest, respondToFriendRequest, listenToIncomingFriendRequests, listenToFriends,
