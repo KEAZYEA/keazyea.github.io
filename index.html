@@ -2908,16 +2908,19 @@ function getNewsTypeInfo(type) {
             });
         }
 
-        // Counts "ongoing giveaways you haven't looked at yet" — the weekly
-        // one (1 point while entries are open this week) plus one point per
-        // active secret giveaway. A giveaway drops off the count the moment
-        // its entry window closes or it's deleted (computed live off
-        // Firestore, not just off the "seen" flag), and also the moment the
-        // user actually visits that tab (promo.html sets the matching
+        // Counts "things on the Promo Codes page you haven't looked at yet"
+        // — the weekly giveaway (1 point while entries are open this week),
+        // one point per active secret giveaway, and one point per promo
+        // code you haven't seen. Each drops off the moment its relevant tab
+        // is actually visited (promo.html sets the matching
         // "kih_giveaway_seen_*" localStorage key when it renders each one —
-        // shared with this page since both run on the same origin).
+        // shared with this page since both run on the same origin), or —
+        // for giveaways specifically — the moment its entry window closes
+        // or it's deleted, computed live off Firestore rather than just off
+        // the "seen" flag.
         let latestSecretGiveawaysForBadge = [];
-        function renderGiveawayBadgeFrom(secretItems) {
+        let latestPromoCodesForBadge = [];
+        function renderGiveawayBadgeFrom(secretItems, codes) {
             const now = Date.now();
             let count = 0;
             try {
@@ -2931,13 +2934,14 @@ function getNewsTypeInfo(type) {
                 g.expiresAt > now &&
                 localStorage.getItem("kih_giveaway_seen_secret_" + g.id) !== "1"
             ).length;
+            count += (codes || []).filter(c => localStorage.getItem("kih_giveaway_seen_code_" + c.id) !== "1").length;
             const el = document.getElementById("giveawayBadgeHome");
             if (!el) return;
             el.textContent = count > 9 ? "9+" : String(count);
             el.style.display = count > 0 ? "flex" : "none";
         }
         function refreshGiveawayBadge() {
-            renderGiveawayBadgeFrom(latestSecretGiveawaysForBadge);
+            renderGiveawayBadgeFrom(latestSecretGiveawaysForBadge, latestPromoCodesForBadge);
         }
 
         let unsubGiveawayBadge = null;
@@ -2945,13 +2949,22 @@ function getNewsTypeInfo(type) {
             if (unsubGiveawayBadge) { unsubGiveawayBadge(); unsubGiveawayBadge = null; }
             if (!AppState.getCurrentUser()) {
                 latestSecretGiveawaysForBadge = [];
-                renderGiveawayBadgeFrom([]);
+                latestPromoCodesForBadge = [];
+                renderGiveawayBadgeFrom([], []);
                 return;
             }
             unsubGiveawayBadge = AppState.listenToSecretGiveaways((items) => {
                 latestSecretGiveawaysForBadge = items;
-                renderGiveawayBadgeFrom(items);
+                renderGiveawayBadgeFrom(items, latestPromoCodesForBadge);
             });
+            // Promo codes aren't live-listened anywhere on the site (a
+            // one-time fetch, same as promo.html itself uses) — fetch once
+            // here too rather than adding a new listener pattern just for
+            // this badge.
+            AppState.getPromoCodes().then((codes) => {
+                latestPromoCodesForBadge = codes;
+                renderGiveawayBadgeFrom(latestSecretGiveawaysForBadge, codes);
+            }).catch(() => {});
         }
 
         function renderInboxBadgeFrom(notifications) {

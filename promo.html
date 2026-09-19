@@ -245,7 +245,9 @@
 </div>
 
     <div class="tabs">
-        <button class="tab-btn active" onclick="switchPromoTab('codes')">Latest Codes</button>
+        <button class="tab-btn active" onclick="switchPromoTab('codes')" style="position:relative;">Latest Codes
+            <span class="badge-dot" id="codesTabBadge" style="display:none;"></span>
+        </button>
         <button class="tab-btn" id="vipTabBtn" onclick="switchPromoTab('vip')" style="position:relative;">Weekly Giveaway
             <span class="badge-dot" id="vipTabBadge" style="display:none;"></span>
         </button>
@@ -566,10 +568,44 @@
                 } catch (e) { /* storage full/unavailable — safe to ignore */ }
             }
 
+            // Tab badge for "there's a new code you haven't looked at" — a
+            // separate, independent mechanism from checkForNewCodes() above
+            // (which only feeds the site-wide 📬 Inbox and doesn't clear
+            // just by viewing this tab). Same "seen" pattern used for the
+            // giveaway tab badges: unseen until you actually see this tab,
+            // no need to copy/redeem anything, and it doesn't require
+            // opening the Inbox at all.
+            let latestPromoCodes = [];
+
+            function refreshCodesTabBadge(codes) {
+                const el = document.getElementById("codesTabBadge");
+                if (!el) return;
+                const count = (codes || []).filter(c => localStorage.getItem("kih_giveaway_seen_code_" + c.id) !== "1").length;
+                el.textContent = count > 9 ? "9+" : String(count);
+                el.style.display = count > 0 ? "flex" : "none";
+            }
+
+            // Only marks things seen if this tab is actually the one being
+            // shown right now — called both after a fresh fetch (in case the
+            // tab was already active before the fetch finished) and from
+            // switchPromoTab() (in case the fetch already finished before
+            // the user switched here).
+            function markCodesTabSeenIfActive() {
+                const page = document.getElementById("codesPage");
+                if (!page || !page.classList.contains("active")) return;
+                try {
+                    latestPromoCodes.forEach(c => localStorage.setItem("kih_giveaway_seen_code_" + c.id, "1"));
+                } catch (e) {}
+                refreshCodesTabBadge(latestPromoCodes);
+            }
+
             async function loadPromoCodes() {
                 const cached = loadCachedCodes();
                 if (cached) {
                     renderPromoCodes(cached);
+                    latestPromoCodes = cached;
+                    refreshCodesTabBadge(cached);
+                    markCodesTabSeenIfActive();
                     AppState.maybeRefreshAd("promoAdSlot");
                 }
 
@@ -584,6 +620,9 @@
                 }
                 saveCachedCodes(codes);
                 checkForNewCodes(codes);
+                latestPromoCodes = codes;
+                refreshCodesTabBadge(codes);
+                markCodesTabSeenIfActive();
                 AppState.maybeRefreshAd("promoAdSlot");
             }
 
@@ -594,6 +633,7 @@
                 if (tab === "codes") {
                     document.getElementById("codesPage").classList.add("active");
                     document.querySelectorAll(".tab-btn")[0].classList.add("active");
+                    markCodesTabSeenIfActive();
                     AppState.maybeRefreshAd("promoAdSlot");
                 } else if (tab === "secret") {
                     document.getElementById("secretPage").classList.add("active");
@@ -1569,6 +1609,11 @@ if (user && user.uid === winnerData.winnerUid) {
             const requestedTab = new URLSearchParams(window.location.search).get("tab");
             if (requestedTab === "vip") switchPromoTab("vip");
             else if (requestedTab === "secret") switchPromoTab("secret");
+            // "codes" is already the active tab in the static HTML, but
+            // switchPromoTab("codes") still needs to actually run once so
+            // its markCodesTabSeenIfActive() call fires — otherwise this
+            // default-landing case would never clear the codes tab badge.
+            else switchPromoTab("codes");
 
             // Ad recheck — separate from refreshVipState so a VIP status
             // change (or late-confirmed sign-in) always clears/shows the
