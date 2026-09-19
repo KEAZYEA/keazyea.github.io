@@ -108,6 +108,49 @@
             font-family: inherit;
             font-size: 0.95rem;
         }
+
+        /* Each top-level section (Weekly Giveaway, Secret Giveaways, Post a
+           Tip, etc.) is a native <details> so it can be collapsed — this
+           page accumulates a lot of sections over time and otherwise it's
+           all permanently expanded, forcing constant scrolling to reach
+           anything near the bottom. Open/closed state persists per section
+           via localStorage (see the script below), so once you collapse
+           something you don't use often, it stays collapsed next time. */
+        .admin-section {
+            text-align: left;
+        }
+
+        .admin-section > summary {
+            font-size: 1.5rem;
+            font-weight: 700;
+            cursor: pointer;
+            padding: 8px 0;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            user-select: none;
+        }
+
+        .admin-section > summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .admin-section > summary::before {
+            content: "▶";
+            font-size: 0.85rem;
+            color: #9a9ab0;
+            transition: transform 0.15s ease;
+            flex-shrink: 0;
+        }
+
+        .admin-section[open] > summary::before {
+            transform: rotate(90deg);
+        }
+
+        .admin-section > summary:hover {
+            color: #6c9bff;
+        }
     </style>
 </head>
 
@@ -167,7 +210,8 @@
 
             <!-- STATE: ADMIN PANEL -->
             <div id="adminPanelState" style="display:none;">
-                <h2>🎲 Weekly Giveaway Draw</h2>
+                <details class="admin-section">
+                <summary>🎲 Weekly Giveaway Draw</summary>
                 <p class="promo-sub">Current week: <strong id="currentWeekId"></strong></p>
                 <p class="promo-sub" id="entryCountText"></p>
                 <p class="promo-sub" id="alreadyDrawnText" style="display:none; color:gold;"></p>
@@ -214,9 +258,86 @@
                     <div id="pendingPrizesList"></div>
                 </div>
 
+                </details>
+
                 <hr style="border-color:#2a2a4a; margin:40px 0;">
 
-                <h2>🛠️ Server Maintenance</h2>
+                <details class="admin-section">
+                <summary>🔒 Secret Giveaways</summary>
+                <p class="promo-sub">Admin-created, one-off giveaways — separate from the automatic weekly draw above.
+                    Optionally password-gate entry (you hand the password out yourself, anywhere you like); set
+                    independent iOS/Android winner slots and draw them one at a time. The reward description stays
+                    hidden from everyone until they actually enter. Giveaways auto-delete after the number of days
+                    you set below (cleanup happens next time this admin panel loads past that date, not on a timer).</p>
+
+                <button class="btn-primary" onclick="openCreateSecretGiveawayForm()"
+                    style="padding:12px 24px; margin-bottom:16px;">➕ Create New Secret Giveaway</button>
+
+                <div id="createSecretGiveawayForm"
+                    style="display:none; margin-bottom:24px; padding:20px; border:1px solid #4169e1; border-radius:12px; text-align:left;">
+                    <label style="display:block; margin-bottom:6px;">Title</label>
+                    <input type="text" id="secretGiveawayTitleInput" placeholder="e.g. Discord Announcement Giveaway"
+                        style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box; margin-bottom:10px;">
+
+                    <label style="display:block; margin-bottom:6px;">Prize description (hidden until someone
+                        enters)</label>
+                    <textarea id="secretGiveawayPrizeInput" rows="2" placeholder="e.g. $10 gift card"
+                        style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box; margin-bottom:10px; font-family:inherit;"></textarea>
+
+                    <label style="display:flex; align-items:center; gap:8px; margin-bottom:10px; cursor:pointer;">
+                        <input type="checkbox" id="secretGiveawayRequiresPasswordInput" checked
+                            onchange="document.getElementById('secretGiveawayPasswordWrap').style.display = this.checked ? 'block' : 'none';">
+                        Require a password to enter
+                    </label>
+                    <div id="secretGiveawayPasswordWrap">
+                        <label style="display:block; margin-bottom:6px;">Password (give this out yourself, anywhere
+                            you like)</label>
+                        <input type="text" id="secretGiveawayPasswordInput" placeholder="e.g. DRAGONFIRE2026"
+                            style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box; margin-bottom:10px;">
+                    </div>
+
+                    <div style="display:flex; gap:10px; margin-bottom:10px;">
+                        <div style="flex:1;">
+                            <label style="display:block; margin-bottom:6px;">iOS winners</label>
+                            <input type="number" id="secretGiveawayIosWinnersInput" min="0" step="1" value="0"
+                                style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box;">
+                        </div>
+                        <div style="flex:1;">
+                            <label style="display:block; margin-bottom:6px;">Android winners</label>
+                            <input type="number" id="secretGiveawayAndroidWinnersInput" min="0" step="1" value="0"
+                                style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box;">
+                        </div>
+                    </div>
+
+                    <div style="display:flex; gap:10px; margin-bottom:14px;">
+                        <div style="flex:1;">
+                            <label style="display:block; margin-bottom:6px;">Duration (hours to enter)</label>
+                            <input type="number" id="secretGiveawayDurationInput" min="1" step="1" value="24"
+                                style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box;">
+                        </div>
+                        <div style="flex:1;">
+                            <label style="display:block; margin-bottom:6px;">Auto-delete after (days)</label>
+                            <input type="number" id="secretGiveawayDeleteDaysInput" min="1" step="1" value="30"
+                                style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box;">
+                        </div>
+                    </div>
+
+                    <div style="display:flex; gap:8px;">
+                        <button class="btn-primary" id="createSecretGiveawayBtn" onclick="handleCreateSecretGiveaway()"
+                            style="padding:10px 20px;">Create</button>
+                        <button class="btn-primary" onclick="closeCreateSecretGiveawayForm()"
+                            style="padding:10px 20px; background:#555; border-color:#555;">Cancel</button>
+                    </div>
+                </div>
+
+                <div id="secretGiveawaysList"></div>
+
+                </details>
+
+                <hr style="border-color:#2a2a4a; margin:40px 0;">
+
+                <details class="admin-section">
+                <summary>🛠️ Server Maintenance</summary>
                 <p class="promo-sub" id="maintenanceStatusText">Loading status...</p>
                 <textarea id="maintenanceMessageInput"
                     placeholder="Message shown to users while maintenance is active, e.g. 'We're updating troop data — some pages may look off for a few minutes.'"
@@ -229,9 +350,12 @@
                         style="padding:12px 24px; background:#45aa38; border-color:#45aa38;">🟢 Turn OFF</button>
                 </div>
 
+                </details>
+
                 <hr style="border-color:#2a2a4a; margin:40px 0;">
 
-                <h2>📣 Post an Announcement</h2>
+                <details class="admin-section">
+                <summary>📣 Post an Announcement</summary>
 <p class="promo-sub">Appears in everyone's Inbox immediately (under "General"). Use for site-wide
     updates, downtime notices, etc. — not tied to a specific promo/tip. The body field accepts
     <strong>raw HTML</strong>, so you can bold text, add line breaks, or add links.</p>
@@ -245,9 +369,12 @@
     style="margin-top:12px; padding:12px 28px;">Post Announcement</button>
                 <div id="recentAnnouncementsList" style="margin-top:16px; text-align:left;"></div>
 
+                </details>
+
                 <hr style="border-color:#2a2a4a; margin:40px 0;">
 
-                <h2>🎁 Post a Promo Code</h2>
+                <details class="admin-section">
+                <summary>🎁 Post a Promo Code</summary>
                 <p class="promo-sub">This appears instantly on the Promo Codes page and notifies everyone via their
                     inbox.
                 </p>
@@ -257,9 +384,12 @@
                     style="margin-top:12px; padding:12px 28px;">Post Code</button>
                 <div id="recentCodesList" style="margin-top:16px; text-align:left;"></div>
 
+                </details>
+
                 <hr style="border-color:#2a2a4a; margin:40px 0;">
 
-                <h2>💡 Post a Tip</h2>
+                <details class="admin-section">
+                <summary>💡 Post a Tip</summary>
                 <p class="promo-sub">This appears on the Tips page and notifies everyone via their inbox.</p>
                 <input type="text" id="newTipTitleInput" placeholder="Tip title, e.g. IRON GUARDS"
                     style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box; margin-bottom:10px;">
@@ -287,9 +417,12 @@
                     style="margin-top:12px; padding:12px 28px;">Post Tip</button>
                 <div id="recentTipsList" style="margin-top:16px; text-align:left; max-height:420px; overflow-y:auto; padding-right:6px;"></div>
 
+                </details>
+
                 <hr style="border-color:#2a2a4a; margin:40px 0;">
 
-                <h2>📰 Post News / Rumours</h2>
+                <details class="admin-section">
+                <summary>📰 Post News / Rumours</summary>
                 <p class="promo-sub">Shown via the news icon in the top bar (next to Friends) for every visitor —
                     no sign-in needed to view. The body field accepts <strong>raw HTML</strong>, so you can bold
                     text, add line breaks, links, or embed an image with an <code>&lt;img&gt;</code> tag pointing
@@ -319,29 +452,41 @@
                     style="margin-top:12px; padding:12px 28px;">Post News</button>
                 <div id="recentNewsList" style="margin-top:16px; text-align:left; max-height:420px; overflow-y:auto; padding-right:6px;"></div>
 
+                </details>
+
                 <hr style="border-color:#2a2a4a; margin:40px 0;">
 
-                <h2>🚩 Reports Queue</h2>
+                <details class="admin-section">
+                <summary>🚩 Reports Queue</summary>
                 <p class="promo-sub">Reports from users about clan posts or DMs. Reviewing one shows the reported
                     content
                     plus a shortcut to that account's name-change history before you act.</p>
                 <div id="reportsList" style="text-align:left;"></div>
 
+                </details>
+
                 <hr style="border-color:#2a2a4a; margin:40px 0;">
 
-                <h2>⏱️ Active Timeouts</h2>
+                <details class="admin-section">
+                <summary>⏱️ Active Timeouts</summary>
                 <p class="promo-sub">Users currently serving a temporary timeout. Remove it early if needed.</p>
                 <div id="timeoutsList" style="text-align:left;"></div>
 
+                </details>
+
                 <hr style="border-color:#2a2a4a; margin:40px 0;">
 
-                <h2>🔨 Banned Users</h2>
+                <details class="admin-section">
+                <summary>🔨 Banned Users</summary>
                 <p class="promo-sub">Users currently permanently banned.</p>
                 <div id="bansList" style="text-align:left;"></div>
 
+                </details>
+
                 <hr style="border-color:#2a2a4a; margin:40px 0;">
 
-                <h2>🔨 Moderation Lookup</h2>
+                <details class="admin-section">
+                <summary>🔨 Moderation Lookup</summary>
                 <p class="promo-sub">Look up any player by their in-game name (can be changed) or their email address
                     (tied to their Google account — more reliable for a repeat offender who keeps renaming themselves).</p>
                 <div style="display:flex; gap:8px; margin-bottom:10px;">
@@ -380,12 +525,31 @@
     style="background:#555; color:white; border:none; border-radius:8px; padding:10px 20px; cursor:pointer;">Backfill
     Public Profile Search Index</button>
 <div id="backfillNameLowerResult" style="margin-top:12px; text-align:left;"></div>
+                </details>
             </div>
 
         </div>
 
         <script type="module" src="appState.js"></script>
         <script type="module">
+            // Remember each collapsible section's open/closed state across
+            // visits, keyed by its own summary text (stable and readable,
+            // no need to hand-assign ids to every <details>). Applies saved
+            // state on load, then keeps saving on every toggle.
+            (function initAdminSectionCollapse() {
+                document.querySelectorAll(".admin-section").forEach((section) => {
+                    const summary = section.querySelector(":scope > summary");
+                    if (!summary) return;
+                    const key = "kih_admin_section_" + summary.textContent.trim();
+                    const saved = localStorage.getItem(key);
+                    if (saved === "closed") section.removeAttribute("open");
+                    else if (saved === "open") section.setAttribute("open", "");
+                    section.addEventListener("toggle", () => {
+                        localStorage.setItem(key, section.open ? "open" : "closed");
+                    });
+                });
+            })();
+
             let pickedWinner = null;
             let pickedWeekId = null;
             function showInfoModal(title, message) {
@@ -626,6 +790,219 @@
                 }
             }
             window.handleSendPendingPrize = handleSendPendingPrize;
+
+            /* ---------------- SECRET GIVEAWAYS ---------------- */
+            window.openCreateSecretGiveawayForm = function () {
+                document.getElementById("secretGiveawayTitleInput").value = "";
+                document.getElementById("secretGiveawayPrizeInput").value = "";
+                document.getElementById("secretGiveawayRequiresPasswordInput").checked = true;
+                document.getElementById("secretGiveawayPasswordWrap").style.display = "block";
+                document.getElementById("secretGiveawayPasswordInput").value = "";
+                document.getElementById("secretGiveawayIosWinnersInput").value = "0";
+                document.getElementById("secretGiveawayAndroidWinnersInput").value = "0";
+                document.getElementById("secretGiveawayDurationInput").value = "24";
+                document.getElementById("secretGiveawayDeleteDaysInput").value = "30";
+                document.getElementById("createSecretGiveawayForm").style.display = "block";
+            };
+            window.closeCreateSecretGiveawayForm = function () {
+                document.getElementById("createSecretGiveawayForm").style.display = "none";
+            };
+
+            window.handleCreateSecretGiveaway = async function () {
+                const title = document.getElementById("secretGiveawayTitleInput").value;
+                const prizeDescription = document.getElementById("secretGiveawayPrizeInput").value;
+                const requiresPassword = document.getElementById("secretGiveawayRequiresPasswordInput").checked;
+                const password = document.getElementById("secretGiveawayPasswordInput").value;
+                const iosWinnerCount = document.getElementById("secretGiveawayIosWinnersInput").value;
+                const androidWinnerCount = document.getElementById("secretGiveawayAndroidWinnersInput").value;
+                const durationHours = document.getElementById("secretGiveawayDurationInput").value;
+                const deleteAfterDays = document.getElementById("secretGiveawayDeleteDaysInput").value;
+
+                const btn = document.getElementById("createSecretGiveawayBtn");
+                btn.disabled = true;
+                btn.textContent = "Creating...";
+                try {
+                    await AppState.createSecretGiveaway({
+                        title, prizeDescription, requiresPassword, password,
+                        iosWinnerCount, androidWinnerCount, durationHours, deleteAfterDays
+                    });
+                    closeCreateSecretGiveawayForm();
+                    showInfoModal("Done", "Secret giveaway created.");
+                    await refreshSecretGiveawaysList();
+                } catch (e) {
+                    showInfoModal("Couldn't create", e.message);
+                }
+                btn.disabled = false;
+                btn.textContent = "Create";
+            };
+
+            function formatSecretGiveawayTimeLeft(expiresAt) {
+                const msLeft = expiresAt - Date.now();
+                if (msLeft <= 0) return "Ended";
+                const hours = msLeft / (60 * 60 * 1000);
+                if (hours < 1) return Math.ceil(hours * 60) + "m left";
+                if (hours < 48) return hours.toFixed(1) + "h left";
+                return Math.ceil(hours / 24) + "d left";
+            }
+
+            async function refreshSecretGiveawaysList() {
+                const list = document.getElementById("secretGiveawaysList");
+                if (!list) return;
+                try {
+                    if (unsubSecretGiveaways) { unsubSecretGiveaways(); }
+                    unsubSecretGiveaways = AppState.listenToSecretGiveaways((items) => {
+                        renderSecretGiveawaysList(items);
+                        sweepExpiredSecretGiveaways(items);
+                    });
+                } catch (e) {
+                    list.innerHTML = `<p class="promo-sub">Error: ${escapeHtml(e.message)}</p>`;
+                }
+            }
+            let unsubSecretGiveaways = null;
+            let secretGiveawaySweeping = false;
+
+            // Lazy cleanup: nothing schedules this on a timer, so it only
+            // runs when this admin panel happens to be open past a
+            // giveaway's deleteAt date. Fully cascades (entries, private
+            // subdocs) since only admin can delete those subcollections.
+            async function sweepExpiredSecretGiveaways(items) {
+                if (secretGiveawaySweeping) return;
+                const now = Date.now();
+                const expired = items.filter(g => g.deleteAt && g.deleteAt <= now);
+                if (!expired.length) return;
+                secretGiveawaySweeping = true;
+                try {
+                    for (const g of expired) {
+                        try { await AppState.deleteSecretGiveaway(g.id); }
+                        catch (e) { console.warn("Sweep failed for", g.id, e.message); }
+                    }
+                } finally {
+                    secretGiveawaySweeping = false;
+                }
+            }
+
+            function renderSecretGiveawaysList(items) {
+                const list = document.getElementById("secretGiveawaysList");
+                if (!list) return;
+                if (!items.length) {
+                    list.innerHTML = '<p class="promo-sub">No secret giveaways yet.</p>';
+                    return;
+                }
+                list.innerHTML = items.map(g => {
+                    const isExpired = g.expiresAt <= Date.now();
+                    const winners = g.winners || [];
+                    const iosWon = winners.filter(w => w.platform === "ios").length;
+                    const androidWon = winners.filter(w => w.platform === "android").length;
+                    const iosSlots = g.iosWinnerCount || 0;
+                    const androidSlots = g.androidWinnerCount || 0;
+                    const fullyDrawn = iosWon >= iosSlots && androidWon >= androidSlots;
+
+                    // Each winner gets its own "Resend" button — resending
+                    // isn't just for typos, it's the recovery path if the
+                    // original code save ever failed after the winner was
+                    // already recorded (finalizeSecretGiveawayPrize is
+                    // idempotent for exactly this reason).
+                    function winnerLine(list, label, emoji) {
+                        if (!list.length) return "";
+                        const items = list.map(w => {
+                            const safeName = escapeHtml(w.name).replace(/'/g, "\\'");
+                            return `${escapeHtml(w.name)} <button onclick="handleResendSecretCode('${g.id}', '${w.uid}', '${safeName}', '${w.platform}')" style="font-size:0.7rem; padding:2px 8px; margin-left:2px; border-radius:4px; border:1px solid gray; background:#2a2a4a; color:white; cursor:pointer;">✉️ Resend</button>`;
+                        }).join(", ");
+                        return `<p class="promo-sub" style="margin:0 0 4px;">${emoji} ${label}: ${items}</p>`;
+                    }
+
+                    let statusHtml = `<p class="promo-sub" style="margin:0 0 4px;">👥 ${g.entryCount || 0} entries ${g.requiresPassword ? "🔒" : "🔓"}</p>`;
+                    statusHtml += `<p class="promo-sub" style="margin:0 0 4px;">${isExpired ? "⏰ Entries closed" : "🟢 " + formatSecretGiveawayTimeLeft(g.expiresAt)}</p>`;
+                    if (iosSlots > 0) statusHtml += `<p class="promo-sub" style="margin:0 0 4px;">🍎 iOS winners: ${iosWon}/${iosSlots}</p>` + winnerLine(winners.filter(w => w.platform === "ios"), "iOS", "🍎");
+                    if (androidSlots > 0) statusHtml += `<p class="promo-sub" style="margin:0 0 4px;">🤖 Android winners: ${androidWon}/${androidSlots}</p>` + winnerLine(winners.filter(w => w.platform === "android"), "Android", "🤖");
+                    if (fullyDrawn) statusHtml += `<p class="promo-sub" style="color:gold; margin:0 0 4px;">🏆 Fully drawn</p>`;
+
+                    let pickButtons = "";
+                    if (iosWon < iosSlots) pickButtons += `<button class="btn-primary" onclick="handlePickSecretWinner('${g.id}', 'ios')" style="padding:8px 16px; margin-right:8px;">🎲 Pick iOS Winner</button>`;
+                    if (androidWon < androidSlots) pickButtons += `<button class="btn-primary" onclick="handlePickSecretWinner('${g.id}', 'android')" style="padding:8px 16px; margin-right:8px;">🎲 Pick Android Winner</button>`;
+
+                    const deleteLabel = fullyDrawn ? "🗑️ Delete" : (isExpired ? "🗑️ Delete" : "🗑️ End Early / Delete");
+                    const viewPasswordBtn = g.requiresPassword
+                        ? `<button class="btn-primary" onclick="handleViewSecretPassword('${g.id}')" style="padding:8px 16px; margin-right:8px; background:#555; border-color:#555;">👁️ View Password</button>`
+                        : "";
+                    const actionsHtml = `${pickButtons}${viewPasswordBtn}<button class="btn-primary" onclick="handleDeleteSecretGiveaway('${g.id}')" style="padding:8px 16px; background:#c62828; border-color:#c62828;">${deleteLabel}</button>`;
+
+                    return `
+                    <div style="margin-bottom:16px; padding:16px; border:1px solid #2a2a4a; border-radius:10px; text-align:left;">
+                        <h4 style="margin:0 0 4px;">${escapeHtml(g.title)}</h4>
+                        ${statusHtml}
+                        <div id="secretWinnerPick_${g.id}" style="display:none; margin-top:10px; padding:14px; border:1px solid #4169e1; border-radius:8px;"></div>
+                        <div style="margin-top:10px;">${actionsHtml}</div>
+                    </div>`;
+                }).join("");
+            }
+
+            window.handlePickSecretWinner = async function (giveawayId, platform) {
+                if (!await showConfirmModal("Pick winner", `Pick a random ${platform} winner from this giveaway's entries?`)) return;
+                try {
+                    const result = await AppState.pickSecretGiveawayWinner(giveawayId, platform);
+                    const container = document.getElementById("secretWinnerPick_" + giveawayId);
+                    const safeName = escapeHtml(result.winner.name).replace(/'/g, "\\'");
+                    container.innerHTML = `
+                        <p style="margin:0 0 4px;"><strong>Winner (${platform}):</strong> ${escapeHtml(result.winner.name)}</p>
+                        <p class="promo-sub" style="margin:0 0 10px;"><strong>Remaining pool:</strong> ${result.entryCount}</p>
+                        <label style="display:block; margin-bottom:6px;">Prize code to send:</label>
+                        <input type="text" id="secretPrizeCodeInput_${giveawayId}" placeholder="e.g. KCJUNE26"
+                            style="width:100%; padding:10px; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box;">
+                        <button class="btn-primary" onclick="handleConfirmSecretWinner('${giveawayId}', '${result.winner.uid}', '${safeName}', '${platform}')"
+                            style="margin-top:10px; padding:10px 20px;">Confirm &amp; Send Prize</button>
+                    `;
+                    container.style.display = "block";
+                } catch (e) {
+                    showInfoModal("Pick failed", e.message);
+                }
+            };
+
+            window.handleConfirmSecretWinner = async function (giveawayId, winnerUid, winnerName, platform) {
+                const input = document.getElementById("secretPrizeCodeInput_" + giveawayId);
+                const code = input.value;
+                if (!code.trim()) { showInfoModal("Missing code", "Type in the promo code before confirming."); return; }
+                if (!await showConfirmModal("Send prize", `Send "${code.trim()}" to ${winnerName}? This can't be undone.`)) return;
+                try {
+                    await AppState.finalizeSecretGiveawayPrize(giveawayId, winnerUid, winnerName, platform, code);
+                    await refreshSecretGiveawaysList();
+                } catch (e) {
+                    showInfoModal("Failed to save", e.message);
+                }
+            };
+
+            window.handleViewSecretPassword = async function (giveawayId) {
+                try {
+                    const password = await AppState.getSecretGiveawayPassword(giveawayId);
+                    showInfoModal("Password", password || "(no password set)");
+                } catch (e) {
+                    showInfoModal("Couldn't load", e.message);
+                }
+            };
+
+            window.handleResendSecretCode = async function (giveawayId, winnerUid, winnerName, platform) {
+                const code = await showPromptModal(`Prize code to (re)send to ${winnerName}?`, "");
+                if (code === null) return;
+                if (!code.trim()) { showInfoModal("Missing code", "Type in the promo code before confirming."); return; }
+                if (!await showConfirmModal("Send prize", `Send "${code.trim()}" to ${winnerName}? This overwrites any code already saved for them.`)) return;
+                try {
+                    await AppState.finalizeSecretGiveawayPrize(giveawayId, winnerUid, winnerName, platform, code);
+                    showInfoModal("Sent", "Prize code saved.");
+                    await refreshSecretGiveawaysList();
+                } catch (e) {
+                    showInfoModal("Failed to save", e.message);
+                }
+            };
+
+            window.handleDeleteSecretGiveaway = async function (giveawayId) {
+                if (!await showConfirmModal("Delete this giveaway?", "This removes it and all its entries permanently. If any winners were already drawn, this does not un-send prizes that were already delivered.")) return;
+                try {
+                    await AppState.deleteSecretGiveaway(giveawayId);
+                    await refreshSecretGiveawaysList();
+                } catch (e) {
+                    showInfoModal("Couldn't delete", e.message);
+                }
+            };
 
 async function refreshMaintenanceStatus() {
                 try {
@@ -1639,6 +2016,7 @@ async function handleLookupUserByUid() {
                 refreshRecentAnnouncements();
                 refreshMissedWeeks();
                 refreshPendingPrizes();
+                refreshSecretGiveawaysList();
             });
             AppState.onAuthChange(refreshAdminState);
 
