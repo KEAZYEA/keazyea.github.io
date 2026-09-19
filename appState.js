@@ -25,7 +25,8 @@ import {
     Timestamp,
     documentId,
     increment,
-    runTransaction
+    runTransaction,
+    arrayUnion
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
 import {
@@ -3235,6 +3236,340 @@ async function sendAdminMessage(uid, title, body) {
         return data.weekId === weekId ? data : null;
     }
 
+    /* ======================================================
+       SECRET GIVEAWAYS — admin-created, one-off, optionally password-gated,
+       with independent iOS/Android winner slots (unlike the automatic
+       weekly cycle above). The password (when required) never lives on the
+       publicly-readable document — it's in a `private/secret` subdoc only
+       admin can read directly. An entrant's guess is validated server-side
+       by a rule comparing it against that private doc, so the correct
+       password is never exposed by simply reading the giveaway. Likewise
+       the reward description lives in `private/config`, readable only once
+       you've actually entered — so nobody can see what's up for grabs
+       without committing an entry first. Each winner's redemption code is
+       written to its own `prizeCodes/{uid}` doc, readable only by
+       that winner, so winners can never see each other's codes.
+       ====================================================== */
+
+    async function createSecretGiveaway({ title, prizeDescription, requiresPassword, password, durationHours, deleteAfterDays, iosWinnerCount, androidWinnerCount }) {
+        await waitForAuthReady();
+        if (!currentUser || currentUser.uid !== ADMIN_UID) throw new Error("Not authorized.");
+
+        const cleanTitle = (title || "").trim();
+        const cleanPrize = (prizeDescription || "").trim();
+        const needsPassword = !!requiresPassword;
+        const cleanPassword = (password || "").trim();
+        const hours = parseFloat(durationHours);
+        const deleteDays = parseFloat(deleteAfterDays) || 30;
+        const iosCount = Math.max(0, parseInt(iosWinnerCount, 10) || 0);
+        const androidCount = Math.max(0, parseInt(androidWinnerCount, 10) || 0);
+
+        if (!cleanTitle) throw new Error("Give the giveaway a title.");
+        if (!cleanPrize) throw new Error("Describe the prize.");
+        if (needsPassword && !cleanPassword) throw new Error("Set a password, or turn off the password requirement.");
+        if (!hours || hours <= 0) throw new Error("Duration must be a positive number of hours.");
+        if (iosCount + androidCount <= 0) throw new Error("Set at least one iOS or Android winner slot.");
+
+        const now = Date.now();
+        const docRef = await addDoc(collection(db, "secretGiveaways"), {
+            title: cleanTitle,
+            createdBy: currentUser.uid,
+            createdAt: now,
+            expiresAt: now + hours * 60 * 60 * 1000,
+            deleteAt: now + deleteDays * 24 * 60 * 60 * 1000,
+            requiresPassword: needsPassword,
+            iosWinnerCount: iosCount,
+            androidWinnerCount: androidCount,
+            entryCount: 0,
+            winners: []
+        });
+        await setDoc(doc(db, "secretGiveaways", docRef.id, "private", "config"), {
+            prizeDescription: cleanPrize
+        });
+        if (needsPassword) {
+            await setDoc(doc(db, "secretGiveaways", docRef.id, "private", "secret"), {
+                password: cleanPassword
+            });
+        }
+        return docRef.id;
+    }
+
+    async function deleteSecretGiveaway(giveawayId) {
+        await waitForAuthReady();
+        if (!currentUser || currentUser.uid !== ADMIN_UID) throw new Error("Not authorized.");
+        try {
+            const entriesSnap = await getDocs(collection(db, "secretGiveaways", giveawayId, "entries"));
+            await Promise.all(entriesSnap.docs.map(d => deleteDoc(d.ref)));
+        } catch (e) {
+            console.warn("Couldn't clean up secret giveaway entries:", e.message);
+        }
+        try {
+            const publicSnap = await getDocs(collection(db, "secretGiveaways", giveawayId, "publicEntries"));
+            await Promise.all(publicSnap.docs.map(d => deleteDoc(d.ref)));
+        } catch (e) {
+            console.warn("Couldn't clean up secret giveaway public entries:", e.message);
+        }
+        try {
+            const codesSnap = await getDocs(collection(db, "secretGiveaways", giveawayId, "prizeCodes"));
+            await Promise.all(codesSnap.docs.map(d => deleteDoc(d.ref)));
+        } catch (e) {
+            console.warn("Couldn't clean up secret giveaway prize codes:", e.message);
+        }
+        try {
+            await deleteDoc(doc(db, "secretGiveaways", giveawayId, "private", "config"));
+        } catch (e) {
+            console.warn("Couldn't clean up secret giveaway config:", e.message);
+        }
+        try {
+            await deleteDoc(doc(db, "secretGiveaways", giveawayId, "private", "secret"));
+        } catch (e) {
+            console.warn("Couldn't clean up secret giveaway secret:", e.message);
+        }
+        await deleteDoc(doc(db, "secretGiveaways", giveawayId));
+    }
+
+    function listenToSecretGiveaways(callback, maxCount = 50) {
+        const q = query(collection(db, "secretGiveaways"), orderBy("createdAt", "desc"), limit(maxCount));
+        return onSnapshot(q, (snap) => {
+            const items = [];
+            snap.forEach(d => items.push({ id: d.id, ...d.data() }));
+            callback(items);
+        });
+    }
+
+    async function getSecretGiveaway(giveawayId) {
+        const snap = await getDoc(doc(db, "secretGiveaways", giveawayId));
+        return snap.exists() ? { id: snap.id, ...snap.data() } : null;
+    }
+
+    // Admin-only lookup so the creator can recover a password they forgot —
+    // the rule on this subdoc only allows admin's own authenticated uid to
+    // read it, so nobody else's client can pull it regardless of what this
+    // function does.
+    async function getSecretGiveawayPassword(giveawayId) {
+        await waitForAuthReady();
+        if (!currentUser || currentUser.uid !== ADMIN_UID) throw new Error("Not authorized.");
+        const snap = await getDoc(doc(db, "secretGiveaways", giveawayId, "private", "secret"));
+        return snap.exists() ? (snap.data().password || null) : null;
+    }
+
+    async function hasEnteredSecretGiveaway(giveawayId) {
+        await waitForAuthReady();
+        if (!currentUser) return false;
+        const snap = await getDoc(doc(db, "secretGiveaways", giveawayId, "entries", currentUser.uid));
+        return snap.exists();
+    }
+
+    async function getMySecretGiveawayEntry(giveawayId) {
+        await waitForAuthReady();
+        if (!currentUser) return null;
+        const snap = await getDoc(doc(db, "secretGiveaways", giveawayId, "entries", currentUser.uid));
+        return snap.exists() ? { id: snap.id, ...snap.data() } : null;
+    }
+
+    // Lets someone who fat-fingered their platform fix it, same idea as the
+    // weekly giveaway's "Switch Device" — only the `platform` field can
+    // change (enforced by the rule), and only while entries are still open.
+    async function switchSecretGiveawayPlatform(giveawayId, platform) {
+        await waitForAuthReady();
+        if (!currentUser) throw new Error("You must sign in with Google first.");
+        if (platform !== "ios" && platform !== "android") throw new Error("Pick a platform (iOS or Android).");
+        const giveawaySnap = await getDoc(doc(db, "secretGiveaways", giveawayId));
+        if (!giveawaySnap.exists()) throw new Error("This giveaway no longer exists.");
+        const slotField = platform === "ios" ? "iosWinnerCount" : "androidWinnerCount";
+        if (!(giveawaySnap.data()[slotField] > 0)) {
+            throw new Error(`This giveaway doesn't have any ${platform === "ios" ? "iOS" : "Android"} winner slots.`);
+        }
+        await updateDoc(doc(db, "secretGiveaways", giveawayId, "entries", currentUser.uid), { platform });
+        await updateDoc(doc(db, "secretGiveaways", giveawayId, "publicEntries", currentUser.uid), { platform });
+    }
+
+    // Lets someone remove their own entry — used when switching the
+    // page-wide device choice to a platform this particular giveaway
+    // doesn't offer at all, since there's nothing to migrate the entry to.
+    async function leaveSecretGiveaway(giveawayId) {
+        await waitForAuthReady();
+        if (!currentUser) throw new Error("You must sign in with Google first.");
+        // Decrement first — if this write is rejected (e.g. a stale set of
+        // rules that doesn't yet allow the -1 branch), nothing else has
+        // changed yet, so the entry stays fully intact instead of ending up
+        // half-deleted with a stale counter that later causes a duplicate
+        // entryCount bump if the user re-enters.
+        await updateDoc(doc(db, "secretGiveaways", giveawayId), { entryCount: increment(-1) });
+        await deleteDoc(doc(db, "secretGiveaways", giveawayId, "entries", currentUser.uid));
+        try {
+            await deleteDoc(doc(db, "secretGiveaways", giveawayId, "publicEntries", currentUser.uid));
+        } catch (e) {
+            console.warn("Couldn't clean up public entry:", e.message);
+        }
+    }
+
+    // Reveals the reward description once you've entered — gated server-side
+    // by a rule that only allows reading this doc if an entries/{you} doc
+    // exists (or you're admin), so the prize stays hidden from anyone who
+    // hasn't actually committed to an entry.
+    async function getSecretGiveawayRewardDescription(giveawayId) {
+        await waitForAuthReady();
+        if (!currentUser) return null;
+        try {
+            const snap = await getDoc(doc(db, "secretGiveaways", giveawayId, "private", "config"));
+            return snap.exists() ? (snap.data().prizeDescription || null) : null;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    // The write only succeeds if `password` matches what's stored in the
+    // giveaway's private secret doc (when required) — enforced by a
+    // Firestore rule, not by this function, so a modified client can't
+    // bypass the check.
+    async function enterSecretGiveaway(giveawayId, platform, password) {
+        await waitForAuthReady();
+        if (!currentUser) throw new Error("You must sign in with Google first to enter.");
+        if (platform !== "ios" && platform !== "android") throw new Error("Pick a platform (iOS or Android) to enter.");
+        const profile = await getProfile();
+        if (isBannedNow(profile)) {
+            showRestrictedNotice(profile.banReason, profile.banUntil);
+            throw new Error("__RESTRICTED__");
+        }
+        if (!profile.name) throw new Error("Set an in-game name in your profile before entering.");
+
+        const giveawaySnap = await getDoc(doc(db, "secretGiveaways", giveawayId));
+        if (!giveawaySnap.exists()) throw new Error("This giveaway no longer exists.");
+        if (giveawaySnap.data().expiresAt <= Date.now()) throw new Error("This giveaway has ended.");
+        const slotField = platform === "ios" ? "iosWinnerCount" : "androidWinnerCount";
+        if (!(giveawaySnap.data()[slotField] > 0)) {
+            throw new Error(`This giveaway doesn't have any ${platform === "ios" ? "iOS" : "Android"} winner slots.`);
+        }
+
+        const entryData = {
+            uid: currentUser.uid,
+            name: profile.name,
+            avatar: profile.avatar || "",
+            platform,
+            enteredAt: Date.now()
+        };
+        if (giveawaySnap.data().requiresPassword) {
+            entryData.password = (password || "").trim();
+        }
+        try {
+            await setDoc(doc(db, "secretGiveaways", giveawayId, "entries", currentUser.uid), entryData);
+        } catch (e) {
+            // A rejected write here almost always means a wrong password —
+            // Firestore doesn't say which condition failed, so that's the
+            // one client-facing message that makes sense by default.
+            throw new Error("Incorrect password, or this giveaway has ended.");
+        }
+        // A separate, publicly-readable copy with no password — this is what
+        // lets the reveal animation cycle through real participant names
+        // instead of filler placeholders. Its create rule requires the
+        // private entries doc above to already exist for this uid, so it
+        // can't be written on its own to fake an entry.
+        await setDoc(doc(db, "secretGiveaways", giveawayId, "publicEntries", currentUser.uid), {
+            uid: currentUser.uid,
+            name: profile.name,
+            platform
+        });
+        await updateDoc(doc(db, "secretGiveaways", giveawayId), { entryCount: increment(1) });
+    }
+
+    // Anyone signed in can see who's competing — no password or identity
+    // details beyond name/platform, unlike the private `entries` collection.
+    async function getPublicSecretGiveawayEntries(giveawayId, platform = null) {
+        await waitForAuthReady();
+        if (!currentUser) return [];
+        const snap = await getDocs(collection(db, "secretGiveaways", giveawayId, "publicEntries"));
+        const items = [];
+        snap.forEach(d => items.push({ id: d.id, ...d.data() }));
+        return platform ? items.filter(e => e.platform === platform) : items;
+    }
+
+    async function getSecretGiveawayEntries(giveawayId, platform = null) {
+        await waitForAuthReady();
+        if (!currentUser || currentUser.uid !== ADMIN_UID) throw new Error("Not authorized.");
+        const snap = await getDocs(collection(db, "secretGiveaways", giveawayId, "entries"));
+        const items = [];
+        snap.forEach(d => items.push({ id: d.id, ...d.data() }));
+        return platform ? items.filter(e => e.platform === platform) : items;
+    }
+
+    // Randomly picks a winner from current entries for one platform,
+    // excluding anyone who has already won this giveaway on any platform —
+    // mirrors pickWeeklyWinner()'s "pick now, persist later" shape so admin
+    // can review before committing. Nothing is written yet.
+    async function pickSecretGiveawayWinner(giveawayId, platform) {
+        await waitForAuthReady();
+        if (!currentUser || currentUser.uid !== ADMIN_UID) throw new Error("Not authorized.");
+        const giveawaySnap = await getDoc(doc(db, "secretGiveaways", giveawayId));
+        if (!giveawaySnap.exists()) throw new Error("Giveaway not found.");
+        const alreadyWon = new Set((giveawaySnap.data().winners || []).map(w => w.uid));
+
+        const entries = await getSecretGiveawayEntries(giveawayId, platform);
+        const pool = entries.filter(e => !alreadyWon.has(e.uid));
+        if (!pool.length) throw new Error(`No remaining ${platform} entries to pick from.`);
+        const winner = pool[Math.floor(Math.random() * pool.length)];
+        return { giveawayId, platform, entryCount: pool.length, winner };
+    }
+
+    // Two writes (recording the winner, saving their code) can't be a single
+    // atomic transaction here — the winners-array update and the prizeCodes
+    // write live under different rule branches. So this is deliberately
+    // idempotent instead: the code write happens FIRST, and the winners
+    // array is only appended to if that person isn't already recorded on
+    // it. That way, if the code write fails partway (e.g. a rules mismatch)
+    // nothing else has changed and a straight retry fixes it. It also means
+    // this same function doubles as "resend/fix a code" for someone already
+    // marked as a winner, without hitting an "already won" dead end.
+    async function finalizeSecretGiveawayPrize(giveawayId, winnerUid, winnerName, platform, prizeCode) {
+        await waitForAuthReady();
+        if (!currentUser || currentUser.uid !== ADMIN_UID) throw new Error("Not authorized.");
+        const code = (prizeCode || "").trim();
+        if (!code) throw new Error("Enter the prize code to send.");
+
+        const giveawayRef = doc(db, "secretGiveaways", giveawayId);
+        const snap = await getDoc(giveawayRef);
+        if (!snap.exists()) throw new Error("Giveaway not found.");
+        const data = snap.data();
+        const winners = data.winners || [];
+        const alreadyRecorded = winners.some(w => w.uid === winnerUid);
+        if (!alreadyRecorded) {
+            const slotCount = platform === "ios" ? data.iosWinnerCount : data.androidWinnerCount;
+            const wonSoFar = winners.filter(w => w.platform === platform).length;
+            if (wonSoFar >= slotCount) throw new Error(`All ${platform} winner slots are already filled.`);
+        }
+
+        await setDoc(doc(db, "secretGiveaways", giveawayId, "prizeCodes", winnerUid), {
+            code,
+            platform,
+            wonAt: Date.now()
+        });
+        if (!alreadyRecorded) {
+            await updateDoc(giveawayRef, {
+                winners: arrayUnion({ uid: winnerUid, name: winnerName, platform, wonAt: Date.now() })
+            });
+        }
+        await addPersonalNotification(winnerUid, {
+            type: "secretGiveawayWin",
+            title: `🔒🎉 You won "${data.title}"!`,
+            body: "Tap to view your prize code.",
+            giveawayId
+        });
+    }
+
+    async function getSecretGiveawayPrize(giveawayId) {
+        await waitForAuthReady();
+        if (!currentUser) return null;
+        // The rule only lets admin or the actual winner read this doc —
+        // anyone else's read is rejected, so this resolves to null instead
+        // of throwing rather than making every caller handle that error.
+        try {
+            const snap = await getDoc(doc(db, "secretGiveaways", giveawayId, "prizeCodes", currentUser.uid));
+            return snap.exists() ? (snap.data().code || null) : null;
+        } catch (e) {
+            return null;
+        }
+    }
+
     /* ---------------- NEWS (admin-posted; body is stored/rendered as raw
        HTML so you can format it and embed <img> tags — safe here because
        Firestore rules restrict writes to the admin uid only, so nobody
@@ -3535,6 +3870,11 @@ async function maybeRefreshAd(containerId) {
         // admin
         isAdmin, pickWeeklyWinner, finalizeGiveawayPrize, getMyPrize,
         getMissedGiveawayWeeks, autoPickMissedWinners, getPendingPrizes, sendPendingPrize,
+        // secret giveaways (admin-created, optionally password-gated, multi-winner)
+        createSecretGiveaway, deleteSecretGiveaway, listenToSecretGiveaways, getSecretGiveaway,
+        getSecretGiveawayPassword, hasEnteredSecretGiveaway, getMySecretGiveawayEntry, switchSecretGiveawayPlatform,
+        leaveSecretGiveaway, enterSecretGiveaway, getSecretGiveawayEntries, getPublicSecretGiveawayEntries,
+        pickSecretGiveawayWinner, finalizeSecretGiveawayPrize, getSecretGiveawayPrize, getSecretGiveawayRewardDescription,
         // promo codes
         addPromoCode, getPromoCodes, updatePromoCode, deletePromoCode,
         // tips

@@ -1329,9 +1329,10 @@ body {
                     <span class="home-menu-icon">⚔️</span>
                     <span class="home-menu-text">Troops & Heroes<small>Browse & compare every unit</small></span>
                 </button>
-                <button class="home-menu-btn" onclick="goToPage('promo')">
+                <button class="home-menu-btn" onclick="goToPage('promo')" style="position:relative;">
                     <span class="home-menu-icon">🎁</span>
                     <span class="home-menu-text">Promo Codes<small>Latest codes & giveaway wheel</small></span>
+                    <span class="badge-dot" id="giveawayBadgeHome" style="display:none;"></span>
                 </button>
                 <button class="home-menu-btn" onclick="openTipsFresh()">
                     <span class="home-menu-icon">💡</span>
@@ -2052,6 +2053,10 @@ body {
             document.getElementById("homeTopbar").style.display = "flex";
             document.getElementById("pageTopbar").style.display = "none";
             document.getElementById("scrollBottomBtn").classList.remove("visible");
+            // The promo iframe marks giveaways "seen" in localStorage as the
+            // user browses them — re-check that now that they're back, since
+            // this page has no other way to know it changed mid-visit.
+            refreshGiveawayBadge();
         }
         function toggleMenu() {
             document.getElementById("menuDropdown").classList.toggle("open");
@@ -2903,12 +2908,58 @@ function getNewsTypeInfo(type) {
             });
         }
 
+        // Counts "ongoing giveaways you haven't looked at yet" — the weekly
+        // one (1 point while entries are open this week) plus one point per
+        // active secret giveaway. A giveaway drops off the count the moment
+        // its entry window closes or it's deleted (computed live off
+        // Firestore, not just off the "seen" flag), and also the moment the
+        // user actually visits that tab (promo.html sets the matching
+        // "kih_giveaway_seen_*" localStorage key when it renders each one —
+        // shared with this page since both run on the same origin).
+        let latestSecretGiveawaysForBadge = [];
+        function renderGiveawayBadgeFrom(secretItems) {
+            const now = Date.now();
+            let count = 0;
+            try {
+                if (AppState.isGiveawayOpen()) {
+                    const weekId = AppState.getWeekId();
+                    if (localStorage.getItem("kih_giveaway_seen_week_" + weekId) !== "1") count++;
+                }
+            } catch (e) { /* ignore — weekly count just won't contribute */ }
+            count += secretItems.filter(g =>
+                !(g.deleteAt && g.deleteAt <= now) &&
+                g.expiresAt > now &&
+                localStorage.getItem("kih_giveaway_seen_secret_" + g.id) !== "1"
+            ).length;
+            const el = document.getElementById("giveawayBadgeHome");
+            if (!el) return;
+            el.textContent = count > 9 ? "9+" : String(count);
+            el.style.display = count > 0 ? "flex" : "none";
+        }
+        function refreshGiveawayBadge() {
+            renderGiveawayBadgeFrom(latestSecretGiveawaysForBadge);
+        }
+
+        let unsubGiveawayBadge = null;
+        function startGiveawayBadgeListener() {
+            if (unsubGiveawayBadge) { unsubGiveawayBadge(); unsubGiveawayBadge = null; }
+            if (!AppState.getCurrentUser()) {
+                latestSecretGiveawaysForBadge = [];
+                renderGiveawayBadgeFrom([]);
+                return;
+            }
+            unsubGiveawayBadge = AppState.listenToSecretGiveaways((items) => {
+                latestSecretGiveawaysForBadge = items;
+                renderGiveawayBadgeFrom(items);
+            });
+        }
+
         function renderInboxBadgeFrom(notifications) {
             let lastSeenAt = parseInt(localStorage.getItem("kih_notif_last_seen_at") || "0", 10);
             let inboxOpen = document.getElementById("page-inbox").classList.contains("active");
             let unread = inboxOpen ? 0 : notifications.filter(n => {
                 // Personal notifications track their own read state per-doc.
-                if (n.type === "friendAccepted" || n.type === "formationComment" || n.type === "formationReply") return !n.read;
+                if (n.type === "friendAccepted" || n.type === "formationComment" || n.type === "formationReply" || n.type === "secretGiveawayWin") return !n.read;
                 return n.createdAt > lastSeenAt;
             }).length;
             let show = unread > 0;
@@ -2924,7 +2975,7 @@ function getNewsTypeInfo(type) {
         // Anything not explicitly listed (e.g. adminMessage, or any future
         // type) falls under "general" by default.
         function inboxCategoryFor(n) {
-            if (n.type === "promo" || n.type === "giveawayWin") return "promo";
+            if (n.type === "promo" || n.type === "giveawayWin" || n.type === "secretGiveawayWin") return "promo";
             if (n.type === "tip") return "tip";
             if (n.type === "friendAccepted" || n.type === "formationComment" || n.type === "formationReply") return "social";
             return "general";
@@ -2961,6 +3012,8 @@ function getNewsTypeInfo(type) {
     button = `<button class="btn-primary view-prize-inbox-btn" data-prize="${escapeHomeHtml(n.prize || "")}" data-pending="${n.pendingPrize ? "1" : "0"}" style="padding:6px 16px; font-size:0.85rem;">${n.prize ? "🎁 View Code" : "⏳ Status"}</button>`;
 } else if (n.type === "formationComment" || n.type === "formationReply") {
     button = `<button class="btn-primary" style="padding:6px 16px; font-size:0.85rem;" onclick="openInboxFormationPost('${n.postId}')">💬 View</button>`;
+} else if (n.type === "secretGiveawayWin") {
+    button = `<button class="btn-primary" style="padding:6px 16px; font-size:0.85rem;" onclick="openInboxSecretGiveaway('${n.giveawayId}')">🎁 View Prize</button>`;
 }
 // adminMessage and announcement need no button — title + body already contain everything
 
@@ -3024,6 +3077,8 @@ function getNewsTypeInfo(type) {
         button = `<button class="btn-primary view-prize-inbox-btn" data-prize="${escapeHomeHtml(n.prize || "")}" data-pending="${n.pendingPrize ? "1" : "0"}" style="margin-top:14px; padding:10px 20px; font-size:0.9rem;">${n.prize ? "🎁 View Code" : "⏳ Status"}</button>`;
     } else if (n.type === "formationComment" || n.type === "formationReply") {
         button = `<button class="btn-primary" style="margin-top:14px; padding:10px 20px; font-size:0.9rem;" onclick="openInboxFormationPost('${n.postId}')">💬 View</button>`;
+    } else if (n.type === "secretGiveawayWin") {
+        button = `<button class="btn-primary" style="margin-top:14px; padding:10px 20px; font-size:0.9rem;" onclick="openInboxSecretGiveaway('${n.giveawayId}')">🎁 View Prize</button>`;
     }
 
     content.innerHTML = `
@@ -3154,6 +3209,18 @@ window.closeInboxItemModal = closeInboxItemModal;
             goToPage("social");
         }
 
+        // Jump into Promo's Secret Giveaways tab and reveal this specific
+        // win (used by the "you won a secret giveaway" notification).
+        function openInboxSecretGiveaway(giveawayId) {
+            let frame = document.querySelector("#page-promo iframe");
+            let url = new URL(frame.getAttribute("src") || "promo.html", window.location.href);
+            url.searchParams.set("tab", "secret");
+            url.searchParams.set("secretGiveawayId", giveawayId);
+            frame.removeAttribute("data-src"); // see openInboxTip's comment above
+            frame.src = url.toString();
+            goToPage("promo");
+        }
+
         let unsubUnreadDmHome = null;
         function startUnreadDmListenerHome() {
             if (unsubUnreadDmHome) { unsubUnreadDmHome(); unsubUnreadDmHome = null; }
@@ -3187,6 +3254,7 @@ window.closeInboxItemModal = closeInboxItemModal;
                 startFriendReqListenerHome();
                 startPersonalNotifListener();
                 startUnreadDmListenerHome();
+                startGiveawayBadgeListener();
                 checkTermsGate();
             });
             let unsubTopbarProfile = null;
@@ -3204,6 +3272,7 @@ AppState.waitForAuthReady().then(() => {
     startFriendReqListenerHome();
     startPersonalNotifListener();
     startUnreadDmListenerHome();
+    startGiveawayBadgeListener();
     AppState.touchLastActive();
     setInterval(() => AppState.touchLastActive(), 5 * 60 * 1000);
     checkTermsGate();

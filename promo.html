@@ -31,8 +31,12 @@
             padding: 24px;
             width: 90%;
             max-width: 360px;
+            max-height: 85vh;
+            overflow-y: auto;
+            overscroll-behavior: contain;
             color: white;
             text-align: center;
+            box-sizing: border-box;
         }
 
         .center-modal-title {
@@ -55,17 +59,26 @@
 
         .center-modal-actions button {
             flex: 1;
-            padding: 12px 16px;
+        }
+
+        /* Base sizing lives on these classes directly (not just the
+           .center-modal-actions descendant rule above) — some buttons using
+           these classes, like the reveal modal's Close button, aren't
+           wrapped in .center-modal-actions and were rendering at the
+           browser's tiny default button size as a result. */
+        .center-modal-btn-confirm,
+        .center-modal-btn-cancel {
+            padding: 14px 16px;
             border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 600;
+            font-size: 1.05rem;
+            font-weight: 700;
             cursor: pointer;
-            border: none;
         }
 
         .center-modal-btn-confirm {
             background: #4169e1;
             color: white;
+            border: none;
         }
 
         .center-modal-btn-cancel {
@@ -149,6 +162,30 @@
             60% { transform: scale(1.12); opacity: 1; }
             100% { transform: scale(1); opacity: 1; }
         }
+
+        @keyframes reveal-pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.5); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 215, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
+        }
+
+        /* Same badge-dot component index.html uses for its own unread
+           counters — this file didn't have it defined at all yet. */
+        .badge-dot {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background: #ff4d4f;
+            color: white;
+            font-size: 0.65rem;
+            min-width: 16px;
+            height: 16px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 3px;
+        }
     </style>
 </head>
 
@@ -184,16 +221,37 @@
 </div>
 
     <div class="center-modal-overlay" id="prizeRevealModalOverlay">
-    <div class="center-modal-box" style="max-width:360px;">
-        <div class="center-modal-title">🎉 Your Prize</div>
-        <div id="prizeRevealBody" style="margin-bottom:16px;"></div>
-        <button class="center-modal-btn-cancel" id="prizeRevealCloseBtn" style="width:100%;">Close</button>
+    <div class="center-modal-box" style="max-width:360px; display:flex; flex-direction:column; overflow-y:hidden;">
+        <div class="center-modal-title" id="prizeRevealModalTitle" style="flex-shrink:0;">🎉 Your Prize</div>
+        <div id="prizeRevealBody" style="margin-bottom:16px; overflow-y:auto; flex:1; min-height:0;"></div>
+        <button class="center-modal-btn-cancel" id="prizeRevealCloseBtn"
+            style="width:100%; padding:18px 16px; font-size:1.2rem; border:2px solid #6c9bff; margin-top:4px; flex-shrink:0;">✖ Close</button>
+    </div>
+</div>
+
+    <!-- Generic confirm/info popup — replaces native confirm()/alert() so
+         nothing on this page shows the browser's own "this site says" style
+         dialog. showConfirmModal() shows both buttons; showInfoModal() hides
+         Cancel. -->
+    <div class="center-modal-overlay" id="genericModalOverlay">
+    <div class="center-modal-box">
+        <div class="center-modal-title" id="genericModalTitle"></div>
+        <div class="center-modal-body" id="genericModalBody"></div>
+        <div class="center-modal-actions">
+            <button class="center-modal-btn-cancel" id="genericModalCancelBtn">Cancel</button>
+            <button class="center-modal-btn-confirm" id="genericModalOkBtn">OK</button>
+        </div>
     </div>
 </div>
 
     <div class="tabs">
         <button class="tab-btn active" onclick="switchPromoTab('codes')">Latest Codes</button>
-        <button class="tab-btn" id="vipTabBtn" onclick="switchPromoTab('vip')">Weekly Giveaway </button>
+        <button class="tab-btn" id="vipTabBtn" onclick="switchPromoTab('vip')" style="position:relative;">Weekly Giveaway
+            <span class="badge-dot" id="vipTabBadge" style="display:none;"></span>
+        </button>
+        <button class="tab-btn" id="secretTabBtn" onclick="switchPromoTab('secret')" style="position:relative;">🔒 Secret Giveaways
+            <span class="badge-dot" id="secretTabBadge" style="display:none;"></span>
+        </button>
     </div>
 
     <div id="promoPage">
@@ -268,6 +326,7 @@
                         <p class="promo-sub" id="enteringAsLine">Entering as <strong id="giveawayPlayerName"></strong></p>
                         <p class="promo-sub">🗓️ New winner every Sunday. Next draw in: <strong
                                 id="giveawayCountdown"></strong></p>
+                        <p class="promo-sub" id="giveawayParticipantCount"></p>
 
                         <p id="joinedNotice" class="promo-sub" style="display:none; color:#45aa38;">✅ You're in for
                             this week!</p>
@@ -304,12 +363,140 @@
 
         </div>
 
+        <!-- ===== SECRET GIVEAWAYS TAB ===== -->
+        <div id="secretPage" class="page">
+            <div class="promo-grid">
+                <div class="promo-panel" style="max-width:600px; margin:0 auto; text-align:center; font-size:1.1rem;">
+                    <div id="secretSignedOutState" class="lock-screen" style="display:none;">
+                        <span class="vip-lock-icon-big">🔒</span>
+                        <h2>Sign in to enter</h2>
+                        <p class="promo-sub">Sign in with Google so we can track your entry and deliver your prize if
+                            you win.</p>
+                        <button class="btn-primary vip-unlock-btn" onclick="handleSignIn()"
+                            style="font-size:1.2rem; padding:16px 32px; margin-top:12px;">Sign in with Google</button>
+                    </div>
+
+                    <!-- Asked once, applies to every secret giveaway on this page — same
+                         idea as the weekly giveaway's device select, so an iOS player
+                         never even sees an Android-only giveaway (and vice versa). -->
+                    <div id="secretDeviceChoiceState" class="lock-screen" style="display:none;">
+                        <h2>Which device are you using?</h2>
+                        <p class="promo-sub">This decides which secret giveaways you'll see — you can switch anytime.</p>
+                        <div class="device-options" style="display:flex; justify-content:center; gap:16px; margin-top:16px;">
+                            <button class="btn-primary" onclick="chooseSecretDevice('ios')"
+                                style="display:flex; align-items:center; gap:8px; font-size:1.05rem; padding:14px 28px; border-radius:12px;">
+                                <span class="device-icon">🍎</span>iOS
+                            </button>
+                            <button class="btn-primary" onclick="chooseSecretDevice('android')"
+                                style="display:flex; align-items:center; gap:8px; font-size:1.05rem; padding:14px 28px; border-radius:12px;">
+                                <span class="device-icon">🤖</span>Android
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="secretListWrap" style="display:none; text-align:left;">
+                        <h2 style="text-align:center;">🔒 Secret Giveaways</h2>
+                        <p class="promo-sub" style="text-align:center; margin-bottom:8px;">Enter to reveal the
+                            reward — some need a password, ask around for it if so.</p>
+                        <p class="promo-sub" style="text-align:center; margin-bottom:16px;">Showing <strong id="secretDeviceLabel"></strong> giveaways.
+                            <button class="switch-device-btn" onclick="switchSecretDevice()" style="display:inline; margin:0 0 0 6px; padding:4px 10px; font-size:0.8rem;">🔄 Switch</button>
+                        </p>
+                        <div id="secretGiveawayList">
+                            <p class="promo-sub" style="text-align:center;">Loading...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <script type="module" src="appState.js"></script>
         <script type="module">
+
+            /* ---------------- MODAL SCROLL LOCK ----------------
+               Every popup on this page (switch-device, draw-day, history,
+               prize reveal, the generic confirm/info one) shares the
+               .center-modal-overlay class and gets opened/closed the same
+               way — classList.add/remove("open") — so a single observer
+               here covers all of them, including any added later, without
+               each open/close call site needing to know about scroll
+               locking. Watches for the "open" class instead of hooking every
+               call site individually.
+
+               Deliberately does NOT use `body { overflow: hidden }` — on
+               mobile (iOS Safari especially) that makes `position: fixed`
+               elements stop anchoring to the real screen and instead
+               anchor to the page's scrolled content, so a tall popup ends
+               up positioned partway down the page with the page behind it
+               visible above and below it instead of covering the full
+               screen. Pinning the body with `position: fixed` instead
+               avoids that, since it doesn't change how fixed DESCENDANTS
+               (like the overlay) compute their own position. */
+            let modalScrollLockSavedY = 0;
+            function updateModalScrollLock() {
+                const anyOpen = document.querySelector(".center-modal-overlay.open") !== null;
+                const isLocked = document.body.style.position === "fixed";
+                if (anyOpen && !isLocked) {
+                    modalScrollLockSavedY = window.scrollY;
+                    document.body.style.position = "fixed";
+                    document.body.style.top = `-${modalScrollLockSavedY}px`;
+                    document.body.style.left = "0";
+                    document.body.style.right = "0";
+                } else if (!anyOpen && isLocked) {
+                    document.body.style.position = "";
+                    document.body.style.top = "";
+                    document.body.style.left = "";
+                    document.body.style.right = "";
+                    window.scrollTo(0, modalScrollLockSavedY);
+                }
+            }
+            const modalScrollLockObserver = new MutationObserver(updateModalScrollLock);
+            document.querySelectorAll(".center-modal-overlay").forEach((el) => {
+                modalScrollLockObserver.observe(el, { attributes: true, attributeFilter: ["class"] });
+            });
+            updateModalScrollLock();
 
             /* ---------------- PROMO CODES (Firestore-backed) ---------------- */
             function escapeHtml(str) {
                 return String(str).replace(/[&<>"']/g, s => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[s]));
+            }
+
+            /* ---------------- GENERIC POPUP (replaces native confirm()/alert()) ---------------- */
+            function showConfirmModal(title, body, okLabel) {
+                return new Promise((resolve) => {
+                    document.getElementById("genericModalTitle").textContent = title;
+                    document.getElementById("genericModalBody").textContent = body;
+                    const okBtn = document.getElementById("genericModalOkBtn");
+                    const cancelBtn = document.getElementById("genericModalCancelBtn");
+                    okBtn.textContent = okLabel || "OK";
+                    cancelBtn.style.display = "block";
+                    const overlay = document.getElementById("genericModalOverlay");
+                    overlay.classList.add("open");
+                    function cleanup(result) {
+                        overlay.classList.remove("open");
+                        okBtn.onclick = null;
+                        cancelBtn.onclick = null;
+                        resolve(result);
+                    }
+                    okBtn.onclick = () => cleanup(true);
+                    cancelBtn.onclick = () => cleanup(false);
+                });
+            }
+            function showInfoModal(title, body) {
+                return new Promise((resolve) => {
+                    document.getElementById("genericModalTitle").textContent = title;
+                    document.getElementById("genericModalBody").textContent = body;
+                    const okBtn = document.getElementById("genericModalOkBtn");
+                    const cancelBtn = document.getElementById("genericModalCancelBtn");
+                    okBtn.textContent = "OK";
+                    cancelBtn.style.display = "none";
+                    const overlay = document.getElementById("genericModalOverlay");
+                    overlay.classList.add("open");
+                    okBtn.onclick = () => {
+                        overlay.classList.remove("open");
+                        okBtn.onclick = null;
+                        resolve();
+                    };
+                });
             }
 
             function renderPromoCodes(codes) {
@@ -408,7 +595,11 @@
                     document.getElementById("codesPage").classList.add("active");
                     document.querySelectorAll(".tab-btn")[0].classList.add("active");
                     AppState.maybeRefreshAd("promoAdSlot");
-                                } else {
+                } else if (tab === "secret") {
+                    document.getElementById("secretPage").classList.add("active");
+                    document.getElementById("secretTabBtn").classList.add("active");
+                    refreshSecretGiveawayState();
+                } else {
                     document.getElementById("vipPage").classList.add("active");
                     document.querySelectorAll(".tab-btn")[1].classList.add("active");
                     showState("loading");
@@ -482,6 +673,7 @@ document.getElementById("historyCloseBtn").addEventListener("click", () => {
 async function openPrizeReveal(weekId) {
     const overlay = document.getElementById("prizeRevealModalOverlay");
     const body = document.getElementById("prizeRevealBody");
+    document.getElementById("prizeRevealModalTitle").textContent = "🎉 Your Prize";
     if (!weekId) {
         body.innerHTML = "<p class='promo-sub'>No week specified.</p>";
         overlay.classList.add("open");
@@ -511,6 +703,200 @@ async function openPrizeReveal(weekId) {
     }
 }
 window.openPrizeReveal = openPrizeReveal;
+
+// One reveal flow for everyone — winner or not. Cycles through the real
+// entrants for one platform, lands on whoever actually won it, and ONLY
+// THEN (never before) checks whether the viewer themselves is among them
+// to decide whether to also show a prize code. There is no shortcut: the
+// winner has to watch the same spin as everyone else to find out.
+let secretRevealTarget = null;
+let secretRevealNames = [];
+
+async function openSecretGiveawayReveal(giveawayId, platform) {
+    const overlay = document.getElementById("prizeRevealModalOverlay");
+    const body = document.getElementById("prizeRevealBody");
+    // Neutral on purpose — unlike openPrizeReveal() above, this modal is
+    // shown to winners and non-winners alike, so it can't claim "Your
+    // Prize" before the spin has actually decided anything.
+    document.getElementById("prizeRevealModalTitle").textContent = "🎡 Giveaway Reveal";
+    body.innerHTML = "<p class='promo-sub'>Loading...</p>";
+    overlay.classList.add("open");
+
+    try {
+        const user = AppState.getCurrentUser();
+        const giveaway = await AppState.getSecretGiveaway(giveawayId);
+        if (!giveaway) { body.innerHTML = "<p class='promo-sub'>Giveaway not found.</p>"; return; }
+        const platformWinners = (giveaway.winners || []).filter(w => w.platform === platform);
+        if (!platformWinners.length) { body.innerHTML = "<p class='promo-sub'>No winners drawn for this platform yet.</p>"; return; }
+
+        const isMineIncluded = !!(user && platformWinners.some(w => w.uid === user.uid));
+        const landedText = platformWinners.map(w => w.name).join(", ");
+        const revealKey = "secret_" + giveawayId + "_" + platform;
+        secretRevealTarget = { giveawayId, name: landedText, revealKey, isMineIncluded };
+        const realEntrants = await AppState.getPublicSecretGiveawayEntries(giveawayId, platform);
+        secretRevealNames = buildSecretRevealPool(realEntrants.map(e => e.name), null);
+
+        const label = (platform === "ios" ? "🍎 iOS" : "🤖 Android") + " — " + giveaway.title;
+        if (isWheelRevealed(revealKey)) {
+            // Already revealed earlier — show the landed state immediately,
+            // no need to replay the animation.
+            body.innerHTML = renderSecretRevealBox(label, true);
+            if (isMineIncluded) {
+                const code = await AppState.getSecretGiveawayPrize(giveawayId);
+                if (code) body.insertAdjacentHTML("beforeend", renderSecretPrizeResult(code));
+                wireSecretCopyBtn(body);
+            } else {
+                body.insertAdjacentHTML("beforeend", renderSecretNonWinnerResult());
+            }
+            return;
+        }
+        body.innerHTML = renderSecretRevealBox(label, false, "🎡 Watch the Reveal");
+    } catch (e) {
+        body.innerHTML = `<p class="promo-sub">Couldn't load reveal: ${escapeHtml(e.message)}</p>`;
+    }
+}
+window.openSecretGiveawayReveal = openSecretGiveawayReveal;
+
+// Entry point from an inbox "you won" notification — those only carry a
+// giveawayId, not a platform, so this looks up which platform the viewer
+// actually won on before handing off to the same forced-spin flow above.
+async function openSecretPrizeRevealFromNotification(giveawayId) {
+    const overlay = document.getElementById("prizeRevealModalOverlay");
+    const body = document.getElementById("prizeRevealBody");
+    const user = AppState.getCurrentUser();
+    if (!user) return;
+    document.getElementById("prizeRevealModalTitle").textContent = "🎡 Giveaway Reveal";
+    body.innerHTML = "<p class='promo-sub'>Loading...</p>";
+    overlay.classList.add("open");
+    const giveaway = await AppState.getSecretGiveaway(giveawayId);
+    const myWin = giveaway && (giveaway.winners || []).find(w => w.uid === user.uid);
+    if (!myWin) {
+        body.innerHTML = "<p class='promo-sub'>No prize found — either this wasn't your win, or the giveaway was removed.</p>";
+        return;
+    }
+    await openSecretGiveawayReveal(giveawayId, myWin.platform);
+}
+window.openSecretPrizeRevealFromNotification = openSecretPrizeRevealFromNotification;
+
+// Cycles through the REAL people who entered (from the public, no-password
+// entries copy) before landing on the actual winner — same idea as
+// prepareNames() for the weekly wheel. A few mystery fillers are mixed in
+// so a low-entry giveaway still has something to flicker through.
+function buildSecretRevealPool(names, myName) {
+    const filler = ["🔒", "🎁", "❓", "🍀", "✨"];
+    const others = (names || []).filter(n => n !== myName);
+    const pool = [...new Set([...others, ...filler])];
+    return pool.length ? pool : filler;
+}
+
+function renderSecretRevealBox(title, landedInstantly, buttonLabel) {
+    return `
+        <div class="reveal-box" style="margin:0 auto;">
+            <div class="reveal-box-label">${escapeHtml(title)}</div>
+            <div class="reveal-box-name${landedInstantly ? " landed" : ""}" id="secretRevealBoxName">${landedInstantly ? escapeHtml(secretRevealTarget.name) : "?"}</div>
+        </div>
+        ${landedInstantly ? "" : `
+        <button class="btn-primary" id="secretSpinBtn" onclick="spinSecretWheel()"
+            style="margin-top:20px; font-size:1.2rem; font-weight:700; padding:16px 32px; border-radius:14px;">${buttonLabel}</button>
+        `}
+    `;
+}
+
+function renderSecretPrizeResult(code) {
+    return `
+        <div class="giveaway-result" style="display:block; margin-top:16px;">
+            🏆 Congrats, you won!
+            <div style="margin-top:14px; font-size:1rem; color:#9a9ab0;">Your Promo Code</div>
+            <div style="font-size:1.4rem; margin-top:2px;">⬇️</div>
+            <div class="promo-code-box" style="display:inline-flex; align-items:center; gap:10px; justify-content:center; font-size:1.3rem; padding:14px 20px; margin-top:6px;">
+                <span>${escapeHtml(code)}</span>
+                <button class="copy-btn" data-code="${escapeHtml(code)}" style="font-size:0.9rem; padding:6px 14px;">Copy</button>
+            </div>
+            <div style="margin-top:12px; font-size:0.85rem; color:#ff9b6b;">⚠️ Please note that sharing of promo codes can result in potential consequences. So please keep them to yourself and use them only once.</div>
+        </div>
+    `;
+}
+
+// Same idea as the weekly wheel's "else" branch in showWinnerResult() —
+// everyone who isn't the winner sees this instead, right below the same
+// landed name, rather than the modal just going quiet for them.
+function renderSecretNonWinnerResult() {
+    return `
+        <div class="giveaway-result" style="display:block; margin-top:16px; color:#9a9ab0;">
+            <span style="font-size:1.4rem;">😢</span><br>
+            Sorry, you didn't win this time. Try again next time! 🍀
+        </div>
+    `;
+}
+
+function wireSecretCopyBtn(container) {
+    const btn = container.querySelector(".copy-btn");
+    if (btn) btn.addEventListener("click", () => copyCode(btn.getAttribute("data-code"), btn));
+}
+
+// Same cycling-then-decelerating mechanic as spinWheel(), just shorter and
+// scoped to the reveal modal's own elements/ids so it doesn't collide with
+// the inline weekly wheel section.
+function spinSecretWheel() {
+    const spinBtn = document.getElementById("secretSpinBtn");
+    const nameEl = document.getElementById("secretRevealBoxName");
+    if (!spinBtn || !nameEl || !secretRevealTarget) return;
+    spinBtn.disabled = true;
+    spinBtn.textContent = "Revealing...";
+    nameEl.classList.remove("landed");
+    nameEl.classList.add("cycling");
+
+    const totalDuration = 3500;
+    const startTime = performance.now();
+
+    function scheduleNextTick() {
+        const elapsed = performance.now() - startTime;
+        const progress = Math.min(elapsed / totalDuration, 1);
+
+        if (progress >= 1) {
+            nameEl.classList.remove("cycling");
+            nameEl.classList.add("landed");
+            nameEl.textContent = secretRevealTarget.name;
+            spinBtn.textContent = "Revealed!";
+            markWheelRevealed(secretRevealTarget.revealKey);
+            if (secretRevealTarget.isMineIncluded) {
+                landSecretPrize();
+            } else {
+                landSecretNonWinnerMessage();
+            }
+            return;
+        }
+
+        let candidate;
+        do {
+            candidate = secretRevealNames[Math.floor(Math.random() * secretRevealNames.length)];
+        } while (candidate === nameEl.textContent && secretRevealNames.length > 1);
+        nameEl.textContent = candidate;
+
+        const interval = 60 + progress * progress * 260;
+        setTimeout(scheduleNextTick, interval);
+    }
+    scheduleNextTick();
+}
+window.spinSecretWheel = spinSecretWheel;
+
+async function landSecretPrize() {
+    const body = document.getElementById("prizeRevealBody");
+    try {
+        const code = await AppState.getSecretGiveawayPrize(secretRevealTarget.giveawayId);
+        body.insertAdjacentHTML("beforeend", code
+            ? renderSecretPrizeResult(code)
+            : "<p class='promo-sub' style='margin-top:12px;'>No prize code found yet — check back shortly.</p>");
+        wireSecretCopyBtn(body);
+    } catch (e) {
+        body.insertAdjacentHTML("beforeend", `<p class="promo-sub" style="margin-top:12px;">Couldn't load prize: ${escapeHtml(e.message)}</p>`);
+    }
+}
+
+function landSecretNonWinnerMessage() {
+    const body = document.getElementById("prizeRevealBody");
+    body.insertAdjacentHTML("beforeend", renderSecretNonWinnerResult());
+}
 
 document.getElementById("prizeRevealCloseBtn").addEventListener("click", () => {
     document.getElementById("prizeRevealModalOverlay").classList.remove("open");
@@ -543,6 +929,12 @@ document.getElementById("prizeRevealCloseBtn").addEventListener("click", () => {
                 --- end original --- */
 
                 currentWeekId = AppState.getWeekId();
+                // Just opening this tab counts as "seen" — the badge
+                // shouldn't wait for the user to actually join, since
+                // someone who opens the tab and decides not to join yet has
+                // still definitely seen it.
+                try { localStorage.setItem("kih_giveaway_seen_week_" + currentWeekId, "1"); } catch (e) {}
+                refreshWeeklyTabBadge();
                 const existingEntry = await AppState.getMyGiveawayEntry(currentWeekId);
                 if (existingEntry) {
                     chosenDevice = existingEntry.device;
@@ -599,6 +991,12 @@ document.getElementById("prizeRevealCloseBtn").addEventListener("click", () => {
                     }
                 }
 
+                // Marks this week's giveaway "seen" for the home badge on
+                // index.html — shared via localStorage since that page and
+                // this iframe run on the same origin.
+                try { localStorage.setItem("kih_giveaway_seen_week_" + AppState.getWeekId(), "1"); } catch (e) {}
+                refreshWeeklyTabBadge();
+
                 startGiveawayCountdown();
                 await refreshJoinState();
                 // Check for an already-drawn winner right away — not just when
@@ -652,6 +1050,10 @@ function showDrawDayModal() {
     // draw day joinGiveaway() is skipped, so this would otherwise
     // contradict the "entries are closed" notice right below it.
     document.getElementById("enteringAsLine").style.display = joined ? "block" : "none";
+
+    AppState.getPublicGiveawayEntries(currentWeekId).then(entries => {
+        document.getElementById("giveawayParticipantCount").textContent = "👥 " + entries.length + " entered this week";
+    }).catch(() => {});
 }
 
             /* ---------------- WEEKLY COUNTDOWN ---------------- */
@@ -829,16 +1231,344 @@ if (user && user.uid === winnerData.winnerUid) {
             }
             window.spinWheel = spinWheel;
 
+            /* ---------------- SECRET GIVEAWAYS ---------------- */
+
+            let unsubSecretGiveaways = null;
+            let latestSecretGiveaways = [];
+
+            // Runs regardless of which tab is open, so the "🔒 Secret
+            // Giveaways" tab badge (and the home screen badge on index.html,
+            // which reads the same "seen" keys independently) can show a
+            // count even before the user ever clicks into that tab. Safe to
+            // call repeatedly — only sets the listener up once.
+            function startSecretGiveawaysBadgeFeed() {
+                if (unsubSecretGiveaways) return;
+                unsubSecretGiveaways = AppState.listenToSecretGiveaways((items) => {
+                    latestSecretGiveaways = items;
+                    refreshSecretTabBadge();
+                    if (document.getElementById("secretPage").classList.contains("active")) {
+                        showSecretDeviceGate();
+                    }
+                });
+            }
+
+            function refreshSecretTabBadge() {
+                const el = document.getElementById("secretTabBadge");
+                if (!el) return;
+                const now = Date.now();
+                const count = latestSecretGiveaways.filter(g =>
+                    !(g.deleteAt && g.deleteAt <= now) &&
+                    g.expiresAt > now &&
+                    localStorage.getItem("kih_giveaway_seen_secret_" + g.id) !== "1"
+                ).length;
+                el.textContent = count > 9 ? "9+" : String(count);
+                el.style.display = count > 0 ? "flex" : "none";
+            }
+
+            function refreshWeeklyTabBadge() {
+                const el = document.getElementById("vipTabBadge");
+                if (!el) return;
+                let show = false;
+                try {
+                    if (AppState.isGiveawayOpen()) {
+                        show = localStorage.getItem("kih_giveaway_seen_week_" + AppState.getWeekId()) !== "1";
+                    }
+                } catch (e) { /* not signed in yet or week not resolvable — just hide it */ }
+                el.textContent = "1";
+                el.style.display = show ? "flex" : "none";
+            }
+
+            function formatSecretTimeLeft(expiresAt) {
+                const msLeft = expiresAt - Date.now();
+                if (msLeft <= 0) return "Ended";
+                const hours = msLeft / (60 * 60 * 1000);
+                if (hours < 1) return Math.ceil(hours * 60) + "m left";
+                if (hours < 48) return hours.toFixed(1) + "h left";
+                return Math.ceil(hours / 24) + "d left";
+            }
+
+            // A single, page-wide device choice (not per-giveaway) — decides
+            // which giveaways even show up. Persisted in localStorage since
+            // it's a per-browser display preference, not a security-relevant
+            // value; the actual entry still records its own `platform`
+            // field in Firestore.
+            function getSecretDevice() {
+                return localStorage.getItem("kih_secret_device");
+            }
+            function setSecretDevice(device) {
+                localStorage.setItem("kih_secret_device", device);
+            }
+
+            // First-time pick only — nothing to migrate yet, since there's
+            // no prior device to have entered anything under.
+            window.chooseSecretDevice = function (device) {
+                setSecretDevice(device);
+                showSecretDeviceGate();
+            };
+
+            // Switching an ALREADY-chosen device is a straight toggle — there
+            // are only two platforms, so there's nothing to pick, and asking
+            // "which one" again would be pointless. Confirms up front (once,
+            // before anything happens) rather than after the fact, and never
+            // uses the browser's own confirm()/alert() (which shows an ugly
+            // "this page says" style prefix) — everything routes through the
+            // custom popup instead.
+            window.switchSecretDevice = async function () {
+                const current = getSecretDevice();
+                const device = current === "ios" ? "android" : "ios";
+                const deviceLabel = device === "ios" ? "iOS" : "Android";
+
+                const affected = [];
+                for (const g of latestSecretGiveaways) {
+                    const entry = await AppState.getMySecretGiveawayEntry(g.id);
+                    if (!entry || entry.platform === device) continue;
+                    const slots = device === "ios" ? g.iosWinnerCount : g.androidWinnerCount;
+                    affected.push({ g, canMigrate: slots > 0 });
+                }
+                const kicked = affected.filter(a => !a.canMigrate);
+
+                const confirmBody = kicked.length
+                    ? `Switching to ${deviceLabel} will remove you from ` +
+                      `${kicked.length === 1 ? "this giveaway" : "these giveaways"} — ` +
+                      `${kicked.map(a => a.g.title).join(", ")} — since ` +
+                      `${kicked.length === 1 ? "it doesn't" : "they don't"} offer that platform.`
+                    : `New and existing entries will switch to ${deviceLabel}.`;
+                const ok = await showConfirmModal(`Switch to ${deviceLabel}?`, confirmBody, "Switch");
+                if (!ok) return;
+
+                setSecretDevice(device);
+                const list = document.getElementById("secretGiveawayList");
+                if (list) list.innerHTML = "<p class='promo-sub' style='text-align:center;'>Updating your entries...</p>";
+                const failures = [];
+                await Promise.all(affected.map(async (a) => {
+                    try {
+                        if (a.canMigrate) {
+                            await AppState.switchSecretGiveawayPlatform(a.g.id, device);
+                        } else {
+                            await AppState.leaveSecretGiveaway(a.g.id);
+                        }
+                    } catch (e) {
+                        failures.push(a.g.title + ": " + e.message);
+                    }
+                }));
+                showSecretDeviceGate();
+                if (failures.length) {
+                    await showInfoModal("Some entries didn't update", failures.join("; "));
+                }
+            };
+
+            function showSecretDeviceGate() {
+                const device = getSecretDevice();
+                document.getElementById("secretDeviceChoiceState").style.display = device ? "none" : "block";
+                document.getElementById("secretListWrap").style.display = device ? "block" : "none";
+                if (device) {
+                    document.getElementById("secretDeviceLabel").textContent = device === "ios" ? "🍎 iOS" : "🤖 Android";
+                    renderSecretGiveawayList(latestSecretGiveaways);
+                }
+            }
+
+            async function refreshSecretGiveawayState() {
+                const user = AppState.getCurrentUser();
+                document.getElementById("secretSignedOutState").style.display = user ? "none" : "block";
+                document.getElementById("secretDeviceChoiceState").style.display = "none";
+                document.getElementById("secretListWrap").style.display = "none";
+                if (!user) return;
+                // Show the device gate (or the list, if a device is already
+                // chosen) right away — it doesn't need to wait on Firestore.
+                showSecretDeviceGate();
+                startSecretGiveawaysBadgeFeed();
+            }
+
+            async function renderSecretGiveawayList(items) {
+                const list = document.getElementById("secretGiveawayList");
+                const user = AppState.getCurrentUser();
+                const device = getSecretDevice();
+                const now = Date.now();
+                // Auto-cleanup only actually happens when admin has the admin
+                // panel open past a giveaway's deleteAt date, so hide any
+                // stale-but-not-yet-swept giveaway from regular users too.
+                const notDeleted = items.filter(g => !(g.deleteAt && g.deleteAt <= now));
+                // Mark everything active as "seen" the moment this tab is
+                // actually opened — including a giveaway the device filter
+                // below hides entirely (e.g. an iOS-only giveaway for an
+                // Android user). That one can never be acted on from this
+                // device, so it shouldn't keep the badge lit forever just
+                // because it never gets a chance to render; visiting this
+                // tab is the "I checked, nothing more I can do here" signal.
+                try {
+                    notDeleted.forEach(g => localStorage.setItem("kih_giveaway_seen_secret_" + g.id, "1"));
+                } catch (e) {}
+                refreshSecretTabBadge();
+                if (!notDeleted.length) {
+                    list.innerHTML = "<p class='promo-sub' style='text-align:center;'>No secret giveaways right now — check back later!</p>";
+                    return;
+                }
+                // "Have I already entered" (and if so, what's the reward and
+                // which platform did I pick) needs a lookup per card —
+                // resolve them all up front so the list renders once instead
+                // of flashing placeholder states.
+                const details = await Promise.all(notDeleted.map(async (g) => {
+                    const entry = await AppState.getMySecretGiveawayEntry(g.id);
+                    const reward = entry ? await AppState.getSecretGiveawayRewardDescription(g.id) : null;
+                    return { entry, reward };
+                }));
+
+                // Only show giveaways relevant to the chosen device — unless
+                // it's one you've already entered or won, so your own history
+                // never disappears just because you later switched devices.
+                const pairs = notDeleted.map((g, i) => [g, details[i]]).filter(([g, detail]) => {
+                    const slots = device === "ios" ? g.iosWinnerCount : g.androidWinnerCount;
+                    const isWinner = user && (g.winners || []).some(w => w.uid === user.uid);
+                    return (slots || 0) > 0 || !!detail.entry || isWinner;
+                });
+                if (!pairs.length) {
+                    list.innerHTML = `<p class='promo-sub' style='text-align:center;'>No ${device === "ios" ? "iOS" : "Android"} secret giveaways right now — check back later!</p>`;
+                    return;
+                }
+                list.innerHTML = pairs.map(([g, detail]) => renderSecretGiveawayCard(g, detail, user, device)).join("");
+            }
+
+            // Deliberately does NOT branch on "is the viewer the winner" —
+            // that would spoil the outcome just by which UI renders, no
+            // matter what the button says. Every viewer (winner or not)
+            // sees the exact same card; the spin animation is the only way
+            // anyone finds out, including the actual winner.
+            function renderSecretGiveawayCard(g, detail, user, device) {
+                const isExpired = g.expiresAt <= Date.now();
+                const winners = g.winners || [];
+                const platformsWithWinners = [...new Set(winners.map(w => w.platform))];
+
+                let bodyHtml;
+                if (detail.entry) {
+                    const platformLabel = detail.entry.platform === "ios" ? "🍎 iOS" : "🤖 Android";
+                    const otherPlatform = detail.entry.platform === "ios" ? "android" : "ios";
+                    const otherLabel = otherPlatform === "ios" ? "iOS" : "Android";
+                    const otherHasSlots = (otherPlatform === "ios" ? g.iosWinnerCount : g.androidWinnerCount) > 0;
+                    // A stale entry can exist on a platform this giveaway no
+                    // longer (or never did) offer slots for — it can never
+                    // win as-is, so say so plainly instead of a false
+                    // "Good luck!", and only offer a switch if the other
+                    // platform actually has slots to switch into.
+                    const myPlatformHasSlots = (detail.entry.platform === "ios" ? g.iosWinnerCount : g.androidWinnerCount) > 0;
+                    // For correcting just this one entry — separate from the
+                    // page-wide device choice above, which only decides what
+                    // NEW entries default to.
+                    const switchBtn = (!isExpired && otherHasSlots)
+                        ? `<button class="switch-device-btn" onclick="handleSwitchSecretPlatform('${g.id}', '${otherPlatform}')" style="margin-top:10px;">🔄 Wrong platform? Switch this entry to ${otherLabel}</button>`
+                        : "";
+                    let statusLine;
+                    if (!myPlatformHasSlots) {
+                        statusLine = `<p class="promo-sub" style="color:#ff9b6b;">⚠️ This giveaway doesn't have any ${platformLabel} slots — you can't win as entered. ${otherHasSlots ? "Switch below to fix it." : ""}</p>`;
+                    } else if (platformsWithWinners.includes(detail.entry.platform)) {
+                        statusLine = `<p class="promo-sub">🎉 Winner drawn for ${platformLabel} — watch the reveal below to find out!</p>`;
+                    } else {
+                        statusLine = `<p class="promo-sub">${isExpired ? "⏰ Entries closed — winners will be drawn soon." : "Good luck!"}</p>`;
+                    }
+                    bodyHtml = `
+                        <p class="promo-sub" style="color:#45aa38; margin:0 0 6px;">✅ You're entered (${platformLabel})! Here's what's up for grabs:</p>
+                        <p class="promo-sub" style="margin:0 0 6px;">🎁 ${escapeHtml(detail.reward || "...")}</p>
+                        ${statusLine}
+                        ${switchBtn}`;
+                } else if (isExpired) {
+                    bodyHtml = `<p class="promo-sub">⏰ Entries closed — you didn't enter this one.</p>`;
+                } else {
+                    const passwordInput = g.requiresPassword ? `
+                        <input type="text" id="secretPasswordInput_${g.id}" placeholder="Enter password"
+                            style="width:100%; padding:10px; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box; margin-bottom:8px;"
+                            onkeydown="if(event.key==='Enter') handleEnterSecretGiveaway('${g.id}');">` : "";
+                    bodyHtml = `
+                        <p class="promo-sub" style="margin:0 0 8px;">Entering as ${device === "ios" ? "🍎 iOS" : "🤖 Android"}</p>
+                        ${passwordInput}
+                        <button class="btn-primary" id="secretEnterBtn_${g.id}" onclick="handleEnterSecretGiveaway('${g.id}')" style="padding:10px 20px; width:100%;">Enter (reveals the reward)</button>
+                    `;
+                }
+
+                // No names printed here on purpose — the only way to find out
+                // who won is to watch the spin, whether you're the winner or
+                // just curious. Same button for everyone. Made big and loud
+                // (gold border, pulsing) since this is the whole payoff
+                // moment of the giveaway — it shouldn't read as a minor
+                // secondary action next to "you're entered" text.
+                const revealButtonsHtml = platformsWithWinners.length
+                    ? `<div style="margin:0 0 12px; padding:12px; border:2px solid gold; border-radius:10px; background:rgba(255,215,0,0.08); text-align:center;">
+                        <p style="margin:0 0 10px; font-weight:700; font-size:1.05rem; color:gold;">🏆 Winners have been drawn!</p>
+                        <div style="display:flex; flex-direction:column; gap:8px;">
+                            ${platformsWithWinners.map(p => `<button class="btn-primary" onclick="openSecretGiveawayReveal('${g.id}', '${p}')" style="font-size:1.1rem; font-weight:700; padding:14px 20px; width:100%; border-radius:12px; animation:reveal-pulse 1.6s ease-in-out infinite;">🎡 Watch ${p === "ios" ? "iOS" : "Android"} Reveal</button>`).join("")}
+                        </div>
+                       </div>`
+                    : "";
+
+                return `
+                <div style="margin-bottom:16px; padding:16px; border:1px solid #2a2a4a; border-radius:12px;">
+                    <h3 style="margin:0 0 6px;">${escapeHtml(g.title)}</h3>
+                    <p class="promo-sub" style="margin:0 0 6px;">${isExpired ? "Entries closed" : formatSecretTimeLeft(g.expiresAt)} &middot; 👥 ${g.entryCount || 0} entered ${g.requiresPassword ? "🔒" : "🔓"}</p>
+                    ${revealButtonsHtml}
+                    ${bodyHtml}
+                </div>`;
+            }
+
+            window.handleEnterSecretGiveaway = async function (giveawayId) {
+                const platform = getSecretDevice();
+                const passwordInput = document.getElementById("secretPasswordInput_" + giveawayId);
+                const password = passwordInput ? passwordInput.value : "";
+                if (passwordInput && !password.trim()) { await showInfoModal("Missing password", "Type in the password first."); return; }
+
+                const btn = document.getElementById("secretEnterBtn_" + giveawayId);
+                btn.disabled = true;
+                btn.textContent = "Entering...";
+                try {
+                    await AppState.enterSecretGiveaway(giveawayId, platform, password);
+                    renderSecretGiveawayList(latestSecretGiveaways);
+                } catch (e) {
+                    await showInfoModal("Couldn't enter", e.message !== "__RESTRICTED__" ? e.message : "Your account is currently restricted.");
+                    btn.disabled = false;
+                    btn.textContent = "Enter";
+                }
+            };
+
+            window.handleSwitchSecretPlatform = async function (giveawayId, newPlatform) {
+                try {
+                    await AppState.switchSecretGiveawayPlatform(giveawayId, newPlatform);
+                    renderSecretGiveawayList(latestSecretGiveaways);
+                } catch (e) {
+                    await showInfoModal("Couldn't switch", e.message);
+                }
+            };
+
+            // Arrived here from an inbox "you won a secret giveaway" notification.
+            const revealSecretGiveawayId = new URLSearchParams(window.location.search).get("secretGiveawayId");
+            if (revealSecretGiveawayId) {
+                switchPromoTab("secret");
+                AppState.waitForAuthReady().then(() => openSecretPrizeRevealFromNotification(revealSecretGiveawayId));
+            }
+            AppState.onAuthChange(() => {
+                if (document.getElementById("secretPage").classList.contains("active")) refreshSecretGiveawayState();
+            });
+
             /* init */
             loadPromoCodes();
             AppState.waitForAuthReady().then(refreshVipState);
             AppState.onAuthChange(refreshVipState);
+
+            // Tab badges need to reflect reality even if the user never
+            // clicks into that tab — start the secret-giveaways feed and
+            // check the weekly status right away, not only when a tab is
+            // opened.
+            AppState.waitForAuthReady().then(() => {
+                startSecretGiveawaysBadgeFeed();
+                refreshWeeklyTabBadge();
+            });
+            AppState.onAuthChange(() => {
+                startSecretGiveawaysBadgeFeed();
+                refreshWeeklyTabBadge();
+            });
 
             // ?tab=vip lets callers (e.g. the giveaway sign-in prompt on
             // index.html) drop the visitor straight into the Weekly
             // Giveaway tab instead of the default Latest Codes tab.
             const requestedTab = new URLSearchParams(window.location.search).get("tab");
             if (requestedTab === "vip") switchPromoTab("vip");
+            else if (requestedTab === "secret") switchPromoTab("secret");
 
             // Ad recheck — separate from refreshVipState so a VIP status
             // change (or late-confirmed sign-in) always clears/shows the
