@@ -1352,30 +1352,73 @@
             box-shadow: 0 -8px 16px -8px rgba(0, 0, 0, 0.6);
         }
 
-        /* This footer is flex-shrink:0 and ~260-300px tall once the pool
-           toolbar wraps on a narrow screen. With a keyboard open there's
-           only ~350px of screen left, so the footer alone claims almost
-           all of it and the scrolling region above (title, type,
-           description) collapses to a sliver — you can't see what you're
-           typing, and reaching the other fields means fighting a tiny
-           porthole. Shrinking the box doesn't help; being flex-shrink:0,
-           the footer just squeezes that region harder. Since a unit pool
-           is useless while typing a title, it steps aside until the
-           keyboard goes away and hands its ~280px back to the fields. */
-        .tier-editor-box.typing-in-header .tier-editor-footer {
+        /* The pool is flex-shrink:0 and ~200px tall once its toolbar wraps
+           on a narrow screen. With a keyboard open there's only ~350px of
+           screen left, so the footer as a whole claims almost all of it
+           and the scrolling region above (title, type, description)
+           collapses to a sliver — you can't see what you're typing, and
+           reaching the other fields means fighting a tiny porthole.
+           Shrinking the box doesn't help; being flex-shrink:0, the footer
+           just squeezes that region harder. So the pool itself collapses
+           to its drag handle, handing ~200px back to the fields. The
+           handle and the Post/Cancel buttons deliberately stay put — the
+           handle so there's always something visible to grab, and the
+           buttons so finishing the post never costs an extra tap. */
+        .tier-editor-box.pool-collapsed .tier-editor-pool-fixed {
             display: none;
         }
 
         /* Sits at the top of the visible area instead of centred in it, so
            the fields stay as far from the keyboard as possible and don't
            jump around as the box resizes. */
-        .tier-editor-box.typing-in-header {
+        .tier-editor-box.pool-collapsed {
             align-self: flex-start;
         }
 
-        .tier-editor-pool-fixed {
-            padding: 8px 20px 12px;
+        /* Carries the blue accent line that used to sit on the pool itself,
+           now doubling as a grab target for dragging the pool open/shut.
+           touch-action:none because the drag is handled directly — without
+           it the browser claims the gesture as a scroll and the handle
+           never sees the move events. */
+        .tier-editor-pool-handle {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            padding: 7px 20px 6px;
             border-top: 3px solid #4169e1;
+            background: #16162a;
+            cursor: grab;
+            touch-action: none;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .tier-editor-pool-handle:active {
+            cursor: grabbing;
+            background: #1c1c34;
+        }
+
+        .tier-editor-pool-grabber {
+            width: 44px;
+            height: 5px;
+            border-radius: 3px;
+            background: #4169e1;
+        }
+
+        .tier-editor-pool-handle-label {
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: #6c9bff;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        /* The blue accent line moved up onto .tier-editor-pool-handle, which
+           now sits directly above this. */
+        .tier-editor-pool-fixed {
+            padding: 0 20px 12px;
         }
 
         .tier-editor-pool-heading {
@@ -2472,7 +2515,12 @@
             </div>
 
             <div class="tier-editor-footer">
-                <div class="tier-editor-pool-fixed">
+                <div class="tier-editor-pool-handle" id="tierPoolHandle" role="button" tabindex="0"
+                    aria-expanded="true" aria-controls="tierEditorPoolFixed">
+                    <div class="tier-editor-pool-grabber"></div>
+                    <span class="tier-editor-pool-handle-label" id="tierPoolHandleLabel">▼ Hide units</span>
+                </div>
+                <div class="tier-editor-pool-fixed" id="tierEditorPoolFixed">
                     <div class="tier-pool-toolbar">
                         <div class="tier-pool-type-btns" id="tierPoolTypeBtns"></div>
                         <input type="text" id="tierPoolSearchInput" class="modal-field-input"
@@ -2842,28 +2890,90 @@
             if (box) box.style.maxHeight = "";
         }
 
-        /* ---------------- TIER EDITOR: ROOM TO TYPE ----------------
-           Drives .tier-editor-box.typing-in-header — see the stylesheet
-           for why the pool has to get out of the way. Moving between two
-           header fields fires focusout before the next focusin, so the
-           re-check is deferred a tick; otherwise the pool would flash back
-           in between taps. The pool's own search box lives inside the
-           footer, so it deliberately doesn't count as typing in the header
-           — hiding the footer there would hide the field being typed in. */
-        (function setupTierEditorTypingLayout() {
+        /* ---------------- TIER EDITOR: COLLAPSIBLE UNIT POOL ----------------
+           Drives .tier-editor-box.pool-collapsed — see the stylesheet for
+           why the pool has to get out of the way while typing. One state,
+           three ways to change it: focusing a header field collapses it,
+           and the handle can be dragged or tapped either way.
+
+           Expanding drops the keyboard, since wanting the units means
+           you're done typing — and leaving it up would just cover the pool
+           you asked to see. */
+        function setTierPoolCollapsed(collapsed) {
+            const box = document.querySelector(".tier-editor-box");
+            if (!box) return;
+            box.classList.toggle("pool-collapsed", collapsed);
+            const handle = document.getElementById("tierPoolHandle");
+            handle.setAttribute("aria-expanded", collapsed ? "false" : "true");
+            document.getElementById("tierPoolHandleLabel").textContent =
+                collapsed ? "▲ Pull up for units" : "▼ Hide units";
+            if (!collapsed) {
+                const focused = document.activeElement;
+                if (focused && (focused.tagName === "INPUT" || focused.tagName === "TEXTAREA")
+                    && box.querySelector(".tier-editor-scroll-region").contains(focused)) {
+                    focused.blur();
+                }
+            }
+        }
+
+        (function setupTierEditorPoolHandle() {
             const box = document.querySelector(".tier-editor-box");
             if (!box) return;
             const scrollRegion = box.querySelector(".tier-editor-scroll-region");
-            if (!scrollRegion) return;
-            function syncTypingState() {
+            const handle = document.getElementById("tierPoolHandle");
+            if (!scrollRegion || !handle) return;
+
+            // Moving between two header fields fires focusout before the next
+            // focusin, so the re-check is deferred a tick; otherwise the pool
+            // would flash back in between taps. The pool's own search box sits
+            // inside the footer, so it deliberately doesn't count as typing in
+            // the header — collapsing there would hide the field being typed in.
+            function syncFromFocus() {
+                // Only phones are tight enough to need this — a desktop modal
+                // has room for both, so clicking the title there shouldn't
+                // make the pool vanish. 900px matches the breakpoint where
+                // the modal is already given its roomier desktop sizing.
+                if (!window.matchMedia("(max-width: 899px)").matches) return;
                 const el = document.activeElement;
-                const typing = !!el
-                    && (el.tagName === "INPUT" || el.tagName === "TEXTAREA")
-                    && scrollRegion.contains(el);
-                box.classList.toggle("typing-in-header", typing);
+                if (!!el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA")
+                    && scrollRegion.contains(el)) {
+                    setTierPoolCollapsed(true);
+                }
             }
-            box.addEventListener("focusin", syncTypingState);
-            box.addEventListener("focusout", () => setTimeout(syncTypingState, 0));
+            box.addEventListener("focusin", syncFromFocus);
+            box.addEventListener("focusout", () => setTimeout(syncFromFocus, 0));
+
+            const DRAG_THRESHOLD = 24; // px before a drag counts as intent
+            const TAP_SLOP = 8;        // px of wobble still treated as a tap
+            let startY = null;
+            let moved = false;
+
+            handle.addEventListener("pointerdown", (e) => {
+                startY = e.clientY;
+                moved = false;
+                handle.setPointerCapture(e.pointerId);
+            });
+            handle.addEventListener("pointermove", (e) => {
+                if (startY === null) return;
+                const dy = startY - e.clientY; // positive = dragging upward
+                if (Math.abs(dy) > TAP_SLOP) moved = true;
+                if (dy > DRAG_THRESHOLD) setTierPoolCollapsed(false);
+                else if (dy < -DRAG_THRESHOLD) setTierPoolCollapsed(true);
+            });
+            function endDrag(e) {
+                if (startY === null) return;
+                if (!moved) setTierPoolCollapsed(!box.classList.contains("pool-collapsed"));
+                startY = null;
+                if (handle.hasPointerCapture(e.pointerId)) handle.releasePointerCapture(e.pointerId);
+            }
+            handle.addEventListener("pointerup", endDrag);
+            handle.addEventListener("pointercancel", endDrag);
+
+            handle.addEventListener("keydown", (e) => {
+                if (e.key !== "Enter" && e.key !== " ") return;
+                e.preventDefault();
+                setTierPoolCollapsed(!box.classList.contains("pool-collapsed"));
+            });
         })();
 
         // Formation/tier-list comment boxes are now multi-line textareas
@@ -3014,7 +3124,12 @@ function buildCountrySelectOptions(selectId, includeAny) {
             document.getElementById("tabPanelFriends").classList.toggle("active", tab === "friends");
             if (tab === "friends") loadSuggestedFriends();
             if (tab === "tierlist") ensureUnitDataLoaded();
+            // Remembered so returning from Home lands back on the tab you
+            // were actually using instead of always resetting to Friends.
+            try { localStorage.setItem(SOCIAL_TAB_KEY, tab); } catch (e) {}
         };
+        const SOCIAL_TAB_KEY = "kih_social_tab";
+        const SOCIAL_TABS = ["friends", "clan", "formation", "tierlist"];
         function avatarColorFor(name) {
             const colors = ["#4169e1", "#aa7a1e", "#2e7d32", "#c62828", "#6c63ff", "#00897b", "#d81b60", "#ef6c00"];
             let hash = 0;
@@ -3098,7 +3213,7 @@ function formatDmDateSeparator(ts) {
             document.getElementById("infoModalOverlay").classList.remove("open");
         };
 
-        function showConfirmModal(title, message) {
+        function showConfirmModal(title, message, yesLabel, cancelLabel) {
             return new Promise((resolve) => {
                 document.getElementById("confirmModalTitle").textContent = title;
                 document.getElementById("confirmModalBody").textContent = message;
@@ -3106,6 +3221,10 @@ function formatDmDateSeparator(ts) {
                 overlay.classList.add("open");
                 const yesBtn = document.getElementById("confirmModalYesBtn");
                 const cancelBtn = document.getElementById("confirmModalCancelBtn");
+                // Reset every time — the buttons are shared, so a previous
+                // caller's wording would otherwise stick around.
+                yesBtn.textContent = yesLabel || "Confirm";
+                cancelBtn.textContent = cancelLabel || "Cancel";
                 function cleanup(result) {
                     overlay.classList.remove("open");
                     yesBtn.onclick = null;
@@ -3702,6 +3821,83 @@ window.removeClanIconPreview = function () {
 
         /* ---- Post Formation modal ---- */
 
+        /* ---------------- COMPOSE DRAFTS ----------------
+           Leaving Social (or closing the page) shuts the compose modals, so
+           anything half-written would otherwise be gone on return. Drafts
+           save as you type and are offered back the next time you open the
+           modal.
+
+           Only NEW posts are drafted. Restoring a draft on top of an edit
+           of something already published would silently overwrite the live
+           version with unrelated text, so edit mode opts out entirely.
+
+           Screenshots aren't included — File objects can't be serialised to
+           localStorage — so the prompt says so outright rather than letting
+           someone assume their images came back. */
+        const DRAFT_KEYS = { formation: "kih_draft_formation", tierlist: "kih_draft_tierlist" };
+
+        function readDraft(kind) {
+            try {
+                const raw = localStorage.getItem(DRAFT_KEYS[kind]);
+                return raw ? JSON.parse(raw) : null;
+            } catch (e) { return null; }
+        }
+        function writeDraft(kind, data) {
+            try { localStorage.setItem(DRAFT_KEYS[kind], JSON.stringify(data)); } catch (e) {}
+        }
+        function clearDraft(kind) {
+            try { localStorage.removeItem(DRAFT_KEYS[kind]); } catch (e) {}
+        }
+
+        // Resolves to the draft to restore, or null to start clean.
+        async function offerDraft(kind, message) {
+            const draft = readDraft(kind);
+            if (!draft) return null;
+            const restore = await showConfirmModal(
+                "Unfinished draft", message, "Restore draft", "Start fresh");
+            if (!restore) { clearDraft(kind); return null; }
+            return draft;
+        }
+
+        function saveFormationDraft() {
+            if (editingFormationPostId) return;
+            if (!document.getElementById("postFormationModalOverlay").classList.contains("open")) return;
+            const description = document.getElementById("postFormationDescription").value;
+            // Category alone isn't worth prompting over — it defaults anyway.
+            if (!description.trim()) { clearDraft("formation"); return; }
+            writeDraft("formation", {
+                category: document.getElementById("postFormationCategory").value,
+                description
+            });
+        }
+
+        function saveTierListDraft() {
+            if (editingTierListId) return;
+            if (!document.getElementById("postTierListModalOverlay").classList.contains("open")) return;
+            const title = document.getElementById("postTierListTitleInput").value;
+            const description = document.getElementById("postTierListDescriptionInput").value;
+            const tiers = tierBoardState || emptyTierBoard();
+            const placed = AppState.TIER_KEYS.reduce((sum, k) => sum + (tiers[k] || []).length, 0);
+            if (!title.trim() && !description.trim() && !placed) { clearDraft("tierlist"); return; }
+            writeDraft("tierlist", {
+                title,
+                description,
+                unitType: document.getElementById("postTierListUnitType").value,
+                tiers
+            });
+        }
+
+        ["postFormationDescription", "postFormationCategory"].forEach((id) => {
+            const el = document.getElementById(id);
+            el.addEventListener("input", saveFormationDraft);
+            el.addEventListener("change", saveFormationDraft);
+        });
+        ["postTierListTitleInput", "postTierListDescriptionInput", "postTierListUnitType"].forEach((id) => {
+            const el = document.getElementById(id);
+            el.addEventListener("input", saveTierListDraft);
+            el.addEventListener("change", saveTierListDraft);
+        });
+
         window.openPostFormationModal = async function () {
             const user = AppState.getCurrentUser();
             if (!user) { showInfoModal("Sign in required", "Sign in with Google first."); return; }
@@ -3724,6 +3920,14 @@ window.removeClanIconPreview = function () {
             document.getElementById("postFormationModalTitle").textContent = "Share Formation";
             document.getElementById("submitPostFormationBtn").disabled = false;
             document.getElementById("submitPostFormationBtn").textContent = "Post";
+
+            const draft = await offerDraft("formation",
+                "You started a formation post and didn't finish it. Restore what you wrote? Screenshots aren't saved, so you'll need to pick those again.");
+            if (draft) {
+                document.getElementById("postFormationCategory").value = draft.category || "arena";
+                document.getElementById("postFormationDescription").value = draft.description || "";
+                document.getElementById("postFormationDescCount").textContent = `${(draft.description || "").length}/5000`;
+            }
 
             document.getElementById("postFormationModalOverlay").classList.add("open");
             document.body.style.overflow = "hidden";
@@ -3857,6 +4061,7 @@ window.removeClanIconPreview = function () {
                     await AppState.postFormation({ category, description, imageUrls, imagePaths });
                 }
 
+                if (!isEditing) clearDraft("formation");
                 closePostFormationModal();
                 showToast(isEditing ? "Post updated." : "Formation posted!");
             } catch (e) {
@@ -4670,6 +4875,10 @@ window.removeClanIconPreview = function () {
                 </div>
             `).join("");
             wireTierUnitDrag(container);
+            // Every board mutation re-renders, so this is the one place that
+            // catches placing, moving and clearing units without each of
+            // them having to remember to save.
+            saveTierListDraft();
         }
 
         function tierPoolTypeBtnDefs() {
@@ -4764,6 +4973,18 @@ window.removeClanIconPreview = function () {
             tierPoolTypeFilter = "";
             document.getElementById("tierPoolSearchInput").value = "";
 
+            const draft = await offerDraft("tierlist",
+                "You started a tier list and didn't finish it. Restore what you had?");
+            if (draft) {
+                document.getElementById("postTierListTitleInput").value = draft.title || "";
+                document.getElementById("postTierListUnitType").value = draft.unitType || "both";
+                document.getElementById("postTierListDescriptionInput").value = draft.description || "";
+                document.getElementById("postTierListDescCount").textContent = `${(draft.description || "").length}/2000`;
+                AppState.TIER_KEYS.forEach(k => {
+                    tierBoardState[k] = Array.isArray(draft.tiers && draft.tiers[k]) ? [...draft.tiers[k]] : [];
+                });
+            }
+
             document.getElementById("postTierListModalOverlay").classList.add("open");
             document.body.style.overflow = "hidden";
             document.documentElement.style.overflow = "hidden";
@@ -4818,9 +5039,9 @@ window.removeClanIconPreview = function () {
             document.documentElement.style.overflow = "";
             resetModalKeyboardViewportSizing("postTierListModalOverlay");
             // Closing while a field still has focus doesn't reliably fire
-            // focusout in every browser, and a stale class here would mean
-            // reopening to a modal with no Post button.
-            document.querySelector(".tier-editor-box").classList.remove("typing-in-header");
+            // focusout in every browser, so reset explicitly rather than
+            // reopening to a collapsed pool and a stale handle label.
+            setTierPoolCollapsed(false);
             editingTierListId = null;
             tierBoardState = null;
         };
@@ -4853,6 +5074,7 @@ window.removeClanIconPreview = function () {
                     await AppState.postTierList({ title, unitType, description, tiers: tierBoardState });
                     showToast("Tier list posted!");
                 }
+                if (!isEditing) clearDraft("tierlist");
                 closePostTierListModal();
             } catch (e) {
                 if (e.message !== "__RESTRICTED__") showInfoModal("Couldn't post", e.message);
@@ -6117,8 +6339,9 @@ document.getElementById("dmMessages").addEventListener("scroll", rafThrottle(upd
         });
 
         // Called by home.html whenever the person navigates away from the
-        // Social page — closes any open chat/modal and resets back to the
-        // Friends tab so returning later always starts fresh.
+        // Social page — closes any open chat/modal so nothing is left
+        // hanging open underneath. The tab itself is deliberately left
+        // alone: coming back should resume where you were, not restart.
        window.resetSocialView = function () {
             closeDmModal();
             closeActionModal();
@@ -6142,7 +6365,6 @@ document.getElementById("dmMessages").addEventListener("scroll", rafThrottle(upd
             document.getElementById("dmActionsMenu")?.classList.remove("open");
             document.getElementById("friendReqPanel")?.classList.remove("open");
             document.getElementById("clanFilterDropdown")?.classList.remove("open");
-            switchSocialTab("friends");
         };
 
         let isDmSending = false; // blocks re-entrant sends while one is still in flight
@@ -6270,6 +6492,12 @@ window.sendDmFromInput = async function () {
             setInterval(() => renderFriends(friends), 30 * 1000);
             setInterval(() => AppState.maybeRefreshAd("adBannerSocial"), 25000);
             loadSuggestedFriends();
+
+            // Resume on the tab last used. Deliberately before the deep-link
+            // handling below, so arriving from a notification still wins.
+            let savedTab = null;
+            try { savedTab = localStorage.getItem(SOCIAL_TAB_KEY); } catch (e) {}
+            if (savedTab && SOCIAL_TABS.includes(savedTab)) switchSocialTab(savedTab);
 
             // Arrived here from an inbox notification ("Message" button) — open
             // straight into the DM with that friend.
