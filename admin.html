@@ -550,6 +550,26 @@
                 });
             })();
 
+            /* ---------------- KEYBOARD-SAFE INPUT SCROLLING ----------------
+               On mobile, the on-screen keyboard shrinks the visible viewport
+               without moving page content the way a normal resize would —
+               especially with this many stacked form sections. This actively
+               re-centers whatever's currently focused whenever the keyboard
+               opens or its height changes, across every input on this page. */
+            function scrollFocusedFieldIntoView() {
+                const el = document.activeElement;
+                if (!el || (el.tagName !== "INPUT" && el.tagName !== "TEXTAREA" && el.tagName !== "SELECT")) return;
+                el.scrollIntoView({ block: "center", behavior: "smooth" });
+            }
+            if (window.visualViewport) {
+                window.visualViewport.addEventListener("resize", scrollFocusedFieldIntoView);
+            }
+            document.addEventListener("focusin", (e) => {
+                const el = e.target;
+                if (el.tagName !== "INPUT" && el.tagName !== "TEXTAREA" && el.tagName !== "SELECT") return;
+                setTimeout(() => el.scrollIntoView({ block: "center", behavior: "smooth" }), 300);
+            });
+
             let pickedWinner = null;
             let pickedWeekId = null;
             function showInfoModal(title, message) {
