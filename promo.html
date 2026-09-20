@@ -414,6 +414,28 @@
         <script type="module" src="appState.js"></script>
         <script type="module">
 
+            /* ---------------- KEYBOARD-SAFE INPUT SCROLLING ----------------
+               On mobile, the on-screen keyboard shrinks the visible viewport
+               without moving page content the way a normal resize would —
+               especially inside a `position:fixed` modal, which has no
+               natural "the page scrolled" affordance to bring a focused
+               field back into view once it ends up covered. This actively
+               re-centers whatever's currently focused whenever the keyboard
+               opens or its height changes, across every input on this page. */
+            function scrollFocusedFieldIntoView() {
+                const el = document.activeElement;
+                if (!el || (el.tagName !== "INPUT" && el.tagName !== "TEXTAREA" && el.tagName !== "SELECT")) return;
+                el.scrollIntoView({ block: "center", behavior: "smooth" });
+            }
+            if (window.visualViewport) {
+                window.visualViewport.addEventListener("resize", scrollFocusedFieldIntoView);
+            }
+            document.addEventListener("focusin", (e) => {
+                const el = e.target;
+                if (el.tagName !== "INPUT" && el.tagName !== "TEXTAREA" && el.tagName !== "SELECT") return;
+                setTimeout(() => el.scrollIntoView({ block: "center", behavior: "smooth" }), 300);
+            });
+
             /* ---------------- MODAL SCROLL LOCK ----------------
                Every popup on this page (switch-device, draw-day, history,
                prize reveal, the generic confirm/info one) shares the

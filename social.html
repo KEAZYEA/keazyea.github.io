@@ -1330,8 +1330,38 @@
 
         .formation-comment-input-row {
             display: flex;
-            align-items: center;
+            align-items: flex-end;
             gap: 8px;
+            margin-top: 12px;
+        }
+
+        /* Enter now inserts a newline (native textarea behavior) instead of
+           sending — only the Send button submits. Starts at one line and
+           grows as you type via the "auto-grow" script wired to its input
+           event, capping out and scrolling internally past ~6 lines. */
+        .comment-textarea {
+            resize: none;
+            overflow-y: auto;
+            max-height: 140px;
+            line-height: 1.4;
+            font-size: 0.95rem;
+        }
+
+        /* Bundles the editing note, image previews, and the input row
+           itself into ONE sticky footer — pinning them separately (rather
+           than as one shared container) leaves a gap between them where
+           scrolled comment content shows through, since each would need
+           its own independently-guessed offset. Pins to the bottom of
+           .postclan-box's own scroll area, so you can keep typing while
+           scrolling the post/comments above without losing the compose box. */
+        .comment-compose-sticky {
+            position: sticky;
+            bottom: 0;
+            background: #16162a;
+            padding-top: 8px;
+            padding-bottom: 4px;
+            z-index: 5;
+            border-top: 1px solid #2a2a4a;
             margin-top: 12px;
         }
 
@@ -2214,16 +2244,17 @@
                 <div class="friends-section-title" style="margin-top:18px;">Comments</div>
                 <div id="formationCommentsList"></div>
 
-                <div id="formationCommentEditingNote" class="compose-hint" style="display:none; margin-top:10px;"></div>
-                <div id="formationCommentImagePreviews" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;"></div>
-                <div class="formation-comment-input-row">
-                    <input type="file" id="formationCommentImageInput" accept="image/*" multiple style="display:none;">
-                    <button type="button" class="formation-attach-btn" onclick="triggerFormationCommentImagePick()"
-                        title="Attach up to 3 photos">+</button>
-                    <input type="text" id="formationCommentTextInput" class="modal-field-input"
-                        placeholder="Suggest a formation, give tips..." style="margin-bottom:0; flex:1;"
-                        onkeydown="if(event.key==='Enter') submitFormationComment();">
-                    <button class="btn-primary" id="formationCommentSendBtn" onclick="submitFormationComment()" style="flex-shrink:0;">Send</button>
+                <div class="comment-compose-sticky">
+                    <div id="formationCommentEditingNote" class="compose-hint" style="display:none; margin-top:10px;"></div>
+                    <div id="formationCommentImagePreviews" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;"></div>
+                    <div class="formation-comment-input-row">
+                        <input type="file" id="formationCommentImageInput" accept="image/*" multiple style="display:none;">
+                        <button type="button" class="formation-attach-btn" onclick="triggerFormationCommentImagePick()"
+                            title="Attach up to 3 photos">+</button>
+                        <textarea id="formationCommentTextInput" class="modal-field-input comment-textarea"
+                            placeholder="Suggest a formation, give tips..." style="margin-bottom:0; flex:1;" rows="1"></textarea>
+                        <button class="btn-primary" id="formationCommentSendBtn" onclick="submitFormationComment()" style="flex-shrink:0;">Send</button>
+                    </div>
                 </div>
             </div>
 
@@ -2343,16 +2374,17 @@
                 <div class="friends-section-title" style="margin-top:18px;">Comments</div>
                 <div id="tierListCommentsList"></div>
 
-                <div id="tierListCommentEditingNote" class="compose-hint" style="display:none; margin-top:10px;"></div>
-                <div id="tierListCommentImagePreviews" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;"></div>
-                <div class="formation-comment-input-row">
-                    <input type="file" id="tierListCommentImageInput" accept="image/*" multiple style="display:none;">
-                    <button type="button" class="formation-attach-btn" onclick="triggerTierListCommentImagePick()"
-                        title="Attach up to 3 photos">+</button>
-                    <input type="text" id="tierListCommentTextInput" class="modal-field-input"
-                        placeholder="Give feedback on this tier list..." style="margin-bottom:0; flex:1;"
-                        onkeydown="if(event.key==='Enter') submitTierListComment();">
-                    <button class="btn-primary" id="tierListCommentSendBtn" onclick="submitTierListComment()" style="flex-shrink:0;">Send</button>
+                <div class="comment-compose-sticky">
+                    <div id="tierListCommentEditingNote" class="compose-hint" style="display:none; margin-top:10px;"></div>
+                    <div id="tierListCommentImagePreviews" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;"></div>
+                    <div class="formation-comment-input-row">
+                        <input type="file" id="tierListCommentImageInput" accept="image/*" multiple style="display:none;">
+                        <button type="button" class="formation-attach-btn" onclick="triggerTierListCommentImagePick()"
+                            title="Attach up to 3 photos">+</button>
+                        <textarea id="tierListCommentTextInput" class="modal-field-input comment-textarea"
+                            placeholder="Give feedback on this tier list..." style="margin-bottom:0; flex:1;" rows="1"></textarea>
+                        <button class="btn-primary" id="tierListCommentSendBtn" onclick="submitTierListComment()" style="flex-shrink:0;">Send</button>
+                    </div>
                 </div>
             </div>
 
@@ -2535,6 +2567,49 @@
 
     <script type="module" src="appState.js"></script>
     <script type="module">
+        /* ---------------- KEYBOARD-SAFE INPUT SCROLLING ----------------
+           On mobile, the on-screen keyboard shrinks the visible viewport
+           without moving page content the way a normal resize would —
+           especially inside a `position:fixed` modal, which has no natural
+           "the page scrolled" affordance to bring a focused field back into
+           view once it ends up above/behind where the keyboard now covers.
+           This actively re-centers whatever's currently focused whenever
+           the keyboard opens or its height changes, across every input on
+           this page — not just one specific field or modal. */
+        function scrollFocusedFieldIntoView() {
+            const el = document.activeElement;
+            if (!el || (el.tagName !== "INPUT" && el.tagName !== "TEXTAREA" && el.tagName !== "SELECT")) return;
+            el.scrollIntoView({ block: "center", behavior: "smooth" });
+        }
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener("resize", scrollFocusedFieldIntoView);
+        }
+        document.addEventListener("focusin", (e) => {
+            const el = e.target;
+            if (el.tagName !== "INPUT" && el.tagName !== "TEXTAREA" && el.tagName !== "SELECT") return;
+            // Gives the keyboard's open animation (and the viewport resize
+            // it triggers) a moment to finish before scrolling, otherwise
+            // this runs against layout that's about to change again.
+            setTimeout(() => el.scrollIntoView({ block: "center", behavior: "smooth" }), 300);
+        });
+
+        // Formation/tier-list comment boxes are now multi-line textareas
+        // (Enter inserts a newline instead of sending) that grow with their
+        // content up to the CSS cap, then scroll — this is what makes a
+        // line break actually visible as you type instead of just quietly
+        // scrolling inside a fixed single row. Setting .value directly
+        // (e.g. populating an edit, or clearing after send) doesn't fire an
+        // "input" event, so every such call site also calls this manually.
+        function autoGrowCommentTextarea(el) {
+            if (!el) return;
+            el.style.height = "auto";
+            el.style.height = Math.min(el.scrollHeight, 140) + "px";
+        }
+        ["formationCommentTextInput", "tierListCommentTextInput"].forEach((id) => {
+            const el = document.getElementById(id);
+            if (el) el.addEventListener("input", () => autoGrowCommentTextarea(el));
+        });
+
         const CLAN_TAGS = [
     { id: "active", label: "Active Clan" },
     { id: "clanClash", label: "Plays Clan Clash" },
@@ -3690,6 +3765,7 @@ window.removeClanIconPreview = function () {
             formationCommentSubmitting = false;
             document.getElementById("formationCommentSendBtn").disabled = false;
             document.getElementById("formationCommentTextInput").value = "";
+            autoGrowCommentTextarea(document.getElementById("formationCommentTextInput"));
             formationCommentImageFiles = [];
             formationCommentExistingImages = [];
             editingFormationCommentId = null;
@@ -4024,6 +4100,7 @@ window.removeClanIconPreview = function () {
             formationCommentImageFiles = [];
             formationCommentExistingImages = (c.imageUrls || []).map((url, i) => ({ url, path: (c.imagePaths || [])[i] || null }));
             document.getElementById("formationCommentTextInput").value = c.text || "";
+            autoGrowCommentTextarea(document.getElementById("formationCommentTextInput"));
             renderFormationCommentImagePreviews();
             const note = document.getElementById("formationCommentEditingNote");
             note.innerHTML = 'Editing your comment — <button type="button" class="field-clear-btn" onclick="cancelEditFormationComment()">Cancel</button>';
@@ -4037,6 +4114,7 @@ window.removeClanIconPreview = function () {
             formationCommentExistingImages = [];
             formationCommentImageFiles = [];
             document.getElementById("formationCommentTextInput").value = "";
+            autoGrowCommentTextarea(document.getElementById("formationCommentTextInput"));
             renderFormationCommentImagePreviews();
             document.getElementById("formationCommentEditingNote").style.display = "none";
             document.getElementById("formationCommentSendBtn").textContent = "Send";
@@ -4048,6 +4126,7 @@ window.removeClanIconPreview = function () {
             formationCommentImageFiles = [];
             replyingToFormationCommentId = commentId;
             document.getElementById("formationCommentTextInput").value = "";
+            autoGrowCommentTextarea(document.getElementById("formationCommentTextInput"));
             renderFormationCommentImagePreviews();
             const note = document.getElementById("formationCommentEditingNote");
             note.innerHTML = `Replying to <strong>${escapeHtml(name)}</strong> — <button type="button" class="field-clear-btn" onclick="cancelReplyFormationComment()">Cancel</button>`;
@@ -4106,6 +4185,7 @@ window.removeClanIconPreview = function () {
                         parentId: replyingToFormationCommentId
                     });
                     textInput.value = "";
+                    autoGrowCommentTextarea(textInput);
                     formationCommentImageFiles = [];
                     renderFormationCommentImagePreviews();
                     if (replyingToFormationCommentId) cancelReplyFormationComment();
@@ -4687,6 +4767,7 @@ window.removeClanIconPreview = function () {
             });
 
             document.getElementById("tierListCommentTextInput").value = "";
+            autoGrowCommentTextarea(document.getElementById("tierListCommentTextInput"));
             tierListCommentImageFiles = [];
             tierListCommentExistingImages = [];
             editingTierListCommentId = null;
@@ -4847,6 +4928,7 @@ window.removeClanIconPreview = function () {
             tierListCommentImageFiles = [];
             tierListCommentExistingImages = (c.imageUrls || []).map((url, i) => ({ url, path: (c.imagePaths || [])[i] || null }));
             document.getElementById("tierListCommentTextInput").value = c.text || "";
+            autoGrowCommentTextarea(document.getElementById("tierListCommentTextInput"));
             renderTierListCommentImagePreviews();
             const note = document.getElementById("tierListCommentEditingNote");
             note.innerHTML = 'Editing your comment — <button type="button" class="field-clear-btn" onclick="cancelEditTierListComment()">Cancel</button>';
@@ -4860,6 +4942,7 @@ window.removeClanIconPreview = function () {
             tierListCommentExistingImages = [];
             tierListCommentImageFiles = [];
             document.getElementById("tierListCommentTextInput").value = "";
+            autoGrowCommentTextarea(document.getElementById("tierListCommentTextInput"));
             renderTierListCommentImagePreviews();
             document.getElementById("tierListCommentEditingNote").style.display = "none";
             document.getElementById("tierListCommentSendBtn").textContent = "Send";
@@ -4871,6 +4954,7 @@ window.removeClanIconPreview = function () {
             tierListCommentImageFiles = [];
             replyingToTierListCommentId = commentId;
             document.getElementById("tierListCommentTextInput").value = "";
+            autoGrowCommentTextarea(document.getElementById("tierListCommentTextInput"));
             renderTierListCommentImagePreviews();
             const note = document.getElementById("tierListCommentEditingNote");
             note.innerHTML = `Replying to <strong>${escapeHtml(name)}</strong> — <button type="button" class="field-clear-btn" onclick="cancelReplyTierListComment()">Cancel</button>`;
@@ -4924,6 +5008,7 @@ window.removeClanIconPreview = function () {
                         parentId: replyingToTierListCommentId
                     });
                     textInput.value = "";
+                    autoGrowCommentTextarea(textInput);
                     tierListCommentImageFiles = [];
                     renderTierListCommentImagePreviews();
                     if (replyingToTierListCommentId) cancelReplyTierListComment();
