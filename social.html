@@ -1352,6 +1352,27 @@
             box-shadow: 0 -8px 16px -8px rgba(0, 0, 0, 0.6);
         }
 
+        /* This footer is flex-shrink:0 and ~260-300px tall once the pool
+           toolbar wraps on a narrow screen. With a keyboard open there's
+           only ~350px of screen left, so the footer alone claims almost
+           all of it and the scrolling region above (title, type,
+           description) collapses to a sliver — you can't see what you're
+           typing, and reaching the other fields means fighting a tiny
+           porthole. Shrinking the box doesn't help; being flex-shrink:0,
+           the footer just squeezes that region harder. Since a unit pool
+           is useless while typing a title, it steps aside until the
+           keyboard goes away and hands its ~280px back to the fields. */
+        .tier-editor-box.typing-in-header .tier-editor-footer {
+            display: none;
+        }
+
+        /* Sits at the top of the visible area instead of centred in it, so
+           the fields stay as far from the keyboard as possible and don't
+           jump around as the box resizes. */
+        .tier-editor-box.typing-in-header {
+            align-self: flex-start;
+        }
+
         .tier-editor-pool-fixed {
             padding: 8px 20px 12px;
             border-top: 3px solid #4169e1;
@@ -2820,6 +2841,30 @@
             const box = overlay.querySelector(".modal-box");
             if (box) box.style.maxHeight = "";
         }
+
+        /* ---------------- TIER EDITOR: ROOM TO TYPE ----------------
+           Drives .tier-editor-box.typing-in-header — see the stylesheet
+           for why the pool has to get out of the way. Moving between two
+           header fields fires focusout before the next focusin, so the
+           re-check is deferred a tick; otherwise the pool would flash back
+           in between taps. The pool's own search box lives inside the
+           footer, so it deliberately doesn't count as typing in the header
+           — hiding the footer there would hide the field being typed in. */
+        (function setupTierEditorTypingLayout() {
+            const box = document.querySelector(".tier-editor-box");
+            if (!box) return;
+            const scrollRegion = box.querySelector(".tier-editor-scroll-region");
+            if (!scrollRegion) return;
+            function syncTypingState() {
+                const el = document.activeElement;
+                const typing = !!el
+                    && (el.tagName === "INPUT" || el.tagName === "TEXTAREA")
+                    && scrollRegion.contains(el);
+                box.classList.toggle("typing-in-header", typing);
+            }
+            box.addEventListener("focusin", syncTypingState);
+            box.addEventListener("focusout", () => setTimeout(syncTypingState, 0));
+        })();
 
         // Formation/tier-list comment boxes are now multi-line textareas
         // (Enter inserts a newline instead of sending) that grow with their
@@ -4772,6 +4817,10 @@ window.removeClanIconPreview = function () {
             document.body.style.overflow = "";
             document.documentElement.style.overflow = "";
             resetModalKeyboardViewportSizing("postTierListModalOverlay");
+            // Closing while a field still has focus doesn't reliably fire
+            // focusout in every browser, and a stale class here would mean
+            // reopening to a modal with no Post button.
+            document.querySelector(".tier-editor-box").classList.remove("typing-in-header");
             editingTierListId = null;
             tierBoardState = null;
         };
