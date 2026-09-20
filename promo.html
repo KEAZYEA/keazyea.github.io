@@ -429,6 +429,7 @@
                 </div>
             </div>
         </div>
+    </div>
 
         <script type="module" src="appState.js"></script>
         <script type="module">
@@ -1449,10 +1450,32 @@ if (user && user.uid === winnerData.winnerUid) {
                 }
             };
 
+            // Mark everything currently active as "seen" — including a
+            // giveaway the device filter would hide entirely (e.g. an
+            // iOS-only giveaway for an Android user, or ANY giveaway before
+            // a first-time visitor has picked a device at all). Visiting
+            // this tab is the "I checked" signal regardless of what's
+            // actually rendered past that point.
+            function markAllSecretGiveawaysSeen(items) {
+                const now = Date.now();
+                const notDeleted = items.filter(g => !(g.deleteAt && g.deleteAt <= now));
+                try {
+                    notDeleted.forEach(g => localStorage.setItem("kih_giveaway_seen_secret_" + g.id, "1"));
+                } catch (e) {}
+                refreshSecretTabBadge();
+            }
+
             function showSecretDeviceGate() {
                 const device = getSecretDevice();
                 document.getElementById("secretDeviceChoiceState").style.display = device ? "none" : "block";
                 document.getElementById("secretListWrap").style.display = device ? "block" : "none";
+                // This has to run unconditionally, not just once a device is
+                // chosen — a first-time visitor lands on the device-choice
+                // screen (not the list), and renderSecretGiveawayList()
+                // below never runs until they pick one, so the badge could
+                // never clear just by opening the tab, only by finishing
+                // the device picker. That's the exact bug being fixed here.
+                markAllSecretGiveawaysSeen(latestSecretGiveaways);
                 if (device) {
                     document.getElementById("secretDeviceLabel").textContent = device === "ios" ? "🍎 iOS" : "🤖 Android";
                     renderSecretGiveawayList(latestSecretGiveaways);
@@ -1480,17 +1503,10 @@ if (user && user.uid === winnerData.winnerUid) {
                 // panel open past a giveaway's deleteAt date, so hide any
                 // stale-but-not-yet-swept giveaway from regular users too.
                 const notDeleted = items.filter(g => !(g.deleteAt && g.deleteAt <= now));
-                // Mark everything active as "seen" the moment this tab is
-                // actually opened — including a giveaway the device filter
-                // below hides entirely (e.g. an iOS-only giveaway for an
-                // Android user). That one can never be acted on from this
-                // device, so it shouldn't keep the badge lit forever just
-                // because it never gets a chance to render; visiting this
-                // tab is the "I checked, nothing more I can do here" signal.
-                try {
-                    notDeleted.forEach(g => localStorage.setItem("kih_giveaway_seen_secret_" + g.id, "1"));
-                } catch (e) {}
-                refreshSecretTabBadge();
+                // "Seen" marking now happens in showSecretDeviceGate() before
+                // this ever runs — moved there so it also covers the
+                // first-time-visitor case, where this function isn't called
+                // at all yet (see that function's comment for why).
                 if (!notDeleted.length) {
                     list.innerHTML = "<p class='promo-sub' style='text-align:center;'>No secret giveaways right now — check back later!</p>";
                     return;
