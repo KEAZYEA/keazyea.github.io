@@ -1107,13 +1107,14 @@
         }
 
         /* Only in the create/edit modal: bounded + independently scrollable
-           so a long board doesn't push the sticky pool far out of reach —
-           the read-only board in the feed/detail view is left unbounded. */
+           so a long board doesn't push the pool far out of reach — the
+           read-only board in the feed/detail view is left unbounded. */
         #tierBoardEditor {
             /* No height cap — a tier row with 30 units just grows taller
-               (flex-wrap) instead of clipping some of them off. The whole
-               modal (.tier-editor-box) scrolls to cover it; the pool and
-               action buttons below stay reachable via position:sticky
+               (flex-wrap) instead of clipping some of them off. Only the
+               .tier-editor-scroll-region around this (header + board)
+               scrolls to cover it; the pool and action buttons stay
+               reachable in their own separate, non-scrolling footer below,
                regardless of how tall this gets. */
             padding-right: 2px;
         }
@@ -1297,11 +1298,32 @@
            unit, but the pool pins itself to the bottom of that scroll once
            you scroll down to it, so it stays visible without needing to
            predict how tall anything else is. */
+        /* Same fix as the comment compose bar in .postclan-box-flex: this
+           used to be one big auto-scrolling box with the pool/actions
+           pinned via position:sticky. That's fragile the moment a mobile
+           keyboard opens (the title input up in the header could end up
+           scrolled out of reach above it, with no way back — the exact
+           "can't see what I'm typing" report this was built to fix in the
+           first place) — sticky positioning inside a nested scroll
+           container has to fight the keyboard's viewport resize, and can
+           lose. Real flex layout instead: one scrolling middle region
+           (header + board) and a genuinely separate, non-scrolling footer
+           (pool + actions) that was never sticky to begin with, so there's
+           nothing for the keyboard to fight. */
         .tier-editor-box {
+            display: flex;
+            flex-direction: column;
             max-width: 680px;
             max-height: 88vh;
-            overflow-y: auto;
+            overflow-y: hidden;
             padding: 20px;
+        }
+
+        .tier-editor-scroll-region {
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            overscroll-behavior: contain;
         }
 
         .tier-editor-header {
@@ -1312,19 +1334,11 @@
             padding: 0;
         }
 
-        /* The pool and the action bar are stacked INSIDE one shared sticky
-           wrapper (.tier-editor-sticky-footer below) rather than each being
-           independently sticky — two separately-positioned sticky elements
-           need their offsets to line up exactly or a gap opens between them
-           that the scrolling board shows through. One opaque wrapper can't
-           have that gap by construction. */
-        .tier-editor-sticky-footer {
-            position: sticky;
-            bottom: -20px;
+        .tier-editor-footer {
+            flex-shrink: 0;
             margin: 14px -20px -20px;
             background: #16162a;
             box-shadow: 0 -8px 16px -8px rgba(0, 0, 0, 0.6);
-            z-index: 2;
         }
 
         .tier-editor-pool-fixed {
@@ -2392,38 +2406,40 @@
     <!-- Post/Edit Tier List modal -->
     <div class="modal-overlay" id="postTierListModalOverlay">
         <div class="modal-box tier-editor-box">
-            <div class="tier-editor-header">
-                <div class="modal-title" id="postTierListModalTitle">Create Tier List</div>
+            <div class="tier-editor-scroll-region">
+                <div class="tier-editor-header">
+                    <div class="modal-title" id="postTierListModalTitle">Create Tier List</div>
 
-                <label class="modal-field-label">Title</label>
-                <input type="text" id="postTierListTitleInput" class="modal-field-input" maxlength="100"
-                    placeholder="e.g. Best Arena Heroes">
+                    <label class="modal-field-label">Title</label>
+                    <input type="text" id="postTierListTitleInput" class="modal-field-input" maxlength="100"
+                        placeholder="e.g. Best Arena Heroes">
 
-                <label class="modal-field-label">Type</label>
-                <select id="postTierListUnitType" class="modal-field-input" style="margin-bottom:10px;"
-                    onchange="onTierListEditorTypeChange()">
-                    <option value="hero">Heroes</option>
-                    <option value="troop">Troops</option>
-                    <option value="both" selected>Heroes and Troops</option>
-                </select>
+                    <label class="modal-field-label">Type</label>
+                    <select id="postTierListUnitType" class="modal-field-input" style="margin-bottom:10px;"
+                        onchange="onTierListEditorTypeChange()">
+                        <option value="hero">Heroes</option>
+                        <option value="troop">Troops</option>
+                        <option value="both" selected>Heroes and Troops</option>
+                    </select>
 
-                <label class="modal-field-label">Description (optional)</label>
-                <textarea id="postTierListDescriptionInput" class="modal-field-input" maxlength="2000" rows="2"
-                    placeholder="Explain your reasoning, what this tier list is for, etc."></textarea>
-                <div class="compose-hint" id="postTierListDescCount" style="text-align:right; margin:-6px 0 10px;">0/2000</div>
+                    <label class="modal-field-label">Description (optional)</label>
+                    <textarea id="postTierListDescriptionInput" class="modal-field-input" maxlength="2000" rows="2"
+                        placeholder="Explain your reasoning, what this tier list is for, etc."></textarea>
+                    <div class="compose-hint" id="postTierListDescCount" style="text-align:right; margin:-6px 0 10px;">0/2000</div>
+                </div>
+
+                <div class="tier-editor-pool-heading" style="background:transparent; padding-top:2px; justify-content:space-between;">
+                    <span>📋 Your Tier List — scrolls up here</span>
+                    <button type="button" class="delete-post-link" style="text-transform:none; letter-spacing:normal; font-weight:700;"
+                        onclick="clearTierBoardConfirm()">🗑️ Clear All</button>
+                </div>
+                <div class="tier-editor-board-scroll">
+                    <div id="tierBoardEditorLoading" class="clan-empty" style="display:none;">Loading heroes and troops...</div>
+                    <div class="tier-board" id="tierBoardEditor"></div>
+                </div>
             </div>
 
-            <div class="tier-editor-pool-heading" style="background:transparent; padding-top:2px; justify-content:space-between;">
-                <span>📋 Your Tier List — scrolls up here</span>
-                <button type="button" class="delete-post-link" style="text-transform:none; letter-spacing:normal; font-weight:700;"
-                    onclick="clearTierBoardConfirm()">🗑️ Clear All</button>
-            </div>
-            <div class="tier-editor-board-scroll">
-                <div id="tierBoardEditorLoading" class="clan-empty" style="display:none;">Loading heroes and troops...</div>
-                <div class="tier-board" id="tierBoardEditor"></div>
-            </div>
-
-            <div class="tier-editor-sticky-footer">
+            <div class="tier-editor-footer">
                 <div class="tier-editor-pool-fixed">
                     <div class="tier-pool-toolbar">
                         <div class="tier-pool-type-btns" id="tierPoolTypeBtns"></div>
