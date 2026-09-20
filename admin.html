@@ -151,6 +151,20 @@
         .admin-section > summary:hover {
             color: #6c9bff;
         }
+
+        /* This file had zero @media rules at all before this — the whole
+           admin panel is a single 600px-wide column regardless of the
+           actual viewport, which is especially wasteful now that it holds
+           11 collapsible sections' worth of forms and lists. `!important`
+           is needed since #adminPage sets its width via inline
+           `style="max-width:..."` on the element itself. Small utility
+           dialogs (info/confirm/prompt) are deliberately left alone — they
+           don't have enough content to need it. */
+        @media (min-width: 900px) {
+            #adminPage {
+                max-width: 900px !important;
+            }
+        }
     </style>
 </head>
 
@@ -556,9 +570,20 @@
                especially with this many stacked form sections. This actively
                re-centers whatever's currently focused whenever the keyboard
                opens or its height changes, across every input on this page. */
+            function isElementFullyVisible(el) {
+                const rect = el.getBoundingClientRect();
+                const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+                const vw = window.visualViewport ? window.visualViewport.width : window.innerWidth;
+                return rect.top >= 0 && rect.left >= 0 && rect.bottom <= vh && rect.right <= vw;
+            }
             function scrollFocusedFieldIntoView() {
                 const el = document.activeElement;
                 if (!el || (el.tagName !== "INPUT" && el.tagName !== "TEXTAREA" && el.tagName !== "SELECT")) return;
+                // A sticky/fixed field that's already stuck in view is
+                // already visible — calling scrollIntoView on it anyway
+                // fights that positioning and can scroll the container to a
+                // broken position instead of correctly doing nothing.
+                if (isElementFullyVisible(el)) return;
                 el.scrollIntoView({ block: "center", behavior: "smooth" });
             }
             if (window.visualViewport) {
@@ -567,7 +592,7 @@
             document.addEventListener("focusin", (e) => {
                 const el = e.target;
                 if (el.tagName !== "INPUT" && el.tagName !== "TEXTAREA" && el.tagName !== "SELECT") return;
-                setTimeout(() => el.scrollIntoView({ block: "center", behavior: "smooth" }), 300);
+                setTimeout(scrollFocusedFieldIntoView, 300);
             });
 
             let pickedWinner = null;

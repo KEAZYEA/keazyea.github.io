@@ -644,6 +644,28 @@
             font-family: inherit;
         }
 
+        /* Placeholder text had no explicit color anywhere, so it fell back
+           to the browser's own default placeholder gray — which is dim
+           enough on this dark background to be nearly unreadable (that's
+           the "can't even see it" complaint). This also indirectly made
+           selecting text to edit harder to get right, since it's hard to
+           precisely drag-select something you can barely see. Firefox
+           dims placeholder text further with a default opacity below 1
+           even once a color is set, hence forcing it back to 1 here. */
+        .modal-field-input::placeholder {
+            color: #7a7a95;
+            opacity: 1;
+        }
+
+        /* The browser's default text-selection highlight also wasn't
+           overridden, so on this dark theme it could end up looking like
+           barely anything changed when you dragged to select — same root
+           cause as the placeholder issue above. */
+        .modal-field-input::selection {
+            background: #4169e1;
+            color: white;
+        }
+
         /* ---- Action sheet (click a poster) ---- */
         .modal-overlay {
             display: none;
@@ -774,12 +796,75 @@
 
         /* ---- Post Clan modal: wider + scrollable so nothing gets cut off ---- */
         .postclan-box {
+            position: relative;
             max-width: 520px;
             max-height: 85vh;
             overflow-y: auto;
             overscroll-behavior: contain; /* stops scroll from "handing off" to
                                               the page behind once you reach the
                                               top/bottom of this box */
+        }
+
+        /* Used by the two modals with a comment compose bar (formation and
+           tier-list detail). `position: sticky` for that bar turned out to
+           be fragile in practice — on mobile, the on-screen keyboard's
+           resize combined with a nested scroll container made it fight for
+           position, corrupting the layout (comment text visibly bleeding
+           through, and the whole box getting stuck unable to scroll back
+           up). This is the same fix already proven for the prize-reveal
+           popup: make the box a real flex column with one scrolling middle
+           region (.postclan-scroll-region) and a genuinely separate,
+           non-scrolling footer (.comment-compose-footer) — not a "trick"
+           positioning value trying to fake that same effect. */
+        .postclan-box-flex {
+            display: flex;
+            flex-direction: column;
+            overflow-y: hidden;
+        }
+
+        .postclan-scroll-region {
+            flex: 1;
+            min-height: 0; /* lets this actually shrink and scroll instead of
+                               just growing and pushing the footer off screen */
+            overflow-y: auto;
+            overscroll-behavior: contain;
+        }
+
+        .comment-compose-footer {
+            flex-shrink: 0;
+            background: #16162a;
+            padding-top: 8px;
+            padding-bottom: 4px;
+            border-top: 1px solid #2a2a4a;
+            margin-top: 12px;
+        }
+
+        /* Absolutely positioned against .postclan-box (not sticky/fixed) —
+           since the box itself never moves on screen while its own content
+           scrolls internally, this stays pinned in the same visual corner
+           without needing to fight that scroll. Lets you close a post with
+           a lot of comments without scrolling all the way down to a bottom
+           Close button. Top-LEFT specifically — the carousel's own download
+           button already occupies top-right, and the two were sitting
+           almost on top of each other there. */
+        .postclan-close-btn {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #555;
+            color: white;
+            font-size: 1.1rem;
+            line-height: 1;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .postclan-close-btn:hover {
+            background: rgba(0, 0, 0, 0.75);
         }
 
         /* ---- Highlight your own clan post in the list ---- */
@@ -1338,31 +1423,25 @@
         /* Enter now inserts a newline (native textarea behavior) instead of
            sending — only the Send button submits. Starts at one line and
            grows as you type via the "auto-grow" script wired to its input
-           event, capping out and scrolling internally past ~6 lines. */
+           event, capping out and scrolling internally past ~6 lines.
+
+           min-height matters here: a `rows="1"` textarea's initial height
+           is computed by the browser using its OWN default line-height
+           assumption, not this rule's line-height/padding — so before the
+           auto-grow script ever runs (i.e. right when it's empty, just
+           showing the placeholder), the box could end up a few pixels
+           shorter than one full line of THIS font/line-height actually
+           needs, clipping the top or bottom of the text/placeholder. This
+           floor (line-height 1.4 × 15.2px font ≈ 21px, + 10px top/bottom
+           padding, + 2px border) guarantees room for a full line
+           regardless of what the browser assumed `rows="1"` meant. */
         .comment-textarea {
             resize: none;
             overflow-y: auto;
+            min-height: 44px;
             max-height: 140px;
             line-height: 1.4;
             font-size: 0.95rem;
-        }
-
-        /* Bundles the editing note, image previews, and the input row
-           itself into ONE sticky footer — pinning them separately (rather
-           than as one shared container) leaves a gap between them where
-           scrolled comment content shows through, since each would need
-           its own independently-guessed offset. Pins to the bottom of
-           .postclan-box's own scroll area, so you can keep typing while
-           scrolling the post/comments above without losing the compose box. */
-        .comment-compose-sticky {
-            position: sticky;
-            bottom: 0;
-            background: #16162a;
-            padding-top: 8px;
-            padding-bottom: 4px;
-            z-index: 5;
-            border-top: 1px solid #2a2a4a;
-            margin-top: 12px;
         }
 
         /* Clearly a "add a photo" control — a plain + circle instead of an
@@ -1858,6 +1937,31 @@
     overscroll-behavior: contain;
     margin-right: 32px;
 }
+
+        /* This whole file had exactly one @media rule before this (a short-
+           landscape-height tweak) — every modal is sized for a phone
+           screen with no larger breakpoint at all, so on desktop the
+           content-heavy ones (posting/detail views with comments, the tier
+           list editor) stay stuck at a cramped mobile width and still have
+           to scroll internally for content that a full desktop window has
+           plenty of room to just show. `!important` is needed here because
+           these boxes set their width via inline `style="max-width:..."`
+           on the element itself, which normal stylesheet rules can't beat
+           regardless of selector specificity. Small utility dialogs
+           (confirm/info/prompt) are deliberately left alone — a "Delete
+           this?" popup doesn't need to be 800px wide just because the
+           screen is. */
+        @media (min-width: 900px) {
+            .postclan-box {
+                max-width: 760px !important;
+                max-height: 90vh !important;
+            }
+
+            .tier-editor-box {
+                max-width: 860px !important;
+                max-height: 90vh !important;
+            }
+        }
     </style>
 </head>
 
@@ -2127,6 +2231,7 @@
     <!-- Post Clan modal -->
     <div class="modal-overlay" id="postClanModalOverlay">
         <div class="modal-box postclan-box">
+            <button type="button" class="postclan-close-btn" onclick="closePostClanModal()" title="Close">✕</button>
             <div class="modal-title" id="postClanModalTitle">Post Your Clan</div>
 <div id="postClanCooldownNote" class="compose-hint" style="display:block; margin-bottom:14px;"></div>
 <button type="button" id="autofillClanBtn" class="btn-primary"
@@ -2181,6 +2286,7 @@
     <!-- Post Formation modal -->
     <div class="modal-overlay" id="postFormationModalOverlay">
         <div class="modal-box postclan-box">
+            <button type="button" class="postclan-close-btn" onclick="closePostFormationModal()" title="Close">✕</button>
             <div class="modal-title" id="postFormationModalTitle">Share Formation</div>
             <p class="compose-hint" style="margin:0 0 14px;">📌 Your post stays live for 30 days, then it's
                 automatically removed.</p>
@@ -2207,59 +2313,58 @@
 
     <!-- Formation detail modal (with comments) -->
     <div class="modal-overlay" id="formationDetailModalOverlay">
-        <div class="modal-box postclan-box" style="max-width:520px; text-align:left;">
-            <div class="formation-carousel" id="formationCarousel">
-                <button type="button" class="fc-nav fc-prev" id="fcPrevBtn" onclick="formationDetailPrevImage()">‹</button>
-                <div class="fc-stage" id="fcStage">
-                    <img id="formationCarouselImg" class="fc-img">
-                </div>
-                <button type="button" class="fc-nav fc-next" id="fcNextBtn" onclick="formationDetailNextImage()">›</button>
-                <div class="fc-counter" id="fcCounter"></div>
-                <div class="fc-actions">
-                    <button type="button" class="fc-action-btn" onclick="downloadCurrentFormationImage()" title="Download this photo">⬇</button>
-                </div>
-            </div>
-
-            <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin:12px 0 6px;">
-                <span id="formationDetailCategory" class="clan-card-server-badge badge-both"></span>
-                <button type="button" class="formation-like-btn" id="formationDetailLikeBtn" onclick="toggleFormationDetailLike()"
-                    title="Double-tap the photo to like it too">
-                    <span id="formationDetailLikeIcon">🤍</span> <span id="formationDetailLikeCount">0</span>
-                </button>
-            </div>
-            <div class="clan-post-body" id="formationDetailDescription"></div>
-
-            <div class="clan-post-head" id="formationDetailPosterRow" style="margin-top:16px; cursor:pointer;">
-                <img class="clan-post-avatar" id="formationDetailAvatar" onerror="this.style.visibility='hidden'">
-                <span class="clan-post-name" id="formationDetailPosterName"></span>
-                <span class="clan-post-time" id="formationDetailTime"></span>
-            </div>
-            <div class="clan-post-footer">
-                <button class="edit-post-link" id="formationDetailEditBtn" style="display:none;">✏️ Edit</button>
-                <button class="delete-post-link" id="formationDetailDeleteBtn" style="display:none;">🗑️ Delete</button>
-                <button class="report-link" id="formationDetailReportBtn" style="display:none;">🚩 Report</button>
-            </div>
-
-            <div class="formation-comments-section">
-                <div class="friends-section-title" style="margin-top:18px;">Comments</div>
-                <div id="formationCommentsList"></div>
-
-                <div class="comment-compose-sticky">
-                    <div id="formationCommentEditingNote" class="compose-hint" style="display:none; margin-top:10px;"></div>
-                    <div id="formationCommentImagePreviews" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;"></div>
-                    <div class="formation-comment-input-row">
-                        <input type="file" id="formationCommentImageInput" accept="image/*" multiple style="display:none;">
-                        <button type="button" class="formation-attach-btn" onclick="triggerFormationCommentImagePick()"
-                            title="Attach up to 3 photos">+</button>
-                        <textarea id="formationCommentTextInput" class="modal-field-input comment-textarea"
-                            placeholder="Suggest a formation, give tips..." style="margin-bottom:0; flex:1;" rows="1"></textarea>
-                        <button class="btn-primary" id="formationCommentSendBtn" onclick="submitFormationComment()" style="flex-shrink:0;">Send</button>
+        <div class="modal-box postclan-box postclan-box-flex" style="max-width:520px; text-align:left;">
+            <button type="button" class="postclan-close-btn" onclick="closeFormationDetailModal()" title="Close">✕</button>
+            <div class="postclan-scroll-region">
+                <div class="formation-carousel" id="formationCarousel">
+                    <button type="button" class="fc-nav fc-prev" id="fcPrevBtn" onclick="formationDetailPrevImage()">‹</button>
+                    <div class="fc-stage" id="fcStage">
+                        <img id="formationCarouselImg" class="fc-img">
+                    </div>
+                    <button type="button" class="fc-nav fc-next" id="fcNextBtn" onclick="formationDetailNextImage()">›</button>
+                    <div class="fc-counter" id="fcCounter"></div>
+                    <div class="fc-actions">
+                        <button type="button" class="fc-action-btn" onclick="downloadCurrentFormationImage()" title="Download this photo">⬇</button>
                     </div>
                 </div>
+
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin:12px 0 6px;">
+                    <span id="formationDetailCategory" class="clan-card-server-badge badge-both"></span>
+                    <button type="button" class="formation-like-btn" id="formationDetailLikeBtn" onclick="toggleFormationDetailLike()"
+                        title="Double-tap the photo to like it too">
+                        <span id="formationDetailLikeIcon">🤍</span> <span id="formationDetailLikeCount">0</span>
+                    </button>
+                </div>
+                <div class="clan-post-body" id="formationDetailDescription"></div>
+
+                <div class="clan-post-head" id="formationDetailPosterRow" style="margin-top:16px; cursor:pointer;">
+                    <img class="clan-post-avatar" id="formationDetailAvatar" onerror="this.style.visibility='hidden'">
+                    <span class="clan-post-name" id="formationDetailPosterName"></span>
+                    <span class="clan-post-time" id="formationDetailTime"></span>
+                </div>
+                <div class="clan-post-footer">
+                    <button class="edit-post-link" id="formationDetailEditBtn" style="display:none;">✏️ Edit</button>
+                    <button class="delete-post-link" id="formationDetailDeleteBtn" style="display:none;">🗑️ Delete</button>
+                    <button class="report-link" id="formationDetailReportBtn" style="display:none;">🚩 Report</button>
+                </div>
+
+                <div class="formation-comments-section">
+                    <div class="friends-section-title" style="margin-top:18px;">Comments</div>
+                    <div id="formationCommentsList"></div>
+                </div>
             </div>
 
-            <div class="modal-actions" style="margin-top:14px;">
-                <button class="modal-cancel" onclick="closeFormationDetailModal()">Close</button>
+            <div class="comment-compose-footer">
+                <div id="formationCommentEditingNote" class="compose-hint" style="display:none; margin-top:10px;"></div>
+                <div id="formationCommentImagePreviews" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;"></div>
+                <div class="formation-comment-input-row">
+                    <input type="file" id="formationCommentImageInput" accept="image/*" multiple style="display:none;">
+                    <button type="button" class="formation-attach-btn" onclick="triggerFormationCommentImagePick()"
+                        title="Attach up to 3 photos">+</button>
+                    <textarea id="formationCommentTextInput" class="modal-field-input comment-textarea"
+                        placeholder="Suggest a formation, give tips..." style="margin-bottom:0; flex:1;" rows="1"></textarea>
+                    <button class="btn-primary" id="formationCommentSendBtn" onclick="submitFormationComment()" style="flex-shrink:0;">Send</button>
+                </div>
             </div>
         </div>
     </div>
@@ -2339,57 +2444,56 @@
 
     <!-- Tier List detail modal -->
     <div class="modal-overlay" id="tierListDetailModalOverlay">
-        <div class="modal-box postclan-box" style="max-width:680px; text-align:left;">
-            <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px;">
-                <div id="tierListDetailTitle" style="font-weight:800; font-size:1.25rem;"></div>
-                <span id="tierListDetailTypeBadge" class="clan-card-server-badge badge-both"></span>
-            </div>
+        <div class="modal-box postclan-box postclan-box-flex" style="max-width:680px; text-align:left;">
+            <button type="button" class="postclan-close-btn" onclick="closeTierListDetailModal()" title="Close">✕</button>
+            <div class="postclan-scroll-region">
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px; padding-left:40px;">
+                    <div id="tierListDetailTitle" style="font-weight:800; font-size:1.25rem;"></div>
+                    <span id="tierListDetailTypeBadge" class="clan-card-server-badge badge-both"></span>
+                </div>
 
-            <div class="tier-board" id="tierBoardDetail"></div>
+                <div class="tier-board" id="tierBoardDetail"></div>
 
-            <div id="tierListDetailDescription" class="clan-post-body" style="margin-top:10px;"></div>
+                <div id="tierListDetailDescription" class="clan-post-body" style="margin-top:10px;"></div>
 
-            <div class="tier-vote-row">
-                <button type="button" class="tier-vote-btn" id="tierListUpvoteBtn" onclick="voteOnCurrentTierList(1)">▲
-                    <span id="tierListUpvoteCount">0</span></button>
-                <span class="tier-vote-score" id="tierListNetScore">0</span>
-                <button type="button" class="tier-vote-btn" id="tierListDownvoteBtn" onclick="voteOnCurrentTierList(-1)">▼
-                    <span id="tierListDownvoteCount">0</span></button>
-                <button type="button" class="fc-action-btn" style="margin-left:auto; position:static;"
-                    onclick="downloadCurrentTierListImage()" title="Download as image">⬇</button>
-            </div>
+                <div class="tier-vote-row">
+                    <button type="button" class="tier-vote-btn" id="tierListUpvoteBtn" onclick="voteOnCurrentTierList(1)">▲
+                        <span id="tierListUpvoteCount">0</span></button>
+                    <span class="tier-vote-score" id="tierListNetScore">0</span>
+                    <button type="button" class="tier-vote-btn" id="tierListDownvoteBtn" onclick="voteOnCurrentTierList(-1)">▼
+                        <span id="tierListDownvoteCount">0</span></button>
+                    <button type="button" class="fc-action-btn" style="margin-left:auto; position:static;"
+                        onclick="downloadCurrentTierListImage()" title="Download as image">⬇</button>
+                </div>
 
-            <div class="clan-post-head" id="tierListDetailPosterRow" style="margin-top:12px; cursor:pointer;">
-                <img class="clan-post-avatar" id="tierListDetailAvatar" onerror="this.style.visibility='hidden'">
-                <span class="clan-post-name" id="tierListDetailPosterName"></span>
-                <span class="clan-post-time" id="tierListDetailTime"></span>
-            </div>
-            <div class="clan-post-footer">
-                <button class="edit-post-link" id="tierListDetailEditBtn" style="display:none;">✏️ Edit</button>
-                <button class="delete-post-link" id="tierListDetailDeleteBtn" style="display:none;">🗑️ Delete</button>
-                <button class="report-link" id="tierListDetailReportBtn" style="display:none;">🚩 Report</button>
-            </div>
+                <div class="clan-post-head" id="tierListDetailPosterRow" style="margin-top:12px; cursor:pointer;">
+                    <img class="clan-post-avatar" id="tierListDetailAvatar" onerror="this.style.visibility='hidden'">
+                    <span class="clan-post-name" id="tierListDetailPosterName"></span>
+                    <span class="clan-post-time" id="tierListDetailTime"></span>
+                </div>
+                <div class="clan-post-footer">
+                    <button class="edit-post-link" id="tierListDetailEditBtn" style="display:none;">✏️ Edit</button>
+                    <button class="delete-post-link" id="tierListDetailDeleteBtn" style="display:none;">🗑️ Delete</button>
+                    <button class="report-link" id="tierListDetailReportBtn" style="display:none;">🚩 Report</button>
+                </div>
 
-            <div class="formation-comments-section">
-                <div class="friends-section-title" style="margin-top:18px;">Comments</div>
-                <div id="tierListCommentsList"></div>
-
-                <div class="comment-compose-sticky">
-                    <div id="tierListCommentEditingNote" class="compose-hint" style="display:none; margin-top:10px;"></div>
-                    <div id="tierListCommentImagePreviews" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;"></div>
-                    <div class="formation-comment-input-row">
-                        <input type="file" id="tierListCommentImageInput" accept="image/*" multiple style="display:none;">
-                        <button type="button" class="formation-attach-btn" onclick="triggerTierListCommentImagePick()"
-                            title="Attach up to 3 photos">+</button>
-                        <textarea id="tierListCommentTextInput" class="modal-field-input comment-textarea"
-                            placeholder="Give feedback on this tier list..." style="margin-bottom:0; flex:1;" rows="1"></textarea>
-                        <button class="btn-primary" id="tierListCommentSendBtn" onclick="submitTierListComment()" style="flex-shrink:0;">Send</button>
-                    </div>
+                <div class="formation-comments-section">
+                    <div class="friends-section-title" style="margin-top:18px;">Comments</div>
+                    <div id="tierListCommentsList"></div>
                 </div>
             </div>
 
-            <div class="modal-actions" style="margin-top:14px;">
-                <button class="modal-cancel" onclick="closeTierListDetailModal()">Close</button>
+            <div class="comment-compose-footer">
+                <div id="tierListCommentEditingNote" class="compose-hint" style="display:none; margin-top:10px;"></div>
+                <div id="tierListCommentImagePreviews" style="display:flex; flex-wrap:wrap; gap:8px; margin-top:10px;"></div>
+                <div class="formation-comment-input-row">
+                    <input type="file" id="tierListCommentImageInput" accept="image/*" multiple style="display:none;">
+                    <button type="button" class="formation-attach-btn" onclick="triggerTierListCommentImagePick()"
+                        title="Attach up to 3 photos">+</button>
+                    <textarea id="tierListCommentTextInput" class="modal-field-input comment-textarea"
+                        placeholder="Give feedback on this tier list..." style="margin-bottom:0; flex:1;" rows="1"></textarea>
+                    <button class="btn-primary" id="tierListCommentSendBtn" onclick="submitTierListComment()" style="flex-shrink:0;">Send</button>
+                </div>
             </div>
         </div>
     </div>
@@ -2576,9 +2680,22 @@
            This actively re-centers whatever's currently focused whenever
            the keyboard opens or its height changes, across every input on
            this page — not just one specific field or modal. */
+        function isElementFullyVisible(el) {
+            const rect = el.getBoundingClientRect();
+            const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+            const vw = window.visualViewport ? window.visualViewport.width : window.innerWidth;
+            return rect.top >= 0 && rect.left >= 0 && rect.bottom <= vh && rect.right <= vw;
+        }
         function scrollFocusedFieldIntoView() {
             const el = document.activeElement;
             if (!el || (el.tagName !== "INPUT" && el.tagName !== "TEXTAREA" && el.tagName !== "SELECT")) return;
+            // A sticky/fixed field (e.g. the comment compose bar pinned to
+            // the bottom of its own scroll container) is already visible
+            // once it's stuck in place — calling scrollIntoView on it
+            // anyway fights the sticky positioning and can scroll the
+            // container to a broken, corrupted-looking position instead of
+            // correctly doing nothing (there's nothing to bring into view).
+            if (isElementFullyVisible(el)) return;
             el.scrollIntoView({ block: "center", behavior: "smooth" });
         }
         if (window.visualViewport) {
@@ -2588,9 +2705,9 @@
             const el = e.target;
             if (el.tagName !== "INPUT" && el.tagName !== "TEXTAREA" && el.tagName !== "SELECT") return;
             // Gives the keyboard's open animation (and the viewport resize
-            // it triggers) a moment to finish before scrolling, otherwise
+            // it triggers) a moment to finish before checking, otherwise
             // this runs against layout that's about to change again.
-            setTimeout(() => el.scrollIntoView({ block: "center", behavior: "smooth" }), 300);
+            setTimeout(scrollFocusedFieldIntoView, 300);
         });
 
         // Formation/tier-list comment boxes are now multi-line textareas
@@ -2607,7 +2724,13 @@
         }
         ["formationCommentTextInput", "tierListCommentTextInput"].forEach((id) => {
             const el = document.getElementById(id);
-            if (el) el.addEventListener("input", () => autoGrowCommentTextarea(el));
+            if (!el) return;
+            el.addEventListener("input", () => autoGrowCommentTextarea(el));
+            // Also run once immediately — otherwise the box sits at
+            // whatever height the browser guessed for rows="1" (see the
+            // .comment-textarea CSS comment) until the very first
+            // keystroke, instead of the correct height from the start.
+            autoGrowCommentTextarea(el);
         });
 
         const CLAN_TAGS = [
@@ -5638,12 +5761,24 @@ document.getElementById("dmActionsMenu").classList.remove("open");
         const timeHtml = `<span class="dm-msg-time">${formatDmTime(m.createdAt)}</span>`;
 
         // Inline edit mode: swap the bubble body for a textarea + Save/Cancel.
+        // This used to reference replyBtn/editBtn/reportBtn here, but those
+        // are declared with const further down in this same function — JS's
+        // temporal dead zone means reading a const before its declaration
+        // line throws a ReferenceError, not just "undefined". That silently
+        // broke this whole render the instant edit mode activated, which is
+        // why the Edit button looked like it just didn't do anything. Edit
+        // mode doesn't need those actions anyway (you shouldn't be able to
+        // Reply/Edit/Report a message you're mid-editing) — it needs its
+        // own Save/Cancel, using the .dm-msg-edit-box/.dm-msg-edit-actions
+        // styles that already existed in the CSS but were never actually
+        // used anywhere.
         if (editingMsgId === m.id) {
             html += `<div class="dm-msg ${mine ? "mine" : "theirs"}" id="dmMsgRow_${m.id}">
     ${quoteHtml}
-    ${escapeHtml(m.text)}${editedTag}${timeHtml}
-    <div class="dm-msg-actions" style="clear:both;">
-        ${replyBtn}${editBtn}${reportBtn}
+    <textarea class="dm-msg-edit-box" id="dmEditBox_${m.id}">${escapeHtml(m.text)}</textarea>
+    <div class="dm-msg-edit-actions">
+        <button class="dm-msg-action-link" onclick='saveEditMessage("${m.id}")'>💾 Save</button>
+        <button class="dm-msg-action-link" onclick='cancelEditMessage()'>✕ Cancel</button>
     </div>
 </div>`;
             return;
