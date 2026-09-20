@@ -799,6 +799,14 @@
             position: relative;
             max-width: 520px;
             max-height: 85vh;
+            /* dvh continuously tracks the REAL visible height, keyboard
+               included, with zero JS and zero timing lag — unlike vh, which
+               stays pinned to the full layout viewport and is what let the
+               keyboard "push" content off screen instead of the box just
+               shrinking to leave the keyboard room. Browsers that don't
+               support dvh yet simply ignore this line and keep the vh
+               value above. */
+            max-height: 85dvh;
             overflow-y: auto;
             overscroll-behavior: contain; /* stops scroll from "handing off" to
                                               the page behind once you reach the
@@ -1315,6 +1323,9 @@
             flex-direction: column;
             max-width: 680px;
             max-height: 88vh;
+            /* See .postclan-box above — dvh tracks the real visible area
+               continuously (keyboard included) with no JS involved. */
+            max-height: 88dvh;
             overflow-y: hidden;
             padding: 20px;
         }
@@ -2726,6 +2737,90 @@
             setTimeout(scrollFocusedFieldIntoView, 300);
         });
 
+        /* ---------------- MODAL SCROLL LOCK ----------------
+           Every popup on this page shares the .modal-overlay class and is
+           opened/closed the same way — classList.add/remove("open") — so a
+           single observer here covers all of them, including any added
+           later, without each open/close call site needing to know about
+           scroll locking.
+
+           Deliberately does NOT rely on `body { overflow: hidden }` alone
+           — on mobile (iOS Safari especially) that lets a focused input's
+           auto-scroll-into-view behavior shift the page's scroll position
+           out from under a `position: fixed` overlay, since overflow:hidden
+           doesn't actually pin the layout viewport in place. That's what
+           caused the Create Tier List modal's top section to scroll out of
+           view with no way to bring it back once the keyboard opened.
+           Pinning the body with `position: fixed` instead avoids that,
+           since it doesn't change how fixed DESCENDANTS (like the overlay)
+           compute their own position. */
+        let modalScrollLockSavedY = 0;
+        function updateModalScrollLock() {
+            const anyOpen = document.querySelector(".modal-overlay.open") !== null;
+            const isLocked = document.body.style.position === "fixed";
+            if (anyOpen && !isLocked) {
+                modalScrollLockSavedY = window.scrollY;
+                document.body.style.position = "fixed";
+                document.body.style.top = `-${modalScrollLockSavedY}px`;
+                document.body.style.left = "0";
+                document.body.style.right = "0";
+            } else if (!anyOpen && isLocked) {
+                document.body.style.position = "";
+                document.body.style.top = "";
+                document.body.style.left = "";
+                document.body.style.right = "";
+                window.scrollTo(0, modalScrollLockSavedY);
+            }
+        }
+        const modalScrollLockObserver = new MutationObserver(updateModalScrollLock);
+        document.querySelectorAll(".modal-overlay").forEach((el) => {
+            modalScrollLockObserver.observe(el, { attributes: true, attributeFilter: ["class"] });
+        });
+        updateModalScrollLock();
+
+        /* ---------------- MODAL KEYBOARD-SAFE VIEWPORT SIZING ----------------
+           `vh`-based max-height doesn't shrink to match the real visible
+           area when the on-screen keyboard opens, so a tall modal's
+           max-height stays computed against the full (keyboard-covered)
+           layout viewport. Actively resizes/repositions the overlay and
+           its box to match window.visualViewport instead — the same
+           technique already proven for the DM modal (see
+           setupDmViewportHandling below; rafThrottle is defined later in
+           this module but hoisted, so it's safe to reference here). */
+        function setupModalKeyboardViewportHandling(overlayId) {
+            if (!window.visualViewport) return;
+            const overlay = document.getElementById(overlayId);
+            if (!overlay) return;
+            const box = overlay.querySelector(".modal-box");
+            if (!box) return;
+            function handleViewportChange() {
+                if (!overlay.classList.contains("open")) return;
+                const vv = window.visualViewport;
+                overlay.style.height = vv.height + "px";
+                overlay.style.top = vv.offsetTop + "px";
+                box.style.maxHeight = Math.round(vv.height * 0.92) + "px";
+            }
+            const throttled = rafThrottle(handleViewportChange);
+            window.visualViewport.addEventListener("resize", throttled);
+            window.visualViewport.addEventListener("scroll", throttled);
+            new MutationObserver(() => { if (overlay.classList.contains("open")) handleViewportChange(); })
+                .observe(overlay, { attributes: true, attributeFilter: ["class"] });
+        }
+        ["postTierListModalOverlay", "tierListDetailModalOverlay", "formationDetailModalOverlay", "postClanModalOverlay", "postFormationModalOverlay"]
+            .forEach(setupModalKeyboardViewportHandling);
+
+        // Clears the inline sizing setupModalKeyboardViewportHandling applies,
+        // so the next time the modal opens it starts from its normal CSS
+        // sizing instead of whatever the keyboard-adjusted viewport last was.
+        function resetModalKeyboardViewportSizing(overlayId) {
+            const overlay = document.getElementById(overlayId);
+            if (!overlay) return;
+            overlay.style.height = "";
+            overlay.style.top = "";
+            const box = overlay.querySelector(".modal-box");
+            if (box) box.style.maxHeight = "";
+        }
+
         // Formation/tier-list comment boxes are now multi-line textareas
         // (Enter inserts a newline instead of sending) that grow with their
         // content up to the CSS cap, then scroll — this is what makes a
@@ -3186,6 +3281,7 @@ function formatDmDateSeparator(ts) {
             document.getElementById("postClanModalOverlay").classList.remove("open");
             document.body.style.overflow = "";
             document.documentElement.style.overflow = "";
+            resetModalKeyboardViewportSizing("postClanModalOverlay");
             editingPostId = null;
         };
 
@@ -3620,6 +3716,7 @@ window.removeClanIconPreview = function () {
             document.getElementById("postFormationModalOverlay").classList.remove("open");
             document.body.style.overflow = "";
             document.documentElement.style.overflow = "";
+            resetModalKeyboardViewportSizing("postFormationModalOverlay");
             editingFormationPostId = null;
             formationExistingImages = [];
         };
@@ -3926,6 +4023,7 @@ window.removeClanIconPreview = function () {
             document.getElementById("formationDetailModalOverlay").classList.remove("open");
             document.body.style.overflow = "";
             document.documentElement.style.overflow = "";
+            resetModalKeyboardViewportSizing("formationDetailModalOverlay");
             if (unsubFormationComments) { unsubFormationComments(); unsubFormationComments = null; }
             currentFormationDetailId = null;
         };
@@ -4673,6 +4771,7 @@ window.removeClanIconPreview = function () {
             document.getElementById("postTierListModalOverlay").classList.remove("open");
             document.body.style.overflow = "";
             document.documentElement.style.overflow = "";
+            resetModalKeyboardViewportSizing("postTierListModalOverlay");
             editingTierListId = null;
             tierBoardState = null;
         };
@@ -4930,6 +5029,7 @@ window.removeClanIconPreview = function () {
             document.getElementById("tierListDetailModalOverlay").classList.remove("open");
             document.body.style.overflow = "";
             document.documentElement.style.overflow = "";
+            resetModalKeyboardViewportSizing("tierListDetailModalOverlay");
             if (unsubTierListComments) { unsubTierListComments(); unsubTierListComments = null; }
             currentTierListDetailId = null;
         };
