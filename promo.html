@@ -123,6 +123,16 @@
             box-shadow: 0 0 24px rgba(65, 105, 225, 0.25);
         }
 
+        /* Same exposure as .reveal-box-name directly above it — an
+           admin-entered code long enough to outgrow the modal would push
+           past the edge and make the reveal pannable again. Codes stay on
+           one line whenever they fit; this only engages when they can't. */
+        .promo-code-box {
+            max-width: 100%;
+            flex-wrap: wrap;
+            overflow-wrap: anywhere;
+        }
+
         .reveal-box-label {
             font-size: 0.9rem;
             color: #9a9ab0;
@@ -139,6 +149,17 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            /* The reel cycles through real in-game names, and at this size
+               only ~20 characters fit. Without this a longer one renders as
+               a single unbreakable line that spills outside the bordered
+               card — and since the scroll parent has overflow-y:auto, the
+               spec computes its overflow-x to auto too, so the whole reveal
+               becomes draggable sideways. `anywhere` (not `break-word`) is
+               what's needed: it also shrinks the min-content width, which
+               is what lets this flex item wrap at all. */
+            max-width: 100%;
+            min-width: 0;
+            overflow-wrap: anywhere;
         }
 
         .reveal-box-name.cycling {
@@ -242,7 +263,7 @@
     <div class="center-modal-overlay" id="prizeRevealModalOverlay">
     <div class="center-modal-box" style="max-width:360px; display:flex; flex-direction:column; overflow-y:hidden;">
         <div class="center-modal-title" id="prizeRevealModalTitle" style="flex-shrink:0;">🎉 Your Prize</div>
-        <div id="prizeRevealBody" style="margin-bottom:16px; overflow-y:auto; flex:1; min-height:0;"></div>
+        <div id="prizeRevealBody" style="margin-bottom:16px; overflow-y:auto; overflow-x:hidden; flex:1; min-height:0;"></div>
         <button class="center-modal-btn-cancel" id="prizeRevealCloseBtn"
             style="width:100%; padding:18px 16px; font-size:1.2rem; border:2px solid #6c9bff; margin-top:4px; flex-shrink:0;">✖ Close</button>
     </div>
