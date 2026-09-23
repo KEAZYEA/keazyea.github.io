@@ -1179,12 +1179,22 @@
             border-radius: 8px;
             object-fit: cover;
             background: #2a2a4a;
-            cursor: grab;
-            touch-action: none;
             border: 2px solid transparent;
         }
 
-        .tier-unit-icon:active {
+        /* Draggable ONLY in the editor — wireTierUnitDrag() is called for the
+           board and the pool there and nowhere else. touch-action:none is
+           what lets a touch drag work at all, but it also tells the browser
+           not to scroll from this element. These icons pack the tier rows
+           edge to edge, so while it sat on the base class it silently ate
+           most vertical scrolling on the read-only feed and detail views —
+           you could only scroll by finding a gap between pictures. */
+        .tier-editor-box .tier-unit-icon {
+            cursor: grab;
+            touch-action: none;
+        }
+
+        .tier-editor-box .tier-unit-icon:active {
             cursor: grabbing;
         }
 
@@ -2988,10 +2998,28 @@
             el.style.height = "auto";
             el.style.height = Math.min(el.scrollHeight, 140) + "px";
         }
-        ["formationCommentTextInput", "tierListCommentTextInput"].forEach((id) => {
+        // These two behave like a chat box, so Enter sends and Shift+Enter
+        // makes a new line. The long description fields in the compose
+        // modals deliberately keep the normal Enter-is-a-newline behaviour —
+        // they're prose, not messages.
+        [
+            { id: "formationCommentTextInput", send: () => submitFormationComment() },
+            { id: "tierListCommentTextInput", send: () => submitTierListComment() }
+        ].forEach(({ id, send }) => {
             const el = document.getElementById(id);
             if (!el) return;
             el.addEventListener("input", () => autoGrowCommentTextarea(el));
+            el.addEventListener("keydown", (e) => {
+                if (e.key !== "Enter" || e.shiftKey) return;
+                // While an IME is open (Chinese/Japanese/Korean and friends)
+                // Enter confirms the candidate word — sending on that would
+                // fire off a half-typed message.
+                if (e.isComposing || e.keyCode === 229) return;
+                // Without this the newline is inserted before the send runs,
+                // so a failed/empty send would leave a blank line behind.
+                e.preventDefault();
+                send();
+            });
             // Also run once immediately — otherwise the box sits at
             // whatever height the browser guessed for rows="1" (see the
             // .comment-textarea CSS comment) until the very first
