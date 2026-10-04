@@ -1633,10 +1633,29 @@ if (user && user.uid === winnerData.winnerUid) {
                        </div>`
                     : "";
 
+                // Which sides this giveaway actually runs — taken from the
+                // winner SLOTS, not from `winners`, which is empty until the
+                // draw happens. Only offered platforms are listed, so an
+                // Android-only giveaway doesn't advertise "iOS 0 entered".
+                const offersIos = (g.iosWinnerCount || 0) > 0;
+                const offersAndroid = (g.androidWinnerCount || 0) > 0;
+                const entryCounts = [];
+                if (offersIos) entryCounts.push(`🍎 iOS ${g.iosEntryCount || 0} entered`);
+                if (offersAndroid) entryCounts.push(`🤖 Android ${g.androidEntryCount || 0} entered`);
+                const entryCountsHtml = entryCounts.length
+                    ? entryCounts.join(" &middot; ")
+                    : `👥 ${g.entryCount || 0} entered`;
+
+                const passwordChipHtml = g.requiresPassword
+                    ? `<span style="display:inline-block; padding:3px 10px; border-radius:999px; font-size:0.8rem; font-weight:700; background:#3a2a16; border:1px solid #aa7a1e; color:#ffc46b;">🔒 Password required</span>`
+                    : `<span style="display:inline-block; padding:3px 10px; border-radius:999px; font-size:0.8rem; font-weight:700; background:#16301f; border:1px solid #2e7d32; color:#7ddc92;">🔓 No password needed</span>`;
+
                 return `
                 <div style="margin-bottom:16px; padding:16px; border:1px solid #2a2a4a; border-radius:12px;">
                     <h3 style="margin:0 0 6px;">${escapeHtml(g.title)}</h3>
-                    <p class="promo-sub" style="margin:0 0 6px;">${isExpired ? "Entries closed" : formatSecretTimeLeft(g.expiresAt)} &middot; 👥 ${g.entryCount || 0} entered ${g.requiresPassword ? "🔒" : "🔓"}</p>
+                    <p class="promo-sub" style="margin:0 0 6px;">${isExpired ? "Entries closed" : formatSecretTimeLeft(g.expiresAt)}</p>
+                    <p class="promo-sub" style="margin:0 0 8px;">${entryCountsHtml}</p>
+                    <div style="margin:0 0 10px;">${passwordChipHtml}</div>
                     ${revealButtonsHtml}
                     ${bodyHtml}
                 </div>`;

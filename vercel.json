@@ -1,3 +1,9 @@
 {
-  "framework": null
+  "framework": null,
+  "crons": [
+    {
+      "path": "/api/weekly-notify",
+      "schedule": "0 16 * * *"
+    }
+  ]
 }
