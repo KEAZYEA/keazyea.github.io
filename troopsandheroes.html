@@ -229,6 +229,9 @@ let troopsCameFromCompare = false;
                ================================================================ */
 
             const statDescriptions = {
+                evasion: "Chance to completely dodge an incoming attack. Innate to every Trickster-role unit, scaling with the unit's level (0.5% per level, up to 5% at level 10).",
+                defaultDamageMultiplier: "How much less damage the affected units take. Shown as the reduction, so -32.5% means they take 32.5% less damage than normal.",
+                negativeDebuffDurationMultiplier: "How much shorter enemy debuffs last on the affected units. Shown as the reduction, so -80% means a debuff wears off in a fifth of its usual time.",
                 // existing stat descriptions
                 // ===== ABILITY STAT DESCRIPTIONS =====
                 abilitiesCooldownMultiplier: "Multiplier applied to all ability cooldowns. Lower is better (e.g. 0.5 = half cooldown).",
@@ -500,7 +503,10 @@ let troopsCameFromCompare = false;
                 return result;
             }
 
-            const talentSkipKeys = ["name", "level", "addAbilityId", "key", "talentId", "heroId", "id", "modifier", "buffModifier"];
+            // additionalEffects is an array of extra effect rows for the same
+            // talent — rendered explicitly after the generic key loop, which
+            // would otherwise try to print the array as a single value.
+            const talentSkipKeys = ["name", "level", "addAbilityId", "key", "talentId", "heroId", "id", "modifier", "buffModifier", "additionalEffects"];
 
             const abilityPriorityOverride = {
                 "fireMage_sunrise": 0,
@@ -555,6 +561,7 @@ let troopsCameFromCompare = false;
                 defense: "Defense",
                 moveSpeed: "Move Speed",
                 count: "Count",
+                evasion: "Evasion",
                 shardsRequired: "Shards Required",
                 ownershipBonus: "Ownership Bonus",
                 upgradeCurrency: "Upgrade Currency",
@@ -780,6 +787,29 @@ let troopsCameFromCompare = false;
     return val;
 }
 
+            /* A talent effect's raw number only means something alongside its
+               `format`. "oneMinusPercent" with 0.675 is a 32.5% reduction, so
+               it's shown signed (-32.5%) rather than as the bare multiplier,
+               which would read like an increase. */
+            const talentEffectLabels = {
+                defaultDamageMultiplier: "Damage Taken",
+                negativeDebuffDurationMultiplier: "Debuff Duration"
+            };
+            function formatTalentEffect(effect) {
+                let label = talentEffectLabels[effect.type] || formatKey(effect.type);
+                let value = effect.value;
+                if (typeof value === "number") {
+                    if (effect.format === "oneMinusPercent") {
+                        value = "-" + parseFloat(((1 - value) * 100).toFixed(2)) + "%";
+                    } else if (effect.format === "minusOnePercent") {
+                        value = "+" + parseFloat(((value - 1) * 100).toFixed(2)) + "%";
+                    } else if (effect.format === "percent") {
+                        value = parseFloat((value * 100).toFixed(2)) + "%";
+                    }
+                }
+                return { label, value };
+            }
+
             function getStatLabel(key, abilityInfoId) {
                 if (key === "damageMultiplier" && damageReceivedAbilities[abilityInfoId]) {
                     return "Damage Received";
@@ -855,7 +885,9 @@ let troopsCameFromCompare = false;
     if (!locEntry) return "";
     return en[locEntry.value] || "";
 }
-            function getTalentModifier(talent) {
+            // Returns EVERY modifier row describing this talent, not just one —
+            // see the modifierKey fallback at the bottom for why that matters.
+            function getTalentModifiers(talent) {
                 if (!talent) return null;
 
                 // Try direct lookup by addAbilityId (for talents that have it)
@@ -863,22 +895,28 @@ let troopsCameFromCompare = false;
                     let result = hpAddModifierData[talent.addAbilityId]
                         || attackProbabilityModifierData[talent.addAbilityId]
                         || modifierData[talent.addAbilityId];
-                    if (result) return result;
+                    if (result) return [result];
                 }
 
                 // Fallback: construct key from talent name + level (e.g., "blackPlague_1")
                 if (talent.name && talent.level) {
                     let constructedKey = `${talent.name}_${talent.level}`;
                     let result = modifierData[constructedKey];
-                    if (result) return result;
+                    if (result) return [result];
                 }
 
-                // Fallback: search by modifierKey matching talent.modifier
+                // Fallback: search by modifierKey matching talent.modifier.
+                // A single modifierKey can carry SEVERAL effect rows — Inquisitor
+                // Durand's Immutability stores its damage-taken reduction
+                // (ImmutabilityDef_N) and its debuff-duration cut
+                // (ImmutabilityTime_N) under the same lordInquisitor_buff_N key.
+                // This used to .find() just the first one, which silently hid
+                // whichever happened to be later in the file.
                 if (talent.modifier) {
-                    let entry = Object.values(modifierData).find(m => m.modifierKey === talent.modifier);
-                    if (entry) return entry;
+                    let matches = Object.values(modifierData).filter(m => m.modifierKey === talent.modifier);
+                    if (matches.length) return matches;
                 }
-                return null;
+                return [];
             }
 
             function getTalentIcon(unitKey) {
@@ -901,13 +939,28 @@ let troopsCameFromCompare = false;
                 let talentMeta = unitKey ? Object.values(heroTalentData).find(t => t.heroId === unitKey) : null;
 
                 return talents.map(t => {
-                    let mod = getTalentModifier(t);
+                    let mods = getTalentModifiers(t);
+                    let mod = mods[0];
                     let extra = {};
                     if (mod) {
                         for (let k in mod) {
                             if (["key", "abilityInfoId", "units", "group", "modifier", "modifierKey", "caption", "format"].includes(k)) continue;
                             extra[k] = mod[k];
                         }
+                    }
+                    // Further rows are additional effects of the SAME talent.
+                    // They can't be merged into `extra` — they'd collide with
+                    // the first one on `type`/`value` — so they ride along as
+                    // their own list and get their own rows when rendered.
+                    // `format` is kept, unlike above, because these numbers are
+                    // meaningless without it: a damage multiplier of 0.675 is a
+                    // 32.5% REDUCTION, not 67.5% of anything.
+                    if (mods.length > 1) {
+                        extra.additionalEffects = mods.slice(1).map(m => ({
+                            type: m.type,
+                            value: m.value,
+                            format: m.format || null
+                        }));
                     }
                     if (talentMeta) {
                         let levelInfo = heroTalentLevelData[`${talentMeta.key}_${t.level}`];
@@ -1103,6 +1156,19 @@ function unlockBackgroundScroll() {
                         }
                         return { id: r.troopsSetId, displayName: displayName };
                     });
+            }
+
+            /* Trickster-role troops have an innate dodge chance that isn't in
+               troopsLevel.json with the other stats — it lives in
+               unitParameterModifierNested.json as evasion_aura_trickster_<N>,
+               scaling 0.5% per level up to 5% at level 10 (exactly the troop
+               level range). Nothing in the data names which units get it, so
+               the ROLE is the link: every Trickster-role troop has it, which
+               is why it never showed up on any single unit. */
+            function getTricksterEvasion(troopKey, level) {
+                if (!getTroopRoles(troopKey).some(r => r.id === "Trickster")) return null;
+                let entry = modifierData[`evasion_aura_trickster_${parseInt(level, 10)}`];
+                return entry && typeof entry.value === "number" ? entry.value : null;
             }
 
             function renderRoleBadges(troopKey, meta) {
@@ -1680,6 +1746,32 @@ function goBackToCompareTab() {
         `;
                 }
 
+                // Innate Trickster dodge chance. Sits with the combat stats
+                // rather than under Extra Info because it behaves like one —
+                // it scales with the level selector.
+                let tricksterEvasion = getTricksterEvasion(selectTroop.key, troopsLevel);
+                if (tricksterEvasion !== null) {
+                    let evasionDesc = statDescriptions["evasion"];
+                    html += `
+        <tr>
+          <td>
+            <span class="stat-name">
+              <span>${statDisplayMap["evasion"]}${evasionDesc ? ` <button onclick="
+                  let d = document.getElementById('desc-troop-evasion');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button>` : ""}</span>
+              <img src="images/EVASION.jpg" class="stat-icon">
+            </span>
+          </td>
+          <td>${parseFloat((tricksterEvasion * 100).toFixed(2))}%</td>
+        </tr>
+        ${evasionDesc ? `
+        <tr id="desc-troop-evasion" style="display:none;">
+          <td colspan="2" class="desc-text">${evasionDesc}</td>
+        </tr>` : ""}
+        `;
+                }
+
                 // EXTRA META STATS SECTION
                 html += `<tr><td colspan="2" class="section-header">📊 Extra Info</td></tr>`;
 
@@ -1860,6 +1952,23 @@ ${desc ? `<tr id="${descId}" style="display:none;"><td colspan="2" class="desc-t
 `;
                             }
                         }
+
+                        // Extra effects of the same talent (several modifier rows
+                        // can share one modifierKey). Durand's Immutability is the
+                        // case this exists for: the damage-taken reduction lives
+                        // here while the debuff-duration cut takes the row above.
+                        (talent.additionalEffects || []).forEach(function (effect, effectIndex) {
+                            let formatted = formatTalentEffect(effect);
+                            let effectDesc = statDescriptions[effect.type];
+                            let effectDescId = `desc-troop-talent-${talentIndex}-extra-${effectIndex}`;
+                            html += `
+<tr>
+    <td>${formatted.label}${effectDesc ? ` <button onclick="let d = document.getElementById('${effectDescId}'); d.style.display = d.style.display === 'none' ? 'table-row' : 'none';" class="info-btn">i</button>` : ""}</td>
+    <td>${formatted.value}</td>
+</tr>
+${effectDesc ? `<tr id="${effectDescId}" style="display:none;"><td colspan="2" class="desc-text">${effectDesc}</td></tr>` : ""}
+`;
+                        });
                     });
                 }
 
@@ -2339,6 +2448,45 @@ ${desc ? `
             `;
                     }
 
+                    // Innate Trickster dodge chance. It isn't in leftData/rightData
+                    // like the other stats — it's keyed by ROLE in the modifier data —
+                    // so it's appended here rather than falling out of the loop above.
+                    // Hidden entirely unless at least one side is a Trickster, and
+                    // shown as "—" for the side that isn't.
+                    let leftEvasion = getTricksterEvasion(selectleft.key, leftLevel);
+                    let rightEvasion = getTricksterEvasion(selectright.key, rightLevel);
+                    if (leftEvasion !== null || rightEvasion !== null) {
+                        let asPercent = v => v === null ? "—" : parseFloat((v * 100).toFixed(2)) + "%";
+                        // getColor treats two numbers as higher-is-better (correct for
+                        // evasion) and falls back to neutral when one side is "—".
+                        let evasionColors = getColor("evasion",
+                            leftEvasion === null ? "—" : leftEvasion,
+                            rightEvasion === null ? "—" : rightEvasion);
+                        let evasionDesc = statDescriptions["evasion"];
+                        html += `
+              <tr>
+                <td class="${evasionColors.left}">${asPercent(leftEvasion)}</td>
+                <td class="stat-label">
+                  <span class="stat-name">
+                    <span>${statDisplayMap["evasion"]}${evasionDesc ? ` <button onclick="
+                      let d = document.getElementById('desc-evasion');
+                      d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                    " class="info-btn">i</button>` : ""}</span>
+                    <img src="images/EVASION.jpg" class="stat-icon">
+                  </span>
+                </td>
+                <td class="${evasionColors.right}">${asPercent(rightEvasion)}</td>
+              </tr>
+${evasionDesc ? `
+<tr id="desc-evasion" class="desc-row" style="display:none;">
+  <td colspan="3" class="desc-row-pad">
+<div style="font-size:14px; color:gray; display:block; max-width:400px; margin:0 auto;">${evasionDesc}</div>
+  </td>
+</tr>
+` : ""}
+            `;
+                    }
+
                     // abilities section — only show if at least one side has abilities
                     // Extra Info section
                     let leftMeta = selectleft.meta;
@@ -2672,6 +2820,13 @@ ${desc ? `
                                     html += '<tr><td>' + label + btn + '</td><td>' + displayVal + '</td></tr>' + descRow;
                                 }
                             }
+
+                            // Same as the main card: additional modifier rows
+                            // sharing this talent's modifierKey get their own rows.
+                            (talent.additionalEffects || []).forEach(function (effect) {
+                                let formatted = formatTalentEffect(effect);
+                                html += '<tr><td>' + formatted.label + '</td><td>' + formatted.value + '</td></tr>';
+                            });
                         });
                     }
 

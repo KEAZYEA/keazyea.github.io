@@ -3251,6 +3251,19 @@ async function sendAdminMessage(uid, title, body) {
        that winner, so winners can never see each other's codes.
        ====================================================== */
 
+    /* Spells out who can actually enter, so an Android player doesn't tap
+       into an iOS-only giveaway (or vice versa) only to be turned away at
+       the entry screen. Used in the broadcast notification and on the
+       giveaway card itself. */
+    function secretGiveawayEligibilityText(iosWinnerCount, androidWinnerCount) {
+        const ios = (iosWinnerCount || 0) > 0;
+        const android = (androidWinnerCount || 0) > 0;
+        if (ios && android) return "Open to 🍎 iOS and 🤖 Android players.";
+        if (ios) return "🍎 iOS only — Android players can't enter this one.";
+        if (android) return "🤖 Android only — iOS players can't enter this one.";
+        return "No winner slots are open on this one.";
+    }
+
     async function createSecretGiveaway({ title, prizeDescription, requiresPassword, password, durationHours, deleteAfterDays, iosWinnerCount, androidWinnerCount }) {
         await waitForAuthReady();
         if (!currentUser || currentUser.uid !== ADMIN_UID) throw new Error("Not authorized.");
@@ -3281,6 +3294,11 @@ async function sendAdminMessage(uid, title, body) {
             iosWinnerCount: iosCount,
             androidWinnerCount: androidCount,
             entryCount: 0,
+            // Split per device so the card can show "8 Android · 2 iOS"
+            // instead of a single combined number that tells an iOS player
+            // nothing about how crowded their own side of the draw is.
+            iosEntryCount: 0,
+            androidEntryCount: 0,
             winners: []
         });
         await setDoc(doc(db, "secretGiveaways", docRef.id, "private", "config"), {
@@ -3290,6 +3308,23 @@ async function sendAdminMessage(uid, title, body) {
             await setDoc(doc(db, "secretGiveaways", docRef.id, "private", "secret"), {
                 password: cleanPassword
             });
+        }
+        // Only open giveaways get announced. Broadcasting a password-protected
+        // one to everybody would defeat the point of it being gated — those
+        // stay for whoever you hand the password to.
+        if (!needsPassword) {
+            try {
+                await addNotification(
+                    "secretGiveawayNew",
+                    "🔒 New Secret Giveaway!",
+                    `${cleanTitle}\n\n${secretGiveawayEligibilityText(iosCount, androidCount)}\n🔓 No password needed — tap below to enter.`,
+                    docRef.id
+                );
+            } catch (e) {
+                // The giveaway itself already exists and is live; failing to
+                // announce it shouldn't surface as "creation failed".
+                console.warn("Couldn't announce secret giveaway:", e.message);
+            }
         }
         return docRef.id;
     }
@@ -3380,8 +3415,29 @@ async function sendAdminMessage(uid, title, body) {
         if (!(giveawaySnap.data()[slotField] > 0)) {
             throw new Error(`This giveaway doesn't have any ${platform === "ios" ? "iOS" : "Android"} winner slots.`);
         }
-        await updateDoc(doc(db, "secretGiveaways", giveawayId, "entries", currentUser.uid), { platform });
+        const entryRef = doc(db, "secretGiveaways", giveawayId, "entries", currentUser.uid);
+        // Captured before the update, so the count can be moved off whichever
+        // side they were on — without this the split drifts upward every time
+        // somebody changes their device.
+        let previousPlatform = null;
+        try {
+            const entrySnap = await getDoc(entryRef);
+            if (entrySnap.exists()) previousPlatform = entrySnap.data().platform || null;
+        } catch (e) {
+            console.warn("Couldn't read the previous platform:", e.message);
+        }
+        await updateDoc(entryRef, { platform });
         await updateDoc(doc(db, "secretGiveaways", giveawayId, "publicEntries", currentUser.uid), { platform });
+        if (previousPlatform && previousPlatform !== platform) {
+            try {
+                await updateDoc(doc(db, "secretGiveaways", giveawayId), {
+                    [previousPlatform === "ios" ? "iosEntryCount" : "androidEntryCount"]: increment(-1),
+                    [platform === "ios" ? "iosEntryCount" : "androidEntryCount"]: increment(1)
+                });
+            } catch (e) {
+                console.warn("Couldn't move the per-device entry count:", e.message);
+            }
+        }
     }
 
     // Lets someone remove their own entry — used when switching the
@@ -3390,12 +3446,30 @@ async function sendAdminMessage(uid, title, body) {
     async function leaveSecretGiveaway(giveawayId) {
         await waitForAuthReady();
         if (!currentUser) throw new Error("You must sign in with Google first.");
+        // Read which side they were on before the entry disappears, otherwise
+        // there's no way to know which per-device counter to bring down.
+        let leavingPlatform = null;
+        try {
+            const entrySnap = await getDoc(doc(db, "secretGiveaways", giveawayId, "entries", currentUser.uid));
+            if (entrySnap.exists()) leavingPlatform = entrySnap.data().platform || null;
+        } catch (e) {
+            console.warn("Couldn't read entry platform before leaving:", e.message);
+        }
         // Decrement first — if this write is rejected (e.g. a stale set of
         // rules that doesn't yet allow the -1 branch), nothing else has
         // changed yet, so the entry stays fully intact instead of ending up
         // half-deleted with a stale counter that later causes a duplicate
         // entryCount bump if the user re-enters.
         await updateDoc(doc(db, "secretGiveaways", giveawayId), { entryCount: increment(-1) });
+        if (leavingPlatform === "ios" || leavingPlatform === "android") {
+            try {
+                await updateDoc(doc(db, "secretGiveaways", giveawayId), {
+                    [leavingPlatform === "ios" ? "iosEntryCount" : "androidEntryCount"]: increment(-1)
+                });
+            } catch (e) {
+                console.warn("Couldn't lower the per-device entry count:", e.message);
+            }
+        }
         await deleteDoc(doc(db, "secretGiveaways", giveawayId, "entries", currentUser.uid));
         try {
             await deleteDoc(doc(db, "secretGiveaways", giveawayId, "publicEntries", currentUser.uid));
@@ -3471,6 +3545,16 @@ async function sendAdminMessage(uid, title, body) {
             platform
         });
         await updateDoc(doc(db, "secretGiveaways", giveawayId), { entryCount: increment(1) });
+        // Separate write on purpose: if the deployed rules don't yet allow
+        // these two fields, the entry above still stands and only the
+        // per-device split is stale, rather than the whole entry failing.
+        try {
+            await updateDoc(doc(db, "secretGiveaways", giveawayId), {
+                [platform === "ios" ? "iosEntryCount" : "androidEntryCount"]: increment(1)
+            });
+        } catch (e) {
+            console.warn("Couldn't bump the per-device entry count:", e.message);
+        }
     }
 
     // Anyone signed in can see who's competing — no password or identity
@@ -3874,6 +3958,7 @@ async function maybeRefreshAd(containerId) {
         createSecretGiveaway, deleteSecretGiveaway, listenToSecretGiveaways, getSecretGiveaway,
         getSecretGiveawayPassword, hasEnteredSecretGiveaway, getMySecretGiveawayEntry, switchSecretGiveawayPlatform,
         leaveSecretGiveaway, enterSecretGiveaway, getSecretGiveawayEntries, getPublicSecretGiveawayEntries,
+        secretGiveawayEligibilityText,
         pickSecretGiveawayWinner, finalizeSecretGiveawayPrize, getSecretGiveawayPrize, getSecretGiveawayRewardDescription,
         // promo codes
         addPromoCode, getPromoCodes, updatePromoCode, deletePromoCode,

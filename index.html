@@ -3022,7 +3022,8 @@ function getNewsTypeInfo(type) {
         // Anything not explicitly listed (e.g. adminMessage, or any future
         // type) falls under "general" by default.
         function inboxCategoryFor(n) {
-            if (n.type === "promo" || n.type === "giveawayWin" || n.type === "secretGiveawayWin") return "promo";
+            if (n.type === "promo" || n.type === "giveawayWin" || n.type === "secretGiveawayWin"
+                || n.type === "weeklyGiveawayNew" || n.type === "secretGiveawayNew") return "promo";
             if (n.type === "tip") return "tip";
             if (n.type === "friendAccepted" || n.type === "formationComment" || n.type === "formationReply") return "social";
             return "general";
@@ -3061,6 +3062,10 @@ function getNewsTypeInfo(type) {
     button = `<button class="btn-primary" style="padding:6px 16px; font-size:0.85rem;" onclick="openInboxFormationPost('${n.postId}')">💬 View</button>`;
 } else if (n.type === "secretGiveawayWin") {
     button = `<button class="btn-primary" style="padding:6px 16px; font-size:0.85rem;" onclick="openInboxSecretGiveaway('${n.giveawayId}')">🎁 View Prize</button>`;
+} else if (n.type === "weeklyGiveawayNew") {
+    button = `<button class="btn-primary" style="padding:6px 16px; font-size:0.85rem;" onclick="openInboxGiveawayTab('vip')">🎡 Enter Giveaway</button>`;
+} else if (n.type === "secretGiveawayNew") {
+    button = `<button class="btn-primary" style="padding:6px 16px; font-size:0.85rem;" onclick="openInboxGiveawayTab('secret')">🔒 Enter Giveaway</button>`;
 }
 // adminMessage and announcement need no button — title + body already contain everything
 
@@ -3126,6 +3131,10 @@ function getNewsTypeInfo(type) {
         button = `<button class="btn-primary" style="margin-top:14px; padding:10px 20px; font-size:0.9rem;" onclick="openInboxFormationPost('${n.postId}')">💬 View</button>`;
     } else if (n.type === "secretGiveawayWin") {
         button = `<button class="btn-primary" style="margin-top:14px; padding:10px 20px; font-size:0.9rem;" onclick="openInboxSecretGiveaway('${n.giveawayId}')">🎁 View Prize</button>`;
+    } else if (n.type === "weeklyGiveawayNew") {
+        button = `<button class="btn-primary" style="margin-top:14px; padding:10px 20px; font-size:0.9rem;" onclick="openInboxGiveawayTab('vip')">🎡 Enter Giveaway</button>`;
+    } else if (n.type === "secretGiveawayNew") {
+        button = `<button class="btn-primary" style="margin-top:14px; padding:10px 20px; font-size:0.9rem;" onclick="openInboxGiveawayTab('secret')">🔒 Enter Giveaway</button>`;
     }
 
     content.innerHTML = `
@@ -3258,6 +3267,19 @@ window.closeInboxItemModal = closeInboxItemModal;
 
         // Jump into Promo's Secret Giveaways tab and reveal this specific
         // win (used by the "you won a secret giveaway" notification).
+        // "A new giveaway is live" announcements just need to land the person
+        // on the right tab — there's no specific item to open, unlike
+        // openInboxSecretGiveaway below which reveals one particular prize.
+        function openInboxGiveawayTab(tab) {
+            let frame = document.querySelector("#page-promo iframe");
+            let url = new URL(frame.getAttribute("src") || "promo.html", window.location.href);
+            url.searchParams.set("tab", tab);
+            url.searchParams.delete("secretGiveawayId"); // don't re-trigger an old prize reveal
+            frame.removeAttribute("data-src");
+            frame.src = url.toString();
+            goToPage("promo");
+        }
+
         function openInboxSecretGiveaway(giveawayId) {
             let frame = document.querySelector("#page-promo iframe");
             let url = new URL(frame.getAttribute("src") || "promo.html", window.location.href);
