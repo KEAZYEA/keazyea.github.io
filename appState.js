@@ -3632,12 +3632,44 @@ async function sendAdminMessage(uid, title, body) {
                 winners: arrayUnion({ uid: winnerUid, name: winnerName, platform, wonAt: Date.now() })
             });
         }
-        await addPersonalNotification(winnerUid, {
+        // The code is stored ON the notification, not just in prizeCodes.
+        // deleteSecretGiveaway() wipes the prizeCodes subcollection, and
+        // giveaways also auto-delete after their deleteAfterDays window — so a
+        // winner whose only copy lived there lost it the moment the giveaway
+        // went away. This subcollection is readable solely by that winner (or
+        // admin), so it's no less private than prizeCodes was.
+        const winNotif = {
             type: "secretGiveawayWin",
             title: `🔒🎉 You won "${data.title}"!`,
-            body: "Tap to view your prize code.",
-            giveawayId
-        });
+            body: `Here's your prize code: "${code}". Tap to view and copy it.`,
+            giveawayId,
+            prize: code
+        };
+        try {
+            // A resend must UPDATE the existing card rather than add a second
+            // one — otherwise the winner ends up with two "you won" cards
+            // showing different codes and no way to tell which is valid.
+            const existing = await getDocs(query(
+                collection(db, "users", winnerUid, "personalNotifications"),
+                where("type", "==", "secretGiveawayWin"),
+                where("giveawayId", "==", giveawayId),
+                limit(1)
+            ));
+            if (!existing.empty) {
+                await updateDoc(doc(db, "users", winnerUid, "personalNotifications", existing.docs[0].id), {
+                    ...winNotif,
+                    // Resurface it as unread, so a corrected code is actually
+                    // noticed instead of silently changing a card they'd read.
+                    read: false,
+                    createdAt: Date.now()
+                });
+            } else {
+                await addPersonalNotification(winnerUid, winNotif);
+            }
+        } catch (e) {
+            console.warn("Couldn't update the win notification, sending a new one:", e.message);
+            await addPersonalNotification(winnerUid, winNotif);
+        }
     }
 
     // Admin view of what was actually sent to each winner of a giveaway.

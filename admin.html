@@ -866,19 +866,21 @@
                         list.innerHTML = '<p class="promo-sub">No weekly winners drawn yet.</p>';
                         return;
                     }
+                    // One compact row per winner (same shape as the news list), so
+                    // years of weekly draws stay scannable inside the scroll box
+                    // instead of becoming a multi-line card each.
                     list.innerHTML = prizes.map(p => {
                         const codeHtml = p.prize
                             ? `<code style="background:#2a2a4a; padding:2px 6px; border-radius:4px;">${escapeHtml(p.prize)}</code>`
                             : `<span style="color:#ffc46b;">not sent yet</span>`;
-                        const device = p.device === "ios" ? "iOS 🍎" : p.device === "android" ? "Android 🤖" : (p.device || "Unknown");
+                        const device = p.device === "ios" ? "🍎" : p.device === "android" ? "🤖" : "";
                         return `
-                        <div style="border:1px solid #2a2a4a; border-radius:10px; padding:14px 16px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
-                            <div>
-                                <p style="margin:0 0 4px;"><strong>${escapeHtml(p.winnerName || "Unknown")}</strong> <span class="promo-sub">(uid: ${escapeHtml(p.uid)})</span></p>
-                                <p class="promo-sub" style="margin:0 0 4px;">Week of ${escapeHtml(p.weekId || "?")} — played on ${device}</p>
-                                <p class="promo-sub" style="margin:0;">Code sent: ${codeHtml}</p>
-                            </div>
-                            <button class="resend-weekly-btn" data-uid="${escapeHtml(p.uid)}" data-week="${escapeHtml(p.weekId || "")}" data-code="${escapeHtml(p.prize || "")}" style="background:#4169e1; color:white; border:none; border-radius:6px; padding:8px 16px; cursor:pointer; flex-shrink:0;">✉️ Resend</button>
+                        <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 0; border-bottom:1px solid #2a2a4a; flex-wrap:wrap;">
+                            <span>
+                                <strong>${escapeHtml(p.winnerName || "Unknown")}</strong> ${device}
+                                <span class="promo-sub">&middot; ${escapeHtml(p.weekId || "?")} &middot;</span> ${codeHtml}
+                            </span>
+                            <button class="resend-weekly-btn" data-uid="${escapeHtml(p.uid)}" data-week="${escapeHtml(p.weekId || "")}" data-code="${escapeHtml(p.prize || "")}" style="background:#4169e1; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer; flex-shrink:0;">✉️ Resend</button>
                         </div>`;
                     }).join("");
                     list.querySelectorAll(".resend-weekly-btn").forEach(btn => {
@@ -1055,13 +1057,32 @@
                         : "";
                     const actionsHtml = `${pickButtons}${viewPasswordBtn}<button class="btn-primary" onclick="handleDeleteSecretGiveaway('${g.id}')" style="padding:8px 16px; background:#c62828; border-color:#c62828;">${deleteLabel}</button>`;
 
+                    // Collapsed by default so a long history stays scannable —
+                    // with 100 giveaways the old always-expanded cards meant
+                    // scrolling past every winner list to reach the bottom.
+                    // Everything needed to decide whether to open one lives in
+                    // the summary line: name, state, and how many are drawn.
+                    const summaryBits = [
+                        isExpired ? "⏰ Closed" : "🟢 Live",
+                        `👥 ${g.entryCount || 0}`,
+                        g.requiresPassword ? "🔒" : "🔓"
+                    ];
+                    if (iosSlots > 0) summaryBits.push(`🍎 ${iosWon}/${iosSlots}`);
+                    if (androidSlots > 0) summaryBits.push(`🤖 ${androidWon}/${androidSlots}`);
+                    if (fullyDrawn) summaryBits.push("🏆");
+
                     return `
-                    <div style="margin-bottom:16px; padding:16px; border:1px solid #2a2a4a; border-radius:10px; text-align:left;">
-                        <h4 style="margin:0 0 4px;">${escapeHtml(g.title)}</h4>
-                        ${statusHtml}
-                        <div id="secretWinnerPick_${g.id}" style="display:none; margin-top:10px; padding:14px; border:1px solid #4169e1; border-radius:8px;"></div>
-                        <div style="margin-top:10px;">${actionsHtml}</div>
-                    </div>`;
+                    <details style="border:1px solid #2a2a4a; border-radius:10px; margin-bottom:8px; text-align:left;">
+                        <summary style="padding:10px 14px; cursor:pointer; display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+                            <strong>${escapeHtml(g.title)}</strong>
+                            <span class="promo-sub" style="flex-shrink:0;">${summaryBits.join(" &middot; ")}</span>
+                        </summary>
+                        <div style="padding:4px 14px 14px;">
+                            ${statusHtml}
+                            <div id="secretWinnerPick_${g.id}" style="display:none; margin-top:10px; padding:14px; border:1px solid #4169e1; border-radius:8px;"></div>
+                            <div style="margin-top:10px;">${actionsHtml}</div>
+                        </div>
+                    </details>`;
                 }).join("");
 
                 fillSecretPrizeCodes(items);
