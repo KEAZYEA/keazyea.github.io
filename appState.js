@@ -2770,7 +2770,13 @@ async function getGiveawayHistory(maxCount = 20) {
     await setDoc(prizeRef, {
         weekId: weekId,
         prize: prizeCode.trim(),
-        device: winner.device
+        device: winner.device,
+        // winnerName and drawnAt were missing here for a long time (the
+        // auto-pick path recorded them, this one didn't), which is why the
+        // admin list showed "Unknown" with nothing to sort by. Older records
+        // are repaired on read in getAllGiveawayPrizes() from giveawayWeeks.
+        winnerName: winner.name,
+        drawnAt: Date.now()
     });
 
     // NEW: land the win in their inbox immediately — doesn't depend on
@@ -3696,7 +3702,36 @@ async function sendAdminMessage(uid, title, body) {
         const snap = await getDocs(collection(db, "giveawayPrizes"));
         const items = [];
         snap.forEach(d => items.push({ uid: d.id, ...d.data() }));
-        items.sort((a, b) => (b.drawnAt || 0) - (a.drawnAt || 0));
+
+        // Prizes written before winnerName/drawnAt were recorded here still have
+        // both values over in giveawayWeeks, which has always stored them. One
+        // extra collection read repairs the whole history on the fly, so no
+        // migration is needed. The uid check matters because giveawayPrizes is
+        // keyed by uid alone — if someone won twice, only their latest prize doc
+        // survives, and it must not inherit a different week's winner name.
+        const needsRepair = items.some(p => !p.winnerName || !p.drawnAt);
+        if (needsRepair) {
+            try {
+                const weeksSnap = await getDocs(collection(db, "giveawayWeeks"));
+                const weeks = {};
+                weeksSnap.forEach(d => { weeks[d.id] = d.data(); });
+                items.forEach(p => {
+                    const w = weeks[p.weekId];
+                    if (!w) return;
+                    if (!p.winnerName && w.winnerUid === p.uid) p.winnerName = w.winnerName || null;
+                    if (!p.drawnAt && w.drawnAt) p.drawnAt = w.drawnAt;
+                });
+            } catch (e) {
+                console.warn("Couldn't backfill winner names from giveawayWeeks:", e.message);
+            }
+        }
+
+        // Newest first. weekId is the tiebreaker so records with no date at all
+        // still land in a sensible order instead of shuffling between loads.
+        items.sort((a, b) =>
+            (b.drawnAt || 0) - (a.drawnAt || 0)
+            || String(b.weekId || "").localeCompare(String(a.weekId || ""))
+        );
         return items;
     }
 

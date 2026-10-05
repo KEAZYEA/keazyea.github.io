@@ -874,11 +874,16 @@
                             ? `<code style="background:#2a2a4a; padding:2px 6px; border-radius:4px;">${escapeHtml(p.prize)}</code>`
                             : `<span style="color:#ffc46b;">not sent yet</span>`;
                         const device = p.device === "ios" ? "🍎" : p.device === "android" ? "🤖" : "";
+                        // Shown so the ordering is visible rather than implied.
+                        // A few of the oldest records genuinely have no date
+                        // recorded anywhere, so they're labelled rather than
+                        // given a misleading one.
+                        const drawn = p.drawnAt ? new Date(p.drawnAt).toLocaleDateString() : "date unknown";
                         return `
                         <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 0; border-bottom:1px solid #2a2a4a; flex-wrap:wrap;">
                             <span>
                                 <strong>${escapeHtml(p.winnerName || "Unknown")}</strong> ${device}
-                                <span class="promo-sub">&middot; ${escapeHtml(p.weekId || "?")} &middot;</span> ${codeHtml}
+                                <span class="promo-sub">&middot; ${escapeHtml(p.weekId || "?")} &middot; ${escapeHtml(drawn)} &middot;</span> ${codeHtml}
                             </span>
                             <button class="resend-weekly-btn" data-uid="${escapeHtml(p.uid)}" data-week="${escapeHtml(p.weekId || "")}" data-code="${escapeHtml(p.prize || "")}" style="background:#4169e1; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer; flex-shrink:0;">✉️ Resend</button>
                         </div>`;
