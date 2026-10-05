@@ -3640,6 +3640,34 @@ async function sendAdminMessage(uid, title, body) {
         });
     }
 
+    // Admin view of what was actually sent to each winner of a giveaway.
+    // Returns { [winnerUid]: code } so the admin panel can show the code
+    // beside each name — otherwise there's no way to tell what someone was
+    // given, or whether a resend would be sending the same code twice.
+    // The per-winner read rule already allows admin, so no rules change.
+    async function getSecretGiveawayPrizeCodes(giveawayId) {
+        await waitForAuthReady();
+        if (!currentUser || currentUser.uid !== ADMIN_UID) throw new Error("Not authorized.");
+        const snap = await getDocs(collection(db, "secretGiveaways", giveawayId, "prizeCodes"));
+        const byUid = {};
+        snap.forEach(d => { byUid[d.id] = d.data().code || null; });
+        return byUid;
+    }
+
+    // Every weekly prize ever recorded, newest first — pending AND already
+    // sent. getPendingPrizes() deliberately only returns the unsent ones, so
+    // this is what the admin panel needs to show past winners and the code
+    // each of them got.
+    async function getAllGiveawayPrizes() {
+        await waitForAuthReady();
+        if (!currentUser || currentUser.uid !== ADMIN_UID) throw new Error("Not authorized.");
+        const snap = await getDocs(collection(db, "giveawayPrizes"));
+        const items = [];
+        snap.forEach(d => items.push({ uid: d.id, ...d.data() }));
+        items.sort((a, b) => (b.drawnAt || 0) - (a.drawnAt || 0));
+        return items;
+    }
+
     async function getSecretGiveawayPrize(giveawayId) {
         await waitForAuthReady();
         if (!currentUser) return null;
@@ -3954,6 +3982,7 @@ async function maybeRefreshAd(containerId) {
         // admin
         isAdmin, pickWeeklyWinner, finalizeGiveawayPrize, getMyPrize,
         getMissedGiveawayWeeks, autoPickMissedWinners, getPendingPrizes, sendPendingPrize,
+        getAllGiveawayPrizes, getSecretGiveawayPrizeCodes,
         // secret giveaways (admin-created, optionally password-gated, multi-winner)
         createSecretGiveaway, deleteSecretGiveaway, listenToSecretGiveaways, getSecretGiveaway,
         getSecretGiveawayPassword, hasEnteredSecretGiveaway, getMySecretGiveawayEntry, switchSecretGiveawayPlatform,
