@@ -506,7 +506,7 @@ let troopsCameFromCompare = false;
             // additionalEffects is an array of extra effect rows for the same
             // talent — rendered explicitly after the generic key loop, which
             // would otherwise try to print the array as a single value.
-            const talentSkipKeys = ["name", "level", "addAbilityId", "key", "talentId", "heroId", "id", "modifier", "buffModifier", "additionalEffects"];
+            const talentSkipKeys = ["name", "level", "addAbilityId", "key", "talentId", "heroId", "id", "modifier", "buffModifier", "additionalEffects", "valueFormat"];
 
             const abilityPriorityOverride = {
                 "fireMage_sunrise": 0,
@@ -800,11 +800,25 @@ let troopsCameFromCompare = false;
                 let value = effect.value;
                 if (typeof value === "number") {
                     if (effect.format === "oneMinusPercent") {
+                        // Stored as the multiplier that REMAINS (0.9 = 10% less),
+                        // so it's shown as the reduction it actually is.
                         value = "-" + parseFloat(((1 - value) * 100).toFixed(2)) + "%";
                     } else if (effect.format === "minusOnePercent") {
+                        // Stored as a multiplier ABOVE 1 (1.02 = 2% more).
                         value = "+" + parseFloat(((value - 1) * 100).toFixed(2)) + "%";
+                    } else if (effect.format === "minusPercent") {
+                        // Already negative in the data (-0.15 = 15% less).
+                        value = parseFloat((value * 100).toFixed(2)) + "%";
+                    } else if (effect.format === "plain") {
+                        // A count, not a proportion — e.g. attackMultiplier 1
+                        // meaning one extra hit. Rendering it as 100% is wrong.
+                        value = parseFloat(value.toFixed(2));
                     } else if (effect.format === "percent") {
                         value = parseFloat((value * 100).toFixed(2)) + "%";
+                    } else {
+                        // No format recorded — fall back to the page-wide rule,
+                        // which treats a talent `value` as a percentage.
+                        value = formatStatValue("value", value);
                     }
                 }
                 return { label, value };
@@ -947,6 +961,11 @@ let troopsCameFromCompare = false;
                             if (["key", "abilityInfoId", "units", "group", "modifier", "modifierKey", "caption", "format"].includes(k)) continue;
                             extra[k] = mod[k];
                         }
+                        // `format` is excluded above so it can't become a row of
+                        // its own, but the primary `value` is meaningless without
+                        // it (0.9 is a 10% REDUCTION, not 90%), so it rides along
+                        // under a name that talentSkipKeys hides.
+                        if (mod.format) extra.valueFormat = mod.format;
                     }
                     // Further rows are additional effects of the SAME talent.
                     // They can't be merged into `extra` — they'd collide with
@@ -1939,7 +1958,14 @@ function goBackToCompareTab() {
 
                             let label = formatKey(safeKey);
                             if (safeKey === "value" && talent.type) {
-                                label = formatKey(talent.type);
+                                // Same formatter the additional effects use, so both
+                                // rows of a multi-effect talent read consistently.
+                                let primary = formatTalentEffect({ type: talent.type, value: val, format: talent.valueFormat });
+                                label = primary.label;
+                                displayVal = primary.value;
+                                // Descriptions are keyed by the effect type, not by
+                                // the literal "value", so the "i" needs this lookup.
+                                desc = statDescriptions[talent.type] || desc;
                             }
                             let descId = `desc-troop-talent-${talentIndex}-${safeKey}`;
                             if (displayVal !== null) {
@@ -2098,7 +2124,10 @@ ${abilityDesc ? `
                 if ((!leftTalents || leftTalents.length === 0) && (!rightTalents || rightTalents.length === 0)) return "";
 
                 let html = "";
-                let skipKeys = ["name", "level", "addAbilityId", "appliesTo", "modifier", "buffModifier", "summonedTroopId"];
+                // additionalEffects is an array and valueFormat is display
+                // metadata — both are rendered deliberately below rather than
+                // being printed raw by the generic key loop.
+                let skipKeys = ["name", "level", "addAbilityId", "appliesTo", "modifier", "buffModifier", "summonedTroopId", "additionalEffects", "valueFormat"];
                 let maxCount = Math.max(
                     leftTalents ? leftTalents.length : 0,
                     rightTalents ? rightTalents.length : 0
@@ -2170,15 +2199,29 @@ ${abilityDesc ? `
                             rightColor = rightVal > leftVal ? "stat-better" : rightVal < leftVal ? "stat-worse" : "stat-neutral";
                         }
 
-                        let leftDisplay = leftVal === "—" ? "—" : formatStatValue(key, leftVal, "left");
-let rightDisplay = rightVal === "—" ? "—" : formatStatValue(key, rightVal, "right");
+                        let leftDisplay, rightDisplay, labelText = formatKey(key);
+                        if (key === "value") {
+                            // Each side carries its own type and format, so they're
+                            // converted independently — one unit's talent can be a
+                            // reduction while the other's is a bonus.
+                            leftDisplay = leftVal === "—" ? "—" : formatTalentEffect({ type: lt.type, value: leftVal, format: lt.valueFormat }).value;
+                            rightDisplay = rightVal === "—" ? "—" : formatTalentEffect({ type: rt.type, value: rightVal, format: rt.valueFormat }).value;
+                            // Only name the effect when both sides are the same one;
+                            // otherwise the shared label would misdescribe one of them.
+                            if (lt.type && lt.type === rt.type) {
+                                labelText = formatTalentEffect({ type: lt.type, value: leftVal, format: lt.valueFormat }).label;
+                            }
+                        } else {
+                            leftDisplay = leftVal === "—" ? "—" : formatStatValue(key, leftVal, "left");
+                            rightDisplay = rightVal === "—" ? "—" : formatStatValue(key, rightVal, "right");
+                        }
 
-                        let desc = statDescriptions[key];
+                        let desc = statDescriptions[key] || (key === "value" && lt.type && lt.type === rt.type ? statDescriptions[lt.type] : undefined);
                         html += `
       <tr>
         <td class="${leftColor}">${leftDisplay}</td>
         <td class="stat-label">
-          ${formatKey(key)}${desc ? ` <button onclick="
+          ${labelText}${desc ? ` <button onclick="
             let d = document.getElementById('desc-cmp-talent-${key}');
             d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
           " class="info-btn">i</button>` : ""}
@@ -2188,6 +2231,40 @@ let rightDisplay = rightVal === "—" ? "—" : formatStatValue(key, rightVal, "
       ${desc ? `
       <tr id="desc-cmp-talent-${key}" class="desc-row" style="display:none;">
         <td colspan="3" class="desc-text">${desc}</td>
+      </tr>` : ""}
+    `;
+                    });
+
+                    // Additional effects of the same talent (several modifier rows
+                    // sharing one modifierKey — Durand's Immutability is the case
+                    // this exists for). Matched up BY TYPE so the same effect lines
+                    // up across both sides, with "—" where only one side has it.
+                    let leftExtras = {}, rightExtras = {};
+                    (lt.additionalEffects || []).forEach(function (e) { leftExtras[e.type] = e; });
+                    (rt.additionalEffects || []).forEach(function (e) { rightExtras[e.type] = e; });
+                    let extraTypes = [...new Set([...Object.keys(leftExtras), ...Object.keys(rightExtras)])];
+                    extraTypes.forEach(function (effectType) {
+                        let le = leftExtras[effectType], re = rightExtras[effectType];
+                        let formatted = formatTalentEffect(le || re);
+                        // Deliberately uncoloured: whether a bigger number is better
+                        // depends on the effect (a damage-taken cut is better when
+                        // more negative), so there's no safe generic comparison.
+                        let effectDesc = statDescriptions[effectType];
+                        let effectDescId = `desc-cmp-talent-extra-${i}-${effectType}`;
+                        html += `
+      <tr>
+        <td>${le ? formatted.value : "—"}</td>
+        <td class="stat-label">
+          ${formatted.label}${effectDesc ? ` <button onclick="
+            let d = document.getElementById('${effectDescId}');
+            d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+          " class="info-btn">i</button>` : ""}
+        </td>
+        <td>${re ? formatTalentEffect(re).value : "—"}</td>
+      </tr>
+      ${effectDesc ? `
+      <tr id="${effectDescId}" class="desc-row" style="display:none;">
+        <td colspan="3" class="desc-text">${effectDesc}</td>
       </tr>` : ""}
     `;
                     });
@@ -2814,7 +2891,9 @@ ${desc ? `
                                 let descRow = desc ? '<tr id="desc-troop-talent-' + talentIndex + '-' + key + '" style="display:none;"><td colspan="2" class="desc-text">' + desc + '</td></tr>' : "";
                                 let label = formatKey(safeKey);
                                 if (safeKey === "value" && talent.type) {
-                                    label = formatKey(talent.type);
+                                    let primary = formatTalentEffect({ type: talent.type, value: val, format: talent.valueFormat });
+                                    label = primary.label;
+                                    displayVal = primary.value;
                                 }
                                 if (displayVal !== null) {
                                     html += '<tr><td>' + label + btn + '</td><td>' + displayVal + '</td></tr>' + descRow;

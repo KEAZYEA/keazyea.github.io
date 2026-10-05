@@ -272,6 +272,15 @@
                     <div id="pendingPrizesList"></div>
                 </div>
 
+                <div style="margin-top:28px; text-align:left;">
+                    <h3>🏆 Past Winners <span class="promo-sub">(every weekly draw, and the code they were sent)</span></h3>
+                    <!-- Same capped-height treatment as the secret giveaway list -->
+                    <div id="weeklyWinnersList"
+                        style="max-height:50vh; overflow-y:auto; overscroll-behavior:contain; padding-right:6px;">
+                    </div>
+                    <button class="btn-primary" onclick="loadWeeklyWinners()" style="margin-top:10px; padding:8px 18px;">🔄 Refresh</button>
+                </div>
+
                 </details>
 
                 <hr style="border-color:#2a2a4a; margin:40px 0;">
@@ -344,7 +353,12 @@
                     </div>
                 </div>
 
-                <div id="secretGiveawaysList"></div>
+                <!-- Capped height so a long history of giveaways doesn't push
+                     every section below it off the page. overscroll-behavior
+                     stops the page itself scrolling once you hit the end. -->
+                <div id="secretGiveawaysList"
+                    style="max-height:60vh; overflow-y:auto; overscroll-behavior:contain; padding-right:6px; margin-top:8px;">
+                </div>
 
                 </details>
 
@@ -836,6 +850,69 @@
             }
             window.handleSendPendingPrize = handleSendPendingPrize;
 
+            /* ---------------- PAST WEEKLY WINNERS ----------------
+               getPendingPrizes() only returns prizes that haven't been sent, so
+               it can't answer "who won week X and what code did they get". This
+               reads the whole giveawayPrizes collection instead. Resending reuses
+               sendPendingPrize(), which doesn't require the prize to still be
+               pending — it overwrites the code and re-notifies the winner. */
+            async function loadWeeklyWinners() {
+                const list = document.getElementById("weeklyWinnersList");
+                if (!list) return;
+                list.innerHTML = '<p class="promo-sub">Loading…</p>';
+                try {
+                    const prizes = await AppState.getAllGiveawayPrizes();
+                    if (!prizes.length) {
+                        list.innerHTML = '<p class="promo-sub">No weekly winners drawn yet.</p>';
+                        return;
+                    }
+                    list.innerHTML = prizes.map(p => {
+                        const codeHtml = p.prize
+                            ? `<code style="background:#2a2a4a; padding:2px 6px; border-radius:4px;">${escapeHtml(p.prize)}</code>`
+                            : `<span style="color:#ffc46b;">not sent yet</span>`;
+                        const device = p.device === "ios" ? "iOS 🍎" : p.device === "android" ? "Android 🤖" : (p.device || "Unknown");
+                        return `
+                        <div style="border:1px solid #2a2a4a; border-radius:10px; padding:14px 16px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+                            <div>
+                                <p style="margin:0 0 4px;"><strong>${escapeHtml(p.winnerName || "Unknown")}</strong> <span class="promo-sub">(uid: ${escapeHtml(p.uid)})</span></p>
+                                <p class="promo-sub" style="margin:0 0 4px;">Week of ${escapeHtml(p.weekId || "?")} — played on ${device}</p>
+                                <p class="promo-sub" style="margin:0;">Code sent: ${codeHtml}</p>
+                            </div>
+                            <button class="resend-weekly-btn" data-uid="${escapeHtml(p.uid)}" data-week="${escapeHtml(p.weekId || "")}" data-code="${escapeHtml(p.prize || "")}" style="background:#4169e1; color:white; border:none; border-radius:6px; padding:8px 16px; cursor:pointer; flex-shrink:0;">✉️ Resend</button>
+                        </div>`;
+                    }).join("");
+                    list.querySelectorAll(".resend-weekly-btn").forEach(btn => {
+                        btn.addEventListener("click", () => handleResendWeeklyPrize(btn.dataset.uid, btn.dataset.week, btn.dataset.code));
+                    });
+                } catch (e) {
+                    list.innerHTML = `<p class="promo-sub">Error: ${escapeHtml(e.message)}</p>`;
+                }
+            }
+            window.loadWeeklyWinners = loadWeeklyWinners;
+
+            async function handleResendWeeklyPrize(uid, weekId, previousCode) {
+                // Pre-filled with the code they already have, so the common case
+                // (re-notify with the same code) is just two confirmations, while
+                // correcting a wrong code is still possible.
+                const code = await showPromptModal("Code to send this winner?", previousCode || "");
+                if (code === null) return;
+                if (!code.trim()) { showInfoModal("Missing code", "Type in a promo code first."); return; }
+                const changed = code.trim() !== (previousCode || "");
+                const warning = changed && previousCode
+                    ? `\n\nThis REPLACES the code they were sent before ("${previousCode}").`
+                    : "";
+                if (!await showConfirmModal("Resend prize", `Send "${code.trim()}" to this winner now?${warning}`)) return;
+                try {
+                    await AppState.sendPendingPrize(uid, weekId, code.trim());
+                    showInfoModal("Sent", "The code has been delivered to their inbox.");
+                    await loadWeeklyWinners();
+                    await refreshPendingPrizes();
+                } catch (e) {
+                    showInfoModal("Couldn't send", e.message);
+                }
+            }
+            window.handleResendWeeklyPrize = handleResendWeeklyPrize;
+
             /* ---------------- SECRET GIVEAWAYS ---------------- */
             window.openCreateSecretGiveawayForm = function () {
                 document.getElementById("secretGiveawayTitleInput").value = "";
@@ -947,11 +1024,17 @@
                     // original code save ever failed after the winner was
                     // already recorded (finalizeSecretGiveawayPrize is
                     // idempotent for exactly this reason).
+                    // The code each winner was sent is filled in asynchronously by
+                    // fillSecretPrizeCodes() below — it lives in a per-winner
+                    // prizeCodes doc, so it can't come from the giveaway snapshot
+                    // this function renders from.
                     function winnerLine(list, label, emoji) {
                         if (!list.length) return "";
                         const items = list.map(w => {
                             const safeName = escapeHtml(w.name).replace(/'/g, "\\'");
-                            return `${escapeHtml(w.name)} <button onclick="handleResendSecretCode('${g.id}', '${w.uid}', '${safeName}', '${w.platform}')" style="font-size:0.7rem; padding:2px 8px; margin-left:2px; border-radius:4px; border:1px solid gray; background:#2a2a4a; color:white; cursor:pointer;">✉️ Resend</button>`;
+                            return `<span style="display:inline-block; margin:2px 0;">${escapeHtml(w.name)}
+                                <code id="secretCode_${g.id}_${w.uid}" style="background:#2a2a4a; padding:2px 6px; border-radius:4px; font-size:0.78rem;">…</code>
+                                <button onclick="handleResendSecretCode('${g.id}', '${w.uid}', '${safeName}', '${w.platform}')" style="font-size:0.7rem; padding:2px 8px; margin-left:2px; border-radius:4px; border:1px solid gray; background:#2a2a4a; color:white; cursor:pointer;">✉️ Resend</button></span>`;
                         }).join(", ");
                         return `<p class="promo-sub" style="margin:0 0 4px;">${emoji} ${label}: ${items}</p>`;
                     }
@@ -980,6 +1063,34 @@
                         <div style="margin-top:10px;">${actionsHtml}</div>
                     </div>`;
                 }).join("");
+
+                fillSecretPrizeCodes(items);
+            }
+
+            // Pulls each giveaway's sent codes and drops them into the
+            // placeholders rendered above. Only giveaways that actually have
+            // winners are fetched, so an admin with a long list of undrawn
+            // giveaways doesn't trigger a read per giveaway for nothing.
+            async function fillSecretPrizeCodes(items) {
+                for (const g of items) {
+                    if (!(g.winners || []).length) continue;
+                    let codes;
+                    try {
+                        codes = await AppState.getSecretGiveawayPrizeCodes(g.id);
+                    } catch (e) {
+                        console.warn("Couldn't load prize codes for", g.id, e.message);
+                        continue;
+                    }
+                    for (const w of g.winners) {
+                        // A re-render may have replaced the DOM while this was in
+                        // flight, so the element can legitimately be gone.
+                        const el = document.getElementById(`secretCode_${g.id}_${w.uid}`);
+                        if (!el) continue;
+                        const code = codes[w.uid];
+                        el.textContent = code || "no code saved";
+                        if (!code) el.style.color = "#ff8080";
+                    }
+                }
             }
 
             window.handlePickSecretWinner = async function (giveawayId, platform) {
@@ -2061,6 +2172,7 @@ async function handleLookupUserByUid() {
                 refreshRecentAnnouncements();
                 refreshMissedWeeks();
                 refreshPendingPrizes();
+                loadWeeklyWinners();
                 refreshSecretGiveawaysList();
             });
             AppState.onAuthChange(refreshAdminState);
