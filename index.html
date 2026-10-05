@@ -3061,7 +3061,13 @@ function getNewsTypeInfo(type) {
 } else if (n.type === "formationComment" || n.type === "formationReply") {
     button = `<button class="btn-primary" style="padding:6px 16px; font-size:0.85rem;" onclick="openInboxFormationPost('${n.postId}')">💬 View</button>`;
 } else if (n.type === "secretGiveawayWin") {
-    button = `<button class="btn-primary" style="padding:6px 16px; font-size:0.85rem;" onclick="openInboxSecretGiveaway('${n.giveawayId}')">🎁 View Prize</button>`;
+    // Newer wins carry the code on the notification, so it can be shown and
+    // copied right here — and it still works after the giveaway is deleted.
+    // Older ones only have a giveawayId, so they fall back to opening the
+    // promo page, which reads the code from the giveaway itself.
+    button = n.prize
+        ? `<button class="btn-primary view-prize-inbox-btn" data-prize="${escapeHomeHtml(n.prize)}" data-pending="0" style="padding:6px 16px; font-size:0.85rem;">🎁 View Code</button>`
+        : `<button class="btn-primary" style="padding:6px 16px; font-size:0.85rem;" onclick="openInboxSecretGiveaway('${n.giveawayId}')">🎁 View Prize</button>`;
 } else if (n.type === "weeklyGiveawayNew") {
     button = `<button class="btn-primary" style="padding:6px 16px; font-size:0.85rem;" onclick="openInboxGiveawayTab('vip')">🎡 Enter Giveaway</button>`;
 } else if (n.type === "secretGiveawayNew") {
@@ -3130,7 +3136,9 @@ function getNewsTypeInfo(type) {
     } else if (n.type === "formationComment" || n.type === "formationReply") {
         button = `<button class="btn-primary" style="margin-top:14px; padding:10px 20px; font-size:0.9rem;" onclick="openInboxFormationPost('${n.postId}')">💬 View</button>`;
     } else if (n.type === "secretGiveawayWin") {
-        button = `<button class="btn-primary" style="margin-top:14px; padding:10px 20px; font-size:0.9rem;" onclick="openInboxSecretGiveaway('${n.giveawayId}')">🎁 View Prize</button>`;
+        button = n.prize
+            ? `<button class="btn-primary view-prize-inbox-btn" data-prize="${escapeHomeHtml(n.prize)}" data-pending="0" style="margin-top:14px; padding:10px 20px; font-size:0.9rem;">🎁 View Code</button>`
+            : `<button class="btn-primary" style="margin-top:14px; padding:10px 20px; font-size:0.9rem;" onclick="openInboxSecretGiveaway('${n.giveawayId}')">🎁 View Prize</button>`;
     } else if (n.type === "weeklyGiveawayNew") {
         button = `<button class="btn-primary" style="margin-top:14px; padding:10px 20px; font-size:0.9rem;" onclick="openInboxGiveawayTab('vip')">🎡 Enter Giveaway</button>`;
     } else if (n.type === "secretGiveawayNew") {
