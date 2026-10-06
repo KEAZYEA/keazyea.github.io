@@ -1329,7 +1329,7 @@ body {
                     <span class="home-menu-icon">⚔️</span>
                     <span class="home-menu-text">Troops & Heroes<small>Browse & compare every unit</small></span>
                 </button>
-                <button class="home-menu-btn" onclick="goToPage('promo')" style="position:relative;">
+                <button class="home-menu-btn" onclick="openPromoTab('codes')" style="position:relative;">
                     <span class="home-menu-icon">🎁</span>
                     <span class="home-menu-text">Promo Codes<small>Latest codes & giveaway wheel</small></span>
                     <span class="badge-dot" id="giveawayBadgeHome" style="display:none;"></span>
@@ -1990,6 +1990,11 @@ body {
             let frame = document.querySelector("#page-promo iframe");
             let url = new URL(frame.getAttribute("src") || "promo.html", window.location.href);
             if (tab) url.searchParams.set("tab", tab);
+            // Drop any leftover prize-reveal target, otherwise returning to the
+            // Promo page later re-opens an old win's reveal modal unprompted.
+            // openInboxSecretGiveaway() sets this itself and doesn't come
+            // through here, so clearing it is always right at this point.
+            url.searchParams.delete("secretGiveawayId");
             // The iframe may still be un-loaded (data-src, not yet src) if
             // this is the visitor's first trip to the Promo tab — clear it
             // here so goToPage()'s lazy-load logic below doesn't stomp the
@@ -2008,6 +2013,14 @@ body {
     if (page !== "social") {
         resetSocialIframeIfActive();
     }
+
+    // The expanded inbox message sits in its own overlay, outside the page
+    // containers below, so switching pages doesn't hide it on its own. Without
+    // this it stays open on top of wherever its own button just sent you —
+    // e.g. tapping "Enter Giveaway" on the weekly announcement leaves the
+    // announcement covering the giveaway. Closing it here covers every inbox
+    // action (tip, DM, formation post, giveaway) rather than each call site.
+    closeInboxItemModal();
 
     cameFromAbout = page !== "about" && !!fromAbout;
     document.getElementById("backToAboutBtn").style.display = cameFromAbout ? "flex" : "none";
@@ -3051,7 +3064,7 @@ function getNewsTypeInfo(type) {
 
                                 let button = "";
                 if (n.type === "promo") {
-    button = `<button class="btn-primary" style="padding:6px 16px; font-size:0.85rem;" onclick="goToPage('promo')">View Promo Codes</button>`;
+    button = `<button class="btn-primary" style="padding:6px 16px; font-size:0.85rem;" onclick="openPromoTab('codes')">View Promo Codes</button>`;
 } else if (n.type === "tip") {
     button = `<button class="btn-primary" style="padding:6px 16px; font-size:0.85rem;" onclick="openInboxTip('${n.sourceId}')">View Tip</button>`;
 } else if (n.type === "friendAccepted") {
@@ -3069,9 +3082,9 @@ function getNewsTypeInfo(type) {
         ? `<button class="btn-primary view-prize-inbox-btn" data-prize="${escapeHomeHtml(n.prize)}" data-pending="0" style="padding:6px 16px; font-size:0.85rem;">🎁 View Code</button>`
         : `<button class="btn-primary" style="padding:6px 16px; font-size:0.85rem;" onclick="openInboxSecretGiveaway('${n.giveawayId}')">🎁 View Prize</button>`;
 } else if (n.type === "weeklyGiveawayNew") {
-    button = `<button class="btn-primary" style="padding:6px 16px; font-size:0.85rem;" onclick="openInboxGiveawayTab('vip')">🎡 Enter Giveaway</button>`;
+    button = `<button class="btn-primary" style="padding:6px 16px; font-size:0.85rem;" onclick="openPromoTab('vip')">🎡 Enter Giveaway</button>`;
 } else if (n.type === "secretGiveawayNew") {
-    button = `<button class="btn-primary" style="padding:6px 16px; font-size:0.85rem;" onclick="openInboxGiveawayTab('secret')">🔒 Enter Giveaway</button>`;
+    button = `<button class="btn-primary" style="padding:6px 16px; font-size:0.85rem;" onclick="openPromoTab('secret')">🔒 Enter Giveaway</button>`;
 }
 // adminMessage and announcement need no button — title + body already contain everything
 
@@ -3126,7 +3139,7 @@ function getNewsTypeInfo(type) {
 
     let button = "";
     if (n.type === "promo") {
-        button = `<button class="btn-primary" style="margin-top:14px; padding:10px 20px; font-size:0.9rem;" onclick="goToPage('promo')">View Promo Codes</button>`;
+        button = `<button class="btn-primary" style="margin-top:14px; padding:10px 20px; font-size:0.9rem;" onclick="openPromoTab('codes')">View Promo Codes</button>`;
     } else if (n.type === "tip") {
         button = `<button class="btn-primary" style="margin-top:14px; padding:10px 20px; font-size:0.9rem;" onclick="openInboxTip('${n.sourceId}')">View Tip</button>`;
     } else if (n.type === "friendAccepted") {
@@ -3140,9 +3153,9 @@ function getNewsTypeInfo(type) {
             ? `<button class="btn-primary view-prize-inbox-btn" data-prize="${escapeHomeHtml(n.prize)}" data-pending="0" style="margin-top:14px; padding:10px 20px; font-size:0.9rem;">🎁 View Code</button>`
             : `<button class="btn-primary" style="margin-top:14px; padding:10px 20px; font-size:0.9rem;" onclick="openInboxSecretGiveaway('${n.giveawayId}')">🎁 View Prize</button>`;
     } else if (n.type === "weeklyGiveawayNew") {
-        button = `<button class="btn-primary" style="margin-top:14px; padding:10px 20px; font-size:0.9rem;" onclick="openInboxGiveawayTab('vip')">🎡 Enter Giveaway</button>`;
+        button = `<button class="btn-primary" style="margin-top:14px; padding:10px 20px; font-size:0.9rem;" onclick="openPromoTab('vip')">🎡 Enter Giveaway</button>`;
     } else if (n.type === "secretGiveawayNew") {
-        button = `<button class="btn-primary" style="margin-top:14px; padding:10px 20px; font-size:0.9rem;" onclick="openInboxGiveawayTab('secret')">🔒 Enter Giveaway</button>`;
+        button = `<button class="btn-primary" style="margin-top:14px; padding:10px 20px; font-size:0.9rem;" onclick="openPromoTab('secret')">🔒 Enter Giveaway</button>`;
     }
 
     content.innerHTML = `
@@ -3275,19 +3288,6 @@ window.closeInboxItemModal = closeInboxItemModal;
 
         // Jump into Promo's Secret Giveaways tab and reveal this specific
         // win (used by the "you won a secret giveaway" notification).
-        // "A new giveaway is live" announcements just need to land the person
-        // on the right tab — there's no specific item to open, unlike
-        // openInboxSecretGiveaway below which reveals one particular prize.
-        function openInboxGiveawayTab(tab) {
-            let frame = document.querySelector("#page-promo iframe");
-            let url = new URL(frame.getAttribute("src") || "promo.html", window.location.href);
-            url.searchParams.set("tab", tab);
-            url.searchParams.delete("secretGiveawayId"); // don't re-trigger an old prize reveal
-            frame.removeAttribute("data-src");
-            frame.src = url.toString();
-            goToPage("promo");
-        }
-
         function openInboxSecretGiveaway(giveawayId) {
             let frame = document.querySelector("#page-promo iframe");
             let url = new URL(frame.getAttribute("src") || "promo.html", window.location.href);
