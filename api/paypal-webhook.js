@@ -29,23 +29,32 @@ const { FieldValue } = require("firebase-admin/firestore");
 
 const ONE_MONTH_MS = 31 * 24 * 60 * 60 * 1000; // small buffer over 30 days so a slightly-late renewal doesn't lapse a user early
 
-async function verifyWebhookSignature(headers, body) {
+// PayPal signs the exact bytes it sent, so the check must be given those
+// bytes. A body that was parsed and re-serialised can differ in tiny ways
+// (escaped "\/", number formatting) and then fails with FAILURE even though
+// every setting is right — which is what happened in production. When the
+// raw text is available it's spliced in untouched; otherwise the parsed
+// object is sent as before.
+async function verifyWebhookSignature(headers, body, rawBody) {
   const token = await getPayPalAccessToken();
+  const PLACEHOLDER = "\"__KIH_RAW_WEBHOOK_EVENT__\"";
+  let payload = JSON.stringify({
+    auth_algo: headers["paypal-auth-algo"],
+    cert_url: headers["paypal-cert-url"],
+    transmission_id: headers["paypal-transmission-id"],
+    transmission_sig: headers["paypal-transmission-sig"],
+    transmission_time: headers["paypal-transmission-time"],
+    webhook_id: process.env.PAYPAL_WEBHOOK_ID,
+    webhook_event: rawBody ? "__KIH_RAW_WEBHOOK_EVENT__" : body
+  });
+  if (rawBody) payload = payload.replace(PLACEHOLDER, () => rawBody);
   const res = await fetch(`${PAYPAL_API}/v1/notifications/verify-webhook-signature`, {
     method: "POST",
     headers: {
       "Authorization": `Bearer ${token}`,
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({
-      auth_algo: headers["paypal-auth-algo"],
-      cert_url: headers["paypal-cert-url"],
-      transmission_id: headers["paypal-transmission-id"],
-      transmission_sig: headers["paypal-transmission-sig"],
-      transmission_time: headers["paypal-transmission-time"],
-      webhook_id: process.env.PAYPAL_WEBHOOK_ID,
-      webhook_event: body
-    })
+    body: payload
   });
   const data = await res.json().catch(() => ({}));
   if (data.verification_status !== "SUCCESS") {
@@ -54,6 +63,7 @@ async function verifyWebhookSignature(headers, body) {
     // this; an error body (e.g. INVALID_RESOURCE_ID) means that id doesn't
     // exist in this PayPal environment at all.
     console.warn(`Webhook check: PayPal replied ${res.status} ${JSON.stringify(data).slice(0, 300)}; ` +
+      `checked ${rawBody ? "the raw body" : "a re-serialised body (raw body unavailable)"}; ` +
       `PAYPAL_WEBHOOK_ID in use ends "${String(process.env.PAYPAL_WEBHOOK_ID || "(not set)").slice(-6)}", ` +
       `transmission ${headers["paypal-transmission-id"] || "(none)"}`);
   }
@@ -190,7 +200,7 @@ function alertAmount(resource) {
   return value ? `${currency} ${value}`.trim() : "";
 }
 
-async function recordPaymentAlert(db, eventType, resource) {
+async function recordPaymentAlert(db, eventType, resource, { unverified = false } = {}) {
   let match = null;
   for (const id of candidatePaymentIds(resource)) {
     const [cap, sale] = await Promise.all([
@@ -211,6 +221,9 @@ async function recordPaymentAlert(db, eventType, resource) {
       break;
     }
   }
+  // An unconfirmed alert must point at a payment we recorded ourselves;
+  // its custom_id is the sender's word, so it isn't enough on its own.
+  if (unverified && !match) return false;
   if (!match) {
     const tag = parsePackCustomId(resource.custom_id);
     if (tag) match = { uid: tag.uid, paymentId: null, tokensGranted: getPack(tag.packId).tokens, what: `${getPack(tag.packId).tokens}-token pack` };
@@ -244,12 +257,13 @@ async function recordPaymentAlert(db, eventType, resource) {
       amount: alertAmount(resource),
       paymentId: match ? match.paymentId : null,
       paypalIds: candidatePaymentIds(resource),
+      signatureVerified: !unverified,
       createdAt: now,
       resolved: false
     });
     return true;
   });
-  if (!created) return;
+  if (!created) return true;
 
   // The inbox renders titles and message bodies as HTML, and the name is
   // whatever the player chose — escaped so a name can't inject markup into
@@ -263,12 +277,36 @@ async function recordPaymentAlert(db, eventType, resource) {
     await db.collection("users").doc(ADMIN_UID).collection("personalNotifications").add({
       type: "adminAlert",
       title: `⚠️ ${label}: ${safeName || "check Admin → Tokens"}`,
-      body: `${label} on ${match ? match.what : "a payment"}${alertAmount(resource) ? ` (${alertAmount(resource)})` : ""} by ${who}.${tokensLine} Open Admin → Tokens to decide what to do.`,
+      body: `${label} on ${match ? match.what : "a payment"}${alertAmount(resource) ? ` (${alertAmount(resource)})` : ""} by ${who}.${tokensLine}` +
+        (unverified ? " PayPal's signature check didn't pass for this notice, so confirm it in your PayPal activity first." : "") +
+        " Open Admin → Tokens to decide what to do.",
       createdAt: now,
       read: false
     });
   } catch (e) {
     console.warn("Couldn't send the admin alert notification:", e.message);
+  }
+  return true;
+}
+
+// The request body exactly as PayPal sent it, or null if the platform has
+// already consumed it. Read with a short time limit so a stream that never
+// ends can't hang the function.
+async function readRawBody(req) {
+  if (typeof req.rawBody === "string") return req.rawBody;
+  if (Buffer.isBuffer(req.rawBody)) return req.rawBody.toString("utf8");
+  if (!req || typeof req[Symbol.asyncIterator] !== "function" || req.readableEnded) return null;
+  const read = (async () => {
+    const chunks = [];
+    for await (const chunk of req) chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+    return Buffer.concat(chunks).toString("utf8");
+  })();
+  const timeout = new Promise((resolve) => setTimeout(() => resolve(null), 1500));
+  try {
+    const text = await Promise.race([read, timeout]);
+    return text && text.trim().startsWith("{") ? text : null;
+  } catch (e) {
+    return null;
   }
 }
 
@@ -311,11 +349,21 @@ module.exports = async (req, res) => {
     return;
   }
 
-  const event = req.body;
+  // Prefer the untouched text PayPal sent (see verifyWebhookSignature), and
+  // parse the event from that same text so both always agree.
+  const rawBody = await readRawBody(req);
+  let event = null;
+  if (rawBody) {
+    try { event = JSON.parse(rawBody); } catch (e) { event = null; }
+  }
+  if (!event) event = req.body;
+  if (typeof event === "string") {
+    try { event = JSON.parse(event); } catch (e) { event = null; }
+  }
 
   let verified = false;
   try {
-    verified = await verifyWebhookSignature(req.headers, event);
+    verified = await verifyWebhookSignature(req.headers, event, rawBody);
   } catch (e) {
     console.error("Webhook verification error:", e.message);
   }
@@ -329,14 +377,21 @@ module.exports = async (req, res) => {
     } catch (e) {
       console.error("Webhook direct confirmation error:", e.message);
     }
-    if (!confirmed) {
+    // Refund/chargeback/dispute alerts move no money, so if the signature
+    // fails they're still recorded, but only when they point at a payment
+    // this site really recorded (checked in recordPaymentAlert), and marked
+    // unconfirmed so the admin checks PayPal before acting.
+    if (!confirmed && !ALERT_LABELS[(event || {}).event_type]) {
       console.warn("Rejected webhook: signature verification failed.");
       res.status(400).send("Signature verification failed");
       return;
     }
-    console.warn(`Signature check failed, but PayPal confirmed ${event.event_type} ${confirmed.id} directly, so it's being processed. ` +
-      "Check PAYPAL_WEBHOOK_ID so the signature check passes too.");
+    if (confirmed) {
+      console.warn(`Signature check failed, but PayPal confirmed ${event.event_type} ${confirmed.id} directly, so it's being processed. ` +
+        "Check PAYPAL_WEBHOOK_ID so the signature check passes too.");
+    }
   }
+  const unverifiedAlert = !verified && !confirmed;
 
   const admin = getFirebaseAdmin();
   const db = admin.firestore();
@@ -455,7 +510,12 @@ module.exports = async (req, res) => {
     }
 
     else if (ALERT_LABELS[eventType]) {
-      await recordPaymentAlert(db, eventType, resource);
+      const recorded = await recordPaymentAlert(db, eventType, resource, { unverified: unverifiedAlert });
+      if (!recorded && unverifiedAlert) {
+        console.warn("Rejected webhook: signature verification failed (alert for a payment this site never recorded).");
+        res.status(400).send("Signature verification failed");
+        return;
+      }
     }
 
     else if (eventType === "PAYMENT.CAPTURE.COMPLETED") {
