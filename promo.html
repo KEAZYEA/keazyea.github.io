@@ -1593,9 +1593,74 @@ if (user && user.uid === winnerData.winnerUid) {
                                 onkeydown="if(event.key==='Enter') handleStakeTokens('${g.id}');">
                             <button class="btn-primary" id="stakeBtn_${g.id}" onclick="handleStakeTokens('${g.id}')" style="padding:10px 18px; flex-shrink:0;">Add</button>
                         </div>
+                        ${staked > 0 ? renderStakeEditHtml(g.id, staked) : ""}
                         <p class="promo-sub" style="margin:8px 0 0; font-size:0.8rem;">You have ${secretTokenBalance} 🪙 (<a href="#" style="color:#ffc400;" onclick="if (window.top.goToPage) window.top.goToPage('store'); return false;">get more</a>) · spent when your side is drawn, win or lose · refunded if you leave before then</p>
                     </div>`;
             }
+
+            // Lower, raise or remove the stake, while entries are open. Which
+            // cards have the editor open is remembered, so a live refresh of
+            // the list doesn't snap it shut mid-edit.
+            const openStakeEditors = new Set();
+            function renderStakeEditHtml(giveawayId, staked) {
+                const open = openStakeEditors.has(giveawayId);
+                return `
+                    <button type="button" onclick="toggleStakeEditor('${giveawayId}')"
+                        style="margin-top:8px; background:none; border:none; color:#ffc400; cursor:pointer; padding:4px 0; font-size:0.85rem;">
+                        ${open ? "✕ Close" : "✏️ Change stake"}</button>
+                    <div id="stakeEditor_${giveawayId}" style="display:${open ? "block" : "none"}; margin-top:6px;">
+                        <p class="promo-sub" style="margin:0 0 6px; font-size:0.85rem;">Set your stake to (lower it to get tokens back):</p>
+                        <div style="display:flex; gap:8px;">
+                            <input type="number" id="stakeEditInput_${giveawayId}" min="0" step="1" inputmode="numeric" value="${staked}"
+                                style="flex:1; min-width:0; padding:10px; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box;"
+                                onkeydown="if(event.key==='Enter') handleSetStake('${giveawayId}', ${staked});">
+                            <button class="btn-primary" id="stakeEditBtn_${giveawayId}" onclick="handleSetStake('${giveawayId}', ${staked})" style="padding:10px 18px; flex-shrink:0;">Save</button>
+                        </div>
+                        <button type="button" id="stakeRemoveBtn_${giveawayId}" onclick="handleSetStake('${giveawayId}', ${staked}, 0)"
+                            style="margin-top:8px; background:#2a2a4a; color:white; border:1px solid #aa3838; border-radius:6px; padding:8px 12px; cursor:pointer; font-size:0.85rem;">
+                            Remove all (get ${staked} 🪙 back)</button>
+                    </div>`;
+            }
+
+            window.toggleStakeEditor = function (giveawayId) {
+                if (openStakeEditors.has(giveawayId)) openStakeEditors.delete(giveawayId);
+                else openStakeEditors.add(giveawayId);
+                renderSecretGiveawayList(latestSecretGiveaways);
+            };
+
+            window.handleSetStake = async function (giveawayId, current, forced) {
+                const input = document.getElementById("stakeEditInput_" + giveawayId);
+                const amount = forced !== undefined ? forced : Number(input && input.value);
+                if (!Number.isInteger(amount) || amount < 0) {
+                    await showInfoModal("How many tokens?", "Type a whole number of tokens, 0 or more.");
+                    return;
+                }
+                if (amount === current) {
+                    await showInfoModal("No change", `Your stake is already ${current} 🪙.`);
+                    return;
+                }
+                const change = amount - current;
+                if (change > secretTokenBalance) {
+                    await showInfoModal("Not enough tokens", `Raising it to ${amount} needs ${change} more 🪙, and you have ${secretTokenBalance}.`);
+                    return;
+                }
+                const message = amount === 0
+                    ? `Remove all ${current} 🪙 from this entry? They go back to your wallet. You stay entered with your 1 free chance.`
+                    : change < 0
+                        ? `Lower your stake from ${current} to ${amount}? ${-change} 🪙 go back to your wallet, and your entry counts as ${amount + 1} chances.`
+                        : `Raise your stake from ${current} to ${amount}? ${change} more 🪙 come out of your wallet, and your entry counts as ${amount + 1} chances.`;
+                if (!await showConfirmModal("Change stake?", message, "Confirm")) return;
+                const btns = ["stakeEditBtn_", "stakeRemoveBtn_"].map(p => document.getElementById(p + giveawayId)).filter(Boolean);
+                btns.forEach(b => { b.disabled = true; });
+                try {
+                    await AppState.setSecretGiveawayStake(giveawayId, amount);
+                    openStakeEditors.delete(giveawayId);
+                    renderSecretGiveawayList(latestSecretGiveaways);
+                } catch (e) {
+                    await showInfoModal("Couldn't change your stake", e.message);
+                    btns.forEach(b => { b.disabled = false; });
+                }
+            };
 
             function renderSecretGiveawayCard(g, detail, user, device) {
                 const isExpired = g.expiresAt <= Date.now();

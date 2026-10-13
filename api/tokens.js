@@ -12,6 +12,8 @@
  *                                           claim (no token yet), once per quest per day
  *   claim           { claimIds }           -> +1 token per ready reward, paid once
  *   stake           { giveawayId, amount } -> wallet -> your entry
+ *   setStake        { giveawayId, amount } -> sets your stake to exactly `amount`
+ *                                              (lower refunds the difference, 0 removes it)
  *   unstake         { giveawayId }         -> refunds your whole stake (before leaving)
  *   reconcile       { giveawayId }         -> after a device switch, moves your
  *                                              stake to the new platform's total
@@ -249,6 +251,56 @@ async function stake(db, uid, body, now) {
   });
 }
 
+// Sets the stake on your entry to exactly `amount`: lower refunds the
+// difference to your wallet, higher takes the difference from it, 0 removes
+// it all. Only while entries are open and your side hasn't been drawn, so
+// nobody can rearrange chances once the field is final.
+async function setStake(db, uid, body, now) {
+  const { giveawayId } = body;
+  // Must be an actual number: Number(null) and Number("") are 0, which would
+  // quietly mean "remove my whole stake".
+  const amount = body.amount;
+  if (!isDocId(giveawayId)) throw new HttpError(400, "Missing giveaway.");
+  if (typeof amount !== "number" || !Number.isInteger(amount) || amount < 0 || amount > 1000000) {
+    throw new HttpError(400, "Enter a whole number of tokens, 0 or more.");
+  }
+  await assertNotBanned(db, uid);
+
+  const gRef = db.collection("secretGiveaways").doc(giveawayId);
+  const eRef = gRef.collection("entries").doc(uid);
+  const wRef = db.collection("tokenWallets").doc(uid);
+  return db.runTransaction(async (tx) => {
+    const [g, e, w] = await tx.getAll(gRef, eRef, wRef);
+    if (!g.exists) throw new HttpError(404, "This giveaway no longer exists.");
+    if (!e.exists) throw new HttpError(400, "Enter the giveaway first.");
+    const gd = g.data();
+    const ed = e.data();
+    if ((gd.expiresAt || 0) <= now) throw new HttpError(400, "Entries have closed, so your stake can't be changed now.");
+    const platform = ed.platform;
+    if ((gd.winners || []).some(x => x.platform === platform)) {
+      throw new HttpError(400, "The draw for your platform has already happened.");
+    }
+    const balance = w.exists ? (w.data().balance || 0) : 0;
+    const prev = ed.tokens || 0;
+    const change = amount - prev;
+    if (change === 0) return { ok: true, balance, tokens: prev, refunded: 0 };
+    if (change > balance) throw new HttpError(400, `You only have ${balance} more token${balance === 1 ? "" : "s"} to add.`);
+
+    // Take the old stake off whichever platform total it was counted in
+    // (it may differ after a device switch) and put the new one on yours.
+    const deltas = {};
+    const add = (p, v) => { const f = counterField(p); deltas[f] = (deltas[f] || 0) + v; };
+    add(ed.stakePlatform || platform, -prev);
+    add(platform, amount);
+
+    tx.set(wRef, { balance: balance - change, updatedAt: now }, { merge: true });
+    tx.update(eRef, { tokens: amount, stakePlatform: platform });
+    const inc = incrementsFrom(deltas);
+    if (Object.keys(inc).length) tx.update(gRef, inc);
+    return { ok: true, balance: balance - change, tokens: amount, refunded: Math.max(0, -change) };
+  });
+}
+
 async function unstake(db, uid, body, now) {
   const { giveawayId } = body;
   if (!isDocId(giveawayId)) throw new HttpError(400, "Missing giveaway.");
@@ -441,11 +493,12 @@ async function adminUserTokens(db, body) {
 
 async function adminAdjust(db, adminUid, body, now) {
   const { uid: target, mode } = body;
-  const amount = Number(body.amount);
+  // A real number only — Number(null) is 0, and "set to 0" would wipe a balance.
+  const amount = body.amount;
   const reason = cleanText(body.reason, 200);
   if (!["add", "remove", "set"].includes(mode)) throw new HttpError(400, "Choose add, remove or set.");
   const min = mode === "set" ? 0 : 1;
-  if (!Number.isInteger(amount) || amount < min || amount > MAX_ADJUST_TOKENS) {
+  if (typeof amount !== "number" || !Number.isInteger(amount) || amount < min || amount > MAX_ADJUST_TOKENS) {
     throw new HttpError(400, `Enter a whole number${mode === "set" ? " (0 or more)" : " (1 or more)"}.`);
   }
   await requireUser(db, target);
@@ -586,6 +639,7 @@ module.exports = async (req, res) => {
       case "claim": result = await claimRewards(db, uid, body, now); break;
       case "stake": result = await stake(db, uid, body, now); break;
       case "unstake": result = await unstake(db, uid, body, now); break;
+      case "setStake": result = await setStake(db, uid, body, now); break;
       case "reconcile": result = await reconcile(db, uid, body); break;
       case "refundGiveaway": result = await refundGiveaway(db, uid, body, now); break;
       case "claimGift": result = await claimGift(admin, db, uid, body, now); break;
