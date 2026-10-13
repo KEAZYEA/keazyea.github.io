@@ -71,6 +71,11 @@ async function verifyWebhookSignature(headers, body, rawBody) {
 }
 
 const PLAN_NAMES = { vip: "Super Supporter", noAds: "Supporter" };
+// Every event type the handler below acts on (refund alerts: ALERT_LABELS).
+const HANDLED_EVENTS = new Set([
+  "BILLING.SUBSCRIPTION.ACTIVATED", "PAYMENT.SALE.COMPLETED", "PAYMENT.CAPTURE.COMPLETED",
+  "BILLING.SUBSCRIPTION.CANCELLED", "BILLING.SUBSCRIPTION.EXPIRED", "BILLING.SUBSCRIPTION.SUSPENDED"
+]);
 // PayPal statuses for a subscription that is (or is about to be) billing.
 const BILLING_STATUSES = ["APPROVAL_PENDING", "APPROVED", "ACTIVE", "SUSPENDED"];
 
@@ -361,6 +366,16 @@ module.exports = async (req, res) => {
     try { event = JSON.parse(event); } catch (e) { event = null; }
   }
 
+  // The webhook may be subscribed to many event types this site doesn't use.
+  // Acknowledge those straight away — nothing is done with them, so there's
+  // nothing to verify — instead of rejecting them and having PayPal retry
+  // each one for days.
+  const type = (event || {}).event_type;
+  if (!HANDLED_EVENTS.has(type) && !ALERT_LABELS[type]) {
+    res.status(200).send("OK (event type not used here)");
+    return;
+  }
+
   let verified = false;
   try {
     verified = await verifyWebhookSignature(req.headers, event, rawBody);
@@ -423,8 +438,15 @@ module.exports = async (req, res) => {
       const planKey = planKeyFromPlanId(sub.plan_id);
 
       if (!uid || !planKey) {
-        console.warn("Could not resolve uid/planKey for subscription", subscriptionId);
-        res.status(200).send("OK (unresolved uid/plan, ignored)");
+        // Money may already have moved, so this must not be dropped. Usually
+        // it's PAYPAL_VIP_PLAN_ID / PAYPAL_NOADS_PLAN_ID not matching the
+        // plan in the log line. A 503 makes PayPal retry (for ~3 days), so
+        // once the setting is fixed and redeployed the payment goes through
+        // by itself; answering 200 here used to make PayPal give up on it.
+        console.error(`Could not resolve uid/planKey for subscription ${subscriptionId}: plan_id "${sub.plan_id || "(none)"}" ` +
+          `(PAYPAL_VIP_PLAN_ID "${process.env.PAYPAL_VIP_PLAN_ID || "(not set)"}", PAYPAL_NOADS_PLAN_ID "${process.env.PAYPAL_NOADS_PLAN_ID || "(not set)"}"), ` +
+          `custom_id ${uid ? "set" : "MISSING"}. PayPal will retry.`);
+        res.status(503).send("Unresolved uid/plan; retry later");
         return;
       }
 
