@@ -2332,6 +2332,7 @@ async function handleLookupUserByUid() {
                         const openBtn = a.uid ? `<button class="set" data-act="open" data-id="${escapeHtml(a.id)}">👤 Open account</button>` : "";
                         return `<div class="token-card alert">
                             <div><strong>${escapeHtml(a.label)}</strong> <span class="promo-sub">· ${escapeHtml(fmtDate(a.createdAt))}</span></div>
+                            ${a.signatureVerified === false ? `<p class="promo-sub" style="margin:4px 0 0; color:#ffc46b;">Unconfirmed: PayPal's signature check didn't pass for this notice. Check your PayPal activity before acting.</p>` : ""}
                             <div style="margin-top:4px;">${who}</div>
                             <p class="promo-sub" style="margin:4px 0 0;">${escapeHtml(a.what)}${a.amount ? " · " + escapeHtml(a.amount) : ""}</p>
                             ${tokensLine}
