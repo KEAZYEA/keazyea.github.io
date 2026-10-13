@@ -47,7 +47,16 @@ async function verifyWebhookSignature(headers, body) {
       webhook_event: body
     })
   });
-  const data = await res.json();
+  const data = await res.json().catch(() => ({}));
+  if (data.verification_status !== "SUCCESS") {
+    // PayPal's own answer, so the log says WHY: FAILURE with a 200 almost
+    // always means PAYPAL_WEBHOOK_ID isn't the id of the webhook that sent
+    // this; an error body (e.g. INVALID_RESOURCE_ID) means that id doesn't
+    // exist in this PayPal environment at all.
+    console.warn(`Webhook check: PayPal replied ${res.status} ${JSON.stringify(data).slice(0, 300)}; ` +
+      `PAYPAL_WEBHOOK_ID in use ends "${String(process.env.PAYPAL_WEBHOOK_ID || "(not set)").slice(-6)}", ` +
+      `transmission ${headers["paypal-transmission-id"] || "(none)"}`);
+  }
   return data.verification_status === "SUCCESS";
 }
 
@@ -263,6 +272,39 @@ async function recordPaymentAlert(db, eventType, resource) {
   }
 }
 
+/* Second way to trust a webhook, used only when the signature check fails
+   (e.g. PAYPAL_WEBHOOK_ID doesn't match the webhook that sent it). For each
+   event that moves money or plan time, look the thing up in PayPal by id,
+   with this site's own credentials, and require PayPal to say it's in the
+   state the event claims. A forged event can't pass: PayPal won't return a
+   completed sale or capture that doesn't exist on this merchant account.
+   PayPal's copy is returned and used instead of the event's own body, so
+   nothing from an unverified body is trusted. Replaying a real event is
+   harmless: every credit is keyed by its PayPal id and pays once.
+   Refund/dispute alerts aren't covered here; they need the signature. */
+async function confirmWithPayPal(eventType, resource) {
+  const id = resource && resource.id;
+  if (typeof id !== "string" || !/^[A-Za-z0-9-]{5,64}$/.test(id)) return null;
+  let path, inState;
+  if (eventType === "PAYMENT.SALE.COMPLETED") {
+    path = `/v1/payments/sale/${id}`;
+    inState = (r) => r.state === "completed" && typeof r.billing_agreement_id === "string";
+  } else if (eventType === "BILLING.SUBSCRIPTION.ACTIVATED") {
+    path = `/v1/billing/subscriptions/${id}`;
+    inState = (r) => r.status === "ACTIVE";
+  } else if (["BILLING.SUBSCRIPTION.CANCELLED", "BILLING.SUBSCRIPTION.EXPIRED", "BILLING.SUBSCRIPTION.SUSPENDED"].includes(eventType)) {
+    path = `/v1/billing/subscriptions/${id}`;
+    inState = (r) => r.status === eventType.split(".").pop();
+  } else if (eventType === "PAYMENT.CAPTURE.COMPLETED") {
+    path = `/v2/payments/captures/${id}`;
+    inState = (r) => r.status === "COMPLETED";
+  } else {
+    return null;
+  }
+  const { status, data } = await paypalJson(path);
+  return status < 300 && data && data.id === id && inState(data) ? data : null;
+}
+
 module.exports = async (req, res) => {
   if (req.method !== "POST") {
     res.status(405).send("Method not allowed");
@@ -277,16 +319,29 @@ module.exports = async (req, res) => {
   } catch (e) {
     console.error("Webhook verification error:", e.message);
   }
+  // If the signature check fails, the events that move money or plan time
+  // are confirmed with PayPal directly instead, and only PayPal's own copy
+  // is used from then on (see confirmWithPayPal).
+  let confirmed = null;
   if (!verified) {
-    console.warn("Rejected webhook: signature verification failed.");
-    res.status(400).send("Signature verification failed");
-    return;
+    try {
+      confirmed = await confirmWithPayPal((event || {}).event_type, (event || {}).resource || {});
+    } catch (e) {
+      console.error("Webhook direct confirmation error:", e.message);
+    }
+    if (!confirmed) {
+      console.warn("Rejected webhook: signature verification failed.");
+      res.status(400).send("Signature verification failed");
+      return;
+    }
+    console.warn(`Signature check failed, but PayPal confirmed ${event.event_type} ${confirmed.id} directly, so it's being processed. ` +
+      "Check PAYPAL_WEBHOOK_ID so the signature check passes too.");
   }
 
   const admin = getFirebaseAdmin();
   const db = admin.firestore();
   const eventType = event.event_type;
-  const resource = event.resource || {};
+  const resource = confirmed || event.resource || {};
 
   try {
     if (eventType === "BILLING.SUBSCRIPTION.ACTIVATED" || eventType === "PAYMENT.SALE.COMPLETED") {
