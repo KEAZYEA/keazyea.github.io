@@ -141,7 +141,7 @@
 
     <div class="legal-wrap">
         <h1>Privacy Policy</h1>
-        <p class="legal-updated">Last updated: July 4, 2026</p>
+        <p class="legal-updated">Last updated: October 13, 2026</p>
 
         <div id="adBannerLegal" style="display:none; justify-content:center; margin:0 0 24px;"></div>
 
@@ -159,11 +159,21 @@
                 and avatar selection in our database (Firebase/Firestore) so it can sync across your devices.</li>
             <li><strong>Giveaway entries:</strong> If you enter the weekly giveaway, we store your name, email,
                 and selected device type (iOS/Android) to run the draw and deliver prizes.</li>
-            <li><strong>Subscription status:</strong> If you subscribe to Supporter or Super Supporter, we store your subscription
-                status and expiration date. Payment itself is handled entirely by PayPal — we never see or store
-                your card, bank, or PayPal login details.</li>
-            <li><strong>Inbox messages:</strong> Notifications (like promo code alerts or giveaway results) are
-                stored locally in your browser and are not tied to your account across devices.</li>
+            <li><strong>Subscriptions and purchases:</strong> If you subscribe to Supporter or Super Supporter, or buy
+            a token pack, we store your subscription status and expiration date, and for each payment PayPal's
+            transaction or subscription ID, what it was for, the amount, and the tokens it added. If PayPal tells
+            us a payment was refunded, reversed, charged back, or disputed, we record that against your account.
+            Payment itself is handled entirely by PayPal — we never see or store your card, bank, or PayPal login
+            details.</li>
+        <li><strong>Tokens and Daily Quests:</strong> If you're signed in, we store your token balance, the quests
+            you complete and claim (with a reference to what completed them, such as the ID of the post or message
+            you made), the tokens you stake on giveaways, the gifts you claim, and any manual changes an admin makes
+            to your balance, with the reason. To stop gifts being claimed again with new accounts, we check when
+            your account was created, using your sign-in record.</li>
+            <li><strong>Inbox messages:</strong> Messages meant only for you (such as giveaway results, prize codes,
+            token receipts, gifts, and messages from us) are stored with your account so they appear on all your
+            devices. General announcements are shared with everyone. Which messages you've already seen is
+            remembered in your browser.</li>
             <li><strong>Moderation data:</strong> If a report is filed involving your account, or if your account is
                 timed out or banned, we store the report content, any submitted evidence, the reason for the action,
                 and its duration, in order to administer moderation on the site.</li>
@@ -172,18 +182,18 @@
                 and similar technologies, so we can improve the site's usability. Clarity does not knowingly capture
                 anything you type into form fields. This data is processed by Microsoft; see the Microsoft Clarity
                 entry under Third-Party Services below.</li>
-            <li><strong>Advertising data:</strong> We use Google AdSense to show ads to non-subscribers. Google may
-                use cookies and similar technologies to serve ads based on your visits to this and other
-                sites.</li>
+            <li><strong>Advertising:</strong> The site doesn't currently show ads. If that changes, we'll update this
+            policy before ads are shown.</li>
         </ul>
 
         <h2>How We Use Information</h2>
         <ul>
             <li>To let you sign in and keep your profile/progress synced across devices</li>
             <li>To run the weekly giveaway and contact winners about their prize</li>
-            <li>To manage Supporter and Super Supporter subscriptions</li>
+            <li>To manage Supporter and Super Supporter subscriptions and process token pack purchases</li>
+        <li>To run Daily Quests and tokens, including giveaway stakes and gifts</li>
+        <li>To prevent abuse, such as multiple accounts, and to handle refunds and chargebacks</li>
             <li>To understand how visitors use the site and improve its usability, via Microsoft Clarity</li>
-            <li>To show relevant ads to visitors who haven't subscribed to remove them</li>
             <li>To respond to support questions you send us</li>
         </ul>
 
@@ -191,7 +201,7 @@
         <p>We rely on the following third parties, each with their own privacy policies:</p>
         <ul>
             <li><strong>Google Firebase</strong> (authentication and database hosting)</li>
-            <li><strong>PayPal</strong> (subscription billing — see
+            <li><strong>PayPal</strong> (subscription and token pack payments — see
                 <a href="https://www.paypal.com/us/legalhub/privacy-full" target="_blank" rel="noopener noreferrer">PayPal's
                     Privacy Statement</a>)</li>
             <li><strong>Microsoft Clarity</strong> (behavioral analytics, heatmaps, and session recording, used to
@@ -199,23 +209,23 @@
                 <a href="https://privacy.microsoft.com/privacystatement" target="_blank" rel="noopener noreferrer">Microsoft's
                     Privacy Statement</a>). Sessions are recorded via cookies; if you're in the EEA, UK, or
                 Switzerland, Clarity only begins recording after you've consented to cookies on this site.</li>
-            <li><strong>Google AdSense</strong> (advertising — see
-                <a href="https://policies.google.com/technologies/ads" target="_blank" rel="noopener noreferrer">how
-                    Google uses information from sites that use its services</a>). You can manage your ad
-                personalization settings at
-                <a href="https://adssettings.google.com" target="_blank" rel="noopener noreferrer">Google Ads
-                    Settings</a>.</li>
+            <li><strong>Vercel</strong> (hosts the server code that processes payments, tokens, and quests — see
+                <a href="https://vercel.com/legal/privacy-policy" target="_blank" rel="noopener noreferrer">Vercel's
+                    Privacy Policy</a>)</li>
         </ul>
 
         <h2>Cookies</h2>
-        <p>This site uses cookies and similar technologies for sign-in sessions, behavioral analytics through
+        <p>This site uses cookies and similar technologies for sign-in sessions and for behavioral analytics through
             Microsoft Clarity (mouse movements, clicks, scrolling, and page interaction data, used to understand and
-            improve the site), and, for non-subscribers, ad personalization through Google AdSense.</p>
+            improve the site). The site also saves a few settings in your browser, such as which inbox messages
+            you've seen.</p>
 
         <h2>Data Retention & Your Choices</h2>
         <p>You can sign out at any time, which stops your profile from syncing further. To request that we delete
-            your account data (profile, giveaway entries, prize history), email us at the address below and we'll
-            process the request. Locally stored inbox messages can be cleared by clearing your browser's site data.
+            your account data (profile, giveaway entries, prize history, tokens), email us at the address below and
+            we'll process the request. Records of payments, refunds, and chargebacks may be kept as long as needed
+            for accounting, disputes, and fraud prevention. Remembered "seen" inbox messages can be cleared by
+            clearing your browser's site data.
             You can also opt out of Microsoft Clarity tracking by disabling cookies in your browser.</p>
 
         <h2>Children's Privacy</h2>
