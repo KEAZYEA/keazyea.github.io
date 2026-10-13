@@ -411,6 +411,14 @@ async function signOutUser() {
         return callTokensApi("stake", { giveawayId, amount });
     }
 
+    // Changes your stake to exactly `amount` (0 removes it); the difference
+    // goes back to, or comes out of, your wallet.
+    async function setSecretGiveawayStake(giveawayId, amount) {
+        await waitForAuthReady();
+        if (!currentUser) throw new Error("Sign in first.");
+        return callTokensApi("setStake", { giveawayId, amount });
+    }
+
     /* ---------------- PROFILE ---------------- */
 
     function defaultProfile() {
@@ -4351,7 +4359,7 @@ async function maybeRefreshAd(containerId) {
         signIn, signOut: signOutUser, getCurrentUser, onAuthChange, waitForAuthReady, getIdToken,
         getTodaysQuests, listenToMyWallet, listenToMyQuestProgress, claimQuestRewards, getMyTokenBalance,
         listenToMyGiftClaims, claimTokenGift, adminTokens,
-        reportQuestProgress, startDailyQuestTracking, stakeTokensOnSecretGiveaway,
+        reportQuestProgress, startDailyQuestTracking, stakeTokensOnSecretGiveaway, setSecretGiveawayStake,
         // profile
         getProfile, setProfile, isVipActive, isNoAdsActive, isBannedNow, shouldShowAds, listenToMyProfile,
         // unique names
