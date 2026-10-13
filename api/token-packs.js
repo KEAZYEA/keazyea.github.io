@@ -18,7 +18,7 @@
 
 const {
   getFirebaseAdmin, paypalJson, PACK_CURRENCY, getPack, packPrice, packCustomId,
-  parsePackCustomId, amountMatchesPack, creditTokenPack, notifyPackCredited, isBannedNow
+  parsePackCustomId, amountMatchesPack, creditTokenPack, notifyPackCredited, isBannedNow, ADMIN_UID
 } = require("./_lib");
 
 class HttpError extends Error {
@@ -176,9 +176,10 @@ module.exports = async (req, res) => {
   if (req.method !== "POST") { res.status(405).json({ ok: false, error: "Method not allowed" }); return; }
 
   const body = req.body || {};
+  let uid = null;
   try {
     const admin = getFirebaseAdmin();
-    const uid = await verifyCaller(admin, req);
+    uid = await verifyCaller(admin, req);
     const db = admin.firestore();
 
     let result;
@@ -191,10 +192,20 @@ module.exports = async (req, res) => {
   } catch (e) {
     const status = e.status || 500;
     if (status >= 500 && !e.status) console.error("token-packs failed:", e);
+    // Starting an order happens before the buyer has approved anything in
+    // PayPal, so a failure there can never have charged them — say so,
+    // rather than worrying them with "if you were charged".
+    const unexpected = body.action === "createOrder"
+      ? "Couldn't start the payment, so nothing was charged. Please try again in a little while."
+      : "Something went wrong. If you were charged, your tokens will be added automatically within a few minutes.";
     res.status(status).json({
       ok: false,
       ...(e.extra || {}),
-      error: e.status ? e.message : "Something went wrong. If you were charged, your tokens will be added automatically within a few minutes."
+      error: e.status ? e.message : unexpected,
+      // The real cause, for the site owner only: setup problems (wrong PayPal
+      // secret, missing settings) show up right in the error message instead
+      // of needing the server logs. Never sent to anyone else.
+      ...(uid === ADMIN_UID && !e.status ? { adminDetail: String(e.message || e).slice(0, 300) } : {})
     });
   }
 };

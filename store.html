@@ -610,7 +610,9 @@
             let data = null;
             try { data = await res.json(); } catch (e) { /* non-JSON error page */ }
             if (!res.ok || !data || !data.ok) {
-                const err = new Error((data && data.error) || `Request failed (${res.status})`);
+                // adminDetail is only ever sent to the site owner's account.
+                const err = new Error(((data && data.error) || `Request failed (${res.status})`) +
+                    (data && data.adminDetail ? `\n\n[Admin only] ${data.adminDetail}` : ""));
                 err.status = res.status;
                 err.restart = !!(data && data.restart);
                 throw err;
