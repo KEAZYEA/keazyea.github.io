@@ -1451,7 +1451,8 @@ if (user && user.uid === winnerData.winnerUid) {
                     ? `Switching to ${deviceLabel} will remove you from ` +
                       `${kicked.length === 1 ? "this giveaway" : "these giveaways"} — ` +
                       `${kicked.map(a => a.g.title).join(", ")} — since ` +
-                      `${kicked.length === 1 ? "it doesn't" : "they don't"} offer that platform.`
+                      `${kicked.length === 1 ? "it doesn't" : "they don't"} offer that platform. ` +
+                      `Any tokens you staked there are refunded.`
                     : `New and existing entries will switch to ${deviceLabel}.`;
                 const ok = await showConfirmModal(`Switch to ${deviceLabel}?`, confirmBody, "Switch");
                 if (!ok) return;
@@ -1547,6 +1548,8 @@ if (user && user.uid === winnerData.winnerUid) {
                     const reward = entry ? await AppState.getSecretGiveawayRewardDescription(g.id) : null;
                     return { entry, reward };
                 }));
+                // One read per render, shared by every card's "Add tokens" box.
+                secretTokenBalance = user ? await AppState.getMyTokenBalance() : 0;
 
                 // Only show giveaways relevant to the chosen device — unless
                 // it's one you've already entered or won, so your own history
@@ -1568,6 +1571,32 @@ if (user && user.uid === winnerData.winnerUid) {
             // matter what the button says. Every viewer (winner or not)
             // sees the exact same card; the spin animation is the only way
             // anyone finds out, including the actual winner.
+            // Wallet balance as of the last list render (see renderSecretGiveawayList).
+            let secretTokenBalance = 0;
+
+            // Staking lives on the card itself. Tokens can be added any time until
+            // entries close or your side is drawn; each one is one more chance on
+            // top of the free one everyone gets.
+            function renderStakeHtml(g, entry, isExpired, sideDrawn) {
+                const staked = entry.tokens || 0;
+                const chances = `your entry counts as <strong>${staked + 1}</strong> chance${staked + 1 === 1 ? "" : "s"}`;
+                if (isExpired || sideDrawn) {
+                    if (!staked) return "";
+                    return `<p class="promo-sub" style="margin:10px 0 0;">🪙 You staked <strong>${staked}</strong> — ${chances}.</p>`;
+                }
+                return `
+                    <div style="margin-top:12px; padding:12px; border:1px solid #aa7a1e; border-radius:10px; background:rgba(255,196,0,0.06);">
+                        <p class="promo-sub" style="margin:0 0 8px;">🪙 Staked: <strong>${staked}</strong> — ${chances}.</p>
+                        <div style="display:flex; gap:8px;">
+                            <input type="number" id="stakeInput_${g.id}" min="1" step="1" inputmode="numeric" placeholder="Tokens to add"
+                                style="flex:1; min-width:0; padding:10px; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box;"
+                                onkeydown="if(event.key==='Enter') handleStakeTokens('${g.id}');">
+                            <button class="btn-primary" id="stakeBtn_${g.id}" onclick="handleStakeTokens('${g.id}')" style="padding:10px 18px; flex-shrink:0;">Add</button>
+                        </div>
+                        <p class="promo-sub" style="margin:8px 0 0; font-size:0.8rem;">You have ${secretTokenBalance} 🪙 (<a href="#" style="color:#ffc400;" onclick="if (window.top.goToPage) window.top.goToPage('store'); return false;">get more</a>) · spent when your side is drawn, win or lose · refunded if you leave before then</p>
+                    </div>`;
+            }
+
             function renderSecretGiveawayCard(g, detail, user, device) {
                 const isExpired = g.expiresAt <= Date.now();
                 const winners = g.winners || [];
@@ -1599,10 +1628,12 @@ if (user && user.uid === winnerData.winnerUid) {
                     } else {
                         statusLine = `<p class="promo-sub">${isExpired ? "⏰ Entries closed — winners will be drawn soon." : "Good luck!"}</p>`;
                     }
+                    const sideDrawn = platformsWithWinners.includes(detail.entry.platform);
                     bodyHtml = `
                         <p class="promo-sub" style="color:#45aa38; margin:0 0 6px;">✅ You're entered (${platformLabel})! Here's what's up for grabs:</p>
                         <p class="promo-sub" style="margin:0 0 6px;">🎁 ${escapeHtml(detail.reward || "...")}</p>
                         ${statusLine}
+                        ${myPlatformHasSlots ? renderStakeHtml(g, detail.entry, isExpired, sideDrawn) : ""}
                         ${switchBtn}`;
                 } else if (isExpired) {
                     bodyHtml = `<p class="promo-sub">⏰ Entries closed — you didn't enter this one.</p>`;
@@ -1639,9 +1670,16 @@ if (user && user.uid === winnerData.winnerUid) {
                 // Android-only giveaway doesn't advertise "iOS 0 entered".
                 const offersIos = (g.iosWinnerCount || 0) > 0;
                 const offersAndroid = (g.androidWinnerCount || 0) > 0;
+                // Average tokens per entrant on each side — iOS and Android are
+                // drawn separately, so each player only competes with their own
+                // side's average. Counts everyone entered, including people who
+                // staked nothing.
+                const avgLabel = (staked, count) => count > 0 && staked > 0
+                    ? ` (avg ${Math.round((staked / count) * 10) / 10} 🪙)`
+                    : "";
                 const entryCounts = [];
-                if (offersIos) entryCounts.push(`🍎 iOS ${g.iosEntryCount || 0} entered`);
-                if (offersAndroid) entryCounts.push(`🤖 Android ${g.androidEntryCount || 0} entered`);
+                if (offersIos) entryCounts.push(`🍎 iOS ${g.iosEntryCount || 0} entered${avgLabel(g.iosTokensStaked || 0, g.iosEntryCount || 0)}`);
+                if (offersAndroid) entryCounts.push(`🤖 Android ${g.androidEntryCount || 0} entered${avgLabel(g.androidTokensStaked || 0, g.androidEntryCount || 0)}`);
                 const entryCountsHtml = entryCounts.length
                     ? entryCounts.join(" &middot; ")
                     : `👥 ${g.entryCount || 0} entered`;
@@ -1677,6 +1715,36 @@ if (user && user.uid === winnerData.winnerUid) {
                     await showInfoModal("Couldn't enter", e.message !== "__RESTRICTED__" ? e.message : "Your account is currently restricted.");
                     btn.disabled = false;
                     btn.textContent = "Enter";
+                }
+            };
+
+            window.handleStakeTokens = async function (giveawayId) {
+                const input = document.getElementById("stakeInput_" + giveawayId);
+                const btn = document.getElementById("stakeBtn_" + giveawayId);
+                const amount = Number(input.value);
+                if (!Number.isInteger(amount) || amount < 1) {
+                    await showInfoModal("How many tokens?", "Type a whole number of tokens, 1 or more.");
+                    return;
+                }
+                if (amount > secretTokenBalance) {
+                    await showInfoModal("Not enough tokens", `You have ${secretTokenBalance} 🪙. Complete Daily Quests on the home screen to earn more.`);
+                    return;
+                }
+                const ok = await showConfirmModal(
+                    "Stake tokens?",
+                    `Add ${amount} 🪙 to this entry? They're spent once your side is drawn, win or lose — but refunded if you leave before then.`,
+                    "Stake"
+                );
+                if (!ok) return;
+                btn.disabled = true;
+                btn.textContent = "Adding...";
+                try {
+                    await AppState.stakeTokensOnSecretGiveaway(giveawayId, amount);
+                    renderSecretGiveawayList(latestSecretGiveaways);
+                } catch (e) {
+                    await showInfoModal("Couldn't add tokens", e.message);
+                    btn.disabled = false;
+                    btn.textContent = "Add";
                 }
             };
 

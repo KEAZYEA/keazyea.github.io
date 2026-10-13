@@ -120,6 +120,47 @@
             text-align: left;
         }
 
+        /* ---- Tokens section ---- */
+        .token-input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 10px;
+            font-size: 1rem;
+            border-radius: 6px;
+            border: 1px solid gray;
+            background: #2a2a4a;
+            color: white;
+            font-family: inherit;
+        }
+        .token-form {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .token-form label { display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; color: #b0b0c0; }
+        .token-form-wide { grid-column: 1 / -1; }
+        .token-scroll { max-height: 50vh; overflow-y: auto; overscroll-behavior: contain; padding-right: 4px; }
+        .token-card { border: 1px solid #2a2a4a; border-radius: 10px; padding: 12px 14px; margin-bottom: 8px; }
+        .token-card.alert { border-color: #aa3838; background: rgba(170, 56, 56, 0.08); }
+        .token-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+        .token-actions button, .token-small-btn {
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            cursor: pointer;
+            color: white;
+            background: #2a2a4a;
+            font-size: 0.85rem;
+        }
+        .token-small-btn { margin-top: 8px; }
+        .token-actions .give { background: #2e7d32; }
+        .token-actions .remove { background: #aa3838; }
+        .token-actions .set { background: #4169e1; }
+        .token-actions .gift { background: #aa7a1e; }
+        .token-balance-big { font-size: 1.8rem; font-weight: 800; }
+        .token-history-row { font-size: 0.82rem; color: #b0b0c0; padding: 4px 0; border-bottom: 1px solid #2a2a4a; }
+
         .admin-section > summary {
             font-size: 1.5rem;
             font-weight: 700;
@@ -360,6 +401,54 @@
                     style="max-height:60vh; overflow-y:auto; overscroll-behavior:contain; padding-right:6px; margin-top:8px;">
                 </div>
 
+                </details>
+
+                <hr style="border-color:#2a2a4a; margin:40px 0;">
+
+                <details class="admin-section" id="tokensSection">
+                <summary>🪙 Tokens</summary>
+
+                <h3 style="margin-bottom:4px;">⚠️ Refunds &amp; chargebacks <span class="promo-sub" id="tokenAlertsCount"></span></h3>
+                <p class="promo-sub" style="margin-top:0;">PayPal tells the site when a payment is refunded, charged back
+                    or disputed, and you get an inbox message. Nothing is taken back automatically — they may have
+                    spent some tokens already, so it's your call. Plan time can be removed with Revoke in Moderation
+                    Lookup.</p>
+                <div id="tokenAlertsList" class="token-scroll"></div>
+                <button class="token-small-btn" onclick="loadTokenAlerts()">↻ Refresh</button>
+
+                <h3 style="margin:28px 0 4px;">👤 Someone's tokens</h3>
+                <p class="promo-sub" style="margin-top:0;">See their balance and history, give, remove or set tokens, or
+                    send them a gift to claim (e.g. a giveaway prize).</p>
+                <div style="display:flex; gap:8px;">
+                    <input type="text" id="tokenLookupInput" placeholder="In-game name or user ID (uid)" class="token-input"
+                        onkeydown="if (event.key === 'Enter') handleTokenLookup();">
+                    <button class="btn-primary" onclick="handleTokenLookup()" style="padding:10px 20px; flex-shrink:0;">Look Up</button>
+                </div>
+                <div id="tokenAccountResult" style="margin-top:12px;"></div>
+
+                <h3 style="margin:28px 0 4px;">🎁 Free tokens for everyone</h3>
+                <p class="promo-sub" style="margin-top:0;">Lands in everyone's inbox with a Claim button, once per
+                    person, until it expires. Only accounts that already exist when you send it can claim, so nobody
+                    can farm it with new accounts.</p>
+                <div class="token-form">
+                    <label>Tokens each <input type="number" id="giftAllAmount" min="1" step="1" value="5" class="token-input"></label>
+                    <label>Lasts for
+                        <span style="display:flex; gap:6px;">
+                            <input type="number" id="giftAllDuration" min="1" step="1" value="3" class="token-input">
+                            <select id="giftAllUnit" class="token-input" style="width:auto;">
+                                <option value="24" selected>days</option>
+                                <option value="1">hours</option>
+                            </select>
+                        </span>
+                    </label>
+                    <label class="token-form-wide">Title (optional) <input type="text" id="giftAllTitle" maxlength="100" placeholder="e.g. 🎉 Thanks for 1,000 players!" class="token-input"></label>
+                    <label class="token-form-wide">Message (optional) <textarea id="giftAllMessage" maxlength="500" rows="2" placeholder="Shown in the inbox under the title" class="token-input"></textarea></label>
+                </div>
+                <button class="btn-primary" onclick="handleSendGiftAll()" style="padding:10px 20px;">Send to everyone</button>
+
+                <h3 style="margin:28px 0 4px;">📋 Recent gifts</h3>
+                <div id="tokenGiftsList" class="token-scroll"></div>
+                <button class="token-small-btn" onclick="loadTokenGifts()">↻ Refresh</button>
                 </details>
 
                 <hr style="border-color:#2a2a4a; margin:40px 0;">
@@ -885,7 +974,10 @@
                                 <strong>${escapeHtml(p.winnerName || "Unknown")}</strong> ${device}
                                 <span class="promo-sub">&middot; ${escapeHtml(p.weekId || "?")} &middot; ${escapeHtml(drawn)} &middot;</span> ${codeHtml}
                             </span>
-                            <button class="resend-weekly-btn" data-uid="${escapeHtml(p.uid)}" data-week="${escapeHtml(p.weekId || "")}" data-code="${escapeHtml(p.prize || "")}" style="background:#4169e1; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer; flex-shrink:0;">✉️ Resend</button>
+                            <span style="display:flex; gap:6px; flex-shrink:0;">
+                                <button class="resend-weekly-btn" data-uid="${escapeHtml(p.uid)}" data-week="${escapeHtml(p.weekId || "")}" data-code="${escapeHtml(p.prize || "")}" style="background:#4169e1; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">✉️ Resend</button>
+                                <button class="prize-tokens-btn" data-uid="${escapeHtml(p.uid)}" data-name="${escapeHtml(p.winnerName || "")}" title="Send tokens as (part of) the prize" style="background:#aa7a1e; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">🪙 Tokens</button>
+                            </span>
                         </div>`;
                     }).join("");
                     list.querySelectorAll(".resend-weekly-btn").forEach(btn => {
@@ -1041,7 +1133,8 @@
                             const safeName = escapeHtml(w.name).replace(/'/g, "\\'");
                             return `<span style="display:inline-block; margin:2px 0;">${escapeHtml(w.name)}
                                 <code id="secretCode_${g.id}_${w.uid}" style="background:#2a2a4a; padding:2px 6px; border-radius:4px; font-size:0.78rem;">…</code>
-                                <button onclick="handleResendSecretCode('${g.id}', '${w.uid}', '${safeName}', '${w.platform}')" style="font-size:0.7rem; padding:2px 8px; margin-left:2px; border-radius:4px; border:1px solid gray; background:#2a2a4a; color:white; cursor:pointer;">✉️ Resend</button></span>`;
+                                <button onclick="handleResendSecretCode('${g.id}', '${w.uid}', '${safeName}', '${w.platform}')" style="font-size:0.7rem; padding:2px 8px; margin-left:2px; border-radius:4px; border:1px solid gray; background:#2a2a4a; color:white; cursor:pointer;">✉️ Resend</button>
+                                <button class="prize-tokens-btn" data-uid="${escapeHtml(w.uid)}" data-name="${escapeHtml(w.name || "")}" title="Send tokens as (part of) the prize" style="font-size:0.7rem; padding:2px 8px; margin-left:2px; border-radius:4px; border:1px solid #aa7a1e; background:#2a2a4a; color:white; cursor:pointer;">🪙 Tokens</button></span>`;
                         }).join(", ");
                         return `<p class="promo-sub" style="margin:0 0 4px;">${emoji} ${label}: ${items}</p>`;
                     }
@@ -1074,6 +1167,8 @@
                     ];
                     if (iosSlots > 0) summaryBits.push(`🍎 ${iosWon}/${iosSlots}`);
                     if (androidSlots > 0) summaryBits.push(`🤖 ${androidWon}/${androidSlots}`);
+                    const totalStaked = (g.iosTokensStaked || 0) + (g.androidTokensStaked || 0);
+                    if (totalStaked > 0) summaryBits.push(`🪙 ${totalStaked}`);
                     if (fullyDrawn) summaryBits.push("🏆");
 
                     return `
@@ -1127,7 +1222,8 @@
                     const safeName = escapeHtml(result.winner.name).replace(/'/g, "\\'");
                     container.innerHTML = `
                         <p style="margin:0 0 4px;"><strong>Winner (${platform}):</strong> ${escapeHtml(result.winner.name)}</p>
-                        <p class="promo-sub" style="margin:0 0 10px;"><strong>Remaining pool:</strong> ${result.entryCount}</p>
+                        <p class="promo-sub" style="margin:0 0 4px;"><strong>Remaining pool:</strong> ${result.entryCount}</p>
+                        <p class="promo-sub" style="margin:0 0 10px;"><strong>Staked:</strong> ${result.winner.tokens || 0} 🪙 — their chance was ${result.winnerWeight} in ${result.totalWeight} (${Math.round((result.winnerWeight / result.totalWeight) * 1000) / 10}%)</p>
                         <label style="display:block; margin-bottom:6px;">Prize code to send:</label>
                         <input type="text" id="secretPrizeCodeInput_${giveawayId}" placeholder="e.g. KCJUNE26"
                             style="width:100%; padding:10px; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box;">
@@ -1982,8 +2078,8 @@ const targetBtn = r.targetUid
 
                     const vipActive = profile && profile.vipExpiresAt && profile.vipExpiresAt > Date.now();
                     const vipStatusHtml = vipActive
-                        ? `<p class="promo-sub" style="margin:0 0 8px; color:gold;">👑 VIP active until ${new Date(profile.vipExpiresAt).toLocaleString()}${profile.vipSubscriptionId ? "" : " (manual grant, no live subscription)"}</p>`
-                        : `<p class="promo-sub" style="margin:0 0 8px;">Not currently VIP.</p>`;
+                        ? `<p class="promo-sub" style="margin:0 0 8px; color:gold;">👑 Super Supporter until ${new Date(profile.vipExpiresAt).toLocaleString()}${profile.vipSubscriptionId ? "" : " (manual grant, no live subscription)"}</p>`
+                        : `<p class="promo-sub" style="margin:0 0 8px;">Not currently a Super Supporter.</p>`;
 
                     result.innerHTML = `
                     <div style="border:1px solid #2a2a4a; border-radius:10px; padding:14px 16px;">
@@ -1994,8 +2090,9 @@ const targetBtn = r.targetUid
                         ${historyHtml}
                         <div style="display:flex; gap:8px; margin-top:14px; flex-wrap:wrap;">
                             <button onclick="handleSendAdminMessage()" style="background:#4169e1; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">✉️ Send Message</button>
-                            <button onclick="handleGrantVip('${uid}')" style="background:#6c63ff; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">👑 Grant VIP</button>
-                            ${vipActive ? `<button onclick="handleRevokeVip('${uid}')" style="background:#aa7a1e; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Revoke VIP</button>` : ""}
+                            <button onclick="openTokenAccount('${escapeHtml(uid)}').then(() => document.getElementById('tokenAccountResult').scrollIntoView({ behavior: 'smooth', block: 'center' }))" style="background:#aa7a1e; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">🪙 Tokens</button>
+                            <button onclick="handleGrantVip('${uid}')" style="background:#6c63ff; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">👑 Grant Super Supporter</button>
+                            ${vipActive ? `<button onclick="handleRevokeVip('${uid}')" style="background:#aa7a1e; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Revoke Super Supporter</button>` : ""}
                             <button onclick="handleTimeoutUid('${uid}')" style="background:#aa7a1e; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Timeout...</button>
                             <button onclick="handleBanUid('${uid}', 0)" style="background:#aa3838; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Ban Permanently</button>
                             <button onclick="handleUnbanUid('${uid}')" style="background:#45aa38; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Unban</button>
@@ -2025,29 +2122,29 @@ const targetBtn = r.targetUid
             }
             window.handleSendAdminMessage = handleSendAdminMessage;
             async function handleGrantVip(uid) {
-                const daysStr = await showPromptModal("Grant VIP for how many days?", "30");
+                const daysStr = await showPromptModal("Grant Super Supporter for how many days?", "30");
                 if (daysStr === null) return;
                 const days = parseFloat(daysStr);
                 if (isNaN(days) || days <= 0) { showInfoModal("Invalid duration", "Enter a positive number of days."); return; }
-                if (!await showConfirmModal("Grant VIP", `Grant ${lookupCurrentName} ${days} day(s) of VIP? This stacks on top of any VIP time they already have.`)) return;
+                if (!await showConfirmModal("Grant Super Supporter", `Make ${lookupCurrentName} a Super Supporter for ${days} day(s)? This stacks on top of any time they already have. It gives no tokens — those only come with real payments.`)) return;
                 try {
                     const newExpiresAt = await AppState.adminGrantVip(uid, days);
-                    showInfoModal("Done", `VIP granted — now expires ${new Date(newExpiresAt).toLocaleString()}.`);
+                    showInfoModal("Done", `Super Supporter granted — now expires ${new Date(newExpiresAt).toLocaleString()}.`);
                     await renderLookupProfile(uid, lookupCurrentName, null);
                 } catch (e) {
-                    showInfoModal("Couldn't grant VIP", e.message);
+                    showInfoModal("Couldn't grant Super Supporter", e.message);
                 }
             }
             window.handleGrantVip = handleGrantVip;
 
             async function handleRevokeVip(uid) {
-                if (!await showConfirmModal("Revoke VIP", `Remove VIP from ${lookupCurrentName} immediately?`)) return;
+                if (!await showConfirmModal("Revoke Super Supporter", `Remove Super Supporter from ${lookupCurrentName} immediately?`)) return;
                 try {
                     await AppState.adminRevokeVip(uid);
-                    showInfoModal("Done", "VIP has been revoked.");
+                    showInfoModal("Done", "Super Supporter has been revoked.");
                     await renderLookupProfile(uid, lookupCurrentName, null);
                 } catch (e) {
-                    showInfoModal("Couldn't revoke VIP", e.message);
+                    showInfoModal("Couldn't revoke Super Supporter", e.message);
                 }
             }
             window.handleRevokeVip = handleRevokeVip;
@@ -2187,8 +2284,281 @@ async function handleLookupUserByUid() {
                 }
             }
             window.handleBackfillUsernames = handleBackfillUsernames;
+            /* ---------------- TOKENS ----------------
+               Everything here goes through api/tokens.js (AppState.adminTokens),
+               which only accepts the admin account and logs every manual
+               balance change. Names and reasons are escaped before display:
+               names are chosen by players. */
+            function fmtDate(ms) {
+                return ms ? new Date(ms).toLocaleString() : "—";
+            }
+            function openTokensSection() {
+                const section = document.getElementById("tokensSection");
+                section.setAttribute("open", "");
+                return section;
+            }
+            async function askWholeNumber(title, defaultValue, min) {
+                const raw = await showPromptModal(title, String(defaultValue));
+                if (raw === null) return null;
+                const n = Number(raw.trim());
+                if (!Number.isInteger(n) || n < min) {
+                    showInfoModal("Not a valid number", `Enter a whole number${min === 0 ? " (0 or more)" : " (1 or more)"}.`);
+                    return null;
+                }
+                return n;
+            }
+
+            // --- refund / chargeback alerts ---
+            async function loadTokenAlerts() {
+                const list = document.getElementById("tokenAlertsList");
+                const count = document.getElementById("tokenAlertsCount");
+                list.innerHTML = "<p class='promo-sub'>Loading...</p>";
+                try {
+                    const { alerts } = await AppState.adminTokens("adminListAlerts");
+                    count.textContent = alerts.length ? `(${alerts.length} open)` : "";
+                    if (!alerts.length) {
+                        list.innerHTML = "<p class='promo-sub'>Nothing to deal with. 👍</p>";
+                        return;
+                    }
+                    list.innerHTML = alerts.map(a => {
+                        const who = a.uid
+                            ? `<strong>${escapeHtml(a.userName || "Unknown name")}</strong> <span class="promo-sub">(uid: ${escapeHtml(a.uid)})</span>`
+                            : `<strong>Unknown account</strong> <span class="promo-sub">PayPal ids: ${escapeHtml((a.paypalIds || []).join(", "))}</span>`;
+                        const tokensLine = a.tokensGranted
+                            ? `<p class="promo-sub" style="margin:4px 0 0;">That payment gave them <strong>${a.tokensGranted} 🪙</strong>. They had <strong>${a.balanceAtAlert ?? "?"} 🪙</strong> when this came in.</p>`
+                            : "";
+                        const removeBtn = a.uid && a.tokensGranted
+                            ? `<button class="remove" data-act="remove" data-id="${escapeHtml(a.id)}">➖ Remove ${a.tokensGranted} 🪙</button>` : "";
+                        const openBtn = a.uid ? `<button class="set" data-act="open" data-id="${escapeHtml(a.id)}">👤 Open account</button>` : "";
+                        return `<div class="token-card alert">
+                            <div><strong>${escapeHtml(a.label)}</strong> <span class="promo-sub">· ${escapeHtml(fmtDate(a.createdAt))}</span></div>
+                            <div style="margin-top:4px;">${who}</div>
+                            <p class="promo-sub" style="margin:4px 0 0;">${escapeHtml(a.what)}${a.amount ? " · " + escapeHtml(a.amount) : ""}</p>
+                            ${tokensLine}
+                            <div class="token-actions">${removeBtn}${openBtn}<button data-act="resolve" data-id="${escapeHtml(a.id)}">✓ Mark handled</button></div>
+                        </div>`;
+                    }).join("");
+                    list.querySelectorAll("button[data-act]").forEach(btn => {
+                        const alert = alerts.find(a => a.id === btn.dataset.id);
+                        btn.addEventListener("click", () => handleAlertAction(btn.dataset.act, alert));
+                    });
+                } catch (e) {
+                    count.textContent = "";
+                    list.innerHTML = `<p class="promo-sub">Couldn't load alerts: ${escapeHtml(e.message)}</p>`;
+                }
+            }
+            window.loadTokenAlerts = loadTokenAlerts;
+
+            async function handleAlertAction(act, alert) {
+                if (!alert) return;
+                const name = alert.userName || "this player";
+                try {
+                    if (act === "open") {
+                        await openTokenAccount(alert.uid);
+                        document.getElementById("tokenAccountResult").scrollIntoView({ behavior: "smooth", block: "center" });
+                    } else if (act === "remove") {
+                        if (!await showConfirmModal("Remove tokens",
+                            `Remove ${alert.tokensGranted} tokens from ${name}? (${alert.label}: ${alert.what}.) If they have fewer left, their balance goes to 0.`)) return;
+                        const r = await AppState.adminTokens("adminAdjust", {
+                            uid: alert.uid, mode: "remove", amount: alert.tokensGranted,
+                            reason: `${alert.label}: ${alert.what}${alert.amount ? " (" + alert.amount + ")" : ""}`, notify: false
+                        });
+                        if (await showConfirmModal("Done", `${name}: ${r.before} → ${r.after} tokens. Mark this alert as handled too?`)) {
+                            await AppState.adminTokens("adminResolveAlert", { alertId: alert.id });
+                        }
+                        await loadTokenAlerts();
+                    } else if (act === "resolve") {
+                        if (!await showConfirmModal("Mark handled", `Mark the ${alert.label.toLowerCase()} for ${name} as handled? It leaves the list; nothing else changes.`)) return;
+                        await AppState.adminTokens("adminResolveAlert", { alertId: alert.id });
+                        await loadTokenAlerts();
+                    }
+                } catch (e) {
+                    showInfoModal("Couldn't do that", e.message);
+                }
+            }
+
+            // --- one person's tokens ---
+            let tokenAccountUid = null;
+            let tokenAccountName = "";
+
+            async function handleTokenLookup() {
+                const q = document.getElementById("tokenLookupInput").value.trim();
+                if (!q) { showInfoModal("Missing", "Type an in-game name or a uid first."); return; }
+                const result = document.getElementById("tokenAccountResult");
+                result.innerHTML = "<p class='promo-sub'>Looking up...</p>";
+                try {
+                    // A uid has no spaces and is long; try it as one first, then as a name.
+                    let uid = null;
+                    if (/^[A-Za-z0-9]{20,}$/.test(q) && await AppState.getUserProfileForAdmin(q)) uid = q;
+                    if (!uid) {
+                        const found = await AppState.findUserByName(q);
+                        uid = found ? found.uid : null;
+                    }
+                    if (!uid) { result.innerHTML = "<p class='promo-sub'>No account found with that name or uid.</p>"; return; }
+                    await openTokenAccount(uid);
+                } catch (e) {
+                    result.innerHTML = `<p class="promo-sub">Error: ${escapeHtml(e.message)}</p>`;
+                }
+            }
+            window.handleTokenLookup = handleTokenLookup;
+
+            async function openTokenAccount(uid) {
+                openTokensSection();
+                const result = document.getElementById("tokenAccountResult");
+                result.innerHTML = "<p class='promo-sub'>Loading...</p>";
+                try {
+                    const a = await AppState.adminTokens("adminUserTokens", { uid });
+                    tokenAccountUid = a.uid;
+                    tokenAccountName = a.name || "this player";
+                    const modeLabel = { add: "Gave", remove: "Removed", set: "Set to" };
+                    const history = a.adjustments.length
+                        ? a.adjustments.map(h => `<div class="token-history-row">${escapeHtml(fmtDate(h.at))} · ${modeLabel[h.mode] || h.mode} ${h.amount} · ${h.before} → ${h.after}${h.reason ? " · " + escapeHtml(h.reason) : ""}</div>`).join("")
+                        : "<p class='promo-sub'>No manual changes yet.</p>";
+                    result.innerHTML = `<div class="token-card">
+                        <div><strong>${escapeHtml(a.name || "Unknown name")}</strong> <span class="promo-sub">(uid: ${escapeHtml(a.uid)})</span></div>
+                        <div class="token-balance-big">🪙 ${a.balance}</div>
+                        <p class="promo-sub" style="margin:2px 0 0;">All-time: ${a.lifetimeEarned} from quests · ${a.lifetimePurchased} bought · ${a.lifetimeGifted} from gifts</p>
+                        <label class="promo-sub" style="display:flex; align-items:center; gap:6px; margin-top:10px; cursor:pointer;">
+                            <input type="checkbox" id="tokenNotifyBox" checked> Send them an inbox message when I give or remove tokens
+                        </label>
+                        <div class="token-actions">
+                            <button class="give" onclick="handleTokenAdjust('add')">➕ Give</button>
+                            <button class="remove" onclick="handleTokenAdjust('remove')">➖ Remove</button>
+                            <button class="set" onclick="handleTokenAdjust('set')">✏️ Set balance</button>
+                            <button class="gift" onclick="handleGiftToAccount()">🎁 Send a gift to claim</button>
+                        </div>
+                        <p class="promo-sub" style="margin:14px 0 4px;">Manual changes (newest first):</p>
+                        ${history}
+                    </div>`;
+                } catch (e) {
+                    result.innerHTML = `<p class="promo-sub">Error: ${escapeHtml(e.message)}</p>`;
+                }
+            }
+            window.openTokenAccount = openTokenAccount;
+
+            async function handleTokenAdjust(mode) {
+                if (!tokenAccountUid) return;
+                const name = tokenAccountName;
+                const question = { add: `How many tokens to GIVE ${name}?`, remove: `How many tokens to REMOVE from ${name}?`, set: `Set ${name}'s balance to how many tokens?` }[mode];
+                const amount = await askWholeNumber(question, mode === "set" ? 0 : 10, mode === "set" ? 0 : 1);
+                if (amount === null) return;
+                const reason = await showPromptModal("Reason (kept in the history; shown to them if you message them)", mode === "add" ? "Giveaway prize" : "");
+                if (reason === null) return;
+                const notify = !!(document.getElementById("tokenNotifyBox") || {}).checked;
+                const verb = { add: `Give ${amount} tokens to`, remove: `Remove ${amount} tokens from`, set: `Set the balance to ${amount} tokens for` }[mode];
+                if (!await showConfirmModal("Confirm", `${verb} ${name}?${notify ? " They'll get an inbox message." : " They won't be told."}`)) return;
+                try {
+                    const r = await AppState.adminTokens("adminAdjust", { uid: tokenAccountUid, mode, amount, reason: reason.trim(), notify });
+                    showInfoModal("Done", `${name}: ${r.before} → ${r.after} tokens.`);
+                    await openTokenAccount(tokenAccountUid);
+                } catch (e) {
+                    showInfoModal("Couldn't change tokens", e.message);
+                }
+            }
+            window.handleTokenAdjust = handleTokenAdjust;
+
+            // A claimable gift for one person — also how tokens are given as a
+            // giveaway prize (the winner rows call this with prize wording).
+            async function sendGiftToPlayer(uid, name, asPrize) {
+                const amount = await askWholeNumber(asPrize ? `How many tokens is ${name}'s prize?` : `How many tokens to gift ${name}?`, asPrize ? 50 : 10, 1);
+                if (amount === null) return;
+                const days = await askWholeNumber("How many days do they have to claim it?", asPrize ? 30 : 7, 1);
+                if (days === null) return;
+                const title = asPrize ? `🎉 Your prize: ${amount} tokens!` : `🎁 ${amount} free tokens for you!`;
+                const message = asPrize
+                    ? `Congrats on winning! Tap Claim to add ${amount} tokens to your wallet. This expires in ${days} day${days === 1 ? "" : "s"}.`
+                    : `Tap Claim to add ${amount} tokens to your wallet. This expires in ${days} day${days === 1 ? "" : "s"}.`;
+                if (!await showConfirmModal("Send gift", `Send ${name} ${amount} tokens to claim within ${days} day${days === 1 ? "" : "s"}?\n\n"${title}"`)) return;
+                try {
+                    await AppState.adminTokens("adminSendGift", { target: uid, amount, expiresInHours: days * 24, title, message });
+                    showInfoModal("Sent", `It's in ${name}'s inbox. Their tokens arrive when they tap Claim.`);
+                    await loadTokenGifts();
+                } catch (e) {
+                    showInfoModal("Couldn't send the gift", e.message);
+                }
+            }
+            window.sendTokenPrize = (uid, name) => sendGiftToPlayer(uid, name || "the winner", true);
+            // The 🪙 Tokens buttons on weekly and secret giveaway winner rows.
+            // Read from data attributes (escaped), never spliced into an
+            // onclick string, since winner names are chosen by players.
+            document.addEventListener("click", (e) => {
+                const btn = e.target.closest && e.target.closest(".prize-tokens-btn");
+                if (!btn) return;
+                e.preventDefault();
+                e.stopPropagation();
+                sendTokenPrize(btn.dataset.uid, btn.dataset.name);
+            });
+            async function handleGiftToAccount() {
+                if (tokenAccountUid) await sendGiftToPlayer(tokenAccountUid, tokenAccountName, false);
+            }
+            window.handleGiftToAccount = handleGiftToAccount;
+
+            // --- gifts for everyone ---
+            async function handleSendGiftAll() {
+                const amount = Number(document.getElementById("giftAllAmount").value);
+                const duration = Number(document.getElementById("giftAllDuration").value);
+                const unitHours = Number(document.getElementById("giftAllUnit").value);
+                const title = document.getElementById("giftAllTitle").value.trim();
+                const message = document.getElementById("giftAllMessage").value.trim();
+                if (!Number.isInteger(amount) || amount < 1) { showInfoModal("Tokens each", "Enter a whole number, 1 or more."); return; }
+                if (!(duration > 0)) { showInfoModal("Lasts for", "Enter how long it lasts."); return; }
+                const unitWord = unitHours === 24 ? "day" : "hour";
+                const lasts = `${duration} ${unitWord}${duration === 1 ? "" : "s"}`;
+                if (!await showConfirmModal("Send to everyone",
+                    `Give EVERY existing account ${amount} tokens to claim within ${lasts}?\n\n"${title || `🎁 ${amount} free tokens!`}"`)) return;
+                try {
+                    await AppState.adminTokens("adminSendGift", { target: "all", amount, expiresInHours: duration * unitHours, title, message });
+                    showInfoModal("Sent", "It's in everyone's inbox now.");
+                    document.getElementById("giftAllTitle").value = "";
+                    document.getElementById("giftAllMessage").value = "";
+                    await loadTokenGifts();
+                } catch (e) {
+                    showInfoModal("Couldn't send the gift", e.message);
+                }
+            }
+            window.handleSendGiftAll = handleSendGiftAll;
+
+            async function loadTokenGifts() {
+                const list = document.getElementById("tokenGiftsList");
+                list.innerHTML = "<p class='promo-sub'>Loading...</p>";
+                try {
+                    const { gifts } = await AppState.adminTokens("adminListGifts");
+                    if (!gifts.length) { list.innerHTML = "<p class='promo-sub'>No gifts sent in the last 6 months.</p>"; return; }
+                    const now = Date.now();
+                    list.innerHTML = gifts.map(g => {
+                        const live = g.expiresAt > now;
+                        const to = g.target === "all" ? "Everyone" : escapeHtml(g.targetName || g.target);
+                        const status = live ? `🟢 until ${escapeHtml(fmtDate(g.expiresAt))}` : (g.endedEarly ? "⏹ ended early" : "⌛ expired");
+                        return `<div class="token-card">
+                            <div><strong>${escapeHtml(g.title)}</strong></div>
+                            <p class="promo-sub" style="margin:4px 0 0;">${g.amount} 🪙 each · to ${to} · sent ${escapeHtml(fmtDate(g.createdAt))} · ${status}</p>
+                            <p class="promo-sub" style="margin:2px 0 0;">Claimed by ${g.claimCount || 0} (${g.claimedTokens || 0} 🪙 total)</p>
+                            ${live ? `<div class="token-actions"><button class="remove" data-gift="${escapeHtml(g.id)}">⏹ End now</button></div>` : ""}
+                        </div>`;
+                    }).join("");
+                    list.querySelectorAll("button[data-gift]").forEach(btn => {
+                        btn.addEventListener("click", async () => {
+                            if (!await showConfirmModal("End gift", "Stop this gift now? Anyone who hasn't claimed it yet won't be able to. Already-claimed tokens stay.")) return;
+                            try {
+                                await AppState.adminTokens("adminEndGift", { giftId: btn.dataset.gift });
+                                await loadTokenGifts();
+                            } catch (e) {
+                                showInfoModal("Couldn't end it", e.message);
+                            }
+                        });
+                    });
+                } catch (e) {
+                    list.innerHTML = `<p class="promo-sub">Couldn't load gifts: ${escapeHtml(e.message)}</p>`;
+                }
+            }
+            window.loadTokenGifts = loadTokenGifts;
+
             AppState.waitForAuthReady().then(() => {
                 refreshAdminState();
+                if (AppState.isAdmin()) {
+                    loadTokenAlerts();
+                    loadTokenGifts();
+                }
                 refreshRecentCodes();
                 refreshRecentTips();
                 refreshRecentNews();

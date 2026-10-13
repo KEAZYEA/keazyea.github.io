@@ -418,6 +418,9 @@
     `;
             window.scrollTo({ top: 0, left: 0, behavior: "instant" });
             AppState.maybeRefreshAd("tipsAdSlot");
+            // Opening a tip is the "Read a tip" daily quest. Only pays if that
+            // quest is on today, and only once — the server decides both.
+            if (tip.id) AppState.reportQuestProgress("readTip", tip.id);
         }
 
         function showGrid() {
