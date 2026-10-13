@@ -1253,7 +1253,111 @@ body {
         @media (max-width: 599px) {
             #adSlot728x90 { display: none !important; }
         }
-       
+
+        /* ---------- Daily quests ---------- */
+        .quest-wallet {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 14px 16px;
+            margin-bottom: 12px;
+            border: 1px solid #aa7a1e;
+            border-radius: 12px;
+            background: rgba(255, 196, 0, 0.07);
+        }
+        .quest-wallet-balance { font-size: 1.6rem; font-weight: 800; }
+        .quest-countdown { text-align: right; font-size: 0.85rem; color: var(--kih-text-dim); }
+        .quest-countdown strong { display: block; font-size: 1.15rem; color: var(--kih-text); font-variant-numeric: tabular-nums; }
+        .quest-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            margin-bottom: 8px;
+            border: 1px solid var(--kih-border);
+            border-radius: 12px;
+            background: var(--kih-panel);
+        }
+        .quest-row.done { border-color: #2e7d32; background: rgba(46, 125, 50, 0.10); }
+        .quest-icon { font-size: 1.5rem; flex-shrink: 0; }
+        .quest-text { flex: 1; min-width: 0; }
+        .quest-title { font-weight: 700; }
+        .quest-hint { font-size: 0.82rem; color: var(--kih-text-dim); margin-top: 2px; }
+        .quest-done { flex-shrink: 0; font-weight: 700; color: #7ddc92; }
+        .quest-go-btn {
+            flex-shrink: 0;
+            background: var(--kih-accent);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .quest-go-btn:hover { background: var(--kih-accent-hover); }
+        /* Done but not yet collected: gold, gently pulsing, so it's obvious
+           there's something to tap. */
+        .quest-row.ready { border-color: #ffc400; background: rgba(255, 196, 0, 0.08); }
+        .quest-claim-btn,
+        .quest-claim-all-btn {
+            flex-shrink: 0;
+            background: #ffc400;
+            color: #1a1a2e;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-weight: 800;
+            cursor: pointer;
+            animation: quest-claim-pulse 1.6s ease-in-out infinite;
+        }
+        .quest-claim-all-btn { display: block; width: 100%; padding: 12px; margin-bottom: 12px; font-size: 1rem; }
+        .quest-claim-btn:disabled,
+        .quest-claim-all-btn:disabled { opacity: 0.6; cursor: default; animation: none; }
+        @keyframes quest-claim-pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255, 196, 0, 0.55); }
+            50% { box-shadow: 0 0 0 6px rgba(255, 196, 0, 0); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .quest-claim-btn, .quest-claim-all-btn { animation: none; }
+        }
+        .quest-section-label { font-size: 0.8rem; color: var(--kih-text-dim); margin: 4px 0 8px; }
+        /* Admin token gifts in the inbox */
+        .inbox-gift-btn { background: #ffc400 !important; color: #1a1a2e !important; font-weight: 800; }
+        .inbox-gift-btn:disabled { opacity: 0.6; }
+        .inbox-gift-state { font-weight: 700; color: #7ddc92; align-self: center; }
+        .inbox-gift-state.expired { color: var(--kih-text-dim); }
+        .inbox-gift-expiry { font-size: 0.78rem; color: var(--kih-text-dim); align-self: center; }
+        .quest-toast {
+            position: fixed;
+            left: 50%;
+            bottom: 24px;
+            transform: translateX(-50%);
+            max-width: calc(100% - 32px);
+            padding: 12px 18px;
+            border: 1px solid #2e7d32;
+            border-radius: 12px;
+            background: #16301f;
+            color: #7ddc92;
+            font-weight: 700;
+            text-align: center;
+            z-index: 600;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Five icons on the right plus the avatar on the left only just fit a
+           320px phone at the default spacing — about 8px to spare, and emoji
+           render at different widths on different phones, so it could spill
+           over. Narrow phones get tighter spacing so there's real room. This
+           sits last so it beats the base .icon-btn rule above. */
+        @media (max-width: 380px) {
+            .home-topbar { padding: 2px 10px; }
+            .topbar-right { gap: 2px; }
+            .home-topbar .icon-btn { font-size: 1.5rem; min-width: 34px; min-height: 34px; padding: 4px; }
+            .quest-row { gap: 10px; padding: 10px 12px; }
+            .quest-wallet { padding: 12px 14px; }
+            .quest-wallet-balance { font-size: 1.4rem; }
+        }
     </style>
 </head>
 
@@ -1267,6 +1371,9 @@ body {
                 <span id="topbarAvatarFallback" class="topbar-avatar-fallback">👤</span>
             </button>
             <div class="topbar-right">
+                <button class="icon-btn" title="Daily Quests" onclick="goToPage('quests')">
+                    📅<span class="badge-dot" id="questsBadgeHome" style="display:none;"></span>
+                </button>
                 <div class="friend-req-wrapper" id="newsWrapperHome">
                     <button class="icon-btn" title="News & Rumours" id="newsBtnHome">
                         📰<span class="badge-dot" id="newsBadgeHome" style="display:none;"></span>
@@ -1305,6 +1412,9 @@ body {
             <div class="menu-wrapper">
                 <button class="icon-btn" title="Menu" onclick="toggleMenu()">☰</button>
                 <div class="menu-dropdown" id="menuDropdown">
+                    <button onclick="goToPage('quests'); closeMenu();">
+                        📅 Daily Quests <span class="badge-dot" id="questsBadgeMenu" style="display:none;"></span>
+                    </button>
                     <button onclick="goToPage('inbox'); closeMenu();">
                         📬 Inbox <span class="badge-dot" id="inboxBadgeMenu" style="display:none;"></span>
                     </button>
@@ -1346,7 +1456,7 @@ body {
                 </button>
                 <button class="home-menu-btn" onclick="goToPage('store')">
                     <span class="home-menu-icon">🛒</span>
-                    <span class="home-menu-text">Store<small>VIP pass & offers</small></span>
+                    <span class="home-menu-text">Store<small>Tokens & supporter plans</small></span>
                 </button>
             </div>
             <button class="about-creator-link" onclick="goToPage('about')">About the Creator</button>
@@ -1388,6 +1498,35 @@ body {
 <div class="home-page-content" id="page-store">
     <iframe data-src="store.html"></iframe>
 </div>
+
+                <!-- DAILY QUESTS -->
+                <div class="home-page-content" id="page-quests">
+                    <div class="page-panel">
+                        <h1>Daily Quests</h1>
+                        <div id="questsSignedOut" style="display:none;">
+                            <p class="settings-sub">Sign in to start earning tokens. Your progress is saved to your account, so it's the same on every device.</p>
+                            <button class="btn-settings-action" onclick="toggleGoogleSignIn()">Sign in with Google</button>
+                        </div>
+                        <div id="questsSignedIn" style="display:none;">
+                            <div class="quest-wallet">
+                                <div>
+                                    <div class="settings-sub" style="margin:0;">Your tokens</div>
+                                    <div class="quest-wallet-balance">🪙 <span id="questTokenBalance">0</span></div>
+                                </div>
+                                <div class="quest-countdown">New quests in<strong id="questCountdown">--:--:--</strong></div>
+                            </div>
+                            <div id="questList"></div>
+                            <p class="settings-sub" style="margin-top:16px; line-height:1.5;">
+                                Finish a quest, then tap <strong>Claim</strong> to collect <strong>1 🪙</strong> — unclaimed
+                                rewards wait for you, they don't expire. The <strong>Store</strong>
+                                has token packs, plus subscriptions that add 25 or 60 🪙 every month. Stake tokens on a
+                                <strong>Secret Giveaway</strong> from its card — every token adds one more chance on top of
+                                your free one. Tokens are spent when your side is drawn, win or lose, and refunded if you
+                                leave before then.
+                            </p>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- ABOUT THE CREATOR -->
                 <div class="home-page-content" id="page-about">
@@ -1463,7 +1602,7 @@ body {
                             <div>
                                 <div class="settings-label">Google Account</div>
                                 <div class="settings-sub" id="googleStatusText">Not signed in — sign in to save progress
-                                    & unlock VIP</div>
+                                    & earn tokens</div>
                             </div>
                             <button class="btn-settings-action" id="googleSignInBtn" onclick="toggleGoogleSignIn()">Sign
                                 in</button>
@@ -2050,6 +2189,7 @@ body {
     if (page === "profile") await loadProfileIntoPage();
     if (page === "settings") await loadSettingsIntoPage();
     if (page === "inbox") { renderInboxList(mergedNotifications()); markInboxSeen(); }
+    if (page === "quests") onQuestsPageOpened();
     setTimeout(updateScrollBottomBtn, 50);
 }
 
@@ -2473,7 +2613,7 @@ window.closeLegalModal = closeLegalModal;
 
     document.getElementById("googleStatusText").textContent = user
         ? "Signed in as " + user.email
-        : "Not signed in — sign in to save progress & unlock VIP";
+        : "Not signed in — sign in to save progress & earn tokens";
     document.getElementById("googleSignInBtn").textContent = user ? "Sign out" : "Sign in";
 
             let vipActive = profile.vipExpiresAt && profile.vipExpiresAt > Date.now();
@@ -2933,6 +3073,11 @@ function getNewsTypeInfo(type) {
 
         let latestPersonalNotifications = [];
         let unsubPersonalNotifs = null;
+        // Admin token gifts this account has already claimed (any device).
+        let myGiftClaims = new Set();
+        let unsubGiftClaims = null;
+        let giftClaiming = null;
+        let lastInboxModalIndex = null;
 
         function mergedNotifications() {
             return [...latestNotifications, ...latestPersonalNotifications]
@@ -2941,6 +3086,14 @@ function getNewsTypeInfo(type) {
 
         function startPersonalNotifListener() {
             if (unsubPersonalNotifs) { unsubPersonalNotifs(); unsubPersonalNotifs = null; }
+            if (unsubGiftClaims) { unsubGiftClaims(); unsubGiftClaims = null; }
+            myGiftClaims = new Set();
+            if (AppState.getCurrentUser()) {
+                unsubGiftClaims = AppState.listenToMyGiftClaims((ids) => {
+                    myGiftClaims = ids;
+                    rerenderInboxIfOpen();
+                });
+            }
             if (!AppState.getCurrentUser()) {
                 latestPersonalNotifications = [];
                 renderInboxBadgeFrom(mergedNotifications());
@@ -3044,6 +3197,44 @@ function getNewsTypeInfo(type) {
 
         let currentInboxFilter = "all";
 
+        // The Claim button on an admin token gift — or what happened to it.
+        function giftButtonHtml(n, big) {
+            const style = big ? "margin-top:14px; padding:10px 20px; font-size:0.9rem;" : "padding:6px 16px; font-size:0.85rem;";
+            const amount = Number(n.amount) || 0;
+            if (myGiftClaims.has(n.giftId)) return `<span class="inbox-gift-state">✅ Claimed +${amount} 🪙</span>`;
+            if ((n.expiresAt || 0) <= Date.now()) return `<span class="inbox-gift-state expired">⌛ Expired</span>`;
+            // Gift ids are plain base-36 from the server. Anything else is not
+            // a real gift, and must never reach the onclick string below.
+            if (!/^[A-Za-z0-9]{1,64}$/.test(String(n.giftId || ""))) return "";
+            const id = n.giftId;
+            return `<button class="btn-primary inbox-gift-btn" style="${style}" onclick="claimInboxGift('${id}')"${giftClaiming === n.giftId ? " disabled" : ""}>🎁 Claim ${amount} 🪙</button>` +
+                `<span class="inbox-gift-expiry">Expires ${new Date(n.expiresAt).toLocaleString()}</span>`;
+        }
+
+        function rerenderInboxIfOpen() {
+            if (document.getElementById("page-inbox").classList.contains("active")) renderInboxList(mergedNotifications());
+            if (lastInboxModalIndex !== null && document.getElementById("inboxItemModalOverlay").classList.contains("open")) {
+                openInboxItemModal(lastInboxModalIndex);
+            }
+        }
+
+        async function claimInboxGift(giftId) {
+            if (giftClaiming) return;
+            giftClaiming = giftId;
+            rerenderInboxIfOpen();
+            try {
+                const result = await AppState.claimTokenGift(giftId);
+                myGiftClaims = new Set([...myGiftClaims, giftId]);
+                showQuestToast(result.claimed > 0 ? `+${result.claimed} 🪙 added to your wallet!` : "You've already claimed this one.");
+            } catch (e) {
+                showQuestToast(e.message || "Couldn't claim — check your connection and try again.");
+            } finally {
+                giftClaiming = null;
+                rerenderInboxIfOpen();
+            }
+        }
+        window.claimInboxGift = claimInboxGift;
+
                 function renderInboxList(notifications) {
             let list = document.getElementById("inboxList");
             if (!list) return;
@@ -3085,6 +3276,10 @@ function getNewsTypeInfo(type) {
     button = `<button class="btn-primary" style="padding:6px 16px; font-size:0.85rem;" onclick="openPromoTab('vip')">🎡 Enter Giveaway</button>`;
 } else if (n.type === "secretGiveawayNew") {
     button = `<button class="btn-primary" style="padding:6px 16px; font-size:0.85rem;" onclick="openPromoTab('secret')">🔒 Enter Giveaway</button>`;
+} else if (n.type === "tokensGranted") {
+    button = `<button class="btn-primary" style="padding:6px 16px; font-size:0.85rem;" onclick="openPromoTab('secret')">🪙 Use Tokens</button>`;
+} else if (n.type === "tokenGift") {
+    button = giftButtonHtml(n, false);
 }
 // adminMessage and announcement need no button — title + body already contain everything
 
@@ -3136,6 +3331,7 @@ function getNewsTypeInfo(type) {
     const n = currentInboxItems[index];
     const content = document.getElementById("inboxItemModalContent");
     if (!content || !n) return;
+    lastInboxModalIndex = index;
 
     let button = "";
     if (n.type === "promo") {
@@ -3156,6 +3352,10 @@ function getNewsTypeInfo(type) {
         button = `<button class="btn-primary" style="margin-top:14px; padding:10px 20px; font-size:0.9rem;" onclick="openPromoTab('vip')">🎡 Enter Giveaway</button>`;
     } else if (n.type === "secretGiveawayNew") {
         button = `<button class="btn-primary" style="margin-top:14px; padding:10px 20px; font-size:0.9rem;" onclick="openPromoTab('secret')">🔒 Enter Giveaway</button>`;
+    } else if (n.type === "tokensGranted") {
+        button = `<button class="btn-primary" style="margin-top:14px; padding:10px 20px; font-size:0.9rem;" onclick="openPromoTab('secret')">🪙 Use Tokens</button>`;
+    } else if (n.type === "tokenGift") {
+        button = `<div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">${giftButtonHtml(n, true)}</div>`;
     }
 
     content.innerHTML = `
@@ -3316,7 +3516,247 @@ window.closeInboxItemModal = closeInboxItemModal;
             renderInboxList(mergedNotifications());
         });
 
+        /* ---------------- DAILY QUESTS ----------------
+           Which quests are on today comes from the server; whether each is
+           done comes from a live listener on the account's claims. So a quest
+           finished on a phone ticks here within a second, and the countdown is
+           only display — the server decides when a day ends, never this clock. */
+        const QUEST_INFO = {
+            login:          { icon: "👋", title: "Log in today", hint: "Counted automatically whenever you visit while signed in." },
+            postClan:       { icon: "🛡️", title: "Post a clan recruitment", hint: "Post your clan in Social → Clan.", go: () => openSocialTab("clan") },
+            sendMessage:    { icon: "💬", title: "Message a friend", hint: "Send a message to any friend.", go: () => openSocialTab("friends") },
+            enterWeekly:    { icon: "🎡", title: "Enter this week's giveaway", hint: "Already entered this week? That counts.", go: () => openPromoTab("vip") },
+            readTip:        { icon: "💡", title: "Read a tip", hint: "Open any tip.", go: () => openTipsFresh() },
+            shareFormation: { icon: "🧩", title: "Share a formation", hint: "Post a new formation in Social → Formation Help.", go: () => openSocialTab("formation") },
+            shareTierList:  { icon: "🏆", title: "Share a tier list", hint: "Post a new tier list in Social → Tier Lists.", go: () => openSocialTab("tierlist") }
+        };
+
+        let questToday = null;       // { dayKey, resetAt, quests }
+        let questLoadFailed = false;
+        let questProgress = {};      // today's quests: questId -> "ready" | "claimed"
+        let questReady = [];         // done, not yet claimed, from ANY day: [{ id, questId, dayKey }]
+        let questProgressLoaded = false;
+        let questClaiming = false;
+        let questBalance = 0;
+        let unsubQuestWallet = null;
+        let unsubQuestProgress = null;
+        let questListenerGeneration = 0;
+        let questResetHandled = false;
+
+        // Social is an iframe that remembers its last tab. Before it's ever
+        // loaded, the saved tab is what it opens to; once loaded, it's told
+        // directly — so the button lands on the right tab either way.
+        function openSocialTab(tab) {
+            try { localStorage.setItem("kih_social_tab", tab); } catch (e) { /* storage blocked */ }
+            goToPage("social");
+            try {
+                const frame = document.querySelector("#page-social iframe");
+                if (frame && frame.contentWindow && frame.contentWindow.switchSocialTab) frame.contentWindow.switchSocialTab(tab);
+            } catch (e) { /* not loaded yet — the saved tab above covers it */ }
+        }
+
+        async function startQuestListeners() {
+            const generation = ++questListenerGeneration;
+            if (unsubQuestWallet) { unsubQuestWallet(); unsubQuestWallet = null; }
+            if (unsubQuestProgress) { unsubQuestProgress(); unsubQuestProgress = null; }
+            questProgress = {};
+            questReady = [];
+            questProgressLoaded = false;
+            questBalance = 0;
+            questLoadFailed = false;
+            questResetHandled = false;
+            renderQuests();
+            if (!AppState.getCurrentUser()) return;
+            try {
+                questToday = await AppState.getTodaysQuests();
+            } catch (e) {
+                questToday = null;
+                questLoadFailed = true;
+                renderQuests();
+                return;
+            }
+            // A newer call (sign-out, day rollover) superseded this one mid-await.
+            if (generation !== questListenerGeneration) return;
+            unsubQuestWallet = AppState.listenToMyWallet((wallet) => {
+                questBalance = wallet.balance || 0;
+                renderQuests();
+            });
+            unsubQuestProgress = AppState.listenToMyQuestProgress(questToday.dayKey, ({ today, ready }) => {
+                // Only announce rewards that become ready AFTER the first
+                // snapshot — otherwise every page load would re-announce them.
+                if (questProgressLoaded) {
+                    ready.filter(r => !questReady.some(x => x.id === r.id)).forEach(r => announceQuestReady(r.questId));
+                }
+                questProgress = today;
+                questReady = ready;
+                questProgressLoaded = true;
+                renderQuests();
+            });
+        }
+
+        function renderQuests() {
+            const signedIn = !!AppState.getCurrentUser();
+            document.getElementById("questsSignedOut").style.display = signedIn ? "none" : "block";
+            document.getElementById("questsSignedIn").style.display = signedIn ? "block" : "none";
+            document.getElementById("questTokenBalance").textContent = questBalance;
+
+            // Topbar icon on the home screen, plus the ☰ menu on every other
+            // page: how many rewards are done and waiting to be claimed.
+            const waiting = signedIn && questProgressLoaded ? questReady.length : 0;
+            ["questsBadgeHome", "questsBadgeMenu"].forEach(id => {
+                const badge = document.getElementById(id);
+                if (!badge) return;
+                badge.textContent = waiting > 9 ? "9+" : waiting;
+                badge.style.display = waiting > 0 ? "flex" : "none";
+            });
+
+            const list = document.getElementById("questList");
+            if (!signedIn) { list.innerHTML = ""; return; }
+            if (questLoadFailed) {
+                list.innerHTML = `<p class="settings-sub">Couldn't load today's quests — check your connection.
+                    <button class="quest-go-btn" onclick="startQuestListeners()" style="margin-left:6px;">Retry</button></p>`;
+                return;
+            }
+            if (!questToday || !questProgressLoaded) {
+                list.innerHTML = `<p class="settings-sub">Loading today's quests…</p>`;
+                return;
+            }
+            const disabled = questClaiming ? " disabled" : "";
+            const claimBtn = (claimId) =>
+                `<button class="quest-claim-btn" onclick="handleQuestClaim('${claimId}')"${disabled}>Claim +1 🪙</button>`;
+            const row = (cls, info, hint, action) => `<div class="quest-row${cls}">
+                    <span class="quest-icon">${info.icon}</span>
+                    <div class="quest-text">
+                        <div class="quest-title">${info.title}</div>
+                        <div class="quest-hint">${hint}</div>
+                    </div>
+                    ${action}
+                </div>`;
+
+            // Rewards finished on an earlier day and never collected.
+            const earlier = questReady.filter(r => r.dayKey !== questToday.dayKey);
+            const earlierHtml = earlier.length
+                ? `<div class="quest-section-label">Not claimed yet from earlier</div>` + earlier.map(r => {
+                    const info = QUEST_INFO[r.questId] || { icon: "⭐", title: r.questId };
+                    return row(" ready", info, `Done on ${formatQuestDay(r.dayKey)}`, claimBtn(r.id));
+                }).join("") + `<div class="quest-section-label" style="margin-top:14px;">Today</div>`
+                : "";
+
+            const todayHtml = questToday.quests.map(id => {
+                const info = QUEST_INFO[id] || { icon: "⭐", title: id, hint: "" };
+                const status = questProgress[id];
+                if (status === "claimed") return row(" done", info, info.hint, `<span class="quest-done">✅ +1 🪙</span>`);
+                if (status === "ready") return row(" ready", info, info.hint, claimBtn(`${questToday.dayKey}_${id}`));
+                return row("", info, info.hint,
+                    info.go ? `<button class="quest-go-btn" onclick="runQuestAction('${id}')">Go</button>` : "");
+            }).join("");
+
+            const claimAll = questReady.length >= 2
+                ? `<button class="quest-claim-all-btn" onclick="handleQuestClaim()"${disabled}>Claim all (+${questReady.length} 🪙)</button>`
+                : "";
+            list.innerHTML = claimAll + earlierHtml + todayHtml;
+        }
+
+        function formatQuestDay(dayKey) {
+            return new Date(dayKey + "T00:00:00Z").toLocaleDateString(undefined, { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" });
+        }
+
+        // Collects one reward, or every waiting one when no id is given. The
+        // server only pays rewards still marked ready, so a double tap or a
+        // second device claiming at the same moment can't pay twice.
+        async function handleQuestClaim(claimId) {
+            if (questClaiming) return;
+            const ids = claimId ? [claimId] : questReady.map(r => r.id).slice(0, 20);
+            if (!ids.length) return;
+            questClaiming = true;
+            renderQuests();
+            try {
+                const result = await AppState.claimQuestRewards(ids);
+                // Show it straight away; the live listeners confirm it a moment later.
+                questReady = questReady.filter(r => !ids.includes(r.id));
+                ids.forEach(id => {
+                    const [day, questId] = id.split("_");
+                    if (questToday && day === questToday.dayKey) questProgress[questId] = "claimed";
+                });
+                if (typeof result.balance === "number") questBalance = result.balance;
+                if (result.claimed > 0) showQuestToast(`+${result.claimed} 🪙 claimed!`);
+            } catch (e) {
+                showQuestToast(e.message || "Couldn't claim — check your connection and try again.");
+            } finally {
+                questClaiming = false;
+                renderQuests();
+            }
+        }
+
+        function runQuestAction(id) {
+            const info = QUEST_INFO[id];
+            if (info && info.go) info.go();
+        }
+
+        function updateQuestCountdown() {
+            const el = document.getElementById("questCountdown");
+            if (!questToday) { el.textContent = "--:--:--"; return; }
+            const left = questToday.resetAt - Date.now();
+            if (left <= 0) {
+                el.textContent = "00:00:00";
+                // Day rolled over: refetch the new day's quests and re-point the
+                // claims listener at the new date. Once only, per rollover.
+                if (!questResetHandled) {
+                    questResetHandled = true;
+                    setTimeout(startQuestListeners, 3000);
+                }
+                return;
+            }
+            const s = Math.floor(left / 1000);
+            const pad = n => String(n).padStart(2, "0");
+            el.textContent = `${pad(Math.floor(s / 3600))}:${pad(Math.floor(s / 60) % 60)}:${pad(s % 60)}`;
+        }
+
+        // Two quests are about something that may ALREADY be true when the page
+        // opens — done earlier today, or on another device. Ask the server to
+        // check those; it verifies, and it pays at most once.
+        async function onQuestsPageOpened() {
+            renderQuests();
+            if (!AppState.getCurrentUser() || !questToday || !questProgressLoaded) return;
+            const pending = questToday.quests.filter(q => !questProgress[q]);
+            if (pending.includes("login")) AppState.reportQuestProgress("login");
+            if (pending.includes("postClan")) AppState.reportQuestProgress("postClan", AppState.getCurrentUser().uid);
+            if (pending.includes("enterWeekly")) {
+                const weekId = AppState.getWeekId();
+                try {
+                    if (await AppState.hasJoinedGiveaway(weekId)) AppState.reportQuestProgress("enterWeekly", weekId);
+                } catch (e) { /* not entered, or offline — nothing to claim */ }
+            }
+        }
+
+        function showQuestToast(text, onClick) {
+            const toast = document.createElement("div");
+            toast.className = "quest-toast";
+            toast.textContent = text;
+            if (onClick) {
+                toast.style.cursor = "pointer";
+                toast.addEventListener("click", () => { toast.remove(); onClick(); });
+            }
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3200);
+        }
+
+        function announceQuestReady(questId) {
+            const info = QUEST_INFO[questId];
+            const onQuestsPage = document.getElementById("page-quests").classList.contains("active");
+            showQuestToast(`✅ ${info ? info.title : "Quest"} done — ${onQuestsPage ? "tap Claim for" : "tap here to claim"} your 🪙`,
+                onQuestsPage ? null : () => goToPage("quests"));
+        }
+
         document.addEventListener("DOMContentLoaded", () => {
+            AppState.startDailyQuestTracking();
+            // waitForAuthReady covers a sign-in Firebase restored before this
+            // ran; onAuthChange covers every later one. If both fire, the
+            // generation check inside startQuestListeners keeps only the newest.
+            AppState.waitForAuthReady().then(startQuestListeners);
+            AppState.onAuthChange(() => startQuestListeners());
+            setInterval(updateQuestCountdown, 1000);
+
             startNewsListenerHome();
             AppState.listenToNotifications((notifications) => {
                 latestNotifications = notifications;

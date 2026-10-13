@@ -15,9 +15,17 @@
  *   BILLING.SUBSCRIPTION.EXPIRED
  *   BILLING.SUBSCRIPTION.SUSPENDED
  *   PAYMENT.SALE.COMPLETED
+ *   PAYMENT.CAPTURE.COMPLETED   (token packs — see api/token-packs.js)
+ * and, so refunds and chargebacks reach the admin (see recordPaymentAlert):
+ *   PAYMENT.CAPTURE.REFUNDED, PAYMENT.CAPTURE.REVERSED,
+ *   PAYMENT.SALE.REFUNDED, PAYMENT.SALE.REVERSED, CUSTOMER.DISPUTE.CREATED
  */
 
-const { getFirebaseAdmin, getPayPalAccessToken, PAYPAL_API, planKeyFromPlanId } = require("./_lib");
+const {
+  getFirebaseAdmin, getPayPalAccessToken, PAYPAL_API, paypalJson, planKeyFromPlanId, TOKENS_PER_PAYMENT,
+  parsePackCustomId, creditTokenPack, notifyPackCredited, getPack, ADMIN_UID
+} = require("./_lib");
+const { FieldValue } = require("firebase-admin/firestore");
 
 const ONE_MONTH_MS = 31 * 24 * 60 * 60 * 1000; // small buffer over 30 days so a slightly-late renewal doesn't lapse a user early
 
@@ -41,6 +49,218 @@ async function verifyWebhookSignature(headers, body) {
   });
   const data = await res.json();
   return data.verification_status === "SUCCESS";
+}
+
+const PLAN_NAMES = { vip: "Super Supporter", noAds: "Supporter" };
+// PayPal statuses for a subscription that is (or is about to be) billing.
+const BILLING_STATUSES = ["APPROVAL_PENDING", "APPROVED", "ACTIVE", "SUSPENDED"];
+
+async function getSubscription(subscriptionId) {
+  const token = await getPayPalAccessToken();
+  const res = await fetch(`${PAYPAL_API}/v1/billing/subscriptions/${subscriptionId}`, {
+    headers: { "Authorization": `Bearer ${token}` }
+  });
+  return res.json();
+}
+
+// True only if PayPal confirms it cancelled it just now (204). Already
+// cancelled, or any error, is false — so two webhooks racing to cancel the
+// same one only report it once.
+async function cancelSubscriptionAtPayPal(subscriptionId, reason) {
+  const token = await getPayPalAccessToken();
+  const res = await fetch(`${PAYPAL_API}/v1/billing/subscriptions/${subscriptionId}/cancel`, {
+    method: "POST",
+    headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" },
+    body: JSON.stringify({ reason })
+  });
+  return res.status === 204;
+}
+
+/* Points the user's profile at `subscriptionId` for this plan.
+
+   One live subscription per plan per person. Someone can still end up with
+   two (Subscribe tapped on two devices before the first one registered, or
+   the page's guard bypassed). Every payment from either one has already
+   counted — each stacks a month and pays its tokens — but only one should
+   keep billing: the NEWER one, decided by PayPal's creation time rather
+   than by which webhook happened to arrive first (a late renewal of the old
+   one must not take over). The older one is cancelled at PayPal, since the
+   Store can only show and cancel the one on record. */
+async function recordSubscription(db, uid, planKey, subscriptionId, sub) {
+  const field = planKey === "vip" ? "vipSubscriptionId" : "noAdsSubscriptionId";
+  const userRef = db.collection("users").doc(uid);
+
+  const onRecord = await db.runTransaction(async (tx) => {
+    const [userSnap] = await tx.getAll(userRef);
+    const current = userSnap.exists ? (userSnap.data()[field] || null) : null;
+    if (!current || current === subscriptionId) {
+      tx.set(userRef, { [field]: subscriptionId }, { merge: true });
+      return null;
+    }
+    return current;
+  });
+  if (!onRecord) return;
+
+  let other;
+  try {
+    other = await getSubscription(onRecord);
+  } catch (e) {
+    console.error(`Couldn't look up ${onRecord} while recording ${subscriptionId} for ${uid}:`, e.message);
+    return;
+  }
+  // The one on record has already ended: nothing to choose between.
+  if (!BILLING_STATUSES.includes(other.status)) {
+    await db.runTransaction(async (tx) => {
+      const [userSnap] = await tx.getAll(userRef);
+      if (userSnap.exists && userSnap.data()[field] === onRecord) tx.set(userRef, { [field]: subscriptionId }, { merge: true });
+    });
+    return;
+  }
+
+  const thisIsNewer = (Date.parse(sub.create_time) || 0) >= (Date.parse(other.create_time) || 0);
+  const keep = thisIsNewer ? subscriptionId : onRecord;
+  const retire = thisIsNewer ? onRecord : subscriptionId;
+  if (thisIsNewer) {
+    await db.runTransaction(async (tx) => {
+      const [userSnap] = await tx.getAll(userRef);
+      if (userSnap.exists && userSnap.data()[field] === onRecord) tx.set(userRef, { [field]: keep }, { merge: true });
+    });
+  }
+
+  const retireStatus = thisIsNewer ? other.status : sub.status;
+  if (!BILLING_STATUSES.includes(retireStatus)) return;
+  const cancelled = await cancelSubscriptionAtPayPal(retire, "Duplicate subscription to the same plan; the newer one stays active").catch(() => false);
+  if (!cancelled) return;
+  console.log(`Cancelled duplicate ${planKey} subscription ${retire} for ${uid}; keeping ${keep}.`);
+  try {
+    await userRef.collection("personalNotifications").add({
+      type: "subscriptionDuplicate",
+      title: "🔁 Duplicate subscription cancelled",
+      body: `You had two ${PLAN_NAMES[planKey]} subscriptions, so we cancelled the older one — from now on you're only billed once a month. Nothing was lost: every payment already counted towards your plan time and tokens.`,
+      createdAt: Date.now(),
+      read: false
+    });
+  } catch (e) {
+    console.warn(`Couldn't send duplicate-subscription notice to ${uid}:`, e.message);
+  }
+}
+
+/* ---------------- Refunds, chargebacks, disputes ----------------
+   Tokens and plan time are NOT taken back automatically: whether to, and
+   how much (they may have spent some already), is the admin's call. This
+   records an alert saying who, for what, and how many tokens that payment
+   gave them, and drops a message in the admin's inbox. The admin page lists
+   open alerts with one-tap tools to deal with them. */
+const ALERT_LABELS = {
+  "PAYMENT.CAPTURE.REFUNDED": "Refund",
+  "PAYMENT.SALE.REFUNDED": "Refund",
+  "PAYMENT.CAPTURE.REVERSED": "Chargeback / reversal",
+  "PAYMENT.SALE.REVERSED": "Chargeback / reversal",
+  "CUSTOMER.DISPUTE.CREATED": "Dispute opened"
+};
+
+// PayPal shapes these differently per event, so gather every id that could
+// be the original payment and see which one we recorded when it was paid.
+function escapeHtml(str) {
+  return String(str || "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+function candidatePaymentIds(resource) {
+  const ids = [resource.id, resource.sale_id, resource.capture_id];
+  for (const link of resource.links || []) {
+    if (link.rel === "up" && typeof link.href === "string") ids.push(link.href.split("/").pop());
+  }
+  for (const t of resource.disputed_transactions || []) ids.push(t.seller_transaction_id, t.buyer_transaction_id);
+  return [...new Set(ids.filter(id => typeof id === "string" && id && !id.includes("/")))];
+}
+
+function alertAmount(resource) {
+  const a = resource.amount || resource.dispute_amount || {};
+  const value = a.value || a.total;
+  const currency = a.currency_code || a.currency || "";
+  return value ? `${currency} ${value}`.trim() : "";
+}
+
+async function recordPaymentAlert(db, eventType, resource) {
+  let match = null;
+  for (const id of candidatePaymentIds(resource)) {
+    const [cap, sale] = await Promise.all([
+      db.collection("processedPaypalCaptures").doc(id).get(),
+      db.collection("processedPaypalSales").doc(id).get()
+    ]);
+    if (cap.exists) {
+      const d = cap.data();
+      const pack = getPack(d.packId);
+      match = { uid: d.uid, paymentId: id, tokensGranted: d.tokensGranted || 0,
+        what: pack ? `${pack.tokens}-token pack` : "token pack" };
+      break;
+    }
+    if (sale.exists) {
+      const d = sale.data();
+      match = { uid: d.uid, paymentId: id, tokensGranted: d.tokensGranted || 0,
+        what: `${PLAN_NAMES[d.planKey] || "subscription"} monthly payment` };
+      break;
+    }
+  }
+  if (!match) {
+    const tag = parsePackCustomId(resource.custom_id);
+    if (tag) match = { uid: tag.uid, paymentId: null, tokensGranted: getPack(tag.packId).tokens, what: `${getPack(tag.packId).tokens}-token pack` };
+  }
+
+  let userName = "";
+  let balance = null;
+  if (match && match.uid) {
+    const [u, w] = await Promise.all([
+      db.collection("users").doc(match.uid).get(),
+      db.collection("tokenWallets").doc(match.uid).get()
+    ]);
+    userName = u.exists ? (u.data().name || "") : "";
+    balance = w.exists ? (w.data().balance || 0) : 0;
+  }
+
+  const label = ALERT_LABELS[eventType] || eventType;
+  const alertId = `${eventType}_${resource.id || Date.now()}`.replace(/[^A-Za-z0-9._-]/g, "_");
+  const alertRef = db.collection("adminAlerts").doc(alertId);
+  const now = Date.now();
+  const created = await db.runTransaction(async (tx) => {
+    const [existing] = await tx.getAll(alertRef);
+    if (existing.exists) return false; // PayPal re-sent the same event
+    tx.set(alertRef, {
+      eventType, label,
+      uid: match ? match.uid : null,
+      userName,
+      what: match ? match.what : "a payment this site couldn't match to an account",
+      tokensGranted: match ? match.tokensGranted : 0,
+      balanceAtAlert: balance,
+      amount: alertAmount(resource),
+      paymentId: match ? match.paymentId : null,
+      paypalIds: candidatePaymentIds(resource),
+      createdAt: now,
+      resolved: false
+    });
+    return true;
+  });
+  if (!created) return;
+
+  // The inbox renders titles and message bodies as HTML, and the name is
+  // whatever the player chose — escaped so a name can't inject markup into
+  // the admin's own inbox.
+  const safeName = escapeHtml(userName);
+  const who = match ? `${safeName || "Unknown name"} (uid ${escapeHtml(match.uid)})` : "an unknown account";
+  const tokensLine = match && match.tokensGranted
+    ? ` That payment gave them ${match.tokensGranted} tokens; they have ${balance} now.`
+    : "";
+  try {
+    await db.collection("users").doc(ADMIN_UID).collection("personalNotifications").add({
+      type: "adminAlert",
+      title: `⚠️ ${label}: ${safeName || "check Admin → Tokens"}`,
+      body: `${label} on ${match ? match.what : "a payment"}${alertAmount(resource) ? ` (${alertAmount(resource)})` : ""} by ${who}.${tokensLine} Open Admin → Tokens to decide what to do.`,
+      createdAt: now,
+      read: false
+    });
+  } catch (e) {
+    console.warn("Couldn't send the admin alert notification:", e.message);
+  }
 }
 
 module.exports = async (req, res) => {
@@ -107,40 +327,108 @@ module.exports = async (req, res) => {
       // should grant time for — ACTIVATED just means the subscription is
       // now live, so it only needs to record the subscription id.
       if (eventType === "BILLING.SUBSCRIPTION.ACTIVATED") {
-        await userRef.set({ [subscriptionIdField]: subscriptionId }, { merge: true });
+        await recordSubscription(db, uid, planKey, subscriptionId, sub);
         console.log(`Recorded ${planKey} subscription id for user ${uid} (activation, no expiry change).`);
         res.status(200).send("OK");
         return;
       }
 
       // Idempotency guard: PayPal retries webhooks that don't get a fast
-      // 200 response, which could otherwise double-grant days for the exact
-      // same sale. resource.id here is the unique PAYMENT SALE id (distinct
-      // from the subscription id), so it's a safe one-time key.
+      // 200 response, which could otherwise double-grant for the exact same
+      // sale. resource.id here is the unique PAYMENT SALE id (distinct from
+      // the subscription id), so it's a safe one-time key.
+      //
+      // The check, the month of access and the tokens all happen in ONE
+      // transaction. Checking first and writing afterwards (as this used to)
+      // lets two deliveries of the same sale that arrive together both pass
+      // the check — tolerable for a few extra days of VIP, not for currency.
       const saleId = resource.id;
       const processedRef = db.collection("processedPaypalSales").doc(saleId);
-      const processedSnap = await processedRef.get();
-      if (processedSnap.exists) {
+      const walletRef = db.collection("tokenWallets").doc(uid);
+      const tokensGranted = TOKENS_PER_PAYMENT[planKey] || 0;
+      const now = Date.now();
+
+      const outcome = await db.runTransaction(async (tx) => {
+        const [processedSnap, userSnap] = await tx.getAll(processedRef, userRef);
+        if (processedSnap.exists) return { duplicate: true };
+
+        // If they still have time left on a previous (possibly cancelled)
+        // subscription, stack the new month on top of that instead of
+        // resetting to "1 month from right now" — so resubscribing before
+        // the old period ends adds 30 days rather than shortening it.
+        const currentExpiresAt = userSnap.exists ? (userSnap.data()[expiresAtField] || 0) : 0;
+        const baseTime = currentExpiresAt > now ? currentExpiresAt : now;
+
+        // Which subscription id the profile points at is settled separately
+        // (recordSubscription below): this payment counts either way.
+        tx.set(userRef, { [expiresAtField]: baseTime + ONE_MONTH_MS }, { merge: true });
+        if (tokensGranted > 0) {
+          tx.set(walletRef, {
+            balance: FieldValue.increment(tokensGranted),
+            lifetimePurchased: FieldValue.increment(tokensGranted),
+            updatedAt: now
+          }, { merge: true });
+        }
+        tx.set(processedRef, { uid, planKey, tokensGranted, processedAt: now });
+        return { duplicate: false, expiresAt: baseTime + ONE_MONTH_MS };
+      });
+
+      if (outcome.duplicate) {
         console.log(`Sale ${saleId} already processed, skipping duplicate.`);
         res.status(200).send("OK (duplicate sale, ignored)");
         return;
       }
+      console.log(`Updated ${planKey} for user ${uid}, now expires ${new Date(outcome.expiresAt).toISOString()}, +${tokensGranted} tokens.`);
+      await recordSubscription(db, uid, planKey, subscriptionId, sub);
 
-      // If they still have time left on a previous (possibly cancelled)
-      // subscription, stack the new month on top of that instead of
-      // resetting to "1 month from right now" — so resubscribing before
-      // the old period ends adds 30 days rather than shortening it.
-      const userSnap = await userRef.get();
-      const currentExpiresAt = userSnap.exists ? (userSnap.data()[expiresAtField] || 0) : 0;
-      const baseTime = currentExpiresAt > Date.now() ? currentExpiresAt : Date.now();
+      // Tell them, so a renewal visibly delivers something. Best-effort and
+      // outside the transaction: the payment is already fully credited above,
+      // and a failed notification must not make PayPal retry the sale.
+      if (tokensGranted > 0) {
+        try {
+          await db.collection("users").doc(uid).collection("personalNotifications").add({
+            type: "tokensGranted",
+            title: `🪙 +${tokensGranted} tokens added`,
+            body: `Your ${planKey === "vip" ? "Super Supporter" : "Supporter"} payment went through, and ${tokensGranted} tokens are in your wallet. Stake them on a Secret Giveaway from its card.`,
+            createdAt: now,
+            read: false
+          });
+        } catch (e) {
+          console.warn(`Couldn't send token notification to ${uid}:`, e.message);
+        }
+      }
+    }
 
-      await userRef.set({
-        [expiresAtField]: baseTime + ONE_MONTH_MS,
-        [subscriptionIdField]: subscriptionId
-      }, { merge: true });
-      await processedRef.set({ uid, planKey, processedAt: Date.now() });
+    else if (ALERT_LABELS[eventType]) {
+      await recordPaymentAlert(db, eventType, resource);
+    }
 
-      console.log(`Updated ${planKey} for user ${uid}, now expires ${new Date(baseTime + ONE_MONTH_MS).toISOString()}.`);
+    else if (eventType === "PAYMENT.CAPTURE.COMPLETED") {
+      // One-off token packs (api/token-packs.js). The checkout call usually
+      // credits these itself a second after paying; this is the backup for
+      // when that call never finished, and the only path for a payment
+      // PayPal held as PENDING and cleared later. creditTokenPack pays once
+      // per capture whichever path gets there first.
+      const orderId = ((resource.supplementary_data || {}).related_ids || {}).order_id || null;
+      let tag = parsePackCustomId(resource.custom_id);
+      if (!tag && !resource.custom_id && orderId) {
+        // custom_id should be on the capture, but read the order if not.
+        const { status, data } = await paypalJson(`/v2/checkout/orders/${orderId}`);
+        if (status < 300) tag = parsePackCustomId(((data.purchase_units || [])[0] || {}).custom_id);
+      }
+      if (!tag || resource.status !== "COMPLETED") {
+        res.status(200).send("OK (not a completed token pack, ignored)");
+        return;
+      }
+      const result = await creditTokenPack(db, {
+        captureId: resource.id, uid: tag.uid, packId: tag.packId, orderId, amount: resource.amount, source: "webhook"
+      });
+      if (result.reason) {
+        console.error(`Capture ${resource.id} for ${tag.uid} not credited: ${result.reason}`, JSON.stringify(resource.amount));
+      } else if (result.credited) {
+        console.log(`Credited ${result.tokens} pack tokens to ${tag.uid} from capture ${resource.id} (webhook).`);
+        await notifyPackCredited(db, tag.uid, result.tokens);
+      }
     }
 
     else if (
@@ -180,11 +468,22 @@ module.exports = async (req, res) => {
         // (isVipActive/isNoAdsActive already check expiresAt vs now).
         // We just clear the subscriptionId so the Store page knows to show
         // "Subscribe" again instead of "Cancel subscription" once expired.
+        //
+        // Only if it's still the subscription on record, though: when someone
+        // cancels and resubscribes, the old one's notice can arrive after the
+        // new one is recorded, and clearing then would orphan the new one —
+        // the Store would offer Subscribe again and lose its Cancel button.
         const subscriptionIdField = planKey === "vip" ? "vipSubscriptionId" : "noAdsSubscriptionId";
-        await db.collection("users").doc(uid).set({
-          [subscriptionIdField]: null
-        }, { merge: true });
-        console.log(`Cleared ${subscriptionIdField} for user ${uid} (${eventType}).`);
+        const userRef = db.collection("users").doc(uid);
+        const cleared = await db.runTransaction(async (tx) => {
+          const [userSnap] = await tx.getAll(userRef);
+          if (!userSnap.exists || userSnap.data()[subscriptionIdField] !== subscriptionId) return false;
+          tx.set(userRef, { [subscriptionIdField]: null }, { merge: true });
+          return true;
+        });
+        console.log(cleared
+          ? `Cleared ${subscriptionIdField} for user ${uid} (${eventType}).`
+          : `${eventType} for ${subscriptionId}, which isn't ${uid}'s current ${planKey} subscription — left as is.`);
       } else {
         console.warn(`Could not resolve uid/planKey for subscription ${subscriptionId} on ${eventType} — subscriptionId was not cleared.`);
       }

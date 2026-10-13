@@ -153,6 +153,112 @@
             line-height: 1.5;
             margin-bottom: 20px;
         }
+
+        /* ---- One-off token packs ---- */
+        /* Same outer width as the plan cards above: both side by side on a
+           wide screen (2 x 330px + 32px gap), one card wide when they stack. */
+        .pack-card {
+            max-width: 692px;
+            margin: 0 auto 40px;
+            border: 1px solid #aa7a1e;
+            border-radius: 16px;
+            padding: 24px 20px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        .pack-card h3 {
+            margin-top: 0;
+        }
+
+        .pack-options {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+            max-width: 420px;
+            margin: 20px auto 12px;
+        }
+
+        .pack-option {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            min-width: 0;
+            padding: 18px 4px 12px;
+            background: #1c1c36;
+            border: 2px solid var(--kih-border);
+            border-radius: 12px;
+            color: var(--kih-text);
+            font: inherit;
+            cursor: pointer;
+        }
+
+        .pack-option.selected {
+            border-color: #ffc400;
+            background: rgba(255, 196, 0, 0.08);
+        }
+
+        .pack-tokens {
+            font-size: 1.6rem;
+            font-weight: 700;
+            line-height: 1.1;
+        }
+
+        .pack-unit {
+            font-size: 0.8rem;
+            color: #b0b0c0;
+        }
+
+        .pack-price {
+            margin-top: 6px;
+            font-size: 1.05rem;
+            font-weight: 700;
+        }
+
+        .pack-bonus {
+            min-height: 1.2em; /* keeps all three tiles the same height */
+            font-size: 0.75rem;
+            color: #7ee787;
+        }
+
+        .pack-ribbon {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 2px 8px;
+            border-radius: 999px;
+            background: #ffc400;
+            color: #1a1a2e;
+            font-size: 0.65rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        /* Same tag as "Best value", a size up to suit the bigger card. */
+        .plan-ribbon {
+            top: -12px;
+            padding: 3px 12px;
+            font-size: 0.8rem;
+        }
+
+        .pack-summary {
+            margin: 0 0 14px;
+            color: #d0d0da;
+        }
+
+        #packButtonBox {
+            max-width: 360px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 707px) {
+            .pack-card {
+                max-width: 330px;
+            }
+        }
     </style>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -161,6 +267,12 @@
          This value is PUBLIC/safe to expose client-side (like the
          Firebase API key) — it is not a secret. -->
     <script src="https://www.paypal.com/sdk/js?client-id=Aej56iglBkMUmp1f3LJBR-egvy-BvA3Yh3sWlVtyXTfqTCsy91Q10L2iSewf7dhXQiW90JG_mBoHRzKd&vault=true&intent=subscription"></script>
+    <!-- A second copy for the one-off token packs. One SDK load can't do both
+         subscriptions and one-time payments, so this one is loaded under its
+         own name (paypalPacks) with intent=capture. Same client-id — swap
+         both together. -->
+    <script src="https://www.paypal.com/sdk/js?client-id=Aej56iglBkMUmp1f3LJBR-egvy-BvA3Yh3sWlVtyXTfqTCsy91Q10L2iSewf7dhXQiW90JG_mBoHRzKd&currency=USD&intent=capture"
+        data-namespace="paypalPacks"></script>
 </head>
 
 <body>
@@ -195,11 +307,19 @@
 
         <div class="store-grid"
     style="display:flex; justify-content:center; align-items:stretch; flex-wrap:wrap; gap:32px; margin-bottom:40px;">
-            <!-- NO ADS PLAN — retired: only shown to existing subscribers so they can manage/cancel -->
+            <!-- $1 PLAN, "Supporter" (internally still "noAds": its fields and plan key
+                 keep the old name; ads are switched off site-wide, so it no longer
+                 lists that perk). Hidden until
+                 refreshPlanButtons() has the profile — see the $2 card below. -->
             <div class="plan-card" id="noAdsCard"
                 style="display:none; text-align:center; border:1px solid #6c63ff; border-radius:16px; padding:28px 24px; width:280px; flex-direction:column; justify-content:space-between;">
-                <h3>🚫 No Ads</h3>
-                <p class="promo-sub">This plan is no longer offered — VIP now includes No Ads. You can keep this until it ends, or cancel any time.</p>
+                <h3>⭐ Supporter</h3>
+                <div class="plan-price">USD $1<span>/month</span></div>
+                <ul class="plan-perks" style="display:inline-block; text-align:left;">
+                    <li>🪙 <strong>25 tokens</strong> every month</li>
+                    <li>Cancel anytime</li>
+                </ul>
+                <div id="noAdsButtonBox"></div>
                 <div id="noAdsActiveBox" style="display:none;">
                     <p class="promo-sub" id="noAdsStatusText"></p>
                     <button class="btn-primary plan-btn btn-secondary" id="noAdsCancelBtn"
@@ -209,17 +329,20 @@
                 </div>
             </div>
 
-            <!-- VIP PLAN — new sign-ups disabled 2026-07-31, see refreshPlanButtons() below.
-                 Existing subscribers still see this card so they can check status / cancel. -->
+            <!-- $2 PLAN, "Super Supporter" (internally still "vip"). Hidden until refreshPlanButtons() has the profile
+                 and decides: the store page appears before that profile request
+                 returns, so a card that started visible flashed for about a second. -->
             <div class="plan-card vip" id="vipPlanCard"
-                style="text-align:center; border:1px solid #6c63ff; border-radius:16px; padding:28px 24px; width:280px; display:flex; flex-direction:column; justify-content:space-between;">
-                <h3>👑 VIP Pass</h3>
+                style="position:relative; text-align:center; border:1px solid #ffc400; border-radius:16px; padding:28px 24px; width:280px; display:none; flex-direction:column; justify-content:space-between;">
+                <span class="pack-ribbon plan-ribbon">Popular</span>
+                <h3>👑 Super Supporter</h3>
                 <div class="plan-price">USD $2<span>/month</span></div>
+                <!-- The old perks (daily clan posts, the VIP giveaway wheel) are
+                     free for everyone now, so they're no longer listed. -->
                 <ul class="plan-perks" style="display:inline-block; text-align:left;">
-    <!-- <li>No ads included</li> — removed, ads are disabled site-wide for now -->
-    <li>Post clan recruitment messages daily (instead of once a week)</li>
-    <li>Chance to win exclusive promo codes via the VIP giveaway wheel</li>
-</ul>
+                    <li>🪙 <strong>60 tokens</strong> every month</li>
+                    <li>Cancel anytime</li>
+                </ul>
                 <div id="vipActiveBox" style="display:none;">
                     <p class="promo-sub" id="vipStatusText"></p>
                     <button class="btn-primary plan-btn btn-secondary" id="vipCancelBtn" onclick="handleCancel('vip')"
@@ -229,6 +352,38 @@
                 <div id="vipButtonBox"></div>
             </div>
 
+        </div>
+
+        <!-- ONE-OFF TOKEN PACKS. These tiles are display only: the price
+             charged and the tokens credited come from TOKEN_PACKS in
+             api/_lib.js, so change both together. -->
+        <div class="pack-card" id="tokenPacksCard">
+            <h3>🪙 Token Packs</h3>
+            <p class="promo-sub" style="margin:0;">One-time top-up, no subscription. You have
+                <strong id="storeTokenBalance">0</strong> 🪙</p>
+            <div class="pack-options">
+                <button type="button" class="pack-option" data-pack="small" aria-pressed="false" onclick="selectPack('small')">
+                    <span class="pack-tokens">20</span>
+                    <span class="pack-unit">tokens</span>
+                    <span class="pack-price">$1</span>
+                    <span class="pack-bonus"></span>
+                </button>
+                <button type="button" class="pack-option selected" data-pack="medium" aria-pressed="true" onclick="selectPack('medium')">
+                    <span class="pack-tokens">45</span>
+                    <span class="pack-unit">tokens</span>
+                    <span class="pack-price">$2</span>
+                    <span class="pack-bonus">+5 bonus</span>
+                </button>
+                <button type="button" class="pack-option" data-pack="large" aria-pressed="false" onclick="selectPack('large')">
+                    <span class="pack-ribbon">Best value</span>
+                    <span class="pack-tokens">75</span>
+                    <span class="pack-unit">tokens</span>
+                    <span class="pack-price">$3</span>
+                    <span class="pack-bonus">+15 bonus</span>
+                </button>
+            </div>
+            <p class="pack-summary" id="packSummary">45 tokens for USD $2</p>
+            <div id="packButtonBox"></div>
         </div>
 
         <div class="donate-box" style="text-align:center;">
@@ -241,16 +396,20 @@
             </a>
         </div>
 
-        <p class="store-note" style="text-align:center;">Subscriptions are processed by PayPal; this site never sees or
+        <p class="store-note" style="text-align:center;">Payments are processed by PayPal; this site never sees or
             stores your payment details.</p>
+        <p class="store-note" style="text-align:center;">Subscription tokens are added each time a monthly payment goes
+            through, and pack tokens as soon as PayPal confirms the payment.
+            Stake them on a Secret Giveaway for extra chances — you can also earn them free from Daily Quests.
+            Tokens have no cash value and can't be exchanged for money or transferred to another account.</p>
     </div>
 
     <div class="processing-modal-overlay" id="processingModalOverlay">
         <div class="processing-modal-box">
-            <div class="processing-modal-spinner"></div>
+            <div class="processing-modal-spinner" id="processingModalSpinner"></div>
             <div class="processing-modal-title" id="processingModalTitle">Activating your subscription...</div>
             <div class="processing-modal-body" id="processingModalBody">
-                This can take a few minutes to process. Please be patient — you can close this and refresh the page later, and your VIP perks will be active once PayPal confirms the payment.
+                This can take a few minutes to process. Please be patient — you can close this and refresh the page later, and your plan and tokens will be ready once PayPal confirms the payment.
             </div>
             <button class="btn-settings-action" id="processingModalCloseBtn" style="width:100%;">Close</button>
         </div>
@@ -284,6 +443,10 @@
        // plan ("subscribe" vs "resubscribe"), so refreshPlanButtons() knows
        // when to swap it out — not just whether *a* button was rendered once.
        let renderedKeys = { vip: null, noAds: null };
+       // Set once PayPal approves a subscription, until the page reloads: the
+       // webhook takes a few seconds to minutes to record it, and without
+       // this the Subscribe button would sit there inviting a second one.
+       const activating = { vip: false, noAds: false };
 
         function daysLeft(expiresAt) {
             return Math.max(0, Math.ceil((expiresAt - Date.now()) / 86400000));
@@ -293,8 +456,14 @@
             document.getElementById("processingModalTitle").textContent =
                 title || "Activating your subscription...";
             document.getElementById("processingModalBody").textContent =
-                body || "This can take a few minutes to process. Please be patient — you can close this and refresh the page later, and your VIP perks will be active once PayPal confirms the payment.";
+                body || "This can take a few minutes to process. Please be patient — you can close this and refresh the page later, and your plan and tokens will be ready once PayPal confirms the payment.";
+            document.getElementById("processingModalSpinner").style.display = "block";
             document.getElementById("processingModalOverlay").classList.add("open");
+        }
+        // Same box, finished: no spinner, just the outcome and Close.
+        function showResultModal(title, body) {
+            showProcessingModal(title, body);
+            document.getElementById("processingModalSpinner").style.display = "none";
         }
         function hideProcessingModal() {
             document.getElementById("processingModalOverlay").classList.remove("open");
@@ -314,67 +483,51 @@
     const vipActive = AppState.isVipActive(profile);
     const noAdsActive = AppState.isNoAdsActive(profile);
 
-            // ----- No Ads card (retired — legacy subscribers only) -----
-            const noAdsLiveSub = !!profile.noAdsSubscriptionId && noAdsActive;
-            const noAdsCard = document.getElementById("noAdsCard");
-
-            if (noAdsLiveSub) {
-                noAdsCard.style.display = "flex";
-                document.getElementById("noAdsActiveBox").style.display = "block";
-                document.getElementById("noAdsStatusText").textContent =
-                    `Active — ${daysLeft(profile.noAdsExpiresAt)} day(s) left`;
-                document.getElementById("noAdsCancelBtn").style.display = "inline-block";
-            } else {
-                // Never subscribed, or already cancelled — nothing to manage,
-                // hide the whole card since this plan can't be (re)purchased.
-                noAdsCard.style.display = "none";
-            }
-
-            // ----- VIP card -----
-            // adminRevokeVip() now also cancels the live PayPal subscription
-            // (see appState.js), so vipSubscriptionId reliably clears soon
-            // after a revoke — this simple check is correct again.
+            // Both plans are on sale again, each paying out tokens every month
+            // (see TOKENS_PER_PAYMENT in api/_lib.js). adminRevokeVip() also
+            // cancels the live PayPal subscription, so a subscription id
+            // reliably means "still billing".
+            const noAdsLiveSub = noAdsActive && !!profile.noAdsSubscriptionId;
+            renderPlanCard("noAds", noAdsLiveSub, noAdsActive && !noAdsLiveSub, profile.noAdsExpiresAt);
             const vipLiveSub = vipActive && !!profile.vipSubscriptionId;
-            const vipCancelledButActive = vipActive && !vipLiveSub;
+            renderPlanCard("vip", vipLiveSub, vipActive && !vipLiveSub, profile.vipExpiresAt);
+        }
 
-            /* ============================================================
-               VIP SIGN-UPS — DISABLED 2026-07-31.
-               Traffic/sign-ups are still very low, so the giveaway + daily
-               clan posting are free for everyone rather than gated behind
-               a $2/mo pass. Existing subscribers (vipLiveSub or
-               vipCancelledButActive) still see their card so they can
-               check status or cancel — only brand-new sign-ups and
-               resubscribes are turned off below.
-               To bring VIP back: delete this comment block, remove the
-               "new sign-ups disabled" branch below, and uncomment the
-               original renderSubscribeButton() calls beneath it.
-               ============================================================ */
-            const vipCard = document.getElementById("vipPlanCard");
-            vipCard.style.display = (vipLiveSub || vipCancelledButActive) ? "flex" : "none";
-
-            document.getElementById("vipActiveBox").style.display = vipLiveSub ? "block" : "none";
-            document.getElementById("vipButtonBox").style.display = "none";
-
-            if (vipLiveSub) {
-                document.getElementById("vipStatusText").textContent =
-                    `Active — ${daysLeft(profile.vipExpiresAt)} day(s) left`;
-            } else if (vipCancelledButActive) {
-                document.getElementById("vipButtonBox").style.display = "block";
-                document.getElementById("vipButtonBox").innerHTML =
-                    `<p class="promo-sub">Cancelled — ${daysLeft(profile.vipExpiresAt)} day(s) left. New VIP sign-ups are paused for now.</p>`;
+        // Both plans work the same way: a live subscription shows its status
+        // and a Cancel button; one that's cancelled but not yet run out offers
+        // Resubscribe (which stacks another month on top); otherwise Subscribe.
+        // The cards start hidden in the HTML and are only shown from here, once
+        // the profile has loaded — so nobody briefly sees the wrong state.
+        function renderPlanCard(plan, live, cancelledButActive, expiresAt) {
+            const ids = plan === "vip"
+                ? { card: "vipPlanCard", active: "vipActiveBox", status: "vipStatusText", cancel: "vipCancelBtn", buttons: "vipButtonBox", planId: VIP_PLAN_ID }
+                : { card: "noAdsCard", active: "noAdsActiveBox", status: "noAdsStatusText", cancel: "noAdsCancelBtn", buttons: "noAdsButtonBox", planId: NOADS_PLAN_ID };
+            document.getElementById(ids.card).style.display = "flex";
+            document.getElementById(ids.active).style.display = live ? "block" : "none";
+            const buttons = document.getElementById(ids.buttons);
+            buttons.style.display = live ? "none" : "block";
+            if (live) {
+                document.getElementById(ids.status).textContent = `Active — ${daysLeft(expiresAt)} day(s) left`;
+                document.getElementById(ids.cancel).style.display = "inline-block";
+                renderedKeys[plan] = "active";
+                return;
             }
-            /* --- ORIGINAL VIP SUBSCRIBE FLOW (commented out) ---
-            } else if (vipCancelledButActive) {
-                if (user && renderedKeys.vip !== "resubscribe") {
-                    renderSubscribeButton("vipButtonBox", VIP_PLAN_ID, "vip",
-                        `Cancelled — ${daysLeft(profile.vipExpiresAt)} day(s) left. Resubscribe to add another 30 days:`);
-                    renderedKeys.vip = "resubscribe";
+            if (activating[plan]) {
+                if (renderedKeys[plan] !== "activating") {
+                    buttons.innerHTML = '<p class="promo-sub">⏳ Payment received — activating your plan. This can take a few minutes; it will show as Active here once PayPal confirms.</p>';
+                    renderedKeys[plan] = "activating";
                 }
-            } else if (user && renderedKeys.vip !== "subscribe") {
-                renderSubscribeButton("vipButtonBox", VIP_PLAN_ID, "vip");
-                renderedKeys.vip = "subscribe";
+                return;
             }
-            --- end original --- */
+            // The live profile listener calls this often; only (re)build the
+            // PayPal button when the variant actually changes.
+            const variant = cancelledButActive ? "resubscribe" : "subscribe";
+            if (renderedKeys[plan] !== variant) {
+                renderSubscribeButton(ids.buttons, ids.planId, plan, cancelledButActive
+                    ? `Cancelled — ${daysLeft(expiresAt)} day(s) left. Resubscribe to add another month:`
+                    : null);
+                renderedKeys[plan] = variant;
+            }
         }
 
        function renderSubscribeButton(containerId, planId, plan, noticeText) {
@@ -387,24 +540,160 @@
             const btnHolderId = containerId + "Btns";
             document.getElementById(containerId).innerHTML =
                 (noticeText ? `<p class="promo-sub">${noticeText}</p>` : "") + `<div id="${btnHolderId}"></div>`;
+            let subscribeError = null;
             paypal.Buttons({
                 style: { shape: "pill", color: "blue", layout: "vertical", label: "subscribe" },
-                createSubscription: function (data, actions) {
+                createSubscription: async function (data, actions) {
+                    // One live subscription per plan. Re-checked against a fresh
+                    // profile right before PayPal opens, so a second device or a
+                    // stale tab can't start another. Cancelled-with-days-left has
+                    // no subscription id, so Resubscribe still works. The webhook
+                    // cancels any duplicate that gets past this anyway.
+                    subscribeError = null;
+                    const fresh = await AppState.getProfile();
+                    const liveId = plan === "vip" ? fresh.vipSubscriptionId : fresh.noAdsSubscriptionId;
+                    const live = plan === "vip" ? AppState.isVipActive(fresh) : AppState.isNoAdsActive(fresh);
+                    if (activating[plan] || (live && liveId)) {
+                        subscribeError = "You already have this plan. Refresh the Store to see it.";
+                        throw new Error(subscribeError);
+                    }
                     return actions.subscription.create({
                         plan_id: planId,
                         custom_id: user.uid // lets our webhook know WHICH Firebase user this is
                     });
                 },
                 onApprove: function (data) {
+                    activating[plan] = true;
+                    renderedKeys[plan] = null;
+                    refreshPlanButtons().catch(() => {});
                     showProcessingModal();
                     pollForActivation(plan);
                 },
                 onError: function (err) {
                     console.error(err);
-                    alert("Something went wrong with PayPal checkout. Please try again.");
+                    alert(subscribeError || "Something went wrong with PayPal checkout. Please try again.");
                 }
             }).render("#" + btnHolderId);
         }
+        /* ---------------- One-off token packs ----------------
+           Display copy only. What's actually charged and credited is
+           TOKEN_PACKS in api/_lib.js — the server builds the PayPal order
+           from the pack id, so keep the two in step. */
+        const TOKEN_PACKS = {
+            small: { tokens: 20, price: 1 },
+            medium: { tokens: 45, price: 2 },
+            large: { tokens: 75, price: 3 }
+        };
+        let selectedPack = "medium";
+        let packButtonsRendered = false;
+
+        function selectPack(packId) {
+            if (!Object.prototype.hasOwnProperty.call(TOKEN_PACKS, packId)) return;
+            selectedPack = packId;
+            document.querySelectorAll(".pack-option").forEach((btn) => {
+                const on = btn.dataset.pack === packId;
+                btn.classList.toggle("selected", on);
+                btn.setAttribute("aria-pressed", on ? "true" : "false");
+            });
+            const pack = TOKEN_PACKS[packId];
+            document.getElementById("packSummary").textContent = `${pack.tokens} tokens for USD $${pack.price}`;
+        }
+        window.selectPack = selectPack;
+
+        async function callPacksApi(action, payload) {
+            const idToken = await AppState.getIdToken();
+            const res = await fetch(BACKEND_BASE + "/api/token-packs", {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Authorization": "Bearer " + idToken },
+                body: JSON.stringify({ action, ...payload })
+            });
+            let data = null;
+            try { data = await res.json(); } catch (e) { /* non-JSON error page */ }
+            if (!res.ok || !data || !data.ok) {
+                const err = new Error((data && data.error) || `Request failed (${res.status})`);
+                err.status = res.status;
+                err.restart = !!(data && data.restart);
+                throw err;
+            }
+            return data;
+        }
+
+        // Capturing is safe to repeat (PayPal won't charge twice for one order,
+        // and the server credits each payment once), so one retry covers a
+        // dropped connection or a slow server instead of leaving it unclear.
+        async function captureWithRetry(orderID) {
+            try {
+                return await callPacksApi("captureOrder", { orderID });
+            } catch (e) {
+                if (e.status && e.status < 500) throw e;
+                await new Promise((resolve) => setTimeout(resolve, 2000));
+                return callPacksApi("captureOrder", { orderID });
+            }
+        }
+
+        // One PayPal button for all three packs: it buys whichever tile is
+        // selected at the moment it's tapped.
+        function renderPackButtons() {
+            if (packButtonsRendered || !AppState.getCurrentUser()) return;
+            const box = document.getElementById("packButtonBox");
+            if (!window.paypalPacks) {
+                box.innerHTML = '<p class="promo-sub">PayPal didn\'t load — refresh the page to buy a pack.</p>';
+                return;
+            }
+            packButtonsRendered = true;
+            let checkoutError = null;
+            paypalPacks.Buttons({
+                style: { shape: "pill", color: "blue", layout: "vertical", label: "pay" },
+                createOrder: async function () {
+                    checkoutError = null;
+                    try {
+                        return (await callPacksApi("createOrder", { packId: selectedPack })).orderID;
+                    } catch (e) {
+                        checkoutError = e.message;
+                        throw e;
+                    }
+                },
+                onApprove: async function (data, actions) {
+                    showProcessingModal("Adding your tokens...",
+                        "Confirming your payment with PayPal — this usually takes a few seconds. Please keep this page open.");
+                    let result;
+                    try {
+                        result = await captureWithRetry(data.orderID);
+                    } catch (e) {
+                        if (e.restart) {
+                            hideProcessingModal();
+                            return actions.restart();
+                        }
+                        showResultModal("Payment not finished", e.status
+                            ? e.message
+                            : "We couldn't reach the server to confirm your payment. If PayPal charged you, your tokens will be added automatically within a few minutes; if not, nothing was taken and you can try again.");
+                        return;
+                    }
+                    if (result.status === "pending") {
+                        showResultModal("⏳ Payment under review",
+                            `PayPal is still checking this payment. Your ${result.tokens} tokens will be added automatically once it clears, and you'll get an inbox message — no need to buy again.`);
+                    } else {
+                        showResultModal(`✅ +${result.tokens} tokens added`,
+                            "They're in your wallet now. Stake them on a Secret Giveaway from its card in Promo.");
+                    }
+                },
+                onError: function (err) {
+                    console.error(err);
+                    alert(checkoutError || "Something went wrong with PayPal checkout. Please try again.");
+                }
+            }).render("#packButtonBox");
+        }
+
+        // Live balance, so a purchase (or tokens earned on another device)
+        // shows up here straight away.
+        let unsubWalletStore = null;
+        function startWalletListenerStore() {
+            if (unsubWalletStore) { unsubWalletStore(); unsubWalletStore = null; }
+            unsubWalletStore = AppState.listenToMyWallet((wallet) => {
+                document.getElementById("storeTokenBalance").textContent = (wallet && wallet.balance) || 0;
+            });
+        }
+
         // Reloads the whole app (top window, not just this iframe), so every
         // ad surface — banners, native, Social Bar, popunder — clears
         // immediately once a purchase goes active. Mirrors the reload
@@ -426,7 +715,12 @@
 
         async function pollForActivation(plan, attempts = 0) {
             const profile = await AppState.getProfile();
-            const active = plan === "vip" ? AppState.isVipActive(profile) : AppState.isNoAdsActive(profile);
+            // Days left alone isn't enough: someone resubscribing after a
+            // cancel already has days left, so this would "succeed" before
+            // the new subscription is recorded. Wait for its id too.
+            const active = plan === "vip"
+                ? AppState.isVipActive(profile) && !!profile.vipSubscriptionId
+                : AppState.isNoAdsActive(profile) && !!profile.noAdsSubscriptionId;
             if (active) {
                 reloadWholeApp(); // page reloads, so the modal disappears along with everything else
                 return;
@@ -529,6 +823,8 @@
         AppState.waitForAuthReady().then(() => {
             refreshPlanButtons();
             startProfileListenerStore();
+            renderPackButtons();
+            startWalletListenerStore();
             AppState.maybeRefreshAd("adBannerStore");
             AppState.loadAdsterraAdsIfAllowed();
         });
@@ -536,6 +832,8 @@
             renderedKeys = { vip: null, noAds: null };
             refreshPlanButtons();
             startProfileListenerStore();
+            renderPackButtons();
+            startWalletListenerStore();
             AppState.maybeRefreshAd("adBannerStore");
         });
         // maybeRefreshAd throttles itself to once per 20s internally — this

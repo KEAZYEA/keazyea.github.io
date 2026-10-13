@@ -24,6 +24,9 @@
  *                                                 (skips any whose name already exists, so safe to re-run)
  *   node paypal-catalog.js list               -> lists all products and plans currently on your account
  *   node paypal-catalog.js deactivate <planId> -> stops new signups on a plan (existing subscribers unaffected)
+ *   node paypal-catalog.js rename-plan <planId> "<new name>" ["<description>"]
+ *                                              -> renames a plan in place (PayPal allows the plan's
+ *                                                 name/description to change; a PRODUCT's name can't)
  *   node paypal-catalog.js test-order <amount> -> creates + captures a $<amount> USD one-time test order
  * ------------------------------------------------------------
  */
@@ -50,11 +53,15 @@ if (PAYPAL_ENV === "live") {
    Re-running create-plans will skip any product name that already
    exists, so it's safe to just add a new entry and re-run.
    ------------------------------------------------------------ */
+// The two plans were renamed on the site (No Ads -> Supporter, VIP Pass ->
+// Super Supporter) and in PayPal with rename-plan. planName below is the NEW
+// name, so create-plans still recognises them and won't make duplicates.
+// productName can't be renamed in PayPal, so it keeps the original.
 const PLAN_MANIFEST = [
   {
     productName: "KIH No Ads",
     productDescription: "Removes ads site-wide on Keazyea's Intelligence Hub",
-    planName: "No Ads Monthly",
+    planName: "Supporter Monthly",
     priceUsd: "1.00",
     intervalUnit: "MONTH",   // MONTH, WEEK, DAY, or YEAR
     intervalCount: 1
@@ -62,7 +69,7 @@ const PLAN_MANIFEST = [
   {
     productName: "KIH VIP Pass",
     productDescription: "VIP perks on Keazyea's Intelligence Hub",
-    planName: "VIP Pass Monthly",
+    planName: "Super Supporter Monthly",
     priceUsd: "2.00",
     intervalUnit: "MONTH",
     intervalCount: 1
@@ -158,6 +165,20 @@ async function deactivatePlan(token, planId) {
   }
 }
 
+async function renamePlan(token, planId, name, description) {
+  const ops = [{ op: "replace", path: "/name", value: name }];
+  if (description) ops.push({ op: "replace", path: "/description", value: description });
+  const res = await fetch(`${PAYPAL_API}/v1/billing/plans/${planId}`, {
+    method: "PATCH",
+    headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" },
+    body: JSON.stringify(ops)
+  });
+  if (res.status !== 204) {
+    const data = await res.json().catch(() => ({}));
+    throw new Error(`Rename failed (${res.status}): ` + JSON.stringify(data));
+  }
+}
+
 async function createAndCaptureTestOrder(token, amountUsd) {
   const createRes = await fetch(`${PAYPAL_API}/v2/checkout/orders`, {
     method: "POST",
@@ -231,6 +252,13 @@ async function cmdDeactivate(planId) {
   console.log(`Plan ${planId} deactivated — existing subscribers keep working, no new signups can start on it.`);
 }
 
+async function cmdRenamePlan(planId, name, description) {
+  if (!planId || !name) throw new Error('Usage: node paypal-catalog.js rename-plan <planId> "<new name>" ["<description>"]');
+  const token = await getAccessToken();
+  await renamePlan(token, planId, name, description);
+  console.log(`Plan ${planId} renamed to "${name}". Existing subscribers stay on it; nothing else changes.`);
+}
+
 async function cmdTestOrder(amount) {
   if (!amount) throw new Error("Usage: node paypal-catalog.js test-order <amountUsd>");
   const token = await getAccessToken();
@@ -240,18 +268,20 @@ async function cmdTestOrder(amount) {
 /* ---------------- entry point ---------------- */
 
 (async () => {
-  const [, , command, arg] = process.argv;
+  const [, , command, arg, ...rest] = process.argv;
   try {
     switch (command) {
       case "create-plans": await cmdCreatePlans(); break;
       case "list": await cmdList(); break;
       case "deactivate": await cmdDeactivate(arg); break;
+      case "rename-plan": await cmdRenamePlan(arg, rest[0], rest[1]); break;
       case "test-order": await cmdTestOrder(arg); break;
       default:
         console.log("Usage:");
         console.log("  node paypal-catalog.js create-plans");
         console.log("  node paypal-catalog.js list");
         console.log("  node paypal-catalog.js deactivate <planId>");
+        console.log('  node paypal-catalog.js rename-plan <planId> "<new name>" ["<description>"]');
         console.log("  node paypal-catalog.js test-order <amountUsd>");
     }
   } catch (e) {

@@ -161,6 +161,256 @@ async function signOutUser() {
         return currentUser.getIdToken();
     }
 
+    /* ---------------- DAILY QUESTS & TOKENS ----------------
+       Balances only ever change on the server (api/tokens.js). Everything
+       here either asks it to, or listens to what it wrote. That's what keeps
+       every device in agreement: unlike the inbox's "seen" marker, there is
+       no per-device copy of anything that matters, so there's nothing to
+       drift. The few localStorage keys below only save network calls, and
+       being wrong about them can never earn or lose a token. */
+    const QUEST_CACHE_KEY = "kih_quest_today";
+    const QUEST_RETRY_KEY = "kih_quest_retry";
+    const LOGIN_CLAIM_KEY = "kih_login_claim";
+    const QUEST_RETRY_WINDOW_MS = 24 * 60 * 60 * 1000;
+
+    async function callTokensApi(action, payload = {}, { auth = true } = {}) {
+        const headers = { "Content-Type": "application/json" };
+        if (auth) headers.Authorization = "Bearer " + await getIdToken();
+        const res = await fetch(BACKEND_BASE + "/api/tokens", {
+            method: "POST",
+            headers,
+            body: JSON.stringify({ action, ...payload })
+        });
+        let data = null;
+        try { data = await res.json(); } catch (e) { /* non-JSON error page */ }
+        if (!res.ok) {
+            const err = new Error((data && data.error) || `Request failed (${res.status})`);
+            err.status = res.status;
+            throw err;
+        }
+        return data;
+    }
+
+    function readCachedTodaysQuests() {
+        try {
+            const cached = JSON.parse(localStorage.getItem(QUEST_CACHE_KEY) || "null");
+            if (cached && cached.resetAt > Date.now() && Array.isArray(cached.quests)) return cached;
+        } catch (e) { /* storage blocked */ }
+        return null;
+    }
+
+    // { dayKey, resetAt, quests }. Cached until the next reset, so each device
+    // asks the server once a day rather than on every page view.
+    async function getTodaysQuests() {
+        const cached = readCachedTodaysQuests();
+        if (cached) return cached;
+        const data = await callTokensApi("today", {}, { auth: false });
+        const today = { dayKey: data.dayKey, resetAt: data.resetAt, quests: data.quests };
+        try { localStorage.setItem(QUEST_CACHE_KEY, JSON.stringify(today)); } catch (e) { /* storage blocked */ }
+        return today;
+    }
+
+    function listenToMyWallet(callback) {
+        if (!currentUser) { callback({ balance: 0 }); return () => {}; }
+        return onSnapshot(doc(db, "tokenWallets", currentUser.uid), (snap) => {
+            callback(snap.exists() ? snap.data() : { balance: 0 });
+        }, (err) => {
+            console.warn("Wallet listener failed:", err.message);
+            callback({ balance: 0 });
+        });
+    }
+
+    // Live quest progress, from any device:
+    //   today: { questId: "ready" | "claimed" } for `dayKey`
+    //   ready: every reward done but not yet claimed, from ANY day (they
+    //          don't expire), as [{ id, questId, dayKey }]
+    // Two small queries rather than one over all claims, which grow forever.
+    // Docs from before the claim step have no status and were already paid.
+    function listenToMyQuestProgress(dayKey, callback) {
+        if (!currentUser) { callback({ today: {}, ready: [] }); return () => {}; }
+        const claims = collection(db, "tokenWallets", currentUser.uid, "claims");
+        let today = null;
+        let ready = null;
+        const emit = () => { if (today && ready) callback({ today, ready }); };
+        const onFail = (err) => {
+            console.warn("Quest progress listener failed:", err.message);
+            today = today || {};
+            ready = ready || [];
+            emit();
+        };
+        const unsubToday = onSnapshot(query(claims, where("dayKey", "==", dayKey)), (snap) => {
+            today = {};
+            snap.forEach(d => { today[d.data().questId] = d.data().status === "ready" ? "ready" : "claimed"; });
+            emit();
+        }, onFail);
+        const unsubReady = onSnapshot(query(claims, where("status", "==", "ready")), (snap) => {
+            ready = [];
+            snap.forEach(d => ready.push({ id: d.id, questId: d.data().questId, dayKey: d.data().dayKey }));
+            ready.sort((a, b) => a.dayKey.localeCompare(b.dayKey));
+            emit();
+        }, onFail);
+        return () => { unsubToday(); unsubReady(); };
+    }
+
+    // Ids of every admin gift this account has claimed, live from any device
+    // (see claimGift in api/tokens.js — they're stored alongside quest claims).
+    function listenToMyGiftClaims(callback) {
+        if (!currentUser) { callback(new Set()); return () => {}; }
+        const q = query(collection(db, "tokenWallets", currentUser.uid, "claims"), where("kind", "==", "gift"));
+        return onSnapshot(q, (snap) => {
+            const ids = new Set();
+            snap.forEach(d => ids.add(d.data().giftId));
+            callback(ids);
+        }, (err) => {
+            console.warn("Gift claims listener failed:", err.message);
+            callback(new Set());
+        });
+    }
+
+    // Claims a gift from the inbox. Returns { claimed, balance } or throws
+    // with the reason (expired, not for this account, ...).
+    async function claimTokenGift(giftId) {
+        await waitForAuthReady();
+        if (!currentUser) throw new Error("Sign in first.");
+        return callTokensApi("claimGift", { giftId });
+    }
+
+    // admin.html's token tools. The server refuses anyone but the admin;
+    // this check just saves a pointless round trip.
+    async function adminTokens(action, payload = {}) {
+        await waitForAuthReady();
+        if (!currentUser || currentUser.uid !== ADMIN_UID) throw new Error("Not authorized.");
+        return callTokensApi(action, payload);
+    }
+
+    // Collects ready rewards (ids from listenToMyQuestProgress). Returns
+    // { claimed, balance }; ids already claimed elsewhere are just skipped.
+    async function claimQuestRewards(claimIds) {
+        await waitForAuthReady();
+        if (!currentUser) throw new Error("Sign in first.");
+        return callTokensApi("claim", { claimIds });
+    }
+
+    async function getMyTokenBalance() {
+        await waitForAuthReady();
+        if (!currentUser) return 0;
+        try {
+            const snap = await getDoc(doc(db, "tokenWallets", currentUser.uid));
+            return snap.exists() ? (snap.data().balance || 0) : 0;
+        } catch (e) {
+            return 0;
+        }
+    }
+
+    // Called right after an action that might complete a quest. Fire-and-
+    // forget: a quest is a bonus, so it must never block or fail the action
+    // itself. The server decides whether it counts. If the request never got
+    // an answer at all, it's queued and retried, so a dropped connection
+    // doesn't silently cost someone their token.
+    async function reportQuestProgress(questId, proofId = null) {
+        try {
+            await waitForAuthReady();
+            if (!currentUser) return null;
+            // Skip the round trip when it's definitely not one of today's quests.
+            const cached = readCachedTodaysQuests();
+            if (cached && !cached.quests.includes(questId)) return null;
+            return await callTokensApi("complete", { questId, proofId });
+        } catch (e) {
+            // A 4xx is a definite "no" — retrying would just be refused forever.
+            if (!e.status || e.status >= 500) queueQuestRetry(questId, proofId);
+            else console.warn("Quest not counted:", e.message);
+            return null;
+        }
+    }
+
+    function queueQuestRetry(questId, proofId) {
+        try {
+            const cutoff = Date.now() - QUEST_RETRY_WINDOW_MS;
+            const list = JSON.parse(localStorage.getItem(QUEST_RETRY_KEY) || "[]")
+                .filter(r => r.at > cutoff && !(r.questId === questId && r.proofId === proofId));
+            list.push({ questId, proofId, at: Date.now() });
+            localStorage.setItem(QUEST_RETRY_KEY, JSON.stringify(list.slice(-20)));
+        } catch (e) { /* storage blocked */ }
+    }
+
+    async function flushQuestRetries() {
+        let list = [];
+        try {
+            list = JSON.parse(localStorage.getItem(QUEST_RETRY_KEY) || "[]");
+            localStorage.removeItem(QUEST_RETRY_KEY);
+        } catch (e) { /* storage blocked */ }
+        const cutoff = Date.now() - QUEST_RETRY_WINDOW_MS;
+        // Anything that fails again is re-queued by reportQuestProgress itself.
+        for (const r of list) {
+            if (r.at > cutoff) await reportQuestProgress(r.questId, r.proofId);
+        }
+    }
+
+    let loginClaimedUntil = 0;
+    let loginClaimInFlight = null;
+
+    // Login counts when a signed-in person VISITS, not when they press Sign In:
+    // Firebase keeps people signed in, so most returning players never press it.
+    function claimDailyLogin() {
+        if (loginClaimInFlight) return loginClaimInFlight;
+        loginClaimInFlight = (async () => {
+            await waitForAuthReady();
+            if (!currentUser || Date.now() < loginClaimedUntil) return;
+            try {
+                const stored = JSON.parse(localStorage.getItem(LOGIN_CLAIM_KEY) || "null");
+                if (stored && stored.uid === currentUser.uid && stored.resetAt > Date.now()) {
+                    loginClaimedUntil = stored.resetAt;
+                    return;
+                }
+            } catch (e) { /* storage blocked */ }
+            const result = await reportQuestProgress("login");
+            if (result && result.ok && (result.completed || result.alreadyCompleted)) {
+                loginClaimedUntil = result.resetAt;
+                try {
+                    localStorage.setItem(LOGIN_CLAIM_KEY, JSON.stringify({ uid: currentUser.uid, resetAt: result.resetAt }));
+                } catch (e) { /* storage blocked */ }
+            }
+        })().finally(() => { loginClaimInFlight = null; });
+        return loginClaimInFlight;
+    }
+
+    // Started once, by the top-level page only — appState.js also runs inside
+    // every iframe, and each claiming independently would multiply the calls.
+    let questTrackingStarted = false;
+    function startDailyQuestTracking() {
+        if (questTrackingStarted) return;
+        questTrackingStarted = true;
+        const run = () => {
+            loginClaimedUntil = 0; // a different account may have signed in
+            claimDailyLogin().catch(() => {});
+            flushQuestRetries().catch(() => {});
+        };
+        waitForAuthReady().then(run);
+        onAuthChange(run);
+        // Phones freeze background tabs, so a timer can't be trusted to fire
+        // overnight — re-check whenever the tab comes back into view instead.
+        document.addEventListener("visibilitychange", () => {
+            if (document.visibilityState === "visible") claimDailyLogin().catch(() => {});
+        });
+        // And for a tab left open in the foreground across the reset.
+        const scheduleNextReset = async () => {
+            try {
+                const today = await getTodaysQuests();
+                const wait = Math.min(Math.max(5000, today.resetAt - Date.now() + 5000), 6 * 60 * 60 * 1000);
+                setTimeout(() => { claimDailyLogin().catch(() => {}); scheduleNextReset(); }, wait);
+            } catch (e) {
+                setTimeout(scheduleNextReset, 10 * 60 * 1000);
+            }
+        };
+        scheduleNextReset();
+    }
+
+    async function stakeTokensOnSecretGiveaway(giveawayId, amount) {
+        await waitForAuthReady();
+        if (!currentUser) throw new Error("Sign in first.");
+        return callTokensApi("stake", { giveawayId, amount });
+    }
+
     /* ---------------- PROFILE ---------------- */
 
     function defaultProfile() {
@@ -616,8 +866,8 @@ async function backfillAvatarCasing() {
    VIP-TIERED POSTING COOLDOWN — DISABLED 2026-07-31.
    Previously: VIP could post once every 24h, everyone else once
    every 7 days. VIP is paused site-wide right now (see store.html),
-   so everyone gets the SAME cooldown: one clan post per calendar
-   day, resetting at midnight — not a rolling time window.
+   so everyone gets the SAME cooldown: one clan post per day,
+   resetting at 00:00 Singapore time — not a rolling time window.
    To bring the old VIP/normal split back, delete the daily-reset
    block below and uncomment these three lines + swap
    getClanPostCooldownRemaining() back to the ms-window version.
@@ -630,21 +880,25 @@ async function backfillAvatarCasing() {
 
 const CLAN_POST_LIFETIME_MS = 30 * 24 * 60 * 60 * 1000; // posts auto-expire after ~1 month
 
-function isSameCalendarDay(tsA, tsB) {
-    const a = new Date(tsA), b = new Date(tsB);
-    return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+// The daily reset is 00:00 Singapore time for EVERYONE — the same boundary
+// the daily quests use (api/_lib.js) and that the Firestore rule enforces.
+// This used to use each visitor's own local midnight while the rule still
+// enforced a 7-day wait for non-VIPs, so the page would say "you can post"
+// and the save would then fail with a permission error. If you change the
+// offset, change it in all three places.
+const DAILY_RESET_TZ_OFFSET_MS = 8 * 60 * 60 * 1000;
+function dailyResetDayNumber(ms) {
+    return Math.floor((ms + DAILY_RESET_TZ_OFFSET_MS) / 86400000);
 }
 
-// Returns 0 if the user can post right now, otherwise ms remaining until
-// midnight (the daily reset), instead of a rolling 24h/7-day window.
+// Returns 0 if the user can post right now, otherwise ms until the next reset.
 async function getClanPostCooldownRemaining() {
     const profile = await getProfile();
     if (!profile.lastClanPostAt) return 0;
-    if (!isSameCalendarDay(profile.lastClanPostAt, Date.now())) return 0;
-    const nextMidnight = new Date();
-    nextMidnight.setHours(24, 0, 0, 0);
-    const remaining = nextMidnight.getTime() - Date.now();
-    return remaining > 0 ? remaining : 0;
+    const now = Date.now();
+    if (dailyResetDayNumber(profile.lastClanPostAt) < dailyResetDayNumber(now)) return 0;
+    const nextReset = (dailyResetDayNumber(now) + 1) * 86400000 - DAILY_RESET_TZ_OFFSET_MS;
+    return Math.max(0, nextReset - now);
 }
 
     async function uploadClanIcon(file) {
@@ -704,7 +958,7 @@ async function getClanPostCooldownRemaining() {
         const remaining = await getClanPostCooldownRemaining();
         if (remaining > 0) {
             const hours = Math.max(1, Math.ceil(remaining / (60 * 60 * 1000)));
-            throw new Error(`You've already posted today — try again in about ${hours} hour(s) (resets at midnight).`);
+            throw new Error(`You've already posted today — try again in about ${hours} hour(s) (resets daily at 00:00 Singapore time).`);
         }
 
         const postId = currentUser.uid;
@@ -730,6 +984,7 @@ async function getClanPostCooldownRemaining() {
             lastClanPostAt: Date.now(),
             lastClanPostData: { clanName, server, minTrophies, clanRank, country, memberCount, description, tags }
         });
+        reportQuestProgress("postClan", postId);
         return postId;
     }
     // Edits an existing clan post's content without touching the posting
@@ -902,6 +1157,7 @@ async function getClanPostCooldownRemaining() {
             createdAt: Date.now(),
             expiresAt: Timestamp.fromMillis(Date.now() + FORMATION_POST_LIFETIME_MS)
         });
+        reportQuestProgress("shareFormation", docRef.id);
         return docRef.id;
     }
 
@@ -1240,6 +1496,7 @@ async function getClanPostCooldownRemaining() {
             downvotes: 0,
             createdAt: Date.now()
         });
+        reportQuestProgress("shareTierList", docRef.id);
         return docRef.id;
     }
 
@@ -1916,7 +2173,7 @@ async function getClanPostCooldownRemaining() {
             }
         }
 
-        await addDoc(collection(db, "dmThreads", threadId, "messages"), {
+        const msgRef = await addDoc(collection(db, "dmThreads", threadId, "messages"), {
             senderUid: currentUser.uid,
             text: trimmed,
             createdAt: Date.now(),
@@ -1941,6 +2198,9 @@ async function getClanPostCooldownRemaining() {
         if (otherUid) {
             patch[`unreadCount.${otherUid}`] = increment(1);
         }
+        // The message itself is the proof, so report it whether or not the
+        // thread-preview update below succeeds.
+        reportQuestProgress("sendMessage", threadId + "/" + msgRef.id);
         await updateDoc(doc(db, "dmThreads", threadId), patch);
     }
 // Lets a user edit the text of their own already-sent message. Also
@@ -2277,8 +2537,8 @@ async function getClanPostCooldownRemaining() {
         try {
             await addPersonalNotification(uid, {
                 type: "adminGrant",
-                title: "👑 You've been granted VIP!",
-                body: `An admin granted you VIP access for ${days} day(s). Enjoy!`
+                title: "👑 You're now a Super Supporter!",
+                body: `An admin made you a Super Supporter for ${days} day(s). Enjoy!`
             });
         } catch (e) {
             console.warn("Couldn't send VIP grant notification:", e.message);
@@ -2686,6 +2946,7 @@ async function getClanPostCooldownRemaining() {
 
         await setDoc(ref, entry);
         await setDoc(publicRef, { name: name, weekId: weekId });
+        reportQuestProgress("enterWeekly", weekId);
         return entry;
     }
 
@@ -2784,7 +3045,7 @@ async function getGiveawayHistory(maxCount = 20) {
     try {
         await addPersonalNotification(winner.uid, {
             type: "giveawayWin",
-            title: "🎁 You won the VIP Giveaway!",
+            title: "🎁 You won the Weekly Giveaway!",
             body: `Congrats — you won "${prizeCode.trim()}" playing on ${winner.device === "ios" ? "iOS" : "Android"}. Redeem it in-game.`,
             weekId: weekId,
             prize: prizeCode.trim(),
@@ -2861,7 +3122,7 @@ async function autoPickMissedWinners() {
         try {
             await addPersonalNotification(winner.uid, {
                 type: "giveawayWin",
-                title: "🎉 You won the VIP Giveaway!",
+                title: "🎉 You won the Weekly Giveaway!",
                 body: "Congrats — you were picked as this week's winner! Your prize code is still being finalized — we'll send it to you here shortly.",
                 weekId,
                 prize: null,
@@ -2927,7 +3188,7 @@ async function sendPendingPrize(uid, weekId, code) {
             // user who already saw/dismissed the "coming soon" card would
             // have no way of noticing it silently updated behind the scenes.
             await updateDoc(doc(db, "users", uid, "personalNotifications", notifSnap.docs[0].id), {
-                title: "🎁 Your VIP Giveaway code is ready!",
+                title: "🎁 Your Weekly Giveaway code is ready!",
                 body: `Here's your promo code: "${trimmed}". Redeem it in-game.`,
                 prize: trimmed,
                 pendingPrize: false,
@@ -2940,7 +3201,7 @@ async function sendPendingPrize(uid, weekId, code) {
             // of failing silently.
             await addPersonalNotification(uid, {
                 type: "giveawayWin",
-                title: "🎁 Your VIP Giveaway code is ready!",
+                title: "🎁 Your Weekly Giveaway code is ready!",
                 body: `Here's your promo code: "${trimmed}". Redeem it in-game.`,
                 weekId,
                 prize: trimmed,
@@ -3338,6 +3599,15 @@ async function sendAdminMessage(uid, title, body) {
     async function deleteSecretGiveaway(giveawayId) {
         await waitForAuthReady();
         if (!currentUser || currentUser.uid !== ADMIN_UID) throw new Error("Not authorized.");
+        // Entries are the only record of who staked what, so every stake on a
+        // platform that hasn't been drawn yet is refunded FIRST. If that fails,
+        // deletion stops — going ahead would destroy those tokens for good.
+        // Only asked when something is actually staked, so deleting ordinary
+        // giveaways never depends on the tokens API being reachable.
+        const staked = await getDocs(query(collection(db, "secretGiveaways", giveawayId, "entries"), where("tokens", ">", 0)));
+        if (!staked.empty) {
+            await callTokensApi("refundGiveaway", { giveawayId });
+        }
         try {
             const entriesSnap = await getDocs(collection(db, "secretGiveaways", giveawayId, "entries"));
             await Promise.all(entriesSnap.docs.map(d => deleteDoc(d.ref)));
@@ -3426,9 +3696,13 @@ async function sendAdminMessage(uid, title, body) {
         // side they were on — without this the split drifts upward every time
         // somebody changes their device.
         let previousPlatform = null;
+        let stakedTokens = 0;
         try {
             const entrySnap = await getDoc(entryRef);
-            if (entrySnap.exists()) previousPlatform = entrySnap.data().platform || null;
+            if (entrySnap.exists()) {
+                previousPlatform = entrySnap.data().platform || null;
+                stakedTokens = entrySnap.data().tokens || 0;
+            }
         } catch (e) {
             console.warn("Couldn't read the previous platform:", e.message);
         }
@@ -3443,6 +3717,14 @@ async function sendAdminMessage(uid, title, body) {
             } catch (e) {
                 console.warn("Couldn't move the per-device entry count:", e.message);
             }
+            // The stake follows the entry to its new side. Only the shown
+            // per-platform average depends on this — the draw reads each
+            // entry's own platform and tokens directly — so a failure here is
+            // logged, not thrown, and the next stake or unstake repairs it.
+            if (stakedTokens > 0) {
+                callTokensApi("reconcile", { giveawayId })
+                    .catch(e => console.warn("Couldn't move the stake to the new platform:", e.message));
+            }
         }
     }
 
@@ -3455,11 +3737,23 @@ async function sendAdminMessage(uid, title, body) {
         // Read which side they were on before the entry disappears, otherwise
         // there's no way to know which per-device counter to bring down.
         let leavingPlatform = null;
+        let stakedTokens = 0;
         try {
             const entrySnap = await getDoc(doc(db, "secretGiveaways", giveawayId, "entries", currentUser.uid));
-            if (entrySnap.exists()) leavingPlatform = entrySnap.data().platform || null;
+            if (entrySnap.exists()) {
+                leavingPlatform = entrySnap.data().platform || null;
+                stakedTokens = entrySnap.data().tokens || 0;
+            }
         } catch (e) {
             console.warn("Couldn't read entry platform before leaving:", e.message);
+        }
+        // Refund any stake through the server BEFORE the entry is touched. The
+        // rules won't let a staked entry be deleted directly, so this is the
+        // only way out of a staked giveaway — which is what guarantees the
+        // refund can't be skipped. If the refund is refused (e.g. this side has
+        // already been drawn, so the tokens are spent), leaving stops here.
+        if (stakedTokens > 0) {
+            await callTokensApi("unstake", { giveawayId });
         }
         // Decrement first — if this write is rejected (e.g. a stale set of
         // rules that doesn't yet allow the -1 branch), nothing else has
@@ -3597,8 +3891,27 @@ async function sendAdminMessage(uid, title, body) {
         const entries = await getSecretGiveawayEntries(giveawayId, platform);
         const pool = entries.filter(e => !alreadyWon.has(e.uid));
         if (!pool.length) throw new Error(`No remaining ${platform} entries to pick from.`);
-        const winner = pool[Math.floor(Math.random() * pool.length)];
-        return { giveawayId, platform, entryCount: pool.length, winner };
+        // Each entry's chance is 1 + the tokens staked on it, so everyone keeps
+        // a free base chance and every token adds exactly one more.
+        const weightOf = (e) => 1 + Math.max(0, Math.floor(Number(e.tokens) || 0));
+        const totalWeight = pool.reduce((sum, e) => sum + weightOf(e), 0);
+        let ticket = secureRandom() * totalWeight;
+        let winner = pool[pool.length - 1];
+        for (const e of pool) {
+            ticket -= weightOf(e);
+            if (ticket < 0) { winner = e; break; }
+        }
+        return { giveawayId, platform, entryCount: pool.length, winner, totalWeight, winnerWeight: weightOf(winner) };
+    }
+
+    // Uniform in [0, 1). Uses the browser's cryptographic source rather than
+    // Math.random, since this decides who wins something people staked on.
+    function secureRandom() {
+        const c = globalThis.crypto;
+        if (c && typeof c.getRandomValues === "function") {
+            return c.getRandomValues(new Uint32Array(1))[0] / 4294967296;
+        }
+        return Math.random();
     }
 
     // Two writes (recording the winner, saving their code) can't be a single
@@ -4036,6 +4349,9 @@ async function maybeRefreshAd(containerId) {
     return {
         // auth
         signIn, signOut: signOutUser, getCurrentUser, onAuthChange, waitForAuthReady, getIdToken,
+        getTodaysQuests, listenToMyWallet, listenToMyQuestProgress, claimQuestRewards, getMyTokenBalance,
+        listenToMyGiftClaims, claimTokenGift, adminTokens,
+        reportQuestProgress, startDailyQuestTracking, stakeTokensOnSecretGiveaway,
         // profile
         getProfile, setProfile, isVipActive, isNoAdsActive, isBannedNow, shouldShowAds, listenToMyProfile,
         // unique names
