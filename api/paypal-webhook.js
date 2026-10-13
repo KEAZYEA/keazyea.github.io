@@ -521,7 +521,7 @@ module.exports = async (req, res) => {
           await db.collection("users").doc(uid).collection("personalNotifications").add({
             type: "tokensGranted",
             title: `🪙 +${tokensGranted} tokens added`,
-            body: `Your ${planKey === "vip" ? "Super Supporter" : "Supporter"} payment went through, and ${tokensGranted} tokens are in your wallet. Stake them on a Secret Giveaway from its card.`,
+            body: `Your ${planKey === "vip" ? "Super Supporter" : "Supporter"} payment went through, and ${tokensGranted} tokens are in your wallet. To use them, enter a Secret Giveaway (Promo → Secret Giveaways) and add them to your entry — each token is one extra chance to win.`,
             createdAt: now,
             read: false
           });

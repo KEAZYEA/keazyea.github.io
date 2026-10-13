@@ -159,7 +159,7 @@ async function notifyPackCredited(db, uid, tokens) {
     await db.collection("users").doc(uid).collection("personalNotifications").add({
       type: "tokensGranted",
       title: `🪙 +${tokens} tokens added`,
-      body: `Your token pack payment went through, and ${tokens} tokens are in your wallet. Stake them on a Secret Giveaway from its card.`,
+      body: `Your token pack payment went through, and ${tokens} tokens are in your wallet. To use them, enter a Secret Giveaway (Promo → Secret Giveaways) and add them to your entry — each token is one extra chance to win.`,
       createdAt: Date.now(),
       read: false
     });
