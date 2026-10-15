@@ -2127,7 +2127,7 @@ body {
         // ("vip" for the giveaway, "codes" for the default codes list).
         function openPromoTab(tab) {
             let frame = document.querySelector("#page-promo iframe");
-            let url = new URL(frame.getAttribute("src") || "promo.html", window.location.href);
+            let url = new URL(currentSectionFrameUrl(frame, "promo.html"), window.location.href);
             if (tab) url.searchParams.set("tab", tab);
             // Drop any leftover prize-reveal target, otherwise returning to the
             // Promo page later re-opens an old win's reveal modal unprompted.
@@ -2138,16 +2138,36 @@ body {
             // this is the visitor's first trip to the Promo tab — clear it
             // here so goToPage()'s lazy-load logic below doesn't stomp the
             // URL we just built back down to a bare "promo.html".
-            frame.removeAttribute("data-src");
-            frame.src = url.toString();
+            setSectionFrameUrl(frame, url.toString());
             goToPage("promo");
         }
 
-       async function goToPage(page, fromAbout) {
+       /* ---------- Browser / phone Back button ----------
+          This site is one page that shows and hides sections, so the browser
+          never knew the visitor moved anywhere and Back left the site. Every
+          section change is now recorded, and Back/Forward replay them. Pages
+          inside the sections (e.g. a unit in Troops & Heroes) record their own
+          steps the same way, and the browser walks through them in order. */
+       function recordPageInHistory(page) {
+           const current = history.state && history.state.kihPage;
+           if (current === page) return;
+           history.pushState({ kihPage: page }, "");
+       }
+       window.addEventListener("popstate", (e) => {
+           // Steps inside a section (e.g. a unit in Troops & Heroes) fire in
+           // that section's frame, not here. The only step of this page with
+           // no label is the very first one, which is Home.
+           const page = (e.state && e.state.kihPage) || "home";
+           if (page === "home") goHome(true);
+           else goToPage(page, false, true);
+       });
+
+       async function goToPage(page, fromAbout, fromHistory) {
     if (page !== "profile" && isProfileDirty()) {
         let choice = await showUnsavedModal();
         if (choice === "save") await saveProfile();
     }
+    if (!fromHistory) recordPageInHistory(page);
 
     if (page !== "social") {
         resetSocialIframeIfActive();
@@ -2183,7 +2203,9 @@ body {
         frame.removeAttribute("data-src");
     } else if (page === "promo" || page === "tips") {
         let existingFrame = target.querySelector("iframe");
-        if (existingFrame) existingFrame.src = existingFrame.src;
+        // Reload whatever it's showing now (setSectionFrameUrl may have moved
+        // it on from its src attribute). A reload never adds a Back step.
+        if (existingFrame) setSectionFrameUrl(existingFrame, currentSectionFrameUrl(existingFrame, existingFrame.getAttribute("src")));
     }
 
     if (page === "profile") await loadProfileIntoPage();
@@ -2223,7 +2245,7 @@ body {
             }
         }
 
-        async function goHome() {
+        async function goHome(fromHistory) {
             if (isProfileDirty()) {
                 let choice = await showUnsavedModal();
                 if (choice === "save") {
@@ -2232,6 +2254,7 @@ body {
                 }
                 // "discard" falls through and continues leaving
             }
+            if (fromHistory !== true) recordPageInHistory("home");
             resetSocialIframeIfActive();
             cameFromAbout = false;
             document.getElementById("backToAboutBtn").style.display = "none";
@@ -3455,36 +3478,69 @@ window.closeInboxItemModal = closeInboxItemModal;
         // then navigate there. Used by the home-menu Tips button.
         function openTipsFresh() {
             let frame = document.querySelector("#page-tips iframe");
-            if (frame) {
-                frame.removeAttribute("data-src"); // see openInboxTip's comment below
-                frame.src = "tips.html";
-            }
+            if (frame) setSectionFrameUrl(frame, "tips.html");
             goToPage("tips");
+        }
+
+        // The address a section's frame is showing right now (or will show,
+        // if it hasn't loaded yet).
+        function currentSectionFrameUrl(frame, fallback) {
+            // Still on its way to an address setSectionFrameUrl gave it: the
+            // frame reports its old address until the new page starts loading,
+            // and handing that back would undo the move (e.g. goToPage's
+            // refresh sending a just-opened tip back to the plain tips list).
+            if (frame._pendingUrl) return frame._pendingUrl;
+            try {
+                const href = frame.contentWindow && frame.contentWindow.location.href;
+                if (frame.getAttribute("src") && href && href !== "about:blank") return href;
+            } catch (e) { /* not readable — use the attribute */ }
+            return frame.getAttribute("src") || fallback;
+        }
+
+        // Points a section's frame at a new address WITHOUT adding a step to
+        // the Back button: the section change itself is recorded by goToPage,
+        // and an extra step here would make Back first flip the frame back to
+        // what it showed before. A frame that hasn't loaded yet just gets its
+        // src (its first load never adds a step). Clearing data-src stops
+        // goToPage's lazy-load from overwriting the address set here.
+        function setSectionFrameUrl(frame, url) {
+            frame.removeAttribute("data-src");
+            try {
+                const href = frame.contentWindow && frame.contentWindow.location.href;
+                if (frame.getAttribute("src") && href && href !== "about:blank") {
+                    const target = new URL(url, window.location.href).toString();
+                    frame._pendingUrl = target;
+                    frame.addEventListener("load", () => {
+                        if (frame._pendingUrl === target) frame._pendingUrl = null;
+                    }, { once: true });
+                    frame.contentWindow.location.replace(target);
+                    return;
+                }
+            } catch (e) { /* fall back to a normal load */ }
+            frame.src = url;
         }
 
         // Jump into the Tips page and open a specific tip directly.
         function openInboxTip(tipId) {
             let frame = document.querySelector("#page-tips iframe");
-            let url = new URL(frame.getAttribute("src") || "tips.html", window.location.href);
+            let url = new URL(currentSectionFrameUrl(frame, "tips.html"), window.location.href);
             if (tipId) url.searchParams.set("tipId", tipId);
             // The iframe may still be un-loaded (data-src, not yet src) if
             // this is the visitor's first trip to the Tips tab — clear it
             // here so goToPage()'s lazy-load logic below doesn't stomp the
             // ?tipId= URL we just built back down to a bare "tips.html".
-            frame.removeAttribute("data-src");
-            frame.src = url.toString();
+            setSectionFrameUrl(frame, url.toString());
             goToPage("tips");
         }
 
         // Jump into Social's Friends tab and auto-open the DM with this person.
         function openInboxFriendChat(uid, name, avatar) {
             let frame = document.querySelector("#page-social iframe");
-            let url = new URL(frame.getAttribute("src") || "social.html", window.location.href);
+            let url = new URL(currentSectionFrameUrl(frame, "social.html"), window.location.href);
             url.searchParams.set("dmUid", uid);
             url.searchParams.set("dmName", name);
             if (avatar) url.searchParams.set("dmAvatar", avatar);
-            frame.removeAttribute("data-src"); // see openInboxTip's comment above
-            frame.src = url.toString();
+            setSectionFrameUrl(frame, url.toString());
             goToPage("social");
         }
 
@@ -3492,10 +3548,9 @@ window.closeInboxItemModal = closeInboxItemModal;
         // (used by "commented on your post" / "replied to your comment").
         function openInboxFormationPost(postId) {
             let frame = document.querySelector("#page-social iframe");
-            let url = new URL(frame.getAttribute("src") || "social.html", window.location.href);
+            let url = new URL(currentSectionFrameUrl(frame, "social.html"), window.location.href);
             url.searchParams.set("formationPostId", postId);
-            frame.removeAttribute("data-src"); // see openInboxTip's comment above
-            frame.src = url.toString();
+            setSectionFrameUrl(frame, url.toString());
             goToPage("social");
         }
 
@@ -3503,11 +3558,10 @@ window.closeInboxItemModal = closeInboxItemModal;
         // win (used by the "you won a secret giveaway" notification).
         function openInboxSecretGiveaway(giveawayId) {
             let frame = document.querySelector("#page-promo iframe");
-            let url = new URL(frame.getAttribute("src") || "promo.html", window.location.href);
+            let url = new URL(currentSectionFrameUrl(frame, "promo.html"), window.location.href);
             url.searchParams.set("tab", "secret");
             url.searchParams.set("secretGiveawayId", giveawayId);
-            frame.removeAttribute("data-src"); // see openInboxTip's comment above
-            frame.src = url.toString();
+            setSectionFrameUrl(frame, url.toString());
             goToPage("promo");
         }
 
@@ -3814,9 +3868,17 @@ AppState.onAuthChange(() => startTopbarProfileListener());
 
             const urlParams = new URLSearchParams(window.location.search);
 const gotoPage = urlParams.get("goto");
+// A refresh keeps the browser's record of where the visitor was, so put
+// them back on that section rather than dropping them on Home.
+const pageBeforeRefresh = history.state && history.state.kihPage;
 if (gotoPage) {
+    history.replaceState({ kihPage: "home" }, ""); // Back from the linked page lands on Home
     goToPage(gotoPage);
-    history.replaceState(null, "", window.location.pathname); // consume it — refresh won't re-trigger this
+    history.replaceState(history.state, "", window.location.pathname); // consume it — refresh won't re-trigger this
+} else if (pageBeforeRefresh && pageBeforeRefresh !== "home") {
+    goToPage(pageBeforeRefresh, false, true);
+} else {
+    history.replaceState({ kihPage: "home" }, "");
 }
         });
 function setAppHeight() {

@@ -604,7 +604,8 @@ let troopsCameFromCompare = false;
             // only these values have a matching gallery — everything else should render as plain text
             const appliesToClickableValues = new Set([
                 ...Object.keys(factionColorMap).map(k => k.toLowerCase()),
-                ...Object.keys(roleColorMap).map(k => k.toLowerCase())
+                ...Object.keys(roleColorMap).map(k => k.toLowerCase()),
+                "piercing"
             ]);
             function isClickableAppliesToValue(val) {
                 if (!val) return false;
@@ -839,6 +840,11 @@ let troopsCameFromCompare = false;
                 if (key === "damageMultiplier" && damageReceivedAbilities[abilityInfoId]) {
                     return "Damage Received";
                 }
+                if (key === "piercingDamageMultiplier") {
+                    // Clickable, like Durand's "Tank": lists the units with piercing attacks.
+                    let ctx = document.getElementById("comparePage")?.classList.contains("active") ? "left" : "troops";
+                    return `Damage Taken (<span class="applies-to-link" onclick="openAppliesToList('Piercing', '${ctx}')">Piercing&nbsp;🔍</span>)`;
+                }
                 if (damageTakenMultiplierLabels[key]) return damageTakenMultiplierLabels[key];
                 return formatKey(key);
             }
@@ -1020,10 +1026,28 @@ let troopsCameFromCompare = false;
             // Mage/Elevate/Demon) or a troop role (Tank/Ranger/Support/Trickster).
             // Faction match takes priority; falls back to role match (troops only,
             // since heroes have no role data).
+            // Troops/heroes with an attack from the game's piercing ability
+            // files. "blockable" ones can be stopped by shields like
+            // A.D.E.P.T.'s; the game marks them with that projectile type.
+            function getPiercingUnits() {
+                let keys = typeof piercingAbilityKeys !== "undefined" ? [...piercingAbilityKeys] : [];
+                let found = [];
+                [["troop", troopList], ["hero", heroList]].forEach(([unitType, list]) => {
+                    list.forEach(u => {
+                        let own = keys.filter(k => k.startsWith(u.key + "_"));
+                        if (!own.length) return;
+                        let blockable = own.some(k => (abilityData[k] || {}).projectileEffectId === "blockablePiercingProjectile");
+                        found.push({ ...u, unitType, note: blockable ? "🛡️ blockable" : "" });
+                    });
+                });
+                return found;
+            }
+
             function getUnitsByAppliesTo(value) {
                 if (!value) return [];
                 let normalized = String(value).trim().toLowerCase();
                 let matches = [];
+                if (normalized === "piercing") return getPiercingUnits();
 
                 troopList.forEach(t => {
                     if ((t.meta.factionId || "").toLowerCase() === normalized) matches.push({ ...t, unitType: "troop" });
@@ -1062,13 +1086,18 @@ function unlockBackgroundScroll() {
 }
             function openAppliesToList(value, context = "troops") {
     let units = getUnitsByAppliesTo(value);
-    document.getElementById("appliesToModalTitle").textContent = `Applies to: ${value}`;
+    let isPiercing = String(value).trim().toLowerCase() === "piercing";
+    document.getElementById("appliesToModalTitle").textContent = isPiercing ? "Units with piercing attacks" : `Applies to: ${value}`;
     let body = document.getElementById("appliesToModalBody");
+    let intro = isPiercing
+        ? `<p style="color:#b0b0c0; font-size:0.85rem; margin:0 0 6px; text-align:center;">Shots that pass through units. 🛡️ blockable shots can be stopped by shields like A.D.E.P.T.'s.</p>`
+        : "";
 
     if (!units.length) {
         body.innerHTML = `<p style="text-align:center; color:#9a9ab0;">No matching units found.</p>`;
         document.getElementById("appliesToModalOverlay").classList.add("open");
         lockBackgroundScroll();
+        recordAppliesToOpen();
         return;
     }
 
@@ -1084,19 +1113,26 @@ function unlockBackgroundScroll() {
                 <div class="applies-to-item" onclick="selectUnitFromAppliesTo('${u.key}', '${u.unitType}', '${context}')">
                     <img src="images/${u.key.toUpperCase()}.jpg" alt="${u.displayName}" loading="lazy" onerror="this.style.visibility='hidden'">
                     <span>${u.displayName}</span>
+                    ${u.note ? `<span style="color:#ffc46b;">${u.note}</span>` : ""}
                 </div>
             `).join("")}
         </div>
     `;
     }
 
-    body.innerHTML = renderGroup("Troops", troopUnits) + renderGroup("Heroes", heroUnits);
+    body.innerHTML = intro + renderGroup("Troops", troopUnits) + renderGroup("Heroes", heroUnits);
     document.getElementById("appliesToModalOverlay").classList.add("open");
     lockBackgroundScroll();
+    recordAppliesToOpen();
 }
-            function closeAppliesToList() {
-    document.getElementById("appliesToModalOverlay").classList.remove("open");
+            // keepHistory: the caller replaces this step itself (picking a
+            // unit from the list); otherwise closing undoes the list's Back step.
+            function closeAppliesToList(keepHistory) {
+    let overlay = document.getElementById("appliesToModalOverlay");
+    if (!overlay.classList.contains("open")) return;
+    overlay.classList.remove("open");
     unlockBackgroundScroll();
+    if (keepHistory !== true && history.state && history.state.thModal) history.back();
 }
             function selectUnitFromAppliesTo(key, unitType, context = "troops") {
     let target = (unitType === "hero" ? heroList : troopList).find(u => u.key === key);
@@ -1105,7 +1141,7 @@ function unlockBackgroundScroll() {
     if (context === "left" || context === "right") {
         // Always show the clicked unit on the Troops & Heroes tab — avoids
         // troop/hero mismatch errors and overwriting the other compare side.
-        closeAppliesToList();
+        closeAppliesToList(true);
         troopNavStack = [];
         troopsCameFromCompare = true;
         selectTroop = target;
@@ -1122,7 +1158,7 @@ function unlockBackgroundScroll() {
     if (selectTroop) {
         troopNavStack.push({ unit: selectTroop, level: parseInt(troopsLevel), scrollY: window.scrollY });
     }
-    closeAppliesToList();
+    closeAppliesToList(true);
     selectTroop = target;
     troopType = unitType;
     troopsLevel = 1;
@@ -1428,6 +1464,7 @@ function switchTab(tab) {
         window.scrollTo(0, compareScrollY);
     }
     moveSharedAdBlock(tab);
+    recordTroopsView();
 }
 
             // Coalesces rapid resize events to once per animation frame, avoiding
@@ -1556,7 +1593,80 @@ function switchTab(tab) {
     document.getElementById("troopsSearch").value = "";
     showTroopsGallery();
     window.scrollTo(0, galleryScrollY);
+    recordTroopsView();
 }
+
+/* ---------- Browser / phone Back button ----------
+   Opening a unit, switching between Troops and Compare, and opening the
+   "Applies to" list each become a step in the browser's history, so Back
+   returns to the gallery / the previous unit / closes the list instead of
+   leaving the site. (The main site records which section you're in; these
+   steps sit inside that, and the browser walks through both in order.) */
+var restoringTroopsHistory = false; // var: switchTab() may run before this line during startup
+
+function currentTroopsView() {
+    if (document.getElementById("comparePage").classList.contains("active")) return { thView: "compare" };
+    return selectTroop
+        ? { thView: "unit", key: selectTroop.key, unitType: troopType, level: parseInt(troopsLevel) || 1 }
+        : { thView: "gallery" };
+}
+
+function recordTroopsView() {
+    if (restoringTroopsHistory) return;
+    const next = currentTroopsView();
+    const cur = history.state || {};
+    if (cur.thModal) { history.replaceState(next, ""); return; } // picked a unit from the list: it takes the list's step
+    if (cur.thView === next.thView && cur.key === next.key) {
+        // Same view, e.g. moving the level slider: keep it current, no new step.
+        if (cur.level !== next.level) history.replaceState(next, "");
+        return;
+    }
+    history.pushState(next, "");
+}
+
+function recordAppliesToOpen() {
+    if (restoringTroopsHistory) return;
+    history.pushState({ ...currentTroopsView(), thModal: true }, "");
+}
+
+window.addEventListener("popstate", (e) => {
+    const target = e.state && e.state.thView ? e.state : { thView: "gallery" };
+    // Back while the list is open just closes it.
+    let overlay = document.getElementById("appliesToModalOverlay");
+    if (overlay.classList.contains("open") && !target.thModal) {
+        overlay.classList.remove("open");
+        unlockBackgroundScroll();
+    }
+    const now = currentTroopsView();
+    restoringTroopsHistory = true;
+    try {
+        if (target.thView === "compare") {
+            if (now.thView !== "compare") switchTab("compare");
+        } else {
+            if (now.thView === "compare") switchTab("troops");
+            if (target.thView === "unit") {
+                let unit = (target.unitType === "hero" ? heroList : troopList).find(u => u.key === target.key);
+                if (unit && (now.key !== target.key || now.level !== target.level)) {
+                    troopNavStack = [];
+                    troopsCameFromCompare = false;
+                    selectTroop = unit;
+                    troopType = target.unitType;
+                    troopsLevel = target.level || 1;
+                    document.getElementById("troopsSlider").value = troopsLevel;
+                    document.getElementById("troopsLevel").textContent = "Level " + troopsLevel;
+                    document.getElementById("troopsResults").innerHTML = "";
+                    updateTroopsCard();
+                    window.scrollTo(0, 0);
+                }
+            } else if (now.thView !== "gallery") {
+                goBackToGallery();
+            }
+        }
+    } finally {
+        restoringTroopsHistory = false;
+    }
+});
+history.replaceState({ thView: "gallery" }, "");
 
 function goBackToCompareTab() {
     troopsCameFromCompare = false;
@@ -2017,6 +2127,7 @@ ${effectDesc ? `<tr id="${effectDescId}" style="display:none;"><td colspan="2" c
                     if (el) el.style.display = "table-row";
                 });
                 updateTabsHeight();
+                recordTroopsView();
             }
 
             /* ================================================================
