@@ -1790,39 +1790,68 @@ async function getClanPostCooldownRemaining() {
             console.warn("Couldn't clear unread count after unfriending:", e.message);
         }
     }
-    async function respondToFriendRequest(reqId, accept) {
+    // Accept/decline happen exactly once per request, however many times
+    // Accept is tapped on a slow connection, and from however many pages or
+    // devices. Three layers:
+    //  1. repeat calls for the same request on this page share one attempt;
+    //  2. the status change is a transaction that only acts on "pending" —
+    //     every later attempt sees "accepted" and does nothing;
+    //  3. the sender's inbox message has a fixed id per request, so even a
+    //     second one getting through would be refused (the rules only let
+    //     the sender's side create it, never overwrite it).
+    // Only the attempt that actually flipped pending -> accepted notifies.
+    const friendResponsesInFlight = new Map();
+
+    function respondToFriendRequest(reqId, accept) {
+        if (friendResponsesInFlight.has(reqId)) return friendResponsesInFlight.get(reqId);
+        const attempt = answerFriendRequest(reqId, accept)
+            .finally(() => friendResponsesInFlight.delete(reqId));
+        friendResponsesInFlight.set(reqId, attempt);
+        return attempt;
+    }
+
+    async function answerFriendRequest(reqId, accept) {
         await waitForAuthReady();
         if (!currentUser) throw new Error("Not signed in.");
         const ref = doc(db, "friendRequests", reqId);
-        if (accept) {
-            const reqSnap = await getDoc(ref);
-            const reqData = reqSnap.exists() ? reqSnap.data() : null;
-            const profile = await getProfile();
-            await updateDoc(ref, {
-                status: "accepted",
-                toAvatar: profile.avatar || "",
-                toName: profile.name || "Commander"
-            });
+        // Read before the transaction: transactions may retry, and the
+        // profile isn't part of what has to be consistent.
+        const profile = accept ? await getProfile() : null;
 
-            // Notify the original sender so they see it in their own inbox,
-            // even if they're not on the Social page right now.
-            if (reqData && reqData.fromUid) {
-                try {
-                    await addPersonalNotification(reqData.fromUid, {
-                        type: "friendAccepted",
-                        title: `🎉 ${profile.name || "Commander"} accepted your friend request!`,
-                        body: "You're now friends — tap below to start chatting.",
-                        fromUid: currentUser.uid,
-                        fromName: profile.name || "Commander",
-                        fromAvatar: profile.avatar || ""
-                    });
-                } catch (e) {
-                    console.warn("Couldn't notify friend request sender:", e.message);
-                }
-            }
-        } else {
-            await updateDoc(ref, { status: "declined" });
+        const result = await runTransaction(db, async (tx) => {
+            const snap = await tx.get(ref);
+            if (!snap.exists()) throw new Error("This friend request no longer exists.");
+            const data = snap.data();
+            if (data.status !== "pending") return { changed: false, data };
+            tx.update(ref, accept
+                ? { status: "accepted", toAvatar: profile.avatar || "", toName: profile.name || "Commander" }
+                : { status: "declined" });
+            return { changed: true, data };
+        });
+
+        // Tell the sender, in the background: the friendship already exists,
+        // so the tap shouldn't wait on a second write over a slow connection.
+        if (accept && result.changed && result.data.fromUid) {
+            notifyFriendAccepted(reqId, result.data, profile)
+                .catch(e => console.warn("Couldn't notify friend request sender:", e.message));
         }
+        return { changed: result.changed, status: result.changed ? (accept ? "accepted" : "declined") : result.data.status };
+    }
+
+    // One message per request: the id includes when the request was sent, so
+    // a fresh request after unfriending gets its own message again.
+    async function notifyFriendAccepted(reqId, reqData, profile) {
+        const notifId = `friendAccepted_${reqId}_${reqData.createdAt || 0}`;
+        await setDoc(doc(db, "users", reqData.fromUid, "personalNotifications", notifId), {
+            type: "friendAccepted",
+            title: `🎉 ${profile.name || "Commander"} accepted your friend request!`,
+            body: "You're now friends — tap below to start chatting.",
+            fromUid: currentUser.uid,
+            fromName: profile.name || "Commander",
+            fromAvatar: profile.avatar || "",
+            createdAt: Date.now(),
+            read: false
+        });
     }
 
     /* ---- Personal (per-user) notifications ----

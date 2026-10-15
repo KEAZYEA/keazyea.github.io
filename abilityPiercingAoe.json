@@ -8,7 +8,8 @@
         "projectileSpeed": 60,
         "blinkDistance": 9,
         "cooldown": 11,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": null
     },
     "accurateMerida_Powershot_2": {
         "key": "accurateMerida_Powershot_2",
@@ -19,7 +20,8 @@
         "projectileSpeed": 60,
         "blinkDistance": 9,
         "cooldown": 11,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": null
     },
     "accurateMerida_Powershot_3": {
         "key": "accurateMerida_Powershot_3",
@@ -30,7 +32,8 @@
         "projectileSpeed": 60,
         "blinkDistance": 9,
         "cooldown": 11,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": null
     },
     "accurateMerida_Powershot_4": {
         "key": "accurateMerida_Powershot_4",
@@ -41,7 +44,8 @@
         "projectileSpeed": 60,
         "blinkDistance": 9,
         "cooldown": 10,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": null
     },
     "accurateMerida_Powershot_5": {
         "key": "accurateMerida_Powershot_5",
@@ -52,7 +56,8 @@
         "projectileSpeed": 60,
         "blinkDistance": 9,
         "cooldown": 10,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": null
     },
     "accurateMerida_Powershot_6": {
         "key": "accurateMerida_Powershot_6",
@@ -63,7 +68,8 @@
         "projectileSpeed": 60,
         "blinkDistance": 9,
         "cooldown": 10,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": null
     },
     "accurateMerida_Powershot_7": {
         "key": "accurateMerida_Powershot_7",
@@ -74,7 +80,8 @@
         "projectileSpeed": 60,
         "blinkDistance": 9,
         "cooldown": 10,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": null
     },
     "accurateMerida_Powershot_8": {
         "key": "accurateMerida_Powershot_8",
@@ -85,7 +92,8 @@
         "projectileSpeed": 60,
         "blinkDistance": 9,
         "cooldown": 9,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": null
     },
     "accurateMerida_Powershot_9": {
         "key": "accurateMerida_Powershot_9",
@@ -96,7 +104,8 @@
         "projectileSpeed": 60,
         "blinkDistance": 9,
         "cooldown": 9,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": null
     },
     "accurateMerida_Powershot_10": {
         "key": "accurateMerida_Powershot_10",
@@ -107,6 +116,7 @@
         "projectileSpeed": 60,
         "blinkDistance": 9,
         "cooldown": 9,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": null
     }
 }

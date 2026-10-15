@@ -82,5 +82,11 @@
     },
     "throwImmune": {
         "key": "throwImmune"
+    },
+    "lightningImmune": {
+        "key": "lightningImmune"
+    },
+    "castImmuneSummon": {
+        "key": "castImmuneSummon"
     }
 }

@@ -368,5 +368,20 @@
         "key": "throwImmune_isHero",
         "abilityRestrictionId": "throwImmune",
         "statId": "isHero"
+    },
+    "castImmuneSummon_castImmuneSummon": {
+        "key": "castImmuneSummon_castImmuneSummon",
+        "abilityRestrictionId": "castImmuneSummon",
+        "statId": "castImmuneSummon"
+    },
+    "castImmune_castImmuneSummon": {
+        "key": "castImmune_castImmuneSummon",
+        "abilityRestrictionId": "castImmune",
+        "statId": "castImmuneSummon"
+    },
+    "lightningImmune_lightningImmune": {
+        "key": "lightningImmune_lightningImmune",
+        "abilityRestrictionId": "lightningImmune",
+        "statId": "lightningImmune"
     }
 }

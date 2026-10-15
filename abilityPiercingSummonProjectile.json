@@ -9,7 +9,8 @@
         "summonedTroopId": "miniStoneGolem",
         "triggerNumber": 4,
         "distance": 12,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": null
     },
     "stoneGolem_bowlder_2": {
         "key": "stoneGolem_bowlder_2",
@@ -21,7 +22,8 @@
         "summonedTroopId": "miniStoneGolem",
         "triggerNumber": 4,
         "distance": 12,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": null
     },
     "stoneGolem_bowlder_3": {
         "key": "stoneGolem_bowlder_3",
@@ -33,7 +35,8 @@
         "summonedTroopId": "miniStoneGolem",
         "triggerNumber": 4,
         "distance": 12,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": null
     },
     "stoneGolem_bowlder_4": {
         "key": "stoneGolem_bowlder_4",
@@ -45,7 +48,8 @@
         "summonedTroopId": "miniStoneGolem",
         "triggerNumber": 4,
         "distance": 12,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": null
     },
     "stoneGolem_bowlder_5": {
         "key": "stoneGolem_bowlder_5",
@@ -57,7 +61,8 @@
         "summonedTroopId": "miniStoneGolem",
         "triggerNumber": 4,
         "distance": 12,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": null
     },
     "stoneGolem_bowlder_6": {
         "key": "stoneGolem_bowlder_6",
@@ -69,7 +74,8 @@
         "summonedTroopId": "miniStoneGolem",
         "triggerNumber": 4,
         "distance": 12,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": null
     },
     "stoneGolem_bowlder_7": {
         "key": "stoneGolem_bowlder_7",
@@ -81,7 +87,8 @@
         "summonedTroopId": "miniStoneGolem",
         "triggerNumber": 4,
         "distance": 12,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": null
     },
     "stoneGolem_bowlder_8": {
         "key": "stoneGolem_bowlder_8",
@@ -93,7 +100,8 @@
         "summonedTroopId": "miniStoneGolem",
         "triggerNumber": 4,
         "distance": 12,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": null
     },
     "stoneGolem_bowlder_9": {
         "key": "stoneGolem_bowlder_9",
@@ -105,7 +113,8 @@
         "summonedTroopId": "miniStoneGolem",
         "triggerNumber": 4,
         "distance": 12,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": null
     },
     "stoneGolem_bowlder_10": {
         "key": "stoneGolem_bowlder_10",
@@ -117,6 +126,7 @@
         "summonedTroopId": "miniStoneGolem",
         "triggerNumber": 4,
         "distance": 12,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": null
     }
 }

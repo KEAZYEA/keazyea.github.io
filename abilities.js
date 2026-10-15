@@ -1,5 +1,13 @@
 var abilityData = {};
 var abilityInfoKeys = new Set();
+// abilityInfo.json entries (titles/descriptions) kept apart too: another
+// file can reuse the same key for the ability's effect (A.D.E.P.T.'s
+// "humanAdept_damage_resist"), which overwrites it in abilityData.
+var abilityInfoData = {};
+// Always-on abilities whose key has no level number because they're the
+// same at every level, e.g. A.D.E.P.T.'s "humanAdept_damage_resist".
+var passiveAbilityKeys = new Set();
+const PASSIVE_ABILITY_FILES = new Set(["abilityInitialModifier.json", "abilityInitialEffect.json"]);
 
 function loadAbilities(loadJSON) {
 
@@ -116,10 +124,12 @@ function loadAbilities(loadJSON) {
 
       results.forEach((data, index) => {
         let isInfoFile = abilityFiles[index] === "abilityInfo.json";
+        let isPassiveFile = PASSIVE_ABILITY_FILES.has(abilityFiles[index]);
         for (let key in data) {
           abilityData[key] = data[key];
           // only entries from abilityInfo.json are eligible for method 1 matching
-          if (isInfoFile) abilityInfoKeys.add(key);
+          if (isInfoFile) { abilityInfoKeys.add(key); abilityInfoData[key] = data[key]; }
+          if (isPassiveFile) passiveAbilityKeys.add(key);
         }
       });
 
@@ -157,6 +167,9 @@ function cleanAbility(raw) {
       console.warn("Suspicious modifier match for", modKey, mods.length, "entries");
     }
     mods.forEach(m => cleaned[m.type] = m.value);
+    // A damage-taken multiplier of exactly 1 changes nothing (A.D.E.P.T.'s
+    // lightning entry), so it isn't listed as if it did something.
+    ["piercingDamageMultiplier", "lightningDamageMultiplier"].forEach(k => { if (cleaned[k] === 1) delete cleaned[k]; });
   }
 
   delete cleaned.modifier;
@@ -218,6 +231,10 @@ function getAbilitiesForUnit(unitKey, level) {
       } else if (!isNaN(parseInt(remainder[remainder.length - 1]))) {
         abilityLevel = parseInt(remainder[remainder.length - 1]);
         abilityName = remainder.slice(0, -1).join("_");
+      } else if (passiveAbilityKeys.has(key) && remainder.every(p => isNaN(parseInt(p)))) {
+        // Always-on ability with no level in its key: applies from level 1 up.
+        abilityLevel = 1;
+        abilityName = remainder.join("_");
       } else {
         continue;
       }
@@ -251,7 +268,7 @@ if (!bestAbilities[abilityName] || abilityLevel > bestAbilities[abilityName].lev
 
 function getAbilityDescription(abilityInfoId) {
     if (!abilityInfoId || !abilityData) return "";
-    let entry = abilityData[abilityInfoId];
+    let entry = abilityInfoData[abilityInfoId] || abilityData[abilityInfoId];
     if (!entry) return "";
     let locKey = entry.desctiption_Localized || entry.description_Localized; // support both spellings
     if (!locKey) return "";

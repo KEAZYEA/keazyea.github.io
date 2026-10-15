@@ -5662,8 +5662,14 @@ window.removeClanIconPreview = function () {
             window.toggleFriendReqPanel();
         });
 
-        function renderFriendRequests(requests) {
-            incomingRequests = requests;
+        // Requests already answered on this page. Hidden the moment Accept or
+        // Decline is tapped, so a slow connection can't invite a second tap;
+        // they'd drop out of the live list anyway once the answer is saved.
+        const answeringRequests = new Set();
+
+        function renderFriendRequests(allRequests) {
+            incomingRequests = allRequests;
+            const requests = allRequests.filter(r => !answeringRequests.has(r.id));
             const badge = document.getElementById("friendReqBadge");
             badge.textContent = requests.length > 9 ? "9+" : String(requests.length);
             badge.classList.toggle("show", requests.length > 0);
@@ -5688,9 +5694,15 @@ window.removeClanIconPreview = function () {
         }
 
         window.respondReq = async function (reqId, accept) {
+            if (answeringRequests.has(reqId)) return;
+            answeringRequests.add(reqId);
+            renderFriendRequests(incomingRequests);
             try {
                 await AppState.respondToFriendRequest(reqId, accept);
             } catch (e) {
+                // Didn't go through: put it back so they can try again.
+                answeringRequests.delete(reqId);
+                renderFriendRequests(incomingRequests);
                 showInfoModal("Couldn't respond", e.message);
             }
         };

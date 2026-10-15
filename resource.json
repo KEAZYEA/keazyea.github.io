@@ -7,10 +7,6 @@
         "key": "goldChest",
         "prefabPath": "Sprites\/ChestPresentation\/gold_chest"
     },
-    "dummyIcon": {
-        "key": "dummyIcon",
-        "prefabPath": "Chests\/ChestTroops"
-    },
     "ability_assassin_teleport": {
         "key": "ability_assassin_teleport",
         "prefabPath": "AbilitiesIcons\/assassin_teleport"
@@ -35,10 +31,6 @@
         "key": "cardChest_4",
         "prefabPath": "CardChests\/card_star_4"
     },
-    "gachaSceneDefinition": {
-        "key": "gachaSceneDefinition",
-        "prefabPath": "Cutscenes\/GachaSceneDefinition"
-    },
     "epicChest": {
         "key": "epicChest",
         "prefabPath": "Sprites\/ChestPresentation\/epic_chest"
@@ -47,10 +39,6 @@
         "key": "ability_alc_heal",
         "prefabPath": "AbilitiesIcons\/alc_heal"
     },
-    "ability_Dark_knight_Furious_anger": {
-        "key": "ability_Dark_knight_Furious_anger",
-        "prefabPath": "AbilitiesIcons\/Dark_knight_Furious_anger"
-    },
     "ability_Dark_knight_vengeance_strike": {
         "key": "ability_Dark_knight_vengeance_strike",
         "prefabPath": "AbilitiesIcons\/Dark_knight_vengeance_strike"
@@ -58,14 +46,6 @@
     "ability_Dragon_purifying_flame": {
         "key": "ability_Dragon_purifying_flame",
         "prefabPath": "AbilitiesIcons\/Dragon_purifying_flame"
-    },
-    "ability_Dragon_Primal_fear": {
-        "key": "ability_Dragon_Primal_fear",
-        "prefabPath": "AbilitiesIcons\/Dragon_Primal_fear"
-    },
-    "ability_General_combat_drill": {
-        "key": "ability_General_combat_drill",
-        "prefabPath": "AbilitiesIcons\/General_combat_drill"
     },
     "ability_General_Iroh_Strike": {
         "key": "ability_General_Iroh_Strike",
@@ -123,10 +103,6 @@
         "key": "chest_coin",
         "prefabPath": "Sprites\/StoreProducts\/chest_coin"
     },
-    "chest_coin_wood": {
-        "key": "chest_coin_wood",
-        "prefabPath": "Sprites\/StoreProducts\/chest_coin_wood"
-    },
     "chest_gem": {
         "key": "chest_gem",
         "prefabPath": "Sprites\/StoreProducts\/chest_gem"
@@ -142,10 +118,6 @@
     "small_gem": {
         "key": "small_gem",
         "prefabPath": "Sprites\/StoreProducts\/small_gem"
-    },
-    "icon_offer_dragon": {
-        "key": "icon_offer_dragon",
-        "prefabPath": "Sprites\/Icons\/icon_offer_dragon"
     },
     "league_bronze_ui_01": {
         "key": "league_bronze_ui_01",
@@ -243,18 +215,6 @@
         "key": "territory_winter",
         "prefabPath": "Sprites\/Territories\/winter"
     },
-    "battlePassFlag_popup_01": {
-        "key": "battlePassFlag_popup_01",
-        "prefabPath": "BattlePassHeaders\/battlePassFlag_popup_01"
-    },
-    "battlePassFlag_popup_02": {
-        "key": "battlePassFlag_popup_02",
-        "prefabPath": "BattlePassHeaders\/battlePassFlag_popup_02"
-    },
-    "battlePassFlag_popup_03": {
-        "key": "battlePassFlag_popup_03",
-        "prefabPath": "BattlePassHeaders\/battlePassFlag_popup_03"
-    },
     "ability_abilityHex": {
         "key": "ability_abilityHex",
         "prefabPath": "AbilitiesIcons\/abilityHex"
@@ -286,10 +246,6 @@
     "ability_abilityResurrection": {
         "key": "ability_abilityResurrection",
         "prefabPath": "AbilitiesIcons\/abilityResurrection"
-    },
-    "battlePassFlag_popup_04": {
-        "key": "battlePassFlag_popup_04",
-        "prefabPath": "BattlePassHeaders\/battlePassFlag_popup_04"
     },
     "hand_of_midas": {
         "key": "hand_of_midas",
@@ -491,10 +447,6 @@
         "key": "ability_BossSpiderQueen_targetMinions",
         "prefabPath": "BossPlayerAbilitiesIcons\/BossSpiderQueen_targetMinions"
     },
-    "ability_fireMage_rebirth": {
-        "key": "ability_fireMage_rebirth",
-        "prefabPath": "AbilitiesIcons\/fireMage_rebirth"
-    },
     "ability_fireMage_sunrise": {
         "key": "ability_fireMage_sunrise",
         "prefabPath": "AbilitiesIcons\/fireMage_sunrise"
@@ -503,10 +455,6 @@
         "key": "ability_lightningElemental_stormCloud",
         "prefabPath": "AbilitiesIcons\/LightningElemental_StormCloud"
     },
-    "ability_undeadShaman_multiShot": {
-        "key": "ability_undeadShaman_multiShot",
-        "prefabPath": "AbilitiesIcons\/UndeadShaman_multiShot"
-    },
     "ability_windElemental_abilityVortex": {
         "key": "ability_windElemental_abilityVortex",
         "prefabPath": "AbilitiesIcons\/WindElemental_abilityVortex"
@@ -514,10 +462,6 @@
     "ability_waterMage_waterPuddles": {
         "key": "ability_waterMage_waterPuddles",
         "prefabPath": "AbilitiesIcons\/WaterMage_torrentStorm"
-    },
-    "battlePassFlag_popup_05": {
-        "key": "battlePassFlag_popup_05",
-        "prefabPath": "BattlePassHeaders\/battlePassFlag_popup_05"
     },
     "battlePassFlag_popup_offers_05": {
         "key": "battlePassFlag_popup_offers_05",
@@ -554,14 +498,6 @@
     "icon_talent_book": {
         "key": "icon_talent_book",
         "prefabPath": "Sprites\/StoreProducts\/icon_talent_book"
-    },
-    "icon_key": {
-        "key": "icon_key",
-        "prefabPath": "Sprites\/StoreProducts\/icon_key"
-    },
-    "ability_shadowHuntress_shadowBlink": {
-        "key": "ability_shadowHuntress_shadowBlink",
-        "prefabPath": "AbilitiesIcons\/ShadowHuntress_shadowBlink"
     },
     "ability_bossKraken_passive_melee": {
         "key": "ability_bossKraken_passive_melee",
@@ -611,21 +547,9 @@
         "key": "ability_lordInquisitor_holyFire",
         "prefabPath": "AbilitiesIcons\/lordInquisitor_holyFire"
     },
-    "battlePassFlag_popup_06": {
-        "key": "battlePassFlag_popup_06",
-        "prefabPath": "BattlePassHeaders\/battlePassFlag_popup_06"
-    },
-    "battlePassFlag_popup_07": {
-        "key": "battlePassFlag_popup_07",
-        "prefabPath": "BattlePassHeaders\/battlePassFlag_popup_07"
-    },
     "ability_drunkTank_burp": {
         "key": "ability_drunkTank_burp",
         "prefabPath": "AbilitiesIcons\/drunkTank_burp"
-    },
-    "ability_pirateCannoneer_flamingBall": {
-        "key": "ability_pirateCannoneer_flamingBall",
-        "prefabPath": "AbilitiesIcons\/pirateCannoneer_flamingBall"
     },
     "ability_bardHero_courageSong": {
         "key": "ability_bardHero_courageSong",
@@ -674,10 +598,6 @@
     "ability_demonTank_primalFear": {
         "key": "ability_demonTank_primalFear",
         "prefabPath": "AbilitiesIcons\/demonTank_primalFear"
-    },
-    "ability_griffinRider_lightningSummon": {
-        "key": "ability_griffinRider_lightningSummon",
-        "prefabPath": "AbilitiesIcons\/griffinRider_lightningSummon"
     },
     "ability_axeThrowers_Rage": {
         "key": "ability_axeThrowers_Rage",
@@ -746,10 +666,6 @@
     "unlock_hero_slot_reward": {
         "key": "unlock_hero_slot_reward",
         "prefabPath": "Sprites\/Icons\/unlock_hero_slot_reward"
-    },
-    "ability_bossSand_passive_melee": {
-        "key": "ability_bossSand_passive_melee",
-        "prefabPath": "BossAbilitiesIcons\/bossSand_passive_melee"
     },
     "ability_bossSand_passive_range": {
         "key": "ability_bossSand_passive_range",
@@ -882,5 +798,21 @@
     "battlePassFlag_popupLevels_18": {
         "key": "battlePassFlag_popupLevels_18",
         "prefabPath": "BattlePassHeaders\/battlePassFlag_popupLevels_18"
+    },
+    "chest_coin_wood": {
+        "key": "chest_coin_wood",
+        "prefabPath": "Sprites\/StoreProducts\/chest_coin_wood"
+    },
+    "ability_bossIceSnake_iceArrows": {
+        "key": "ability_bossIceSnake_iceArrows",
+        "prefabPath": "BossAbilitiesIcons\/bossIceSnake_iceArrows"
+    },
+    "ability_bossIceSnake_summon": {
+        "key": "ability_bossIceSnake_summon",
+        "prefabPath": "BossAbilitiesIcons\/bossIceSnake_summon"
+    },
+    "ability_humanAdept_damage_resist": {
+        "key": "ability_humanAdept_damage_resist",
+        "prefabPath": "AbilitiesIcons\/HumanAdept_damage_resist"
     }
 }

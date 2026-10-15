@@ -18,5 +18,10 @@
         "key": "tombLibraryInitial",
         "abilityInfoId": "tombInitial",
         "effectId": "tombLibraryInitial"
+    },
+    "humanAdeptInitial": {
+        "key": "humanAdeptInitial",
+        "abilityInfoId": "humanAdeptInitial",
+        "effectId": "humanAdeptInitial"
     }
 }

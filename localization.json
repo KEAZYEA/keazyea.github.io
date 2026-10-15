@@ -10258,5 +10258,161 @@
     "clan_message_revenge_helping": {
         "key": "clan_message_revenge_helping",
         "value": "2564"
+    },
+    "description_clan_members_tab_activity_arena": {
+        "key": "description_clan_members_tab_activity_arena",
+        "value": "2565"
+    },
+    "description_clan_members_tab_activity_boss": {
+        "key": "description_clan_members_tab_activity_boss",
+        "value": "2566"
+    },
+    "description_clan_members_tab_activity_clanChest": {
+        "key": "description_clan_members_tab_activity_clanChest",
+        "value": "2567"
+    },
+    "boss_dragon_gold_passive_ability1_description": {
+        "key": "boss_dragon_gold_passive_ability1_description",
+        "value": "2568"
+    },
+    "boss_dragon_gold_passive_ability2_description": {
+        "key": "boss_dragon_gold_passive_ability2_description",
+        "value": "2569"
+    },
+    "boss_dragon_gold_ability1_description": {
+        "key": "boss_dragon_gold_ability1_description",
+        "value": "2570"
+    },
+    "boss_dragon_gold_ability2_description": {
+        "key": "boss_dragon_gold_ability2_description",
+        "value": "2571"
+    },
+    "boss_dragon_gold_ability3_description": {
+        "key": "boss_dragon_gold_ability3_description",
+        "value": "2572"
+    },
+    "SquadEvent_stunToad_Title": {
+        "key": "SquadEvent_stunToad_Title",
+        "value": "2573"
+    },
+    "questCriteriaAcquireToad": {
+        "key": "questCriteriaAcquireToad",
+        "value": "2574"
+    },
+    "questCriteriaOwnTroopsToadLvl2": {
+        "key": "questCriteriaOwnTroopsToadLvl2",
+        "value": "2575"
+    },
+    "questCriteriaOwnTroopsToadLvl3": {
+        "key": "questCriteriaOwnTroopsToadLvl3",
+        "value": "2576"
+    },
+    "questCriteriaOwnTroopsToadLvl4": {
+        "key": "questCriteriaOwnTroopsToadLvl4",
+        "value": "2577"
+    },
+    "questCriteriaOwnTroopsToadLvl5": {
+        "key": "questCriteriaOwnTroopsToadLvl5",
+        "value": "2578"
+    },
+    "description_clan_members_tab_activity_goldKeeper": {
+        "key": "description_clan_members_tab_activity_goldKeeper",
+        "value": "2579"
+    },
+    "caption_clan_members_gold_keeper_summon": {
+        "key": "caption_clan_members_gold_keeper_summon",
+        "value": "2580"
+    },
+    "caption_extended_info_gold_keeper_summon": {
+        "key": "caption_extended_info_gold_keeper_summon",
+        "value": "2581"
+    },
+    "caption_clan_members_hours_ago_format": {
+        "key": "caption_clan_members_hours_ago_format",
+        "value": "2582"
+    },
+    "caption_clan_members_less_hour_ago": {
+        "key": "caption_clan_members_less_hour_ago",
+        "value": "2583"
+    },
+    "caption_clan_members_rookie_format": {
+        "key": "caption_clan_members_rookie_format",
+        "value": "2584"
+    },
+    "caption_vip_gold_keeper": {
+        "key": "caption_vip_gold_keeper",
+        "value": "2585"
+    },
+    "caption_vip_gold_keeper_bottom": {
+        "key": "caption_vip_gold_keeper_bottom",
+        "value": "2586"
+    },
+    "Troop_HumanAdept_Name": {
+        "key": "Troop_HumanAdept_Name",
+        "value": "2587"
+    },
+    "Troop_HumanAdept_Description": {
+        "key": "Troop_HumanAdept_Description",
+        "value": "2588"
+    },
+    "humanAdept_damage_resist_title": {
+        "key": "humanAdept_damage_resist_title",
+        "value": "2589"
+    },
+    "humanAdept_damage_resist_description": {
+        "key": "humanAdept_damage_resist_description",
+        "value": "2590"
+    },
+    "boss_IceSnake_name": {
+        "key": "boss_IceSnake_name",
+        "value": "2591"
+    },
+    "boss_IceSnake_name_description": {
+        "key": "boss_IceSnake_name_description",
+        "value": "2592"
+    },
+    "boss_IceSnake_ability2_name": {
+        "key": "boss_IceSnake_ability2_name",
+        "value": "2593"
+    },
+    "boss_IceSnake_ability2_description": {
+        "key": "boss_IceSnake_ability2_description",
+        "value": "2594"
+    },
+    "boss_IceSnake_ability1_name": {
+        "key": "boss_IceSnake_ability1_name",
+        "value": "2595"
+    },
+    "boss_IceSnake_ability1_description": {
+        "key": "boss_IceSnake_ability1_description",
+        "value": "2596"
+    },
+    "caption_boss_store": {
+        "key": "caption_boss_store",
+        "value": "2597"
+    },
+    "caption_boss_store_extra": {
+        "key": "caption_boss_store_extra",
+        "value": "2598"
+    },
+    "caption_summon": {
+        "key": "caption_summon",
+        "value": "2599"
+    },
+    "abilityEffect_damage_reduction_no_percent": {
+        "key": "abilityEffect_damage_reduction_no_percent",
+        "value": "2600"
+    },
+    "boss_shop_offer_gigantic": {
+        "key": "boss_shop_offer_gigantic",
+        "value": "2601"
+    },
+    "troop_get_from_bossIceSnake": {
+        "key": "troop_get_from_bossIceSnake",
+        "value": "2602"
+    },
+    "troop_get_from_boss": {
+        "key": "troop_get_from_boss",
+        "value": "2603"
     }
 }

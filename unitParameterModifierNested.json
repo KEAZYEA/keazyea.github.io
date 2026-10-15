@@ -3844,7 +3844,7 @@
         "modifierKey": "reflect_aura_cactus_1",
         "type": "reflectSum",
         "value": 0.05,
-        "caption": "talentEffect_reflectDamage",
+        "caption": "abilityEffect_reflect",
         "format": "percent"
     },
     "reflect_aura_cactus_2_1": {
@@ -3852,7 +3852,7 @@
         "modifierKey": "reflect_aura_cactus_2",
         "type": "reflectSum",
         "value": 0.08,
-        "caption": "talentEffect_reflectDamage",
+        "caption": "abilityEffect_reflect",
         "format": "percent"
     },
     "reflect_aura_cactus_3_1": {
@@ -3860,7 +3860,7 @@
         "modifierKey": "reflect_aura_cactus_3",
         "type": "reflectSum",
         "value": 0.11,
-        "caption": "talentEffect_reflectDamage",
+        "caption": "abilityEffect_reflect",
         "format": "percent"
     },
     "reflect_aura_cactus_4_1": {
@@ -3868,7 +3868,7 @@
         "modifierKey": "reflect_aura_cactus_4",
         "type": "reflectSum",
         "value": 0.14,
-        "caption": "talentEffect_reflectDamage",
+        "caption": "abilityEffect_reflect",
         "format": "percent"
     },
     "reflect_aura_cactus_5_1": {
@@ -3876,7 +3876,7 @@
         "modifierKey": "reflect_aura_cactus_5",
         "type": "reflectSum",
         "value": 0.17,
-        "caption": "talentEffect_reflectDamage",
+        "caption": "abilityEffect_reflect",
         "format": "percent"
     },
     "reflect_aura_cactus_6_1": {
@@ -3884,7 +3884,7 @@
         "modifierKey": "reflect_aura_cactus_6",
         "type": "reflectSum",
         "value": 0.21,
-        "caption": "talentEffect_reflectDamage",
+        "caption": "abilityEffect_reflect",
         "format": "percent"
     },
     "reflect_aura_cactus_7_1": {
@@ -3892,7 +3892,7 @@
         "modifierKey": "reflect_aura_cactus_7",
         "type": "reflectSum",
         "value": 0.25,
-        "caption": "talentEffect_reflectDamage",
+        "caption": "abilityEffect_reflect",
         "format": "percent"
     },
     "reflect_aura_cactus_8_1": {
@@ -3900,7 +3900,7 @@
         "modifierKey": "reflect_aura_cactus_8",
         "type": "reflectSum",
         "value": 0.29,
-        "caption": "talentEffect_reflectDamage",
+        "caption": "abilityEffect_reflect",
         "format": "percent"
     },
     "reflect_aura_cactus_9_1": {
@@ -3908,7 +3908,7 @@
         "modifierKey": "reflect_aura_cactus_9",
         "type": "reflectSum",
         "value": 0.33,
-        "caption": "talentEffect_reflectDamage",
+        "caption": "abilityEffect_reflect",
         "format": "percent"
     },
     "reflect_aura_cactus_10_1": {
@@ -3916,7 +3916,7 @@
         "modifierKey": "reflect_aura_cactus_10",
         "type": "reflectSum",
         "value": 0.37,
-        "caption": "talentEffect_reflectDamage",
+        "caption": "abilityEffect_reflect",
         "format": "percent"
     },
     "library_cactus_rangeHpDebuff_1_1": {
@@ -3950,5 +3950,53 @@
         "value": 0.1,
         "caption": "attackBuffHuman",
         "format": "percent"
+    },
+    "library_toad_rangeHpDebuff_1_1": {
+        "key": "library_toad_rangeHpDebuff_1_1",
+        "modifierKey": "library_toad_rangeHpDebuff_1",
+        "type": "hpMultiplier",
+        "value": 0.8,
+        "caption": "hpDebuffRange",
+        "format": "oneMinusPercent"
+    },
+    "library_toad_aoeBuff_1_1": {
+        "key": "library_toad_aoeBuff_1_1",
+        "modifierKey": "library_toad_aoeBuff_1",
+        "type": "aoeAttackMultiplier",
+        "value": 0.1,
+        "caption": "aoeBuff",
+        "format": "percent"
+    },
+    "library_toad_healBuff_1_1": {
+        "key": "library_toad_healBuff_1_1",
+        "modifierKey": "library_toad_healBuff_1",
+        "type": "healMultiplier",
+        "value": 1.1,
+        "caption": "healBuff",
+        "format": "minusOnePercent"
+    },
+    "library_toad_attackBuffHuman_1_1": {
+        "key": "library_toad_attackBuffHuman_1_1",
+        "modifierKey": "library_toad_attackBuffHuman_1",
+        "type": "attackMultiplier",
+        "value": 0.1,
+        "caption": "attackBuffHuman",
+        "format": "percent"
+    },
+    "humanAdept_piercingDamageMultiplier": {
+        "key": "humanAdept_piercingDamageMultiplier",
+        "modifierKey": "humanAdept_damage_resist",
+        "type": "piercingDamageMultiplier",
+        "value": 0.25,
+        "caption": "abilityEffect_damage_reduction_no_percent",
+        "format": "oneMinusPercent"
+    },
+    "humanAdept_lightningDamageMultiplier": {
+        "key": "humanAdept_lightningDamageMultiplier",
+        "modifierKey": "humanAdept_damage_resist",
+        "type": "lightningDamageMultiplier",
+        "value": 1,
+        "caption": "abilityEffect_damage_reduction_no_percent",
+        "format": "oneMinusPercent"
     }
 }
