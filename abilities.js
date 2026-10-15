@@ -8,6 +8,9 @@ var abilityInfoData = {};
 // same at every level, e.g. A.D.E.P.T.'s "humanAdept_damage_resist".
 var passiveAbilityKeys = new Set();
 const PASSIVE_ABILITY_FILES = new Set(["abilityInitialModifier.json", "abilityInitialEffect.json"]);
+// Attacks the game classes as piercing (shots that pass through units) —
+// the ones damage-taken modifiers like A.D.E.P.T.'s shield refer to.
+var piercingAbilityKeys = new Set();
 
 function loadAbilities(loadJSON) {
 
@@ -125,11 +128,13 @@ function loadAbilities(loadJSON) {
       results.forEach((data, index) => {
         let isInfoFile = abilityFiles[index] === "abilityInfo.json";
         let isPassiveFile = PASSIVE_ABILITY_FILES.has(abilityFiles[index]);
+        let isPiercingFile = abilityFiles[index].startsWith("abilityPiercing");
         for (let key in data) {
           abilityData[key] = data[key];
           // only entries from abilityInfo.json are eligible for method 1 matching
           if (isInfoFile) { abilityInfoKeys.add(key); abilityInfoData[key] = data[key]; }
           if (isPassiveFile) passiveAbilityKeys.add(key);
+          if (isPiercingFile) piercingAbilityKeys.add(key);
         }
       });
 
