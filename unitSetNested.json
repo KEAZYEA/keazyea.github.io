@@ -1183,5 +1183,25 @@
         "key": "Cactus_BannedFromFuse",
         "unitSetId": "BannedFromFuse",
         "unit": "cactus"
+    },
+    "HumanAdept": {
+        "key": "HumanAdept",
+        "unitSetId": "Human",
+        "unit": "humanAdept"
+    },
+    "HumanAdept_Melee": {
+        "key": "HumanAdept_Melee",
+        "unitSetId": "Melee",
+        "unit": "humanAdept"
+    },
+    "HumanAdept_Tank": {
+        "key": "HumanAdept_Tank",
+        "unitSetId": "Tank",
+        "unit": "humanAdept"
+    },
+    "HumanAdept_BannedFromFuse": {
+        "key": "HumanAdept_BannedFromFuse",
+        "unitSetId": "BannedFromFuse",
+        "unit": "humanAdept"
     }
 }

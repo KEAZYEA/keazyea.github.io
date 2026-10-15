@@ -2788,7 +2788,14 @@ function truncateInboxBody(str, maxLen = 100) {
 // on an item can look itself up by index and show the full text.
 let currentInboxItems = [];
 
-        function renderFriendReqsHome(requests) {
+        // Same as social.html: a request disappears the moment it's answered,
+        // so a slow connection can't invite a second (or fifth) tap.
+        const answeringRequestsHome = new Set();
+        let latestFriendReqsHome = [];
+
+        function renderFriendReqsHome(allRequests) {
+            latestFriendReqsHome = allRequests;
+            const requests = allRequests.filter(r => !answeringRequestsHome.has(r.id));
             const badge = document.getElementById("friendReqBadgeHome");
             badge.textContent = requests.length > 9 ? "9+" : String(requests.length);
             badge.style.display = requests.length > 0 ? "flex" : "none";
@@ -2812,9 +2819,15 @@ let currentInboxItems = [];
             `).join("");
         }
         window.respondReqHome = async function (reqId, accept) {
+            if (answeringRequestsHome.has(reqId)) return;
+            answeringRequestsHome.add(reqId);
+            renderFriendReqsHome(latestFriendReqsHome);
             try {
                 await AppState.respondToFriendRequest(reqId, accept);
             } catch (e) {
+                // Didn't go through: put it back so they can try again.
+                answeringRequestsHome.delete(reqId);
+                renderFriendReqsHome(latestFriendReqsHome);
                 alert(e.message);
             }
         };

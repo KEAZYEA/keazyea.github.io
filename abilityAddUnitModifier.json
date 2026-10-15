@@ -2095,5 +2095,41 @@
         "group": "",
         "applyToBoss": false,
         "keepWhenSourceKilled": false
+    },
+    "library_toad_rangeHpDebuff_1": {
+        "key": "library_toad_rangeHpDebuff_1",
+        "abilityInfoId": "library_toad_rangeHpDebuff",
+        "modifier": "library_toad_rangeHpDebuff_1",
+        "units": "Range",
+        "group": "",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_toad_aoeBuff_1": {
+        "key": "library_toad_aoeBuff_1",
+        "abilityInfoId": "library_toad_aoeBuff",
+        "modifier": "library_toad_aoeBuff_1",
+        "units": null,
+        "group": "",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_toad_healBuff_1": {
+        "key": "library_toad_healBuff_1",
+        "abilityInfoId": "library_toad_healBuff",
+        "modifier": "library_toad_healBuff_1",
+        "units": null,
+        "group": "",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
+    },
+    "library_toad_attackBuffHuman_1": {
+        "key": "library_toad_attackBuffHuman_1",
+        "abilityInfoId": "library_toad_attackBuffHuman",
+        "modifier": "library_toad_attackBuffHuman_1",
+        "units": "Human",
+        "group": "",
+        "applyToBoss": false,
+        "keepWhenSourceKilled": false
     }
 }

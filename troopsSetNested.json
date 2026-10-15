@@ -203,5 +203,15 @@
         "key": "cactus_Support",
         "troopsSetId": "Support",
         "troopsId": "cactus"
+    },
+    "humanAdept_Tank": {
+        "key": "humanAdept_Tank",
+        "troopsSetId": "Tank",
+        "troopsId": "humanAdept"
+    },
+    "humanAdept_Support": {
+        "key": "humanAdept_Support",
+        "troopsSetId": "Support",
+        "troopsId": "humanAdept"
     }
 }

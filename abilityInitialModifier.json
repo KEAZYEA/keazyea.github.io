@@ -103,5 +103,10 @@
         "key": "reflect_aura_cactus_10",
         "abilityInfoId": "reflect_aura_cactus",
         "modifier": "reflect_aura_cactus_10"
+    },
+    "humanAdept_damage_resist": {
+        "key": "humanAdept_damage_resist",
+        "abilityInfoId": "humanAdept_damage_resist",
+        "modifier": "humanAdept_damage_resist"
     }
 }

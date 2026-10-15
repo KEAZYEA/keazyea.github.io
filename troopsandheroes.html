@@ -229,6 +229,8 @@ let troopsCameFromCompare = false;
                ================================================================ */
 
             const statDescriptions = {
+                piercingDamageMultiplier: "How much less damage this unit takes from piercing projectiles (arrows, bolts and similar shots that pass through units). -75% means it takes only a quarter of the normal damage.",
+                lightningDamageMultiplier: "How much less damage this unit takes from lightning attacks.",
                 evasion: "Chance to completely dodge an incoming attack. Innate to every Trickster-role unit, scaling with the unit's level (0.5% per level, up to 5% at level 10).",
                 defaultDamageMultiplier: "How much less damage the affected units take. Shown as the reduction, so -32.5% means they take 32.5% less damage than normal.",
                 negativeDebuffDurationMultiplier: "How much shorter enemy debuffs last on the affected units. Shown as the reduction, so -80% means a debuff wears off in a fifth of its usual time.",
@@ -774,7 +776,16 @@ let troopsCameFromCompare = false;
                     .replace(/\b\w/g, c => c.toUpperCase()); // Title Case
             }
 
+            // Multipliers on damage the unit TAKES from one kind of attack
+            // (A.D.E.P.T.'s shield): 0.25 means 75% less, shown as -75%.
+            const damageTakenMultiplierLabels = {
+                piercingDamageMultiplier: "Damage Taken (Piercing)",
+                lightningDamageMultiplier: "Damage Taken (Lightning)"
+            };
             function formatStatValue(key, val, context = "troops") {
+    if (damageTakenMultiplierLabels[key] && typeof val === "number") {
+        return "-" + parseFloat(((1 - val) * 100).toFixed(2)) + "%";
+    }
     if (key === "upgradeCurrency" && val === "TalentSphere") {
         return "Books";
     }
@@ -828,6 +839,7 @@ let troopsCameFromCompare = false;
                 if (key === "damageMultiplier" && damageReceivedAbilities[abilityInfoId]) {
                     return "Damage Received";
                 }
+                if (damageTakenMultiplierLabels[key]) return damageTakenMultiplierLabels[key];
                 return formatKey(key);
             }
             function getStatDescription(key, abilityInfoId) {
@@ -871,7 +883,7 @@ let troopsCameFromCompare = false;
 
             function getAbilityDescription(abilityKey) {
     if (!abilityKey || !abilityData) return "";
-    let entry = abilityData[abilityKey];
+    let entry = (typeof abilityInfoData !== "undefined" && abilityInfoData[abilityKey]) || abilityData[abilityKey];
     if (!entry) return "";
     let locKey = entry.desctiption_Localized || entry.description_Localized; // support both spellings
     if (!locKey) return "";
@@ -881,7 +893,7 @@ let troopsCameFromCompare = false;
 }
             function getAbilityTitle(abilityInfoId) {
                 if (!abilityInfoId || !abilityData) return "";
-                let entry = abilityData[abilityInfoId];
+                let entry = (typeof abilityInfoData !== "undefined" && abilityInfoData[abilityInfoId]) || abilityData[abilityInfoId];
                 if (!entry) return "";
                 let locKey = entry.title_Localized;
                 if (!locKey) return "";

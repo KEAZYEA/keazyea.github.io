@@ -34,5 +34,9 @@
     "bossDragonGold2_DmgLvlUp": {
         "key": "bossDragonGold2_DmgLvlUp",
         "abilityInfoId": "bossDragonGold_DmgLvlUp"
+    },
+    "bossIceSnake_DmgLvlUp": {
+        "key": "bossIceSnake_DmgLvlUp",
+        "abilityInfoId": "bossIceSnake_DmgLvlUp"
     }
 }

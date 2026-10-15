@@ -11,7 +11,8 @@
         "projectileSpeed": 60,
         "distance": 70,
         "explodeOutsideLocation": false,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": "blockablePiercingProjectile"
     },
     "magicArcher_2_range": {
         "key": "magicArcher_2_range",
@@ -25,7 +26,8 @@
         "projectileSpeed": 60,
         "distance": 70,
         "explodeOutsideLocation": false,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": "blockablePiercingProjectile"
     },
     "magicArcher_3_range": {
         "key": "magicArcher_3_range",
@@ -39,7 +41,8 @@
         "projectileSpeed": 60,
         "distance": 70,
         "explodeOutsideLocation": false,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": "blockablePiercingProjectile"
     },
     "magicArcher_4_range": {
         "key": "magicArcher_4_range",
@@ -53,7 +56,8 @@
         "projectileSpeed": 60,
         "distance": 70,
         "explodeOutsideLocation": false,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": "blockablePiercingProjectile"
     },
     "magicArcher_5_range": {
         "key": "magicArcher_5_range",
@@ -67,7 +71,8 @@
         "projectileSpeed": 60,
         "distance": 70,
         "explodeOutsideLocation": false,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": "blockablePiercingProjectile"
     },
     "magicArcher_6_range": {
         "key": "magicArcher_6_range",
@@ -81,7 +86,8 @@
         "projectileSpeed": 60,
         "distance": 70,
         "explodeOutsideLocation": false,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": "blockablePiercingProjectile"
     },
     "magicArcher_7_range": {
         "key": "magicArcher_7_range",
@@ -95,7 +101,8 @@
         "projectileSpeed": 60,
         "distance": 70,
         "explodeOutsideLocation": false,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": "blockablePiercingProjectile"
     },
     "magicArcher_8_range": {
         "key": "magicArcher_8_range",
@@ -109,7 +116,8 @@
         "projectileSpeed": 60,
         "distance": 70,
         "explodeOutsideLocation": false,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": "blockablePiercingProjectile"
     },
     "magicArcher_9_range": {
         "key": "magicArcher_9_range",
@@ -123,7 +131,8 @@
         "projectileSpeed": 60,
         "distance": 70,
         "explodeOutsideLocation": false,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": "blockablePiercingProjectile"
     },
     "magicArcher_10_range": {
         "key": "magicArcher_10_range",
@@ -137,7 +146,8 @@
         "projectileSpeed": 60,
         "distance": 70,
         "explodeOutsideLocation": false,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": "blockablePiercingProjectile"
     },
     "drunkTank_barrel_1": {
         "key": "drunkTank_barrel_1",
@@ -151,7 +161,8 @@
         "projectileSpeed": 7.2,
         "distance": 35,
         "explodeOutsideLocation": false,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": "blockablePiercingProjectile"
     },
     "drunkTank_barrel_2": {
         "key": "drunkTank_barrel_2",
@@ -165,7 +176,8 @@
         "projectileSpeed": 7.2,
         "distance": 35,
         "explodeOutsideLocation": false,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": "blockablePiercingProjectile"
     },
     "drunkTank_barrel_3": {
         "key": "drunkTank_barrel_3",
@@ -179,7 +191,8 @@
         "projectileSpeed": 7.2,
         "distance": 35,
         "explodeOutsideLocation": false,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": "blockablePiercingProjectile"
     },
     "drunkTank_barrel_4": {
         "key": "drunkTank_barrel_4",
@@ -193,7 +206,8 @@
         "projectileSpeed": 7.2,
         "distance": 35,
         "explodeOutsideLocation": false,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": "blockablePiercingProjectile"
     },
     "drunkTank_barrel_5": {
         "key": "drunkTank_barrel_5",
@@ -207,7 +221,8 @@
         "projectileSpeed": 7.2,
         "distance": 35,
         "explodeOutsideLocation": false,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": "blockablePiercingProjectile"
     },
     "drunkTank_barrel_6": {
         "key": "drunkTank_barrel_6",
@@ -221,7 +236,8 @@
         "projectileSpeed": 7.2,
         "distance": 35,
         "explodeOutsideLocation": false,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": "blockablePiercingProjectile"
     },
     "drunkTank_barrel_7": {
         "key": "drunkTank_barrel_7",
@@ -235,7 +251,8 @@
         "projectileSpeed": 7.2,
         "distance": 35,
         "explodeOutsideLocation": false,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": "blockablePiercingProjectile"
     },
     "drunkTank_barrel_8": {
         "key": "drunkTank_barrel_8",
@@ -249,7 +266,8 @@
         "projectileSpeed": 7.2,
         "distance": 35,
         "explodeOutsideLocation": false,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": "blockablePiercingProjectile"
     },
     "drunkTank_barrel_9": {
         "key": "drunkTank_barrel_9",
@@ -263,7 +281,8 @@
         "projectileSpeed": 7.2,
         "distance": 35,
         "explodeOutsideLocation": false,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": "blockablePiercingProjectile"
     },
     "drunkTank_barrel_10": {
         "key": "drunkTank_barrel_10",
@@ -277,7 +296,8 @@
         "projectileSpeed": 7.2,
         "distance": 35,
         "explodeOutsideLocation": false,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": "blockablePiercingProjectile"
     },
     "elevateArcher_impale_1": {
         "key": "elevateArcher_impale_1",
@@ -291,7 +311,8 @@
         "projectileSpeed": 30,
         "distance": 85,
         "explodeOutsideLocation": false,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": "blockablePiercingProjectile"
     },
     "elevateArcher_impale_2": {
         "key": "elevateArcher_impale_2",
@@ -305,7 +326,8 @@
         "projectileSpeed": 30,
         "distance": 85,
         "explodeOutsideLocation": false,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": "blockablePiercingProjectile"
     },
     "elevateArcher_impale_3": {
         "key": "elevateArcher_impale_3",
@@ -319,7 +341,8 @@
         "projectileSpeed": 30,
         "distance": 85,
         "explodeOutsideLocation": false,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": "blockablePiercingProjectile"
     },
     "elevateArcher_impale_4": {
         "key": "elevateArcher_impale_4",
@@ -333,7 +356,8 @@
         "projectileSpeed": 30,
         "distance": 85,
         "explodeOutsideLocation": false,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": "blockablePiercingProjectile"
     },
     "elevateArcher_impale_5": {
         "key": "elevateArcher_impale_5",
@@ -347,7 +371,8 @@
         "projectileSpeed": 30,
         "distance": 85,
         "explodeOutsideLocation": false,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": "blockablePiercingProjectile"
     },
     "elevateArcher_impale_6": {
         "key": "elevateArcher_impale_6",
@@ -361,7 +386,8 @@
         "projectileSpeed": 30,
         "distance": 85,
         "explodeOutsideLocation": false,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": "blockablePiercingProjectile"
     },
     "elevateArcher_impale_7": {
         "key": "elevateArcher_impale_7",
@@ -375,7 +401,8 @@
         "projectileSpeed": 30,
         "distance": 85,
         "explodeOutsideLocation": false,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": "blockablePiercingProjectile"
     },
     "elevateArcher_impale_8": {
         "key": "elevateArcher_impale_8",
@@ -389,7 +416,8 @@
         "projectileSpeed": 30,
         "distance": 85,
         "explodeOutsideLocation": false,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": "blockablePiercingProjectile"
     },
     "elevateArcher_impale_9": {
         "key": "elevateArcher_impale_9",
@@ -403,7 +431,8 @@
         "projectileSpeed": 30,
         "distance": 85,
         "explodeOutsideLocation": false,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": "blockablePiercingProjectile"
     },
     "elevateArcher_impale_10": {
         "key": "elevateArcher_impale_10",
@@ -417,6 +446,7 @@
         "projectileSpeed": 30,
         "distance": 85,
         "explodeOutsideLocation": false,
-        "attackType": "Range"
+        "attackType": "Range",
+        "projectileEffectId": "blockablePiercingProjectile"
     }
 }
