@@ -1492,9 +1492,11 @@ body {
                     <span class="home-menu-icon">💡</span>
                     <span class="home-menu-text">Tips<small>Team comps, talents, event strategy</small></span>
                 </button>
-                <button class="home-menu-btn" onclick="goToPage('games')">
+                <button class="home-menu-btn" onclick="goToPage('games')" style="position:relative;">
                     <span class="home-menu-icon">🎮</span>
-                    <span class="home-menu-text">Games<small>Today's Puzzle, Trivia, Guess the Unit, Unitle & Higher or Lower</small></span>
+                    <span class="home-menu-text">Games<small>Today's Puzzle, Unitle, Higher or Lower, Trivia & Guess the Unit</small></span>
+                    <span class="badge-dot" id="gamesBadgeHome" title="Today's puzzle is waiting"
+                        style="display:none; position:absolute; top:10px; right:14px;">1</span>
                 </button>
                 <button class="home-menu-btn" onclick="goToPage('social')" style="position:relative;">
                     <span class="home-menu-icon">👥</span>
@@ -3881,6 +3883,11 @@ window.closeInboxItemModal = closeInboxItemModal;
                 badge.textContent = waiting > 9 ? "9+" : waiting;
                 badge.style.display = waiting > 0 ? "flex" : "none";
             });
+            // Today's Puzzle not played yet: a "1" on the home Games tile until
+            // its token is collected (the claim shows up in questProgress).
+            const puzzlePending = signedIn && questProgressLoaded && !questProgress.dailyPuzzle;
+            const gamesBadge = document.getElementById("gamesBadgeHome");
+            if (gamesBadge) gamesBadge.style.display = puzzlePending ? "flex" : "none";
 
             const list = document.getElementById("questList");
             if (!signedIn) { list.innerHTML = ""; return; }
@@ -3933,7 +3940,9 @@ window.closeInboxItemModal = closeInboxItemModal;
             // this is a way in, ticked once today's token is collected.
             const puzzleDone = !!questProgress.dailyPuzzle;
             const puzzleHtml = `<div class="quest-section-label" style="margin-top:14px;">Daily game</div>` +
-                row(puzzleDone ? " done" : "", { icon: "🎲", title: "Play today's puzzle" },
+                // Not played yet: a red 1 on the dice, like an app's notification.
+                row(puzzleDone ? " done" : "", { title: "Play today's puzzle", icon: puzzleDone ? "🎲"
+                        : `<span style="position:relative; display:inline-block;">🎲<span class="badge-dot" style="top:-6px; right:-10px;">1</span></span>` },
                     puzzleDone ? "Done for today — a new game after the reset." : "Finish today's game in Games — any score counts.",
                     puzzleDone ? `<span class="quest-done">✅ +1 🪙</span>`
                         : `<span class="quest-reward">+1 🪙</span><button class="quest-go-btn" onclick="openTodaysPuzzle()">Play</button>`);
