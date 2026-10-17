@@ -67,7 +67,7 @@ const ADMIN_UID = "Ts92RY0ipMYDRJa2s5toQfDYxtp1";
 // Tokens credited on EVERY successful subscription payment (each monthly
 // renewal, not just the first), keyed by plan. VIP is the $2 plan, noAds the
 // $1 plan — see PLAN_MANIFEST in paypal-catalog.js for the prices.
-const TOKENS_PER_PAYMENT = { vip: 60, noAds: 25 };
+const TOKENS_PER_PAYMENT = { vip: 180, noAds: 80 };
 
 // Calls the PayPal REST API and returns { status, data } without throwing on
 // a non-2xx reply, so callers can react to PayPal's specific error codes.
@@ -91,9 +91,9 @@ async function paypalJson(path, { method = "GET", body, headers = {} } = {}) {
    float rounding when comparing against what PayPal says was paid. If you
    change these, change the pack tiles in store.html to match. */
 const TOKEN_PACKS = {
-  small: { tokens: 20, cents: 100 },
-  medium: { tokens: 45, cents: 200 },
-  large: { tokens: 75, cents: 300 }
+  small: { tokens: 70, cents: 100 },
+  medium: { tokens: 150, cents: 200 },
+  large: { tokens: 240, cents: 300 }
 };
 const PACK_CURRENCY = "USD";
 
@@ -196,11 +196,42 @@ function dayStartMs(ms) {
 }
 
 /* ---------------- Daily quest rotation ----------------
-   Login is always on. Two more are picked per day, DERIVED from the date
-   rather than stored, so every device and every server instance agrees on
-   the same set without anything needing to have run first. */
-const ROTATING_QUESTS = ["postClan", "sendMessage", "enterWeekly", "readTip", "shareFormation", "shareTierList"];
-const ROTATING_QUESTS_PER_DAY = 2;
+   Login is always on. On top of it, each day has quests worth exactly
+   QUEST_POINTS_PER_DAY tokens, in one of the mixes below: "check out"
+   quests pay 1, "do something" quests pay 2. The day's set is DERIVED from
+   the date rather than stored, so every device and every server instance
+   agrees on it without anything needing to have run first. */
+const VIEW_QUESTS = ["readNews", "viewUnit", "compareUnits", "readTip", "checkPromo",
+  "viewFormation", "viewTierList", "viewProfile", "likeOrVote", "enterWeekly"];
+const ACTION_QUESTS = ["postClan", "sendMessage", "shareFormation", "shareTierList", "comment"];
+const QUEST_POINTS_PER_DAY = 4;
+const QUEST_MIXES = [[1, 1, 2], [2, 2], [1, 1, 1, 1]];
+
+// Tokens a quest pays. Login is 1, except the Sunday chest (see sundayLoginReward).
+function questReward(questId) {
+  if (ACTION_QUESTS.includes(questId)) return 2;
+  return 1;
+}
+
+// Monday..Sunday day keys of the week containing dayKey (weeks start Monday).
+function weekDayKeys(dayKey) {
+  const d = new Date(dayKey + "T00:00:00Z");
+  const sinceMonday = (d.getUTCDay() + 6) % 7;
+  const monday = d.getTime() - sinceMonday * DAY_MS;
+  return Array.from({ length: 7 }, (_, i) => new Date(monday + i * DAY_MS).toISOString().slice(0, 10));
+}
+
+function isSundayKey(dayKey) {
+  return new Date(dayKey + "T00:00:00Z").getUTCDay() === 0;
+}
+
+// Sunday's login is a chest: 3–5 tokens after logging in every day Monday to
+// Saturday, otherwise the usual 1. `loggedInDays` is a Set of day keys.
+function sundayLoginReward(dayKey, loggedInDays, random = Math.random) {
+  const monToSat = weekDayKeys(dayKey).slice(0, 6);
+  const fullStreak = monToSat.every(k => loggedInDays.has(k));
+  return { fullStreak, reward: fullStreak ? 3 + Math.floor(random() * 3) : 1 };
+}
 
 // FNV-1a: turns the date into a stable 32-bit seed.
 function hashString(s) {
@@ -222,17 +253,32 @@ function seededRandom(seed) {
   };
 }
 
+function shuffled(list, rand) {
+  const a = list.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 function questsForDay(dayKey) {
   // Weekly giveaway entries are closed on Sundays (draw day), so that quest
   // must never come up then — it would be impossible to complete.
-  const isSunday = new Date(dayKey + "T00:00:00Z").getUTCDay() === 0;
-  const pool = ROTATING_QUESTS.filter(q => !(isSunday && q === "enterWeekly"));
-  const rand = seededRandom(hashString("kih-quests:" + dayKey));
-  for (let i = pool.length - 1; i > 0; i--) {
-    const j = Math.floor(rand() * (i + 1));
-    [pool[i], pool[j]] = [pool[j], pool[i]];
-  }
-  return ["login", ...pool.slice(0, ROTATING_QUESTS_PER_DAY)];
+  const views = VIEW_QUESTS.filter(q => !(isSundayKey(dayKey) && q === "enterWeekly"));
+  const rand = seededRandom(hashString("kih-quests-v2:" + dayKey));
+  const mix = QUEST_MIXES[Math.floor(rand() * QUEST_MIXES.length)];
+  const viewPick = shuffled(views, rand);
+  const actionPick = shuffled(ACTION_QUESTS, rand);
+  const picked = mix.map(points => (points === 2 ? actionPick : viewPick).shift());
+  return ["login", ...picked];
+}
+
+// { questId: tokens } for a day's quests, for the page to show.
+function questRewardsFor(quests) {
+  const out = {};
+  quests.forEach(q => { out[q] = questReward(q); });
+  return out;
 }
 
 /* ---------------- Small shared helpers ---------------- */
@@ -256,5 +302,6 @@ module.exports = {
   getFirebaseAdmin, getPayPalAccessToken, PAYPAL_API, paypalJson, ADMIN_UID, planKeyFromPlanId, TOKENS_PER_PAYMENT,
   TOKEN_PACKS, PACK_CURRENCY, getPack, packPrice, packCustomId, parsePackCustomId, amountMatchesPack,
   creditTokenPack, notifyPackCredited,
-  DAY_MS, dayKeyFor, dayStartMs, questsForDay, isBannedNow, toMillis
+  DAY_MS, dayKeyFor, dayStartMs, questsForDay, isBannedNow, toMillis,
+  VIEW_QUESTS, ACTION_QUESTS, QUEST_POINTS_PER_DAY, questReward, questRewardsFor, weekDayKeys, isSundayKey, sundayLoginReward
 };

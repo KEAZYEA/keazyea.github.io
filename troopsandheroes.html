@@ -2128,6 +2128,7 @@ ${effectDesc ? `<tr id="${effectDescId}" style="display:none;"><td colspan="2" c
                 });
                 updateTabsHeight();
                 recordTroopsView();
+                if (window.AppState && selectTroop) AppState.reportQuestProgress("viewUnit", selectTroop.key);
             }
 
             /* ================================================================
@@ -2547,6 +2548,10 @@ let rightDisplay = rightVal === "—" ? "—" : formatStatValue(key, rightVal, "
             }
 
             function updateCards() {
+                // Daily quest: compare two units of the same kind.
+                if (window.AppState && selectleft && selectright && leftType === rightType) {
+                    AppState.reportQuestProgress("compareUnits", selectleft.key + "_" + selectright.key);
+                }
                 document.querySelectorAll('[id^="desc-"]').forEach(el => {
                     if (el.style.display !== "none") persistedOpenDescs.add(el.id);
                 });

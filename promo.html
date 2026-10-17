@@ -720,6 +720,7 @@
                     document.querySelectorAll(".tab-btn")[0].classList.add("active");
                     markCodesTabSeenIfActive();
                     AppState.maybeRefreshAd("promoAdSlot");
+                    AppState.reportQuestProgress("checkPromo");
                 } else if (tab === "secret") {
                     document.getElementById("secretPage").classList.add("active");
                     document.getElementById("secretTabBtn").classList.add("active");

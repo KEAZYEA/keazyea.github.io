@@ -316,7 +316,7 @@
                 <h3>⭐ Supporter</h3>
                 <div class="plan-price">USD $1<span>/month</span></div>
                 <ul class="plan-perks" style="display:inline-block; text-align:left;">
-                    <li>🪙 <strong>25 tokens</strong> every month</li>
+                    <li>🪙 <strong>80 tokens</strong> every month</li>
                     <li>Cancel anytime</li>
                 </ul>
                 <div id="noAdsButtonBox"></div>
@@ -340,7 +340,7 @@
                 <!-- The old perks (daily clan posts, the VIP giveaway wheel) are
                      free for everyone now, so they're no longer listed. -->
                 <ul class="plan-perks" style="display:inline-block; text-align:left;">
-                    <li>🪙 <strong>60 tokens</strong> every month</li>
+                    <li>🪙 <strong>180 tokens</strong> every month</li>
                     <li>Cancel anytime</li>
                 </ul>
                 <div id="vipActiveBox" style="display:none;">
@@ -363,26 +363,26 @@
                 <strong id="storeTokenBalance">0</strong> 🪙</p>
             <div class="pack-options">
                 <button type="button" class="pack-option" data-pack="small" aria-pressed="false" onclick="selectPack('small')">
-                    <span class="pack-tokens">20</span>
+                    <span class="pack-tokens">70</span>
                     <span class="pack-unit">tokens</span>
                     <span class="pack-price">$1</span>
                     <span class="pack-bonus"></span>
                 </button>
                 <button type="button" class="pack-option selected" data-pack="medium" aria-pressed="true" onclick="selectPack('medium')">
-                    <span class="pack-tokens">45</span>
+                    <span class="pack-tokens">150</span>
                     <span class="pack-unit">tokens</span>
                     <span class="pack-price">$2</span>
-                    <span class="pack-bonus">+5 bonus</span>
+                    <span class="pack-bonus">+10 bonus</span>
                 </button>
                 <button type="button" class="pack-option" data-pack="large" aria-pressed="false" onclick="selectPack('large')">
                     <span class="pack-ribbon">Best value</span>
-                    <span class="pack-tokens">75</span>
+                    <span class="pack-tokens">240</span>
                     <span class="pack-unit">tokens</span>
                     <span class="pack-price">$3</span>
-                    <span class="pack-bonus">+15 bonus</span>
+                    <span class="pack-bonus">+30 bonus</span>
                 </button>
             </div>
-            <p class="pack-summary" id="packSummary">45 tokens for USD $2</p>
+            <p class="pack-summary" id="packSummary">150 tokens for USD $2</p>
             <div id="packButtonBox"></div>
         </div>
 
@@ -580,9 +580,9 @@
            TOKEN_PACKS in api/_lib.js — the server builds the PayPal order
            from the pack id, so keep the two in step. */
         const TOKEN_PACKS = {
-            small: { tokens: 20, price: 1 },
-            medium: { tokens: 45, price: 2 },
-            large: { tokens: 75, price: 3 }
+            small: { tokens: 70, price: 1 },
+            medium: { tokens: 150, price: 2 },
+            large: { tokens: 240, price: 3 }
         };
         let selectedPack = "medium";
         let packButtonsRendered = false;

@@ -7,10 +7,12 @@
  * paypal-webhook.js (subscriptions) and token-packs.js (one-off packs).
  *
  * POST JSON { action, ... }:
- *   today           -> today's quests and when they reset (no sign-in needed)
+ *   today           -> today's quests, what each pays, this week's days (Mon..Sun)
+ *                      and when they reset (no sign-in needed)
  *   complete        { questId, proofId } -> marks today's quest done, ready to
  *                                           claim (no token yet), once per quest per day
- *   claim           { claimIds }           -> +1 token per ready reward, paid once
+ *   claim           { claimIds }           -> pays each ready reward (1 or 2; Sunday's
+ *                                              login chest 3–5 after a Mon–Sat streak), once
  *   stake           { giveawayId, amount } -> wallet -> your entry
  *   setStake        { giveawayId, amount } -> sets your stake to exactly `amount`
  *                                              (lower refunds the difference, 0 removes it)
@@ -31,7 +33,8 @@
  * same device tapping twice at the same instant, finds it already exists.
  */
 
-const { getFirebaseAdmin, DAY_MS, dayKeyFor, dayStartMs, questsForDay, isBannedNow, toMillis } = require("./_lib");
+const { getFirebaseAdmin, DAY_MS, dayKeyFor, dayStartMs, questsForDay, isBannedNow, toMillis,
+  questReward, questRewardsFor, weekDayKeys, isSundayKey, sundayLoginReward } = require("./_lib");
 const { FieldValue } = require("firebase-admin/firestore");
 
 // Same admin uid used in appState.js and cancel-subscription.js.
@@ -129,6 +132,9 @@ async function assertNotBanned(db, uid) {
    Each quest is checked against the thing it claims happened, by id, with a
    direct lookup. A search ("did they post anything today?") would need extra
    Firestore indexes; the page already knows the id of what it just made. */
+// A comment quest needs real text, not "a".
+const MIN_COMMENT_CHARS = 8;
+
 async function verifyQuestProof(db, uid, questId, proofId, now, dayKey) {
   const dayStart = dayStartMs(now);
   const madeToday = (v) => {
@@ -179,6 +185,51 @@ async function verifyQuestProof(db, uid, questId, proofId, now, dayKey) {
       return (await db.collection("tips").doc(proofId).get()).exists;
     }
 
+    // The other "check out" quests work the same way as readTip: viewing
+    // can't be proven, so each checks only that the thing viewed is real.
+    // They pay 1 and once a day, so pretending earns little.
+    case "readNews":
+      return isDocId(proofId) && (await db.collection("news").doc(proofId).get()).exists;
+    case "viewFormation":
+      return isDocId(proofId) && (await db.collection("formationPosts").doc(proofId).get()).exists;
+    case "viewTierList":
+      return isDocId(proofId) && (await db.collection("tierLists").doc(proofId).get()).exists;
+    case "viewProfile":
+      // Someone else's profile.
+      return isDocId(proofId) && proofId !== uid && (await db.collection("publicProfiles").doc(proofId).get()).exists;
+    case "viewUnit":
+    case "compareUnits":
+      // Troop/hero data isn't in the database; a sensible unit key is enough.
+      return typeof proofId === "string" && /^[A-Za-z0-9_]{1,80}$/.test(proofId);
+    case "checkPromo":
+      return true;
+
+    case "likeOrVote": {
+      // "f/<postId>" (liked a formation) or "t/<tierListId>" (voted on a tier
+      // list), done today: the like/vote doc is keyed by the voter's uid.
+      const [kind, id, extra] = typeof proofId === "string" ? proofId.split("/") : [];
+      if (!["f", "t"].includes(kind) || !isDocId(id) || extra !== undefined) return false;
+      const ref = kind === "f"
+        ? db.collection("formationPosts").doc(id).collection("likes").doc(uid)
+        : db.collection("tierLists").doc(id).collection("votes").doc(uid);
+      const snap = await ref.get();
+      return snap.exists && madeToday(snap.data().createdAt);
+    }
+
+    case "comment": {
+      // "f/<postId>/<commentId>" or "t/<tierListId>/<commentId>": your own
+      // comment, written today, on SOMEONE ELSE's post, with real text — so
+      // "a" under your own post doesn't earn 2 tokens.
+      const [kind, postId, commentId, extra] = typeof proofId === "string" ? proofId.split("/") : [];
+      if (!["f", "t"].includes(kind) || !isDocId(postId) || !isDocId(commentId) || extra !== undefined) return false;
+      const postRef = db.collection(kind === "f" ? "formationPosts" : "tierLists").doc(postId);
+      const [post, comment] = await Promise.all([postRef.get(), postRef.collection("comments").doc(commentId).get()]);
+      if (!post.exists || !comment.exists) return false;
+      const c = comment.data();
+      return c.uid === uid && post.data().uid !== uid && madeToday(c.createdAt)
+        && typeof c.text === "string" && c.text.trim().length >= MIN_COMMENT_CHARS;
+    }
+
     default:
       return false;
   }
@@ -199,26 +250,47 @@ async function completeQuest(db, uid, body, now, dayKey, resetAt) {
     return { ...base, completed: false, reason: "not-verified" };
   }
 
-  const claimRef = db.collection("tokenWallets").doc(uid).collection("claims").doc(`${dayKey}_${questId}`);
+  const claims = db.collection("tokenWallets").doc(uid).collection("claims");
+  const claimRef = claims.doc(`${dayKey}_${questId}`);
+  // Sunday's login is the weekly chest: it needs this week's Mon–Sat logins.
+  const sundayChest = questId === "login" && isSundayKey(dayKey);
+  const weekLoginRefs = sundayChest ? weekDayKeys(dayKey).slice(0, 6).map(k => claims.doc(`${k}_login`)) : [];
   return db.runTransaction(async (tx) => {
-    const [claimSnap] = await tx.getAll(claimRef);
+    const [claimSnap, ...weekSnaps] = await tx.getAll(claimRef, ...weekLoginRefs);
     if (claimSnap.exists) return { ...base, completed: false, alreadyCompleted: true };
+    // The reward is fixed when the quest is done, so what the page shows is
+    // exactly what Claim pays.
+    let reward = questReward(questId);
+    let fullStreak;
+    if (sundayChest) {
+      const loggedIn = new Set(weekSnaps.filter(s => s.exists).map(s => s.data().dayKey));
+      ({ reward, fullStreak } = sundayLoginReward(dayKey, loggedIn));
+    }
     tx.set(claimRef, {
       questId,
       dayKey,
       proofId: proofId == null ? null : String(proofId).slice(0, 200),
       status: "ready",
+      reward,
+      ...(sundayChest ? { chest: true, fullStreak } : {}),
       completedAt: now
     });
-    return { ...base, completed: true };
+    return { ...base, completed: true, reward };
   });
 }
 
 const MAX_CLAIMS_PER_CALL = 20;
 
-// Pays +1 for each listed reward that's still "ready". Anything already
-// claimed (another device, a double tap) or never completed is skipped, so
-// sending the same ids twice can't pay twice.
+// What one ready reward pays. Never more than 5, whatever a doc says.
+function rewardOf(claim) {
+  const r = Math.floor(Number(claim.reward));
+  return Number.isFinite(r) && r >= 1 ? Math.min(r, 5) : 1;
+}
+
+// Pays each listed reward that's still "ready" — its `reward` (1 or 2, 3–5
+// for the Sunday chest; rewards from before amounts varied have none and
+// pay 1). Anything already claimed (another device, a double tap) or never
+// completed is skipped, so sending the same ids twice can't pay twice.
 async function claimRewards(db, uid, body, now) {
   const ids = body.claimIds;
   if (!Array.isArray(ids) || !ids.length || ids.length > MAX_CLAIMS_PER_CALL) {
@@ -236,10 +308,12 @@ async function claimRewards(db, uid, body, now) {
     const [walletSnap, ...claimSnaps] = await tx.getAll(walletRef, ...claimRefs);
     const balance = walletSnap.exists ? (walletSnap.data().balance || 0) : 0;
     let paid = 0;
+    let count = 0;
     claimSnaps.forEach((snap, i) => {
       if (!snap.exists || snap.data().status !== "ready") return;
       tx.update(claimRefs[i], { status: "claimed", claimedAt: now });
-      paid++;
+      paid += rewardOf(snap.data());
+      count++;
     });
     if (paid) {
       tx.set(walletRef, {
@@ -248,7 +322,7 @@ async function claimRewards(db, uid, body, now) {
         updatedAt: now
       }, { merge: true });
     }
-    return { ok: true, claimed: paid, balance: balance + paid };
+    return { ok: true, claimed: paid, count, balance: balance + paid };
   });
 }
 
@@ -687,7 +761,8 @@ module.exports = async (req, res) => {
 
   try {
     if (body.action === "today") {
-      res.status(200).json({ ok: true, dayKey, resetAt, quests: questsForDay(dayKey) });
+      const quests = questsForDay(dayKey);
+      res.status(200).json({ ok: true, dayKey, resetAt, quests, rewards: questRewardsFor(quests), week: weekDayKeys(dayKey) });
       return;
     }
 
