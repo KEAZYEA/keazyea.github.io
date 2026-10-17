@@ -1,17 +1,1 @@
-{
-    "bossDragon_levelUp_1": {
-        "key": "bossDragon_levelUp_1",
-        "abilityInfoId": null,
-        "cooldown": 30
-    },
-    "bossSpiderQueen_levelUp_1": {
-        "key": "bossSpiderQueen_levelUp_1",
-        "abilityInfoId": null,
-        "cooldown": 30
-    },
-    "bossKraken_levelUp_1": {
-        "key": "bossKraken_levelUp_1",
-        "abilityInfoId": null,
-        "cooldown": 30
-    }
-}
+{}

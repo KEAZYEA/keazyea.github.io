@@ -1694,7 +1694,7 @@ function goBackToCompareTab() {
                     troopList.forEach(function (troop) {
                         let item = document.createElement("div");
                         item.className = "gallery-item " + troop.rarity;
-                        item.innerHTML = `<img src="images/${troop.key.toUpperCase()}.jpg" alt="${troop.displayName}"><span>${troop.displayName}</span>`;
+                        item.innerHTML = `<img src="images/${troop.key.toUpperCase()}.jpg" alt="${troop.displayName}" loading="lazy" decoding="async"><span>${troop.displayName}</span>`;
                         item.addEventListener("click", function () {
                             galleryScrollY = window.scrollY;
                             troopNavStack = [];
@@ -1721,7 +1721,7 @@ function goBackToCompareTab() {
                     heroList.forEach(function (hero) {
     let item = document.createElement("div");
     item.className = "gallery-item " + hero.rarity;
-    item.innerHTML = `<img src="images/${hero.key.toUpperCase()}.jpg" alt="${hero.displayName}"><span>${hero.displayName}</span>`;
+    item.innerHTML = `<img src="images/${hero.key.toUpperCase()}.jpg" alt="${hero.displayName}" loading="lazy" decoding="async"><span>${hero.displayName}</span>`;
     item.addEventListener("click", function () {
         galleryScrollY = window.scrollY;
         troopNavStack = [];

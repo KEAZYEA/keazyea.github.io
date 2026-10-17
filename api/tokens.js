@@ -19,6 +19,9 @@
  *                                              stake to the new platform's total
  *   refundGiveaway  { giveawayId }         -> admin only, before deleting: refunds
  *                                              stakes on any platform not yet drawn
+ *   maxStake        { giveawayId }         -> fills in the highest-stake figures on a
+ *                                              giveaway staked on before they were kept
+ *                                              (every stake change above refreshes them)
  *   claimGift       { giftId }             -> collects an admin gift from the inbox
  *   admin*          (admin only)           -> look up / give / remove / set tokens,
  *                                              send and end gifts, refund alerts
@@ -53,6 +56,47 @@ function isDocId(s) {
 
 function counterField(platform) {
   return platform === "ios" ? "iosTokensStaked" : "androidTokensStaked";
+}
+
+// An "everyone" giveaway (allWinnerCount > 0) draws iOS and Android players
+// from one pool, so its stakes are spent once anybody has been drawn. A split
+// giveaway draws each platform separately.
+function isEveryone(gd) {
+  return (gd.allWinnerCount || 0) > 0;
+}
+function poolDrawn(gd, platform) {
+  const winners = gd.winners || [];
+  return isEveryone(gd) ? winners.length > 0 : winners.some(x => x.platform === platform);
+}
+
+// The highest single stake on each platform, kept on the giveaway doc so
+// every player can see what they're up against (entries themselves are
+// private). Worked out from the entries rather than adjusted step by step,
+// because lowering the top stake means finding the next-highest. Runs in a
+// transaction that also reads the giveaway: every stake change writes the
+// giveaway's totals, so two of these can't interleave and leave a stale max.
+async function refreshMaxStakes(db, gRef) {
+  try {
+    return await db.runTransaction(async (tx) => {
+      const g = await tx.get(gRef);
+      if (!g.exists) return null;
+      const staked = await tx.get(gRef.collection("entries").where("tokens", ">", 0));
+      let ios = 0;
+      let android = 0;
+      staked.forEach(d => {
+        const e = d.data();
+        const t = Math.floor(Number(e.tokens) || 0);
+        if (e.platform === "ios") ios = Math.max(ios, t);
+        else if (e.platform === "android") android = Math.max(android, t);
+      });
+      tx.update(gRef, { maxStakeIos: ios, maxStakeAndroid: android });
+      return { maxStakeIos: ios, maxStakeAndroid: android };
+    });
+  } catch (e) {
+    // Only the shown figure depends on this; the next stake change retries.
+    console.warn(`Couldn't refresh the highest stake for ${gRef.id}:`, e.message);
+    return null;
+  }
 }
 
 function incrementsFrom(deltas) {
@@ -231,8 +275,8 @@ async function stake(db, uid, body, now) {
     const ed = e.data();
     if ((gd.expiresAt || 0) <= now) throw new HttpError(400, "Entries have closed, so tokens can't be added now.");
     const platform = ed.platform;
-    if ((gd.winners || []).some(x => x.platform === platform)) {
-      throw new HttpError(400, "The draw for your platform has already happened.");
+    if (poolDrawn(gd, platform)) {
+      throw new HttpError(400, isEveryone(gd) ? "The draw has already happened." : "The draw for your platform has already happened.");
     }
     const balance = w.exists ? (w.data().balance || 0) : 0;
     if (balance < amount) throw new HttpError(400, `You only have ${balance} token${balance === 1 ? "" : "s"}.`);
@@ -277,8 +321,8 @@ async function setStake(db, uid, body, now) {
     const ed = e.data();
     if ((gd.expiresAt || 0) <= now) throw new HttpError(400, "Entries have closed, so your stake can't be changed now.");
     const platform = ed.platform;
-    if ((gd.winners || []).some(x => x.platform === platform)) {
-      throw new HttpError(400, "The draw for your platform has already happened.");
+    if (poolDrawn(gd, platform)) {
+      throw new HttpError(400, isEveryone(gd) ? "The draw has already happened." : "The draw for your platform has already happened.");
     }
     const balance = w.exists ? (w.data().balance || 0) : 0;
     const prev = ed.tokens || 0;
@@ -313,8 +357,8 @@ async function unstake(db, uid, body, now) {
     const ed = e.data();
     const prev = ed.tokens || 0;
     if (prev <= 0) return { ok: true, refunded: 0 };
-    if (g.exists && (g.data().winners || []).some(x => x.platform === ed.platform)) {
-      throw new HttpError(400, "The draw for your platform has already happened, so these tokens are spent.");
+    if (g.exists && poolDrawn(g.data(), ed.platform)) {
+      throw new HttpError(400, "The draw has already happened, so these tokens are spent.");
     }
     tx.set(wRef, { balance: FieldValue.increment(prev), updatedAt: now }, { merge: true });
     tx.update(eRef, { tokens: 0 });
@@ -356,7 +400,6 @@ async function refundGiveaway(db, uid, body, now) {
 
   const gRef = db.collection("secretGiveaways").doc(giveawayId);
   const g = await gRef.get();
-  const drawn = new Set(g.exists ? (g.data().winners || []).map(w => w.platform) : []);
   const staked = await gRef.collection("entries").where("tokens", ">", 0).get();
 
   let refundedEntries = 0;
@@ -379,7 +422,7 @@ async function refundGiveaway(db, uid, body, now) {
 
   for (const doc of staked.docs) {
     const ed = doc.data();
-    if (drawn.has(ed.platform)) continue;
+    if (g.exists && poolDrawn(g.data(), ed.platform)) continue;
     const prev = ed.tokens || 0;
     batch.set(db.collection("tokenWallets").doc(doc.id), { balance: FieldValue.increment(prev), updatedAt: now }, { merge: true });
     batch.update(doc.ref, { tokens: 0 });
@@ -608,6 +651,25 @@ async function adminResolveAlert(db, adminUid, body, now) {
   return { ok: true };
 }
 
+const STAKE_ACTIONS = new Set(["stake", "setStake", "unstake", "reconcile", "refundGiveaway"]);
+
+// For giveaways staked on before the highest stake was tracked: works it out
+// once. Anyone signed in may ask, but it only recomputes when the figures are
+// missing, so repeated calls cost a single read.
+async function maxStake(db, body) {
+  if (!isDocId(body.giveawayId)) throw new HttpError(400, "Missing giveaway.");
+  const gRef = db.collection("secretGiveaways").doc(body.giveawayId);
+  const g = await gRef.get();
+  if (!g.exists) throw new HttpError(404, "This giveaway no longer exists.");
+  const gd = g.data();
+  if (typeof gd.maxStakeIos === "number" && typeof gd.maxStakeAndroid === "number") {
+    return { ok: true, maxStakeIos: gd.maxStakeIos, maxStakeAndroid: gd.maxStakeAndroid };
+  }
+  const max = await refreshMaxStakes(db, gRef);
+  if (!max) throw new HttpError(503, "Couldn't work out the highest stake — try again.");
+  return { ok: true, ...max };
+}
+
 module.exports = async (req, res) => {
   // The site is served from GitHub Pages and this API from Vercel, so the
   // browser sends a CORS preflight first; without these headers it's blocked
@@ -650,7 +712,13 @@ module.exports = async (req, res) => {
       case "adminEndGift": assertAdmin(uid); result = await adminEndGift(db, body, now); break;
       case "adminListAlerts": assertAdmin(uid); result = await adminListAlerts(db); break;
       case "adminResolveAlert": assertAdmin(uid); result = await adminResolveAlert(db, uid, body, now); break;
+      case "maxStake": result = await maxStake(db, body); break;
       default: throw new HttpError(400, "Unknown action.");
+    }
+    // Any change to someone's stake can change the highest one.
+    if (STAKE_ACTIONS.has(body.action)) {
+      const max = await refreshMaxStakes(db, db.collection("secretGiveaways").doc(body.giveawayId));
+      if (max) result = { ...result, ...max };
     }
     res.status(200).json(result);
   } catch (e) {
