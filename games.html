@@ -19,6 +19,12 @@
             padding: 8px 2px; font-size: 0.8rem; line-height: 1.15; min-width: 0; margin: 0;
         }
         .games-tabs .tab-btn .tab-icon { font-size: 1.25rem; line-height: 1.2; }
+        .games-tabs .tab-btn { position: relative; }
+        /* Today's puzzle not finished yet. */
+        .tab-badge {
+            position: absolute; top: 4px; right: 5px; min-width: 18px; height: 18px; padding: 0 4px; box-sizing: border-box;
+            border-radius: 9px; background: #e53935; color: #fff; font-size: 0.7rem; font-weight: 800; line-height: 18px; text-align: center;
+        }
         .games-wrap { max-width: 560px; margin: 0 auto; }
         .game-intro { color: #b0b0c8; font-size: 0.92rem; line-height: 1.45; margin: 14px 0; text-align: center; }
         .game-intro small { display: block; color: #8a8aa6; font-size: 0.82rem; margin-top: 4px; }
@@ -59,7 +65,7 @@
         .roulette { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 6px 0 14px; }
         .rl-tile {
             display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 18px 6px;
-            border-radius: 14px; border: 2px solid #34345e; background: #26264a; font-weight: 800; font-size: 0.95rem;
+            border-radius: 14px; border: 2px solid #34345e; background: #26264a; font-weight: 800; font-size: 0.95rem; text-align: center;
             transition: transform 0.12s, background 0.12s, border-color 0.12s, box-shadow 0.12s;
         }
         .rl-tile .rl-icon { font-size: 2rem; }
@@ -166,11 +172,11 @@
 <body>
     <h1>Games</h1>
     <div class="tabs games-tabs">
-        <button class="tab-btn active" data-tab="today" onclick="switchTab('today')"><span class="tab-icon">🎲</span><span class="tab-label">Today's Puzzle</span></button>
-        <button class="tab-btn" data-tab="trivia" onclick="switchTab('trivia')"><span class="tab-icon">🧠</span><span class="tab-label">Trivia</span></button>
-        <button class="tab-btn" data-tab="guess" onclick="switchTab('guess')"><span class="tab-icon">🔍</span><span class="tab-label">Guess</span></button>
+        <button class="tab-btn active" data-tab="today" onclick="switchTab('today')"><span class="tab-icon">🎲</span><span class="tab-label">Today's Puzzle</span><span class="tab-badge" id="todayBadge" style="display:none;">1</span></button>
         <button class="tab-btn" data-tab="unitle" onclick="switchTab('unitle')"><span class="tab-icon">🎯</span><span class="tab-label">Unitle</span></button>
         <button class="tab-btn" data-tab="hilo" onclick="switchTab('hilo')"><span class="tab-icon">⬆️</span><span class="tab-label">Hi-Lo</span></button>
+        <button class="tab-btn" data-tab="trivia" onclick="switchTab('trivia')"><span class="tab-icon">🧠</span><span class="tab-label">Trivia</span></button>
+        <button class="tab-btn" data-tab="guess" onclick="switchTab('guess')"><span class="tab-icon">🔍</span><span class="tab-label">Guess</span></button>
     </div>
     <div class="games-wrap">
         <p class="game-intro" id="gameIntro"></p>
@@ -285,6 +291,7 @@
             const done = daily && daily.day === dayKey() && dailyFinished();
             const label = document.querySelector('.games-tabs [data-tab="today"] .tab-label');
             label.textContent = done ? "Today's Puzzle ✅" : "Today's Puzzle";
+            $("todayBadge").style.display = done ? "none" : "block";
         }
 
         /* ---------------- switching ---------------- */
@@ -422,13 +429,16 @@
             startGame(daily.game, true);
         }
 
-        // Clockwise around the 2×2 grid: trivia, guess / unitle, hilo.
-        const RL_ORDER = ["trivia", "guess", "hilo", "unitle"];
+        // The grid shows the games in the same order as the tabs (unitle,
+        // hilo / trivia, guess); the light runs clockwise around it. Display
+        // only — which game is today's comes from C.dailyGameFor.
+        const RL_GRID = ["unitle", "hilo", "trivia", "guess"];
+        const RL_ORDER = ["unitle", "hilo", "guess", "trivia"];
         function renderRoulette() {
             setIntro(`One game a day, the same for everyone. Finish it to earn <b>+1 🪙</b> — however you score.`);
             $("gameArea").innerHTML = `<div class="game-card">
                 <div class="rl-title" id="rlTitle">Which game is it today?</div>
-                <div class="roulette">${C.GAMES.map(g => `<div class="rl-tile" data-g="${g}"><span class="rl-icon">${C.GAME_ICONS[g]}</span>${esc(C.GAME_TITLES[g])}</div>`).join("")}</div>
+                <div class="roulette">${RL_GRID.map(g => `<div class="rl-tile" data-g="${g}"><span class="rl-icon">${C.GAME_ICONS[g]}</span>${esc(C.GAME_TITLES[g])}</div>`).join("")}</div>
                 <div class="game-actions" id="rlActions"><button class="btn-primary" id="spinBtn" onclick="spinRoulette()">🎲 Spin</button></div>
             </div>`;
         }
@@ -526,7 +536,7 @@
             const send = `<button class="btn-primary" onclick="openFriends()">⚔️ Challenge a friend</button>`;
             if (game.daily) {
                 return `<div id="dailyReward">${rewardHtml()}</div>
-                    <div class="game-actions">${send}<button class="btn-ghost" onclick="switchTab('${game.id}')">🎮 Free play</button></div>`;
+                    <div class="game-actions">${send}<button class="btn-ghost" onclick="switchTab('${game.id}')">▶️ Play more</button></div>`;
             }
             return `<div class="game-actions">${send}<button class="btn-ghost" onclick="switchTab('${game.id}')">▶️ Play again</button></div>`;
         }
