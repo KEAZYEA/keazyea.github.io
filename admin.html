@@ -360,7 +360,19 @@
                             style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box; margin-bottom:10px;">
                     </div>
 
-                    <div style="display:flex; gap:10px; margin-bottom:10px;">
+                    <label style="display:block; margin-bottom:6px;">Who's in the draw</label>
+                    <select id="secretGiveawayPoolInput" onchange="updateSecretPoolInputs()"
+                        style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box; margin-bottom:10px;">
+                        <option value="split">Split — separate iOS and Android winners</option>
+                        <option value="all">🌍 Everyone — iOS and Android in one draw</option>
+                    </select>
+                    <div id="secretGiveawayAllWrap" style="display:none; margin-bottom:10px;">
+                        <label style="display:block; margin-bottom:6px;">Winners (from everyone)</label>
+                        <input type="number" id="secretGiveawayAllWinnersInput" min="1" step="1" value="1"
+                            style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box;">
+                        <p class="promo-sub" style="margin:6px 0 0; font-size:0.85rem;">Players still say which device they're on, so you can see it in the entries list.</p>
+                    </div>
+                    <div id="secretGiveawaySplitWrap" style="display:flex; gap:10px; margin-bottom:10px;">
                         <div style="flex:1;">
                             <label style="display:block; margin-bottom:6px;">iOS winners</label>
                             <input type="number" id="secretGiveawayIosWinnersInput" min="0" step="1" value="0"
@@ -1021,9 +1033,19 @@
                 document.getElementById("secretGiveawayPasswordInput").value = "";
                 document.getElementById("secretGiveawayIosWinnersInput").value = "0";
                 document.getElementById("secretGiveawayAndroidWinnersInput").value = "0";
+                document.getElementById("secretGiveawayPoolInput").value = "split";
+                document.getElementById("secretGiveawayAllWinnersInput").value = "1";
+                updateSecretPoolInputs();
                 document.getElementById("secretGiveawayDurationInput").value = "24";
                 document.getElementById("secretGiveawayDeleteDaysInput").value = "30";
                 document.getElementById("createSecretGiveawayForm").style.display = "block";
+            };
+            // Split giveaways ask for iOS and Android winners; everyone
+            // giveaways ask for one number.
+            window.updateSecretPoolInputs = function () {
+                const everyone = document.getElementById("secretGiveawayPoolInput").value === "all";
+                document.getElementById("secretGiveawayAllWrap").style.display = everyone ? "block" : "none";
+                document.getElementById("secretGiveawaySplitWrap").style.display = everyone ? "none" : "flex";
             };
             window.closeCreateSecretGiveawayForm = function () {
                 document.getElementById("createSecretGiveawayForm").style.display = "none";
@@ -1036,6 +1058,9 @@
                 const password = document.getElementById("secretGiveawayPasswordInput").value;
                 const iosWinnerCount = document.getElementById("secretGiveawayIosWinnersInput").value;
                 const androidWinnerCount = document.getElementById("secretGiveawayAndroidWinnersInput").value;
+                const everyone = document.getElementById("secretGiveawayPoolInput").value === "all";
+                const allWinnerCount = everyone ? document.getElementById("secretGiveawayAllWinnersInput").value : 0;
+                if (everyone && !(parseInt(allWinnerCount, 10) > 0)) { showInfoModal("How many winners?", "Set at least 1 winner."); return; }
                 const durationHours = document.getElementById("secretGiveawayDurationInput").value;
                 const deleteAfterDays = document.getElementById("secretGiveawayDeleteDaysInput").value;
 
@@ -1045,7 +1070,7 @@
                 try {
                     await AppState.createSecretGiveaway({
                         title, prizeDescription, requiresPassword, password,
-                        iosWinnerCount, androidWinnerCount, durationHours, deleteAfterDays
+                        iosWinnerCount, androidWinnerCount, allWinnerCount, durationHours, deleteAfterDays
                     });
                     closeCreateSecretGiveawayForm();
                     showInfoModal("Done", "Secret giveaway created.");
@@ -1116,7 +1141,12 @@
                     const androidWon = winners.filter(w => w.platform === "android").length;
                     const iosSlots = g.iosWinnerCount || 0;
                     const androidSlots = g.androidWinnerCount || 0;
-                    const fullyDrawn = iosWon >= iosSlots && androidWon >= androidSlots;
+                    // Everyone giveaways: one pool for both devices.
+                    const everyone = AppState.isEveryoneSecretGiveaway(g);
+                    const allSlots = everyone ? g.allWinnerCount : 0;
+                    const allWon = everyone ? winners.length : 0;
+                    const fullyDrawn = everyone ? allWon >= allSlots : (iosWon >= iosSlots && androidWon >= androidSlots);
+                    const deviceEmoji = (p) => p === "ios" ? "🍎" : "🤖";
 
                     // Each winner gets its own "Resend" button — resending
                     // isn't just for typos, it's the recovery path if the
@@ -1131,7 +1161,7 @@
                         if (!list.length) return "";
                         const items = list.map(w => {
                             const safeName = escapeHtml(w.name).replace(/'/g, "\\'");
-                            return `<span style="display:inline-block; margin:2px 0;">${escapeHtml(w.name)}
+                            return `<span style="display:inline-block; margin:2px 0;">${everyone ? deviceEmoji(w.platform) + " " : ""}${escapeHtml(w.name)}
                                 <code id="secretCode_${g.id}_${w.uid}" style="background:#2a2a4a; padding:2px 6px; border-radius:4px; font-size:0.78rem;">…</code>
                                 <button onclick="handleResendSecretCode('${g.id}', '${w.uid}', '${safeName}', '${w.platform}')" style="font-size:0.7rem; padding:2px 8px; margin-left:2px; border-radius:4px; border:1px solid gray; background:#2a2a4a; color:white; cursor:pointer;">✉️ Resend</button>
                                 <button class="prize-tokens-btn" data-uid="${escapeHtml(w.uid)}" data-name="${escapeHtml(w.name || "")}" title="Send tokens as (part of) the prize" style="font-size:0.7rem; padding:2px 8px; margin-left:2px; border-radius:4px; border:1px solid #aa7a1e; background:#2a2a4a; color:white; cursor:pointer;">🪙 Tokens</button></span>`;
@@ -1139,13 +1169,15 @@
                         return `<p class="promo-sub" style="margin:0 0 4px;">${emoji} ${label}: ${items}</p>`;
                     }
 
-                    let statusHtml = `<p class="promo-sub" style="margin:0 0 4px;">👥 ${g.entryCount || 0} entries ${g.requiresPassword ? "🔒" : "🔓"}</p>`;
+                    let statusHtml = `<p class="promo-sub" style="margin:0 0 4px;">👥 ${g.entryCount || 0} entries (🍎 ${g.iosEntryCount || 0} · 🤖 ${g.androidEntryCount || 0}) ${g.requiresPassword ? "🔒" : "🔓"}${everyone ? " · 🌍 one draw for everyone" : ""}</p>`;
                     statusHtml += `<p class="promo-sub" style="margin:0 0 4px;">${isExpired ? "⏰ Entries closed" : "🟢 " + formatSecretGiveawayTimeLeft(g.expiresAt)}</p>`;
+                    if (everyone) statusHtml += `<p class="promo-sub" style="margin:0 0 4px;">🌍 Winners: ${allWon}/${allSlots}</p>` + winnerLine(winners, "Winners", "🌍");
                     if (iosSlots > 0) statusHtml += `<p class="promo-sub" style="margin:0 0 4px;">🍎 iOS winners: ${iosWon}/${iosSlots}</p>` + winnerLine(winners.filter(w => w.platform === "ios"), "iOS", "🍎");
                     if (androidSlots > 0) statusHtml += `<p class="promo-sub" style="margin:0 0 4px;">🤖 Android winners: ${androidWon}/${androidSlots}</p>` + winnerLine(winners.filter(w => w.platform === "android"), "Android", "🤖");
                     if (fullyDrawn) statusHtml += `<p class="promo-sub" style="color:gold; margin:0 0 4px;">🏆 Fully drawn</p>`;
 
                     let pickButtons = "";
+                    if (everyone && allWon < allSlots) pickButtons += `<button class="btn-primary" onclick="handlePickSecretWinner('${g.id}', 'all')" style="padding:8px 16px; margin-right:8px;">🎲 Pick Winner (everyone)</button>`;
                     if (iosWon < iosSlots) pickButtons += `<button class="btn-primary" onclick="handlePickSecretWinner('${g.id}', 'ios')" style="padding:8px 16px; margin-right:8px;">🎲 Pick iOS Winner</button>`;
                     if (androidWon < androidSlots) pickButtons += `<button class="btn-primary" onclick="handlePickSecretWinner('${g.id}', 'android')" style="padding:8px 16px; margin-right:8px;">🎲 Pick Android Winner</button>`;
 
@@ -1153,7 +1185,8 @@
                     const viewPasswordBtn = g.requiresPassword
                         ? `<button class="btn-primary" onclick="handleViewSecretPassword('${g.id}')" style="padding:8px 16px; margin-right:8px; background:#555; border-color:#555;">👁️ View Password</button>`
                         : "";
-                    const actionsHtml = `${pickButtons}${viewPasswordBtn}<button class="btn-primary" onclick="handleDeleteSecretGiveaway('${g.id}')" style="padding:8px 16px; background:#c62828; border-color:#c62828;">${deleteLabel}</button>`;
+                    const viewEntriesBtn = `<button class="btn-primary" onclick="handleViewSecretEntries('${g.id}')" style="padding:8px 16px; margin-right:8px; background:#555; border-color:#555;">👥 View entries</button>`;
+                    const actionsHtml = `${pickButtons}${viewEntriesBtn}${viewPasswordBtn}<button class="btn-primary" onclick="handleDeleteSecretGiveaway('${g.id}')" style="padding:8px 16px; background:#c62828; border-color:#c62828;">${deleteLabel}</button>`;
 
                     // Collapsed by default so a long history stays scannable —
                     // with 100 giveaways the old always-expanded cards meant
@@ -1165,6 +1198,7 @@
                         `👥 ${g.entryCount || 0}`,
                         g.requiresPassword ? "🔒" : "🔓"
                     ];
+                    if (everyone) summaryBits.push(`🌍 ${allWon}/${allSlots}`);
                     if (iosSlots > 0) summaryBits.push(`🍎 ${iosWon}/${iosSlots}`);
                     if (androidSlots > 0) summaryBits.push(`🤖 ${androidWon}/${androidSlots}`);
                     const totalStaked = (g.iosTokensStaked || 0) + (g.androidTokensStaked || 0);
@@ -1180,6 +1214,7 @@
                         <div style="padding:4px 14px 14px;">
                             ${statusHtml}
                             <div id="secretWinnerPick_${g.id}" style="display:none; margin-top:10px; padding:14px; border:1px solid #4169e1; border-radius:8px;"></div>
+                            <div id="secretEntries_${g.id}" style="display:none; margin-top:10px; padding:14px; border:1px solid #2a2a4a; border-radius:8px; max-height:320px; overflow-y:auto;"></div>
                             <div style="margin-top:10px;">${actionsHtml}</div>
                         </div>
                     </details>`;
@@ -1214,14 +1249,16 @@
                 }
             }
 
-            window.handlePickSecretWinner = async function (giveawayId, platform) {
-                if (!await showConfirmModal("Pick winner", `Pick a random ${platform} winner from this giveaway's entries?`)) return;
+            window.handlePickSecretWinner = async function (giveawayId, group) {
+                const groupText = group === "all" ? "winner from everyone (iOS + Android)" : group + " winner";
+                if (!await showConfirmModal("Pick winner", `Pick a random ${groupText} from this giveaway's entries?`)) return;
                 try {
-                    const result = await AppState.pickSecretGiveawayWinner(giveawayId, platform);
+                    const result = await AppState.pickSecretGiveawayWinner(giveawayId, group);
+                    const platform = result.winner.platform;
                     const container = document.getElementById("secretWinnerPick_" + giveawayId);
                     const safeName = escapeHtml(result.winner.name).replace(/'/g, "\\'");
                     container.innerHTML = `
-                        <p style="margin:0 0 4px;"><strong>Winner (${platform}):</strong> ${escapeHtml(result.winner.name)}</p>
+                        <p style="margin:0 0 4px;"><strong>Winner:</strong> ${escapeHtml(result.winner.name)} (${platform === "ios" ? "🍎 iOS" : "🤖 Android"})</p>
                         <p class="promo-sub" style="margin:0 0 4px;"><strong>Remaining pool:</strong> ${result.entryCount}</p>
                         <p class="promo-sub" style="margin:0 0 10px;"><strong>Staked:</strong> ${result.winner.tokens || 0} 🪙 — their chance was ${result.winnerWeight} in ${result.totalWeight} (${Math.round((result.winnerWeight / result.totalWeight) * 1000) / 10}%)</p>
                         <label style="display:block; margin-bottom:6px;">Prize code to send:</label>
@@ -1246,6 +1283,27 @@
                     await refreshSecretGiveawaysList();
                 } catch (e) {
                     showInfoModal("Failed to save", e.message);
+                }
+            };
+
+            // Everyone entered, with their device and stake — biggest stakes first.
+            window.handleViewSecretEntries = async function (giveawayId) {
+                const box = document.getElementById("secretEntries_" + giveawayId);
+                if (!box) return;
+                if (box.style.display === "block") { box.style.display = "none"; return; }
+                box.innerHTML = "<p class='promo-sub'>Loading...</p>";
+                box.style.display = "block";
+                try {
+                    const entries = await AppState.getSecretGiveawayEntries(giveawayId);
+                    if (!entries.length) { box.innerHTML = "<p class='promo-sub'>No entries yet.</p>"; return; }
+                    entries.sort((a, b) => (b.tokens || 0) - (a.tokens || 0) || (a.enteredAt || 0) - (b.enteredAt || 0));
+                    const ios = entries.filter(e => e.platform === "ios").length;
+                    box.innerHTML = `<p class="promo-sub" style="margin:0 0 8px;"><strong>${entries.length}</strong> entries — 🍎 ${ios} iOS · 🤖 ${entries.length - ios} Android</p>` +
+                        entries.map(e => `<div style="padding:4px 0; border-bottom:1px solid #2a2a4a; font-size:0.9rem;">
+                            ${e.platform === "ios" ? "🍎" : "🤖"} ${escapeHtml(e.name || "?")}
+                            <span class="promo-sub">· 🪙 ${e.tokens || 0}${e.enteredAt ? " · " + new Date(e.enteredAt).toLocaleString() : ""}</span></div>`).join("");
+                } catch (e) {
+                    box.innerHTML = `<p class="promo-sub">Couldn't load entries: ${escapeHtml(e.message)}</p>`;
                 }
             };
 

@@ -415,6 +415,11 @@
         <div id="secretPage" class="page">
             <div class="promo-grid">
                 <div class="promo-panel" style="max-width:600px; margin:0 auto; text-align:center; font-size:1.1rem;">
+                    <!-- Shown until sign-in has been checked, so a slow start
+                         doesn't flash "Sign in" or an empty list first. -->
+                    <div id="secretLoadingState" class="lock-screen" style="text-align:center;">
+                        <p class="promo-sub">⏳ Loading secret giveaways...</p>
+                    </div>
                     <div id="secretSignedOutState" class="lock-screen" style="display:none;">
                         <span class="vip-lock-icon-big">🔒</span>
                         <h2>Sign in to enter</h2>
@@ -825,14 +830,19 @@ async function openPrizeReveal(weekId) {
 window.openPrizeReveal = openPrizeReveal;
 
 // One reveal flow for everyone — winner or not. Cycles through the real
-// entrants for one platform, lands on whoever actually won it, and ONLY
-// THEN (never before) checks whether the viewer themselves is among them
-// to decide whether to also show a prize code. There is no shortcut: the
-// winner has to watch the same spin as everyone else to find out.
+// entrants for one draw group ("ios", "android", or "all" for an everyone
+// giveaway), lands on whoever actually won it, and ONLY THEN (never before)
+// checks whether the viewer themselves is among them to decide whether to
+// also show a prize code. There is no shortcut: the winner has to watch the
+// same spin as everyone else to find out.
 let secretRevealTarget = null;
 let secretRevealNames = [];
 
-async function openSecretGiveawayReveal(giveawayId, platform) {
+function secretGroupLabel(group) {
+    return group === "all" ? "🌍 Everyone" : group === "ios" ? "🍎 iOS" : "🤖 Android";
+}
+
+async function openSecretGiveawayReveal(giveawayId, group) {
     const overlay = document.getElementById("prizeRevealModalOverlay");
     const body = document.getElementById("prizeRevealBody");
     // Neutral on purpose — unlike openPrizeReveal() above, this modal is
@@ -846,17 +856,19 @@ async function openSecretGiveawayReveal(giveawayId, platform) {
         const user = AppState.getCurrentUser();
         const giveaway = await AppState.getSecretGiveaway(giveawayId);
         if (!giveaway) { body.innerHTML = "<p class='promo-sub'>Giveaway not found.</p>"; return; }
-        const platformWinners = (giveaway.winners || []).filter(w => w.platform === platform);
-        if (!platformWinners.length) { body.innerHTML = "<p class='promo-sub'>No winners drawn for this platform yet.</p>"; return; }
+        const groupWinners = (giveaway.winners || []).filter(w => AppState.secretWinnerGroup(w) === group);
+        if (!groupWinners.length) { body.innerHTML = "<p class='promo-sub'>No winners drawn for this one yet.</p>"; return; }
 
-        const isMineIncluded = !!(user && platformWinners.some(w => w.uid === user.uid));
-        const landedText = platformWinners.map(w => w.name).join(", ");
-        const revealKey = "secret_" + giveawayId + "_" + platform;
-        secretRevealTarget = { giveawayId, name: landedText, revealKey, isMineIncluded };
-        const realEntrants = await AppState.getPublicSecretGiveawayEntries(giveawayId, platform);
-        secretRevealNames = buildSecretRevealPool(realEntrants.map(e => e.name), null);
+        const isMineIncluded = !!(user && groupWinners.some(w => w.uid === user.uid));
+        const landedText = groupWinners.map(w => w.name).join(", ");
+        const revealKey = "secret_" + giveawayId + "_" + group;
+        secretRevealTarget = { giveawayId, name: landedText, winnerNames: groupWinners.map(w => w.name), revealKey, isMineIncluded };
+        const realEntrants = await AppState.getPublicSecretGiveawayEntries(giveawayId, group === "all" ? null : group);
+        secretRevealNames = realEntrants.map(e => e.name);
+        // Winners stay on the list even if they left afterwards.
+        secretRevealTarget.entrantNames = [...secretRevealNames, ...secretRevealTarget.winnerNames];
 
-        const label = (platform === "ios" ? "🍎 iOS" : "🤖 Android") + " — " + giveaway.title;
+        const label = secretGroupLabel(group) + " — " + giveaway.title;
         if (isWheelRevealed(revealKey)) {
             // Already revealed earlier — show the landed state immediately,
             // no need to replay the animation.
@@ -868,6 +880,7 @@ async function openSecretGiveawayReveal(giveawayId, platform) {
             } else {
                 body.insertAdjacentHTML("beforeend", renderSecretNonWinnerResult());
             }
+            body.insertAdjacentHTML("beforeend", renderEntrantsList(secretRevealTarget.entrantNames));
             return;
         }
         body.innerHTML = renderSecretRevealBox(label, false, "🎡 Watch the Reveal");
@@ -894,20 +907,9 @@ async function openSecretPrizeRevealFromNotification(giveawayId) {
         body.innerHTML = "<p class='promo-sub'>No prize found — either this wasn't your win, or the giveaway was removed.</p>";
         return;
     }
-    await openSecretGiveawayReveal(giveawayId, myWin.platform);
+    await openSecretGiveawayReveal(giveawayId, AppState.secretWinnerGroup(myWin));
 }
 window.openSecretPrizeRevealFromNotification = openSecretPrizeRevealFromNotification;
-
-// Cycles through the REAL people who entered (from the public, no-password
-// entries copy) before landing on the actual winner — same idea as
-// prepareNames() for the weekly wheel. A few mystery fillers are mixed in
-// so a low-entry giveaway still has something to flicker through.
-function buildSecretRevealPool(names, myName) {
-    const filler = ["🔒", "🎁", "❓", "🍀", "✨"];
-    const others = (names || []).filter(n => n !== myName);
-    const pool = [...new Set([...others, ...filler])];
-    return pool.length ? pool : filler;
-}
 
 function renderSecretRevealBox(title, landedInstantly, buttonLabel) {
     return `
@@ -954,49 +956,113 @@ function wireSecretCopyBtn(container) {
     if (btn) btn.addEventListener("click", () => copyCode(btn.getAttribute("data-code"), btn));
 }
 
-// Same cycling-then-decelerating mechanic as spinWheel(), just shorter and
-// scoped to the reveal modal's own elements/ids so it doesn't collide with
-// the inline weekly wheel section.
+/* ---------------- THE REVEAL SPIN (weekly + secret) ----------------
+   Shows every entrant's name once, in a shuffled order, then lands on the
+   winner. The spin lasts 5–10 seconds depending on how many entered, and
+   that time is shared out between the names: quick at the start, slowing
+   down towards the end. Each name stays up for at least one screen refresh
+   so none are skipped; with more than ~600 entrants that stretches the spin
+   slightly past 10 seconds rather than leave anyone out. Short lists go
+   round a few times so it still looks like a spin. */
+function shuffledCopy(list) {
+    const a = list.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+
+// Everyone flashes up during the spin, winners included — leaving the winner
+// out until the last moment would give it away (with two entrants you'd see
+// only the loser's name, then the winner pop in at the end).
+function buildRevealSequence(names, winnerNames) {
+    const winners = new Set(winnerNames);
+    const everyone = [...new Set([...(names || []), ...(winnerNames || [])].filter(Boolean))];
+    // A lone entrant still gets a spin, mixed in with a few placeholders.
+    const base = everyone.length > 1 ? everyone : [...everyone, "🎁", "❓", "🍀", "✨"];
+    let seq = shuffledCopy(base);
+    while (seq.length < 24) {
+        const next = shuffledCopy(base);
+        // Don't show the same name twice in a row where two rounds meet.
+        if (next.length > 1 && next[0] === seq[seq.length - 1]) next.push(next.shift());
+        seq = seq.concat(next);
+    }
+    // Finish on someone who didn't win, so the landing is a real change of
+    // name (with two people: A, B, A, B … then it stops on the winner).
+    const last = seq[seq.length - 1];
+    if (winners.has(last)) {
+        const losers = base.filter(n => !winners.has(n) && n !== last);
+        if (losers.length) seq.push(losers[Math.floor(Math.random() * losers.length)]);
+    }
+    return { seq, entrantCount: everyone.length };
+}
+
+function playNameReveal(nameEl, names, winnerNames, finalText, onDone) {
+    const { seq, entrantCount } = buildRevealSequence(names, winnerNames);
+    const duration = Math.min(10000, Math.max(5000, entrantCount * 150));
+    // Step i's share of the time grows from 1x to 4x, so it slows down.
+    const weights = seq.map((_, i) => 1 + 3 * Math.pow(i / Math.max(1, seq.length - 1), 2));
+    const total = weights.reduce((a, b) => a + b, 0);
+    const startsAt = [];
+    let acc = 0;
+    weights.forEach(w => { startsAt.push((acc / total) * duration); acc += w; });
+
+    nameEl.classList.remove("landed");
+    nameEl.classList.add("cycling");
+    const t0 = performance.now();
+    let shown = -1;
+    function frame(now) {
+        const elapsed = now - t0;
+        // Where the schedule says we should be, but never more than one name
+        // per frame — that's what guarantees everyone is actually seen.
+        let due = shown;
+        while (due + 1 < seq.length && startsAt[due + 1] <= elapsed) due++;
+        if (due > shown) {
+            shown++;
+            nameEl.textContent = seq[shown];
+        }
+        if (shown >= seq.length - 1 && elapsed >= duration) {
+            nameEl.classList.remove("cycling");
+            nameEl.classList.add("landed");
+            nameEl.textContent = finalText;
+            onDone();
+            return;
+        }
+        requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+}
+
+// "👥 Everyone who entered (N)" under a finished reveal, so anyone can check
+// the full list of names that were in the draw.
+function renderEntrantsList(names) {
+    const unique = [...new Set((names || []).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+    if (!unique.length) return "";
+    return `
+        <details class="entrants-list" style="margin:14px auto 0; max-width:420px; text-align:left;">
+            <summary style="cursor:pointer; color:#9a9ab0; font-size:0.95rem; text-align:center;">👥 Everyone who entered (${unique.length})</summary>
+            <div style="margin-top:8px; max-height:220px; overflow-y:auto; padding:10px 12px; border:1px solid #2a2a4a; border-radius:10px; font-size:0.9rem; line-height:1.6;">
+                ${unique.map(n => escapeHtml(n)).join(" &middot; ")}
+            </div>
+        </details>`;
+}
+
 function spinSecretWheel() {
     const spinBtn = document.getElementById("secretSpinBtn");
     const nameEl = document.getElementById("secretRevealBoxName");
     if (!spinBtn || !nameEl || !secretRevealTarget) return;
     spinBtn.disabled = true;
     spinBtn.textContent = "Revealing...";
-    nameEl.classList.remove("landed");
-    nameEl.classList.add("cycling");
-
-    const totalDuration = 3500;
-    const startTime = performance.now();
-
-    function scheduleNextTick() {
-        const elapsed = performance.now() - startTime;
-        const progress = Math.min(elapsed / totalDuration, 1);
-
-        if (progress >= 1) {
-            nameEl.classList.remove("cycling");
-            nameEl.classList.add("landed");
-            nameEl.textContent = secretRevealTarget.name;
-            spinBtn.textContent = "Revealed!";
-            markWheelRevealed(secretRevealTarget.revealKey);
-            if (secretRevealTarget.isMineIncluded) {
-                landSecretPrize();
-            } else {
-                landSecretNonWinnerMessage();
-            }
-            return;
+    playNameReveal(nameEl, secretRevealNames, secretRevealTarget.winnerNames, secretRevealTarget.name, () => {
+        spinBtn.textContent = "Revealed!";
+        markWheelRevealed(secretRevealTarget.revealKey);
+        if (secretRevealTarget.isMineIncluded) {
+            landSecretPrize();
+        } else {
+            landSecretNonWinnerMessage();
         }
-
-        let candidate;
-        do {
-            candidate = secretRevealNames[Math.floor(Math.random() * secretRevealNames.length)];
-        } while (candidate === nameEl.textContent && secretRevealNames.length > 1);
-        nameEl.textContent = candidate;
-
-        const interval = 60 + progress * progress * 260;
-        setTimeout(scheduleNextTick, interval);
-    }
-    scheduleNextTick();
+    });
 }
 window.spinSecretWheel = spinSecretWheel;
 
@@ -1011,11 +1077,13 @@ async function landSecretPrize() {
     } catch (e) {
         body.insertAdjacentHTML("beforeend", `<p class="promo-sub" style="margin-top:12px;">Couldn't load prize: ${escapeHtml(e.message)}</p>`);
     }
+    body.insertAdjacentHTML("beforeend", renderEntrantsList(secretRevealTarget.entrantNames));
 }
 
 function landSecretNonWinnerMessage() {
     const body = document.getElementById("prizeRevealBody");
     body.insertAdjacentHTML("beforeend", renderSecretNonWinnerResult());
+    body.insertAdjacentHTML("beforeend", renderEntrantsList(secretRevealTarget.entrantNames));
 }
 
 document.getElementById("prizeRevealCloseBtn").addEventListener("click", () => {
@@ -1030,6 +1098,9 @@ document.getElementById("prizeRevealCloseBtn").addEventListener("click", () => {
                pass-through version below and uncomment the block beneath it.
                ============================================================ */
             async function refreshVipState() {
+                // Before sign-in has been checked, "no user" just means "not
+                // known yet" — wait, so the tab doesn't flash "Sign in" first.
+                await AppState.waitForAuthReady();
                 const user = AppState.getCurrentUser();
                 if (!user) {
                     // vipTabLockIcon span was removed from the tab button HTML
@@ -1261,15 +1332,10 @@ function showDrawDayModal() {
             let wheelNames = [];
             let winnerData = null;
 
+            // Every entrant's name goes into the spin (see playNameReveal).
             function prepareNames(entries, winner) {
                 let names = entries.map(e => e.name);
                 if (!names.includes(winner.winnerName)) names.push(winner.winnerName);
-                if (names.length > 12) {
-                    const winnerName = winner.winnerName;
-                    const others = names.filter(n => n !== winnerName);
-                    others.sort(() => Math.random() - 0.5);
-                    names = [winnerName, ...others.slice(0, 11)];
-                }
                 wheelNames = names;
                 winnerData = winner;
             }
@@ -1300,54 +1366,22 @@ if (user && user.uid === winnerData.winnerUid) {
                     resultDiv.innerHTML +=
                         '<br><br><span style="color:#9a9ab0; font-size:1rem;">Awwww, You didn\'t win... Come back again next week! 🍀</span>';
                 }
+                resultDiv.insertAdjacentHTML("beforeend", renderEntrantsList(wheelNames));
             }
 
             /* ---------------- REVEAL ANIMATION ----------------
-               Cycles the visible name through the entrant pool at a fast,
-               slot-machine-like clip, then decelerates and lands on the
-               real winner right as the 5s window ends. */
+               Every entrant's name flashes up once (playNameReveal), slowing
+               down over 5–10 seconds, then it lands on the real winner. */
             function spinWheel() {
                 const spinBtn = document.getElementById("spinBtn");
                 const nameEl = document.getElementById("revealBoxName");
                 spinBtn.disabled = true;
                 spinBtn.textContent = "Revealing...";
-
-                nameEl.classList.remove("landed");
-                nameEl.classList.add("cycling");
-
-                const totalDuration = 5000;
-                const startTime = performance.now();
-                let cycleTimeout = null;
-
-                // Cycle interval grows over time (fast -> slow) so it feels like
-                // it's "settling" rather than stopping abruptly.
-                function scheduleNextTick() {
-                    const elapsed = performance.now() - startTime;
-                    const progress = Math.min(elapsed / totalDuration, 1);
-
-                    if (progress >= 1) {
-                        nameEl.classList.remove("cycling");
-                        nameEl.classList.add("landed");
-                        nameEl.textContent = winnerData.winnerName;
-                        spinBtn.textContent = "Winner revealed";
-                        markWheelRevealed(currentWeekId);
-                        showWinnerResult();
-                        return;
-                    }
-
-                    // Pick a random name to flash (avoid repeating the same one twice in a row)
-                    let candidate;
-                    do {
-                        candidate = wheelNames[Math.floor(Math.random() * wheelNames.length)];
-                    } while (candidate === nameEl.textContent && wheelNames.length > 1);
-                    nameEl.textContent = candidate;
-
-                    // Interval ramps from ~60ms (fast flicker) to ~320ms (slowing down)
-                    const interval = 60 + progress * progress * 260;
-                    cycleTimeout = setTimeout(scheduleNextTick, interval);
-                }
-
-                scheduleNextTick();
+                playNameReveal(nameEl, wheelNames, [winnerData.winnerName], winnerData.winnerName, () => {
+                    spinBtn.textContent = "Winner revealed";
+                    markWheelRevealed(currentWeekId);
+                    showWinnerResult();
+                });
             }
             window.spinWheel = spinWheel;
 
@@ -1361,15 +1395,97 @@ if (user && user.uid === winnerData.winnerUid) {
             // which reads the same "seen" keys independently) can show a
             // count even before the user ever clicks into that tab. Safe to
             // call repeatedly — only sets the listener up once.
+            // Until the first snapshot arrives the list is unknown, not empty —
+            // without this the tab said "No secret giveaways right now" for
+            // the second or two before they'd downloaded.
+            let secretGiveawaysLoaded = false;
+            let secretGiveawaysFailed = false;
+
             function startSecretGiveawaysBadgeFeed() {
                 if (unsubSecretGiveaways) return;
+                secretGiveawaysFailed = false;
                 unsubSecretGiveaways = AppState.listenToSecretGiveaways((items) => {
                     latestSecretGiveaways = items;
+                    secretGiveawaysLoaded = true;
+                    secretGiveawaysFailed = false;
                     refreshSecretTabBadge();
-                    if (document.getElementById("secretPage").classList.contains("active")) {
+                    if (document.getElementById("secretPage").classList.contains("active") && AppState.getCurrentUser()) {
+                        showSecretDeviceGate();
+                    }
+                }, 50, () => {
+                    unsubSecretGiveaways = null;
+                    secretGiveawaysFailed = true;
+                    if (document.getElementById("secretPage").classList.contains("active") && AppState.getCurrentUser()) {
                         showSecretDeviceGate();
                     }
                 });
+            }
+
+            window.retrySecretGiveaways = function () {
+                startSecretGiveawaysBadgeFeed();
+                showSecretDeviceGate();
+            };
+
+            /* ---------------- PER-CARD DATA, FETCHED ONCE ----------------
+               The list re-renders whenever ANY giveaway changes (someone
+               enters, stakes, a winner is drawn). Your own entry, its prize
+               text and your token balance only change when YOU do something,
+               so they're kept here and only fetched again after your own
+               actions, or when you reopen the tab — instead of every card
+               being re-read from the database on every change. */
+            const secretDetailCache = new Map();
+            let secretBalancePromise = null;
+
+            function getSecretDetail(giveawayId) {
+                if (!secretDetailCache.has(giveawayId)) {
+                    const p = (async () => {
+                        const entry = await AppState.getMySecretGiveawayEntry(giveawayId);
+                        const reward = entry ? await AppState.getSecretGiveawayRewardDescription(giveawayId) : null;
+                        return { entry, reward };
+                    })();
+                    // A failed read shouldn't be remembered.
+                    p.catch(() => secretDetailCache.delete(giveawayId));
+                    secretDetailCache.set(giveawayId, p);
+                }
+                return secretDetailCache.get(giveawayId);
+            }
+            function getSecretBalance() {
+                if (!secretBalancePromise) {
+                    secretBalancePromise = AppState.getMyTokenBalance().catch(e => { secretBalancePromise = null; throw e; });
+                }
+                return secretBalancePromise;
+            }
+            // After your own action on one giveaway (or all, with no id).
+            function forgetSecretDetails(giveawayId) {
+                if (giveawayId) secretDetailCache.delete(giveawayId);
+                else secretDetailCache.clear();
+                secretBalancePromise = null;
+            }
+
+            // Giveaways staked on before the highest stake was tracked: ask the
+            // server to work it out once; the result arrives through the
+            // listener like any other change.
+            const maxStakeRequested = new Set();
+            const maxStakeFailed = new Set();
+            function secretTopStake(g, platform) {
+                const ios = g.maxStakeIos;
+                const android = g.maxStakeAndroid;
+                if (typeof ios !== "number" || typeof android !== "number") {
+                    if (!((g.iosTokensStaked || 0) + (g.androidTokensStaked || 0))) return 0; // nothing staked yet
+                    if (!maxStakeRequested.has(g.id) && AppState.getCurrentUser()) {
+                        maxStakeRequested.add(g.id);
+                        AppState.refreshSecretGiveawayMaxStake(g.id).catch(e => {
+                            // Couldn't be worked out: drop the line rather than
+                            // leave "checking…" up for good.
+                            console.warn("Couldn't load the highest stake:", e.message);
+                            maxStakeFailed.add(g.id);
+                            renderSecretGiveawayList(latestSecretGiveaways);
+                        });
+                    }
+                    return maxStakeFailed.has(g.id) ? undefined : null; // undefined: unknown, null: still checking
+                }
+                if (AppState.isEveryoneSecretGiveaway(g)) return Math.max(ios, android);
+                return platform === "ios" ? ios : android;
             }
 
             function refreshSecretTabBadge() {
@@ -1438,13 +1554,15 @@ if (user && user.uid === winnerData.winnerUid) {
                 const device = current === "ios" ? "android" : "ios";
                 const deviceLabel = device === "ios" ? "iOS" : "Android";
 
+                // All looked up at once (and usually already cached), rather
+                // than one database read after another.
+                const details = await Promise.all(latestSecretGiveaways.map(g => getSecretDetail(g.id).catch(() => ({ entry: null }))));
                 const affected = [];
-                for (const g of latestSecretGiveaways) {
-                    const entry = await AppState.getMySecretGiveawayEntry(g.id);
-                    if (!entry || entry.platform === device) continue;
-                    const slots = device === "ios" ? g.iosWinnerCount : g.androidWinnerCount;
-                    affected.push({ g, canMigrate: slots > 0 });
-                }
+                latestSecretGiveaways.forEach((g, i) => {
+                    const entry = details[i].entry;
+                    if (!entry || entry.platform === device) return;
+                    affected.push({ g, canMigrate: AppState.secretGiveawaySlotsFor(g, device) > 0 });
+                });
                 const kicked = affected.filter(a => !a.canMigrate);
 
                 const confirmBody = kicked.length
@@ -1472,6 +1590,7 @@ if (user && user.uid === winnerData.winnerUid) {
                         failures.push(a.g.title + ": " + e.message);
                     }
                 }));
+                forgetSecretDetails();
                 showSecretDeviceGate();
                 if (failures.length) {
                     await showInfoModal("Some entries didn't update", failures.join("; "));
@@ -1495,6 +1614,8 @@ if (user && user.uid === winnerData.winnerUid) {
 
             function showSecretDeviceGate() {
                 const device = getSecretDevice();
+                document.getElementById("secretLoadingState").style.display = "none";
+                document.getElementById("secretSignedOutState").style.display = "none";
                 document.getElementById("secretDeviceChoiceState").style.display = device ? "none" : "block";
                 document.getElementById("secretListWrap").style.display = device ? "block" : "none";
                 // This has to run unconditionally, not just once a device is
@@ -1510,23 +1631,66 @@ if (user && user.uid === winnerData.winnerUid) {
                 }
             }
 
+            let secretStateSeq = 0;
             async function refreshSecretGiveawayState() {
-                const user = AppState.getCurrentUser();
-                document.getElementById("secretSignedOutState").style.display = user ? "none" : "block";
+                const seq = ++secretStateSeq;
                 document.getElementById("secretDeviceChoiceState").style.display = "none";
                 document.getElementById("secretListWrap").style.display = "none";
-                if (!user) return;
+                document.getElementById("secretSignedOutState").style.display = "none";
+                // Until sign-in has been checked we can't tell "signed out"
+                // from "not loaded yet", so say it's loading rather than
+                // flashing the sign-in screen.
+                document.getElementById("secretLoadingState").style.display = "block";
+                await AppState.waitForAuthReady();
+                if (seq !== secretStateSeq) return; // a newer call took over
+                const user = AppState.getCurrentUser();
+                if (!user) {
+                    document.getElementById("secretLoadingState").style.display = "none";
+                    document.getElementById("secretSignedOutState").style.display = "block";
+                    return;
+                }
+                // Reopening the tab is the moment to pick up anything changed
+                // elsewhere (e.g. a stake added on another device).
+                forgetSecretDetails();
                 // Show the device gate (or the list, if a device is already
                 // chosen) right away — it doesn't need to wait on Firestore.
                 showSecretDeviceGate();
                 startSecretGiveawaysBadgeFeed();
             }
 
+            // What you'd typed into a card (stake amount, password), and which
+            // box had focus, survives the list being redrawn under you.
+            function captureSecretInputs(list) {
+                const values = {};
+                list.querySelectorAll("input[id]").forEach(el => { if (el.value !== el.defaultValue) values[el.id] = el.value; });
+                const active = document.activeElement;
+                return { values, focusId: active && list.contains(active) ? active.id : null };
+            }
+            function restoreSecretInputs(list, kept) {
+                for (const [id, value] of Object.entries(kept.values)) {
+                    const el = document.getElementById(id);
+                    if (el && list.contains(el)) el.value = value;
+                }
+                if (kept.focusId) {
+                    const el = document.getElementById(kept.focusId);
+                    if (el) el.focus({ preventScroll: true });
+                }
+                list.querySelectorAll("[id^='stakeHint_']").forEach(el => updateStakeHint(el.id.slice("stakeHint_".length)));
+            }
+
+            let secretRenderSeq = 0;
             async function renderSecretGiveawayList(items) {
+                const seq = ++secretRenderSeq;
                 const list = document.getElementById("secretGiveawayList");
                 const user = AppState.getCurrentUser();
                 const device = getSecretDevice();
                 const now = Date.now();
+                if (!secretGiveawaysLoaded) {
+                    list.innerHTML = secretGiveawaysFailed
+                        ? `<p class='promo-sub' style='text-align:center;'>Couldn't load the giveaways. <button class="switch-device-btn" onclick="retrySecretGiveaways()" style="display:inline; margin:0 0 0 6px; padding:4px 10px; font-size:0.85rem;">Try again</button></p>`
+                        : "<p class='promo-sub' style='text-align:center;'>⏳ Loading secret giveaways...</p>";
+                    return;
+                }
                 // Auto-cleanup only actually happens when admin has the admin
                 // panel open past a giveaway's deleteAt date, so hide any
                 // stale-but-not-yet-swept giveaway from regular users too.
@@ -1543,27 +1707,34 @@ if (user && user.uid === winnerData.winnerUid) {
                 // which platform did I pick) needs a lookup per card —
                 // resolve them all up front so the list renders once instead
                 // of flashing placeholder states.
-                const details = await Promise.all(notDeleted.map(async (g) => {
-                    const entry = await AppState.getMySecretGiveawayEntry(g.id);
-                    const reward = entry ? await AppState.getSecretGiveawayRewardDescription(g.id) : null;
-                    return { entry, reward };
-                }));
-                // One read per render, shared by every card's "Add tokens" box.
-                secretTokenBalance = user ? await AppState.getMyTokenBalance() : 0;
+                let details;
+                try {
+                    details = await Promise.all(notDeleted.map(g => getSecretDetail(g.id)));
+                    // Shared by every card's "Add tokens" box.
+                    secretTokenBalance = user ? await getSecretBalance() : 0;
+                } catch (e) {
+                    if (seq !== secretRenderSeq) return;
+                    list.innerHTML = `<p class='promo-sub' style='text-align:center;'>Couldn't load your entries. <button class="switch-device-btn" onclick="retrySecretGiveaways()" style="display:inline; margin:0 0 0 6px; padding:4px 10px; font-size:0.85rem;">Try again</button></p>`;
+                    return;
+                }
+                // A newer render started while this one was waiting; let it win.
+                if (seq !== secretRenderSeq) return;
 
                 // Only show giveaways relevant to the chosen device — unless
                 // it's one you've already entered or won, so your own history
                 // never disappears just because you later switched devices.
+                // Everyone giveaways have slots for both devices.
                 const pairs = notDeleted.map((g, i) => [g, details[i]]).filter(([g, detail]) => {
-                    const slots = device === "ios" ? g.iosWinnerCount : g.androidWinnerCount;
                     const isWinner = user && (g.winners || []).some(w => w.uid === user.uid);
-                    return (slots || 0) > 0 || !!detail.entry || isWinner;
+                    return AppState.secretGiveawaySlotsFor(g, device) > 0 || !!detail.entry || isWinner;
                 });
                 if (!pairs.length) {
                     list.innerHTML = `<p class='promo-sub' style='text-align:center;'>No ${device === "ios" ? "iOS" : "Android"} secret giveaways right now — check back later!</p>`;
                     return;
                 }
+                const kept = captureSecretInputs(list);
                 list.innerHTML = pairs.map(([g, detail]) => renderSecretGiveawayCard(g, detail, user, device)).join("");
+                restoreSecretInputs(list, kept);
             }
 
             // Deliberately does NOT branch on "is the viewer the winner" —
@@ -1577,6 +1748,20 @@ if (user && user.uid === winnerData.winnerUid) {
             // Staking lives on the card itself. Tokens can be added any time until
             // entries close or your side is drawn; each one is one more chance on
             // top of the free one everyone gets.
+            // Your stake and the highest one in your draw, per card, for the
+            // "add N → your stake becomes M" hint while typing.
+            const secretStakeInfo = {};
+
+            // The line showing the highest stake in your draw — what you'd
+            // need to beat, so you can judge how much to put in.
+            function renderTopStakeLine(top, staked) {
+                if (top === undefined) return "";
+                if (top === null) return `<p class="promo-sub" style="margin:0 0 8px;">🔝 Highest stake: checking…</p>`;
+                if (top === 0) return `<p class="promo-sub" style="margin:0 0 8px;">🔝 Nobody has staked yet — even 1 🪙 gives you the highest stake.</p>`;
+                if (staked >= top) return `<p class="promo-sub" style="margin:0 0 8px;">🔝 Yours is the highest stake (<strong>${top}</strong> 🪙) — nobody has staked more.</p>`;
+                return `<p class="promo-sub" style="margin:0 0 8px;">🔝 Highest stake right now: <strong>${top}</strong> 🪙</p>`;
+            }
+
             function renderStakeHtml(g, entry, isExpired, sideDrawn) {
                 const staked = entry.tokens || 0;
                 const chances = `your entry counts as <strong>${staked + 1}</strong> chance${staked + 1 === 1 ? "" : "s"}`;
@@ -1584,16 +1769,21 @@ if (user && user.uid === winnerData.winnerUid) {
                     if (!staked) return "";
                     return `<p class="promo-sub" style="margin:10px 0 0;">🪙 You staked <strong>${staked}</strong> — ${chances}.</p>`;
                 }
+                const top = secretTopStake(g, entry.platform);
+                secretStakeInfo[g.id] = { staked, top };
                 return `
                     <div style="margin-top:12px; padding:12px; border:1px solid #aa7a1e; border-radius:10px; background:rgba(255,196,0,0.06);">
                         <p class="promo-sub" style="margin:0 0 8px;">🪙 Staked: <strong>${staked}</strong> — ${chances}.</p>
+                        ${renderTopStakeLine(top, staked)}
                         <div style="display:flex; gap:8px;">
                             <input type="number" id="stakeInput_${g.id}" min="1" step="1" inputmode="numeric" placeholder="Tokens to add"
                                 style="flex:1; min-width:0; padding:10px; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box;"
+                                onfocus="suggestStake('${g.id}')" oninput="updateStakeHint('${g.id}')"
                                 onkeydown="if(event.key==='Enter') handleStakeTokens('${g.id}');">
                             <button class="btn-primary" id="stakeBtn_${g.id}" onclick="handleStakeTokens('${g.id}')" style="padding:10px 18px; flex-shrink:0;">Add</button>
                         </div>
-                        ${staked > 0 ? renderStakeEditHtml(g.id, staked) : ""}
+                        <p class="promo-sub" id="stakeHint_${g.id}" style="margin:6px 0 0; font-size:0.85rem; color:#ffc46b; display:none;"></p>
+                        ${staked > 0 ? renderStakeEditHtml(g.id, staked, top) : ""}
                         <p class="promo-sub" style="margin:8px 0 0; font-size:0.8rem;">You have ${secretTokenBalance} 🪙 (<a href="#" style="color:#ffc400;" onclick="if (window.top.goToPage) window.top.goToPage('store'); return false;">get more</a>) · spent when your side is drawn, win or lose · refunded if you leave before then</p>
                     </div>`;
             }
@@ -1602,14 +1792,17 @@ if (user && user.uid === winnerData.winnerUid) {
             // cards have the editor open is remembered, so a live refresh of
             // the list doesn't snap it shut mid-edit.
             const openStakeEditors = new Set();
-            function renderStakeEditHtml(giveawayId, staked) {
+            function renderStakeEditHtml(giveawayId, staked, top) {
                 const open = openStakeEditors.has(giveawayId);
+                const topHint = typeof top === "number" && top > 0 && staked < top + 1
+                    ? ` The highest is ${top} 🪙 — set ${top + 1} to have the highest.`
+                    : "";
                 return `
                     <button type="button" onclick="toggleStakeEditor('${giveawayId}')"
                         style="margin-top:8px; background:none; border:none; color:#ffc400; cursor:pointer; padding:4px 0; font-size:0.85rem;">
                         ${open ? "✕ Close" : "✏️ Change stake"}</button>
                     <div id="stakeEditor_${giveawayId}" style="display:${open ? "block" : "none"}; margin-top:6px;">
-                        <p class="promo-sub" style="margin:0 0 6px; font-size:0.85rem;">Set your stake to (lower it to get tokens back):</p>
+                        <p class="promo-sub" style="margin:0 0 6px; font-size:0.85rem;">Set your stake to (lower it to get tokens back):${topHint}</p>
                         <div style="display:flex; gap:8px;">
                             <input type="number" id="stakeEditInput_${giveawayId}" min="0" step="1" inputmode="numeric" value="${staked}"
                                 style="flex:1; min-width:0; padding:10px; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box;"
@@ -1621,6 +1814,37 @@ if (user && user.uid === winnerData.winnerUid) {
                             Remove all (get ${staked} 🪙 back)</button>
                     </div>`;
             }
+
+            // Tapping into an empty "Tokens to add" box fills in what it takes
+            // to have the highest stake: one more than the current top.
+            window.suggestStake = function (giveawayId) {
+                const input = document.getElementById("stakeInput_" + giveawayId);
+                const info = secretStakeInfo[giveawayId];
+                if (!input || !info || input.value !== "" || typeof info.top !== "number") return;
+                const needed = info.top + 1 - info.staked;
+                if (needed > 0) input.value = String(needed);
+                updateStakeHint(giveawayId);
+            };
+
+            function updateStakeHint(giveawayId) {
+                const hint = document.getElementById("stakeHint_" + giveawayId);
+                const input = document.getElementById("stakeInput_" + giveawayId);
+                const info = secretStakeInfo[giveawayId];
+                if (!hint || !input || !info) return;
+                const amount = Number(input.value);
+                if (input.value === "" || !Number.isInteger(amount) || amount < 1) { hint.style.display = "none"; return; }
+                const total = info.staked + amount;
+                let text = `Your stake becomes ${total} 🪙`;
+                if (typeof info.top === "number") {
+                    if (total > info.top) text += info.top > 0 ? ` — the new highest (current highest: ${info.top}).` : " — the highest.";
+                    else if (total === info.top) text += ` — level with the highest (${info.top}).`;
+                    else text += ` — ${info.top + 1 - total} more would make it the highest.`;
+                } else text += ".";
+                if (amount > secretTokenBalance) text += ` You have ${secretTokenBalance} 🪙.`;
+                hint.textContent = text;
+                hint.style.display = "block";
+            }
+            window.updateStakeHint = updateStakeHint;
 
             window.toggleStakeEditor = function (giveawayId) {
                 if (openStakeEditors.has(giveawayId)) openStakeEditors.delete(giveawayId);
@@ -1654,6 +1878,7 @@ if (user && user.uid === winnerData.winnerUid) {
                 btns.forEach(b => { b.disabled = true; });
                 try {
                     await AppState.setSecretGiveawayStake(giveawayId, amount);
+                    forgetSecretDetails(giveawayId);
                     openStakeEditors.delete(giveawayId);
                     renderSecretGiveawayList(latestSecretGiveaways);
                 } catch (e) {
@@ -1665,20 +1890,24 @@ if (user && user.uid === winnerData.winnerUid) {
             function renderSecretGiveawayCard(g, detail, user, device) {
                 const isExpired = g.expiresAt <= Date.now();
                 const winners = g.winners || [];
-                const platformsWithWinners = [...new Set(winners.map(w => w.platform))];
+                // Draw groups that have winners: "ios" / "android" for a split
+                // giveaway, "all" for an everyone giveaway.
+                const groupsWithWinners = [...new Set(winners.map(w => AppState.secretWinnerGroup(w)))];
+                const everyone = AppState.isEveryoneSecretGiveaway(g);
 
                 let bodyHtml;
                 if (detail.entry) {
                     const platformLabel = detail.entry.platform === "ios" ? "🍎 iOS" : "🤖 Android";
                     const otherPlatform = detail.entry.platform === "ios" ? "android" : "ios";
                     const otherLabel = otherPlatform === "ios" ? "iOS" : "Android";
-                    const otherHasSlots = (otherPlatform === "ios" ? g.iosWinnerCount : g.androidWinnerCount) > 0;
+                    const otherHasSlots = AppState.secretGiveawaySlotsFor(g, otherPlatform) > 0;
                     // A stale entry can exist on a platform this giveaway no
                     // longer (or never did) offer slots for — it can never
                     // win as-is, so say so plainly instead of a false
                     // "Good luck!", and only offer a switch if the other
                     // platform actually has slots to switch into.
-                    const myPlatformHasSlots = (detail.entry.platform === "ios" ? g.iosWinnerCount : g.androidWinnerCount) > 0;
+                    const myPlatformHasSlots = AppState.secretGiveawaySlotsFor(g, detail.entry.platform) > 0;
+                    const sideDrawn = groupsWithWinners.includes(AppState.secretDrawGroup(g, detail.entry.platform));
                     // For correcting just this one entry — separate from the
                     // page-wide device choice above, which only decides what
                     // NEW entries default to.
@@ -1688,12 +1917,11 @@ if (user && user.uid === winnerData.winnerUid) {
                     let statusLine;
                     if (!myPlatformHasSlots) {
                         statusLine = `<p class="promo-sub" style="color:#ff9b6b;">⚠️ This giveaway doesn't have any ${platformLabel} slots — you can't win as entered. ${otherHasSlots ? "Switch below to fix it." : ""}</p>`;
-                    } else if (platformsWithWinners.includes(detail.entry.platform)) {
-                        statusLine = `<p class="promo-sub">🎉 Winner drawn for ${platformLabel} — watch the reveal below to find out!</p>`;
+                    } else if (sideDrawn) {
+                        statusLine = `<p class="promo-sub">🎉 Winner drawn${everyone ? "" : " for " + platformLabel} — watch the reveal below to find out!</p>`;
                     } else {
                         statusLine = `<p class="promo-sub">${isExpired ? "⏰ Entries closed — winners will be drawn soon." : "Good luck!"}</p>`;
                     }
-                    const sideDrawn = platformsWithWinners.includes(detail.entry.platform);
                     bodyHtml = `
                         <p class="promo-sub" style="color:#45aa38; margin:0 0 6px;">✅ You're entered (${platformLabel})! Here's what's up for grabs:</p>
                         <p class="promo-sub" style="margin:0 0 6px;">🎁 ${escapeHtml(detail.reward || "...")}</p>
@@ -1708,7 +1936,7 @@ if (user && user.uid === winnerData.winnerUid) {
                             style="width:100%; padding:10px; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box; margin-bottom:8px;"
                             onkeydown="if(event.key==='Enter') handleEnterSecretGiveaway('${g.id}');">` : "";
                     bodyHtml = `
-                        <p class="promo-sub" style="margin:0 0 8px;">Entering as ${device === "ios" ? "🍎 iOS" : "🤖 Android"}</p>
+                        <p class="promo-sub" style="margin:0 0 8px;">Entering as ${device === "ios" ? "🍎 iOS" : "🤖 Android"}${everyone ? " — everyone's in one draw" : ""}</p>
                         ${passwordInput}
                         <button class="btn-primary" id="secretEnterBtn_${g.id}" onclick="handleEnterSecretGiveaway('${g.id}')" style="padding:10px 20px; width:100%;">Enter (reveals the reward)</button>
                     `;
@@ -1720,11 +1948,11 @@ if (user && user.uid === winnerData.winnerUid) {
                 // (gold border, pulsing) since this is the whole payoff
                 // moment of the giveaway — it shouldn't read as a minor
                 // secondary action next to "you're entered" text.
-                const revealButtonsHtml = platformsWithWinners.length
+                const revealButtonsHtml = groupsWithWinners.length
                     ? `<div style="margin:0 0 12px; padding:12px; border:2px solid gold; border-radius:10px; background:rgba(255,215,0,0.08); text-align:center;">
                         <p style="margin:0 0 10px; font-weight:700; font-size:1.05rem; color:gold;">🏆 Winners have been drawn!</p>
                         <div style="display:flex; flex-direction:column; gap:8px;">
-                            ${platformsWithWinners.map(p => `<button class="btn-primary" onclick="openSecretGiveawayReveal('${g.id}', '${p}')" style="font-size:1.1rem; font-weight:700; padding:14px 20px; width:100%; border-radius:12px; animation:reveal-pulse 1.6s ease-in-out infinite;">🎡 Watch ${p === "ios" ? "iOS" : "Android"} Reveal</button>`).join("")}
+                            ${groupsWithWinners.map(p => `<button class="btn-primary" onclick="openSecretGiveawayReveal('${g.id}', '${p}')" style="font-size:1.1rem; font-weight:700; padding:14px 20px; width:100%; border-radius:12px; animation:reveal-pulse 1.6s ease-in-out infinite;">🎡 Watch ${p === "all" ? "the" : p === "ios" ? "iOS" : "Android"} Reveal</button>`).join("")}
                         </div>
                        </div>`
                     : "";
@@ -1735,19 +1963,34 @@ if (user && user.uid === winnerData.winnerUid) {
                 // Android-only giveaway doesn't advertise "iOS 0 entered".
                 const offersIos = (g.iosWinnerCount || 0) > 0;
                 const offersAndroid = (g.androidWinnerCount || 0) > 0;
-                // Average tokens per entrant on each side — iOS and Android are
-                // drawn separately, so each player only competes with their own
-                // side's average. Counts everyone entered, including people who
+                // Average and highest stake for each pool you could be drawn
+                // in — iOS and Android are drawn separately on a split
+                // giveaway, so each player only competes with their own side.
+                // The average counts everyone entered, including people who
                 // staked nothing.
-                const avgLabel = (staked, count) => count > 0 && staked > 0
-                    ? ` (avg ${Math.round((staked / count) * 10) / 10} 🪙)`
-                    : "";
+                const stakeLabel = (staked, count, top) => {
+                    const bits = [];
+                    if (count > 0 && staked > 0) bits.push(`avg ${Math.round((staked / count) * 10) / 10} 🪙`);
+                    if (typeof top === "number" && top > 0) bits.push(`highest ${top}`);
+                    return bits.length ? ` (${bits.join(", ")})` : "";
+                };
                 const entryCounts = [];
-                if (offersIos) entryCounts.push(`🍎 iOS ${g.iosEntryCount || 0} entered${avgLabel(g.iosTokensStaked || 0, g.iosEntryCount || 0)}`);
-                if (offersAndroid) entryCounts.push(`🤖 Android ${g.androidEntryCount || 0} entered${avgLabel(g.androidTokensStaked || 0, g.androidEntryCount || 0)}`);
+                if (everyone) {
+                    const ios = g.iosEntryCount || 0;
+                    const android = g.androidEntryCount || 0;
+                    entryCounts.push(`👥 ${g.entryCount || 0} entered${stakeLabel((g.iosTokensStaked || 0) + (g.androidTokensStaked || 0), g.entryCount || 0, secretTopStake(g, device))}`
+                        + ` — 🍎 ${ios} · 🤖 ${android}`);
+                } else {
+                    if (offersIos) entryCounts.push(`🍎 iOS ${g.iosEntryCount || 0} entered${stakeLabel(g.iosTokensStaked || 0, g.iosEntryCount || 0, secretTopStake(g, "ios"))}`);
+                    if (offersAndroid) entryCounts.push(`🤖 Android ${g.androidEntryCount || 0} entered${stakeLabel(g.androidTokensStaked || 0, g.androidEntryCount || 0, secretTopStake(g, "android"))}`);
+                }
                 const entryCountsHtml = entryCounts.length
                     ? entryCounts.join(" &middot; ")
                     : `👥 ${g.entryCount || 0} entered`;
+                // Says up front that both devices are in one draw.
+                const everyoneChipHtml = everyone
+                    ? `<span style="display:inline-block; padding:3px 10px; border-radius:999px; font-size:0.8rem; font-weight:700; background:#16243a; border:1px solid #4169e1; color:#9db8ff;">🌍 iOS + Android, one draw</span>`
+                    : "";
 
                 const passwordChipHtml = g.requiresPassword
                     ? `<span style="display:inline-block; padding:3px 10px; border-radius:999px; font-size:0.8rem; font-weight:700; background:#3a2a16; border:1px solid #aa7a1e; color:#ffc46b;">🔒 Password required</span>`
@@ -1758,7 +2001,7 @@ if (user && user.uid === winnerData.winnerUid) {
                     <h3 style="margin:0 0 6px;">${escapeHtml(g.title)}</h3>
                     <p class="promo-sub" style="margin:0 0 6px;">${isExpired ? "Entries closed" : formatSecretTimeLeft(g.expiresAt)}</p>
                     <p class="promo-sub" style="margin:0 0 8px;">${entryCountsHtml}</p>
-                    <div style="margin:0 0 10px;">${passwordChipHtml}</div>
+                    <div style="margin:0 0 10px; display:flex; flex-wrap:wrap; gap:6px;">${passwordChipHtml}${everyoneChipHtml}</div>
                     ${revealButtonsHtml}
                     ${bodyHtml}
                 </div>`;
@@ -1775,6 +2018,7 @@ if (user && user.uid === winnerData.winnerUid) {
                 btn.textContent = "Entering...";
                 try {
                     await AppState.enterSecretGiveaway(giveawayId, platform, password);
+                    forgetSecretDetails(giveawayId);
                     renderSecretGiveawayList(latestSecretGiveaways);
                 } catch (e) {
                     await showInfoModal("Couldn't enter", e.message !== "__RESTRICTED__" ? e.message : "Your account is currently restricted.");
@@ -1805,6 +2049,7 @@ if (user && user.uid === winnerData.winnerUid) {
                 btn.textContent = "Adding...";
                 try {
                     await AppState.stakeTokensOnSecretGiveaway(giveawayId, amount);
+                    forgetSecretDetails(giveawayId);
                     renderSecretGiveawayList(latestSecretGiveaways);
                 } catch (e) {
                     await showInfoModal("Couldn't add tokens", e.message);
@@ -1816,6 +2061,7 @@ if (user && user.uid === winnerData.winnerUid) {
             window.handleSwitchSecretPlatform = async function (giveawayId, newPlatform) {
                 try {
                     await AppState.switchSecretGiveawayPlatform(giveawayId, newPlatform);
+                    forgetSecretDetails(giveawayId);
                     renderSecretGiveawayList(latestSecretGiveaways);
                 } catch (e) {
                     await showInfoModal("Couldn't switch", e.message);

@@ -419,6 +419,14 @@ async function signOutUser() {
         return callTokensApi("setStake", { giveawayId, amount });
     }
 
+    // Giveaways staked on before the highest-stake figures were tracked don't
+    // have them yet; this asks the server to work them out once.
+    async function refreshSecretGiveawayMaxStake(giveawayId) {
+        await waitForAuthReady();
+        if (!currentUser) return null;
+        return callTokensApi("maxStake", { giveawayId });
+    }
+
     /* ---------------- PROFILE ---------------- */
 
     function defaultProfile() {
@@ -3559,7 +3567,8 @@ async function sendAdminMessage(uid, title, body) {
        into an iOS-only giveaway (or vice versa) only to be turned away at
        the entry screen. Used in the broadcast notification and on the
        giveaway card itself. */
-    function secretGiveawayEligibilityText(iosWinnerCount, androidWinnerCount) {
+    function secretGiveawayEligibilityText(iosWinnerCount, androidWinnerCount, allWinnerCount) {
+        if ((allWinnerCount || 0) > 0) return "🌍 Open to everyone — 🍎 iOS and 🤖 Android players are in one draw.";
         const ios = (iosWinnerCount || 0) > 0;
         const android = (androidWinnerCount || 0) > 0;
         if (ios && android) return "Open to 🍎 iOS and 🤖 Android players.";
@@ -3568,7 +3577,28 @@ async function sendAdminMessage(uid, title, body) {
         return "No winner slots are open on this one.";
     }
 
-    async function createSecretGiveaway({ title, prizeDescription, requiresPassword, password, durationHours, deleteAfterDays, iosWinnerCount, androidWinnerCount }) {
+    /* "Everyone" giveaways (allWinnerCount > 0) put iOS and Android players in
+       one pool with one set of winners. Each entry still records its own
+       device, so admin can see who's on what. Split giveaways keep separate
+       iOS and Android pools. A "draw group" is the pool an entry is drawn in:
+       "all" for an everyone giveaway, otherwise the entry's platform. */
+    function isEveryoneSecretGiveaway(g) {
+        return !!g && (g.allWinnerCount || 0) > 0;
+    }
+    function secretGiveawaySlotsFor(g, platform) {
+        if (!g) return 0;
+        if (isEveryoneSecretGiveaway(g)) return g.allWinnerCount;
+        return (platform === "ios" ? g.iosWinnerCount : g.androidWinnerCount) || 0;
+    }
+    function secretDrawGroup(g, platform) {
+        return isEveryoneSecretGiveaway(g) ? "all" : platform;
+    }
+    // Older winners have no `pool`; they were always drawn by platform.
+    function secretWinnerGroup(w) {
+        return w.pool || w.platform;
+    }
+
+    async function createSecretGiveaway({ title, prizeDescription, requiresPassword, password, durationHours, deleteAfterDays, iosWinnerCount, androidWinnerCount, allWinnerCount }) {
         await waitForAuthReady();
         if (!currentUser || currentUser.uid !== ADMIN_UID) throw new Error("Not authorized.");
 
@@ -3578,17 +3608,19 @@ async function sendAdminMessage(uid, title, body) {
         const cleanPassword = (password || "").trim();
         const hours = parseFloat(durationHours);
         const deleteDays = parseFloat(deleteAfterDays) || 30;
-        const iosCount = Math.max(0, parseInt(iosWinnerCount, 10) || 0);
-        const androidCount = Math.max(0, parseInt(androidWinnerCount, 10) || 0);
+        const allCount = Math.max(0, parseInt(allWinnerCount, 10) || 0);
+        // An everyone giveaway has only the shared pool, never per-device slots.
+        const iosCount = allCount > 0 ? 0 : Math.max(0, parseInt(iosWinnerCount, 10) || 0);
+        const androidCount = allCount > 0 ? 0 : Math.max(0, parseInt(androidWinnerCount, 10) || 0);
 
         if (!cleanTitle) throw new Error("Give the giveaway a title.");
         if (!cleanPrize) throw new Error("Describe the prize.");
         if (needsPassword && !cleanPassword) throw new Error("Set a password, or turn off the password requirement.");
         if (!hours || hours <= 0) throw new Error("Duration must be a positive number of hours.");
-        if (iosCount + androidCount <= 0) throw new Error("Set at least one iOS or Android winner slot.");
+        if (iosCount + androidCount + allCount <= 0) throw new Error("Set at least one winner slot.");
 
         const now = Date.now();
-        const docRef = await addDoc(collection(db, "secretGiveaways"), {
+        const giveawayData = {
             title: cleanTitle,
             createdBy: currentUser.uid,
             createdAt: now,
@@ -3604,7 +3636,10 @@ async function sendAdminMessage(uid, title, body) {
             iosEntryCount: 0,
             androidEntryCount: 0,
             winners: []
-        });
+        };
+        // Only written when used, so split giveaways don't need the newer rules.
+        if (allCount > 0) giveawayData.allWinnerCount = allCount;
+        const docRef = await addDoc(collection(db, "secretGiveaways"), giveawayData);
         await setDoc(doc(db, "secretGiveaways", docRef.id, "private", "config"), {
             prizeDescription: cleanPrize
         });
@@ -3621,7 +3656,7 @@ async function sendAdminMessage(uid, title, body) {
                 await addNotification(
                     "secretGiveawayNew",
                     "🔒 New Secret Giveaway!",
-                    `${cleanTitle}\n\n${secretGiveawayEligibilityText(iosCount, androidCount)}\n🔓 No password needed — tap below to enter.`,
+                    `${cleanTitle}\n\n${secretGiveawayEligibilityText(iosCount, androidCount, allCount)}\n🔓 No password needed — tap below to enter.`,
                     docRef.id
                 );
             } catch (e) {
@@ -3676,12 +3711,15 @@ async function sendAdminMessage(uid, title, body) {
         await deleteDoc(doc(db, "secretGiveaways", giveawayId));
     }
 
-    function listenToSecretGiveaways(callback, maxCount = 50) {
+    function listenToSecretGiveaways(callback, maxCount = 50, onError) {
         const q = query(collection(db, "secretGiveaways"), orderBy("createdAt", "desc"), limit(maxCount));
         return onSnapshot(q, (snap) => {
             const items = [];
             snap.forEach(d => items.push({ id: d.id, ...d.data() }));
             callback(items);
+        }, (err) => {
+            console.warn("Secret giveaways listener failed:", err.message);
+            if (onError) onError(err);
         });
     }
 
@@ -3724,8 +3762,7 @@ async function sendAdminMessage(uid, title, body) {
         if (platform !== "ios" && platform !== "android") throw new Error("Pick a platform (iOS or Android).");
         const giveawaySnap = await getDoc(doc(db, "secretGiveaways", giveawayId));
         if (!giveawaySnap.exists()) throw new Error("This giveaway no longer exists.");
-        const slotField = platform === "ios" ? "iosWinnerCount" : "androidWinnerCount";
-        if (!(giveawaySnap.data()[slotField] > 0)) {
+        if (!(secretGiveawaySlotsFor(giveawaySnap.data(), platform) > 0)) {
             throw new Error(`This giveaway doesn't have any ${platform === "ios" ? "iOS" : "Android"} winner slots.`);
         }
         const entryRef = doc(db, "secretGiveaways", giveawayId, "entries", currentUser.uid);
@@ -3848,8 +3885,7 @@ async function sendAdminMessage(uid, title, body) {
         const giveawaySnap = await getDoc(doc(db, "secretGiveaways", giveawayId));
         if (!giveawaySnap.exists()) throw new Error("This giveaway no longer exists.");
         if (giveawaySnap.data().expiresAt <= Date.now()) throw new Error("This giveaway has ended.");
-        const slotField = platform === "ios" ? "iosWinnerCount" : "androidWinnerCount";
-        if (!(giveawaySnap.data()[slotField] > 0)) {
+        if (!(secretGiveawaySlotsFor(giveawaySnap.data(), platform) > 0)) {
             throw new Error(`This giveaway doesn't have any ${platform === "ios" ? "iOS" : "Android"} winner slots.`);
         }
 
@@ -3914,20 +3950,21 @@ async function sendAdminMessage(uid, title, body) {
         return platform ? items.filter(e => e.platform === platform) : items;
     }
 
-    // Randomly picks a winner from current entries for one platform,
-    // excluding anyone who has already won this giveaway on any platform —
-    // mirrors pickWeeklyWinner()'s "pick now, persist later" shape so admin
-    // can review before committing. Nothing is written yet.
-    async function pickSecretGiveawayWinner(giveawayId, platform) {
+    // Randomly picks a winner from current entries for one draw group ("ios",
+    // "android", or "all" for an everyone giveaway), excluding anyone who has
+    // already won this giveaway on any platform — mirrors pickWeeklyWinner()'s
+    // "pick now, persist later" shape so admin can review before committing.
+    // Nothing is written yet.
+    async function pickSecretGiveawayWinner(giveawayId, group) {
         await waitForAuthReady();
         if (!currentUser || currentUser.uid !== ADMIN_UID) throw new Error("Not authorized.");
         const giveawaySnap = await getDoc(doc(db, "secretGiveaways", giveawayId));
         if (!giveawaySnap.exists()) throw new Error("Giveaway not found.");
         const alreadyWon = new Set((giveawaySnap.data().winners || []).map(w => w.uid));
 
-        const entries = await getSecretGiveawayEntries(giveawayId, platform);
+        const entries = await getSecretGiveawayEntries(giveawayId, group === "all" ? null : group);
         const pool = entries.filter(e => !alreadyWon.has(e.uid));
-        if (!pool.length) throw new Error(`No remaining ${platform} entries to pick from.`);
+        if (!pool.length) throw new Error(`No remaining ${group === "all" ? "" : group + " "}entries to pick from.`);
         // Each entry's chance is 1 + the tokens staked on it, so everyone keeps
         // a free base chance and every token adds exactly one more.
         const weightOf = (e) => 1 + Math.max(0, Math.floor(Number(e.tokens) || 0));
@@ -3938,7 +3975,7 @@ async function sendAdminMessage(uid, title, body) {
             ticket -= weightOf(e);
             if (ticket < 0) { winner = e; break; }
         }
-        return { giveawayId, platform, entryCount: pool.length, winner, totalWeight, winnerWeight: weightOf(winner) };
+        return { giveawayId, group, platform: winner.platform, entryCount: pool.length, winner, totalWeight, winnerWeight: weightOf(winner) };
     }
 
     // Uniform in [0, 1). Uses the browser's cryptographic source rather than
@@ -3972,10 +4009,13 @@ async function sendAdminMessage(uid, title, body) {
         const data = snap.data();
         const winners = data.winners || [];
         const alreadyRecorded = winners.some(w => w.uid === winnerUid);
+        // `platform` is the winner's own device; which pool they were drawn
+        // from depends on the giveaway (everyone giveaways share one).
+        const group = secretDrawGroup(data, platform);
         if (!alreadyRecorded) {
-            const slotCount = platform === "ios" ? data.iosWinnerCount : data.androidWinnerCount;
-            const wonSoFar = winners.filter(w => w.platform === platform).length;
-            if (wonSoFar >= slotCount) throw new Error(`All ${platform} winner slots are already filled.`);
+            const slotCount = secretGiveawaySlotsFor(data, platform);
+            const wonSoFar = winners.filter(w => secretWinnerGroup(w) === group).length;
+            if (wonSoFar >= slotCount) throw new Error(`All ${group === "all" ? "" : platform + " "}winner slots are already filled.`);
         }
 
         await setDoc(doc(db, "secretGiveaways", giveawayId, "prizeCodes", winnerUid), {
@@ -3985,7 +4025,7 @@ async function sendAdminMessage(uid, title, body) {
         });
         if (!alreadyRecorded) {
             await updateDoc(giveawayRef, {
-                winners: arrayUnion({ uid: winnerUid, name: winnerName, platform, wonAt: Date.now() })
+                winners: arrayUnion({ uid: winnerUid, name: winnerName, platform, pool: group, wonAt: Date.now() })
             });
         }
         // The code is stored ON the notification, not just in prizeCodes.
@@ -4388,7 +4428,7 @@ async function maybeRefreshAd(containerId) {
         signIn, signOut: signOutUser, getCurrentUser, onAuthChange, waitForAuthReady, getIdToken,
         getTodaysQuests, listenToMyWallet, listenToMyQuestProgress, claimQuestRewards, getMyTokenBalance,
         listenToMyGiftClaims, claimTokenGift, adminTokens,
-        reportQuestProgress, startDailyQuestTracking, stakeTokensOnSecretGiveaway, setSecretGiveawayStake,
+        reportQuestProgress, startDailyQuestTracking, stakeTokensOnSecretGiveaway, setSecretGiveawayStake, refreshSecretGiveawayMaxStake,
         // profile
         getProfile, setProfile, isVipActive, isNoAdsActive, isBannedNow, shouldShowAds, listenToMyProfile,
         // unique names
@@ -4407,7 +4447,7 @@ async function maybeRefreshAd(containerId) {
         createSecretGiveaway, deleteSecretGiveaway, listenToSecretGiveaways, getSecretGiveaway,
         getSecretGiveawayPassword, hasEnteredSecretGiveaway, getMySecretGiveawayEntry, switchSecretGiveawayPlatform,
         leaveSecretGiveaway, enterSecretGiveaway, getSecretGiveawayEntries, getPublicSecretGiveawayEntries,
-        secretGiveawayEligibilityText,
+        secretGiveawayEligibilityText, isEveryoneSecretGiveaway, secretGiveawaySlotsFor, secretDrawGroup, secretWinnerGroup,
         pickSecretGiveawayWinner, finalizeSecretGiveawayPrize, getSecretGiveawayPrize, getSecretGiveawayRewardDescription,
         // promo codes
         addPromoCode, getPromoCodes, updatePromoCode, deletePromoCode,
