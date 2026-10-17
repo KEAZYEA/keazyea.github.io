@@ -1321,6 +1321,34 @@ body {
         @media (prefers-reduced-motion: reduce) {
             .quest-claim-btn, .quest-claim-all-btn { animation: none; }
         }
+        /* Login calendar: Monday..Sunday, tap a day to open its token. */
+        .quest-calendar { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; margin: 4px 0 8px; }
+        .cal-day {
+            display: flex; flex-direction: column; align-items: center; gap: 2px;
+            padding: 8px 2px; border-radius: 10px; border: 1px solid var(--kih-border, #2a2a4a);
+            background: rgba(255, 255, 255, 0.03); color: var(--kih-text); font-size: 1.15rem; line-height: 1.1;
+            font-family: inherit; cursor: default; min-width: 0;
+        }
+        .cal-day small { font-size: 0.68rem; color: var(--kih-text-dim); white-space: nowrap; }
+        .cal-name { font-size: 0.7rem; font-weight: 700; color: var(--kih-text-dim); }
+        .cal-day.today { border-color: var(--kih-accent, #4169e1); }
+        .cal-day.done { border-color: #2e7d32; background: rgba(46, 125, 50, 0.12); }
+        .cal-day.missed { opacity: 0.55; }
+        .cal-day.future { opacity: 0.75; }
+        .cal-day.ready { border-color: #ffc400; background: rgba(255, 196, 0, 0.14); cursor: pointer; animation: quest-claim-pulse 1.6s ease-in-out infinite; }
+        .cal-day.ready small { color: #ffd75e; font-weight: 700; }
+        .cal-day.sunday { border-style: dashed; }
+        .cal-day.sunday.ready, .cal-day.sunday.done { border-style: solid; }
+        .quest-streak { font-size: 0.85rem; color: var(--kih-text-dim); margin: 0 0 14px; line-height: 1.4; }
+        .quest-reward { flex-shrink: 0; font-size: 0.8rem; font-weight: 700; color: #ffd75e; white-space: nowrap; }
+        .quest-links { display: flex; gap: 8px; margin: 0 0 14px; }
+        .quest-links button {
+            flex: 1; min-width: 0; padding: 10px 8px; border-radius: 10px; cursor: pointer; font-family: inherit;
+            font-size: 0.88rem; font-weight: 700; color: var(--kih-text); background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--kih-border, #2a2a4a);
+        }
+        .quest-links button:hover { border-color: var(--kih-accent, #4169e1); }
+        @media (prefers-reduced-motion: reduce) { .cal-day.ready { animation: none; } }
         .quest-section-label { font-size: 0.8rem; color: var(--kih-text-dim); margin: 4px 0 8px; }
         /* Admin token gifts in the inbox */
         .inbox-gift-btn { background: #ffc400 !important; color: #1a1a2e !important; font-weight: 800; }
@@ -1515,13 +1543,20 @@ body {
                                 </div>
                                 <div class="quest-countdown">New quests in<strong id="questCountdown">--:--:--</strong></div>
                             </div>
+                            <!-- Where tokens come from and where they're used, one tap away. -->
+                            <div class="quest-links">
+                                <button type="button" onclick="goToPage('store')">🪙 Get more tokens</button>
+                                <button type="button" onclick="openPromoTab('secret')">🔒 Use them in Secret Giveaways</button>
+                            </div>
                             <div id="questList"></div>
                             <p class="settings-sub" style="margin-top:16px; line-height:1.5;">
-                                Finish a quest, then tap <strong>Claim</strong> to collect <strong>1 🪙</strong> — unclaimed
-                                rewards wait for you, they don't expire. The <strong>Store</strong>
-                                has token packs, plus subscriptions that add 25 or 60 🪙 every month. To use tokens, enter a
-                                <strong>Secret Giveaway</strong> (Promo → Secret Giveaways) and add tokens to your entry —
-                                every token adds one more chance on top of your free one. Tokens are spent when your side is
+                                Every day: log in for <strong>1 🪙</strong>, plus quests worth <strong>4 🪙</strong> —
+                                "check out" quests pay 1, "do something" quests pay 2. Log in every day Monday to Saturday
+                                and Sunday's chest gives <strong>3–5 🪙</strong> (1 if you missed a day). Finish a quest,
+                                then tap <strong>Claim</strong> — unclaimed rewards wait for you, they don't expire. The
+                                <strong>Store</strong> has token packs, plus subscriptions that add 80 or 180 🪙 every month.
+                                To use tokens, enter a <strong>Secret Giveaway</strong> and add tokens to your entry — every
+                                token adds one more chance on top of your free one. Tokens are spent when your side is
                                 drawn, win or lose, and refunded if you leave before then.
                             </p>
                         </div>
@@ -2996,6 +3031,7 @@ function getNewsTypeInfo(type) {
             document.getElementById("newsPanelBackdrop").classList.remove("open");
             renderNewsModalList(latestNewsItems);
             document.getElementById("newsModalOverlay").classList.add("open");
+            if (latestNewsItems.length) AppState.reportQuestProgress("readNews", latestNewsItems[0].id);
             localStorage.setItem(NEWS_LAST_SEEN_KEY, String(Date.now()));
             updateNewsBadgeHome(latestNewsItems);
         }
@@ -3009,6 +3045,7 @@ function getNewsTypeInfo(type) {
     if (!item) {
         content.innerHTML = '<div class="friend-req-empty">This post is no longer available.</div>';
     } else {
+        AppState.reportQuestProgress("readNews", item.id);
         // bodyHtml is admin-authored (Firestore rules restrict writes
         // to the admin uid) — same trust level as the full news
         // modal, which already renders it unescaped.
@@ -3092,6 +3129,7 @@ function getNewsTypeInfo(type) {
             overlay.classList.add("open");
 
             if (!uid) return;
+            AppState.reportQuestProgress("viewProfile", uid);
             let profile = await AppState.getPublicProfile(uid);
             if (!profile) return; // fallback name/avatar stay as-is
 
@@ -3647,12 +3685,35 @@ window.closeInboxItemModal = closeInboxItemModal;
             enterWeekly:    { icon: "🎡", title: "Enter this week's giveaway", hint: "Already entered this week? That counts.", go: () => openPromoTab("vip") },
             readTip:        { icon: "💡", title: "Read a tip", hint: "Open any tip.", go: () => openTipsFresh() },
             shareFormation: { icon: "🧩", title: "Share a formation", hint: "Post a new formation in Social → Formation Help.", go: () => openSocialTab("formation") },
-            shareTierList:  { icon: "🏆", title: "Share a tier list", hint: "Post a new tier list in Social → Tier Lists.", go: () => openSocialTab("tierlist") }
+            shareTierList:  { icon: "🏆", title: "Share a tier list", hint: "Post a new tier list in Social → Tier Lists.", go: () => openSocialTab("tierlist") },
+            comment:        { icon: "🗨️", title: "Comment on someone's post", hint: "A real comment on another player's formation or tier list.", go: () => openSocialTab("formation") },
+            readNews:       { icon: "📰", title: "Read the latest news", hint: "Open any news post.", go: () => openNewsModal() },
+            viewUnit:       { icon: "⚔️", title: "Look up a troop or hero", hint: "Open any unit in Troops & Heroes.", go: () => goToPage("troops") },
+            compareUnits:   { icon: "⚖️", title: "Compare two units", hint: "Pick two troops (or two heroes) in Troops & Heroes → Compare.", go: () => openTroopsCompare() },
+            checkPromo:     { icon: "🎁", title: "Check the promo codes", hint: "Open Promo → Latest Codes.", go: () => openPromoTab("codes") },
+            viewFormation:  { icon: "🔎", title: "Look at a formation", hint: "Open any post in Social → Formation Help.", go: () => openSocialTab("formation") },
+            viewTierList:   { icon: "📊", title: "Look at a tier list", hint: "Open any tier list in Social → Tier Lists.", go: () => openSocialTab("tierlist") },
+            viewProfile:    { icon: "👤", title: "Visit a player's profile", hint: "Tap another player's name or picture.", go: () => openSocialTab("friends") },
+            likeOrVote:     { icon: "👍", title: "Like a formation or vote on a tier list", hint: "In Social → Formation Help or Tier Lists.", go: () => openSocialTab("formation") }
         };
+
+        // Troops & Heroes straight onto its Compare tab, whether or not the
+        // page has loaded yet.
+        function openTroopsCompare() {
+            goToPage("troops");
+            const frame = document.querySelector("#page-troops iframe");
+            if (!frame) return;
+            const go = () => { try { frame.contentWindow.switchTab("compare"); } catch (e) { /* not ready */ } };
+            let ready = false;
+            try { ready = frame.contentDocument.readyState === "complete" && typeof frame.contentWindow.switchTab === "function"; } catch (e) {}
+            if (ready) go();
+            else frame.addEventListener("load", go, { once: true });
+        }
 
         let questToday = null;       // { dayKey, resetAt, quests }
         let questLoadFailed = false;
         let questProgress = {};      // today's quests: questId -> "ready" | "claimed"
+        let questLogins = {};        // this week's logins: dayKey -> { status, reward, chest }
         let questReady = [];         // done, not yet claimed, from ANY day: [{ id, questId, dayKey }]
         let questProgressLoaded = false;
         let questClaiming = false;
@@ -3679,6 +3740,7 @@ window.closeInboxItemModal = closeInboxItemModal;
             if (unsubQuestWallet) { unsubQuestWallet(); unsubQuestWallet = null; }
             if (unsubQuestProgress) { unsubQuestProgress(); unsubQuestProgress = null; }
             questProgress = {};
+            questLogins = {};
             questReady = [];
             questProgressLoaded = false;
             questBalance = 0;
@@ -3700,17 +3762,73 @@ window.closeInboxItemModal = closeInboxItemModal;
                 questBalance = wallet.balance || 0;
                 renderQuests();
             });
-            unsubQuestProgress = AppState.listenToMyQuestProgress(questToday.dayKey, ({ today, ready }) => {
+            unsubQuestProgress = AppState.listenToMyQuestProgress(questToday.dayKey, ({ today, logins, ready }) => {
                 // Only announce rewards that become ready AFTER the first
                 // snapshot — otherwise every page load would re-announce them.
                 if (questProgressLoaded) {
                     ready.filter(r => !questReady.some(x => x.id === r.id)).forEach(r => announceQuestReady(r.questId));
                 }
                 questProgress = today;
+                questLogins = logins || {};
                 questReady = ready;
                 questProgressLoaded = true;
                 renderQuests();
-            });
+            }, questToday.week);
+        }
+
+        function questRewardOf(id) {
+            return (questToday && questToday.rewards && questToday.rewards[id]) || 1;
+        }
+
+        // Monday..Sunday. Each day's login token is opened by tapping that
+        // day; Sunday is the chest — 3–5 🪙 after logging in every day Monday
+        // to Saturday, 1 otherwise. The server decides the amount.
+        function renderLoginCalendar(disabled) {
+            const week = questToday.week || [questToday.dayKey];
+            if (week.length !== 7) return "";
+            const today = questToday.dayKey;
+            const names = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+            const missedDay = week.slice(0, 6).some(k => k < today && !questLogins[k]);
+            const loggedMonSat = week.slice(0, 6).filter(k => questLogins[k]).length;
+            const tiles = week.map((k, i) => {
+                const login = questLogins[k];
+                const sunday = i === 6;
+                let cls = "", body, click = "";
+                if (login && login.status === "ready") {
+                    cls = " ready";
+                    body = sunday && login.chest ? "🎁<small>Open!</small>" : "🪙<small>Open</small>";
+                    click = ` onclick="handleQuestClaim('${k}_login')"${disabled}`;
+                } else if (login) {
+                    cls = " done";
+                    body = `✅<small>+${login.reward || 1}</small>`;
+                } else if (k < today) {
+                    cls = " missed";
+                    body = "✖<small>missed</small>";
+                } else if (k === today) {
+                    cls = " today";
+                    body = `${sunday ? "🎁" : "🪙"}<small>…</small>`;
+                } else {
+                    cls = " future";
+                    body = sunday ? `🎁<small>${missedDay ? "1" : "3–5"}</small>` : "🪙<small>+1</small>";
+                }
+                const label = `${names[i]}${k === today ? " (today)" : ""}`;
+                return `<button type="button" class="cal-day${cls}${sunday ? " sunday" : ""}${k === today ? " today" : ""}" aria-label="${label}"${click || " disabled"}>
+                        <span class="cal-name">${names[i]}</span>${body}</button>`;
+            }).join("");
+            const sundayLogin = questLogins[week[6]];
+            let streak;
+            if (sundayLogin && sundayLogin.status === "claimed") {
+                streak = `🎁 This week's chest gave <strong>+${sundayLogin.reward} 🪙</strong>. A new week starts Monday.`;
+            } else if (sundayLogin && sundayLogin.chest && sundayLogin.reward > 1) {
+                streak = "🔥 Full streak! Tap Sunday to open your chest.";
+            } else if (missedDay) {
+                streak = "You missed a day this week, so Sunday's chest gives 1 🪙. A new streak starts Monday.";
+            } else {
+                streak = `🔥 Log in every day Monday to Saturday to unlock Sunday's chest (3–5 🪙) — <strong>${loggedMonSat}/6</strong> so far.`;
+            }
+            return `<div class="quest-section-label">This week's logins — tap a day to open its token</div>
+                <div class="quest-calendar">${tiles}</div>
+                <p class="quest-streak">${streak}</p>`;
         }
 
         function renderQuests() {
@@ -3741,8 +3859,8 @@ window.closeInboxItemModal = closeInboxItemModal;
                 return;
             }
             const disabled = questClaiming ? " disabled" : "";
-            const claimBtn = (claimId) =>
-                `<button class="quest-claim-btn" onclick="handleQuestClaim('${claimId}')"${disabled}>Claim +1 🪙</button>`;
+            const claimBtn = (claimId, reward) =>
+                `<button class="quest-claim-btn" onclick="handleQuestClaim('${claimId}')"${disabled}>Claim +${reward} 🪙</button>`;
             const row = (cls, info, hint, action) => `<div class="quest-row${cls}">
                     <span class="quest-icon">${info.icon}</span>
                     <div class="quest-text">
@@ -3752,28 +3870,36 @@ window.closeInboxItemModal = closeInboxItemModal;
                     ${action}
                 </div>`;
 
-            // Rewards finished on an earlier day and never collected.
-            const earlier = questReady.filter(r => r.dayKey !== questToday.dayKey);
+            // Rewards finished on an earlier day and never collected — except
+            // this week's logins, which wait on the calendar.
+            const week = questToday.week || [];
+            const earlier = questReady.filter(r => r.dayKey !== questToday.dayKey && !(r.questId === "login" && week.includes(r.dayKey)));
             const earlierHtml = earlier.length
                 ? `<div class="quest-section-label">Not claimed yet from earlier</div>` + earlier.map(r => {
                     const info = QUEST_INFO[r.questId] || { icon: "⭐", title: r.questId };
-                    return row(" ready", info, `Done on ${formatQuestDay(r.dayKey)}`, claimBtn(r.id));
-                }).join("") + `<div class="quest-section-label" style="margin-top:14px;">Today</div>`
+                    return row(" ready", info, `Done on ${formatQuestDay(r.dayKey)}`, claimBtn(r.id, r.chest ? "?" : r.reward || 1));
+                }).join("")
                 : "";
 
-            const todayHtml = questToday.quests.map(id => {
-                const info = QUEST_INFO[id] || { icon: "⭐", title: id, hint: "" };
-                const status = questProgress[id];
-                if (status === "claimed") return row(" done", info, info.hint, `<span class="quest-done">✅ +1 🪙</span>`);
-                if (status === "ready") return row(" ready", info, info.hint, claimBtn(`${questToday.dayKey}_${id}`));
-                return row("", info, info.hint,
-                    info.go ? `<button class="quest-go-btn" onclick="runQuestAction('${id}')">Go</button>` : "");
-            }).join("");
+            // Login lives on the calendar; these are the day's quests.
+            const todayHtml = `<div class="quest-section-label" style="margin-top:14px;">Today's quests — worth 4 🪙</div>` +
+                questToday.quests.filter(id => id !== "login").map(id => {
+                    const info = QUEST_INFO[id] || { icon: "⭐", title: id, hint: "" };
+                    const reward = questRewardOf(id);
+                    const status = questProgress[id];
+                    if (status === "claimed") return row(" done", info, info.hint, `<span class="quest-done">✅ +${reward} 🪙</span>`);
+                    if (status === "ready") return row(" ready", info, info.hint, claimBtn(`${questToday.dayKey}_${id}`, reward));
+                    return row("", info, info.hint, `<span class="quest-reward">+${reward} 🪙</span>` +
+                        (info.go ? `<button class="quest-go-btn" onclick="runQuestAction('${id}')">Go</button>` : ""));
+                }).join("");
 
+            // A waiting chest stays a surprise: its amount isn't added up here.
+            const hasChest = questReady.some(r => r.chest);
+            const readyTotal = questReady.filter(r => !r.chest).reduce((a, r) => a + (r.reward || 1), 0);
             const claimAll = questReady.length >= 2
-                ? `<button class="quest-claim-all-btn" onclick="handleQuestClaim()"${disabled}>Claim all (+${questReady.length} 🪙)</button>`
+                ? `<button class="quest-claim-all-btn" onclick="handleQuestClaim()"${disabled}>Claim all (${hasChest ? "🎁 + " : ""}+${readyTotal} 🪙)</button>`
                 : "";
-            list.innerHTML = claimAll + earlierHtml + todayHtml;
+            list.innerHTML = claimAll + renderLoginCalendar(disabled) + earlierHtml + todayHtml;
         }
 
         function formatQuestDay(dayKey) {
@@ -3787,6 +3913,7 @@ window.closeInboxItemModal = closeInboxItemModal;
             if (questClaiming) return;
             const ids = claimId ? [claimId] : questReady.map(r => r.id).slice(0, 20);
             if (!ids.length) return;
+            const openingChest = questReady.some(r => r.chest && ids.includes(r.id));
             questClaiming = true;
             renderQuests();
             try {
@@ -3796,9 +3923,12 @@ window.closeInboxItemModal = closeInboxItemModal;
                 ids.forEach(id => {
                     const [day, questId] = id.split("_");
                     if (questToday && day === questToday.dayKey) questProgress[questId] = "claimed";
+                    if (questId === "login" && questLogins[day]) questLogins[day] = { ...questLogins[day], status: "claimed" };
                 });
                 if (typeof result.balance === "number") questBalance = result.balance;
-                if (result.claimed > 0) showQuestToast(`+${result.claimed} 🪙 claimed!`);
+                if (result.claimed > 0) showQuestToast(openingChest && ids.length === 1
+                    ? `🎁 Chest opened: +${result.claimed} 🪙!`
+                    : `+${result.claimed} 🪙 claimed!`);
             } catch (e) {
                 showQuestToast(e.message || "Couldn't claim — check your connection and try again.");
             } finally {

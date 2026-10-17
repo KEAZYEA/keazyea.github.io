@@ -4261,6 +4261,7 @@ window.removeClanIconPreview = function () {
             const p = allFormationPosts.find(x => x.id === postId);
             if (!p) return;
             currentFormationDetailId = postId;
+            AppState.reportQuestProgress("viewFormation", postId);
             renderFormationDetailStatic(p);
 
             formationDetailImages = p.imageUrls || [];
@@ -5296,6 +5297,7 @@ window.removeClanIconPreview = function () {
             const t = allTierListPosts.find(x => x.id === tierListId);
             if (!t) return;
             currentTierListDetailId = tierListId;
+            AppState.reportQuestProgress("viewTierList", tierListId);
             await ensureUnitDataLoaded();
             renderTierListDetailStatic(t);
             updateTierListVoteButtonsUI(0);
@@ -5709,6 +5711,7 @@ window.removeClanIconPreview = function () {
         const SERVER_LABELS = { ios: "iOS 🍎", android: "Android 🤖", both: "iOS & Android" };
 
         window.showProfileModal = function (profile, isFriend) {
+            if (profile && profile.uid) AppState.reportQuestProgress("viewProfile", profile.uid);
     document.body.style.overflow = "hidden";
     document.documentElement.style.overflow = "hidden";
             document.getElementById("friendProfileAvatar").innerHTML = avatarHtml(profile.avatar, profile.name, "");

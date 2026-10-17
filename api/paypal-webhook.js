@@ -214,9 +214,12 @@ async function recordPaymentAlert(db, eventType, resource, { unverified = false 
     ]);
     if (cap.exists) {
       const d = cap.data();
+      // Named by what that payment actually gave: pack sizes can change, and
+      // a pack bought before then gave the old amount.
       const pack = getPack(d.packId);
+      const packTokens = d.tokensGranted || (pack ? pack.tokens : 0);
       match = { uid: d.uid, paymentId: id, tokensGranted: d.tokensGranted || 0,
-        what: pack ? `${pack.tokens}-token pack` : "token pack" };
+        what: packTokens ? `${packTokens}-token pack` : "token pack" };
       break;
     }
     if (sale.exists) {

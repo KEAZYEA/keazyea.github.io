@@ -168,7 +168,8 @@ async function signOutUser() {
        no per-device copy of anything that matters, so there's nothing to
        drift. The few localStorage keys below only save network calls, and
        being wrong about them can never earn or lose a token. */
-    const QUEST_CACHE_KEY = "kih_quest_today";
+    // v2: quests carry what they pay, plus the week for the login calendar.
+    const QUEST_CACHE_KEY = "kih_quest_today_v2";
     const QUEST_RETRY_KEY = "kih_quest_retry";
     const LOGIN_CLAIM_KEY = "kih_login_claim";
     const QUEST_RETRY_WINDOW_MS = 24 * 60 * 60 * 1000;
@@ -194,18 +195,20 @@ async function signOutUser() {
     function readCachedTodaysQuests() {
         try {
             const cached = JSON.parse(localStorage.getItem(QUEST_CACHE_KEY) || "null");
-            if (cached && cached.resetAt > Date.now() && Array.isArray(cached.quests)) return cached;
+            if (cached && cached.resetAt > Date.now() && Array.isArray(cached.quests) && cached.rewards && Array.isArray(cached.week)) return cached;
         } catch (e) { /* storage blocked */ }
         return null;
     }
 
-    // { dayKey, resetAt, quests }. Cached until the next reset, so each device
+    // { dayKey, resetAt, quests, rewards, week }: rewards is { questId: tokens },
+    // week is Monday..Sunday day keys. Cached until the next reset, so each device
     // asks the server once a day rather than on every page view.
     async function getTodaysQuests() {
         const cached = readCachedTodaysQuests();
         if (cached) return cached;
         const data = await callTokensApi("today", {}, { auth: false });
-        const today = { dayKey: data.dayKey, resetAt: data.resetAt, quests: data.quests };
+        const today = { dayKey: data.dayKey, resetAt: data.resetAt, quests: data.quests,
+            rewards: data.rewards || {}, week: Array.isArray(data.week) ? data.week : [data.dayKey] };
         try { localStorage.setItem(QUEST_CACHE_KEY, JSON.stringify(today)); } catch (e) { /* storage blocked */ }
         return today;
     }
@@ -221,35 +224,46 @@ async function signOutUser() {
     }
 
     // Live quest progress, from any device:
-    //   today: { questId: "ready" | "claimed" } for `dayKey`
-    //   ready: every reward done but not yet claimed, from ANY day (they
-    //          don't expire), as [{ id, questId, dayKey }]
+    //   today:  { questId: "ready" | "claimed" } for `dayKey`
+    //   logins: { dayKey: { status, reward, chest } } for this week's login
+    //           calendar (`week` is Monday..Sunday day keys)
+    //   ready:  every reward done but not yet claimed, from ANY day (they
+    //           don't expire), as [{ id, questId, dayKey, reward, chest }]
     // Two small queries rather than one over all claims, which grow forever.
     // Docs from before the claim step have no status and were already paid.
-    function listenToMyQuestProgress(dayKey, callback) {
-        if (!currentUser) { callback({ today: {}, ready: [] }); return () => {}; }
+    function listenToMyQuestProgress(dayKey, callback, week = [dayKey]) {
+        if (!currentUser) { callback({ today: {}, logins: {}, ready: [] }); return () => {}; }
         const claims = collection(db, "tokenWallets", currentUser.uid, "claims");
         let today = null;
+        let logins = null;
         let ready = null;
-        const emit = () => { if (today && ready) callback({ today, ready }); };
+        const emit = () => { if (today && ready) callback({ today, logins: logins || {}, ready }); };
         const onFail = (err) => {
             console.warn("Quest progress listener failed:", err.message);
             today = today || {};
             ready = ready || [];
             emit();
         };
-        const unsubToday = onSnapshot(query(claims, where("dayKey", "==", dayKey)), (snap) => {
+        // The whole week at once (a handful of docs a day): today's quests
+        // plus every login, for the calendar.
+        const unsubWeek = onSnapshot(query(claims, where("dayKey", "in", week.includes(dayKey) ? week : [dayKey, ...week])), (snap) => {
             today = {};
-            snap.forEach(d => { today[d.data().questId] = d.data().status === "ready" ? "ready" : "claimed"; });
+            logins = {};
+            snap.forEach(d => {
+                const c = d.data();
+                const status = c.status === "ready" ? "ready" : "claimed";
+                if (c.dayKey === dayKey) today[c.questId] = status;
+                if (c.questId === "login") logins[c.dayKey] = { status, reward: c.reward || 1, chest: !!c.chest };
+            });
             emit();
         }, onFail);
         const unsubReady = onSnapshot(query(claims, where("status", "==", "ready")), (snap) => {
             ready = [];
-            snap.forEach(d => ready.push({ id: d.id, questId: d.data().questId, dayKey: d.data().dayKey }));
+            snap.forEach(d => ready.push({ id: d.id, questId: d.data().questId, dayKey: d.data().dayKey, reward: d.data().reward || 1, chest: !!d.data().chest }));
             ready.sort((a, b) => a.dayKey.localeCompare(b.dayKey));
             emit();
         }, onFail);
-        return () => { unsubToday(); unsubReady(); };
+        return () => { unsubWeek(); unsubReady(); };
     }
 
     // Ids of every admin gift this account has claimed, live from any device
@@ -307,6 +321,11 @@ async function signOutUser() {
     // itself. The server decides whether it counts. If the request never got
     // an answer at all, it's queued and retried, so a dropped connection
     // doesn't silently cost someone their token.
+    // Quests this page already knows are done today ("uid|day|quest"), so
+    // repeat triggers — every unit card opened, every slider move in Compare —
+    // don't each ask the server again.
+    const questsDoneHere = new Set();
+
     async function reportQuestProgress(questId, proofId = null) {
         try {
             await waitForAuthReady();
@@ -314,7 +333,11 @@ async function signOutUser() {
             // Skip the round trip when it's definitely not one of today's quests.
             const cached = readCachedTodaysQuests();
             if (cached && !cached.quests.includes(questId)) return null;
-            return await callTokensApi("complete", { questId, proofId });
+            const doneKey = cached ? `${currentUser.uid}|${cached.dayKey}|${questId}` : null;
+            if (doneKey && questsDoneHere.has(doneKey)) return null;
+            const result = await callTokensApi("complete", { questId, proofId });
+            if (doneKey && result && (result.completed || result.alreadyCompleted)) questsDoneHere.add(doneKey);
+            return result;
         } catch (e) {
             // A 4xx is a definite "no" — retrying would just be refused forever.
             if (!e.status || e.status >= 500) queueQuestRetry(questId, proofId);
@@ -1302,6 +1325,7 @@ async function getClanPostCooldownRemaining() {
             createdAt: Date.now()
         });
         await updateDoc(doc(db, "formationPosts", postId), { commentCount: increment(1) });
+        reportQuestProgress("comment", "f/" + postId + "/" + docRef.id);
 
         // Notify whoever should know about this — best-effort, never lets a
         // notification failure block the comment/reply itself from landing.
@@ -1423,7 +1447,7 @@ async function getClanPostCooldownRemaining() {
         const postRef = doc(db, "formationPosts", postId);
         const uid = currentUser.uid;
 
-        return await runTransaction(db, async (tx) => {
+        const liked = await runTransaction(db, async (tx) => {
             const likeSnap = await tx.get(likeRef);
             if (likeSnap.exists()) {
                 tx.delete(likeRef);
@@ -1434,6 +1458,8 @@ async function getClanPostCooldownRemaining() {
             tx.update(postRef, { likeCount: increment(1) });
             return true;
         });
+        if (liked) reportQuestProgress("likeOrVote", "f/" + postId);
+        return liked;
     }
 
     // Double-tap/double-click "like" always ends in the liked state (never
@@ -1599,7 +1625,7 @@ async function getClanPostCooldownRemaining() {
         const listRef = doc(db, "tierLists", tierListId);
         const uid = currentUser.uid;
 
-        return await runTransaction(db, async (tx) => {
+        const result = await runTransaction(db, async (tx) => {
             const voteSnap = await tx.get(voteRef);
             const prev = voteSnap.exists() ? voteSnap.data().value : 0;
             const next = (prev === direction) ? 0 : direction;
@@ -1617,6 +1643,8 @@ async function getClanPostCooldownRemaining() {
             if (Object.keys(patch).length) tx.update(listRef, patch);
             return next;
         });
+        if (result !== 0) reportQuestProgress("likeOrVote", "t/" + tierListId);
+        return result;
     }
 
     async function getMyTierListVote(tierListId) {
@@ -1654,6 +1682,7 @@ async function getClanPostCooldownRemaining() {
             createdAt: Date.now()
         });
         await updateDoc(doc(db, "tierLists", tierListId), { commentCount: increment(1) });
+        reportQuestProgress("comment", "t/" + tierListId + "/" + docRef.id);
 
         try {
             if (parentId) {
