@@ -64,6 +64,7 @@
         }
 
         .confirm-modal-body {
+            white-space: pre-wrap;
             color: #d0d0da;
             font-size: 0.95rem;
             line-height: 1.5;
@@ -241,6 +242,19 @@
             </div>
         </div>
 
+        <!-- Asks for one or more promo codes (a prize can be several). -->
+        <div class="info-modal-overlay" id="codesModalOverlay">
+            <div class="info-modal-box">
+                <div class="info-modal-title" id="codesModalTitle"></div>
+                <p class="promo-sub" style="margin:0 0 10px; font-size:0.85rem;">More than one? Tap "➕ Add another code" — the player gets each code with its own Copy button.</p>
+                <div id="codesModalList" style="text-align:left; margin-bottom:14px;"></div>
+                <div class="confirm-modal-actions">
+                    <button class="confirm-modal-btn-cancel" id="codesModalCancelBtn">Cancel</button>
+                    <button class="confirm-modal-btn-yes" id="codesModalOkBtn">OK</button>
+                </div>
+            </div>
+        </div>
+
         <h1>Admin</h1>
 
         <div id="adminPage" style="max-width:600px; margin:0 auto; text-align:center; padding:0 20px;">
@@ -283,11 +297,8 @@
                     <p><strong>Device:</strong> <span id="pickedDevice"></span></p>
                     <p><strong>Total entries:</strong> <span id="pickedCount"></span></p>
 
-                    <label for="prizeCodeInput" style="display:block; margin-top:14px; margin-bottom:6px;">Type the
-                        promo
-                        code to send them:</label>
-                    <input type="text" id="prizeCodeInput" placeholder="e.g. KCJUNE26"
-                        style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box;">
+                    <label style="display:block; margin-top:14px; margin-bottom:6px;">Promo code(s) to send them:</label>
+                    <div id="prizeCodeList"></div>
 
                     <button class="btn-primary" id="confirmBtn" onclick="handleConfirm()"
                         style="margin-top:14px; padding:12px 28px;">Confirm & Send Prize</button>
@@ -513,6 +524,38 @@
                     style="margin-top:12px; padding:12px 28px;">Post Code</button>
                 <div id="recentCodesList" style="margin-top:16px; text-align:left;"></div>
 
+                </details>
+
+                <hr style="border-color:#2a2a4a; margin:40px 0;">
+
+                <details class="admin-section" id="sendPromoSection">
+                <summary>🎁 Send Promo Codes to a Player</summary>
+                <p class="promo-sub">Goes straight to one player's inbox (nobody else sees it), each code with its own Copy button.</p>
+                <div style="text-align:left;">
+                    <label style="display:block; margin-bottom:6px;">Player's in-game name</label>
+                    <div style="display:flex; gap:8px;">
+                        <input type="text" id="sendPromoNameInput" placeholder="e.g. Keazyea"
+                            style="flex:1; min-width:0; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box;"
+                            onkeydown="if(event.key==='Enter') handleSendPromoFind();">
+                        <button class="btn-primary" onclick="handleSendPromoFind()" style="padding:10px 18px; flex-shrink:0;">Find</button>
+                    </div>
+                    <p class="promo-sub" id="sendPromoPlayer" style="margin:8px 0 12px;">No player picked yet.</p>
+
+                    <label style="display:block; margin-bottom:6px;">Promo code(s)</label>
+                    <div id="sendPromoCodes"></div>
+
+                    <label style="display:block; margin:12px 0 6px;">Title <span class="promo-sub">(optional)</span></label>
+                    <input type="text" id="sendPromoTitle" placeholder="🎁 You've got a promo code!"
+                        style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box;">
+                    <label style="display:block; margin:12px 0 6px;">Message <span class="promo-sub">(optional, shown above the codes)</span></label>
+                    <textarea id="sendPromoMessage" rows="2" placeholder="e.g. Thanks for joining the Discord event!"
+                        style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box; font-family:inherit;"></textarea>
+                    <button class="btn-primary" id="sendPromoBtn" onclick="handleSendPromo()" style="margin-top:12px; padding:12px 28px;">🎁 Send</button>
+
+                    <h3 style="margin:24px 0 8px;">Recently sent</h3>
+                    <div id="promoSendsList"><p class="promo-sub">Loading…</p></div>
+                    <button class="btn-primary" onclick="loadPromoSends()" style="margin-top:10px; padding:8px 18px;">🔄 Refresh</button>
+                </div>
                 </details>
 
                 <hr style="border-color:#2a2a4a; margin:40px 0;">
@@ -835,7 +878,7 @@
                     document.getElementById("pickedDevice").textContent = result.winner.device;
                     document.getElementById("pickedCount").textContent = result.entryCount;
                     document.getElementById("pickedResult").style.display = "block";
-                    document.getElementById("prizeCodeInput").value = "";
+                    renderCodeList("prizeCodeList");
 
                     btn.style.display = "none";
                 } catch (e) {
@@ -846,21 +889,80 @@
             }
             window.handlePick = handlePick;
 
+            /* ---------------- PROMO CODE LISTS ----------------
+               A prize can be several promo codes. Each list starts with one box
+               and has "➕ Add another code"; the player gets every code with its
+               own Copy button. Codes pasted as "A, B" or one per line also work. */
+            function renderCodeList(containerId, codes) {
+                const el = document.getElementById(containerId);
+                if (!el) return;
+                el.innerHTML = `<div class="code-rows"></div>
+                    <button type="button" onclick="addCodeRow('${containerId}')"
+                        style="background:none; border:1px dashed #4169e1; color:#9db8ff; border-radius:6px; padding:6px 12px; cursor:pointer; font-size:0.85rem;">➕ Add another code</button>`;
+                (codes && codes.length ? codes : [""]).forEach(c => addCodeRow(containerId, c, true));
+            }
+            window.addCodeRow = function (containerId, value = "", initial = false) {
+                const rows = document.querySelector("#" + containerId + " .code-rows");
+                if (!rows) return;
+                const row = document.createElement("div");
+                row.style.cssText = "display:flex; gap:6px; margin-bottom:6px;";
+                row.innerHTML = `<input type="text" class="code-input" placeholder="e.g. KCJUNE26"
+                        style="flex:1; min-width:0; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box;">
+                    <button type="button" title="Remove this code"
+                        style="background:#2a2a4a; color:white; border:1px solid gray; border-radius:6px; padding:0 12px; cursor:pointer; flex-shrink:0;">✕</button>`;
+                const input = row.querySelector("input");
+                input.value = value;
+                row.querySelector("button").onclick = () => {
+                    if (rows.children.length > 1) row.remove();
+                    else input.value = "";
+                };
+                rows.appendChild(row);
+                if (!initial) input.focus();
+            };
+            function readCodeList(containerId) {
+                return AppState.cleanPromoCodes([...document.querySelectorAll("#" + containerId + " .code-input")].map(i => i.value));
+            }
+            function describeCodes(codes) {
+                return codes.length === 1 ? `"${codes[0]}"` : `these ${codes.length} codes:\n` + codes.map((c, i) => `${i + 1}. ${c}`).join("\n") + "\n";
+            }
+            // Pop-up version for the Send Code / Resend buttons. Resolves with
+            // the list of codes, or null if cancelled.
+            function askForCodes(title, codes) {
+                return new Promise((resolve) => {
+                    document.getElementById("codesModalTitle").textContent = title;
+                    renderCodeList("codesModalList", codes);
+                    const overlay = document.getElementById("codesModalOverlay");
+                    overlay.classList.add("open");
+                    const first = overlay.querySelector(".code-input");
+                    if (first) first.focus();
+                    const okBtn = document.getElementById("codesModalOkBtn");
+                    const cancelBtn = document.getElementById("codesModalCancelBtn");
+                    function done(result) {
+                        overlay.classList.remove("open");
+                        okBtn.onclick = null;
+                        cancelBtn.onclick = null;
+                        resolve(result);
+                    }
+                    okBtn.onclick = () => done(readCodeList("codesModalList"));
+                    cancelBtn.onclick = () => done(null);
+                });
+            }
+
             async function handleConfirm() {
-                const code = document.getElementById("prizeCodeInput").value;
-                if (!code.trim()) {
+                const codes = readCodeList("prizeCodeList");
+                if (!codes.length) {
                     showInfoModal("Missing code", "Type in the promo code before confirming.");
                     return;
                 }
 
-                if (!await showConfirmModal("Send prize", "Send \"" + code.trim() + "\" to " + pickedWinner.name + "? This can't be undone.")) return;
+                if (!await showConfirmModal("Send prize", "Send " + describeCodes(codes) + " to " + pickedWinner.name + "? This can't be undone.")) return;
 
                 const confirmBtn = document.getElementById("confirmBtn");
                 confirmBtn.disabled = true;
                 confirmBtn.textContent = "Saving...";
 
                 try {
-                    await AppState.finalizeGiveawayPrize(pickedWeekId, pickedWinner, code);
+                    await AppState.finalizeGiveawayPrize(pickedWeekId, pickedWinner, codes);
                     document.getElementById("pickedResult").style.display = "none";
                     document.getElementById("drawResult").style.display = "block";
                 } catch (e) {
@@ -937,12 +1039,12 @@
             }
 
             async function handleSendPendingPrize(uid, weekId) {
-                const code = await showPromptModal("Promo code to send this winner?", "");
-                if (code === null) return;
-                if (!code.trim()) { showInfoModal("Missing code", "Type in a promo code first."); return; }
-                if (!await showConfirmModal("Send prize", `Send "${code.trim()}" to this winner now?`)) return;
+                const codes = await askForCodes("Promo code(s) to send this winner", []);
+                if (codes === null) return;
+                if (!codes.length) { showInfoModal("Missing code", "Type in a promo code first."); return; }
+                if (!await showConfirmModal("Send prize", `Send ${describeCodes(codes)} to this winner now?`)) return;
                 try {
-                    await AppState.sendPendingPrize(uid, weekId, code.trim());
+                    await AppState.sendPendingPrize(uid, weekId, codes);
                     showInfoModal("Sent", "The code has been delivered to their inbox.");
                     await refreshPendingPrizes();
                 } catch (e) {
@@ -987,13 +1089,13 @@
                                 <span class="promo-sub">&middot; ${escapeHtml(p.weekId || "?")} &middot; ${escapeHtml(drawn)} &middot;</span> ${codeHtml}
                             </span>
                             <span style="display:flex; gap:6px; flex-shrink:0;">
-                                <button class="resend-weekly-btn" data-uid="${escapeHtml(p.uid)}" data-week="${escapeHtml(p.weekId || "")}" data-code="${escapeHtml(p.prize || "")}" style="background:#4169e1; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">✉️ Resend</button>
+                                <button class="resend-weekly-btn" data-uid="${escapeHtml(p.uid)}" data-week="${escapeHtml(p.weekId || "")}" data-codes="${escapeHtml(JSON.stringify(Array.isArray(p.prizes) && p.prizes.length ? p.prizes : (p.prize ? [p.prize] : [])))}" style="background:#4169e1; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">✉️ Resend</button>
                                 <button class="prize-tokens-btn" data-uid="${escapeHtml(p.uid)}" data-name="${escapeHtml(p.winnerName || "")}" title="Send tokens as (part of) the prize" style="background:#aa7a1e; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">🪙 Tokens</button>
                             </span>
                         </div>`;
                     }).join("");
                     list.querySelectorAll(".resend-weekly-btn").forEach(btn => {
-                        btn.addEventListener("click", () => handleResendWeeklyPrize(btn.dataset.uid, btn.dataset.week, btn.dataset.code));
+                        btn.addEventListener("click", () => handleResendWeeklyPrize(btn.dataset.uid, btn.dataset.week, JSON.parse(btn.dataset.codes || "[]")));
                     });
                 } catch (e) {
                     list.innerHTML = `<p class="promo-sub">Error: ${escapeHtml(e.message)}</p>`;
@@ -1001,20 +1103,20 @@
             }
             window.loadWeeklyWinners = loadWeeklyWinners;
 
-            async function handleResendWeeklyPrize(uid, weekId, previousCode) {
-                // Pre-filled with the code they already have, so the common case
-                // (re-notify with the same code) is just two confirmations, while
-                // correcting a wrong code is still possible.
-                const code = await showPromptModal("Code to send this winner?", previousCode || "");
-                if (code === null) return;
-                if (!code.trim()) { showInfoModal("Missing code", "Type in a promo code first."); return; }
-                const changed = code.trim() !== (previousCode || "");
-                const warning = changed && previousCode
-                    ? `\n\nThis REPLACES the code they were sent before ("${previousCode}").`
+            async function handleResendWeeklyPrize(uid, weekId, previousCodes) {
+                // Pre-filled with the code(s) they already have, so the common
+                // case (re-notify with the same codes) is just two confirmations,
+                // while correcting or adding a code is still possible.
+                const codes = await askForCodes("Code(s) to send this winner", previousCodes);
+                if (codes === null) return;
+                if (!codes.length) { showInfoModal("Missing code", "Type in a promo code first."); return; }
+                const before = (previousCodes || []).join(", ");
+                const warning = before && codes.join(", ") !== before
+                    ? `\n\nThis REPLACES what they were sent before (${before}).`
                     : "";
-                if (!await showConfirmModal("Resend prize", `Send "${code.trim()}" to this winner now?${warning}`)) return;
+                if (!await showConfirmModal("Resend prize", `Send ${describeCodes(codes)} to this winner now?${warning}`)) return;
                 try {
-                    await AppState.sendPendingPrize(uid, weekId, code.trim());
+                    await AppState.sendPendingPrize(uid, weekId, codes);
                     showInfoModal("Sent", "The code has been delivered to their inbox.");
                     await loadWeeklyWinners();
                     await refreshPendingPrizes();
@@ -1261,12 +1363,12 @@
                         <p style="margin:0 0 4px;"><strong>Winner:</strong> ${escapeHtml(result.winner.name)} (${platform === "ios" ? "🍎 iOS" : "🤖 Android"})</p>
                         <p class="promo-sub" style="margin:0 0 4px;"><strong>Remaining pool:</strong> ${result.entryCount}</p>
                         <p class="promo-sub" style="margin:0 0 10px;"><strong>Staked:</strong> ${result.winner.tokens || 0} 🪙 — their chance was ${result.winnerWeight} in ${result.totalWeight} (${Math.round((result.winnerWeight / result.totalWeight) * 1000) / 10}%)</p>
-                        <label style="display:block; margin-bottom:6px;">Prize code to send:</label>
-                        <input type="text" id="secretPrizeCodeInput_${giveawayId}" placeholder="e.g. KCJUNE26"
-                            style="width:100%; padding:10px; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box;">
+                        <label style="display:block; margin-bottom:6px;">Prize code(s) to send:</label>
+                        <div id="secretPrizeCodeList_${giveawayId}"></div>
                         <button class="btn-primary" onclick="handleConfirmSecretWinner('${giveawayId}', '${result.winner.uid}', '${safeName}', '${platform}')"
                             style="margin-top:10px; padding:10px 20px;">Confirm &amp; Send Prize</button>
                     `;
+                    renderCodeList("secretPrizeCodeList_" + giveawayId);
                     container.style.display = "block";
                 } catch (e) {
                     showInfoModal("Pick failed", e.message);
@@ -1274,12 +1376,11 @@
             };
 
             window.handleConfirmSecretWinner = async function (giveawayId, winnerUid, winnerName, platform) {
-                const input = document.getElementById("secretPrizeCodeInput_" + giveawayId);
-                const code = input.value;
-                if (!code.trim()) { showInfoModal("Missing code", "Type in the promo code before confirming."); return; }
-                if (!await showConfirmModal("Send prize", `Send "${code.trim()}" to ${winnerName}? This can't be undone.`)) return;
+                const codes = readCodeList("secretPrizeCodeList_" + giveawayId);
+                if (!codes.length) { showInfoModal("Missing code", "Type in the promo code before confirming."); return; }
+                if (!await showConfirmModal("Send prize", `Send ${describeCodes(codes)} to ${winnerName}? This can't be undone.`)) return;
                 try {
-                    await AppState.finalizeSecretGiveawayPrize(giveawayId, winnerUid, winnerName, platform, code);
+                    await AppState.finalizeSecretGiveawayPrize(giveawayId, winnerUid, winnerName, platform, codes);
                     await refreshSecretGiveawaysList();
                 } catch (e) {
                     showInfoModal("Failed to save", e.message);
@@ -1317,12 +1418,12 @@
             };
 
             window.handleResendSecretCode = async function (giveawayId, winnerUid, winnerName, platform) {
-                const code = await showPromptModal(`Prize code to (re)send to ${winnerName}?`, "");
-                if (code === null) return;
-                if (!code.trim()) { showInfoModal("Missing code", "Type in the promo code before confirming."); return; }
-                if (!await showConfirmModal("Send prize", `Send "${code.trim()}" to ${winnerName}? This overwrites any code already saved for them.`)) return;
+                const codes = await askForCodes(`Prize code(s) to (re)send to ${winnerName}`, []);
+                if (codes === null) return;
+                if (!codes.length) { showInfoModal("Missing code", "Type in the promo code before confirming."); return; }
+                if (!await showConfirmModal("Send prize", `Send ${describeCodes(codes)} to ${winnerName}? This overwrites any code already saved for them.`)) return;
                 try {
-                    await AppState.finalizeSecretGiveawayPrize(giveawayId, winnerUid, winnerName, platform, code);
+                    await AppState.finalizeSecretGiveawayPrize(giveawayId, winnerUid, winnerName, platform, codes);
                     showInfoModal("Sent", "Prize code saved.");
                     await refreshSecretGiveawaysList();
                 } catch (e) {
@@ -2148,6 +2249,7 @@ const targetBtn = r.targetUid
                         ${historyHtml}
                         <div style="display:flex; gap:8px; margin-top:14px; flex-wrap:wrap;">
                             <button onclick="handleSendAdminMessage()" style="background:#4169e1; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">✉️ Send Message</button>
+                            <button onclick="openSendPromoFor('${escapeHtml(uid)}', lookupCurrentName)" style="background:#2e7d32; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">🎁 Send Promo</button>
                             <button onclick="openTokenAccount('${escapeHtml(uid)}').then(() => document.getElementById('tokenAccountResult').scrollIntoView({ behavior: 'smooth', block: 'center' }))" style="background:#aa7a1e; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">🪙 Tokens</button>
                             <button onclick="handleGrantVip('${uid}')" style="background:#6c63ff; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">👑 Grant Super Supporter</button>
                             ${vipActive ? `<button onclick="handleRevokeVip('${uid}')" style="background:#aa7a1e; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Revoke Super Supporter</button>` : ""}
@@ -2161,6 +2263,78 @@ const targetBtn = r.targetUid
                     result.innerHTML = `<p class="promo-sub">Error: ${escapeHtml(e.message)}</p>`;
                 }
             }
+
+            /* ---------------- SEND PROMO CODES TO A PLAYER ---------------- */
+            let sendPromoTarget = null;
+            function showSendPromoTarget() {
+                document.getElementById("sendPromoPlayer").innerHTML = sendPromoTarget
+                    ? `Sending to <strong>${escapeHtml(sendPromoTarget.name || "Unknown")}</strong> <span class="promo-sub">(uid: ${escapeHtml(sendPromoTarget.uid)})</span>`
+                    : "No player picked yet.";
+            }
+            window.handleSendPromoFind = async function () {
+                const name = document.getElementById("sendPromoNameInput").value.trim();
+                if (!name) { showInfoModal("Who to?", "Type the player's in-game name."); return; }
+                try {
+                    const found = await AppState.findUserByName(name);
+                    if (!found || !found.uid) {
+                        sendPromoTarget = null;
+                        showSendPromoTarget();
+                        showInfoModal("Not found", `No player called "${name}".`);
+                        return;
+                    }
+                    sendPromoTarget = { uid: found.uid, name: found.name || name };
+                    showSendPromoTarget();
+                } catch (e) {
+                    showInfoModal("Couldn't look up", e.message);
+                }
+            };
+            // From Moderation Lookup's "🎁 Send Promo" button.
+            window.openSendPromoFor = function (uid, name) {
+                sendPromoTarget = { uid, name };
+                showSendPromoTarget();
+                document.getElementById("sendPromoNameInput").value = name || "";
+                const section = document.getElementById("sendPromoSection");
+                section.open = true;
+                section.scrollIntoView({ behavior: "smooth", block: "start" });
+            };
+            window.handleSendPromo = async function () {
+                if (!sendPromoTarget) { showInfoModal("Who to?", "Find the player first."); return; }
+                const codes = readCodeList("sendPromoCodes");
+                if (!codes.length) { showInfoModal("Missing code", "Type in at least one promo code."); return; }
+                const title = document.getElementById("sendPromoTitle").value;
+                const message = document.getElementById("sendPromoMessage").value;
+                if (!await showConfirmModal("Send promo codes", `Send ${describeCodes(codes)} to ${sendPromoTarget.name}?`)) return;
+                const btn = document.getElementById("sendPromoBtn");
+                btn.disabled = true;
+                try {
+                    await AppState.sendPromoCodes(sendPromoTarget.uid, codes, { title, message, name: sendPromoTarget.name });
+                    showInfoModal("Sent", `${codes.length === 1 ? "The code is" : "All " + codes.length + " codes are"} in ${sendPromoTarget.name}'s inbox.`);
+                    renderCodeList("sendPromoCodes");
+                    document.getElementById("sendPromoTitle").value = "";
+                    document.getElementById("sendPromoMessage").value = "";
+                    loadPromoSends();
+                } catch (e) {
+                    showInfoModal("Couldn't send", e.message);
+                }
+                btn.disabled = false;
+            };
+            async function loadPromoSends() {
+                const list = document.getElementById("promoSendsList");
+                if (!list) return;
+                try {
+                    const items = await AppState.listPromoSends(20);
+                    list.innerHTML = items.length
+                        ? items.map(p => `<div style="padding:6px 0; border-bottom:1px solid #2a2a4a; font-size:0.9rem;">
+                            <strong>${escapeHtml(p.name || p.uid)}</strong>
+                            <span class="promo-sub">· ${new Date(p.sentAt).toLocaleString()}</span><br>
+                            ${(p.codes || []).map(c => `<code style="background:#2a2a4a; padding:2px 6px; border-radius:4px; font-size:0.8rem;">${escapeHtml(c)}</code>`).join(" ")}
+                          </div>`).join("")
+                        : "<p class='promo-sub'>Nothing sent yet.</p>";
+                } catch (e) {
+                    list.innerHTML = `<p class="promo-sub">Couldn't load the list: ${escapeHtml(e.message)}</p>`;
+                }
+            }
+            window.loadPromoSends = loadPromoSends;
 
             async function handleSendAdminMessage() {
                 if (!lookupCurrentUid) return;
@@ -2617,7 +2791,9 @@ async function handleLookupUserByUid() {
                 if (AppState.isAdmin()) {
                     loadTokenAlerts();
                     loadTokenGifts();
+                    loadPromoSends();
                 }
+                renderCodeList("sendPromoCodes");
                 refreshRecentCodes();
                 refreshRecentTips();
                 refreshRecentNews();

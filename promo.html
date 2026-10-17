@@ -816,13 +816,9 @@ async function openPrizeReveal(weekId) {
         body.innerHTML = `
             <div style="font-size:1.4rem; margin-bottom:10px;">🏆 You won!</div>
             <div class="promo-sub" style="margin-bottom:10px;">Week of ${escapeHtml(weekId)}</div>
-            <div class="promo-code-box" style="display:inline-flex; align-items:center; gap:10px; justify-content:center; font-size:1.3rem; padding:14px 20px;">
-                <span>${escapeHtml(prize.prize)}</span>
-                <button class="copy-btn" data-code="${escapeHtml(prize.prize)}" style="font-size:0.9rem; padding:6px 14px;">Copy</button>
-            </div>
+            ${renderPromoCodeBoxes(prizeCodesOf(prize))}
         `;
-        const copyBtn = body.querySelector(".copy-btn");
-        copyBtn.addEventListener("click", () => copyCode(copyBtn.getAttribute("data-code"), copyBtn));
+        wireCopyButtons(body);
     } catch (e) {
         body.innerHTML = `<p class="promo-sub">Couldn't load prize: ${escapeHtml(e.message)}</p>`;
     }
@@ -924,16 +920,40 @@ function renderSecretRevealBox(title, landedInstantly, buttonLabel) {
     `;
 }
 
+/* A prize can be several promo codes: each gets its own box and Copy button,
+   so they can be copied and redeemed one at a time. Older prizes carry a
+   single `prize`/`code`; newer ones a list in `prizes`. */
+function prizeCodesOf(p) {
+    if (Array.isArray(p)) return p.filter(Boolean);
+    if (!p) return [];
+    if (typeof p === "string") return [p];
+    if (Array.isArray(p.prizes) && p.prizes.length) return p.prizes;
+    return p.prize ? [p.prize] : [];
+}
+function renderPromoCodeBoxes(codes) {
+    return codes.map((c, i) => `
+            <div class="promo-code-box" style="display:flex; align-items:center; gap:10px; justify-content:center; font-size:1.3rem; padding:14px 20px; margin:6px auto 0; max-width:420px; box-sizing:border-box;">
+                ${codes.length > 1 ? `<span style="color:#9a9ab0; font-size:0.9rem;">${i + 1}.</span>` : ""}
+                <span style="word-break:break-all;">${escapeHtml(c)}</span>
+                <button class="copy-btn" data-code="${escapeHtml(c)}" style="font-size:0.9rem; padding:6px 14px; flex-shrink:0;">Copy</button>
+            </div>`).join("");
+}
+function wireCopyButtons(container) {
+    container.querySelectorAll(".copy-btn").forEach(btn => {
+        if (btn.dataset.wired) return;
+        btn.dataset.wired = "1";
+        btn.addEventListener("click", () => copyCode(btn.getAttribute("data-code"), btn));
+    });
+}
+
 function renderSecretPrizeResult(code) {
+    const codes = prizeCodesOf(code);
     return `
         <div class="giveaway-result" style="display:block; margin-top:16px;">
             🏆 Congrats, you won!
-            <div style="margin-top:14px; font-size:1rem; color:#9a9ab0;">Your Promo Code</div>
+            <div style="margin-top:14px; font-size:1rem; color:#9a9ab0;">${codes.length > 1 ? `Your ${codes.length} Promo Codes` : "Your Promo Code"}</div>
             <div style="font-size:1.4rem; margin-top:2px;">⬇️</div>
-            <div class="promo-code-box" style="display:inline-flex; align-items:center; gap:10px; justify-content:center; font-size:1.3rem; padding:14px 20px; margin-top:6px;">
-                <span>${escapeHtml(code)}</span>
-                <button class="copy-btn" data-code="${escapeHtml(code)}" style="font-size:0.9rem; padding:6px 14px;">Copy</button>
-            </div>
+            ${renderPromoCodeBoxes(codes)}
             <div style="margin-top:12px; font-size:0.85rem; color:#ff9b6b;">⚠️ Please note that sharing of promo codes can result in potential consequences. So please keep them to yourself and use them only once.</div>
         </div>
     `;
@@ -952,8 +972,7 @@ function renderSecretNonWinnerResult() {
 }
 
 function wireSecretCopyBtn(container) {
-    const btn = container.querySelector(".copy-btn");
-    if (btn) btn.addEventListener("click", () => copyCode(btn.getAttribute("data-code"), btn));
+    wireCopyButtons(container);
 }
 
 /* ---------------- THE REVEAL SPIN (weekly + secret) ----------------
@@ -1349,18 +1368,15 @@ function showDrawDayModal() {
 if (user && user.uid === winnerData.winnerUid) {
     const myPrize = await AppState.getMyPrize(currentWeekId);
     if (myPrize) {
+                        const myCodes = prizeCodesOf(myPrize);
                         resultDiv.innerHTML +=
     '<br><br><strong style="font-size:1.3rem;">🏆 Congrats, you won!</strong>' +
-    '<br><div style="margin-top:14px; font-size:1rem; color:#9a9ab0;">Your Promo Code</div>' +
+    '<br><div style="margin-top:14px; font-size:1rem; color:#9a9ab0;">' + (myCodes.length > 1 ? 'Your ' + myCodes.length + ' Promo Codes' : 'Your Promo Code') + '</div>' +
     '<div style="font-size:1.4rem; margin-top:2px;">⬇️</div>' +
-    '<div class="promo-code-box" style="display:inline-flex; align-items:center; gap:10px; justify-content:center; font-size:1.3rem; padding:14px 20px; margin-top:6px;">' +
-    '<span>' + escapeHtml(myPrize.prize) + '</span>' +
-    '<button class="copy-btn" data-code="' + escapeHtml(myPrize.prize) + '" style="font-size:0.9rem; padding:6px 14px;">Copy</button>' +
-    '</div>' +
+    renderPromoCodeBoxes(myCodes) +
     '<div style="margin-top:12px; font-size:0.85rem; color:#ff9b6b;">⚠️ Please note that sharing of promo codes can result in potential consequences. So please keep them to yourself and use them only once.</div>';
 
-                        const newCopyBtn = resultDiv.querySelector(".copy-btn");
-                        newCopyBtn.addEventListener("click", () => copyCode(newCopyBtn.getAttribute("data-code"), newCopyBtn));
+                        wireCopyButtons(resultDiv);
                     }
                 } else {
                     resultDiv.innerHTML +=

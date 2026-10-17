@@ -3050,14 +3050,35 @@ async function getGiveawayHistory(maxCount = 20) {
         return { weekId, entryCount: entries.length, winner };
     }
 
+    /* A prize can be several promo codes. Codes arrive as an array or as text
+       (one per line, or comma-separated) and are stored both ways: `prizes`
+       (the list, so each gets its own Copy button) and `prize` (all of them
+       joined, for anything that only knows about a single code). */
+    function cleanPromoCodes(input) {
+        // Each box may itself hold "A, B" or one code per line.
+        const raw = (Array.isArray(input) ? input : [input])
+            .flatMap(v => String(v == null ? "" : v).split(/[\n,]+/));
+        const out = [];
+        raw.forEach(c => {
+            const code = String(c || "").trim();
+            if (code && !out.includes(code)) out.push(code);
+        });
+        return out;
+    }
+    function promoCodesText(codes) {
+        return codes.length === 1 ? `"${codes[0]}"` : codes.map((c, i) => `${i + 1}. "${c}"`).join("\n");
+    }
+
     async function finalizeGiveawayPrize(weekId, winner, prizeCode) {
     await waitForAuthReady();
     if (!currentUser || currentUser.uid !== ADMIN_UID) {
         throw new Error("Not authorized.");
     }
-    if (!prizeCode || !prizeCode.trim()) {
+    const codes = cleanPromoCodes(prizeCode);
+    if (!codes.length) {
         throw new Error("Prize code cannot be empty.");
     }
+    const prizeText = codes.join(", ");
 
     const already = await getWeekWinner(weekId);
     if (already) {
@@ -3075,7 +3096,8 @@ async function getGiveawayHistory(maxCount = 20) {
     const prizeRef = doc(db, "giveawayPrizes", winner.uid);
     await setDoc(prizeRef, {
         weekId: weekId,
-        prize: prizeCode.trim(),
+        prize: prizeText,
+        prizes: codes,
         device: winner.device,
         // winnerName and drawnAt were missing here for a long time (the
         // auto-pick path recorded them, this one didn't), which is why the
@@ -3091,9 +3113,12 @@ async function getGiveawayHistory(maxCount = 20) {
         await addPersonalNotification(winner.uid, {
             type: "giveawayWin",
             title: "🎁 You won the Weekly Giveaway!",
-            body: `Congrats — you won "${prizeCode.trim()}" playing on ${winner.device === "ios" ? "iOS" : "Android"}. Redeem it in-game.`,
+            body: codes.length === 1
+                ? `Congrats — you won "${codes[0]}" playing on ${winner.device === "ios" ? "iOS" : "Android"}. Redeem it in-game.`
+                : `Congrats — you won ${codes.length} promo codes playing on ${winner.device === "ios" ? "iOS" : "Android"}:\n${promoCodesText(codes)}\nRedeem each one in-game.`,
             weekId: weekId,
-            prize: prizeCode.trim(),
+            prize: prizeText,
+            prizes: codes,
             device: winner.device
         });
     } catch (e) {
@@ -3203,8 +3228,12 @@ async function getPendingPrizes() {
 async function sendPendingPrize(uid, weekId, code) {
     await waitForAuthReady();
     if (!currentUser || currentUser.uid !== ADMIN_UID) throw new Error("Not authorized.");
-    const trimmed = (code || "").trim();
-    if (!trimmed) throw new Error("Prize code cannot be empty.");
+    const codes = cleanPromoCodes(code);
+    if (!codes.length) throw new Error("Prize code cannot be empty.");
+    const trimmed = codes.join(", ");
+    const readyBody = codes.length === 1
+        ? `Here's your promo code: "${codes[0]}". Redeem it in-game.`
+        : `Here are your ${codes.length} promo codes:\n${promoCodesText(codes)}\nRedeem each one in-game.`;
 
     const ref = doc(db, "giveawayPrizes", uid);
     const snap = await getDoc(ref);
@@ -3212,7 +3241,7 @@ async function sendPendingPrize(uid, weekId, code) {
     const data = snap.data();
     if (data.weekId !== weekId) throw new Error("Week mismatch — this prize may have already been updated.");
 
-    await updateDoc(ref, { prize: trimmed, pendingPrize: false });
+    await updateDoc(ref, { prize: trimmed, prizes: codes, pendingPrize: false });
 
     try {
         const q = query(
@@ -3234,8 +3263,9 @@ async function sendPendingPrize(uid, weekId, code) {
             // have no way of noticing it silently updated behind the scenes.
             await updateDoc(doc(db, "users", uid, "personalNotifications", notifSnap.docs[0].id), {
                 title: "🎁 Your Weekly Giveaway code is ready!",
-                body: `Here's your promo code: "${trimmed}". Redeem it in-game.`,
+                body: readyBody,
                 prize: trimmed,
+                prizes: codes,
                 pendingPrize: false,
                 read: false,
                 createdAt: Date.now()
@@ -3247,9 +3277,10 @@ async function sendPendingPrize(uid, weekId, code) {
             await addPersonalNotification(uid, {
                 type: "giveawayWin",
                 title: "🎁 Your Weekly Giveaway code is ready!",
-                body: `Here's your promo code: "${trimmed}". Redeem it in-game.`,
+                body: readyBody,
                 weekId,
                 prize: trimmed,
+                prizes: codes,
                 device: data.device || null
             });
         }
@@ -4000,8 +4031,9 @@ async function sendAdminMessage(uid, title, body) {
     async function finalizeSecretGiveawayPrize(giveawayId, winnerUid, winnerName, platform, prizeCode) {
         await waitForAuthReady();
         if (!currentUser || currentUser.uid !== ADMIN_UID) throw new Error("Not authorized.");
-        const code = (prizeCode || "").trim();
-        if (!code) throw new Error("Enter the prize code to send.");
+        const codes = cleanPromoCodes(prizeCode);
+        if (!codes.length) throw new Error("Enter the prize code to send.");
+        const code = codes.join(", ");
 
         const giveawayRef = doc(db, "secretGiveaways", giveawayId);
         const snap = await getDoc(giveawayRef);
@@ -4020,6 +4052,7 @@ async function sendAdminMessage(uid, title, body) {
 
         await setDoc(doc(db, "secretGiveaways", giveawayId, "prizeCodes", winnerUid), {
             code,
+            codes,
             platform,
             wonAt: Date.now()
         });
@@ -4037,9 +4070,12 @@ async function sendAdminMessage(uid, title, body) {
         const winNotif = {
             type: "secretGiveawayWin",
             title: `🔒🎉 You won "${data.title}"!`,
-            body: `Here's your prize code: "${code}". Tap to view and copy it.`,
+            body: codes.length === 1
+                ? `Here's your prize code: "${code}". Tap to view and copy it.`
+                : `Here are your ${codes.length} prize codes:\n${promoCodesText(codes)}\nTap to view and copy them.`,
             giveawayId,
-            prize: code
+            prize: code,
+            prizes: codes
         };
         try {
             // A resend must UPDATE the existing card rather than add a second
@@ -4131,12 +4167,57 @@ async function sendAdminMessage(uid, title, body) {
         // The rule only lets admin or the actual winner read this doc —
         // anyone else's read is rejected, so this resolves to null instead
         // of throwing rather than making every caller handle that error.
+        // Returns the list of codes (older prizes have just one, in `code`).
         try {
             const snap = await getDoc(doc(db, "secretGiveaways", giveawayId, "prizeCodes", currentUser.uid));
-            return snap.exists() ? (snap.data().code || null) : null;
+            if (!snap.exists()) return null;
+            const d = snap.data();
+            const codes = Array.isArray(d.codes) && d.codes.length ? d.codes : (d.code ? [d.code] : []);
+            return codes.length ? codes : null;
         } catch (e) {
             return null;
         }
+    }
+
+    // Admin-only: sends one or more promo codes straight to a player's inbox,
+    // each with its own Copy button. Every send is also logged in promoSends
+    // (admin-only) so there's a record of who was sent what.
+    async function sendPromoCodes(uid, codesInput, { title, message, name } = {}) {
+        await waitForAuthReady();
+        if (!currentUser || currentUser.uid !== ADMIN_UID) throw new Error("Not authorized.");
+        if (!uid) throw new Error("Pick a player first.");
+        const codes = cleanPromoCodes(codesInput);
+        if (!codes.length) throw new Error("Type in at least one promo code.");
+        const cleanTitle = (title || "").trim() || (codes.length === 1 ? "🎁 You've got a promo code!" : `🎁 You've got ${codes.length} promo codes!`);
+        const note = (message || "").trim();
+        const body = (note ? note + "\n\n" : "") + (codes.length === 1
+            ? `Your promo code: "${codes[0]}". Tap to view and copy it, then redeem it in-game.`
+            : `Your ${codes.length} promo codes:\n${promoCodesText(codes)}\nTap to view and copy them, then redeem each one in-game.`);
+        await addPersonalNotification(uid, {
+            type: "promoCodes",
+            title: cleanTitle,
+            body,
+            prize: codes.join(", "),
+            prizes: codes
+        });
+        try {
+            await addDoc(collection(db, "promoSends"), {
+                uid, name: name || "", codes, title: cleanTitle, note, sentAt: Date.now(), sentBy: currentUser.uid
+            });
+        } catch (e) {
+            // The codes were delivered; only the record failed (e.g. rules not updated yet).
+            console.warn("Sent, but couldn't log the promo send:", e.message);
+        }
+        return codes;
+    }
+
+    async function listPromoSends(maxCount = 20) {
+        await waitForAuthReady();
+        if (!currentUser || currentUser.uid !== ADMIN_UID) throw new Error("Not authorized.");
+        const snap = await getDocs(query(collection(db, "promoSends"), orderBy("sentAt", "desc"), limit(maxCount)));
+        const items = [];
+        snap.forEach(d => items.push({ id: d.id, ...d.data() }));
+        return items;
     }
 
     /* ---------------- NEWS (admin-posted; body is stored/rendered as raw
@@ -4478,7 +4559,7 @@ async function maybeRefreshAd(containerId) {
         unfriend, friendshipId, getPublicProfile,
         searchUsersByName, getSuggestedFriends, touchLastActive,
         // personal notifications (NEW)
-        addPersonalNotification, listenToPersonalNotifications, markPersonalNotificationRead, sendAdminMessage,
+        addPersonalNotification, listenToPersonalNotifications, markPersonalNotificationRead, sendAdminMessage, sendPromoCodes, listPromoSends, cleanPromoCodes,
         // DMs
         getOrCreateDmThread, sendDmMessage, editDmMessage, listenToDmMessages, listenToMyDmThreads, deleteDmMessagesOnly,
         markDmThreadRead, listenToUnreadDmCount,

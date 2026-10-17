@@ -1809,10 +1809,12 @@ body {
         <!-- Prize code reveal (from inbox "View Code") -->
         <div class="mini-modal-overlay" id="prizeRevealModalOverlay">
             <div class="mini-modal-box" style="max-width:340px;">
-                <div style="font-size:1.3rem; font-weight:700; margin-bottom:14px;">🎉 Your Prize</div>
+                <div id="prizeRevealTitle" style="font-size:1.3rem; font-weight:700; margin-bottom:14px;">🎉 Your Prize</div>
                 <div id="prizeRevealAnimArea" style="min-height:90px; display:flex; align-items:center; justify-content:center; margin-bottom:16px;">
                     <span id="prizeRevealCodeText" style="font-size:1.5rem; font-weight:800; letter-spacing:1px; opacity:0; transform:scale(0.6); transition:opacity 0.4s ease, transform 0.4s cubic-bezier(0.34,1.56,0.64,1);"></span>
                 </div>
+                <!-- Several codes: one box each, each with its own Copy button -->
+                <div id="prizeRevealCodeList" style="display:none; margin-bottom:14px;"></div>
                 <div id="prizeRevealWarningNote" style="display:none; color:#ff9b6b; font-size:0.8rem; margin-bottom:14px;">⚠️ Please note that sharing of promo codes can result in potential consequences. So please keep them to yourself and use them only once.</div>
                 <button class="btn-primary" id="prizeRevealCopyBtn" style="width:100%; margin-bottom:10px; padding:12px;">Copy Code</button>
                 <button class="btn-settings-action" id="prizeRevealCloseBtn" style="width:100%;">Close</button>
@@ -3208,7 +3210,7 @@ function getNewsTypeInfo(type) {
             let inboxOpen = document.getElementById("page-inbox").classList.contains("active");
             let unread = inboxOpen ? 0 : notifications.filter(n => {
                 // Personal notifications track their own read state per-doc.
-                if (n.type === "friendAccepted" || n.type === "formationComment" || n.type === "formationReply" || n.type === "secretGiveawayWin") return !n.read;
+                if (n.type === "friendAccepted" || n.type === "formationComment" || n.type === "formationReply" || n.type === "secretGiveawayWin" || n.type === "promoCodes") return !n.read;
                 return n.createdAt > lastSeenAt;
             }).length;
             let show = unread > 0;
@@ -3224,7 +3226,7 @@ function getNewsTypeInfo(type) {
         // Anything not explicitly listed (e.g. adminMessage, or any future
         // type) falls under "general" by default.
         function inboxCategoryFor(n) {
-            if (n.type === "promo" || n.type === "giveawayWin" || n.type === "secretGiveawayWin"
+            if (n.type === "promo" || n.type === "giveawayWin" || n.type === "secretGiveawayWin" || n.type === "promoCodes"
                 || n.type === "weeklyGiveawayNew" || n.type === "secretGiveawayNew") return "promo";
             if (n.type === "tip") return "tip";
             if (n.type === "friendAccepted" || n.type === "formationComment" || n.type === "formationReply") return "social";
@@ -3297,7 +3299,7 @@ function getNewsTypeInfo(type) {
 } else if (n.type === "friendAccepted") {
     button = `<button class="btn-primary" style="padding:6px 16px; font-size:0.85rem;" onclick="openInboxFriendChat('${n.fromUid}', '${escapeHomeHtml(n.fromName).replace(/'/g, "\\'")}', '${escapeHomeHtml(n.fromAvatar || "")}')">💬 Message</button>`;
 } else if (n.type === "giveawayWin") {
-    button = `<button class="btn-primary view-prize-inbox-btn" data-prize="${escapeHomeHtml(n.prize || "")}" data-pending="${n.pendingPrize ? "1" : "0"}" style="padding:6px 16px; font-size:0.85rem;">${n.prize ? "🎁 View Code" : "⏳ Status"}</button>`;
+    button = prizeButtonHtml(n, "padding:6px 16px; font-size:0.85rem;");
 } else if (n.type === "formationComment" || n.type === "formationReply") {
     button = `<button class="btn-primary" style="padding:6px 16px; font-size:0.85rem;" onclick="openInboxFormationPost('${n.postId}')">💬 View</button>`;
 } else if (n.type === "secretGiveawayWin") {
@@ -3306,8 +3308,10 @@ function getNewsTypeInfo(type) {
     // Older ones only have a giveawayId, so they fall back to opening the
     // promo page, which reads the code from the giveaway itself.
     button = n.prize
-        ? `<button class="btn-primary view-prize-inbox-btn" data-prize="${escapeHomeHtml(n.prize)}" data-pending="0" style="padding:6px 16px; font-size:0.85rem;">🎁 View Code</button>`
+        ? prizeButtonHtml(n, "padding:6px 16px; font-size:0.85rem;")
         : `<button class="btn-primary" style="padding:6px 16px; font-size:0.85rem;" onclick="openInboxSecretGiveaway('${n.giveawayId}')">🎁 View Prize</button>`;
+} else if (n.type === "promoCodes") {
+    button = prizeButtonHtml(n, "padding:6px 16px; font-size:0.85rem;");
 } else if (n.type === "weeklyGiveawayNew") {
     button = `<button class="btn-primary" style="padding:6px 16px; font-size:0.85rem;" onclick="openPromoTab('vip')">🎡 Enter Giveaway</button>`;
 } else if (n.type === "secretGiveawayNew") {
@@ -3343,7 +3347,7 @@ function getNewsTypeInfo(type) {
             list.querySelectorAll(".view-prize-inbox-btn").forEach(btn => {
                 btn.addEventListener("click", (e) => {
                     e.stopPropagation();
-                    openPrizeReveal(btn.dataset.prize, btn.dataset.pending === "1");
+                    openPrizeReveal(prizeCodesFromButton(btn), btn.dataset.pending === "1");
                 });
             });
 
@@ -3377,13 +3381,15 @@ function getNewsTypeInfo(type) {
     } else if (n.type === "friendAccepted") {
         button = `<button class="btn-primary" style="margin-top:14px; padding:10px 20px; font-size:0.9rem;" onclick="openInboxFriendChat('${n.fromUid}', '${escapeHomeHtml(n.fromName).replace(/'/g, "\\'")}', '${escapeHomeHtml(n.fromAvatar || "")}')">💬 Message</button>`;
     } else if (n.type === "giveawayWin") {
-        button = `<button class="btn-primary view-prize-inbox-btn" data-prize="${escapeHomeHtml(n.prize || "")}" data-pending="${n.pendingPrize ? "1" : "0"}" style="margin-top:14px; padding:10px 20px; font-size:0.9rem;">${n.prize ? "🎁 View Code" : "⏳ Status"}</button>`;
+        button = prizeButtonHtml(n, "margin-top:14px; padding:10px 20px; font-size:0.9rem;");
     } else if (n.type === "formationComment" || n.type === "formationReply") {
         button = `<button class="btn-primary" style="margin-top:14px; padding:10px 20px; font-size:0.9rem;" onclick="openInboxFormationPost('${n.postId}')">💬 View</button>`;
     } else if (n.type === "secretGiveawayWin") {
         button = n.prize
-            ? `<button class="btn-primary view-prize-inbox-btn" data-prize="${escapeHomeHtml(n.prize)}" data-pending="0" style="margin-top:14px; padding:10px 20px; font-size:0.9rem;">🎁 View Code</button>`
+            ? prizeButtonHtml(n, "margin-top:14px; padding:10px 20px; font-size:0.9rem;")
             : `<button class="btn-primary" style="margin-top:14px; padding:10px 20px; font-size:0.9rem;" onclick="openInboxSecretGiveaway('${n.giveawayId}')">🎁 View Prize</button>`;
+    } else if (n.type === "promoCodes") {
+        button = prizeButtonHtml(n, "margin-top:14px; padding:10px 20px; font-size:0.9rem;");
     } else if (n.type === "weeklyGiveawayNew") {
         button = `<button class="btn-primary" style="margin-top:14px; padding:10px 20px; font-size:0.9rem;" onclick="openPromoTab('vip')">🎡 Enter Giveaway</button>`;
     } else if (n.type === "secretGiveawayNew") {
@@ -3402,7 +3408,7 @@ function getNewsTypeInfo(type) {
     `;
 
     content.querySelectorAll(".view-prize-inbox-btn").forEach(btn => {
-        btn.addEventListener("click", () => openPrizeReveal(btn.dataset.prize, btn.dataset.pending === "1"));
+        btn.addEventListener("click", () => openPrizeReveal(prizeCodesFromButton(btn), btn.dataset.pending === "1"));
     });
 
     document.getElementById("inboxItemModalOverlay").classList.add("open");
@@ -3417,11 +3423,65 @@ window.closeInboxItemModal = closeInboxItemModal;
         // lives on the notification itself (n.prize), so this needs no
         // AppState calls, no VIP check, and no dependency on the wheel/day
         // of week. Works from any inbox notification, any time.
+        // The codes on a prize or promo notification: newer ones carry a list
+        // (`prizes`), older ones a single `prize`.
+        function notificationCodes(n) {
+            if (Array.isArray(n.prizes) && n.prizes.length) return n.prizes;
+            return n.prize ? [n.prize] : [];
+        }
+        function prizeButtonHtml(n, style) {
+            const codes = notificationCodes(n);
+            const label = !codes.length ? "⏳ Status" : codes.length === 1 ? "🎁 View Code" : `🎁 View ${codes.length} Codes`;
+            return `<button class="btn-primary view-prize-inbox-btn" data-prizes="${escapeHomeHtml(JSON.stringify(codes))}" data-pending="${n.pendingPrize ? "1" : "0"}" style="${style}">${label}</button>`;
+        }
+        function prizeCodesFromButton(btn) {
+            try { return JSON.parse(btn.dataset.prizes || "[]"); } catch (e) { return []; }
+        }
+
+        // Copies one code, with "Copied!" feedback on the button pressed.
+        function copyPrizeCode(code, btn) {
+            navigator.clipboard.writeText(code).then(() => {
+                const original = btn.textContent;
+                btn.textContent = "Copied!";
+                setTimeout(() => { btn.textContent = original; }, 1500);
+            }).catch(() => {
+                alert("Couldn't copy automatically — the code is: " + code);
+            });
+        }
+
+        // Shows one code big (with the pop-in animation), or several codes
+        // as a list where each has its own Copy button, so each can be
+        // copied and redeemed separately.
         function openPrizeReveal(prize, pending) {
     const overlay = document.getElementById("prizeRevealModalOverlay");
     const codeText = document.getElementById("prizeRevealCodeText");
     const copyBtn = document.getElementById("prizeRevealCopyBtn");
     const warningNote = document.getElementById("prizeRevealWarningNote");
+    const animArea = document.getElementById("prizeRevealAnimArea");
+    const listEl = document.getElementById("prizeRevealCodeList");
+    const titleEl = document.getElementById("prizeRevealTitle");
+    const codes = Array.isArray(prize) ? prize.filter(Boolean) : (prize ? [prize] : []);
+    titleEl.textContent = codes.length > 1 ? `🎉 Your Prize — ${codes.length} codes` : "🎉 Your Prize";
+    animArea.style.display = codes.length > 1 ? "none" : "flex";
+    listEl.style.display = codes.length > 1 ? "block" : "none";
+    listEl.innerHTML = "";
+
+    if (codes.length > 1) {
+        copyBtn.style.display = "none";
+        warningNote.style.display = "block";
+        listEl.innerHTML = codes.map((c, i) => `
+            <div style="display:flex; align-items:center; gap:8px; padding:10px 12px; margin-bottom:8px; border:1px solid #4169e1; border-radius:10px; background:rgba(65,105,225,0.08);">
+                <span style="color:#9a9ab0; font-size:0.85rem; flex-shrink:0;">${i + 1}.</span>
+                <span style="flex:1; min-width:0; font-weight:800; font-size:1.05rem; letter-spacing:0.5px; word-break:break-all; text-align:left;">${escapeHomeHtml(c)}</span>
+                <button class="btn-primary prize-code-copy-btn" data-index="${i}" style="padding:8px 14px; font-size:0.85rem; flex-shrink:0;">Copy</button>
+            </div>`).join("");
+        listEl.querySelectorAll(".prize-code-copy-btn").forEach(b => {
+            b.addEventListener("click", () => copyPrizeCode(codes[Number(b.dataset.index)], b));
+        });
+        overlay.classList.add("open");
+        return;
+    }
+    prize = codes[0] || "";
 
     if (!prize) {
         codeText.textContent = pending
@@ -3449,15 +3509,7 @@ window.closeInboxItemModal = closeInboxItemModal;
                 });
             });
 
-            copyBtn.onclick = () => {
-                navigator.clipboard.writeText(prize).then(() => {
-                    const original = copyBtn.textContent;
-                    copyBtn.textContent = "Copied!";
-                    setTimeout(() => { copyBtn.textContent = original; }, 1500);
-                }).catch(() => {
-                    alert("Couldn't copy automatically — the code is: " + prize);
-                });
-            };
+            copyBtn.onclick = () => copyPrizeCode(prize, copyBtn);
         }
         window.openPrizeReveal = openPrizeReveal;
 
