@@ -3058,12 +3058,9 @@ async function getGiveawayHistory(maxCount = 20) {
         // Each box may itself hold "A, B" or one code per line.
         const raw = (Array.isArray(input) ? input : [input])
             .flatMap(v => String(v == null ? "" : v).split(/[\n,]+/));
-        const out = [];
-        raw.forEach(c => {
-            const code = String(c || "").trim();
-            if (code && !out.includes(code)) out.push(code);
-        });
-        return out;
+        // Kept exactly as entered (only blanks dropped): the same code twice
+        // means two boxes, each with its own Copy.
+        return raw.map(c => String(c || "").trim()).filter(Boolean);
     }
     function promoCodesText(codes) {
         return codes.length === 1 ? `"${codes[0]}"` : codes.map((c, i) => `${i + 1}. "${c}"`).join("\n");
