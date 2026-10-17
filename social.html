@@ -1684,6 +1684,51 @@
             white-space: pre-wrap;
         }
 
+        /* A game challenge sent from Games, drawn as a card (see dmBodyHtml). */
+        /* A challenge bubble is a fixed, roomier width (a phone's 78% is
+           tight for the card); the card fills it and never overflows. */
+        .dm-msg.has-challenge {
+            width: 290px;
+            max-width: 88%;
+            box-sizing: border-box;
+            padding: 8px;
+        }
+        .dm-challenge-card {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            box-sizing: border-box;
+            width: 100%;
+            min-width: 0;
+            margin: 2px 0 4px;
+            padding: 12px;
+            border-radius: 12px;
+            background: linear-gradient(150deg, #2b1d52, #4a1f2e);
+            border: 1px solid #ffb74d;
+            box-shadow: 0 0 12px rgba(255, 183, 77, 0.25);
+            color: white;
+            text-align: left;
+            cursor: pointer;
+            white-space: normal;
+        }
+        .dm-challenge-card .dmc-tag { font-size: 0.72rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: #ffd75e; }
+        .dm-challenge-card .dmc-game { display: flex; align-items: center; gap: 10px; }
+        .dm-challenge-card .dmc-icon { font-size: 1.9rem; line-height: 1; }
+        .dm-challenge-card .dmc-game b { display: block; font-size: 1.05rem; }
+        .dm-challenge-card .dmc-game small { display: block; font-size: 0.78rem; opacity: 0.75; }
+        .dm-challenge-card .dmc-score { font-size: 0.9rem; }
+        .dm-challenge-card .dmc-score b { color: #ffd75e; }
+        .dm-challenge-card .dmc-btn {
+            display: block;
+            padding: 10px 12px;
+            border-radius: 8px;
+            background: linear-gradient(90deg, #c62828, #e65100);
+            font-size: 0.98rem;
+            font-weight: 800;
+            text-align: center;
+        }
+        .dm-challenge-card:active { transform: scale(0.98); }
+
         .dm-msg-edited-tag {
             font-size: 0.65rem;
             opacity: 0.6;
@@ -5818,7 +5863,7 @@ window.removeClanIconPreview = function () {
             container.innerHTML = list.map((f) => {
                 const hasMsg = !!f.lastMessageAt;
                 const previewRaw = hasMsg
-                    ? (f.lastMessageSenderUid === myUid ? "You: " : "") + (f.lastMessageText || "")
+                    ? (f.lastMessageSenderUid === myUid ? "You: " : "") + dmPreviewText(f.lastMessageText)
                     : "No messages yet";
                 const badge = f.unreadCount > 0
                     ? `<span class="clan-filter-count" style="margin-left:6px; flex-shrink:0;">${f.unreadCount > 9 ? "9+" : f.unreadCount}</span>`
@@ -6226,9 +6271,9 @@ document.getElementById("dmActionsMenu").classList.remove("open");
         const reportBtn = mine ? "" :
             `<button class="dm-msg-action-link" onclick='openReportModal("message", "${m.senderUid}", "${currentDmOtherName.replace(/"/g, '')}", "${m.id}", ${JSON.stringify(m.text)})'>🚩 Report</button>`;
 
-        html += `<div class="dm-msg ${mine ? "mine" : "theirs"}" id="dmMsgRow_${m.id}">
+        html += `<div class="dm-msg ${mine ? "mine" : "theirs"}${parseDmChallenge(m.text) ? " has-challenge" : ""}" id="dmMsgRow_${m.id}">
             ${quoteHtml}
-            ${escapeHtml(m.text)}${editedTag}
+            ${dmBodyHtml(m.text, mine)}${editedTag}
             ${timeHtml}
             <div class="dm-msg-actions">
                 ${replyBtn}${editBtn}${reportBtn}
@@ -6240,6 +6285,54 @@ document.getElementById("dmActionsMenu").classList.remove("open");
     box.scrollTop = box.scrollHeight;
     updateDmScrollBottomBtn();
 }
+
+// A game challenge sent from Games is a line of text plus a link,
+// "https://keazyea.github.io/?challenge=<game>.<puzzle>.<score>" (so it
+// still reads sensibly anywhere that shows plain text). Here it's drawn as a
+// challenge card instead: the game, which puzzle, the score to beat, and a
+// Battle button — tapping the card opens Games on that same puzzle.
+const DM_CHALLENGE_RE = /\nhttps:\/\/keazyea\.github\.io\/\?challenge=(([a-z]+)\.([ds])([0-9a-z]{1,8})\.(\d{1,2}|x))\s*$/;
+const CHALLENGE_GAMES = {
+    trivia: { icon: "🧠", title: "Trivia", out: 5 },
+    guess: { icon: "🔍", title: "Guess the Unit", out: 3 },
+    unitle: { icon: "🎯", title: "Unitle", out: 6 },
+    hilo: { icon: "⬆️", title: "Higher or Lower", out: 10 }
+};
+function parseDmChallenge(text) {
+    const m = DM_CHALLENGE_RE.exec(text || "");
+    if (!m || !CHALLENGE_GAMES[m[2]]) return null;
+    const [, code, gameId, kind, id, score] = m;
+    const game = CHALLENGE_GAMES[gameId];
+    const day = kind === "d" ? `${id.slice(0, 4)}-${id.slice(4, 6)}-${id.slice(6, 8)}` : null;
+    // Singapore date, the same day boundary as Games' daily puzzle.
+    const today = new Date(Date.now() + 8 * 3600e3).toISOString().slice(0, 10);
+    const which = !day ? "Free play" : day === today ? "Today's puzzle" : `Puzzle of ${day}`;
+    let scoreLabel;
+    if (gameId === "hilo") scoreLabel = day ? `${score}/${game.out}` : `a streak of ${score}`;
+    else if (score === "x") scoreLabel = `didn't get it (X/${game.out})`;
+    else if (gameId === "trivia") scoreLabel = `${score}/${game.out}`;
+    else scoreLabel = `${score} guess${score === "1" ? "" : "es"}`;
+    return { code, game, which, scoreLabel };
+}
+function dmBodyHtml(text, mine) {
+    const c = parseDmChallenge(text);
+    if (!c) return escapeHtml(text);
+    return `<div class="dm-challenge-card" role="button" onclick='openGameChallenge("${c.code}")'>
+        <div class="dmc-tag">⚔️ ${mine ? "Your challenge" : "Challenge"}</div>
+        <div class="dmc-game"><span class="dmc-icon">${c.game.icon}</span><span><b>${c.game.title}</b><small>${escapeHtml(c.which)}</small></span></div>
+        <div class="dmc-score">${mine ? "Your score" : "Score to beat"}: <b>${escapeHtml(c.scoreLabel)}</b></div>
+        <span class="dmc-btn">${mine ? "▶ Play it" : "⚔️ Battle"}</span>
+    </div>`;
+}
+// The friends list shows the last message — a challenge reads as one, not a link.
+function dmPreviewText(text) {
+    const c = parseDmChallenge(text);
+    return c ? `⚔️ Challenge: ${c.game.icon} ${c.game.title}` : (text || "");
+}
+window.openGameChallenge = function (code) {
+    if (window.top !== window && window.top && typeof window.top.openGameChallenge === "function") window.top.openGameChallenge(code);
+    else location.href = "games.html?challenge=" + encodeURIComponent(code);
+};
 
 // Jumps to and briefly highlights the message a reply quote points at.
 window.scrollToDmMessage = function (msgId) {

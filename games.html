@@ -1,0 +1,987 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Games — Keazyea's Intelligence Hub</title>
+    <link rel="icon" href="images/KIH.jpg">
+    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+        html, body { margin: 0; background: #1a1a2e; }
+        body { padding: 0 12px 40px; box-sizing: border-box; }
+        h1 { font-size: 2.2rem; margin: 18px 0 6px; }
+        /* Five tabs have to fit a phone: icon over a short label, and Today's
+           Puzzle a little wider than the rest. */
+        .games-tabs { display: grid; grid-template-columns: 1.35fr repeat(4, 1fr); gap: 4px; }
+        .games-tabs .tab-btn {
+            display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 2px;
+            padding: 8px 2px; font-size: 0.8rem; line-height: 1.15; min-width: 0; margin: 0;
+        }
+        .games-tabs .tab-btn .tab-icon { font-size: 1.25rem; line-height: 1.2; }
+        .games-wrap { max-width: 560px; margin: 0 auto; }
+        .game-intro { color: #b0b0c8; font-size: 0.92rem; line-height: 1.45; margin: 14px 0; text-align: center; }
+        .game-intro small { display: block; color: #8a8aa6; font-size: 0.82rem; margin-top: 4px; }
+        .dim { color: #9a9ab0; }
+        .game-card { background: #20203a; border: 1px solid #2f2f55; border-radius: 14px; padding: 16px; }
+        .game-progress { font-size: 0.82rem; color: #9a9ab0; margin-bottom: 8px; display: flex; justify-content: space-between; gap: 8px; }
+        .game-q { font-size: 1.12rem; font-weight: 700; line-height: 1.4; margin: 0 0 12px; }
+        /* Many unit pictures have the name printed along the bottom, which would
+           give answers away — game pictures show only the top 80%. */
+        .game-q-pic { width: 150px; height: 150px; margin: 0 auto 12px; border-radius: 12px; overflow: hidden; border: 2px solid #2f2f55; }
+        .game-q-pic img { display: block; width: 100%; height: 125%; object-fit: cover; object-position: top; }
+        .opt-list { display: flex; flex-direction: column; gap: 8px; }
+        .opt-btn {
+            display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; padding: 11px 12px;
+            border-radius: 10px; border: 1px solid #3a3a66; background: #2a2a4a; color: white; font-family: inherit;
+            font-size: 1rem; cursor: pointer;
+        }
+        .opt-btn img { width: 36px; height: 36px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
+        .opt-btn .opt-extra { margin-left: auto; font-size: 0.85rem; color: #c8c8e0; white-space: nowrap; }
+        .opt-btn:disabled { cursor: default; }
+        .opt-btn.correct { border-color: #2e7d32; background: rgba(46, 125, 50, 0.3); }
+        .opt-btn.wrong { border-color: #c62828; background: rgba(198, 40, 40, 0.28); }
+        .game-actions { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+        .game-actions .btn-primary { flex: 1; padding: 12px; font-size: 1rem; font-weight: 700; }
+        .btn-ghost { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #3a3a66; background: none; color: white; font-family: inherit; font-size: 1rem; cursor: pointer; }
+        .btn-ghost:disabled { opacity: 0.45; cursor: default; }
+        .result-big { font-size: 2.2rem; font-weight: 800; text-align: center; margin: 6px 0; }
+        .result-marks { text-align: center; font-size: 1.4rem; letter-spacing: 2px; margin-bottom: 6px; word-break: break-all; }
+        .result-note { text-align: center; color: #b0b0c8; font-size: 0.92rem; }
+
+        /* Today's Puzzle */
+        .daily-bar {
+            display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; padding: 9px 12px;
+            border-radius: 10px; background: linear-gradient(90deg, rgba(65, 105, 225, 0.25), rgba(255, 196, 0, 0.12)); border: 1px solid #3a4a8a;
+            font-size: 0.9rem; font-weight: 700;
+        }
+        .daily-bar .coin { color: #ffd75e; white-space: nowrap; }
+        .roulette { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 6px 0 14px; }
+        .rl-tile {
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 18px 6px;
+            border-radius: 14px; border: 2px solid #34345e; background: #26264a; font-weight: 800; font-size: 0.95rem;
+            transition: transform 0.12s, background 0.12s, border-color 0.12s, box-shadow 0.12s;
+        }
+        .rl-tile .rl-icon { font-size: 2rem; }
+        .rl-tile.lit { border-color: #ffd75e; background: #3b3b6e; transform: scale(1.04); box-shadow: 0 0 14px rgba(255, 215, 94, 0.45); }
+        .rl-tile.landed { border-color: #ffd75e; background: linear-gradient(160deg, #4169e1, #6a3fc1); transform: scale(1.06); box-shadow: 0 0 22px rgba(255, 215, 94, 0.7); animation: rlPulse 1s ease-in-out infinite alternate; }
+        .rl-tile.faded { opacity: 0.35; }
+        @keyframes rlPulse { from { box-shadow: 0 0 10px rgba(255, 215, 94, 0.45); } to { box-shadow: 0 0 26px rgba(255, 215, 94, 0.9); } }
+        .rl-title { text-align: center; font-size: 1.15rem; font-weight: 800; margin: 2px 0 4px; min-height: 1.4em; }
+        .reward-box {
+            margin-top: 14px; padding: 11px 12px; border-radius: 10px; text-align: center; font-size: 0.95rem; line-height: 1.45;
+            background: rgba(255, 196, 0, 0.08); border: 1px solid #aa7a1e;
+        }
+        .reward-box.paid { background: rgba(46, 125, 50, 0.18); border-color: #2e7d32; font-weight: 700; }
+        .reward-box button { margin-top: 8px; padding: 9px 16px; font-weight: 700; }
+
+        /* Guess the Unit */
+        .guess-frame { width: 230px; height: 230px; margin: 0 auto 12px; border-radius: 14px; overflow: hidden; border: 2px solid #3a3a66; background: #111; }
+        .guess-frame img { width: 100%; height: 125%; object-fit: cover; object-position: top; display: block; transition: transform 0.5s ease, filter 0.5s ease; }
+        .name-tiles { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; margin: 4px 0 12px; }
+        .name-tiles span { min-width: 18px; height: 26px; padding: 0 2px; border-bottom: 2px solid #6c9bff; text-align: center; font-weight: 800; font-size: 1.05rem; line-height: 26px; }
+        .name-tiles span.gap { border: none; min-width: 10px; }
+        .name-tiles span.punct { border: none; min-width: 6px; }
+        .name-tiles span.typed { color: #fff; border-bottom-color: #ffd75e; }
+        .name-tiles span.hinted { color: #7f8bbf; }
+        .name-tiles.over span:not(.gap):not(.punct) { border-bottom-color: #e05555; }
+        .name-tiles[onclick] { cursor: text; }
+        .challenge-bar {
+            margin-bottom: 10px; padding: 9px 12px; border-radius: 10px; text-align: center; font-size: 0.92rem;
+            background: rgba(198, 40, 40, 0.14); border: 1px solid #a33a3a;
+        }
+        .game-card .challenge-bar { margin: 12px 0 0; }
+        .challenge-bar.won { background: rgba(46, 125, 50, 0.2); border-color: #2e7d32; font-weight: 700; }
+        .challenge-bar.lost { background: rgba(255, 196, 0, 0.08); border-color: #aa7a1e; }
+        .hint-list { list-style: none; padding: 0; margin: 0 0 10px; }
+        .hint-list li { background: rgba(255, 196, 0, 0.08); border: 1px solid #aa7a1e; border-radius: 8px; padding: 7px 10px; margin-bottom: 6px; font-size: 0.92rem; }
+        .wrong-guesses { text-align: center; color: #ff8a80; font-size: 0.92rem; margin-bottom: 8px; min-height: 1em; }
+        .guess-msg { text-align: center; color: #ffd75e; font-size: 0.88rem; margin: 8px 0 0; }
+        .guess-input-row { display: flex; gap: 8px; position: relative; }
+        .guess-input-row input {
+            flex: 1; min-width: 0; padding: 11px; border-radius: 8px; border: 1px solid #555; background: #2a2a4a;
+            color: white; font-size: 1rem; font-family: inherit; box-sizing: border-box;
+        }
+        .suggestions { display: flex; flex-direction: column; gap: 4px; margin-top: 6px; }
+        .suggestions button {
+            display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 8px; border: 1px solid #3a3a66;
+            background: #23233f; color: white; font-family: inherit; font-size: 0.95rem; cursor: pointer; text-align: left;
+        }
+        .suggestions img { width: 28px; height: 28px; border-radius: 6px; object-fit: cover; }
+
+        /* Unitle */
+        /* The unit's name sits on its own line above its row, so long hero
+           names never squeeze into (and get chopped by) a narrow column. */
+        .unitle-head, .unitle-row { display: grid; grid-template-columns: 0.85fr repeat(6, minmax(0, 1fr)); gap: 3px; align-items: stretch; }
+        .unitle-name-line { font-size: 0.74rem; font-weight: 700; color: #c8c8e0; margin: 8px 0 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .unitle-head { font-size: 0.62rem; color: #9a9ab0; text-align: center; margin-bottom: 4px; }
+        .unitle-row { margin-bottom: 4px; }
+        /* Whole words only — a word split over two lines ("Huma/n") is hard to read. */
+        .unitle-cell {
+            border-radius: 6px; padding: 5px 1px; text-align: center; font-size: 0.66rem; line-height: 1.2; font-weight: 700;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; min-height: 44px;
+            overflow-wrap: normal; word-break: normal; min-width: 0;
+        }
+        .unitle-cell.name { background: #2a2a4a; padding: 3px; }
+        .unitle-cell.name img { width: 100%; max-width: 36px; aspect-ratio: 1; border-radius: 5px; object-fit: cover; }
+        .unitle-cell.hit { background: #2e7d32; }
+        .unitle-cell.miss { background: #8e2424; }
+        .unitle-cell.near { background: #8a6d12; }
+        .unitle-legend { font-size: 0.78rem; color: #9a9ab0; text-align: center; margin-top: 8px; }
+
+        /* Higher or Lower */
+        .hilo-pair { display: flex; gap: 10px; }
+        .hilo-card {
+            flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 8px;
+            border-radius: 12px; border: 2px solid #3a3a66; background: #2a2a4a; color: white; font-family: inherit; cursor: pointer;
+        }
+        .hilo-card img { width: 100%; max-width: 120px; aspect-ratio: 1; object-fit: cover; border-radius: 10px; }
+        .hilo-card .hilo-name { font-weight: 800; font-size: 0.95rem; text-align: center; }
+        .hilo-card .hilo-val { font-size: 1.15rem; font-weight: 800; color: #ffd75e; min-height: 1.3em; margin-top: auto; }
+        .hilo-card.correct { border-color: #2e7d32; background: rgba(46, 125, 50, 0.28); }
+        .hilo-card.wrong { border-color: #c62828; background: rgba(198, 40, 40, 0.25); }
+        .hilo-card:disabled { cursor: default; }
+
+        /* Send to a friend */
+        .friend-modal { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.65); display: none; align-items: flex-end; justify-content: center; z-index: 50; }
+        .friend-modal.open { display: flex; }
+        .friend-sheet {
+            width: 100%; max-width: 480px; max-height: 80vh; overflow-y: auto; box-sizing: border-box; background: #20203a;
+            border: 1px solid #3a3a66; border-radius: 16px 16px 0 0; padding: 14px 14px 22px;
+        }
+        .friend-sheet-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; font-size: 1.05rem; font-weight: 800; }
+        .friend-sheet-head button { background: none; border: none; color: #b0b0c8; font-size: 1.3rem; cursor: pointer; padding: 4px 8px; }
+        .share-preview { margin: 0 0 12px; padding: 10px; border-radius: 8px; background: #15152a; color: #c8c8e0; font-size: 0.85rem; white-space: pre-wrap; font-family: inherit; }
+        .friend-row { display: flex; align-items: center; gap: 10px; padding: 9px 4px; border-top: 1px solid #2c2c50; }
+        .friend-row .f-dot { width: 9px; height: 9px; border-radius: 50%; background: #555; flex-shrink: 0; }
+        .friend-row .f-dot.on { background: #4caf50; }
+        .friend-row .f-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700; }
+        .friend-row button { padding: 8px 14px; font-weight: 700; flex-shrink: 0; }
+        .friend-row button.sent { background: #2e7d32; }
+        .friend-empty { text-align: center; color: #9a9ab0; font-size: 0.92rem; padding: 14px 4px; line-height: 1.5; }
+        @media (max-width: 380px) { .unitle-cell { font-size: 0.58rem; } .games-tabs .tab-btn { font-size: 0.72rem; } }
+    </style>
+</head>
+
+<body>
+    <h1>Games</h1>
+    <div class="tabs games-tabs">
+        <button class="tab-btn active" data-tab="today" onclick="switchTab('today')"><span class="tab-icon">🎲</span><span class="tab-label">Today's Puzzle</span></button>
+        <button class="tab-btn" data-tab="trivia" onclick="switchTab('trivia')"><span class="tab-icon">🧠</span><span class="tab-label">Trivia</span></button>
+        <button class="tab-btn" data-tab="guess" onclick="switchTab('guess')"><span class="tab-icon">🔍</span><span class="tab-label">Guess</span></button>
+        <button class="tab-btn" data-tab="unitle" onclick="switchTab('unitle')"><span class="tab-icon">🎯</span><span class="tab-label">Unitle</span></button>
+        <button class="tab-btn" data-tab="hilo" onclick="switchTab('hilo')"><span class="tab-icon">⬆️</span><span class="tab-label">Hi-Lo</span></button>
+    </div>
+    <div class="games-wrap">
+        <p class="game-intro" id="gameIntro"></p>
+        <div id="gameArea"><p class="dim" style="text-align:center;">Loading…</p></div>
+    </div>
+
+    <div class="friend-modal" id="friendModal" onclick="if (event.target === this) closeFriends()">
+        <div class="friend-sheet">
+            <div class="friend-sheet-head"><span>⚔️ Challenge a friend</span><button type="button" onclick="closeFriends()" aria-label="Close">✕</button></div>
+            <pre class="share-preview" id="sharePreview"></pre>
+            <div id="friendList"></div>
+        </div>
+    </div>
+
+    <script src="games-core.js"></script>
+    <script type="module" src="appState.js"></script>
+    <script>
+        /* ================================================================
+           GAMES — built entirely from the same game data Troops & Heroes uses
+           (rules and puzzle generator in games-core.js, shared with the server).
+
+           🎲 Today's Puzzle: one game a day, the same for everyone (picked and
+           built from the date, Singapore time like daily quests). The roulette
+           just reveals which one. Finishing it pays +1 🪙, once per account per
+           day, whatever the score — the server replays the play against the
+           same puzzle before paying. Progress is kept on this device.
+
+           The other tabs are free play: random every time, no tokens.
+           ================================================================ */
+        const C = window.GamesCore;
+        const { esc, cap, fmt } = C;
+        const INTROS = {
+            trivia: { daily: "5 questions about troops and heroes — the same 5 for everyone today.", free: "5 random questions about troops and heroes." },
+            guess: { daily: "Who's in the picture? Type the name — 3 guesses, up to 3 hints. Each wrong guess zooms out.", free: "Who's in the picture? Type the name — 3 guesses, up to 3 hints. Each wrong guess zooms out." },
+            unitle: { daily: "Find today's mystery unit in 6 guesses. Each guess shows what matches.", free: "Find the mystery unit in 6 guesses. Each guess shows what matches." },
+            hilo: { daily: "Which has more? 10 match-ups — one wrong answer ends the run.", free: "Which has more? One wrong answer ends your streak." }
+        };
+        const DAILY_PREFIX = "kih_games_daily_v2_";
+        // Opens the site on Games with the challenge (index.html hands it on).
+        const CHALLENGE_URL = "https://keazyea.github.io/?challenge=";
+        const ONLINE_MS = 5 * 60 * 1000; // same "online" as Social
+
+        let UNITS = [];
+        let ALIASES = null;
+        let tab = "today";
+        let game = null;   // the game on screen
+        let daily = null;  // today's puzzle: { day, sig, puzzle, game, spun, play, reward, balance }
+        let rewardUi = { state: "working" };
+
+        /* ---------------- helpers ---------------- */
+        const $ = (id) => document.getElementById(id);
+        const unitByKey = (k) => C.unitByKey(UNITS, k);
+        // Singapore date, the same day boundary as daily quests.
+        function dayKey() { return new Date(Date.now() + 8 * 3600e3).toISOString().slice(0, 10); }
+
+        // appState.js is a module and may still be loading.
+        function appStateReady() {
+            return new Promise((resolve, reject) => {
+                const started = Date.now();
+                (function check() {
+                    if (window.AppState) return resolve(window.AppState);
+                    if (Date.now() - started > 15000) return reject(new Error("Couldn't connect — check your connection and try again."));
+                    setTimeout(check, 100);
+                })();
+            });
+        }
+
+        // A missing picture shouldn't show the browser's broken-image icon.
+        document.addEventListener("error", (e) => {
+            if (e.target && e.target.tagName === "IMG") e.target.style.visibility = "hidden";
+        }, true);
+
+        async function loadUnits() {
+            const get = (f) => fetch(f).then(r => { if (!r.ok) throw new Error(f); return r.json(); });
+            const [troops, troopLevels, heroes, heroLevels, loc, en] = await Promise.all([
+                get("troops.json"), get("troopsLevel.json"), get("hero.json"), get("heroLevel.json"), get("localization.json"), get("en.json")
+            ]);
+            UNITS = C.buildUnits({ troops, troopLevels, heroes, heroLevels, loc, en });
+            ALIASES = C.nameAliases(UNITS);
+        }
+
+        /* ---------------- today's puzzle: saved progress ---------------- */
+        // Saved under the day the puzzle is FOR, with a fingerprint of the
+        // puzzle, so a game data update that changes it starts it over instead
+        // of applying old answers to different questions.
+        function loadDailyState(day) {
+            const puzzle = C.dailyPuzzle(UNITS, day);
+            const sig = String(C.hashString(JSON.stringify(puzzle)));
+            let s = null;
+            try { s = JSON.parse(localStorage.getItem(DAILY_PREFIX + day) || "null"); } catch (e) { }
+            if (!s || s.sig !== sig) s = {};
+            const play = s.play && C.dailyResult(UNITS, day, s.play) ? s.play : null;
+            return { day, sig, puzzle, game: puzzle.game, spun: !!s.spun, play, reward: s.reward || null, balance: s.balance };
+        }
+        function saveDailyState() {
+            try {
+                localStorage.setItem(DAILY_PREFIX + daily.day, JSON.stringify({ sig: daily.sig, spun: daily.spun, play: daily.play, reward: daily.reward, balance: daily.balance }));
+            } catch (e) { /* storage blocked */ }
+        }
+        function clearOldDailies() {
+            try {
+                const keep = DAILY_PREFIX + dayKey();
+                Object.keys(localStorage)
+                    .filter(k => k.startsWith("kih_games_v1_") || (k.startsWith(DAILY_PREFIX) && k !== keep))
+                    .forEach(k => localStorage.removeItem(k));
+            } catch (e) { }
+        }
+        const dailyResult = () => (daily && daily.play ? C.dailyResult(UNITS, daily.day, daily.play) : null);
+        const dailyFinished = () => { const r = dailyResult(); return !!(r && r.finished); };
+
+        function markTabs() {
+            const done = daily && daily.day === dayKey() && dailyFinished();
+            const label = document.querySelector('.games-tabs [data-tab="today"] .tab-label');
+            label.textContent = done ? "Today's Puzzle ✅" : "Today's Puzzle";
+        }
+
+        /* ---------------- switching ---------------- */
+        function showTab(id) {
+            tab = id;
+            document.querySelectorAll(".games-tabs .tab-btn").forEach(b => b.classList.toggle("active", b.dataset.tab === id));
+        }
+        function switchTab(id) {
+            showTab(id);
+            try { localStorage.setItem("kih_games_tab", id); } catch (e) { }
+            render();
+        }
+        function render() {
+            if (!UNITS.length) return;
+            if (tab === "today") startToday();
+            else startGame(tab, false);
+            window.scrollTo(0, 0);
+        }
+        function setIntro(html) { $("gameIntro").innerHTML = html; }
+        // Free play is seeded too (a fresh random seed each game), so a friend
+        // you challenge can be given exactly the same puzzle.
+        const newSeed = () => Math.floor(Math.random() * 2 ** 31);
+        function seededPuzzle(id, seed) {
+            const rand = C.seededRandom(C.hashString(`kih-free:${id}:${seed}`));
+            if (id === "trivia") return { questions: C.triviaSet(UNITS, rand) };
+            if (id === "guess") return C.guessPuzzle(UNITS, rand);
+            if (id === "unitle") return { target: C.unitleTarget(UNITS, rand) };
+            return { rand }; // Higher or Lower: endless, rounds drawn as you go
+        }
+        // isDaily: today's puzzle. Otherwise free play — a new seeded puzzle,
+        // or `fixed` = { puzzle, src, challenge } to replay one a friend sent.
+        function startGame(id, isDaily, fixed) {
+            let p, src;
+            if (isDaily) { p = daily.puzzle; src = "d" + daily.day.replace(/-/g, ""); }
+            else if (fixed) { p = fixed.puzzle; src = fixed.src; }
+            else { const seed = newSeed(); p = seededPuzzle(id, seed); src = "s" + seed.toString(36); }
+            if (!isDaily) {
+                setIntro(fixed && fixed.challenge
+                    ? `${INTROS[id].free}<small>⚔️ A friend's challenge — the same puzzle they played. No tokens here; 🎲 Today's Puzzle pays +1 🪙.</small>`
+                    : `${INTROS[id].free}<small>Free play — as often as you like, no tokens. 🎲 Today's Puzzle pays +1 🪙.</small>`);
+            }
+            ({ trivia: startTrivia, guess: startGuess, unitle: startUnitle, hilo: startHilo })[id](isDaily, p);
+            game.src = src;
+            game.challenge = isDaily ? dailyChallenge : (fixed && fixed.challenge) || null;
+            ({ trivia: renderTrivia, guess: renderGuess, unitle: renderUnitle, hilo: renderHilo })[id]();
+            if (isDaily && dailyFinished()) collectToken();
+        }
+
+        /* ================================================================
+           ⚔️ CHALLENGES — "I scored 4/5 in Trivia, can you beat me?" sent to
+           a friend's chat with a link: <site>/?challenge=<game>.<src>.<score>
+           where src is d<yyyymmdd> (a day's puzzle) or s<seed> (free play).
+           The link opens Games on the very same puzzle.
+           ================================================================ */
+        let dailyChallenge = null; // a challenge on today's puzzle, while this page is open
+        function parseChallenge(code) {
+            const m = /^(trivia|guess|unitle|hilo)\.(d\d{8}|s[0-9a-z]{1,8})\.(\d{1,2}|x)$/.exec(String(code || "").toLowerCase());
+            if (!m) return null;
+            const [, id, src, score] = m;
+            const day = src[0] === "d" ? `${src.slice(1, 5)}-${src.slice(5, 7)}-${src.slice(7, 9)}` : null;
+            // Never a day after today: that would show tomorrow's puzzle early.
+            if (day && (isNaN(Date.parse(day + "T00:00:00Z")) || day > dayKey() || C.dailyGameFor(day) !== id)) return null;
+            return { game: id, src, day, seed: day ? null : parseInt(src.slice(1), 36), score: score === "x" ? null : Number(score) };
+        }
+        // A finished game's score: `value` (null = didn't find it) and how it reads.
+        function scoreOf(g) {
+            if (g.id === "trivia") { const n = g.answers.filter((a, k) => a === g.questions[k].answer).length; return { value: n, label: `${n}/${g.questions.length}` }; }
+            if (g.id === "hilo") { const n = hiloScore(g).score; return { value: n, label: g.fixed ? `${n}/${g.rounds.length}` : `a streak of ${n}` }; }
+            const max = g.id === "guess" ? C.MAX_GUESSES : C.UNITLE_TRIES;
+            const won = g.guesses.includes(g.target);
+            return { value: won ? g.guesses.length : null, label: won ? `${g.guesses.length}/${max}` : `X/${max}` };
+        }
+        function challengeLabel(ch) {
+            if (ch.game === "trivia") return `${ch.score}/${C.TRIVIA_COUNT}`;
+            if (ch.game === "hilo") return ch.day ? `${ch.score}/${C.HILO_DAILY_ROUNDS}` : `a streak of ${ch.score}`;
+            const max = ch.game === "guess" ? C.MAX_GUESSES : C.UNITLE_TRIES;
+            return ch.score == null ? `X/${max}` : `${ch.score}/${max}`;
+        }
+        // > 0: you did better. More right is better in Trivia and Higher or
+        // Lower; fewer guesses is better in Guess and Unitle (not found = worst).
+        function versus(id, mine, theirs) {
+            if (id === "trivia" || id === "hilo") return (mine || 0) - (theirs || 0);
+            const v = (x) => (x == null ? 99 : x);
+            return v(theirs) - v(mine);
+        }
+        // Opening a challenge link. Today's puzzle opens Today's Puzzle (it
+        // still pays the day's token); an older day's puzzle or a free-play
+        // one is replayed exactly, without tokens.
+        function startChallenge(ch) {
+            if (ch.day === dayKey()) {
+                dailyChallenge = ch;
+                if (!daily.spun) { daily.spun = true; saveDailyState(); }
+                showTab("today");
+                render();
+                return;
+            }
+            showTab(ch.game);
+            const puzzle = ch.day ? C.dailyPuzzle(UNITS, ch.day) : seededPuzzle(ch.game, ch.seed);
+            startGame(ch.game, false, { puzzle, src: ch.src, challenge: ch });
+            window.scrollTo(0, 0);
+        }
+        function challengeBar(g) {
+            if (!g.challenge) return "";
+            return `<div class="challenge-bar">⚔️ Your friend's score: <b>${esc(challengeLabel(g.challenge))}</b> — beat it!</div>`;
+        }
+        function challengeOutcome(g) {
+            if (!g.challenge) return "";
+            const d = versus(g.id, scoreOf(g).value, g.challenge.score);
+            const theirs = esc(challengeLabel(g.challenge));
+            return `<div class="challenge-bar ${d > 0 ? "won" : d < 0 ? "lost" : ""}">${d > 0 ? `🏆 You beat your friend's ${theirs}!` : d < 0 ? `😅 Your friend wins this one with ${theirs}.` : `🤝 A tie — you both got ${theirs}.`}</div>`;
+        }
+        // The chat message: what you scored, and a link to the same puzzle.
+        function challengeMessage(g) {
+            const s = scoreOf(g);
+            const icon = C.GAME_ICONS[g.id], title = C.GAME_TITLES[g.id];
+            let brag;
+            if (g.id === "trivia") brag = `I scored ${s.label} in ${icon} ${title}`;
+            else if (g.id === "hilo") brag = `I got ${s.label} in ${icon} ${title}`;
+            else if (s.value == null) brag = g.id === "guess" ? `I couldn't crack ${icon} ${title}` : `I couldn't find the ${icon} ${title} unit`;
+            else brag = `I got ${icon} ${title} in ${s.value} guess${s.value === 1 ? "" : "es"}`;
+            const when = g.src[0] === "d" ? (g.daily ? " on today's puzzle" : ` on the ${g.src.slice(1, 5)}-${g.src.slice(5, 7)}-${g.src.slice(7, 9)} puzzle`) : "";
+            const code = `${g.id}.${g.src}.${s.value == null ? "x" : s.value}`;
+            return `⚔️ ${brag}${when} — can you beat me?\n${CHALLENGE_URL}${code}`;
+        }
+
+        /* ================================================================
+           🎲 TODAY'S PUZZLE — a roulette reveals today's game, then you play it.
+           ================================================================ */
+        function startToday() {
+            const day = dayKey();
+            if (!daily || daily.day !== day) { daily = loadDailyState(day); rewardUi = { state: "working" }; }
+            markTabs();
+            if (!daily.spun) { renderRoulette(); return; }
+            setIntro(INTROS[daily.game].daily);
+            startGame(daily.game, true);
+        }
+
+        // Clockwise around the 2×2 grid: trivia, guess / unitle, hilo.
+        const RL_ORDER = ["trivia", "guess", "hilo", "unitle"];
+        function renderRoulette() {
+            setIntro(`One game a day, the same for everyone. Finish it to earn <b>+1 🪙</b> — however you score.`);
+            $("gameArea").innerHTML = `<div class="game-card">
+                <div class="rl-title" id="rlTitle">Which game is it today?</div>
+                <div class="roulette">${C.GAMES.map(g => `<div class="rl-tile" data-g="${g}"><span class="rl-icon">${C.GAME_ICONS[g]}</span>${esc(C.GAME_TITLES[g])}</div>`).join("")}</div>
+                <div class="game-actions" id="rlActions"><button class="btn-primary" id="spinBtn" onclick="spinRoulette()">🎲 Spin</button></div>
+            </div>`;
+        }
+        function spinRoulette() {
+            const btn = $("spinBtn");
+            if (!btn || btn.disabled) return;
+            btn.disabled = true;
+            btn.textContent = "Spinning…";
+            const target = daily.game;
+            const tiles = Object.fromEntries([...document.querySelectorAll(".rl-tile")].map(t => [t.dataset.g, t]));
+            // Three laps, then on to today's game; each step a little slower.
+            const steps = 3 * RL_ORDER.length + RL_ORDER.indexOf(target) + 1;
+            let i = 0;
+            (function step() {
+                Object.values(tiles).forEach(t => t.classList.remove("lit"));
+                const g = RL_ORDER[i % RL_ORDER.length];
+                tiles[g].classList.add("lit");
+                i++;
+                if (i < steps) { setTimeout(step, 55 + Math.pow(i / steps, 3) * 420); return; }
+                setTimeout(() => {
+                    Object.entries(tiles).forEach(([k, t]) => { t.classList.remove("lit"); t.classList.add(k === target ? "landed" : "faded"); });
+                    $("rlTitle").innerHTML = `Today it's ${C.GAME_ICONS[target]} <b>${esc(C.GAME_TITLES[target])}</b>!`;
+                    $("rlActions").innerHTML = `<button class="btn-primary" onclick="playToday()">▶ Play</button>`;
+                    daily.spun = true;
+                    saveDailyState();
+                }, 350);
+            })();
+        }
+        function playToday() { if (tab === "today") startToday(); }
+
+        // The strip above today's game.
+        function dailyBar() {
+            return `<div class="daily-bar"><span>${C.GAME_ICONS[daily.game]} ${esc(C.GAME_TITLES[daily.game])}</span><span class="coin">${daily.reward ? "✅ +1 🪙" : "+1 🪙 on finish"}</span></div>`;
+        }
+
+        // Called after every move in today's puzzle.
+        function afterDailyMove(play) {
+            daily.play = play;
+            saveDailyState();
+            if (dailyFinished()) { markTabs(); collectToken(); }
+        }
+
+        /* ---------------- +1 🪙 for finishing ---------------- */
+        let collecting = false;
+        function rewardHtml() {
+            if (!daily) return "";
+            const next = `New puzzle after the daily reset.`;
+            if (daily.reward === "paid") return `<div class="reward-box paid">🪙 +1 token added${typeof daily.balance === "number" ? ` — you have ${fmt(daily.balance)} 🪙` : ""}.<br><span class="dim" style="font-weight:400;">${next}</span></div>`;
+            if (daily.reward === "already") return `<div class="reward-box paid">✅ Today's token is already on your account.<br><span class="dim" style="font-weight:400;">${next}</span></div>`;
+            if (rewardUi.state === "signin") return `<div class="reward-box">Sign in to collect your <b>+1 🪙</b> for finishing.<br><button class="btn-primary" onclick="signInForToken(this)">Sign in</button></div>`;
+            if (rewardUi.state === "expired") return `<div class="reward-box">That was ${esc(daily.day)}'s puzzle — it's past the reset now, so it can't pay any more.<br><button class="btn-primary" onclick="playToday()">🎲 Today's puzzle</button></div>`;
+            if (rewardUi.state === "error") return `<div class="reward-box">${esc(rewardUi.msg)}<br><button class="btn-primary" onclick="collectToken()">Try again</button></div>`;
+            return `<div class="reward-box">Collecting your +1 🪙…</div>`;
+        }
+        function paintReward() {
+            const box = $("dailyReward");
+            if (box) box.innerHTML = rewardHtml();
+            const coin = document.querySelector(".daily-bar .coin");
+            if (coin && daily) coin.textContent = daily.reward ? "✅ +1 🪙" : "+1 🪙 on finish";
+        }
+        async function collectToken() {
+            if (!daily || daily.reward || collecting || !dailyFinished()) return;
+            const d = daily;
+            collecting = true;
+            rewardUi = { state: "working" };
+            paintReward();
+            try {
+                const AS = await appStateReady();
+                await AS.waitForAuthReady();
+                if (!AS.getCurrentUser()) { rewardUi = { state: "signin" }; return; }
+                const res = await AS.submitDailyPuzzle(d.day, d.play);
+                if (res && res.expired) { rewardUi = { state: "expired" }; return; }
+                d.reward = res && res.paid ? "paid" : "already";
+                d.balance = res ? res.balance : undefined;
+                if (d === daily) saveDailyState();
+            } catch (e) {
+                rewardUi = { state: "error", msg: (e && e.message) || "Couldn't collect your token." };
+            } finally {
+                collecting = false;
+                if (d === daily) paintReward();
+            }
+        }
+        async function signInForToken(btn) {
+            try {
+                btn.disabled = true;
+                const AS = await appStateReady();
+                await AS.signIn();
+            } catch (e) { /* closed the sign-in window */ }
+            if (btn) btn.disabled = false;
+            collectToken();
+        }
+
+        // The buttons under a finished game.
+        function resultActions() {
+            const send = `<button class="btn-primary" onclick="openFriends()">⚔️ Challenge a friend</button>`;
+            if (game.daily) {
+                return `<div id="dailyReward">${rewardHtml()}</div>
+                    <div class="game-actions">${send}<button class="btn-ghost" onclick="switchTab('${game.id}')">🎮 Free play</button></div>`;
+            }
+            return `<div class="game-actions">${send}<button class="btn-ghost" onclick="switchTab('${game.id}')">▶️ Play again</button></div>`;
+        }
+
+        /* ================================================================
+           🧠 TRIVIA — 5 multiple-choice questions from the game data.
+           ================================================================ */
+        function startTrivia(isDaily, p) {
+            const saved = isDaily && daily.play && Array.isArray(daily.play.answers) ? daily.play.answers : [];
+            game = { id: "trivia", daily: isDaily, questions: p.questions, answers: saved.slice(), showing: null };
+        }
+
+        function renderTrivia() {
+            const g = game;
+            const area = $("gameArea");
+            const bar = (g.daily ? dailyBar() : "") + challengeBar(g);
+            const i = g.answers.length;
+            if (i >= g.questions.length && g.showing === null) {
+                const score = g.answers.filter((a, k) => a === g.questions[k].answer).length;
+                const marks = g.answers.map((a, k) => (a === g.questions[k].answer ? "✅" : "❌")).join("");
+                area.innerHTML = `${bar}<div class="game-card">
+                    <div class="result-note">${g.daily ? `Today's trivia — ${daily.day}` : g.challenge ? "⚔️ Friend's challenge" : "Free play"}</div>
+                    <div class="result-big">${score} / ${g.questions.length}</div>
+                    <div class="result-marks">${marks}</div>
+                    <div class="result-note">${score === g.questions.length ? "Perfect! 🏆" : score >= 3 ? "Nice one! 👏" : "Better luck next time 🍀"}</div>
+                    ${challengeOutcome(g)}
+                    ${resultActions()}
+                </div>`;
+                return;
+            }
+            const qi = g.showing !== null ? g.showing : i;
+            const q = g.questions[qi];
+            const answered = g.showing !== null;
+            const chosen = answered ? g.answers[qi] : null;
+            const opts = q.options.map((o, k) => {
+                const unit = q.unitOptions && !q.hideOptionImages ? UNITS.find(u => u.name === o) : null;
+                let cls = "";
+                if (answered && k === q.answer) cls = " correct";
+                else if (answered && k === chosen) cls = " wrong";
+                const extra = answered && q.reveal ? `<span class="opt-extra">${q.reveal[k]}</span>` : "";
+                return `<button class="opt-btn${cls}" onclick="answerTrivia(${k})"${answered ? " disabled" : ""}>
+                    ${unit ? `<img src="${esc(unit.img)}" alt="">` : ""}<span>${esc(o)}</span>${extra}</button>`;
+            }).join("");
+            const right = g.answers.filter((a, k) => k < (answered ? qi + 1 : qi) && a === g.questions[k].answer).length;
+            area.innerHTML = `${bar}<div class="game-card">
+                <div class="game-progress"><span>Question ${qi + 1} of ${g.questions.length}</span><span>${right} correct</span></div>
+                ${q.img ? `<div class="game-q-pic"><img src="${esc(q.img)}" alt=""></div>` : ""}
+                <p class="game-q">${q.q}</p>
+                <div class="opt-list">${opts}</div>
+                ${answered ? `<div class="game-actions"><button class="btn-primary" onclick="nextTrivia()">${qi + 1 < g.questions.length ? "Next ▶" : "See score"}</button></div>` : ""}
+            </div>`;
+        }
+
+        function answerTrivia(k) {
+            const g = game;
+            if (g.showing !== null || g.answers.length >= g.questions.length) return;
+            g.answers.push(k);
+            g.showing = g.answers.length - 1;
+            renderTrivia();
+            if (g.daily) afterDailyMove({ answers: g.answers.slice() });
+        }
+        function nextTrivia() { game.showing = null; renderTrivia(); }
+
+        /* ================================================================
+           🔍 GUESS THE UNIT — a close-up of the picture, blanks for the name.
+           Type the name (no list to pick from): 3 guesses, up to 3 hints, and
+           each wrong guess zooms out. A name that isn't a unit, or a typo
+           that fits more than one, doesn't use up a guess.
+           ================================================================ */
+        function startGuess(isDaily, p) {
+            const saved = isDaily && daily.play ? daily.play : {};
+            game = {
+                id: "guess", daily: isDaily, target: p.target, focus: p.focus,
+                guesses: Array.isArray(saved.guesses) ? saved.guesses.slice() : [],
+                hints: Math.min(C.MAX_HINTS, saved.hints || 0), msg: "", typed: ""
+            };
+        }
+        function guessStatus(g) {
+            const t = unitByKey(g.target);
+            const won = g.guesses.includes(t.key);
+            const done = won || g.guesses.length >= C.MAX_GUESSES;
+            return { t, won, done, wrong: g.guesses.filter(k => k !== t.key) };
+        }
+        // The name as blanks (spaces and punctuation shown). What you type
+        // fills the blanks as you go — letters only, in order, so "magic
+        // archer" fills both words. Hint 3's letters show faintly in blanks
+        // you haven't reached; the end of the game shows the whole name.
+        function nameTiles(name, someLetters, all, typed) {
+            const chars = [...name];
+            const letters = [...String(typed || "").toUpperCase().replace(/[^A-Z0-9]/g, "")];
+            let slot = 0;
+            return C.nameMask(name, someLetters).map((c, i) => {
+                if (c.gap) return `<span class="gap"></span>`;
+                if (c.punct) return `<span class="punct">${esc(c.punct)}</span>`;
+                if (all) return `<span>${esc(chars[i].toUpperCase())}</span>`;
+                const mine = letters[slot++];
+                return mine ? `<span class="typed">${esc(mine)}</span>` : `<span class="hinted">${esc(c.letter)}</span>`;
+            }).join("");
+        }
+        const letterCount = (s) => String(s || "").replace(/[^A-Za-z0-9]/g, "").length;
+        function paintTiles() {
+            const g = game, box = document.querySelector(".name-tiles");
+            if (!box || g.id !== "guess") return;
+            const t = unitByKey(g.target);
+            box.innerHTML = nameTiles(t.name, g.hints >= 3, false, g.typed);
+            box.classList.toggle("over", letterCount(g.typed) > letterCount(t.name));
+        }
+        function onGuessTyping(value) {
+            game.typed = value;
+            paintTiles();
+        }
+
+        function renderGuess(keepFocus) {
+            const g = game;
+            const { t, won, done, wrong } = guessStatus(g);
+            const view = C.guessView(wrong.length, g.hints, done);
+            const hints = [1, 2, 3].slice(0, g.hints).map(n => C.guessHint(t, n));
+            let body;
+            if (done) {
+                body = `<div class="result-big" style="font-size:1.6rem;">${won ? `🎉 Got it in ${g.guesses.length}!` : "😢 Not this time"}</div>
+                    <div class="result-note">It was <b>${esc(t.name)}</b>${g.hints ? ` · ${g.hints} hint${g.hints === 1 ? "" : "s"} used` : ""}.</div>
+                    ${challengeOutcome(g)}
+                    ${resultActions()}`;
+            } else {
+                body = `<form class="guess-input-row" onsubmit="event.preventDefault(); submitGuess();">
+                        <input type="text" id="guessInput" placeholder="Type the troop or hero's name" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" enterkeyhint="go"
+                            value="${esc(g.typed || "")}" oninput="onGuessTyping(this.value)">
+                        <button class="btn-primary" type="submit" style="padding:0 16px; font-weight:700;">Guess</button>
+                    </form>
+                    ${g.msg ? `<p class="guess-msg">${g.msg}</p>` : ""}
+                    <div class="game-actions">
+                        <button class="btn-ghost" onclick="useHint()"${g.hints >= C.MAX_HINTS ? " disabled" : ""}>💡 Hint (${C.MAX_HINTS - g.hints} left)</button>
+                    </div>`;
+            }
+            $("gameArea").innerHTML = `${g.daily ? dailyBar() : ""}${challengeBar(g)}<div class="game-card">
+                <div class="game-progress"><span>Guess ${Math.min(g.guesses.length + (done ? 0 : 1), C.MAX_GUESSES)} of ${C.MAX_GUESSES}</span><span>${g.daily ? "Today's unit" : g.challenge ? "Challenge" : "Free play"}</span></div>
+                <div class="guess-frame"><img src="${esc(t.img)}" alt="Mystery unit" draggable="false"
+                    style="transform:scale(${view.zoom}); transform-origin:${g.focus[0]}% ${g.focus[1]}%; filter:blur(${view.blur}px);"></div>
+                <div class="name-tiles${!done && letterCount(g.typed) > letterCount(t.name) ? " over" : ""}"${done ? "" : ` onclick="const i = document.getElementById('guessInput'); if (i) i.focus();"`}>${nameTiles(t.name, g.hints >= 3, done, done ? "" : g.typed)}</div>
+                ${hints.length ? `<ul class="hint-list">${hints.map((h, i) => `<li>💡 Hint ${i + 1}: ${h}</li>`).join("")}</ul>` : ""}
+                <div class="wrong-guesses">${wrong.map(k => "❌ " + esc(unitByKey(k).name)).join(" · ")}</div>
+                ${body}
+            </div>`;
+            const input = $("guessInput");
+            if (keepFocus && input) { input.focus(); input.setSelectionRange(input.value.length, input.value.length); }
+        }
+
+        // What was typed → a unit. Full names and the usual short forms
+        // ("Atreya", "Bumi", "Bomber") count, and so does one slip of a key
+        // when that points to a single unit ("Paladn" → Paladin).
+        function oneEditApart(a, b) {
+            if (Math.abs(a.length - b.length) > 1 || a === b) return a === b;
+            let i = 0, j = 0, edits = 0;
+            while (i < a.length && j < b.length) {
+                if (a[i] === b[j]) { i++; j++; continue; }
+                if (++edits > 1) return false;
+                if (a.length > b.length) i++; else if (b.length > a.length) j++; else { i++; j++; }
+            }
+            return edits + (a.length - i) + (b.length - j) <= 1;
+        }
+        function findUnit(text) {
+            const exact = C.resolveName(UNITS, text, ALIASES);
+            if (exact) return exact;
+            const typed = C.normName(text);
+            if (typed.length < 5) return null;
+            const keys = new Set();
+            ALIASES.forEach((key, alias) => { if (alias.length >= 5 && oneEditApart(typed, alias)) keys.add(key); });
+            return keys.size === 1 ? unitByKey([...keys][0]) : null;
+        }
+
+        function submitGuess() {
+            const g = game;
+            const input = $("guessInput");
+            if (!input || guessStatus(g).done) return;
+            const text = input.value.trim();
+            if (!text) return;
+            g.typed = input.value;
+            const unit = findUnit(text);
+            if (!unit) {
+                g.msg = `🤔 No troop or hero called “${esc(text)}” — check the spelling. That didn't use a guess.`;
+                renderGuess(true);
+                return;
+            }
+            if (g.guesses.includes(unit.key)) {
+                g.msg = `You already guessed ${esc(unit.name)}.`;
+                renderGuess(true);
+                return;
+            }
+            g.msg = "";
+            g.typed = "";
+            g.guesses.push(unit.key);
+            const st = guessStatus(g);
+            renderGuess(!st.done);
+            if (g.daily) afterDailyMove({ guesses: g.guesses.slice(), hints: g.hints });
+        }
+        function useHint() {
+            const g = game;
+            if (g.hints >= C.MAX_HINTS || guessStatus(g).done) return;
+            g.hints++;
+            g.msg = "";
+            if ($("guessInput")) g.typed = $("guessInput").value;
+            renderGuess();
+            if (g.daily) afterDailyMove({ guesses: g.guesses.slice(), hints: g.hints });
+        }
+
+        /* ================================================================
+           🎯 UNITLE — Wordle for units: 6 guesses, each showing what matches.
+           ================================================================ */
+        function startUnitle(isDaily, p) {
+            const saved = isDaily && daily.play && Array.isArray(daily.play.guesses) ? daily.play.guesses : [];
+            game = { id: "unitle", daily: isDaily, target: p.target, guesses: saved.slice() };
+        }
+
+        function renderUnitle() {
+            const g = game;
+            const t = unitByKey(g.target);
+            const won = g.guesses.includes(t.key);
+            const done = won || g.guesses.length >= C.UNITLE_TRIES;
+            const rows = g.guesses.map(k => {
+                const u = unitByKey(k);
+                return `<div class="unitle-name-line">${esc(u.name)}</div><div class="unitle-row"><div class="unitle-cell name"><img src="${esc(u.img)}" alt=""></div>
+                    ${C.unitleCells(u, t).map(([c, label, arrow]) => `<div class="unitle-cell ${c}"><span>${esc(label)}</span>${arrow ? `<span>${arrow}</span>` : ""}</div>`).join("")}</div>`;
+            }).join("");
+            let body;
+            if (done) {
+                body = `<div class="result-big" style="font-size:1.6rem; margin-top:10px;">${won ? `🎉 Found in ${g.guesses.length}!` : "😢 Out of guesses"}</div>
+                    <div class="result-note">It was <b>${esc(t.name)}</b>.</div>
+                    ${challengeOutcome(g)}
+                    ${resultActions()}`;
+            } else {
+                body = `<div class="guess-input-row" style="margin-top:10px;">
+                        <input type="text" id="unitleInput" placeholder="Guess a troop or hero…" autocomplete="off"
+                            oninput="showSuggestions(this.value)" onkeydown="if(event.key==='Enter') submitUnitle();">
+                        <button class="btn-primary" style="padding:0 16px; font-weight:700;" onclick="submitUnitle()">Guess</button>
+                    </div>
+                    <div class="suggestions" id="unitleSuggestions"></div>`;
+            }
+            $("gameArea").innerHTML = `${g.daily ? dailyBar() : ""}${challengeBar(g)}<div class="game-card">
+                <div class="game-progress"><span>Guess ${Math.min(g.guesses.length + (done ? 0 : 1), C.UNITLE_TRIES)} of ${C.UNITLE_TRIES}</span><span>${g.daily ? "Today's unit" : "Free play"}</span></div>
+                <div class="unitle-head"><span>Unit</span><span>Type</span><span>Rarity</span><span>Faction</span><span>Fights</span><span>Max HP</span><span>Max ATK</span></div>
+                ${rows || `<p class="dim" style="text-align:center; font-size:0.9rem;">Make your first guess below.</p>`}
+                ${body}
+                <p class="unitle-legend">🟩 match · 🟥 no match · 🟨 close — ⬆️ the answer is higher / rarer, ⬇️ lower. HP and attack are at max level.</p>
+            </div>`;
+        }
+
+        // Up to 6 names containing what's typed (not ones already guessed).
+        function showSuggestions(text) {
+            const box = $("unitleSuggestions");
+            if (!box) return;
+            const q = C.normName(text);
+            if (!q) { box.innerHTML = ""; return; }
+            const guessed = new Set(game.guesses);
+            const matches = UNITS.filter(u => !guessed.has(u.key) && C.normName(u.name).includes(q)).slice(0, 6);
+            box.innerHTML = matches.map(u => `<button type="button" onclick="makeUnitleGuess('${u.key}')"><img src="${esc(u.img)}" alt="">${esc(u.name)}</button>`).join("")
+                || `<span class="dim" style="font-size:0.88rem;">No troop or hero matches that.</span>`;
+        }
+        // Enter / the Guess button: an exact name, a short form, or the only match.
+        function submitUnitle() {
+            const input = $("unitleInput");
+            if (!input || !C.normName(input.value)) return;
+            const q = C.normName(input.value);
+            const guessed = new Set(game.guesses);
+            const named = C.resolveName(UNITS, input.value, ALIASES);
+            const matches = UNITS.filter(u => !guessed.has(u.key) && C.normName(u.name).includes(q));
+            const unit = named && !guessed.has(named.key) ? named : (matches.length === 1 ? matches[0] : null);
+            if (!unit) { showSuggestions(input.value); return; }
+            makeUnitleGuess(unit.key);
+        }
+        function makeUnitleGuess(key) {
+            const g = game;
+            if (g.guesses.includes(g.target) || g.guesses.length >= C.UNITLE_TRIES || g.guesses.includes(key) || !unitByKey(key)) return;
+            g.guesses.push(key);
+            renderUnitle();
+            if (g.daily) afterDailyMove({ guesses: g.guesses.slice() });
+        }
+
+        /* ================================================================
+           ⬆️⬇️ HIGHER OR LOWER — which of two units has more? One miss ends it.
+           ================================================================ */
+        const hiloBest = () => { try { return parseInt(localStorage.getItem("kih_games_hilo_best") || "0", 10) || 0; } catch (e) { return 0; } };
+
+        // A day's puzzle has a fixed 10 rounds; free play is endless, drawing
+        // each round from the puzzle's own seeded `rand` (so a challenge
+        // replays the same match-ups in the same order).
+        function startHilo(isDaily, p) {
+            const fixed = !!p.rounds;
+            const saved = isDaily && daily.play && Array.isArray(daily.play.picks) ? daily.play.picks : [];
+            game = { id: "hilo", daily: isDaily, fixed, rand: p.rand, rounds: fixed ? p.rounds.slice() : [C.hiloRound(UNITS, p.rand)], picks: saved.slice(), showing: false };
+        }
+        function hiloScore(g) {
+            let score = 0;
+            for (let i = 0; i < g.picks.length; i++) {
+                if (g.picks[i] === C.hiloWinner(UNITS, g.rounds[i])) score++;
+                else return { score, over: true };
+            }
+            return { score, over: g.fixed && g.picks.length >= g.rounds.length };
+        }
+
+        function renderHilo() {
+            const g = game;
+            const { score, over } = hiloScore(g);
+            const bar = (g.daily ? dailyBar() : "") + challengeBar(g);
+            const i = g.showing ? g.picks.length - 1 : g.picks.length;
+            if (over && !g.showing) {
+                const marks = g.picks.map((p, k) => (p === C.hiloWinner(UNITS, g.rounds[k]) ? "🟩" : "🟥")).join("");
+                const total = g.rounds.length;
+                $("gameArea").innerHTML = `${bar}<div class="game-card">
+                    <div class="result-note">${g.daily ? `Today's match-ups — ${daily.day}` : g.challenge ? "⚔️ Friend's challenge" : "Free play"}</div>
+                    <div class="result-big">${g.fixed ? `${score} / ${total}` : `🔥 ${score}`}</div>
+                    <div class="result-marks">${marks}</div>
+                    <div class="result-note">${g.fixed ? (score === total ? "Flawless! 🏆" : score >= 5 ? "Nice run! 👏" : "Better luck next time 🍀") : `Best streak: ${hiloBest()}`}</div>
+                    ${challengeOutcome(g)}
+                    ${resultActions()}
+                </div>`;
+                return;
+            }
+            const r = g.rounds[i];
+            const A = unitByKey(r.a), B = unitByKey(r.b);
+            const stat = C.HILO_STATS.find(s => s.key === r.stat);
+            const picked = g.showing ? g.picks[i] : null;
+            const right = C.hiloWinner(UNITS, r);
+            const card = (u) => {
+                let cls = "";
+                if (picked) cls = u.key === right ? " correct" : (u.key === picked ? " wrong" : "");
+                return `<button class="hilo-card${cls}" onclick="pickHilo('${u.key}')"${picked ? " disabled" : ""}>
+                    <img src="${esc(u.img)}" alt=""><span class="hilo-name">${esc(u.name)}</span>
+                    <span class="hilo-val">${picked ? fmt(u[r.stat]) : "?"}</span></button>`;
+            };
+            const lost = picked && picked !== right;
+            $("gameArea").innerHTML = `${bar}<div class="game-card">
+                <div class="game-progress"><span>${g.fixed ? `Round ${i + 1} of ${g.rounds.length}` : `Streak: ${score}`}</span><span>${g.fixed ? `Score: ${score}` : `Best: ${hiloBest()}`}</span></div>
+                <p class="game-q" style="text-align:center;">Which has more <b>${stat.label}</b>?</p>
+                <div class="hilo-pair">${card(A)}${card(B)}</div>
+                ${picked ? `<div class="game-actions"><button class="btn-primary" onclick="nextHilo()">${lost || (g.fixed && i + 1 >= g.rounds.length) ? "See result" : "Next ▶"}</button></div>` : ""}
+            </div>`;
+        }
+
+        function pickHilo(key) {
+            const g = game;
+            if (g.showing || hiloScore(g).over) return;
+            const r = g.rounds[g.picks.length];
+            if (!r || (key !== r.a && key !== r.b)) return;
+            g.picks.push(key);
+            g.showing = true;
+            const { score } = hiloScore(g);
+            if (!g.fixed && score > hiloBest()) {
+                try { localStorage.setItem("kih_games_hilo_best", String(score)); } catch (e) { }
+            }
+            renderHilo();
+            if (g.daily) afterDailyMove({ picks: g.picks.slice() });
+        }
+        function nextHilo() {
+            const g = game;
+            g.showing = false;
+            const { over } = hiloScore(g);
+            if (!over && !g.fixed && g.picks.length >= g.rounds.length) g.rounds.push(C.hiloRound(UNITS, g.rand));
+            renderHilo();
+        }
+
+        /* ================================================================
+           ⚔️ CHALLENGE A FRIEND — your score and a link to the same puzzle,
+           sent to their chat (friends online first). Social shows the link
+           as a challenge card with a Battle button. It never names the answer.
+           ================================================================ */
+        let friendsUnsub = null;
+        let shareText = "";
+        async function openFriends() {
+            shareText = challengeMessage(game);
+            $("sharePreview").textContent = shareText.split("\n")[0] + "\n[ ⚔️ Battle ]";
+            $("friendModal").classList.add("open");
+            const list = $("friendList");
+            list.innerHTML = `<div class="friend-empty">Loading your friends…</div>`;
+            try {
+                const AS = await appStateReady();
+                await AS.waitForAuthReady();
+                if (!$("friendModal").classList.contains("open")) return;
+                if (!AS.getCurrentUser()) {
+                    list.innerHTML = `<div class="friend-empty">Sign in to send this to your friends.<br><button class="btn-primary" style="margin-top:10px; padding:9px 16px;" id="friendSignIn">Sign in</button></div>`;
+                    $("friendSignIn").onclick = async () => {
+                        try { await AS.signIn(); } catch (e) { }
+                        if (AS.getCurrentUser()) openFriends();
+                    };
+                    return;
+                }
+                if (friendsUnsub) friendsUnsub();
+                friendsUnsub = AS.listenToFriends((friends) => renderFriends(friends, AS));
+            } catch (e) {
+                list.innerHTML = `<div class="friend-empty">${esc((e && e.message) || "Couldn't load your friends.")}</div>`;
+            }
+        }
+        function closeFriends() {
+            $("friendModal").classList.remove("open");
+            if (friendsUnsub) { friendsUnsub(); friendsUnsub = null; }
+        }
+        const sentTo = new Set(); // "<uid>|<message>" already sent from here
+        function renderFriends(friends, AS) {
+            const list = $("friendList");
+            if (!friends.length) {
+                list.innerHTML = `<div class="friend-empty">No friends yet — add some in Social → Friends, then send them your score.</div>`;
+                return;
+            }
+            const now = Date.now();
+            const online = (f) => now - (f.lastActiveAt || 0) < ONLINE_MS;
+            const sorted = friends.slice().sort((a, b) => (online(b) - online(a)) || String(a.name || "").localeCompare(String(b.name || "")));
+            list.innerHTML = "";
+            sorted.forEach(f => {
+                const row = document.createElement("div");
+                row.className = "friend-row";
+                row.innerHTML = `<span class="f-dot${online(f) ? " on" : ""}"></span><span class="f-name"></span><button class="btn-primary" type="button">Send</button>`;
+                row.querySelector(".f-name").textContent = f.name || "Commander";
+                const btn = row.querySelector("button");
+                if (sentTo.has(f.uid + "|" + shareText)) { btn.textContent = "Sent ✓"; btn.classList.add("sent"); btn.disabled = true; }
+                btn.onclick = async () => {
+                    btn.disabled = true;
+                    btn.textContent = "Sending…";
+                    try {
+                        const threadId = await AS.getOrCreateDmThread(f.uid, f.name || "Commander");
+                        await AS.sendDmMessage(threadId, shareText);
+                        sentTo.add(f.uid + "|" + shareText);
+                        btn.textContent = "Sent ✓";
+                        btn.classList.add("sent");
+                    } catch (e) {
+                        btn.disabled = false;
+                        btn.textContent = "Retry";
+                        const msg = e && e.message && e.message !== "__RESTRICTED__" ? e.message : "Couldn't send.";
+                        row.title = msg;
+                        alert(msg);
+                    }
+                };
+                list.appendChild(row);
+            });
+        }
+
+        /* ---------------- start ---------------- */
+        (async function init() {
+            try {
+                let saved = null;
+                try { saved = localStorage.getItem("kih_games_tab"); } catch (e) { }
+                const params = new URLSearchParams(location.search);
+                const asked = params.get("game");
+                const valid = (t) => t === "today" || C.GAMES.includes(t);
+                showTab(valid(asked) ? asked : (valid(saved) ? saved : "today"));
+                await loadUnits();
+                clearOldDailies();
+                daily = loadDailyState(dayKey());
+                markTabs();
+                const challenge = parseChallenge(params.get("challenge"));
+                if (challenge) startChallenge(challenge);
+                else render();
+            } catch (e) {
+                $("gameArea").innerHTML = `<p class="dim" style="text-align:center;">Couldn't load the game data — check your connection and reload.</p>`;
+            }
+        })();
+    </script>
+</body>
+
+</html>

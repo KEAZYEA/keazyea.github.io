@@ -305,6 +305,14 @@ async function signOutUser() {
         return callTokensApi("claim", { claimIds });
     }
 
+    // Hands in a finished play of today's puzzle in Games. The server checks it
+    // against the same puzzle and pays 1 token, once a day: { paid, already, balance }.
+    async function submitDailyPuzzle(day, play) {
+        await waitForAuthReady();
+        if (!currentUser) throw new Error("Sign in first.");
+        return callTokensApi("dailyPuzzle", { day, play });
+    }
+
     async function getMyTokenBalance() {
         await waitForAuthReady();
         if (!currentUser) return 0;
@@ -4533,7 +4541,7 @@ async function maybeRefreshAd(containerId) {
     return {
         // auth
         signIn, signOut: signOutUser, getCurrentUser, onAuthChange, waitForAuthReady, getIdToken,
-        getTodaysQuests, listenToMyWallet, listenToMyQuestProgress, claimQuestRewards, getMyTokenBalance,
+        getTodaysQuests, listenToMyWallet, listenToMyQuestProgress, claimQuestRewards, submitDailyPuzzle, getMyTokenBalance,
         listenToMyGiftClaims, claimTokenGift, adminTokens,
         reportQuestProgress, startDailyQuestTracking, stakeTokensOnSecretGiveaway, setSecretGiveawayStake, refreshSecretGiveawayMaxStake,
         // profile
