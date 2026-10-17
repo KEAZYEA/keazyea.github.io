@@ -1761,11 +1761,12 @@ if (user && user.uid === winnerData.winnerUid) {
             // Wallet balance as of the last list render (see renderSecretGiveawayList).
             let secretTokenBalance = 0;
 
-            // Staking lives on the card itself. Tokens can be added any time until
-            // entries close or your side is drawn; each one is one more chance on
+            // Staking lives on the card itself: one "Your stake" box holding the
+            // total you want (raise or lower it, then Save), any time until entries
+            // close or your side is drawn. Each staked token is one more chance on
             // top of the free one everyone gets.
             // Your stake and the highest one in your draw, per card, for the
-            // "add N → your stake becomes M" hint while typing.
+            // live hint and the "Beat the top" button.
             const secretStakeInfo = {};
 
             // The line showing the highest stake in your draw — what you'd
@@ -1778,6 +1779,23 @@ if (user && user.uid === winnerData.winnerUid) {
                 return `<p class="promo-sub" style="margin:0 0 8px;">🔝 Highest stake right now: <strong>${top}</strong> 🪙</p>`;
             }
 
+            // What "Beat the top" would set your stake to: one more than the
+            // highest if you can afford it, otherwise everything you have
+            // (which matches the top exactly if that's as far as you can go).
+            // null when there's nothing useful to offer.
+            function beatTopTarget(staked, top, balance) {
+                if (typeof top !== "number" || staked > top || (staked === top && top > 0)) return null;
+                const affordable = staked + balance;
+                const target = Math.min(top + 1, affordable);
+                return target > staked ? target : null;
+            }
+            function beatTopLabel(target, top) {
+                if (top === 0) return `🔝 Take the top spot — stake ${target}`;
+                if (target > top) return `🔝 Beat the top — stake ${target}`;
+                if (target === top) return `🔝 Match the top — stake ${target}`;
+                return `🔝 Stake all you have — ${target}`;
+            }
+
             function renderStakeHtml(g, entry, isExpired, sideDrawn) {
                 const staked = entry.tokens || 0;
                 const chances = `your entry counts as <strong>${staked + 1}</strong> chance${staked + 1 === 1 ? "" : "s"}`;
@@ -1787,86 +1805,51 @@ if (user && user.uid === winnerData.winnerUid) {
                 }
                 const top = secretTopStake(g, entry.platform);
                 secretStakeInfo[g.id] = { staked, top };
+                const target = beatTopTarget(staked, top, secretTokenBalance);
                 return `
                     <div style="margin-top:12px; padding:12px; border:1px solid #aa7a1e; border-radius:10px; background:rgba(255,196,0,0.06);">
-                        <p class="promo-sub" style="margin:0 0 8px;">🪙 Staked: <strong>${staked}</strong> — ${chances}.</p>
+                        <p class="promo-sub" style="margin:0 0 8px;">🪙 Your stake: <strong>${staked}</strong> — ${chances}.</p>
                         ${renderTopStakeLine(top, staked)}
+                        <label for="stakeEditInput_${g.id}" class="promo-sub" style="display:block; margin:0 0 6px; font-size:0.85rem;">Your stake (raise or lower it, then Save):</label>
                         <div style="display:flex; gap:8px;">
-                            <input type="number" id="stakeInput_${g.id}" min="1" step="1" inputmode="numeric" placeholder="Tokens to add"
+                            <input type="number" id="stakeEditInput_${g.id}" min="0" step="1" inputmode="numeric" value="${staked}"
                                 style="flex:1; min-width:0; padding:10px; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box;"
-                                onfocus="suggestStake('${g.id}')" oninput="updateStakeHint('${g.id}')"
-                                onkeydown="if(event.key==='Enter') handleStakeTokens('${g.id}');">
-                            <button class="btn-primary" id="stakeBtn_${g.id}" onclick="handleStakeTokens('${g.id}')" style="padding:10px 18px; flex-shrink:0;">Add</button>
+                                oninput="updateStakeHint('${g.id}')"
+                                onkeydown="if(event.key==='Enter') handleSetStake('${g.id}', ${staked});">
+                            <button class="btn-primary" id="stakeEditBtn_${g.id}" onclick="handleSetStake('${g.id}', ${staked})" style="padding:10px 18px; flex-shrink:0;">Save</button>
                         </div>
                         <p class="promo-sub" id="stakeHint_${g.id}" style="margin:6px 0 0; font-size:0.85rem; color:#ffc46b; display:none;"></p>
-                        ${staked > 0 ? renderStakeEditHtml(g.id, staked, top) : ""}
+                        ${target !== null ? `<button type="button" id="stakeTopBtn_${g.id}" onclick="handleSetStake('${g.id}', ${staked}, ${target})"
+                            style="margin-top:10px; width:100%; padding:10px 12px; border-radius:8px; border:1px solid #ffc400; background:rgba(255,196,0,0.15); color:#ffd75e; font-weight:700; cursor:pointer; font-size:0.95rem;">${beatTopLabel(target, top)}</button>` : ""}
+                        ${staked > 0 ? `<button type="button" id="stakeRemoveBtn_${g.id}" onclick="handleSetStake('${g.id}', ${staked}, 0)"
+                            style="margin-top:8px; background:#2a2a4a; color:white; border:1px solid #aa3838; border-radius:6px; padding:8px 12px; cursor:pointer; font-size:0.85rem;">
+                            Remove all (get ${staked} 🪙 back)</button>` : ""}
                         <p class="promo-sub" style="margin:8px 0 0; font-size:0.8rem;">You have ${secretTokenBalance} 🪙 (<a href="#" style="color:#ffc400;" onclick="if (window.top.goToPage) window.top.goToPage('store'); return false;">get more</a>) · spent when your side is drawn, win or lose · refunded if you leave before then</p>
                     </div>`;
             }
 
-            // Lower, raise or remove the stake, while entries are open. Which
-            // cards have the editor open is remembered, so a live refresh of
-            // the list doesn't snap it shut mid-edit.
-            const openStakeEditors = new Set();
-            function renderStakeEditHtml(giveawayId, staked, top) {
-                const open = openStakeEditors.has(giveawayId);
-                const topHint = typeof top === "number" && top > 0 && staked < top + 1
-                    ? ` The highest is ${top} 🪙 — set ${top + 1} to have the highest.`
-                    : "";
-                return `
-                    <button type="button" onclick="toggleStakeEditor('${giveawayId}')"
-                        style="margin-top:8px; background:none; border:none; color:#ffc400; cursor:pointer; padding:4px 0; font-size:0.85rem;">
-                        ${open ? "✕ Close" : "✏️ Change stake"}</button>
-                    <div id="stakeEditor_${giveawayId}" style="display:${open ? "block" : "none"}; margin-top:6px;">
-                        <p class="promo-sub" style="margin:0 0 6px; font-size:0.85rem;">Set your stake to (lower it to get tokens back):${topHint}</p>
-                        <div style="display:flex; gap:8px;">
-                            <input type="number" id="stakeEditInput_${giveawayId}" min="0" step="1" inputmode="numeric" value="${staked}"
-                                style="flex:1; min-width:0; padding:10px; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box;"
-                                onkeydown="if(event.key==='Enter') handleSetStake('${giveawayId}', ${staked});">
-                            <button class="btn-primary" id="stakeEditBtn_${giveawayId}" onclick="handleSetStake('${giveawayId}', ${staked})" style="padding:10px 18px; flex-shrink:0;">Save</button>
-                        </div>
-                        <button type="button" id="stakeRemoveBtn_${giveawayId}" onclick="handleSetStake('${giveawayId}', ${staked}, 0)"
-                            style="margin-top:8px; background:#2a2a4a; color:white; border:1px solid #aa3838; border-radius:6px; padding:8px 12px; cursor:pointer; font-size:0.85rem;">
-                            Remove all (get ${staked} 🪙 back)</button>
-                    </div>`;
-            }
-
-            // Tapping into an empty "Tokens to add" box fills in what it takes
-            // to have the highest stake: one more than the current top.
-            window.suggestStake = function (giveawayId) {
-                const input = document.getElementById("stakeInput_" + giveawayId);
-                const info = secretStakeInfo[giveawayId];
-                if (!input || !info || input.value !== "" || typeof info.top !== "number") return;
-                const needed = info.top + 1 - info.staked;
-                if (needed > 0) input.value = String(needed);
-                updateStakeHint(giveawayId);
-            };
-
+            // Live "what this would mean" line under the stake box.
             function updateStakeHint(giveawayId) {
                 const hint = document.getElementById("stakeHint_" + giveawayId);
-                const input = document.getElementById("stakeInput_" + giveawayId);
+                const input = document.getElementById("stakeEditInput_" + giveawayId);
                 const info = secretStakeInfo[giveawayId];
                 if (!hint || !input || !info) return;
-                const amount = Number(input.value);
-                if (input.value === "" || !Number.isInteger(amount) || amount < 1) { hint.style.display = "none"; return; }
-                const total = info.staked + amount;
-                let text = `Your stake becomes ${total} 🪙`;
-                if (typeof info.top === "number") {
-                    if (total > info.top) text += info.top > 0 ? ` — the new highest (current highest: ${info.top}).` : " — the highest.";
-                    else if (total === info.top) text += ` — level with the highest (${info.top}).`;
-                    else text += ` — ${info.top + 1 - total} more would make it the highest.`;
-                } else text += ".";
-                if (amount > secretTokenBalance) text += ` You have ${secretTokenBalance} 🪙.`;
+                const total = Number(input.value);
+                if (input.value === "" || !Number.isInteger(total) || total < 0 || total === info.staked) { hint.style.display = "none"; return; }
+                const change = total - info.staked;
+                let text = change > 0
+                    ? `+${change} 🪙 → ${total + 1} chances`
+                    : `${-change} 🪙 back → ${total + 1} chance${total === 0 ? "" : "s"}`;
+                if (typeof info.top === "number" && total > 0) {
+                    if (total > info.top) text += info.top > 0 ? ` · the new highest (current: ${info.top})` : " · the highest";
+                    else if (total === info.top) text += ` · level with the highest`;
+                    else text += ` · ${info.top + 1 - total} more would make it the highest`;
+                }
+                if (change > secretTokenBalance) text += ` · you only have ${secretTokenBalance} 🪙`;
                 hint.textContent = text;
                 hint.style.display = "block";
             }
             window.updateStakeHint = updateStakeHint;
-
-            window.toggleStakeEditor = function (giveawayId) {
-                if (openStakeEditors.has(giveawayId)) openStakeEditors.delete(giveawayId);
-                else openStakeEditors.add(giveawayId);
-                renderSecretGiveawayList(latestSecretGiveaways);
-            };
 
             window.handleSetStake = async function (giveawayId, current, forced) {
                 const input = document.getElementById("stakeEditInput_" + giveawayId);
@@ -1886,16 +1869,17 @@ if (user && user.uid === winnerData.winnerUid) {
                 }
                 const message = amount === 0
                     ? `Remove all ${current} 🪙 from this entry? They go back to your wallet. You stay entered with your 1 free chance.`
+                    : current === 0
+                    ? `Stake ${amount} 🪙 on this entry? Your entry counts as ${amount + 1} chances. They're spent once your side is drawn, win or lose — but refunded if you leave before then.`
                     : change < 0
                         ? `Lower your stake from ${current} to ${amount}? ${-change} 🪙 go back to your wallet, and your entry counts as ${amount + 1} chances.`
                         : `Raise your stake from ${current} to ${amount}? ${change} more 🪙 come out of your wallet, and your entry counts as ${amount + 1} chances.`;
                 if (!await showConfirmModal("Change stake?", message, "Confirm")) return;
-                const btns = ["stakeEditBtn_", "stakeRemoveBtn_"].map(p => document.getElementById(p + giveawayId)).filter(Boolean);
+                const btns = ["stakeEditBtn_", "stakeRemoveBtn_", "stakeTopBtn_"].map(p => document.getElementById(p + giveawayId)).filter(Boolean);
                 btns.forEach(b => { b.disabled = true; });
                 try {
                     await AppState.setSecretGiveawayStake(giveawayId, amount);
                     forgetSecretDetails(giveawayId);
-                    openStakeEditors.delete(giveawayId);
                     renderSecretGiveawayList(latestSecretGiveaways);
                 } catch (e) {
                     await showInfoModal("Couldn't change your stake", e.message);
@@ -2040,37 +2024,6 @@ if (user && user.uid === winnerData.winnerUid) {
                     await showInfoModal("Couldn't enter", e.message !== "__RESTRICTED__" ? e.message : "Your account is currently restricted.");
                     btn.disabled = false;
                     btn.textContent = "Enter";
-                }
-            };
-
-            window.handleStakeTokens = async function (giveawayId) {
-                const input = document.getElementById("stakeInput_" + giveawayId);
-                const btn = document.getElementById("stakeBtn_" + giveawayId);
-                const amount = Number(input.value);
-                if (!Number.isInteger(amount) || amount < 1) {
-                    await showInfoModal("How many tokens?", "Type a whole number of tokens, 1 or more.");
-                    return;
-                }
-                if (amount > secretTokenBalance) {
-                    await showInfoModal("Not enough tokens", `You have ${secretTokenBalance} 🪙. Complete Daily Quests on the home screen to earn more.`);
-                    return;
-                }
-                const ok = await showConfirmModal(
-                    "Stake tokens?",
-                    `Add ${amount} 🪙 to this entry? They're spent once your side is drawn, win or lose — but refunded if you leave before then.`,
-                    "Stake"
-                );
-                if (!ok) return;
-                btn.disabled = true;
-                btn.textContent = "Adding...";
-                try {
-                    await AppState.stakeTokensOnSecretGiveaway(giveawayId, amount);
-                    forgetSecretDetails(giveawayId);
-                    renderSecretGiveawayList(latestSecretGiveaways);
-                } catch (e) {
-                    await showInfoModal("Couldn't add tokens", e.message);
-                    btn.disabled = false;
-                    btn.textContent = "Add";
                 }
             };
 
