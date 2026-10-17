@@ -5793,9 +5793,14 @@ window.removeClanIconPreview = function () {
         }
 
         const ONLINE_THRESHOLD_MS = 5 * 60 * 1000;
+        const isFriendOnline = (f) => !!f.lastActiveAt && (Date.now() - f.lastActiveAt) < ONLINE_THRESHOLD_MS;
 
         function renderFriends(list) {
             friends = list;
+            // Friends who are online right now go first; within each group the
+            // usual order (latest message first) is kept. The 30-second
+            // re-render below moves someone back down once they go offline.
+            list = [...list].sort((a, b) => isFriendOnline(b) - isFriendOnline(a));
             const container = document.getElementById("friendsList");
             const empty = document.getElementById("friendsEmptyState");
             if (!list.length) {
@@ -5815,7 +5820,7 @@ window.removeClanIconPreview = function () {
                 const badge = f.unreadCount > 0
                     ? `<span class="clan-filter-count" style="margin-left:6px; flex-shrink:0;">${f.unreadCount > 9 ? "9+" : f.unreadCount}</span>`
                     : "";
-                const isOnline = !!f.lastActiveAt && (Date.now() - f.lastActiveAt) < ONLINE_THRESHOLD_MS;
+                const isOnline = isFriendOnline(f);
                 return `
         <div class="friend-row" onclick="openDmWith('${f.uid}', '${escapeHtml(f.name).replace(/'/g, "\\'")}', '${escapeHtml(f.avatar || "")}')">
             <div class="friend-avatar-status-wrap">
