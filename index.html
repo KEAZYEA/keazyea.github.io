@@ -1576,7 +1576,8 @@ body {
                             <div id="questList"></div>
                             <p class="settings-sub" style="margin-top:16px; line-height:1.5;">
                                 Every day: log in for <strong>1 🪙</strong>, plus quests worth <strong>4 🪙</strong> —
-                                "check out" quests pay 1, "do something" quests pay 2. Log in every day Monday to Saturday
+                                "check out" quests pay 1, "do something" quests pay 2 — and finishing today's puzzle in
+                                <strong>Games</strong> pays <strong>1 🪙</strong> straight away. Log in every day Monday to Saturday
                                 and Sunday's chest gives <strong>3–5 🪙</strong> (1 if you missed a day). Finish a quest,
                                 then tap <strong>Claim</strong> — unclaimed rewards wait for you, they don't expire. The
                                 <strong>Store</strong> has token packs, plus subscriptions that add 80 or 180 🪙 every month.
@@ -3927,13 +3928,29 @@ window.closeInboxItemModal = closeInboxItemModal;
                         (info.go ? `<button class="quest-go-btn" onclick="runQuestAction('${id}')">Go</button>` : ""));
                 }).join("");
 
+            // Today's Puzzle in Games pays its own +1 the moment it's finished
+            // (api/tokens.js "dailyPuzzle"), so there's nothing to claim here —
+            // this is a way in, ticked once today's token is collected.
+            const puzzleDone = !!questProgress.dailyPuzzle;
+            const puzzleHtml = `<div class="quest-section-label" style="margin-top:14px;">Daily game</div>` +
+                row(puzzleDone ? " done" : "", { icon: "🎲", title: "Play today's puzzle" },
+                    puzzleDone ? "Done for today — a new game after the reset." : "Finish today's game in Games — any score counts.",
+                    puzzleDone ? `<span class="quest-done">✅ +1 🪙</span>`
+                        : `<span class="quest-reward">+1 🪙</span><button class="quest-go-btn" onclick="openTodaysPuzzle()">Play</button>`);
+
             // A waiting chest stays a surprise: its amount isn't added up here.
             const hasChest = questReady.some(r => r.chest);
             const readyTotal = questReady.filter(r => !r.chest).reduce((a, r) => a + (r.reward || 1), 0);
             const claimAll = questReady.length >= 2
                 ? `<button class="quest-claim-all-btn" onclick="handleQuestClaim()"${disabled}>Claim all (${hasChest ? "🎁 + " : ""}+${readyTotal} 🪙)</button>`
                 : "";
-            list.innerHTML = claimAll + renderLoginCalendar(disabled) + earlierHtml + todayHtml;
+            list.innerHTML = claimAll + renderLoginCalendar(disabled) + earlierHtml + todayHtml + puzzleHtml;
+        }
+
+        // Games, straight onto the Today's Puzzle tab.
+        function openTodaysPuzzle() {
+            setSectionFrameUrl(document.querySelector("#page-games iframe"), "games.html?game=today");
+            goToPage("games");
         }
 
         function formatQuestDay(dayKey) {
