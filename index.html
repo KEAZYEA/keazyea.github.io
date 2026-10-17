@@ -276,7 +276,8 @@ body {
             #page-promo iframe,
             #page-tips iframe,
             #page-social iframe,
-            #page-store iframe {
+            #page-store iframe,
+            #page-games iframe {
                 margin: 0;
                 border: none;
             }
@@ -1134,6 +1135,21 @@ body {
             border-radius: 0;
         }
 
+        #page-games.active {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            min-height: 0;
+        }
+
+        #page-games iframe {
+            flex: 1;
+            width: 100%;
+            margin: 0;
+            border: none;
+            border-radius: 0;
+        }
+
         .social-btn-row {
             display: flex;
             justify-content: space-between;
@@ -1476,6 +1492,10 @@ body {
                     <span class="home-menu-icon">💡</span>
                     <span class="home-menu-text">Tips<small>Team comps, talents, event strategy</small></span>
                 </button>
+                <button class="home-menu-btn" onclick="goToPage('games')">
+                    <span class="home-menu-icon">🎮</span>
+                    <span class="home-menu-text">Games<small>Today's Puzzle, Trivia, Guess the Unit, Unitle & Higher or Lower</small></span>
+                </button>
                 <button class="home-menu-btn" onclick="goToPage('social')" style="position:relative;">
                     <span class="home-menu-icon">👥</span>
                     <span class="home-menu-text">Social<small>Clan, friends & community</small></span>
@@ -1515,6 +1535,11 @@ body {
 <!-- TIPS -->
 <div class="home-page-content" id="page-tips">
     <iframe data-src="tips.html"></iframe>
+</div>
+
+<!-- GAMES -->
+<div class="home-page-content" id="page-games">
+    <iframe data-src="games.html"></iframe>
 </div>
 
 <!-- SOCIAL -->
@@ -3610,6 +3635,15 @@ window.closeInboxItemModal = closeInboxItemModal;
             frame.src = url;
         }
 
+        // A friend's game challenge (from a chat message, or a shared link):
+        // Games on the same puzzle they played. games.html checks the code.
+        function openGameChallenge(code) {
+            if (!/^[a-z]+\.[ds][0-9a-z]{1,8}\.(\d{1,2}|x)$/i.test(String(code || ""))) return;
+            let frame = document.querySelector("#page-games iframe");
+            setSectionFrameUrl(frame, "games.html?challenge=" + encodeURIComponent(code));
+            goToPage("games");
+        }
+
         // Jump into the Tips page and open a specific tip directly.
         function openInboxTip(tipId) {
             let frame = document.querySelector("#page-tips iframe");
@@ -4050,10 +4084,15 @@ AppState.onAuthChange(() => startTopbarProfileListener());
 
             const urlParams = new URLSearchParams(window.location.search);
 const gotoPage = urlParams.get("goto");
+const challengeCode = urlParams.get("challenge");
 // A refresh keeps the browser's record of where the visitor was, so put
 // them back on that section rather than dropping them on Home.
 const pageBeforeRefresh = history.state && history.state.kihPage;
-if (gotoPage) {
+if (challengeCode) {
+    history.replaceState({ kihPage: "home" }, ""); // Back from the challenge lands on Home
+    openGameChallenge(challengeCode);
+    history.replaceState(history.state, "", window.location.pathname); // consume it — refresh won't replay it
+} else if (gotoPage) {
     history.replaceState({ kihPage: "home" }, ""); // Back from the linked page lands on Home
     goToPage(gotoPage);
     history.replaceState(history.state, "", window.location.pathname); // consume it — refresh won't re-trigger this

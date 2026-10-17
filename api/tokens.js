@@ -25,6 +25,8 @@
  *                                              giveaway staked on before they were kept
  *                                              (every stake change above refreshes them)
  *   claimGift       { giftId }             -> collects an admin gift from the inbox
+ *   dailyPuzzle     { day, play }          -> pays 1 for finishing the day's puzzle in
+ *                                              Games (checked against the puzzle), once a day
  *   admin*          (admin only)           -> look up / give / remove / set tokens,
  *                                              send and end gifts, refund alerts
  *
@@ -36,6 +38,7 @@
 const { getFirebaseAdmin, DAY_MS, dayKeyFor, dayStartMs, questsForDay, isBannedNow, toMillis,
   questReward, questRewardsFor, weekDayKeys, isSundayKey, sundayLoginReward } = require("./_lib");
 const { FieldValue } = require("firebase-admin/firestore");
+const GamesCore = require("../games-core.js");
 
 // Same admin uid used in appState.js and cancel-subscription.js.
 const ADMIN_UID = "Ts92RY0ipMYDRJa2s5toQfDYxtp1";
@@ -100,6 +103,23 @@ async function refreshMaxStakes(db, gRef) {
     console.warn(`Couldn't refresh the highest stake for ${gRef.id}:`, e.message);
     return null;
   }
+}
+
+// Same figures, worked out INSIDE a stake change's own transaction (reads
+// before writes) as they'll be once `uid`'s entry holds `tokens` on
+// `platform` — so the stake and the new highest are saved in one write,
+// one round trip, instead of a second transaction afterwards.
+async function maxStakesWith(tx, gRef, uid, platform, tokens) {
+  const staked = await tx.get(gRef.collection("entries").where("tokens", ">", 0));
+  const max = { ios: 0, android: 0 };
+  staked.forEach(d => {
+    if (d.id === uid) return;
+    const e = d.data();
+    const t = Math.floor(Number(e.tokens) || 0);
+    if (e.platform === "ios" || e.platform === "android") max[e.platform] = Math.max(max[e.platform], t);
+  });
+  if (tokens > 0 && (platform === "ios" || platform === "android")) max[platform] = Math.max(max[platform], tokens);
+  return { maxStakeIos: max.ios, maxStakeAndroid: max.android };
 }
 
 function incrementsFrom(deltas) {
@@ -361,11 +381,12 @@ async function stake(db, uid, body, now) {
     const add = (p, v) => { const f = counterField(p); deltas[f] = (deltas[f] || 0) + v; };
     if (prev > 0 && countedOn !== platform) { add(countedOn, -prev); add(platform, prev); }
     add(platform, amount);
+    const max = await maxStakesWith(tx, gRef, uid, platform, prev + amount);
 
     tx.set(wRef, { balance: balance - amount, updatedAt: now }, { merge: true });
     tx.update(eRef, { tokens: prev + amount, stakePlatform: platform });
-    tx.update(gRef, incrementsFrom(deltas));
-    return { ok: true, balance: balance - amount, tokens: prev + amount };
+    tx.update(gRef, { ...incrementsFrom(deltas), ...max });
+    return { ok: true, balance: balance - amount, tokens: prev + amount, ...max };
   });
 }
 
@@ -410,12 +431,12 @@ async function setStake(db, uid, body, now) {
     const add = (p, v) => { const f = counterField(p); deltas[f] = (deltas[f] || 0) + v; };
     add(ed.stakePlatform || platform, -prev);
     add(platform, amount);
+    const max = await maxStakesWith(tx, gRef, uid, platform, amount);
 
     tx.set(wRef, { balance: balance - change, updatedAt: now }, { merge: true });
     tx.update(eRef, { tokens: amount, stakePlatform: platform });
-    const inc = incrementsFrom(deltas);
-    if (Object.keys(inc).length) tx.update(gRef, inc);
-    return { ok: true, balance: balance - change, tokens: amount, refunded: Math.max(0, -change) };
+    tx.update(gRef, { ...incrementsFrom(deltas), ...max });
+    return { ok: true, balance: balance - change, tokens: amount, refunded: Math.max(0, -change), ...max };
   });
 }
 
@@ -434,10 +455,11 @@ async function unstake(db, uid, body, now) {
     if (g.exists && poolDrawn(g.data(), ed.platform)) {
       throw new HttpError(400, "The draw has already happened, so these tokens are spent.");
     }
+    const max = g.exists ? await maxStakesWith(tx, gRef, uid, ed.platform, 0) : {};
     tx.set(wRef, { balance: FieldValue.increment(prev), updatedAt: now }, { merge: true });
     tx.update(eRef, { tokens: 0 });
-    if (g.exists) tx.update(gRef, { [counterField(ed.stakePlatform || ed.platform)]: FieldValue.increment(-prev) });
-    return { ok: true, refunded: prev };
+    if (g.exists) tx.update(gRef, { [counterField(ed.stakePlatform || ed.platform)]: FieldValue.increment(-prev), ...max });
+    return { ok: true, refunded: prev, ...max };
   });
 }
 
@@ -725,7 +747,9 @@ async function adminResolveAlert(db, adminUid, body, now) {
   return { ok: true };
 }
 
-const STAKE_ACTIONS = new Set(["stake", "setStake", "unstake", "reconcile", "refundGiveaway"]);
+// Stake changes that don't already save the new highest stake themselves
+// (stake, setStake and unstake do, in their own transaction).
+const STAKE_ACTIONS = new Set(["reconcile", "refundGiveaway"]);
 
 // For giveaways staked on before the highest stake was tracked: works it out
 // once. Anyone signed in may ask, but it only recomputes when the figures are
@@ -742,6 +766,61 @@ async function maxStake(db, body) {
   const max = await refreshMaxStakes(db, gRef);
   if (!max) throw new HttpError(503, "Couldn't work out the highest stake — try again.");
   return { ok: true, ...max };
+}
+
+/* ---------------- Today's puzzle (Games) ----------------
+   Finishing the day's puzzle pays 1 token, once per account per day, whatever
+   the score. The play is replayed against the very puzzle the page built
+   (games-core.js, from the same game data files), so only a possible,
+   finished play of that day's puzzle counts. The claim doc has a fixed id
+   like a quest's, so a second device or a double tap can't pay twice. */
+const DAILY_PUZZLE_REWARD = 1;
+// A puzzle started just before the reset can still be handed in a little after.
+const DAILY_PUZZLE_GRACE_MS = 30 * 60 * 1000;
+let gameUnits = null;
+function loadGameUnits() {
+  if (!gameUnits) {
+    gameUnits = GamesCore.buildUnits({
+      troops: require("../troops.json"), troopLevels: require("../troopsLevel.json"),
+      heroes: require("../hero.json"), heroLevels: require("../heroLevel.json"),
+      loc: require("../localization.json"), en: require("../en.json")
+    });
+  }
+  return gameUnits;
+}
+
+async function dailyPuzzle(db, uid, body, now, dayKey) {
+  const { day, play } = body;
+  const lateForYesterday = day === dayKeyFor(now - DAY_MS) && now - dayStartMs(now) < DAILY_PUZZLE_GRACE_MS;
+  if (day !== dayKey && !lateForYesterday) return { ok: true, paid: 0, expired: true };
+  const result = GamesCore.dailyResult(loadGameUnits(), day, play);
+  if (!result) throw new HttpError(400, "Couldn't check that puzzle — reload Games and try again.");
+  if (!result.finished) throw new HttpError(400, "Finish the puzzle first.");
+  await assertNotBanned(db, uid);
+
+  const walletRef = db.collection("tokenWallets").doc(uid);
+  const claimRef = walletRef.collection("claims").doc(`${day}_dailyPuzzle`);
+  return db.runTransaction(async (tx) => {
+    const [walletSnap, claimSnap] = await tx.getAll(walletRef, claimRef);
+    const balance = walletSnap.exists ? (walletSnap.data().balance || 0) : 0;
+    if (claimSnap.exists) return { ok: true, paid: 0, already: true, balance };
+    tx.set(claimRef, {
+      questId: "dailyPuzzle",
+      dayKey: day,
+      game: result.game,
+      score: result.score,
+      status: "claimed",
+      reward: DAILY_PUZZLE_REWARD,
+      completedAt: now,
+      claimedAt: now
+    });
+    tx.set(walletRef, {
+      balance: balance + DAILY_PUZZLE_REWARD,
+      lifetimeEarned: FieldValue.increment(DAILY_PUZZLE_REWARD),
+      updatedAt: now
+    }, { merge: true });
+    return { ok: true, paid: DAILY_PUZZLE_REWARD, balance: balance + DAILY_PUZZLE_REWARD };
+  });
 }
 
 module.exports = async (req, res) => {
@@ -788,9 +867,10 @@ module.exports = async (req, res) => {
       case "adminListAlerts": assertAdmin(uid); result = await adminListAlerts(db); break;
       case "adminResolveAlert": assertAdmin(uid); result = await adminResolveAlert(db, uid, body, now); break;
       case "maxStake": result = await maxStake(db, body); break;
+      case "dailyPuzzle": result = await dailyPuzzle(db, uid, body, now, dayKey); break;
       default: throw new HttpError(400, "Unknown action.");
     }
-    // Any change to someone's stake can change the highest one.
+    // Device switches and pre-delete refunds change the highest stake too.
     if (STAKE_ACTIONS.has(body.action)) {
       const max = await refreshMaxStakes(db, db.collection("secretGiveaways").doc(body.giveawayId));
       if (max) result = { ...result, ...max };

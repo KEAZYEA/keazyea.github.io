@@ -1807,6 +1807,9 @@ if (user && user.uid === winnerData.winnerUid) {
                 const top = secretTopStake(g, entry.platform);
                 secretStakeInfo[g.id] = { staked, top };
                 const target = beatTopTarget(staked, top, secretTokenBalance);
+                // Mid-save: everything locked, the pressed button says so.
+                const saving = stakeSaving.get(g.id);
+                const lock = saving ? " disabled" : "";
                 return `
                     <div style="margin-top:12px; padding:12px; border:1px solid #aa7a1e; border-radius:10px; background:rgba(255,196,0,0.06);">
                         <p class="promo-sub" style="margin:0 0 8px;">🪙 Your stake: <strong>${staked}</strong> — ${chances}.</p>
@@ -1816,15 +1819,15 @@ if (user && user.uid === winnerData.winnerUid) {
                             <input type="number" id="stakeEditInput_${g.id}" min="0" step="1" inputmode="numeric" value="${staked}"
                                 style="flex:1; min-width:0; padding:10px; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box;"
                                 oninput="updateStakeHint('${g.id}')"
-                                onkeydown="if(event.key==='Enter') handleSetStake('${g.id}', ${staked});">
-                            <button class="btn-primary" id="stakeEditBtn_${g.id}" onclick="handleSetStake('${g.id}', ${staked})" style="padding:10px 18px; flex-shrink:0;">Save</button>
+                                onkeydown="if(event.key==='Enter') handleSetStake('${g.id}', ${staked});"${lock}>
+                            <button class="btn-primary" id="stakeEditBtn_${g.id}" onclick="handleSetStake('${g.id}', ${staked})" style="padding:10px 18px; flex-shrink:0;"${lock}>${saving === "save" ? "⏳ Saving…" : "Save"}</button>
                         </div>
                         <p class="promo-sub" id="stakeHint_${g.id}" style="margin:6px 0 0; font-size:0.85rem; color:#ffc46b; display:none;"></p>
                         ${target !== null ? `<button type="button" id="stakeTopBtn_${g.id}" onclick="handleSetStake('${g.id}', ${staked}, ${target})"
-                            style="margin-top:10px; width:100%; padding:10px 12px; border-radius:8px; border:1px solid #ffc400; background:rgba(255,196,0,0.15); color:#ffd75e; font-weight:700; cursor:pointer; font-size:0.95rem;">${beatTopLabel(target, top)}</button>` : ""}
+                            style="margin-top:10px; width:100%; padding:10px 12px; border-radius:8px; border:1px solid #ffc400; background:rgba(255,196,0,0.15); color:#ffd75e; font-weight:700; cursor:pointer; font-size:0.95rem;"${lock}>${saving === "top" ? "⏳ Saving…" : beatTopLabel(target, top)}</button>` : ""}
                         ${staked > 0 ? `<button type="button" id="stakeRemoveBtn_${g.id}" onclick="handleSetStake('${g.id}', ${staked}, 0)"
-                            style="margin-top:8px; background:#2a2a4a; color:white; border:1px solid #aa3838; border-radius:6px; padding:8px 12px; cursor:pointer; font-size:0.85rem;">
-                            Remove all (get ${staked} 🪙 back)</button>` : ""}
+                            style="margin-top:8px; background:#2a2a4a; color:white; border:1px solid #aa3838; border-radius:6px; padding:8px 12px; cursor:pointer; font-size:0.85rem;"${lock}>
+                            ${saving === "remove" ? "⏳ Removing…" : `Remove all (get ${staked} 🪙 back)`}</button>` : ""}
                         <p class="promo-sub" style="margin:8px 0 0; font-size:0.8rem;">You have ${secretTokenBalance} 🪙 (<a href="#" style="color:#ffc400;" onclick="if (window.top.goToPage) window.top.goToPage('store'); return false;">get more</a>) · spent when your side is drawn, win or lose · refunded if you leave before then</p>
                     </div>`;
             }
@@ -1852,7 +1855,33 @@ if (user && user.uid === winnerData.winnerUid) {
             }
             window.updateStakeHint = updateStakeHint;
 
+            // Stake changes on their way to the server, by giveaway → which
+            // button was pressed ("save", "top" or "remove"). While one is in
+            // flight the card shows "⏳ Saving…" with every stake button locked —
+            // kept through re-renders (a live update can redraw the card
+            // mid-save) — and further taps are ignored, so it's never sent twice.
+            const stakeSaving = new Map();
+
+            // The server's reply already says where things stand (your stake,
+            // your balance, the new highest stake), so the card is redrawn from
+            // that straight away instead of reading it all back again.
+            function applyStakeResult(giveawayId, result) {
+                const cached = secretDetailCache.get(giveawayId);
+                if (cached && typeof result.tokens === "number") {
+                    secretDetailCache.set(giveawayId, cached.then(d => ({ ...d, entry: d.entry ? { ...d.entry, tokens: result.tokens } : d.entry })));
+                } else {
+                    secretDetailCache.delete(giveawayId);
+                }
+                secretBalancePromise = typeof result.balance === "number" ? Promise.resolve(result.balance) : null;
+                const g = latestSecretGiveaways.find(x => x.id === giveawayId);
+                if (g && typeof result.maxStakeIos === "number") {
+                    g.maxStakeIos = result.maxStakeIos;
+                    g.maxStakeAndroid = result.maxStakeAndroid;
+                }
+            }
+
             window.handleSetStake = async function (giveawayId, current, forced) {
+                if (stakeSaving.has(giveawayId)) return;
                 const input = document.getElementById("stakeEditInput_" + giveawayId);
                 const amount = forced !== undefined ? forced : Number(input && input.value);
                 if (!Number.isInteger(amount) || amount < 0) {
@@ -1876,17 +1905,36 @@ if (user && user.uid === winnerData.winnerUid) {
                         ? `Lower your stake from ${current} to ${amount}? ${-change} 🪙 go back to your wallet, and your entry counts as ${amount + 1} chances.`
                         : `Raise your stake from ${current} to ${amount}? ${change} more 🪙 come out of your wallet, and your entry counts as ${amount + 1} chances.`;
                 if (!await showConfirmModal("Change stake?", message, "Confirm")) return;
-                const btns = ["stakeEditBtn_", "stakeRemoveBtn_", "stakeTopBtn_"].map(p => document.getElementById(p + giveawayId)).filter(Boolean);
-                btns.forEach(b => { b.disabled = true; });
+                if (stakeSaving.has(giveawayId)) return;
+                const kind = forced === undefined ? "save" : forced === 0 ? "remove" : "top";
+                stakeSaving.set(giveawayId, kind);
+                showStakeSaving(giveawayId, kind);
                 try {
-                    await AppState.setSecretGiveawayStake(giveawayId, amount);
-                    forgetSecretDetails(giveawayId);
+                    const result = await AppState.setSecretGiveawayStake(giveawayId, amount);
+                    applyStakeResult(giveawayId, result || {});
+                    stakeSaving.delete(giveawayId);
                     renderSecretGiveawayList(latestSecretGiveaways);
                 } catch (e) {
+                    stakeSaving.delete(giveawayId);
+                    // Unlocked right away; the redraw also restores the labels.
+                    ["stakeEditBtn_", "stakeRemoveBtn_", "stakeTopBtn_", "stakeEditInput_"].forEach(p => {
+                        const el = document.getElementById(p + giveawayId);
+                        if (el) el.disabled = false;
+                    });
+                    renderSecretGiveawayList(latestSecretGiveaways);
                     await showInfoModal("Couldn't change your stake", e.message);
-                    btns.forEach(b => { b.disabled = false; });
                 }
             };
+
+            // Straight onto the card as it is now, without waiting for a redraw.
+            function showStakeSaving(giveawayId, kind) {
+                ["stakeEditBtn_", "stakeRemoveBtn_", "stakeTopBtn_", "stakeEditInput_"].forEach(p => {
+                    const el = document.getElementById(p + giveawayId);
+                    if (el) el.disabled = true;
+                });
+                const pressed = document.getElementById({ save: "stakeEditBtn_", remove: "stakeRemoveBtn_", top: "stakeTopBtn_" }[kind] + giveawayId);
+                if (pressed) pressed.textContent = kind === "remove" ? "⏳ Removing…" : "⏳ Saving…";
+            }
 
             function renderSecretGiveawayCard(g, detail, user, device) {
                 const isExpired = g.expiresAt <= Date.now();
