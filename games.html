@@ -9,6 +9,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style>
         html, body { margin: 0; background: #1a1a2e; }
+        body { background: transparent; }
+        html {
+            min-height: 100%;
+            background:
+                radial-gradient(circle at 10% 0%, rgba(138, 77, 255, 0.22), transparent 40%),
+                radial-gradient(circle at 95% 25%, rgba(46, 204, 113, 0.12), transparent 35%),
+                radial-gradient(circle at 50% 100%, rgba(255, 140, 50, 0.14), transparent 45%),
+                #1a1a2e;
+            background-attachment: fixed;
+        }
+        .games-tabs { background: rgba(24, 24, 44, 0.95); border-radius: 14px; padding: 6px; }
         body { padding: 0 12px 40px; box-sizing: border-box; }
         h1 { font-size: 2.2rem; margin: 18px 0 6px; }
         /* Five tabs have to fit a phone: icon over a short label, and Today's
@@ -26,7 +37,7 @@
             border-radius: 9px; background: #e53935; color: #fff; font-size: 0.7rem; font-weight: 800; line-height: 18px; text-align: center;
         }
         .games-wrap { max-width: 560px; margin: 0 auto; }
-        .game-intro { color: #b0b0c8; font-size: 0.92rem; line-height: 1.45; margin: 14px 0; text-align: center; }
+        .game-intro { color: #b0b0c8; font-size: 0.92rem; line-height: 1.45; margin: 14px 0; padding: 0 18px; text-align: center; } /* clear of the 🏆 side tab */
         .game-intro small { display: block; color: #8a8aa6; font-size: 0.82rem; margin-top: 4px; }
         .dim { color: #9a9ab0; }
         .game-card { background: #20203a; border: 1px solid #2f2f55; border-radius: 14px; padding: 16px; }
@@ -57,7 +68,7 @@
 
         /* Today's Puzzle */
         .daily-bar {
-            display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; padding: 9px 12px;
+            display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; padding: 9px 16px;
             border-radius: 10px; background: linear-gradient(90deg, rgba(65, 105, 225, 0.25), rgba(255, 196, 0, 0.12)); border: 1px solid #3a4a8a;
             font-size: 0.9rem; font-weight: 700;
         }
@@ -73,6 +84,7 @@
         .rl-tile.landed { border-color: #ffd75e; background: linear-gradient(160deg, #4169e1, #6a3fc1); transform: scale(1.06); box-shadow: 0 0 22px rgba(255, 215, 94, 0.7); animation: rlPulse 1s ease-in-out infinite alternate; }
         .rl-tile.faded { opacity: 0.35; }
         @keyframes rlPulse { from { box-shadow: 0 0 10px rgba(255, 215, 94, 0.45); } to { box-shadow: 0 0 26px rgba(255, 215, 94, 0.9); } }
+        #spinBtn { background: linear-gradient(135deg, #8a4dff, #ff4081); box-shadow: 0 6px 20px rgba(255, 64, 129, 0.35); }
         .rl-title { text-align: center; font-size: 1.15rem; font-weight: 800; margin: 2px 0 4px; min-height: 1.4em; }
         .reward-box {
             margin-top: 14px; padding: 11px 12px; border-radius: 10px; text-align: center; font-size: 0.95rem; line-height: 1.45;
@@ -155,7 +167,12 @@
             width: 100%; max-width: 480px; max-height: 80vh; overflow-y: auto; box-sizing: border-box; background: #20203a;
             border: 1px solid #3a3a66; border-radius: 16px 16px 0 0; padding: 14px 14px 22px;
         }
-        .friend-sheet-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; font-size: 1.05rem; font-weight: 800; }
+        /* Stays at the top while a long friend list scrolls, so ✕ is always in reach. */
+        .friend-sheet-head {
+            position: sticky; top: -14px; z-index: 2; margin: -14px -14px 10px; padding: 14px 14px 10px;
+            display: flex; align-items: center; justify-content: space-between; font-size: 1.05rem; font-weight: 800;
+            background: #20203a; border-bottom: 1px solid #2c2c50; border-radius: 16px 16px 0 0;
+        }
         .friend-sheet-head button { background: none; border: none; color: #b0b0c8; font-size: 1.3rem; cursor: pointer; padding: 4px 8px; }
         .share-preview { margin: 0 0 12px; padding: 10px; border-radius: 8px; background: #15152a; color: #c8c8e0; font-size: 0.85rem; white-space: pre-wrap; font-family: inherit; }
         .friend-row { display: flex; align-items: center; gap: 10px; padding: 9px 4px; border-top: 1px solid #2c2c50; }
@@ -165,11 +182,107 @@
         .friend-row button { padding: 8px 14px; font-weight: 700; flex-shrink: 0; }
         .friend-row button.sent { background: #2e7d32; }
         .friend-empty { text-align: center; color: #9a9ab0; font-size: 0.92rem; padding: 14px 4px; line-height: 1.5; }
+        /* Endless runs */
+        .run-bar { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+        .run-score {
+            font-size: 1.35rem; font-weight: 900; padding: 4px 12px; border-radius: 999px;
+            background: linear-gradient(90deg, #ff6b35, #f7c325); color: #1a1a2e; box-shadow: 0 0 14px rgba(255, 140, 50, 0.45);
+        }
+        .run-score.bump { animation: scoreBump 0.45s ease; }
+        @keyframes scoreBump { 40% { transform: scale(1.25); } }
+        .run-best { font-size: 0.82rem; color: #c8c8e0; }
+        .run-tag { margin-left: auto; font-size: 0.75rem; font-weight: 800; padding: 4px 9px; border-radius: 999px; background: #2a2a4a; color: #c8c8e0; white-space: nowrap; }
+        .run-tag.ranked { background: linear-gradient(90deg, #4169e1, #8a4dff); color: #fff; }
+        .run-tag.challenge { background: linear-gradient(90deg, #c62828, #e65100); color: #fff; }
+        .run-timer { position: relative; height: 8px; border-radius: 4px; background: #2a2a4a; overflow: hidden; margin-bottom: 12px; }
+        .run-timer-fill { position: absolute; inset: 0 auto 0 0; width: 100%; background: linear-gradient(90deg, #2ecc71, #f7c325); transition: width 0.25s linear; }
+        .run-timer-fill.low { background: linear-gradient(90deg, #e53935, #ff6b35); }
+        .run-timer-text { text-align: right; font-size: 0.75rem; color: #9a9ab0; margin: -8px 0 8px; font-variant-numeric: tabular-nums; }
+        .run-banner { text-align: center; font-weight: 800; padding: 10px; border-radius: 10px; margin: 10px 0; animation: pop 0.3s ease; }
+        .run-banner.good { background: rgba(46, 125, 50, 0.25); border: 1px solid #2e7d32; }
+        .run-banner.bad { background: rgba(198, 40, 40, 0.22); border: 1px solid #c62828; }
+        @keyframes pop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .run-over { text-align: center; margin-top: 14px; padding: 16px 12px; border-radius: 14px; background: linear-gradient(160deg, #2b1d52, #4a1f2e); border: 1px solid #ffb74d; animation: pop 0.35s ease; }
+        .run-over-title { font-size: 1.3rem; font-weight: 900; }
+        .run-over-score { font-size: 3rem; font-weight: 900; line-height: 1.1; margin: 6px 0 0; background: linear-gradient(90deg, #ffd75e, #ff8a50); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .run-over-unit { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 10px 0; }
+        .run-over-unit img { width: 56px; height: 56px; border-radius: 10px; object-fit: cover; object-position: top; }
+        .run-newbest { display: inline-block; margin-top: 8px; padding: 5px 12px; border-radius: 999px; background: linear-gradient(90deg, #f7c325, #ff6b35); color: #1a1a2e; font-weight: 900; animation: pop 0.4s ease; }
+        .guess-frame img.flat { transform: none !important; filter: none !important; height: 100%; object-fit: cover; }
+
+        /* Run hints: what's left of the run's pool. */
+        .hint-btn { flex: 1 1 auto; }
+        .hint-pips { display: flex; align-items: center; justify-content: center; gap: 5px; width: 100%; }
+        .hint-pips i { width: 10px; height: 10px; border-radius: 50%; background: #2a2a4a; border: 1px solid #4a4a6a; }
+        .hint-pips i.on { background: radial-gradient(circle at 35% 35%, #fff6c2, #ffc400); border-color: #ffc400; box-shadow: 0 0 6px rgba(255, 196, 0, 0.6); }
+        /* A game with a run still going (its clock keeps running). */
+        .games-tabs .tab-btn.run-live::after {
+            content: ""; position: absolute; top: 6px; right: 7px; width: 8px; height: 8px; border-radius: 50%;
+            background: #ff8a50; box-shadow: 0 0 6px rgba(255, 138, 80, 0.8); animation: livePulse 1.6s ease-in-out infinite;
+        }
+        @keyframes livePulse { 50% { transform: scale(1.35); opacity: 0.6; } }
+
+        /* Weekly leaderboard: a tab on the right edge opens it as a side
+           panel. The tab is narrow enough to sit over the page's margin and
+           the card's padding, never over a button. */
+        .lb-tab {
+            position: fixed; right: 0; top: 50%; transform: translateY(-50%); z-index: 30;
+            width: 26px; padding: 10px 0 12px; border: none; border-radius: 12px 0 0 12px;
+            display: flex; flex-direction: column; align-items: center; gap: 6px;
+            background: linear-gradient(180deg, #ffd75e, #ff8a50); color: #1a1a2e;
+            font-family: inherit; font-weight: 900; font-size: 0.7rem; cursor: pointer;
+            box-shadow: -3px 0 14px rgba(255, 160, 60, 0.45);
+        }
+        .lb-tab-icon { font-size: 0.95rem; line-height: 1; }
+        .lb-tab-text { writing-mode: vertical-rl; transform: rotate(180deg); text-transform: uppercase; letter-spacing: 0.08em; white-space: nowrap; }
+        .lb-tab-rank { font-size: 0.62rem; line-height: 1; padding: 3px 3px; border-radius: 6px; background: #1a1a2e; color: #ffd75e; }
+        .lb-back { position: fixed; inset: 0; z-index: 40; background: rgba(0, 0, 0, 0.55); opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+        .lb-back.open { opacity: 1; pointer-events: auto; }
+        .lb-drawer {
+            position: fixed; top: 0; right: 0; bottom: 0; z-index: 41; width: min(380px, 90vw); box-sizing: border-box;
+            display: flex; flex-direction: column;
+            background: radial-gradient(circle at 100% 0%, rgba(255, 196, 0, 0.18), transparent 45%), linear-gradient(160deg, #23234a, #1a1a33);
+            border-left: 1px solid #4a4a86; box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+            transform: translateX(105%); visibility: hidden; transition: transform 0.28s ease, visibility 0s linear 0.28s;
+        }
+        .lb-drawer.open { transform: none; visibility: visible; transition: transform 0.28s ease; }
+        .lb-drawer-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 14px 12px 12px 16px; border-bottom: 1px solid #34345e; }
+        .lb-drawer-head span { font-size: 1.15rem; font-weight: 900; }
+        .lb-drawer-head button { width: 36px; height: 36px; flex-shrink: 0; border-radius: 50%; border: none; background: #2a2a4a; color: white; font-size: 1rem; cursor: pointer; }
+        .lb-drawer-body { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding: 12px 14px 28px; }
+        .lb-section { margin-top: 16px; }
+        .lb-section-title { font-size: 0.8rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.06em; color: #b8b8d8; margin-bottom: 8px; }
+        .lb-rules { margin: 0; padding: 0; list-style: none; font-size: 0.86rem; line-height: 1.45; color: #d0d0e4; }
+        .lb-rules li { padding: 7px 10px; border-radius: 10px; background: rgba(255, 255, 255, 0.04); margin-bottom: 5px; }
+        .lb-link { display: block; margin: 10px auto 0; padding: 6px 12px; border: none; background: none; color: #ffd75e; font-family: inherit; font-weight: 800; font-size: 0.92rem; cursor: pointer; }
+        .lb-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+        .lb-title { font-size: 1.15rem; font-weight: 900; }
+        .lb-ends { font-size: 0.88rem; color: #c8c8e0; white-space: nowrap; }
+        .lb-ends b { color: #ffd75e; }
+        .lb-prizes { display: flex; gap: 6px; margin: 10px 0 12px; }
+        .lb-prize { flex: 1; text-align: center; padding: 7px 4px; border-radius: 10px; font-weight: 800; font-size: 0.85rem; background: rgba(255, 255, 255, 0.05); border: 1px solid #3a3a66; }
+        .lb-prize b { display: block; font-size: 1.05rem; color: #ffd75e; }
+        .lb-row { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 10px; margin-bottom: 4px; background: rgba(255, 255, 255, 0.03); }
+        .lb-row.me { background: rgba(65, 105, 225, 0.25); border: 1px solid #4169e1; }
+        .lb-rank { width: 30px; text-align: center; font-weight: 900; flex-shrink: 0; }
+        .lb-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700; }
+        .lb-total { font-weight: 900; color: #ffd75e; font-variant-numeric: tabular-nums; }
+        .lb-row.top1 { background: linear-gradient(90deg, rgba(255, 215, 94, 0.22), rgba(255, 215, 94, 0.04)); }
+        .lb-row.top2 { background: linear-gradient(90deg, rgba(200, 210, 230, 0.18), rgba(200, 210, 230, 0.03)); }
+        .lb-row.top3 { background: linear-gradient(90deg, rgba(205, 127, 50, 0.22), rgba(205, 127, 50, 0.03)); }
+        .lb-me { margin-top: 10px; padding: 10px; border-radius: 10px; background: rgba(65, 105, 225, 0.15); font-size: 0.88rem; }
+        .lb-me b { color: #ffd75e; }
+        .lb-chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+        .lb-chips span { font-size: 0.76rem; padding: 3px 8px; border-radius: 999px; background: #2a2a4a; }
+        .lb-note { font-size: 0.8rem; color: #9a9ab0; margin-top: 10px; line-height: 1.45; }
+        .lb-note summary { cursor: pointer; color: #c8c8e0; font-weight: 700; }
+        .lb-empty { text-align: center; color: #9a9ab0; font-size: 0.9rem; padding: 12px 4px; }
+        .lb-more { display: block; width: 100%; margin-top: 4px; padding: 7px; border: none; border-radius: 8px; background: none; color: #8fa8ff; font-family: inherit; font-weight: 700; cursor: pointer; }
         @media (max-width: 380px) { .unitle-cell { font-size: 0.58rem; } .games-tabs .tab-btn { font-size: 0.72rem; } }
     </style>
 </head>
 
-<body>
+<body class="kih-stars">
     <h1>Games</h1>
     <div class="tabs games-tabs">
         <button class="tab-btn active" data-tab="today" onclick="switchTab('today')"><span class="tab-icon">🎲</span><span class="tab-label">Today's Puzzle</span><span class="tab-badge" id="todayBadge" style="display:none;">1</span></button>
@@ -182,6 +295,15 @@
         <p class="game-intro" id="gameIntro"></p>
         <div id="gameArea"><p class="dim" style="text-align:center;">Loading…</p></div>
     </div>
+
+    <button type="button" class="lb-tab" id="lbTab" onclick="openLeaderboard()" aria-label="Weekly leaderboard">
+        <span class="lb-tab-icon">🏆</span><span class="lb-tab-rank" id="lbTabRank" style="display:none;"></span><span class="lb-tab-text">Leaderboard</span>
+    </button>
+    <div class="lb-back" id="lbBack" onclick="closeLeaderboard()"></div>
+    <aside class="lb-drawer" id="lbDrawer" aria-hidden="true" aria-label="Weekly leaderboard">
+        <div class="lb-drawer-head"><span>🏆 Weekly leaderboard</span><button type="button" onclick="closeLeaderboard()" aria-label="Close">✕</button></div>
+        <div class="lb-drawer-body" id="lbCard"><div class="lb-empty">Loading the weekly leaderboard…</div></div>
+    </aside>
 
     <div class="friend-modal" id="friendModal" onclick="if (event.target === this) closeFriends()">
         <div class="friend-sheet">
@@ -209,10 +331,10 @@
         const C = window.GamesCore;
         const { esc, cap, fmt } = C;
         const INTROS = {
-            trivia: { daily: "5 questions about troops and heroes — the same 5 for everyone today.", free: "5 random questions about troops and heroes." },
-            guess: { daily: "Who's in the picture? Type the name — 3 guesses, up to 3 hints. Each wrong guess zooms out.", free: "Who's in the picture? Type the name — 3 guesses, up to 3 hints. Each wrong guess zooms out." },
-            unitle: { daily: "Find today's mystery unit in 6 guesses. Each guess shows what matches.", free: "Find the mystery unit in 6 guesses. Each guess shows what matches." },
-            hilo: { daily: "Which has more? 10 match-ups — one wrong answer ends the run.", free: "Which has more? One wrong answer ends your streak." }
+            trivia: { daily: "5 questions about troops and heroes — the same 5 for everyone today.", free: "Endless trivia — how many in a row can you get? 20 seconds a question." },
+            guess: { daily: "Who's in the picture? Type the name — 3 guesses, up to 3 hints. Each wrong guess zooms out.", free: `Name unit after unit from a close-up — 3 guesses and a minute each, and ${C.RUN_GUESS_HINTS} hints for the whole run (used ones don't come back). Fewer guesses, more points.` },
+            unitle: { daily: "Find today's mystery unit in 6 guesses. Each guess shows what matches.", free: "Find mystery units one after another — 6 guesses and 3 minutes each. Fewer guesses, more points." },
+            hilo: { daily: "Which has more? 10 match-ups — one wrong answer ends the run.", free: "Which has more? Keep going until you miss — 15 seconds a pick." }
         };
         const DAILY_PREFIX = "kih_games_daily_v2_";
         // Opens the site on Games with the challenge (index.html hands it on).
@@ -306,33 +428,22 @@
         }
         function render() {
             if (!UNITS.length) return;
+            hideRun();
             if (tab === "today") startToday();
-            else startGame(tab, false);
+            else startRun(tab);
             window.scrollTo(0, 0);
+            loadLeaderboard();
         }
         function setIntro(html) { $("gameIntro").innerHTML = html; }
-        // Free play is seeded too (a fresh random seed each game), so a friend
-        // you challenge can be given exactly the same puzzle.
-        const newSeed = () => Math.floor(Math.random() * 2 ** 31);
-        function seededPuzzle(id, seed) {
-            const rand = C.seededRandom(C.hashString(`kih-free:${id}:${seed}`));
-            if (id === "trivia") return { questions: C.triviaSet(UNITS, rand) };
-            if (id === "guess") return C.guessPuzzle(UNITS, rand);
-            if (id === "unitle") return { target: C.unitleTarget(UNITS, rand) };
-            return { rand }; // Higher or Lower: endless, rounds drawn as you go
-        }
-        // isDaily: today's puzzle. Otherwise free play — a new seeded puzzle,
-        // or `fixed` = { puzzle, src, challenge } to replay one a friend sent.
+        // A one-off puzzle: today's (isDaily), or `fixed` = { puzzle, src,
+        // challenge } — an earlier day's puzzle a friend challenged you to.
+        // (The other tabs are endless runs — see ENDLESS RUNS below.)
         function startGame(id, isDaily, fixed) {
+            hideRun();
             let p, src;
             if (isDaily) { p = daily.puzzle; src = "d" + daily.day.replace(/-/g, ""); }
-            else if (fixed) { p = fixed.puzzle; src = fixed.src; }
-            else { const seed = newSeed(); p = seededPuzzle(id, seed); src = "s" + seed.toString(36); }
-            if (!isDaily) {
-                setIntro(fixed && fixed.challenge
-                    ? `${INTROS[id].free}<small>⚔️ A friend's challenge — the same puzzle they played. No tokens here; 🎲 Today's Puzzle pays +1 🪙.</small>`
-                    : `${INTROS[id].free}<small>Free play — as often as you like, no tokens. 🎲 Today's Puzzle pays +1 🪙.</small>`);
-            }
+            else { p = fixed.puzzle; src = fixed.src; }
+            if (!isDaily) setIntro(`${INTROS[id].daily.replace("today's", "that day's").replace("today", "that day")}<small>⚔️ A friend's challenge — the same puzzle they played. No tokens here; 🎲 Today's Puzzle pays +1 🪙.</small>`);
             ({ trivia: startTrivia, guess: startGuess, unitle: startUnitle, hilo: startHilo })[id](isDaily, p);
             game.src = src;
             game.challenge = isDaily ? dailyChallenge : (fixed && fixed.challenge) || null;
@@ -341,14 +452,15 @@
         }
 
         /* ================================================================
-           ⚔️ CHALLENGES — "I scored 4/5 in Trivia, can you beat me?" sent to
-           a friend's chat with a link: <site>/?challenge=<game>.<src>.<score>
-           where src is d<yyyymmdd> (a day's puzzle) or s<seed> (free play).
-           The link opens Games on the very same puzzle.
+           ⚔️ CHALLENGES — "I got a streak of 12 in Trivia, can you beat me?"
+           sent to a friend's chat with a link: <site>/?challenge=<game>.<src>.<score>
+           where src is d<yyyymmdd> (a day's puzzle; score as that puzzle
+           counts it) or s<seed> (an endless run; score = the run's score).
+           The link opens Games on the very same puzzle or run.
            ================================================================ */
         let dailyChallenge = null; // a challenge on today's puzzle, while this page is open
         function parseChallenge(code) {
-            const m = /^(trivia|guess|unitle|hilo)\.(d\d{8}|s[0-9a-z]{1,8})\.(\d{1,2}|x)$/.exec(String(code || "").toLowerCase());
+            const m = /^(trivia|guess|unitle|hilo)\.(d\d{8}|s[0-9a-z]{1,8})\.(\d{1,3}|x)$/.exec(String(code || "").toLowerCase());
             if (!m) return null;
             const [, id, src, score] = m;
             const day = src[0] === "d" ? `${src.slice(1, 5)}-${src.slice(5, 7)}-${src.slice(7, 9)}` : null;
@@ -365,6 +477,7 @@
             return { value: won ? g.guesses.length : null, label: won ? `${g.guesses.length}/${max}` : `X/${max}` };
         }
         function challengeLabel(ch) {
+            if (!ch.day) return runScoreLabel(ch.game, ch.score || 0);
             if (ch.game === "trivia") return `${ch.score}/${C.TRIVIA_COUNT}`;
             if (ch.game === "hilo") return ch.day ? `${ch.score}/${C.HILO_DAILY_ROUNDS}` : `a streak of ${ch.score}`;
             const max = ch.game === "guess" ? C.MAX_GUESSES : C.UNITLE_TRIES;
@@ -389,9 +502,10 @@
                 return;
             }
             showTab(ch.game);
-            const puzzle = ch.day ? C.dailyPuzzle(UNITS, ch.day) : seededPuzzle(ch.game, ch.seed);
-            startGame(ch.game, false, { puzzle, src: ch.src, challenge: ch });
+            if (ch.day) startGame(ch.game, false, { puzzle: C.dailyPuzzle(UNITS, ch.day), src: ch.src, challenge: ch });
+            else startRun(ch.game, { seed: ch.seed, challenge: ch });
             window.scrollTo(0, 0);
+            loadLeaderboard();
         }
         function challengeBar(g) {
             if (!g.challenge) return "";
@@ -625,27 +739,35 @@
         // archer" fills both words. Hint 3's letters show faintly in blanks
         // you haven't reached; the end of the game shows the whole name.
         function nameTiles(name, someLetters, all, typed) {
-            const chars = [...name];
+            if (all) return tilesFromMask([...name].map(ch => ch === " " ? { gap: true } : /[A-Za-z0-9]/.test(ch) ? { letter: ch.toUpperCase() } : { punct: ch }), "");
+            return tilesFromMask(C.nameMask(name, someLetters), typed);
+        }
+        // From a name's mask (C.nameMask — all a ranked run is sent).
+        function tilesFromMask(mask, typed) {
             const letters = [...String(typed || "").toUpperCase().replace(/[^A-Z0-9]/g, "")];
             let slot = 0;
-            return C.nameMask(name, someLetters).map((c, i) => {
+            return mask.map(c => {
                 if (c.gap) return `<span class="gap"></span>`;
                 if (c.punct) return `<span class="punct">${esc(c.punct)}</span>`;
-                if (all) return `<span>${esc(chars[i].toUpperCase())}</span>`;
                 const mine = letters[slot++];
                 return mine ? `<span class="typed">${esc(mine)}</span>` : `<span class="hinted">${esc(c.letter)}</span>`;
             }).join("");
         }
         const letterCount = (s) => String(s || "").replace(/[^A-Za-z0-9]/g, "").length;
+        const maskLetters = (mask) => mask.filter(c => !c.gap && !c.punct).length;
         function paintTiles() {
-            const g = game, box = document.querySelector(".name-tiles");
-            if (!box || g.id !== "guess") return;
-            const t = unitByKey(g.target);
-            box.innerHTML = nameTiles(t.name, g.hints >= 3, false, g.typed);
-            box.classList.toggle("over", letterCount(g.typed) > letterCount(t.name));
+            const box = document.querySelector(".name-tiles");
+            if (!box) return;
+            let mask, typed;
+            if (runUi && runUi.game === "guess" && runUi.view) { mask = runUi.view.mask; typed = runUi.typed; }
+            else if (game && game.id === "guess") { const t = unitByKey(game.target); mask = C.nameMask(t.name, game.hints >= 3); typed = game.typed; }
+            else return;
+            box.innerHTML = tilesFromMask(mask, typed);
+            box.classList.toggle("over", letterCount(typed) > maskLetters(mask));
         }
         function onGuessTyping(value) {
-            game.typed = value;
+            if (runUi && runUi.game === "guess") runUi.typed = value;
+            else game.typed = value;
             paintTiles();
         }
 
@@ -905,7 +1027,8 @@
         let friendsUnsub = null;
         let shareText = "";
         async function openFriends() {
-            shareText = challengeMessage(game);
+            // A finished endless run on screen, or else the one-off puzzle.
+            shareText = runUi && runUi.over ? runChallengeMessage() : challengeMessage(game);
             $("sharePreview").textContent = shareText.split("\n")[0] + "\n[ ⚔️ Battle ]";
             $("friendModal").classList.add("open");
             const list = $("friendList");
@@ -971,6 +1094,482 @@
             });
         }
 
+        /* ================================================================
+           🔥 ENDLESS RUNS — the free-play tabs. Keep going until you miss.
+           Signed in: played on the server (api/games.js) — answers never
+           reach this page, and your best run this week goes on the weekly
+           leaderboard. Signed out, or replaying a friend's run: played here
+           with the very same rules (games-core.js), unranked.
+           ================================================================ */
+        let runUi = null;    // the run on screen
+        let runTimer = null;
+        // Each game's latest run, kept while you look at other tabs: its clock
+        // keeps going (the server's does anyway), and coming back picks it up
+        // where you left it instead of starting a new one.
+        const runs = {};
+        const liveRun = (ui) => runs[ui.game] === ui; // not replaced by a newer run
+        const paintRun = (ui, keepFocus) => { if (runUi === ui) renderRun(keepFocus); };
+        const newSeed = () => Math.floor(Math.random() * 2 ** 31);
+        const runIsStreak = (g) => g === "trivia" || g === "hilo";
+        const runScoreLabel = (g, n) => (runIsStreak(g) ? `a streak of ${n}` : `${n} point${n === 1 ? "" : "s"}`);
+        const localBestKey = (g) => "kih_games_run_best_" + g;
+        function localBest(g) { try { return parseInt(localStorage.getItem(localBestKey(g)) || "0", 10) || 0; } catch (e) { return 0; } }
+        function saveLocalBest(g, n) { try { if (n > localBest(g)) localStorage.setItem(localBestKey(g), String(n)); } catch (e) { } }
+
+        // Taking the run off screen (another tab, today's puzzle). It isn't
+        // stopped: an answer on its way still lands, and its clock runs on.
+        function hideRun() {
+            clearInterval(runTimer);
+            runTimer = null;
+            runUi = null;
+        }
+        function showRun(ui) {
+            hideRun();
+            runUi = ui;
+            renderRun();
+            runTimer = setInterval(tickRun, 250);
+        }
+        // A small dot on the tab of each game with a run still going.
+        function markRunTabs() {
+            C.GAMES.forEach(g => {
+                const btn = document.querySelector(`.games-tabs [data-tab="${g}"]`);
+                if (btn) btn.classList.toggle("run-live", !!(runs[g] && !runs[g].over && !runs[g].starting));
+            });
+        }
+        async function signedInAppState() {
+            try {
+                const AS = await appStateReady();
+                await AS.waitForAuthReady();
+                return AS.getCurrentUser() && typeof AS.gamesRunStart === "function" ? AS : null;
+            } catch (e) { return null; }
+        }
+
+        // Opening a game's tab: its run if one is going (or just ended and you
+        // haven't seen how), otherwise a new one. opts: { fresh } for Play
+        // again; { seed, challenge } to replay a friend's run (never ranked).
+        async function startRun(id, opts = {}) {
+            const kept = runs[id];
+            if (kept && !opts.fresh && !opts.challenge && !(kept.over && kept.seenOver)) { showRun(kept); return; }
+            const ui = { game: id, starting: true, ranked: false, challenge: opts.challenge || null, score: 0, best: 0, over: false, view: null, feedback: null, typed: "", msg: "", note: "", busy: false, holding: false, unitNo: 1 };
+            runs[id] = ui;
+            markRunTabs();
+            showRun(ui);
+            let resp = null;
+            if (!ui.challenge) {
+                const AS = await signedInAppState();
+                if (!liveRun(ui)) return;
+                if (AS) {
+                    try {
+                        resp = await AS.gamesRunStart(id);
+                        ui.ranked = true;
+                        ui.runId = resp.runId;
+                    } catch (e) {
+                        ui.note = "Couldn't reach the leaderboard just now — this run isn't ranked.";
+                    }
+                    if (!liveRun(ui)) return;
+                } else {
+                    ui.note = "signin";
+                }
+            }
+            if (!resp) {
+                ui.local = C.runNew(id, opts.seed != null ? opts.seed : newSeed(), Date.now());
+                resp = { score: 0, over: false, deadline: ui.local.deadline, now: Date.now(), view: C.runView(UNITS, ui.local), best: ui.challenge ? 0 : localBest(id) };
+            }
+            ui.bestBefore = resp.best || 0;
+            ui.starting = false;
+            applyRunResp(ui, resp, true);
+        }
+        function runIntro(ui) {
+            const note = ui.starting ? "" : ui.challenge ? "⚔️ A friend's challenge — the same run they played. Not ranked."
+                : ui.ranked ? "🏆 Ranked — your best run this week counts on the weekly leaderboard."
+                : ui.note === "signin" ? "Sign in to put your runs on the weekly leaderboard." : esc(ui.note);
+            return `${INTROS[ui.game].free}${note ? `<small>${note}</small>` : ""}`;
+        }
+
+        // One move: an answer, a pick, a guess, a hint — or null when time runs out.
+        async function runMove(input) {
+            const ui = runUi;
+            if (!ui || ui.starting || ui.busy || ui.over || ui.holding) return;
+            ui.busy = true;
+            ui.msg = "";
+            ui.error = null;
+            document.querySelectorAll("#gameArea button, #gameArea input").forEach(el => { el.disabled = true; });
+            let resp;
+            try {
+                if (ui.ranked) {
+                    resp = await window.AppState.gamesRunAnswer(ui.runId, input);
+                } else {
+                    const s = C.runStep(UNITS, ui.local, input, Date.now(), 0);
+                    ui.local = s.run;
+                    resp = { score: s.run.score, over: s.run.over, feedback: s.feedback, deadline: s.run.deadline, now: Date.now(),
+                        view: s.run.over ? null : C.runView(UNITS, s.run), seed: s.run.over ? s.run.seed : undefined, best: Math.max(ui.bestBefore, s.run.score) };
+                }
+            } catch (e) {
+                if (!liveRun(ui)) return;
+                ui.busy = false;
+                if (ui.ranked && (!e.status || e.status >= 500)) ui.error = { message: e.message || "Connection problem.", input };
+                else if (e.status === 409) { ui.over = true; ui.feedback = ui.feedback || {}; markRunTabs(); }
+                else ui.msg = esc(e.message || "That didn't work.");
+                paintRun(ui, true);
+                return;
+            }
+            if (!liveRun(ui)) return;
+            ui.busy = false;
+            applyRunResp(ui, resp, false);
+        }
+        function retryRunMove() {
+            if (!runUi || !runUi.error) return;
+            const { input } = runUi.error;
+            runUi.error = null;
+            runMove(input);
+        }
+
+        function applyRunResp(ui, resp, first) {
+            ui.skew = (resp.now || Date.now()) - Date.now();
+            ui.deadline = resp.deadline;
+            ui.gained = resp.score > ui.score;
+            ui.score = resp.score;
+            ui.over = resp.over;
+            ui.best = Math.max(ui.best, resp.best || 0, ui.challenge ? 0 : ui.score);
+            if (resp.seed != null) ui.seed = resp.seed;
+            markRunTabs();
+            if (first) { ui.view = resp.view; paintRun(ui); return; }
+            const fb = resp.feedback || {};
+            ui.feedback = fb;
+            if (ui.over) {
+                ui.newBest = ui.ranked ? !!resp.newBest || (ui.score > ui.bestBefore && ui.score > 0) : !ui.challenge && ui.score > ui.bestBefore;
+                if (!ui.ranked && !ui.challenge) saveLocalBest(ui.game, ui.score);
+                if (ui.game === "unitle") ui.reveal = { rows: [...ui.view.guesses.map(g => g.key), ...(fb.lastGuess ? [fb.lastGuess] : [])], answer: fb.answer };
+                if (ui.game === "guess") ui.reveal = { answer: fb.answer };
+                paintRun(ui);
+                if (ui.ranked) loadLeaderboard(true);
+                if (runUi === ui) setTimeout(() => { const o = document.querySelector(".run-over"); if (o) o.scrollIntoView({ behavior: "smooth", block: "nearest" }); }, 60);
+                return;
+            }
+            // Show what just happened, then move on to the next one.
+            let hold = 0;
+            if (runIsStreak(ui.game)) hold = 1100;
+            else if (fb.solved) {
+                hold = 1500;
+                ui.reveal = { rows: fb.guesses, answer: fb.answer, points: fb.points, tries: fb.tries };
+            }
+            if (!hold) {
+                ui.view = resp.view;
+                ui.feedback = null;
+                if (fb.wrong && fb.guess) ui.msg = `❌ Not ${esc(fb.guess.name)}`;
+                paintRun(ui, true);
+                return;
+            }
+            ui.holding = true;
+            paintRun(ui);
+            ui.holdTimer = setTimeout(() => {
+                if (!liveRun(ui)) return;
+                ui.holding = false;
+                ui.view = resp.view;
+                ui.feedback = null;
+                if (ui.reveal && ui.reveal.points) ui.unitNo++;
+                ui.reveal = null;
+                ui.gained = false;
+                paintRun(ui, true);
+            }, hold);
+        }
+
+        function fmtClock(ms) {
+            const s = Math.ceil(ms / 1000);
+            return s >= 60 ? `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}` : `${s}s`;
+        }
+        function tickRun() {
+            const ui = runUi;
+            if (!ui || ui.over || ui.starting) return;
+            const total = C.RUN_LIMIT_MS[ui.game];
+            const left = ui.deadline - (Date.now() + (ui.skew || 0));
+            const shown = Math.max(0, Math.min(total, left));
+            const fill = $("runTimerFill"), text = $("runTimerText");
+            if (fill) { fill.style.width = (shown / total * 100) + "%"; fill.classList.toggle("low", shown < total * 0.25); }
+            if (text) text.textContent = ui.holding ? "" : `⏱ ${fmtClock(shown)}`;
+            if (left <= 0 && !ui.busy && !ui.holding && !ui.error) runMove(null);
+        }
+
+        function renderRun(keepFocus) {
+            const ui = runUi;
+            if (!ui) return;
+            setIntro(runIntro(ui));
+            if (ui.starting) { $("gameArea").innerHTML = `<div class="game-card"><p class="dim" style="text-align:center;">Starting…</p></div>`; return; }
+            if (ui.over) ui.seenOver = true;
+            const tag = ui.challenge ? `<span class="run-tag challenge">⚔️ Challenge</span>`
+                : ui.ranked ? `<span class="run-tag ranked">🏆 Ranked</span>` : `<span class="run-tag">Unranked</span>`;
+            const head = `${ui.challenge ? `<div class="challenge-bar">⚔️ Your friend's score: <b>${esc(challengeLabel(ui.challenge))}</b> — beat it!</div>` : ""}
+                <div class="run-bar"><span class="run-score${ui.gained ? " bump" : ""}">🔥 ${ui.score}</span><span class="run-best">${ui.challenge ? "" : `${ui.ranked ? "Best this week" : "Your best"}: <b>${ui.best}</b>`}</span>${tag}</div>
+                ${ui.over ? "" : `<div class="run-timer"><div class="run-timer-fill" id="runTimerFill"></div></div><div class="run-timer-text" id="runTimerText"></div>`}`;
+            const body = { trivia: runTriviaBody, hilo: runHiloBody, unitle: runUnitleBody, guess: runGuessBody }[ui.game]();
+            const err = ui.error ? `<div class="reward-box">${esc(ui.error.message)}<br><button class="btn-primary" onclick="retryRunMove()">Try again</button></div>` : "";
+            $("gameArea").innerHTML = `<div class="game-card">${head}${body}${err}${ui.over ? runOverHtml() : ""}</div>`;
+            tickRun();
+            const input = $("runGuessInput") || $("runUnitleInput");
+            if (keepFocus && input && !ui.over) { input.focus(); input.setSelectionRange(input.value.length, input.value.length); }
+        }
+
+        function runTriviaBody() {
+            const ui = runUi, v = ui.view, fb = ui.feedback;
+            const locked = !!fb || ui.busy || ui.over;
+            const opts = v.options.map((o, k) => {
+                const unit = v.unitOptions ? UNITS.find(u => u.name === o) : null;
+                let cls = "";
+                if (fb && k === fb.answer) cls = " correct";
+                else if (fb && k === fb.picked) cls = " wrong";
+                const extra = fb && fb.reveal ? `<span class="opt-extra">${esc(fb.reveal[k])}</span>` : "";
+                return `<button class="opt-btn${cls}" onclick="runMove({ answer: ${k} })"${locked ? " disabled" : ""}>${unit ? `<img src="${esc(unit.img)}" alt="">` : ""}<span>${esc(o)}</span>${extra}</button>`;
+            }).join("");
+            const banner = fb && fb.correct ? `<div class="run-banner good">✅ Right! +1</div>` : "";
+            return `${v.img ? `<div class="game-q-pic"><img src="${esc(v.img)}" alt=""></div>` : ""}<p class="game-q">${v.q}</p><div class="opt-list">${opts}</div>${banner}`;
+        }
+
+        function runHiloBody() {
+            const ui = runUi, v = ui.view, fb = ui.feedback;
+            const stat = C.HILO_STATS.find(s => s.key === v.stat);
+            const card = (key) => {
+                const u = unitByKey(key);
+                let cls = "";
+                if (fb) cls = key === fb.winner ? " correct" : key === fb.picked ? " wrong" : "";
+                return `<button class="hilo-card${cls}" onclick="runMove({ pick: '${key}' })"${fb || ui.busy || ui.over ? " disabled" : ""}>
+                    <img src="${esc(u.img)}" alt=""><span class="hilo-name">${esc(u.name)}</span>
+                    <span class="hilo-val">${fb ? fmt(fb.values[key]) : "?"}</span></button>`;
+            };
+            const banner = fb && fb.correct ? `<div class="run-banner good">✅ Right! +1</div>` : "";
+            return `<p class="game-q" style="text-align:center;">Which has more <b>${stat.label}</b>?</p><div class="hilo-pair">${card(v.a)}${card(v.b)}</div>${banner}`;
+        }
+
+        function unitleRowsHtml(rows) {
+            return rows.map(r => {
+                const u = unitByKey(r.key);
+                return `<div class="unitle-name-line">${esc(u.name)}</div><div class="unitle-row"><div class="unitle-cell name"><img src="${esc(u.img)}" alt=""></div>
+                    ${r.cells.map(([c, label, arrow]) => `<div class="unitle-cell ${c}"><span>${esc(label)}</span>${arrow ? `<span>${arrow}</span>` : ""}</div>`).join("")}</div>`;
+            }).join("");
+        }
+        function runUnitleBody() {
+            const ui = runUi;
+            let rows;
+            if (ui.reveal) {
+                const t = unitByKey(ui.reveal.answer.key);
+                rows = ui.reveal.rows.map(k => ({ key: k, cells: C.unitleCells(unitByKey(k), t) }));
+            } else rows = ui.view.guesses;
+            const solved = ui.reveal && ui.reveal.points ? `<div class="run-banner good">🎉 Found <b>${esc(ui.reveal.answer.name)}</b> in ${ui.reveal.tries}! +${ui.reveal.points}</div>` : "";
+            const input = ui.over || ui.holding ? "" : `<div class="guess-input-row" style="margin-top:10px;">
+                    <input type="text" id="runUnitleInput" placeholder="Guess a troop or hero…" autocomplete="off"
+                        oninput="showRunSuggestions(this.value)" onkeydown="if(event.key==='Enter') submitRunUnitle();">
+                    <button class="btn-primary" style="padding:0 16px; font-weight:700;" onclick="submitRunUnitle()">Guess</button>
+                </div>
+                ${ui.msg ? `<p class="guess-msg">${ui.msg}</p>` : ""}
+                <div class="suggestions" id="runUnitleSuggestions"></div>`;
+            return `<div class="game-progress"><span>Unit ${ui.unitNo} · guess ${Math.min(rows.length + (ui.over || ui.holding ? 0 : 1), C.UNITLE_TRIES)} of ${C.UNITLE_TRIES}</span><span>${ui.over ? "" : "find it to keep going"}</span></div>
+                <div class="unitle-head"><span>Unit</span><span>Type</span><span>Rarity</span><span>Faction</span><span>Fights</span><span>Max HP</span><span>Max ATK</span></div>
+                ${rows.length ? unitleRowsHtml(rows) : `<p class="dim" style="text-align:center; font-size:0.9rem;">Make your first guess below.</p>`}
+                ${solved}${input}
+                <p class="unitle-legend">🟩 match · 🟥 no match · 🟨 close — ⬆️ the answer is higher / rarer, ⬇️ lower. HP and attack are at max level.</p>`;
+        }
+        function showRunSuggestions(text) {
+            const box = $("runUnitleSuggestions");
+            if (!box || !runUi) return;
+            const q = C.normName(text);
+            if (!q) { box.innerHTML = ""; return; }
+            const guessed = new Set(runUi.view.guesses.map(g => g.key));
+            const matches = UNITS.filter(u => !guessed.has(u.key) && C.normName(u.name).includes(q)).slice(0, 6);
+            box.innerHTML = matches.map(u => `<button type="button" onclick="runMove({ guess: '${u.key}' })"><img src="${esc(u.img)}" alt="">${esc(u.name)}</button>`).join("")
+                || `<span class="dim" style="font-size:0.88rem;">No troop or hero matches that.</span>`;
+        }
+        function submitRunUnitle() {
+            const input = $("runUnitleInput");
+            if (!input || !runUi || !C.normName(input.value)) return;
+            const q = C.normName(input.value);
+            const guessed = new Set(runUi.view.guesses.map(g => g.key));
+            const named = C.resolveName(UNITS, input.value, ALIASES);
+            const matches = UNITS.filter(u => !guessed.has(u.key) && C.normName(u.name).includes(q));
+            const unit = named && !guessed.has(named.key) ? named : (matches.length === 1 ? matches[0] : null);
+            if (!unit) { showRunSuggestions(input.value); return; }
+            runMove({ guess: unit.key });
+        }
+
+        function runGuessBody() {
+            const ui = runUi, v = ui.view;
+            let picture;
+            if (ui.reveal) picture = `<img class="flat" src="${esc(ui.reveal.answer.img)}" alt="" style="object-position:top;">`;
+            else if (v.image) picture = `<img class="flat" src="${v.image}" alt="Mystery unit" draggable="false">`;
+            else picture = `<img src="${esc(v.img)}" alt="Mystery unit" draggable="false" style="transform:scale(${v.picture.zoom}); transform-origin:${v.picture.focus[0]}% ${v.picture.focus[1]}%; filter:blur(${v.picture.blur}px);">`;
+            const tiles = ui.reveal ? nameTiles(ui.reveal.answer.name, false, true) : tilesFromMask(v.mask, ui.typed);
+            const over = !ui.reveal && letterCount(ui.typed) > maskLetters(v.mask);
+            const solved = ui.reveal && ui.reveal.points ? `<div class="run-banner good">🎉 It's <b>${esc(ui.reveal.answer.name)}</b>! +${ui.reveal.points}</div>` : "";
+            const controls = ui.over || ui.holding ? "" : `<form class="guess-input-row" onsubmit="event.preventDefault(); submitRunGuess();">
+                    <input type="text" id="runGuessInput" placeholder="Type the troop or hero's name" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" enterkeyhint="go"
+                        value="${esc(ui.typed)}" oninput="onGuessTyping(this.value)">
+                    <button class="btn-primary" type="submit" style="padding:0 16px; font-weight:700;">Guess</button>
+                </form>
+                ${ui.msg ? `<p class="guess-msg">${ui.msg}</p>` : ""}
+                <div class="game-actions">${runHintButton(v)}</div>`;
+            const wrongNames = (v ? v.wrong : []).map(k => "❌ " + esc(unitByKey(k).name)).join(" · ");
+            return `<div class="game-progress"><span>Unit ${ui.unitNo} · guess ${Math.min((v ? v.wrong.length : 0) + 1, C.MAX_GUESSES)} of ${C.MAX_GUESSES}</span><span>${ui.over ? "" : "name it to keep going"}</span></div>
+                <div class="guess-frame">${picture}</div>
+                <div class="name-tiles${over ? " over" : ""}"${ui.over || ui.holding ? "" : ` onclick="const i = document.getElementById('runGuessInput'); if (i) i.focus();"`}>${tiles}</div>
+                ${v && v.hints.length && !ui.reveal ? `<ul class="hint-list">${v.hints.map((h, i) => `<li>💡 Hint ${i + 1}: ${h}</li>`).join("")}</ul>` : ""}
+                ${ui.reveal ? "" : `<div class="wrong-guesses">${wrongNames}</div>`}
+                ${solved}${controls}`;
+        }
+        // Hints come from the run's pool of RUN_GUESS_HINTS — used ones are gone
+        // for the rest of the run. Still at most MAX_HINTS on one unit.
+        function runHintButton(v) {
+            const left = v.hintsLeft == null ? C.RUN_GUESS_HINTS : v.hintsLeft;
+            const maxed = v.hints.length >= C.MAX_HINTS;
+            const label = left <= 0 ? "💡 No hints left this run" : maxed ? "💡 No more hints for this one" : `💡 Use a hint · ${left} left this run`;
+            return `<button class="btn-ghost hint-btn" onclick="runMove({ hint: true })"${left <= 0 || maxed ? " disabled" : ""}>${label}</button>
+                <span class="hint-pips" aria-label="${left} of ${C.RUN_GUESS_HINTS} hints left">${Array.from({ length: C.RUN_GUESS_HINTS }, (_, i) => `<i class="${i < left ? "on" : ""}"></i>`).join("")}</span>`;
+        }
+        function submitRunGuess() {
+            const input = $("runGuessInput");
+            if (!input || !runUi) return;
+            const text = input.value.trim();
+            if (!text) return;
+            runUi.typed = input.value;
+            const unit = findUnit(text);
+            if (!unit) {
+                runUi.msg = `🤔 No troop or hero called “${esc(text)}” — check the spelling. That didn't use a guess.`;
+                renderRun(true);
+                return;
+            }
+            if (runUi.view.wrong.includes(unit.key)) {
+                runUi.msg = `You already guessed ${esc(unit.name)}.`;
+                renderRun(true);
+                return;
+            }
+            runUi.typed = "";
+            runMove({ guess: unit.key });
+        }
+
+        function runOverHtml() {
+            const ui = runUi, fb = ui.feedback || {};
+            const timedOut = fb.timedOut && (runIsStreak(ui.game) ? fb.picked == null : !fb.lastGuess);
+            const why = timedOut ? "⏰ Time's up!" : runIsStreak(ui.game) ? "💥 Wrong answer — run over" : "💥 Out of guesses — run over";
+            const unit = fb.answer && fb.answer.name ? `<div class="run-over-unit"><img src="${esc(fb.answer.img)}" alt=""><span>It was <b>${esc(fb.answer.name)}</b></span></div>` : "";
+            const what = runIsStreak(ui.game) ? `right answer${ui.score === 1 ? "" : "s"} in a row` : `point${ui.score === 1 ? "" : "s"}`;
+            const best = ui.challenge ? "" : ui.newBest
+                ? `<div class="run-newbest">🏆 New best${ui.ranked ? " this week" : ""}!</div>`
+                : `<div class="dim" style="margin-top:6px; font-size:0.9rem;">${ui.ranked ? "Your best this week" : "Your best"}: ${ui.best}</div>`;
+            let outcome = "";
+            if (ui.challenge) {
+                const d = ui.score - (ui.challenge.score || 0);
+                const theirs = esc(challengeLabel(ui.challenge));
+                outcome = `<div class="challenge-bar ${d > 0 ? "won" : d < 0 ? "lost" : ""}" style="margin-top:10px;">${d > 0 ? `🏆 You beat your friend (${theirs})!` : d < 0 ? `😅 Your friend wins this one (${theirs}).` : `🤝 A tie — you both got ${theirs}.`}</div>`;
+            }
+            const note = !ui.ranked && !ui.challenge
+                ? `<p class="dim" style="font-size:0.85rem; margin:10px 0 0;">${ui.note === "signin" ? "Sign in to put your runs on the weekly leaderboard 🏆" : esc(ui.note)}</p>` : "";
+            const share = ui.score > 0 && ui.seed != null ? `<button class="btn-primary" onclick="openFriends()">⚔️ Challenge a friend</button>` : "";
+            return `<div class="run-over">
+                <div class="run-over-title">${why}</div>
+                ${unit}
+                <div class="run-over-score">${ui.score}</div>
+                <div class="dim">${what}</div>
+                ${best}${outcome}${note}
+                ${ui.ranked ? `<button class="lb-link" onclick="openLeaderboard()">🏆 See where you rank</button>` : ""}
+                <div class="game-actions"><button class="${share ? "btn-ghost" : "btn-primary"}" onclick="startRun('${ui.game}', { fresh: true })">▶️ Play again</button>${share}</div>
+            </div>`;
+        }
+        // The chat message for a finished run: the score, and a link that
+        // replays the same run (its seed — safe to share once it's over).
+        function runChallengeMessage() {
+            const ui = runUi, icon = C.GAME_ICONS[ui.game], title = C.GAME_TITLES[ui.game];
+            const brag = runIsStreak(ui.game) ? `I got a streak of ${ui.score} in ${icon} ${title}` : `I scored ${ui.score} point${ui.score === 1 ? "" : "s"} in ${icon} ${title}`;
+            return `⚔️ ${brag} — can you beat me?\n${CHALLENGE_URL}${ui.game}.s${ui.seed.toString(36)}.${Math.min(999, ui.score)}`;
+        }
+
+        /* ================================================================
+           🏆 WEEKLY LEADERBOARD — the side tab on every tab. Weekly score = your best
+           ranked run this week in each game, added up. Top 3 when the week
+           ends win tokens (paid by api/games.js).
+           ================================================================ */
+        let lbData = null, lbLoadedAt = 0, lbLoading = false, lbError = false, lbShowAll = false;
+        const LB_ORDER = ["unitle", "hilo", "trivia", "guess"];
+        async function loadLeaderboard(force) {
+            if (lbLoading) return;
+            if (!force && lbData && Date.now() - lbLoadedAt < 30000) { renderLeaderboard(); return; }
+            lbLoading = true;
+            try {
+                const AS = await appStateReady();
+                await AS.waitForAuthReady();
+                if (typeof AS.gamesLeaderboard !== "function") throw new Error("unavailable");
+                lbData = await AS.gamesLeaderboard();
+                lbData.receivedAt = Date.now();
+                lbData.signedIn = !!AS.getCurrentUser();
+                lbLoadedAt = Date.now();
+                lbError = false;
+            } catch (e) {
+                lbError = true;
+            } finally {
+                lbLoading = false;
+                renderLeaderboard();
+            }
+        }
+        function fmtLeft(ms) {
+            const m = Math.max(0, Math.floor(ms / 60000)), d = Math.floor(m / 1440), h = Math.floor((m % 1440) / 60);
+            return d ? `${d}d ${h}h` : h ? `${h}h ${m % 60}m` : `${m}m`;
+        }
+        function lbRulesHtml(prizes) {
+            const pay = prizes ? prizes.map((p, i) => `${["🥇", "🥈", "🥉"][i]} ${p}`).join(" · ") + " 🪙" : "tokens";
+            return `<div class="lb-section"><div class="lb-section-title">📜 How it works</div><ul class="lb-rules">
+                    <li>Your weekly score is your <b>best run this week in each game</b>, added together.</li>
+                    <li>🎯 Unitle: 6 points for a unit found in 1 guess, down to 1 point in 6 guesses.</li>
+                    <li>⬆️ Hi-Lo and 🧠 Trivia: 1 point for each right answer in a row.</li>
+                    <li>🔍 Guess the Unit: 3, 2 or 1 points by guesses. ${C.RUN_GUESS_HINTS} hints for the whole run — used ones don't come back.</li>
+                    <li>Only runs played signed in count — not friends' challenges or 🎲 Today's Puzzle.</li>
+                    <li>The week ends Sunday midnight (Singapore time). Top 3 win ${pay}, sent to your inbox.</li>
+                </ul></div>`;
+        }
+        function renderLeaderboard() {
+            const box = $("lbCard");
+            if (!box) return;
+            const rankEl = $("lbTabRank");
+            const myRank = lbData && lbData.signedIn && lbData.me && lbData.me.rank;
+            rankEl.textContent = myRank ? "#" + myRank : "";
+            rankEl.style.display = myRank ? "" : "none";
+            if (!lbData) {
+                box.innerHTML = (lbError ? `<div class="lb-empty">The leaderboard isn't available right now — try again in a bit.</div>`
+                    : `<div class="lb-empty">Loading the weekly leaderboard…</div>`) + lbRulesHtml(null);
+                return;
+            }
+            const d = lbData;
+            const left = d.endsAt - (d.now + (Date.now() - d.receivedAt));
+            const medals = ["🥇", "🥈", "🥉"];
+            const prizes = d.prizes.map((p, i) => `<div class="lb-prize">${medals[i]}<b>+${p} 🪙</b></div>`).join("");
+            const list = lbShowAll ? d.top : d.top.slice(0, 10);
+            const rows = list.map(r => `<div class="lb-row${r.me ? " me" : ""}${r.rank <= 3 ? " top" + r.rank : ""}">
+                    <span class="lb-rank">${medals[r.rank - 1] || "#" + r.rank}</span><span class="lb-name">${esc(r.name)}${r.me ? " (you)" : ""}</span><span class="lb-total">${r.total}</span></div>`).join("");
+            const more = d.top.length > 10 ? `<button class="lb-more" onclick="lbShowAll = !lbShowAll; renderLeaderboard();">${lbShowAll ? "Show top 10" : `Show all ${d.top.length}`}</button>` : "";
+            const chips = (best) => `<div class="lb-chips">${LB_ORDER.map(g => `<span>${C.GAME_ICONS[g]} ${esc(C.GAME_TITLES[g])}: <b>${best[g] || 0}</b></span>`).join("")}</div>`;
+            let me;
+            if (!d.signedIn) me = `<div class="lb-me">Sign in and play — your best run in each game adds up to your weekly score.</div>`;
+            else if (d.me && d.me.rank) me = `<div class="lb-me">You're <b>#${d.me.rank}</b> with <b>${d.me.total}</b> points this week.${chips(d.me.best)}</div>`;
+            else me = `<div class="lb-me">You're not on the board yet — finish a run in any game to get on it.</div>`;
+            const last = d.lastWeek && d.lastWeek.length
+                ? `<div class="lb-section"><div class="lb-section-title">Last week's winners</div><div class="lb-note" style="margin:0;">${d.lastWeek.map(w => `${medals[w.rank - 1]} ${esc(w.name)} (${w.total})`).join(" · ")}</div></div>` : "";
+            box.innerHTML = `<div class="lb-head"><span class="lb-ends">⏳ Ends in <b>${fmtLeft(left)}</b></span></div>
+                <div class="lb-prizes">${prizes}</div>
+                ${me}
+                <div class="lb-section"><div class="lb-section-title">This week</div>
+                ${rows || `<div class="lb-empty">No scores yet this week — be the first! 🚀</div>`}${more}</div>
+                ${last}${lbRulesHtml(d.prizes)}`;
+        }
+        function openLeaderboard() {
+            $("lbDrawer").classList.add("open");
+            $("lbDrawer").setAttribute("aria-hidden", "false");
+            $("lbBack").classList.add("open");
+            document.documentElement.style.overflow = "hidden";
+            loadLeaderboard();
+        }
+        function closeLeaderboard() {
+            $("lbDrawer").classList.remove("open");
+            $("lbDrawer").setAttribute("aria-hidden", "true");
+            $("lbBack").classList.remove("open");
+            document.documentElement.style.overflow = "";
+        }
+        document.addEventListener("keydown", (e) => { if (e.key === "Escape" && $("lbDrawer").classList.contains("open")) closeLeaderboard(); });
+
         /* ---------------- start ---------------- */
         (async function init() {
             try {
@@ -987,6 +1586,8 @@
                 const challenge = parseChallenge(params.get("challenge"));
                 if (challenge) startChallenge(challenge);
                 else render();
+                // Signing in or out changes your place on the leaderboard.
+                appStateReady().then(AS => AS.onAuthChange && AS.onAuthChange(() => loadLeaderboard(true))).catch(() => { });
             } catch (e) {
                 $("gameArea").innerHTML = `<p class="dim" style="text-align:center;">Couldn't load the game data — check your connection and reload.</p>`;
             }

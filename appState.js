@@ -313,6 +313,27 @@ async function signOutUser() {
         return callTokensApi("dailyPuzzle", { day, play });
     }
 
+    // Games' ranked runs and weekly leaderboard (api/games.js). A ranked run
+    // is played on the server one move at a time, so its answers never
+    // reach this page.
+    async function callGamesApi(action, payload = {}) {
+        await waitForAuthReady();
+        const headers = { "Content-Type": "application/json" };
+        if (currentUser) headers.Authorization = "Bearer " + await getIdToken();
+        const res = await fetch(BACKEND_BASE + "/api/games", { method: "POST", headers, body: JSON.stringify({ action, ...payload }) });
+        let data = null;
+        try { data = await res.json(); } catch (e) { /* non-JSON error page */ }
+        if (!res.ok) {
+            const err = new Error((data && data.error) || `Request failed (${res.status})`);
+            err.status = res.status;
+            throw err;
+        }
+        return data;
+    }
+    const gamesRunStart = (game) => callGamesApi("runStart", { game });
+    const gamesRunAnswer = (runId, input) => callGamesApi("runAnswer", { runId, input });
+    const gamesLeaderboard = () => callGamesApi("leaderboard");
+
     async function getMyTokenBalance() {
         await waitForAuthReady();
         if (!currentUser) return 0;
@@ -4541,7 +4562,7 @@ async function maybeRefreshAd(containerId) {
     return {
         // auth
         signIn, signOut: signOutUser, getCurrentUser, onAuthChange, waitForAuthReady, getIdToken,
-        getTodaysQuests, listenToMyWallet, listenToMyQuestProgress, claimQuestRewards, submitDailyPuzzle, getMyTokenBalance,
+        getTodaysQuests, listenToMyWallet, listenToMyQuestProgress, claimQuestRewards, submitDailyPuzzle, gamesRunStart, gamesRunAnswer, gamesLeaderboard, getMyTokenBalance,
         listenToMyGiftClaims, claimTokenGift, adminTokens,
         reportQuestProgress, startDailyQuestTracking, stakeTokensOnSecretGiveaway, setSecretGiveawayStake, refreshSecretGiveawayMaxStake,
         // profile

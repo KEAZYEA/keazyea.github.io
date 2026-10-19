@@ -13,6 +13,97 @@ h1 {
     font-size: 50px;
     text-align: center;
     margin-bottom: 10px;
+    /* A slowly moving blue → violet → pink → gold gradient through the
+       letters. Browsers without background-clip:text keep the blue above. */
+    background: linear-gradient(90deg, #6c9bff, #b47cff, #ff7ab8, #ffc46b, #6c9bff);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    /* still (a moving text gradient repaints every frame on every page) */
+}
+@keyframes kihTitleShimmer { to { background-position: 300% 0; } }
+@media (prefers-reduced-motion: reduce) { h1 { animation: none; } }
+
+/* Page glow: soft coloured light behind a page, fixed while it scrolls.
+   Opt in with <body class="kih-glow glow-xxx">; each glow-xxx is a page's
+   own colours. Looks only. */
+body.kih-glow {
+    --glow-a: rgba(138, 77, 255, 0.22);
+    --glow-b: rgba(46, 204, 113, 0.12);
+    --glow-c: rgba(65, 105, 225, 0.2);
+}
+body.kih-glow.glow-troops { --glow-a: rgba(65, 105, 225, 0.28); --glow-b: rgba(0, 200, 255, 0.13); --glow-c: rgba(220, 60, 60, 0.15); }
+body.kih-glow.glow-tips { --glow-a: rgba(46, 204, 113, 0.2); --glow-b: rgba(255, 196, 0, 0.14); --glow-c: rgba(138, 77, 255, 0.18); }
+body.kih-glow.glow-social { --glow-a: rgba(255, 64, 129, 0.18); --glow-b: rgba(0, 200, 255, 0.13); --glow-c: rgba(138, 77, 255, 0.22); }
+body.kih-glow.glow-store { --glow-a: rgba(255, 196, 0, 0.18); --glow-b: rgba(138, 77, 255, 0.22); --glow-c: rgba(255, 107, 53, 0.15); }
+body.kih-glow::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+        radial-gradient(circle at 12% 0%, var(--glow-a), transparent 42%),
+        radial-gradient(circle at 92% 22%, var(--glow-b), transparent 38%),
+        radial-gradient(circle at 50% 100%, var(--glow-c), transparent 48%);
+    /* the light drifts slowly, so the page never feels static */
+    animation: glowDrift 26s ease-in-out infinite alternate;
+}
+@keyframes glowDrift {
+    from { transform: translate(0, 0) scale(1); }
+    to { transform: translate(-3%, 2%) scale(1.08); }
+}
+/* A faint field of rising specks behind the page (opt in with
+   <body class="kih-stars">). One small tile of dots, repeated and moved
+   with a transform — cheap for the phone to draw, and it loops seamlessly. */
+body.kih-stars::after {
+    content: "";
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: -240px;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.55;
+    background-image:
+        radial-gradient(1.5px 1.5px at 20px 30px, rgba(255, 255, 255, 0.7), transparent 60%),
+        radial-gradient(1px 1px at 90px 140px, rgba(255, 230, 160, 0.8), transparent 60%),
+        radial-gradient(1.5px 1.5px at 160px 60px, rgba(180, 160, 255, 0.8), transparent 60%),
+        radial-gradient(1px 1px at 200px 190px, rgba(255, 255, 255, 0.6), transparent 60%),
+        radial-gradient(2px 2px at 60px 210px, rgba(255, 215, 94, 0.5), transparent 60%);
+    background-size: 240px 240px;
+    animation: starsRise 70s linear infinite;
+}
+@keyframes starsRise { to { transform: translateY(-240px); } }
+@media (prefers-reduced-motion: reduce) {
+    body.kih-glow::before, body.kih-stars::after { animation: none; }
+}
+
+/* Idle life on tabs and badges: a tab lifts a little under your finger,
+   and a notification badge pops in. */
+.tab-btn { position: relative; }
+.tab-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(108, 99, 255, 0.25); }
+/* a notification badge pops in when it appears (once — no endless pulsing) */
+.badge-dot, .tab-badge { animation: badgePop 0.45s cubic-bezier(.2, 1.6, .4, 1) both; }
+@keyframes badgePop { from { transform: scale(0); } }
+@media (prefers-reduced-motion: reduce) {
+    .badge-dot, .tab-badge { animation: none; }
+}
+/* Bars that stick to the top: nearly solid. (A frosted blur here looked
+   nice but made scrolling stutter on slower phones.) */
+body.kih-glow .tabs,
+body.kih-glow .sticky-controls {
+    background: rgba(24, 24, 44, 0.95);
+}
+body.kih-glow .tabs {
+    border-radius: 14px 14px 0 0;
+    padding-left: 6px;
+    padding-right: 6px;
+}
+body.kih-glow .sticky-controls {
+    border-radius: 0 0 14px 14px;
 }
 
 /* ===============================
@@ -91,11 +182,22 @@ h1 {
         than the screen on narrow phones instead of wrapping its text */
     padding: 10px 40px;
     font-size: 16px;
-    border: none;
-    border-radius: 6px;
+    border: 1px solid rgba(140, 160, 255, 0.16);
+    border-radius: 10px;
     cursor: pointer;
     background: #2a2a4a;
+    background: linear-gradient(180deg, #2f2f56, #25254a);
     color: white;
+    font-weight: 700;
+    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+}
+
+.tab-btn:hover {
+    border-color: rgba(140, 160, 255, 0.45);
+}
+
+.tab-btn:active {
+    transform: scale(0.97);
 }
 
 /* this makes it such that when we are on that tab it turns light blue, indicating what tab we are in */
@@ -104,7 +206,10 @@ h1 {
 /* if u see .tab-btn .active with a space, then it means an element of class active inside the class tab-btn */
 .tab-btn.active {
     background: #4169e1;
+    background: linear-gradient(135deg, #4169e1, #8a4dff);
+    border-color: rgba(190, 170, 255, 0.55);
     color: white;
+    box-shadow: 0 4px 16px rgba(138, 77, 255, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.18);
 }
 
 /* we hide all pages because we just want to show which page we are on. Not all */
