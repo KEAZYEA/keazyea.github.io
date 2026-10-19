@@ -489,9 +489,15 @@
         }
         function switchTab(id) {
             showTab(id);
-            try { localStorage.setItem("kih_games_tab", id); } catch (e) { }
             render();
         }
+        // Coming back to Games from elsewhere on the site (index.html says so):
+        // back to Today's Puzzle rather than straight into a game. A run left
+        // going isn't lost — its tab keeps the orange dot.
+        window.addEventListener("message", (e) => {
+            if (e.source !== window.parent || !e.data || e.data.kih !== "gamesReturn") return;
+            if (UNITS.length && tab !== "today") switchTab("today");
+        });
         function render() {
             if (!UNITS.length) return;
             hideRun();
@@ -1797,12 +1803,12 @@
         /* ---------------- start ---------------- */
         (async function init() {
             try {
-                let saved = null;
-                try { saved = localStorage.getItem("kih_games_tab"); } catch (e) { }
+                // Always opens on Today's Puzzle (not the last tab, which would
+                // start a run the moment Games opens) unless a link asks for one.
                 const params = new URLSearchParams(location.search);
                 const asked = params.get("game");
                 const valid = (t) => t === "today" || t === "ranks" || C.GAMES.includes(t);
-                showTab(valid(asked) ? asked : (valid(saved) ? saved : "today"));
+                showTab(valid(asked) ? asked : "today");
                 // While the game data downloads, wake the games server (and its
                 // sign-in check) so the first ranked move doesn't wait for it.
                 signedInAppState().then(AS => AS && AS.gamesPing && AS.gamesPing()).catch(() => { });
