@@ -6,19 +6,28 @@
  * is sent each question without its answer, sends back one move at a time,
  * and this decides what's right — a score can't simply be posted. The rules
  * are games-core.js, the same file the page uses for guests' (unranked)
- * runs, so both behave identically. Guess the Unit's picture is sent as a
- * cropped, blurred image made here, since the real picture's file name is
- * the answer.
+ * runs, so both behave identically. Blur's picture is sent as a cropped,
+ * blurred image made here, since the real picture's file name is the answer.
  *
- * POST JSON { action, ... }:
+ * POST JSON { action, ... } — as plain text (Content-Type text/plain) with
+ * the sign-in token as body.idToken, so the browser sends it straight away
+ * instead of first asking permission (a CORS preflight: a whole extra trip,
+ * which for a player far from the server is the slowest part of a move).
+ * An "Authorization: Bearer" header works too.
+ *   ping                          -> nothing; wakes the server up (and checks the
+ *                                    token) while the page loads, so the first
+ *                                    real move doesn't wait for it
  *   runStart    { game }          -> a new run (sign-in needed): its first question
  *   runAnswer   { runId, input }  -> one move: what happened, then the next
  *                                    question or the end of the run
- *   leaderboard                   -> this week's top players, your place (when
- *                                    signed in), the prizes and last week's winners
+ *   leaderboard                   -> this week's top players, your place, the
+ *                                    prizes and last week's winners — names only for
+ *                                    a signed-in caller; anyone else gets just the
+ *                                    week's end and the prizes
  *
- * Weekly score = your best run this week in each of the four games, added
- * up. Weeks run Monday–Sunday, Singapore time. The first leaderboard or run
+ * Weekly score = your best run this week in each of the five games, each
+ * turned into at most G.LB_CAP points (G.lbPoints), added up — so every
+ * game counts the same. Weeks run Monday–Sunday, Singapore time. The first leaderboard or run
  * request after a week ends pays its top 3 (WEEKLY_PRIZES), once — the
  * week's summary doc records it inside the same transaction.
  *
@@ -32,6 +41,7 @@ const crypto = require("crypto");
 const { getFirebaseAdmin, DAY_MS, dayKeyFor, dayStartMs, weekDayKeys, isBannedNow } = require("./_lib");
 const { FieldValue } = require("firebase-admin/firestore");
 const G = require("../games-core.js");
+const { loadUnits } = require("./_units");
 const jpeg = require("../vendor/jpeg-js");
 
 const WEEKLY_PRIZES = [15, 10, 5]; // 🪙 for 1st, 2nd, 3rd
@@ -42,9 +52,9 @@ class HttpError extends Error {
   constructor(status, message) { super(message); this.status = status; }
 }
 
-async function verifyCaller(admin, req, required) {
+async function verifyCaller(admin, req, required, body) {
   const header = req.headers.authorization || "";
-  const idToken = header.startsWith("Bearer ") ? header.slice(7) : null;
+  const idToken = header.startsWith("Bearer ") ? header.slice(7) : (body && typeof body.idToken === "string" ? body.idToken : null);
   if (!idToken) {
     if (required) throw new HttpError(401, "Sign in first.");
     return null;
@@ -57,19 +67,6 @@ async function verifyCaller(admin, req, required) {
   }
 }
 
-/* ---------------- game data ---------------- */
-let units = null;
-function loadUnits() {
-  if (!units) {
-    units = G.buildUnits({
-      troops: require("../troops.json"), troopLevels: require("../troopsLevel.json"),
-      heroes: require("../hero.json"), heroLevels: require("../heroLevel.json"),
-      loc: require("../localization.json"), en: require("../en.json")
-    });
-  }
-  return units;
-}
-
 /* ---------------- weeks ---------------- */
 const weekOf = (ms) => weekDayKeys(dayKeyFor(ms))[0]; // that week's Monday
 function weekEndsAt(ms) {
@@ -78,13 +75,13 @@ function weekEndsAt(ms) {
 }
 const weeksBefore = (week, n) => new Date(Date.parse(week + "T00:00:00Z") - 7 * n * DAY_MS).toISOString().slice(0, 10);
 const blankBest = () => Object.fromEntries(G.GAMES.map(g => [g, 0]));
-const totalOf = (best) => G.GAMES.reduce((a, g) => a + (Number(best[g]) || 0), 0);
+const totalOf = (best) => G.lbTotal(best); // each game at most G.LB_CAP points
 
-/* ---------------- Guess the Unit pictures ----------------
+/* ---------------- Blur pictures ----------------
    The page shows the picture zoomed in and blurred with CSS, which would
    hand the whole picture (and its name) to anyone who inspects it. For a
    ranked run the server makes the zoomed, blurred view itself — the same
-   region and blur the CSS would show (G.guessCrop) — and sends only that. */
+   region and blur the CSS would show (G.blurCrop) — and sends only that. */
 const CROP_OUT = 300; // px square
 const pictureCache = new Map();
 async function loadPicture(imgPath) {
@@ -127,7 +124,7 @@ function blurRGBA(data, w, h, sigma) {
 
 async function croppedPicture(imgPath, picture) {
   const pic = await loadPicture(imgPath);
-  const c = G.guessCrop(pic.width, pic.height, picture.focus, picture.zoom);
+  const c = G.blurCrop(pic.width, pic.height, picture.focus, picture.zoom);
   const out = new Float32Array(CROP_OUT * CROP_OUT * 4);
   const px = (x, y, ch) => pic.data[(Math.min(pic.height - 1, Math.max(0, y)) * pic.width + Math.min(pic.width - 1, Math.max(0, x))) * 4 + ch];
   for (let y = 0; y < CROP_OUT; y++) {
@@ -150,10 +147,10 @@ async function croppedPicture(imgPath, picture) {
   return "data:image/jpeg;base64," + Buffer.from(data).toString("base64");
 }
 
-// What the browser gets for a run's current question.
+// What the browser gets for a run's current question (never its answer).
 async function publicView(run) {
   const view = G.runView(loadUnits(), run);
-  if (run.game === "guess") {
+  if (run.game === "blur") {
     view.image = await croppedPicture(view.img, view.picture);
     delete view.img;
     delete view.picture;
@@ -176,9 +173,12 @@ async function assertNotBanned(db, uid) {
 async function runStart(db, uid, body, now) {
   const game = body.game;
   if (!G.GAMES.includes(game)) throw new HttpError(400, "Unknown game.");
-  await assertNotBanned(db, uid);
   const week = weekOf(now);
-  const [name, lb] = await Promise.all([
+  // All at once rather than one after another: each is a trip to the database.
+  // (Rescoring only changes totals, never the per-game bests read here.)
+  const [, , name, lb] = await Promise.all([
+    assertNotBanned(db, uid),
+    rescoreWeek(db, week),
     playerName(db, uid),
     db.collection("gameLeaderboards").doc(week).collection("players").doc(uid).get()
   ]);
@@ -192,10 +192,11 @@ async function runStart(db, uid, body, now) {
 // Only the fields a move can have, with the right types.
 function cleanInput(input) {
   if (!input || typeof input !== "object") return null;
-  if (input.hint === true) return { hint: true };
+  if (input.hint === true) return { hint: true }; // Blur
   if (Number.isInteger(input.answer)) return { answer: input.answer };
   if (typeof input.pick === "string") return { pick: input.pick.slice(0, 80) };
   if (typeof input.guess === "string") return { guess: input.guess.slice(0, 80) };
+  if (typeof input.letter === "string") return { letter: input.letter.slice(0, 2) }; // Hangman
   return null;
 }
 
@@ -205,12 +206,17 @@ async function runAnswer(db, uid, body, now) {
   const input = cleanInput(body.input);
   const runRef = db.collection("gameRuns").doc(runId);
   const result = await db.runTransaction(async (tx) => {
-    const runSnap = await tx.get(runRef);
+    // The run and your leaderboard row in one round trip. The row belongs to
+    // the run's week, which is almost always this week; a run started just
+    // before the weekly reset reads its own week's row separately.
+    const thisWeek = weekOf(now);
+    const guessRef = db.collection("gameLeaderboards").doc(thisWeek).collection("players").doc(uid);
+    const [runSnap, guessSnap] = await tx.getAll(runRef, guessRef);
     if (!runSnap.exists || runSnap.data().uid !== uid) throw new HttpError(404, "That run doesn't exist.");
     const doc = runSnap.data();
     if (doc.run.over) throw new HttpError(409, "This run has already ended.");
-    const lbRef = db.collection("gameLeaderboards").doc(doc.week).collection("players").doc(uid);
-    const lbSnap = await tx.get(lbRef);
+    const lbRef = doc.week === thisWeek ? guessRef : db.collection("gameLeaderboards").doc(doc.week).collection("players").doc(uid);
+    const lbSnap = doc.week === thisWeek ? guessSnap : await tx.get(lbRef);
     let step;
     try {
       step = G.runStep(loadUnits(), doc.run, input, now, G.RUN_GRACE_MS);
@@ -296,9 +302,31 @@ async function finalizePastWeeks(db, now) {
 }
 
 /* ---------------- leaderboard ---------------- */
+const SCORING = 2; // 2: each game scaled to at most G.LB_CAP points
+const rescored = new Set();
+async function rescoreWeek(db, week) {
+  if (rescored.has(week)) return;
+  const metaRef = db.collection("gameLeaderboards").doc(week);
+  const meta = await metaRef.get();
+  if (!(meta.exists && meta.data().scoring === SCORING)) {
+    const snap = await metaRef.collection("players").get();
+    let batch = db.batch(), n = 0;
+    for (const d of snap.docs) {
+      const total = totalOf({ ...blankBest(), ...(d.data().best || {}) });
+      if (total !== d.data().total) { batch.update(d.ref, { total }); if (++n % 400 === 0) { await batch.commit(); batch = db.batch(); } }
+    }
+    if (n % 400) await batch.commit();
+    await metaRef.set({ week, scoring: SCORING }, { merge: true });
+  }
+  rescored.add(week);
+}
+
 async function leaderboard(db, uid, now) {
   await finalizePastWeeks(db, now);
   const week = weekOf(now);
+  // Names are only for signed-in players.
+  if (!uid) return { ok: true, week, endsAt: weekEndsAt(now), now, prizes: WEEKLY_PRIZES, cap: G.LB_CAP, top: [], me: null, lastWeek: [], signedOut: true };
+  await rescoreWeek(db, week);
   const players = db.collection("gameLeaderboards").doc(week).collection("players");
   const [topSnap, meSnap, lastMeta] = await Promise.all([
     players.orderBy("total", "desc").limit(LEADERBOARD_SIZE + 10).get(),
@@ -321,26 +349,31 @@ async function leaderboard(db, uid, now) {
   const lastWeek = lastMeta.exists && lastMeta.data().winners
     ? lastMeta.data().winners.map(w => ({ rank: w.rank, name: w.name, total: w.total, prize: w.prize }))
     : [];
-  return { ok: true, week, endsAt: weekEndsAt(now), now, prizes: WEEKLY_PRIZES, top: rows, me, lastWeek };
+  return { ok: true, week, endsAt: weekEndsAt(now), now, prizes: WEEKLY_PRIZES, cap: G.LB_CAP, top: rows, me, lastWeek };
 }
 
 module.exports = async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  // Lets the browser skip the permission check before every move (2 h).
+  res.setHeader("Access-Control-Max-Age", "7200");
   if (req.method === "OPTIONS") { res.status(204).end(); return; }
   if (req.method !== "POST") { res.status(405).json({ ok: false, error: "Method not allowed" }); return; }
 
-  const body = req.body || {};
+  // Plain-text bodies (see the top) arrive as a string.
+  let body = req.body || {};
+  if (typeof body === "string") { try { body = JSON.parse(body); } catch (e) { body = {}; } }
   const now = Date.now();
   try {
     const admin = getFirebaseAdmin();
     const db = admin.firestore();
     let result;
     switch (body.action) {
-      case "runStart": result = await runStart(db, await verifyCaller(admin, req, true), body, now); break;
-      case "runAnswer": result = await runAnswer(db, await verifyCaller(admin, req, true), body, now); break;
-      case "leaderboard": result = await leaderboard(db, await verifyCaller(admin, req, false), now); break;
+      case "ping": loadUnits(); await verifyCaller(admin, req, false, body); result = { ok: true }; break;
+      case "runStart": result = await runStart(db, await verifyCaller(admin, req, true, body), body, now); break;
+      case "runAnswer": result = await runAnswer(db, await verifyCaller(admin, req, true, body), body, now); break;
+      case "leaderboard": result = await leaderboard(db, await verifyCaller(admin, req, false, body), now); break;
       default: throw new HttpError(400, "Unknown action.");
     }
     res.status(200).json(result);
@@ -352,4 +385,4 @@ module.exports = async (req, res) => {
 };
 
 // For tests.
-module.exports._internals = { weekOf, weekEndsAt, weeksBefore, croppedPicture, finalizeWeek, WEEKLY_PRIZES };
+module.exports._internals = { weekOf, weekEndsAt, weeksBefore, finalizeWeek, rescoreWeek, WEEKLY_PRIZES };

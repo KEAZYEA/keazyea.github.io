@@ -2206,6 +2206,13 @@ if (user && user.uid === winnerData.winnerUid) {
             let secretGiveawaysFailed = false;
 
             function startSecretGiveawaysBadgeFeed() {
+                // Winners' names are only for signed-in players: nothing is
+                // fetched for a visitor, and signing out drops what was there.
+                if (!AppState.getCurrentUser()) {
+                    if (unsubSecretGiveaways) { unsubSecretGiveaways(); unsubSecretGiveaways = null; }
+                    latestSecretGiveaways = [];
+                    return;
+                }
                 if (unsubSecretGiveaways) return;
                 secretGiveawaysFailed = false;
                 unsubSecretGiveaways = AppState.listenToSecretGiveaways((items) => {
