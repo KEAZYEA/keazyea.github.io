@@ -154,6 +154,16 @@
             margin-bottom: 20px;
         }
 
+        /* Where a plan's PayPal button goes. Holds its height while the
+           profile and PayPal load, so the cards don't jump. */
+        .plan-btn-box { min-height: 55px; }
+        .plan-btn-loading {
+            height: 45px; margin-top: 10px; border-radius: 999px;
+            background: linear-gradient(90deg, #23233f 0%, #34345e 50%, #23233f 100%);
+            background-size: 200% 100%; animation: planShimmer 1.2s linear infinite;
+        }
+        @keyframes planShimmer { to { background-position: -200% 0; } }
+
         /* ---- One-off token packs ---- */
         /* Same outer width as the plan cards above: both side by side on a
            wide screen (2 x 330px + 32px gap), one card wide when they stack. */
@@ -259,6 +269,132 @@
                 max-width: 330px;
             }
         }
+
+        /* ===============================
+           STORE — product cards instead of paragraphs, and a purchase that
+           feels like one: the pack pops, sparks fly, coins stream into
+           your balance, and a chest bursts open with the amount.
+        ================================*/
+        #storePage { max-width: 720px; margin: 0 auto; padding: 0 14px 30px; box-sizing: border-box; }
+        .store-tagline { text-align: center; color: #d8d0f0; margin: 0 0 16px; font-size: 0.98rem; }
+        .store-section { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; margin: 22px 0 10px; font-size: 1.15rem; }
+        .store-section small { margin-left: auto; font-size: 0.85rem; font-weight: 600; color: #d8d0f0; }
+        .store-section small strong { color: #ffd75e; font-size: 1rem; }
+        .plan-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+        .plan-card {
+            position: relative; flex-direction: column; align-items: stretch; text-align: center; padding: 20px 18px 18px; border-radius: 20px;
+            background: radial-gradient(circle at 50% 0%, rgba(138, 77, 255, 0.3), transparent 60%), linear-gradient(170deg, #26244d, #1b1a33);
+            border: 1px solid rgba(160, 130, 255, 0.55); box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .plan-card.vip {
+            background: radial-gradient(circle at 50% 0%, rgba(255, 196, 0, 0.32), transparent 60%), linear-gradient(170deg, #3a2c14, #1f1b33);
+            border-color: rgba(255, 215, 94, 0.7);
+        }
+        .plan-card:hover { transform: translateY(-3px); box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45); }
+        .plan-top { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+        .plan-top h3 { margin: 0; font-size: 1.2rem; }
+        .plan-icon {
+            width: 58px; height: 58px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem;
+            background: rgba(255, 255, 255, 0.08); box-shadow: 0 0 22px rgba(255, 215, 94, 0.35); animation: floaty 3.4s ease-in-out infinite;
+        }
+        .plan-card.vip .plan-icon { animation-delay: -1.7s; }
+        .plan-price { margin: 10px 0 12px; font-size: 2.2rem; font-weight: 900; color: #fff; }
+        .plan-price span { font-size: 0.95rem; font-weight: 600; color: #c8c8e0; }
+        .plan-perk { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 0 0 6px; font-size: 0.98rem; }
+        .plan-perk b { color: #ffd75e; }
+        .plan-perk.dim { color: #b8b8d8; font-size: 0.88rem; }
+        .plan-status { margin: 10px 0 6px; color: #7ddc92; font-weight: 700; }
+        .plan-cancel { padding: 9px 18px; border-radius: 999px; border: 1px solid #aa3838; background: rgba(229, 57, 53, 0.12); color: #ffb4b0; font: inherit; font-weight: 700; cursor: pointer; }
+        .plan-btn-box { margin-top: 8px; }
+
+        .pack-card { max-width: none; margin: 0 0 18px; padding: 16px 14px 18px; border-radius: 20px; border: 1px solid rgba(255, 215, 94, 0.45);
+            background: linear-gradient(170deg, rgba(255, 196, 0, 0.1), rgba(26, 26, 46, 0.6)); }
+        .pack-options { max-width: none; margin: 8px 0 14px; gap: 10px; }
+        .pack-option {
+            overflow: visible; padding: 22px 4px 12px; border-radius: 16px; border: 2px solid rgba(160, 130, 255, 0.35);
+            background: linear-gradient(180deg, #2a2850, #1e1d3a); transition: transform 0.15s, border-color 0.15s, box-shadow 0.2s;
+        }
+        .pack-option:active { transform: scale(0.96); }
+        .pack-option.selected {
+            border-color: #ffc400; background: linear-gradient(180deg, rgba(255, 196, 0, 0.22), #221f3e);
+            box-shadow: 0 0 0 3px rgba(255, 196, 0, 0.18), 0 8px 24px rgba(255, 196, 0, 0.25); animation: packPick 0.35s ease;
+        }
+        @keyframes packPick { 40% { transform: scale(1.06); } }
+        .pack-art { font-size: 2rem; line-height: 1; margin-bottom: 4px; filter: drop-shadow(0 0 10px rgba(255, 196, 0, 0.55)); }
+        .pack-option.selected .pack-art { animation: floaty 2.2s ease-in-out infinite; }
+        .pack-tokens { font-size: 1.7rem; color: #ffd75e; }
+        .pack-unit { color: #d0d0e8; }
+        .pack-price { display: inline-block; margin-top: 8px; padding: 3px 12px; border-radius: 999px; background: rgba(255, 255, 255, 0.1); }
+        .pack-bonus { font-weight: 800; color: #7ddc92; margin-top: 4px; }
+        .pack-option.bought { animation: packBought 0.7s cubic-bezier(.2, 1.5, .4, 1); }
+        @keyframes packBought { 30% { transform: scale(1.14) rotate(-2deg); box-shadow: 0 0 40px rgba(255, 196, 0, 0.9); } 60% { transform: scale(0.97); } }
+        .pack-summary { font-weight: 700; color: #fff; }
+        @keyframes floaty { 50% { transform: translateY(-5px); } }
+
+        .donate-box { display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 18px; border: 1px solid rgba(255, 255, 255, 0.12); background: rgba(255, 255, 255, 0.04); text-align: left; }
+        .donate-icon { font-size: 1.8rem; }
+        .donate-text { flex: 1; min-width: 0; }
+        .donate-text b { display: block; }
+        .donate-text small { display: block; color: #c8c8e0; font-size: 0.82rem; }
+        .donate-link { flex-shrink: 0; padding: 9px 16px; border-radius: 999px; background: #ffc439; color: #1a1a2e; font-weight: 800; text-decoration: none; }
+        .store-notes { margin-top: 16px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(255, 255, 255, 0.03); }
+        .store-notes summary { cursor: pointer; padding: 12px 14px; font-weight: 700; color: #c8c8e0; list-style: none; }
+        .store-notes summary::-webkit-details-marker { display: none; }
+        .store-notes summary::before { content: "ℹ️ "; }
+        .store-notes summary::after { content: "▾"; float: right; }
+        .store-notes ul { margin: 0; padding: 0 14px 12px; list-style: none; }
+        .store-notes li { padding: 7px 0; border-top: 1px solid rgba(255, 255, 255, 0.06); font-size: 0.86rem; line-height: 1.5; color: #c8c8e0; }
+
+        /* tap ripple */
+        .ripple-host { position: relative; overflow: hidden; }
+        .ripple { position: absolute; border-radius: 50%; pointer-events: none; background: rgba(255, 255, 255, 0.45); transform: scale(0); animation: ripple 0.6s ease-out forwards; }
+        @keyframes ripple { to { transform: scale(4); opacity: 0; } }
+        .pack-option.ripple-host { overflow: visible; }
+        .pack-option .ripple { clip-path: inset(0 round 16px); }
+
+        /* sparks / coins in flight */
+        .fx { position: fixed; z-index: 9999; left: 0; top: 0; pointer-events: none; font-size: 20px; }
+
+        /* the celebration */
+        .celebrate-overlay { position: fixed; inset: 0; z-index: 300; display: none; align-items: center; justify-content: center; padding: 16px; background: rgba(5, 5, 20, 0.75); }
+        .celebrate-overlay.open { display: flex; animation: fadeIn 0.25s ease; }
+        @keyframes fadeIn { from { opacity: 0; } }
+        .celebrate-box {
+            position: relative; overflow: hidden; width: 100%; max-width: 360px; padding: 28px 20px 20px; border-radius: 24px; text-align: center;
+            background: radial-gradient(circle at 50% 30%, rgba(255, 196, 0, 0.35), transparent 60%), linear-gradient(170deg, #2e2358, #1a1a33);
+            border: 1px solid rgba(255, 215, 94, 0.7); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+            animation: boxPop 0.45s cubic-bezier(.2, 1.5, .4, 1);
+        }
+        @keyframes boxPop { from { transform: scale(0.6); opacity: 0; } }
+        .celebrate-rays {
+            position: absolute; left: 50%; top: 90px; width: 360px; height: 360px; margin: -180px 0 0 -180px; pointer-events: none;
+            background: repeating-conic-gradient(rgba(255, 215, 94, 0.18) 0 9deg, transparent 9deg 18deg); border-radius: 50%;
+            -webkit-mask-image: radial-gradient(circle, #000 20%, transparent 68%); mask-image: radial-gradient(circle, #000 20%, transparent 68%);
+            animation: raysSpin 14s linear infinite;
+        }
+        @keyframes raysSpin { to { transform: rotate(360deg); } }
+        .celebrate-chest { position: relative; font-size: 4.2rem; line-height: 1; height: 80px; filter: drop-shadow(0 0 20px rgba(255, 196, 0, 0.8)); }
+        .celebrate-chest.shake { animation: chestShake 0.8s ease-in-out; }
+        @keyframes chestShake { 10%, 50%, 90% { transform: rotate(-10deg) scale(1.05); } 30%, 70% { transform: rotate(10deg) scale(1.05); } }
+        .celebrate-chest.open { animation: chestOpen 0.6s cubic-bezier(.2, 1.5, .4, 1); }
+        @keyframes chestOpen { from { transform: scale(0.3); } 60% { transform: scale(1.3); } }
+        .celebrate-amount { position: relative; margin-top: 10px; font-size: 2.6rem; font-weight: 900; color: #ffd75e; text-shadow: 0 0 18px rgba(255, 196, 0, 0.6); font-variant-numeric: tabular-nums; }
+        .celebrate-sub { position: relative; color: #e0d8ff; margin: 2px 0 18px; }
+        .celebrate-actions { position: relative; display: flex; flex-direction: column; gap: 8px; }
+        .cel-primary { padding: 14px; border-radius: 14px; border: none; cursor: pointer; font: inherit; font-weight: 900; font-size: 1rem; color: #1a1a2e;
+            background: linear-gradient(180deg, #ffe27a, #ffb300); box-shadow: 0 5px 0 #a86f00; }
+        .cel-primary:active { transform: translateY(4px); box-shadow: 0 1px 0 #a86f00; }
+        .cel-ghost { padding: 10px; border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.25); background: none; color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
+
+        @media (prefers-reduced-motion: reduce) {
+            .plan-icon, .pack-option.selected .pack-art, .celebrate-rays { animation: none; }
+        }
+        @media (max-width: 380px) {
+            .pack-options { gap: 6px; }
+            .pack-tokens { font-size: 1.4rem; }
+            .pack-art { font-size: 1.7rem; }
+        }
     </style>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -275,7 +411,7 @@
         data-namespace="paypalPacks"></script>
 </head>
 
-<body>
+<body class="kih-glow glow-store kih-stars">
     <div class="home-topbar" id="storeFallbackTopbar" style="display:none;">
         <button class="icon-btn" title="Home" onclick="goHomeFallback()">🏠</button>
         <div class="menu-wrapper">
@@ -300,82 +436,64 @@
     </div>
 
     <div id="storePage" style="display:none;">
+        <p class="store-tagline">Tokens = extra chances in Secret Giveaways 🎁</p>
 
-        <!-- <p style="text-align:center; color:#d0d0da; font-size:1.05rem; max-width:600px; margin:0 auto 24px;">
-            Support the site and unlock perks. Subscriptions are billed monthly through PayPal.
-        </p> -->
-
-        <div class="store-grid"
-    style="display:flex; justify-content:center; align-items:stretch; flex-wrap:wrap; gap:32px; margin-bottom:40px;">
-            <!-- $1 PLAN, "Supporter" (internally still "noAds": its fields and plan key
-                 keep the old name; ads are switched off site-wide, so it no longer
-                 lists that perk). Hidden until
-                 refreshPlanButtons() has the profile — see the $2 card below. -->
-            <div class="plan-card" id="noAdsCard"
-                style="display:none; text-align:center; border:1px solid #6c63ff; border-radius:16px; padding:28px 24px; width:280px; flex-direction:column; justify-content:space-between;">
-                <h3>⭐ Supporter</h3>
-                <div class="plan-price">USD $1<span>/month</span></div>
-                <ul class="plan-perks" style="display:inline-block; text-align:left;">
-                    <li>🪙 <strong>80 tokens</strong> every month</li>
-                    <li>Cancel anytime</li>
-                </ul>
-                <div id="noAdsButtonBox"></div>
+        <!-- MONTHLY PLANS. Each card shows at once; its button area is a
+             placeholder until refreshPlanButtons() has the profile and
+             decides Subscribe / Resubscribe / Active — so the wrong button
+             never flashes up, and the card doesn't pop in late.
+             $1 "Supporter" is internally still "noAds" (its fields and plan
+             key keep the old name); $2 "Super Supporter" is internally "vip". -->
+        <h2 class="store-section"><span>⭐</span> Monthly plans</h2>
+        <div class="plan-grid">
+            <div class="plan-card" id="noAdsCard" style="display:flex;">
+                <div class="plan-top"><span class="plan-icon">⭐</span><h3>Supporter</h3></div>
+                <div class="plan-price">$1<span>/month</span></div>
+                <div class="plan-perk"><span>🪙</span><b>80 tokens</b> every month</div>
+                <div class="plan-perk dim"><span>✓</span>Cancel anytime</div>
+                <div id="noAdsButtonBox" class="plan-btn-box"><div class="plan-btn-loading"></div></div>
                 <div id="noAdsActiveBox" style="display:none;">
-                    <p class="promo-sub" id="noAdsStatusText"></p>
-                    <button class="btn-primary plan-btn btn-secondary" id="noAdsCancelBtn"
-                        onclick="handleCancel('noAds')"
-                        style="width:auto; font-size:1.05rem; padding:12px 28px; margin-top:8px; border-radius:12px;">Cancel
-                        subscription</button>
+                    <p class="plan-status" id="noAdsStatusText"></p>
+                    <button class="plan-cancel" id="noAdsCancelBtn" onclick="handleCancel('noAds')">Cancel subscription</button>
                 </div>
             </div>
-
-            <!-- $2 PLAN, "Super Supporter" (internally still "vip"). Hidden until refreshPlanButtons() has the profile
-                 and decides: the store page appears before that profile request
-                 returns, so a card that started visible flashed for about a second. -->
-            <div class="plan-card vip" id="vipPlanCard"
-                style="position:relative; text-align:center; border:1px solid #ffc400; border-radius:16px; padding:28px 24px; width:280px; display:none; flex-direction:column; justify-content:space-between;">
+            <div class="plan-card vip" id="vipPlanCard" style="display:flex;">
                 <span class="pack-ribbon plan-ribbon">Popular</span>
-                <h3>👑 Super Supporter</h3>
-                <div class="plan-price">USD $2<span>/month</span></div>
-                <!-- The old perks (daily clan posts, the VIP giveaway wheel) are
-                     free for everyone now, so they're no longer listed. -->
-                <ul class="plan-perks" style="display:inline-block; text-align:left;">
-                    <li>🪙 <strong>180 tokens</strong> every month</li>
-                    <li>Cancel anytime</li>
-                </ul>
+                <div class="plan-top"><span class="plan-icon">👑</span><h3>Super Supporter</h3></div>
+                <div class="plan-price">$2<span>/month</span></div>
+                <div class="plan-perk"><span>🪙</span><b>180 tokens</b> every month</div>
+                <div class="plan-perk dim"><span>✓</span>Cancel anytime</div>
                 <div id="vipActiveBox" style="display:none;">
-                    <p class="promo-sub" id="vipStatusText"></p>
-                    <button class="btn-primary plan-btn btn-secondary" id="vipCancelBtn" onclick="handleCancel('vip')"
-                        style="width:auto; font-size:1.05rem; padding:12px 28px; margin-top:8px; border-radius:12px;">Cancel
-                        subscription</button>
+                    <p class="plan-status" id="vipStatusText"></p>
+                    <button class="plan-cancel" id="vipCancelBtn" onclick="handleCancel('vip')">Cancel subscription</button>
                 </div>
-                <div id="vipButtonBox"></div>
+                <div id="vipButtonBox" class="plan-btn-box"><div class="plan-btn-loading"></div></div>
             </div>
-
         </div>
 
         <!-- ONE-OFF TOKEN PACKS. These tiles are display only: the price
              charged and the tokens credited come from TOKEN_PACKS in
              api/_lib.js, so change both together. -->
+        <h2 class="store-section"><span>🪙</span> Token packs <small>You have <strong id="storeTokenBalance">0</strong> 🪙</small></h2>
         <div class="pack-card" id="tokenPacksCard">
-            <h3>🪙 Token Packs</h3>
-            <p class="promo-sub" style="margin:0;">One-time top-up, no subscription. You have
-                <strong id="storeTokenBalance">0</strong> 🪙</p>
             <div class="pack-options">
-                <button type="button" class="pack-option" data-pack="small" aria-pressed="false" onclick="selectPack('small')">
+                <button type="button" class="pack-option ripple-host" data-pack="small" aria-pressed="false" onclick="selectPack('small')">
+                    <span class="pack-art">🪙</span>
                     <span class="pack-tokens">70</span>
                     <span class="pack-unit">tokens</span>
                     <span class="pack-price">$1</span>
                     <span class="pack-bonus"></span>
                 </button>
-                <button type="button" class="pack-option selected" data-pack="medium" aria-pressed="true" onclick="selectPack('medium')">
+                <button type="button" class="pack-option ripple-host selected" data-pack="medium" aria-pressed="true" onclick="selectPack('medium')">
+                    <span class="pack-art">💰</span>
                     <span class="pack-tokens">150</span>
                     <span class="pack-unit">tokens</span>
                     <span class="pack-price">$2</span>
                     <span class="pack-bonus">+10 bonus</span>
                 </button>
-                <button type="button" class="pack-option" data-pack="large" aria-pressed="false" onclick="selectPack('large')">
+                <button type="button" class="pack-option ripple-host" data-pack="large" aria-pressed="false" onclick="selectPack('large')">
                     <span class="pack-ribbon">Best value</span>
+                    <span class="pack-art">👑</span>
                     <span class="pack-tokens">240</span>
                     <span class="pack-unit">tokens</span>
                     <span class="pack-price">$3</span>
@@ -386,22 +504,35 @@
             <div id="packButtonBox"></div>
         </div>
 
-        <div class="donate-box" style="text-align:center;">
-            <h3 style="margin-top:0;">☕ Enjoying the site?</h3>
-            <p class="promo-sub">If this hub has helped you, consider buying me a coffee — no perks attached, just
-                appreciated.</p>
-            <a href="https://www.paypal.me/keazyea" target="_blank" rel="noopener noreferrer">
-                <button class="donate-btn" style="font-size:1.15rem; padding:14px 32px; border-radius:12px;">Donate via
-                    PayPal</button>
-            </a>
+        <div class="donate-box">
+            <span class="donate-icon">☕</span>
+            <div class="donate-text"><b>Enjoying the site?</b><small>Buy me a coffee — no perks, just appreciated.</small></div>
+            <a href="https://www.paypal.me/keazyea" target="_blank" rel="noopener noreferrer" class="donate-link">Donate</a>
         </div>
 
-        <p class="store-note" style="text-align:center;">Payments are processed by PayPal; this site never sees or
-            stores your payment details.</p>
-        <p class="store-note" style="text-align:center;">Subscription tokens are added each time a monthly payment goes
-            through, and pack tokens as soon as PayPal confirms the payment.
-            Stake them on a Secret Giveaway for extra chances — you can also earn them free from Daily Quests.
-            Tokens have no cash value and can't be exchanged for money or transferred to another account.</p>
+        <details class="store-notes">
+            <summary>Good to know</summary>
+            <ul>
+                <li>🔐 Payments are processed by PayPal — this site never sees or stores your payment details.</li>
+                <li>📅 Plan tokens arrive each time a monthly payment goes through; pack tokens as soon as PayPal confirms the payment.</li>
+                <li>🎁 Drop tokens into a Secret Giveaway for extra chances. You can also earn them free from Daily Quests.</li>
+                <li>⚖️ Tokens have no cash value and can't be exchanged for money or moved to another account.</li>
+            </ul>
+        </details>
+    </div>
+
+    <!-- 🎉 After buying a pack: the chest bursts open and the tokens count up. -->
+    <div class="celebrate-overlay" id="celebrateOverlay" onclick="if (event.target === this) closeCelebrate()">
+        <div class="celebrate-box" role="dialog" aria-label="Tokens added">
+            <div class="celebrate-rays"></div>
+            <div class="celebrate-chest" id="celebrateChest">🎁</div>
+            <div class="celebrate-amount">+<span id="celebrateAmount">0</span> 🪙</div>
+            <div class="celebrate-sub" id="celebrateSub">Added to your wallet</div>
+            <div class="celebrate-actions">
+                <button type="button" class="cel-primary ripple-host" onclick="goSecretGiveaways()">🔒 Use them in Secret Giveaways</button>
+                <button type="button" class="cel-ghost" onclick="closeCelebrate()">Nice!</button>
+            </div>
+        </div>
     </div>
 
     <div class="processing-modal-overlay" id="processingModalOverlay">
@@ -675,8 +806,7 @@
                         showResultModal("⏳ Payment under review",
                             `PayPal is still checking this payment. Your ${result.tokens} tokens will be added automatically once it clears, and you'll get an inbox message — no need to buy again.`);
                     } else {
-                        showResultModal(`✅ +${result.tokens} tokens added`,
-                            "They're in your wallet now. To use them, enter a Secret Giveaway (Promo → Secret Giveaways) and add them to your entry — each token is one extra chance to win.");
+                        celebratePurchase(result.tokens);
                     }
                 },
                 onError: function (err) {
@@ -692,7 +822,7 @@
         function startWalletListenerStore() {
             if (unsubWalletStore) { unsubWalletStore(); unsubWalletStore = null; }
             unsubWalletStore = AppState.listenToMyWallet((wallet) => {
-                document.getElementById("storeTokenBalance").textContent = (wallet && wallet.balance) || 0;
+                countUp(document.getElementById("storeTokenBalance"), (wallet && wallet.balance) || 0);
             });
         }
 
@@ -797,6 +927,115 @@
         btn.textContent = originalText;
     }
 }
+        /* ---------------- ✨ purchase feedback ----------------
+           Buying a pack: the tile pops, sparks burst out of it, coins stream
+           from it into your balance in the header (index.html's
+           kihFlyToHud, or this page's own balance when it's opened on its
+           own), then a chest bursts open with the amount counting up. */
+        const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+        // A ripple from where you pressed.
+        document.addEventListener("pointerdown", (e) => {
+            const host = e.target.closest && e.target.closest(".ripple-host");
+            if (!host) return;
+            const r = host.getBoundingClientRect(), size = Math.max(r.width, r.height);
+            const dot = document.createElement("span");
+            dot.className = "ripple";
+            dot.style.width = dot.style.height = size + "px";
+            dot.style.left = (e.clientX - r.left - size / 2) + "px";
+            dot.style.top = (e.clientY - r.top - size / 2) + "px";
+            host.appendChild(dot);
+            setTimeout(() => dot.remove(), 650);
+        });
+        function burstFrom(el, glyphs, count = 18) {
+            if (!el || !document.body.animate) return;
+            const r = el.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2;
+            for (let i = 0; i < count; i++) {
+                const s = document.createElement("span");
+                s.className = "fx";
+                s.textContent = glyphs[i % glyphs.length];
+                s.style.fontSize = 14 + Math.random() * 12 + "px";
+                document.body.appendChild(s);
+                const a = Math.random() * Math.PI * 2, d = 60 + Math.random() * 90;
+                s.animate([
+                    { transform: `translate(${x - 10}px, ${y - 10}px) scale(0.3)`, opacity: 1 },
+                    { transform: `translate(${x - 10 + Math.cos(a) * d}px, ${y - 10 + Math.sin(a) * d - 40}px) scale(1) rotate(${Math.random() * 360}deg)`, opacity: 0 }
+                ], { duration: 900 + Math.random() * 500, easing: "cubic-bezier(.1,.8,.3,1)", fill: "both" }); setTimeout(() => s.remove(), 1500);
+            }
+        }
+        // Coins into your balance: the header's when this page is inside the
+        // site, otherwise the one on this page.
+        function flyCoinsToBalance(el, amount) {
+            if (!el) return;
+            const r = el.getBoundingClientRect();
+            try {
+                const T = window.top;
+                if (T !== window && typeof T.kihFlyToHud === "function" && window.frameElement) {
+                    const fr = window.frameElement.getBoundingClientRect();
+                    T.kihFlyToHud({ left: r.left + fr.left, top: r.top + fr.top, width: r.width, height: r.height }, amount);
+                    return;
+                }
+            } catch (e) { /* not the site's frame */ }
+            const target = document.getElementById("storeTokenBalance");
+            if (!target || !document.body.animate) return;
+            const b = target.getBoundingClientRect();
+            for (let i = 0; i < 8; i++) {
+                const c = document.createElement("span");
+                c.className = "fx";
+                c.textContent = "🪙";
+                document.body.appendChild(c);
+                const sx = r.left + r.width / 2 - 10, sy = r.top + r.height / 2 - 10, ex = b.left, ey = b.top;
+                c.animate([
+                    { transform: `translate(${sx}px, ${sy}px) scale(0.6)`, opacity: 0 },
+                    { transform: `translate(${(sx + ex) / 2}px, ${Math.min(sy, ey) - 60}px) scale(1.3)`, opacity: 1, offset: 0.45 },
+                    { transform: `translate(${ex}px, ${ey}px) scale(0.6)`, opacity: 0.9 }
+                ], { duration: 700, delay: i * 60, fill: "both" }); setTimeout(() => c.remove(), 800 + i * 60);
+            }
+        }
+        function countUp(el, to, ms = 900) {
+            const from = Number(el.dataset.value);
+            el.dataset.value = String(to);
+            if (!Number.isFinite(from) || from === to) { el.textContent = String(to); return; }
+            const t0 = Date.now();
+            (function step() {
+                if (el.dataset.value !== String(to)) return;
+                const p = Math.min(1, (Date.now() - t0) / ms), e = 1 - Math.pow(1 - p, 3);
+                el.textContent = String(Math.round(from + (to - from) * e));
+                if (p < 1) setTimeout(step, 30);
+            })();
+        }
+        async function celebratePurchase(tokens) {
+            hideProcessingModal();
+            const tile = document.querySelector(".pack-option.selected") || document.getElementById("tokenPacksCard");
+            tile.classList.remove("bought"); void tile.offsetWidth; tile.classList.add("bought");
+            burstFrom(tile, ["✨", "🎉", "⭐", "🪙"]);
+            flyCoinsToBalance(tile, tokens);
+            await sleep(900);
+            const overlay = document.getElementById("celebrateOverlay");
+            const chest = document.getElementById("celebrateChest");
+            const amount = document.getElementById("celebrateAmount");
+            chest.textContent = "🎁";
+            chest.className = "celebrate-chest shake";
+            amount.dataset.value = "0";
+            amount.textContent = "0";
+            overlay.classList.add("open");
+            await sleep(800);
+            chest.textContent = "🎉";
+            chest.className = "celebrate-chest open";
+            burstFrom(chest, ["🪙", "✨", "🪙", "⭐"], 22);
+            countUp(amount, tokens, 1100);
+        }
+        window.celebratePurchase = celebratePurchase;
+        window.closeCelebrate = function () {
+            document.getElementById("celebrateOverlay").classList.remove("open");
+        };
+        window.goSecretGiveaways = function () {
+            window.closeCelebrate();
+            try {
+                if (window.top !== window && window.top.openPromoTab) { window.top.openPromoTab("secret"); return; }
+            } catch (e) { }
+            window.location.href = "promo.html?tab=secret";
+        };
+
         window.handleCancel = handleCancel;
 
         async function handleSignInPrompt() {

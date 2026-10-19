@@ -36,19 +36,32 @@
             padding: 10px 6px;
             font-size: 14px;
             line-height: 1.25;
-            border: none;
-            border-radius: 6px;
+            border: 1px solid rgba(140, 160, 255, 0.16);
+            border-radius: 10px;
             cursor: pointer;
             background: #2a2a4a;
+            background: linear-gradient(180deg, #2f2f56, #25254a);
             color: white;
             text-align: center;
             white-space: normal;
             word-break: break-word;
+            /* a long word that can't fit ("Recruitment" on a phone, which has a
+               &shy; in it too) splits with a hyphen, not at a random letter */
+            -webkit-hyphens: auto;
+            hyphens: auto;
+            transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+        }
+
+        .social-tab-btn:active {
+            transform: scale(0.97);
         }
 
         .social-tab-btn.active {
             background: #4169e1;
+            background: linear-gradient(135deg, #e0407a, #8a4dff 60%, #4169e1);
+            border-color: rgba(255, 170, 220, 0.5);
             color: white;
+            box-shadow: 0 4px 16px rgba(224, 64, 122, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.18);
         }
 
         .social-tab-panel {
@@ -2109,7 +2122,7 @@
     </style>
 </head>
 
-<body>
+<body class="kih-glow glow-social kih-stars">
     <div class="social-wrap">
         <div class="social-header-row">
             <h1>Social</h1>
@@ -2148,7 +2161,7 @@
                     onclick="switchSocialTab('friends')">Friends<span class="clan-filter-count" id="dmUnreadBadge"
                         style="display:none;"></span></button>
                 <button class="social-tab-btn" id="tabBtnClan" onclick="switchSocialTab('clan')">Clan
-                    Recruitment</button>
+                    Recruit&shy;ment</button>
                 <button class="social-tab-btn" id="tabBtnFormation" onclick="switchSocialTab('formation')">Formation
                     Help</button>
                 <button class="social-tab-btn" id="tabBtnTierList" onclick="switchSocialTab('tierlist')">Tier
@@ -6291,7 +6304,7 @@ document.getElementById("dmActionsMenu").classList.remove("open");
 // still reads sensibly anywhere that shows plain text). Here it's drawn as a
 // challenge card instead: the game, which puzzle, the score to beat, and a
 // Battle button — tapping the card opens Games on that same puzzle.
-const DM_CHALLENGE_RE = /\nhttps:\/\/keazyea\.github\.io\/\?challenge=(([a-z]+)\.([ds])([0-9a-z]{1,8})\.(\d{1,2}|x))\s*$/;
+const DM_CHALLENGE_RE = /\nhttps:\/\/keazyea\.github\.io\/\?challenge=(([a-z]+)\.([ds])([0-9a-z]{1,8})\.(\d{1,3}|x))\s*$/;
 const CHALLENGE_GAMES = {
     trivia: { icon: "🧠", title: "Trivia", out: 5 },
     guess: { icon: "🔍", title: "Guess the Unit", out: 3 },
@@ -6306,9 +6319,12 @@ function parseDmChallenge(text) {
     const day = kind === "d" ? `${id.slice(0, 4)}-${id.slice(4, 6)}-${id.slice(6, 8)}` : null;
     // Singapore date, the same day boundary as Games' daily puzzle.
     const today = new Date(Date.now() + 8 * 3600e3).toISOString().slice(0, 10);
-    const which = !day ? "Free play" : day === today ? "Today's puzzle" : `Puzzle of ${day}`;
+    const which = !day ? "Endless run" : day === today ? "Today's puzzle" : `Puzzle of ${day}`;
+    // A day's puzzle keeps that puzzle's scoring; free play is an endless
+    // run, scored as a streak (Trivia, Hi-Lo) or in points (Unitle, Guess).
     let scoreLabel;
-    if (gameId === "hilo") scoreLabel = day ? `${score}/${game.out}` : `a streak of ${score}`;
+    if (!day) scoreLabel = gameId === "trivia" || gameId === "hilo" ? `a streak of ${score === "x" ? 0 : score}` : `${score === "x" ? 0 : score} point${score === "1" ? "" : "s"}`;
+    else if (gameId === "hilo") scoreLabel = `${score}/${game.out}`;
     else if (score === "x") scoreLabel = `didn't get it (X/${game.out})`;
     else if (gameId === "trivia") scoreLabel = `${score}/${game.out}`;
     else scoreLabel = `${score} guess${score === "1" ? "" : "es"}`;

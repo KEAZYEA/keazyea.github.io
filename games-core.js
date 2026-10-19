@@ -371,7 +371,148 @@
         return { game, finished: score < picks.length || picks.length === p.rounds.length, score, total: p.rounds.length };
     }
 
+    /* ---------------- Endless runs (free play + weekly leaderboard) ----------------
+       A run goes on until you miss. Trivia and Higher or Lower score 1 per
+       right answer; Unitle and Guess the Unit go unit after unit, scoring
+       more for fewer guesses. The same rules run in two places: in the page
+       for guests and friends' challenges (unranked), and on the server for
+       signed-in players, where answers never reach the browser and the score
+       counts toward the weekly leaderboard (api/games.js). Everything about a
+       run follows from its seed and its step, so both agree exactly. */
+    const RUN_LIMIT_MS = { trivia: 20000, hilo: 15000, unitle: 180000, guess: 60000 };
+    // Each new question's clock starts this long after the answer comes back,
+    // so the moment spent looking at what you got right isn't counted.
+    const RUN_PAUSE_MS = 2000;
+    // The server allows this much on top, for the trip there and back.
+    const RUN_GRACE_MS = 3000;
+    const RUN_TRIVIA_KINDS = TRIVIA_KINDS.filter(k => k !== "whoIsThis"); // its picture is its answer
+    const runRng = (game, seed, step) => seededRandom(hashString(`run:${game}:${seed}:${step}`));
+    const unitlePoints = (guesses) => Math.max(1, UNITLE_TRIES + 1 - guesses);           // 1 guess → 6 … 6 guesses → 1
+    const guessPoints = (guesses) => Math.max(1, 4 - guesses); // 3 / 2 / 1
+    // Guess the Unit: hints are shared by the whole run — once they're used
+    // up they're gone (still at most MAX_HINTS on any one unit).
+    const RUN_GUESS_HINTS = 5;
+    const hintsLeftOf = (run) => (Number.isInteger(run.hintsLeft) ? run.hintsLeft : RUN_GUESS_HINTS);
+
+    function runTriviaQuestion(units, seed, step) {
+        const rand = runRng("trivia", seed, step);
+        for (const k of shuffle(rand, RUN_TRIVIA_KINDS)) { const q = triviaQuestion(units, rand, k); if (q) return q; }
+        return triviaQuestion(units, rand, "rarity");
+    }
+    const runHiloRound = (units, seed, step) => hiloRound(units, runRng("hilo", seed, step));
+    const runUnitleTarget = (units, seed, step) => unitleTarget(units, runRng("unitle", seed, step));
+    const runGuessPuzzle = (units, seed, step) => guessPuzzle(units, runRng("guess", seed, step));
+
+    function runNew(game, seed, now) {
+        if (!GAMES.includes(game)) throw new Error("Unknown game.");
+        const run = { game, seed, step: 0, score: 0, over: false, guesses: [], hints: 0, deadline: now + RUN_LIMIT_MS[game] };
+        if (game === "guess") run.hintsLeft = RUN_GUESS_HINTS;
+        return run;
+    }
+
+    // What the player sees now — never the answer. (Guess the Unit's `img`
+    // names the unit, so the server swaps it for a cropped picture.)
+    function runView(units, run) {
+        const { game, seed, step } = run;
+        if (game === "trivia") {
+            const q = runTriviaQuestion(units, seed, step);
+            return { q: q.q, options: q.options, img: q.img || null, unitOptions: !!q.unitOptions };
+        }
+        if (game === "hilo") return runHiloRound(units, seed, step);
+        if (game === "unitle") {
+            const t = unitByKey(units, runUnitleTarget(units, seed, step));
+            return { guesses: run.guesses.map(k => ({ key: k, cells: unitleCells(unitByKey(units, k), t) })) };
+        }
+        const p = runGuessPuzzle(units, seed, step);
+        const t = unitByKey(units, p.target);
+        return {
+            mask: nameMask(t.name, run.hints >= 3),
+            hints: [1, 2, 3].slice(0, run.hints).map(n => guessHint(t, n)),
+            hintsLeft: hintsLeftOf(run),
+            wrong: run.guesses.slice(),
+            picture: { ...guessView(run.guesses.length, run.hints, false), focus: p.focus },
+            img: t.img
+        };
+    }
+
+    // One move. input: trivia { answer: option index }, hilo { pick: unit
+    // key }, unitle { guess: unit key }, guess { guess: unit key } or
+    // { hint: true }; null (or arriving after the deadline + grace) means time
+    // ran out. Returns the next state and what happened; throws on a move
+    // that isn't allowed (a guess that isn't a unit, the same guess twice).
+    function runStep(units, run, input, now, grace = 0) {
+        if (run.over) throw new Error("This run has ended.");
+        const r = { ...run, guesses: run.guesses.slice() };
+        const late = now > run.deadline + grace;
+        const unitInfo = (key) => { const u = unitByKey(units, key); return { key, name: u.name, img: u.img }; };
+        const nextUnit = (points) => {
+            r.score += points; r.step++; r.guesses = []; r.hints = 0;
+            r.deadline = now + RUN_PAUSE_MS + RUN_LIMIT_MS[r.game];
+        };
+        const finish = (fb) => { r.over = true; return { run: r, feedback: { ...fb, timedOut: late || input == null } }; };
+        const validGuess = (key) => {
+            if (typeof key !== "string" || !unitByKey(units, key)) throw new Error("That's not a troop or hero.");
+            if (r.guesses.includes(key)) throw new Error("You already guessed that one.");
+        };
+
+        if (r.game === "trivia" || r.game === "hilo") {
+            let right, fb;
+            if (r.game === "trivia") {
+                const q = runTriviaQuestion(units, r.seed, r.step);
+                const picked = input && Number.isInteger(input.answer) ? input.answer : null;
+                right = !late && picked === q.answer;
+                fb = { correct: right, answer: q.answer, picked, reveal: q.reveal || null };
+            } else {
+                const rd = runHiloRound(units, r.seed, r.step);
+                const picked = input && (input.pick === rd.a || input.pick === rd.b) ? input.pick : null;
+                const winner = hiloWinner(units, rd);
+                right = !late && picked === winner;
+                fb = { correct: right, winner, picked, values: { [rd.a]: unitByKey(units, rd.a)[rd.stat], [rd.b]: unitByKey(units, rd.b)[rd.stat] } };
+            }
+            if (!right) return finish(fb);
+            r.score++; r.step++;
+            r.deadline = now + RUN_PAUSE_MS + RUN_LIMIT_MS[r.game];
+            return { run: r, feedback: { ...fb, points: 1 } };
+        }
+
+        const target = r.game === "unitle" ? runUnitleTarget(units, r.seed, r.step) : runGuessPuzzle(units, r.seed, r.step).target;
+        if (late || !input) return finish({ failed: true, answer: unitInfo(target) });
+        if (r.game === "guess" && input.hint) {
+            const left = hintsLeftOf(r);
+            if (r.hints < MAX_HINTS && left > 0) { r.hints++; r.hintsLeft = left - 1; }
+            return { run: r, feedback: { hint: true } };
+        }
+        validGuess(input.guess);
+        if (input.guess === target) {
+            const tries = r.guesses.length + 1;
+            const points = r.game === "unitle" ? unitlePoints(tries) : guessPoints(tries);
+            const solvedIn = [...r.guesses, input.guess];
+            nextUnit(points);
+            return { run: r, feedback: { solved: true, points, tries, answer: unitInfo(target), guesses: solvedIn } };
+        }
+        r.guesses.push(input.guess);
+        const max = r.game === "unitle" ? UNITLE_TRIES : MAX_GUESSES;
+        if (r.guesses.length >= max) return finish({ failed: true, answer: unitInfo(target), lastGuess: input.guess });
+        return { run: r, feedback: { wrong: true, guess: unitInfo(input.guess) } };
+    }
+
+    // Where Guess the Unit's frame looks, in the picture's own pixels: the
+    // same view the page gets with CSS (a 230px square showing the top of the
+    // picture, scaled by `zoom` around `focus`), so a server-made crop
+    // matches what a guest sees exactly.
+    function guessCrop(imgW, imgH, focus, zoom) {
+        const FRAME = 230, BOX_H = FRAME * 1.25;
+        const s = Math.max(FRAME / imgW, BOX_H / imgH);
+        const offX = (FRAME - imgW * s) / 2;
+        const ox = focus[0] / 100 * FRAME, oy = focus[1] / 100 * BOX_H;
+        const x0 = ox - ox / zoom, x1 = ox + (FRAME - ox) / zoom;
+        const y0 = oy - oy / zoom, y1 = oy + (FRAME - oy) / zoom;
+        return { x: (x0 - offX) / s, y: y0 / s, w: (x1 - x0) / s, h: (y1 - y0) / s, scale: s };
+    }
+
     return {
+        RUN_LIMIT_MS, RUN_PAUSE_MS, RUN_GRACE_MS, RUN_TRIVIA_KINDS, RUN_GUESS_HINTS, unitlePoints, guessPoints,
+        runNew, runView, runStep, runTriviaQuestion, runHiloRound, runUnitleTarget, runGuessPuzzle, guessCrop,
         RARITIES, GAMES, GAME_TITLES, GAME_ICONS,
         hashString, seededRandom, dayRng, pick, shuffle, sample, dailyGameFor,
         esc, cap, fmt, buildUnits, unitByKey, levelOf, normName, nameAliases, resolveName, nameMask,

@@ -1270,47 +1270,124 @@ body {
             #adSlot728x90 { display: none !important; }
         }
 
-        /* ---------- Daily quests ---------- */
-        .quest-wallet {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            padding: 14px 16px;
-            margin-bottom: 12px;
-            border: 1px solid #aa7a1e;
-            border-radius: 12px;
-            background: rgba(255, 196, 0, 0.07);
+        /* ---------- 🪙 Token HUD ----------
+           Your balance in the header on every page, gently glowing; it
+           counts up and pops when rewards or a purchase fly into it. */
+        .hud {
+            display: inline-flex; align-items: center; gap: 4px; padding: 3px 3px 3px 10px; border-radius: 999px; flex-shrink: 0;
+            background: linear-gradient(135deg, rgba(255, 196, 0, 0.22), rgba(255, 107, 53, 0.14));
+            border: 1px solid rgba(255, 215, 94, 0.55); box-shadow: 0 0 12px rgba(255, 196, 0, 0.22);
         }
-        .quest-wallet-balance { font-size: 1.6rem; font-weight: 800; }
-        .quest-countdown { text-align: right; font-size: 0.85rem; color: var(--kih-text-dim); }
-        .quest-countdown strong { display: block; font-size: 1.15rem; color: var(--kih-text); font-variant-numeric: tabular-nums; }
+        .hud-bal { display: inline-flex; align-items: center; gap: 6px; padding: 2px 4px 2px 0; background: none; border: none; color: #ffe9a8; font: inherit; font-weight: 900; font-size: 1.05rem; cursor: pointer; }
+        .hud-coin { display: inline-block; font-size: 1.15rem; animation: hudCoin 4s ease-in-out infinite; }
+        @keyframes hudCoin { 0%, 80%, 100% { transform: rotateY(0); } 90% { transform: rotateY(180deg); } }
+        .hud-amt { font-variant-numeric: tabular-nums; min-width: 1.4em; text-align: left; }
+        .hud-plus {
+            width: 26px; height: 26px; border-radius: 50%; border: none; cursor: pointer; padding: 0;
+            background: linear-gradient(180deg, #4cd964, #1e9e3a); color: #fff; font-size: 1.1rem; font-weight: 900; line-height: 1; box-shadow: 0 2px 0 #13702a;
+        }
+        .hud-plus:active { transform: translateY(2px); box-shadow: none; }
+        .hud.got { animation: hudGot 0.7s ease; }
+        @keyframes hudGot { 30% { transform: scale(1.18); box-shadow: 0 0 30px rgba(255, 196, 0, 0.9); } }
+        .home-hud-row { position: relative; z-index: 2; display: flex; justify-content: center; margin: 6px 0 2px; }
+        .hud-fly { position: fixed; z-index: 10000; left: 0; top: 0; font-size: 22px; pointer-events: none; }
+        @media (prefers-reduced-motion: reduce) { .hud, .hud-coin { animation: none; } }
+
+        /* ---------- Daily quests ---------- */
+        /* The wallet: gold, a coin that bobs, a balance that counts up as
+           rewards fly into it. */
+        .quest-wallet {
+            position: relative;
+            overflow: hidden;
+            padding: 16px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(255, 215, 94, 0.6);
+            border-radius: 18px;
+            background:
+                radial-gradient(circle at 0% 0%, rgba(255, 196, 0, 0.32), transparent 55%),
+                linear-gradient(135deg, #3a2a10, #24203f 70%);
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        }
+        .quest-wallet::after {
+            content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 45%; pointer-events: none;
+            background: linear-gradient(110deg, transparent, rgba(255, 255, 255, 0.10), transparent);
+            transform: translateX(-120%); animation: sheenMove 5.5s ease-in-out infinite; /* moved, not repainted: cheap */
+        }
+        @keyframes sheenMove { 55%, 100% { transform: translateX(260%); } }
+        .quest-wallet.got { animation: qwGot 0.7s ease; }
+        @keyframes qwGot { 30% { transform: scale(1.03); box-shadow: 0 0 34px rgba(255, 196, 0, 0.7); } }
+        .qw-top { display: flex; align-items: center; gap: 12px; }
+        .qw-coin { font-size: 2.6rem; line-height: 1; filter: drop-shadow(0 0 12px rgba(255, 196, 0, 0.8)); animation: qwCoin 3s ease-in-out infinite; }
+        @keyframes qwCoin { 0%, 100% { transform: translateY(0) rotateY(0); } 50% { transform: translateY(-4px) rotateY(180deg); } }
+        .qw-bal { flex: 1; min-width: 0; }
+        .qw-bal small, .quest-countdown small { display: block; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.06em; color: #e8d8a8; }
+        .quest-wallet-balance { font-size: 2rem; font-weight: 900; line-height: 1.1; color: #ffd75e; text-shadow: 0 0 14px rgba(255, 196, 0, 0.45); font-variant-numeric: tabular-nums; }
+        .quest-countdown { text-align: right; padding: 6px 10px; border-radius: 12px; background: rgba(0, 0, 0, 0.3); }
+        .quest-countdown strong { display: block; font-size: 1.05rem; color: #fff; font-variant-numeric: tabular-nums; }
+        .quest-how { margin-top: 16px; border-radius: 14px; border: 1px solid var(--kih-border, #2a2a4a); background: rgba(255, 255, 255, 0.03); }
+        .quest-how summary { cursor: pointer; padding: 12px 14px; font-weight: 700; color: var(--kih-text-dim); list-style: none; }
+        .quest-how summary::-webkit-details-marker { display: none; }
+        .quest-how summary::before { content: "ℹ️ "; }
+        .quest-how summary::after { content: "▾"; float: right; transition: transform 0.2s; }
+        .quest-how[open] summary::after { transform: rotate(180deg); }
+        .quest-how ul { margin: 0; padding: 0 14px 12px 14px; list-style: none; }
+        .quest-how li { font-size: 0.86rem; line-height: 1.5; color: var(--kih-text-dim); padding: 6px 0; border-top: 1px solid rgba(255, 255, 255, 0.05); }
+        /* Today's progress */
+        .quest-progress { margin: 2px 0 14px; }
+        .quest-progress-top { display: flex; justify-content: space-between; align-items: baseline; font-size: 0.85rem; margin-bottom: 6px; }
+        .quest-progress-top b { font-size: 1rem; }
+        .quest-progress-top span { color: #ffd75e; font-weight: 800; }
+        .quest-bar { position: relative; height: 12px; border-radius: 999px; background: rgba(255, 255, 255, 0.07); overflow: hidden; }
+        .quest-bar-fill { position: absolute; inset: 0 auto 0 0; border-radius: 999px; background: linear-gradient(90deg, #2ecc71, #ffd75e); box-shadow: 0 0 12px rgba(255, 215, 94, 0.5); transition: width 0.9s cubic-bezier(.2, .9, .3, 1); }
+        .quest-progress.all .quest-bar-fill { background: linear-gradient(90deg, #ffd75e, #ff9f43, #ffd75e); }
+        /* rows slide in when you open the page */
+        .quest-list-anim .quest-row, .quest-list-anim .quest-calendar .cal-day { animation: questIn 0.4s ease both; }
+        @keyframes questIn { from { opacity: 0; transform: translateY(10px); } }
+        /* flying coins and "+1" floats */
+        .quest-fly { position: fixed; z-index: 9999; left: 0; top: 0; font-size: 22px; pointer-events: none; }
         .quest-row {
+            position: relative;
             display: flex;
             align-items: center;
             gap: 12px;
             padding: 12px 14px;
             margin-bottom: 8px;
             border: 1px solid var(--kih-border);
-            border-radius: 12px;
-            background: var(--kih-panel);
+            border-radius: 14px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02)), var(--kih-panel);
         }
-        .quest-row.done { border-color: #2e7d32; background: rgba(46, 125, 50, 0.10); }
-        .quest-icon { font-size: 1.5rem; flex-shrink: 0; }
+        /* done: compact, green, the hint tucked away */
+        .quest-row.done { border-color: rgba(46, 204, 113, 0.5); background: rgba(46, 125, 50, 0.12); padding-top: 9px; padding-bottom: 9px; }
+        .quest-row.done .quest-hint { display: none; }
+        .quest-row.done .quest-title { color: #b8f0c8; }
+        .quest-row.ready { overflow: hidden; }
+        .quest-row.ready::after {
+            content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 45%; pointer-events: none;
+            background: linear-gradient(110deg, transparent, rgba(255, 230, 150, 0.16), transparent);
+            transform: translateX(-120%); animation: sheenMove 3.4s ease-in-out infinite; /* moved, not repainted: cheap */
+        }
+        .quest-icon {
+            width: 42px; height: 42px; flex-shrink: 0; border-radius: 12px; display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem; background: rgba(255, 255, 255, 0.06);
+        }
+        .quest-row.done .quest-icon { background: rgba(46, 204, 113, 0.16); }
+        .quest-row.ready .quest-icon { background: rgba(255, 196, 0, 0.18); }
         .quest-text { flex: 1; min-width: 0; }
         .quest-title { font-weight: 700; }
         .quest-hint { font-size: 0.82rem; color: var(--kih-text-dim); margin-top: 2px; }
         .quest-done { flex-shrink: 0; font-weight: 700; color: #7ddc92; }
         .quest-go-btn {
             flex-shrink: 0;
-            background: var(--kih-accent);
+            background: linear-gradient(180deg, #7b74ff, var(--kih-accent));
             color: white;
             border: none;
-            border-radius: 8px;
-            padding: 8px 14px;
-            font-weight: 700;
+            border-radius: 999px;
+            padding: 8px 16px;
+            font-weight: 800;
             cursor: pointer;
+            box-shadow: 0 3px 0 rgba(0, 0, 0, 0.35);
         }
+        .quest-go-btn:active { transform: translateY(2px); box-shadow: none; }
         .quest-go-btn:hover { background: var(--kih-accent-hover); }
         /* Done but not yet collected: gold, gently pulsing, so it's obvious
            there's something to tap. */
@@ -1318,16 +1395,16 @@ body {
         .quest-claim-btn,
         .quest-claim-all-btn {
             flex-shrink: 0;
-            background: #ffc400;
+            background: linear-gradient(180deg, #ffe27a, #ffb300);
             color: #1a1a2e;
             border: none;
-            border-radius: 8px;
+            border-radius: 999px;
             padding: 8px 12px;
             font-weight: 800;
             cursor: pointer;
             animation: quest-claim-pulse 1.6s ease-in-out infinite;
         }
-        .quest-claim-all-btn { display: block; width: 100%; padding: 12px; margin-bottom: 12px; font-size: 1rem; }
+        .quest-claim-all-btn { display: block; width: 100%; padding: 14px; margin-bottom: 14px; font-size: 1.05rem; border-radius: 14px; box-shadow: 0 4px 0 #a86f00; }
         .quest-claim-btn:disabled,
         .quest-claim-all-btn:disabled { opacity: 0.6; cursor: default; animation: none; }
         @keyframes quest-claim-pulse {
@@ -1347,25 +1424,26 @@ body {
         }
         .cal-day small { font-size: 0.68rem; color: var(--kih-text-dim); white-space: nowrap; }
         .cal-name { font-size: 0.7rem; font-weight: 700; color: var(--kih-text-dim); }
-        .cal-day.today { border-color: var(--kih-accent, #4169e1); }
+        .cal-day.today { border-color: var(--kih-accent, #4169e1); box-shadow: 0 0 14px rgba(108, 99, 255, 0.45); }
         .cal-day.done { border-color: #2e7d32; background: rgba(46, 125, 50, 0.12); }
         .cal-day.missed { opacity: 0.55; }
         .cal-day.future { opacity: 0.75; }
-        .cal-day.ready { border-color: #ffc400; background: rgba(255, 196, 0, 0.14); cursor: pointer; animation: quest-claim-pulse 1.6s ease-in-out infinite; }
+        .cal-day.ready { border-color: #ffc400; background: rgba(255, 196, 0, 0.14); cursor: pointer; animation: quest-claim-pulse 1.6s ease-in-out infinite, calHop 1.6s ease-in-out infinite; }
+        @keyframes calHop { 0%, 70%, 100% { transform: translateY(0); } 80% { transform: translateY(-4px); } 90% { transform: translateY(0); } }
         .cal-day.ready small { color: #ffd75e; font-weight: 700; }
         .cal-day.sunday { border-style: dashed; }
         .cal-day.sunday.ready, .cal-day.sunday.done { border-style: solid; }
         .quest-streak { font-size: 0.85rem; color: var(--kih-text-dim); margin: 0 0 14px; line-height: 1.4; }
-        .quest-reward { flex-shrink: 0; font-size: 0.8rem; font-weight: 700; color: #ffd75e; white-space: nowrap; }
-        .quest-links { display: flex; gap: 8px; margin: 0 0 14px; }
+        .quest-reward { display: inline-block; vertical-align: 2px; margin-left: 4px; flex-shrink: 0; padding: 2px 8px; border-radius: 999px; font-size: 0.8rem; font-weight: 800; color: #ffd75e; background: rgba(255, 196, 0, 0.12); white-space: nowrap; }
+        .quest-links { position: relative; z-index: 1; display: flex; gap: 8px; margin: 12px 0 0; }
         .quest-links button {
-            flex: 1; min-width: 0; padding: 10px 8px; border-radius: 10px; cursor: pointer; font-family: inherit;
-            font-size: 0.88rem; font-weight: 700; color: var(--kih-text); background: rgba(255, 255, 255, 0.04);
-            border: 1px solid var(--kih-border, #2a2a4a);
+            flex: 1; min-width: 0; padding: 9px 8px; border-radius: 999px; cursor: pointer; font-family: inherit;
+            font-size: 0.82rem; font-weight: 800; color: #fff; background: rgba(0, 0, 0, 0.28);
+            border: 1px solid rgba(255, 215, 94, 0.45);
         }
-        .quest-links button:hover { border-color: var(--kih-accent, #4169e1); }
-        @media (prefers-reduced-motion: reduce) { .cal-day.ready { animation: none; } }
-        .quest-section-label { font-size: 0.8rem; color: var(--kih-text-dim); margin: 4px 0 8px; }
+        .quest-links button:hover { border-color: #ffd75e; }
+        @media (prefers-reduced-motion: reduce) { .cal-day.ready, .qw-coin, .quest-wallet::after, .quest-row.ready::after { animation: none; } }
+        .quest-section-label { font-size: 0.74rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.07em; color: var(--kih-text-dim); margin: 4px 0 8px; }
         /* Admin token gifts in the inbox */
         .inbox-gift-btn { background: #ffc400 !important; color: #1a1a2e !important; font-weight: 800; }
         .inbox-gift-btn:disabled { opacity: 0.6; }
@@ -1377,6 +1455,7 @@ body {
             left: 50%;
             bottom: 24px;
             transform: translateX(-50%);
+            animation: toastUp 0.35s cubic-bezier(.2, 1.3, .4, 1);
             max-width: calc(100% - 32px);
             padding: 12px 18px;
             border: 1px solid #2e7d32;
@@ -1388,6 +1467,7 @@ body {
             z-index: 600;
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
         }
+        @keyframes toastUp { from { opacity: 0; transform: translate(-50%, 20px); } }
 
         /* Five icons on the right plus the avatar on the left only just fit a
            320px phone at the default spacing — about 8px to spare, and emoji
@@ -1399,13 +1479,85 @@ body {
             .topbar-right { gap: 2px; }
             .home-topbar .icon-btn { font-size: 1.5rem; min-width: 34px; min-height: 34px; padding: 4px; }
             .quest-row { gap: 10px; padding: 10px 12px; }
-            .quest-wallet { padding: 12px 14px; }
-            .quest-wallet-balance { font-size: 1.4rem; }
+            .quest-wallet { padding: 14px; }
+            .quest-wallet-balance { font-size: 1.7rem; }
+            .qw-coin { font-size: 2.2rem; }
         }
+        /* The page colour lives on <body>, so its drifting glow and rising
+           specks (style.css kih-glow / kih-stars) show through the home
+           screen and the pages drawn here. */
+        body.kih-glow { background: var(--kih-bg); }
+        /* a section covers the home screen: its moving background can rest */
+        body.on-section.kih-glow::before, body.on-section.kih-stars::after, body.on-section .home-logo::before { animation-play-state: paused; }
+        body.kih-glow .home-shell,
+        body.kih-glow .home-page-content.active { background: transparent; }
+        /* Home: the logo floats in front of a slowly turning halo of colour. */
+        .home-logo { position: relative; isolation: isolate; display: inline-block; margin-bottom: clamp(4px, 1.2vh, 10px); }
+        .home-logo::before {
+            content: ""; position: absolute; inset: -16%; z-index: -1; border-radius: 50%; pointer-events: none;
+            background: conic-gradient(rgba(108, 155, 255, 0.05), rgba(108, 155, 255, 0.6), rgba(180, 124, 255, 0.6), rgba(255, 122, 184, 0.5), rgba(255, 196, 107, 0.55), rgba(108, 155, 255, 0.05));
+            filter: blur(20px); animation: haloSpin 10s linear infinite;
+        }
+        @keyframes haloSpin { to { transform: rotate(360deg); } }
+        .home-logo img { display: block; margin: 0 !important; border-radius: 16px; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.55); animation: logoFloat 5s ease-in-out infinite; }
+        @keyframes logoFloat { 50% { transform: translateY(-5px); } }
+        .home-greet { margin: 0 0 clamp(8px, 1.6vh, 12px); font-weight: 800; font-size: clamp(1rem, 2.4vh, 1.2rem); text-align: center; }
+        .home-greet .wave { display: inline-block; transform-origin: 70% 80%; animation: wave 2.6s ease-in-out infinite; }
+        @keyframes wave { 0%, 60%, 100% { transform: rotate(0); } 10%, 30% { transform: rotate(16deg); } 20%, 40% { transform: rotate(-8deg); } }
+        /* Today: three live cards */
+        .home-today { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; width: 100%; max-width: 420px; margin: 0 0 clamp(8px, 1.8vh, 14px); }
+        .home-today:empty { display: none; }
+        .today-card {
+            position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 0;
+            padding: 10px 4px 9px; border-radius: 14px; border: 1px solid rgba(160, 130, 255, 0.4); cursor: pointer;
+            background: linear-gradient(170deg, rgba(138, 77, 255, 0.24), rgba(22, 22, 42, 0.9)); color: #fff; font-family: inherit;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3); animation: menuIn 0.45s ease both;
+        }
+        .today-card:nth-child(2) { animation-delay: 0.06s; }
+        .today-card:nth-child(3) { animation-delay: 0.12s; }
+        .today-card:active { transform: scale(0.96); }
+        .tc-icon { font-size: 1.6rem; line-height: 1; }
+        .today-card b { font-size: 0.8rem; line-height: 1.15; text-align: center; }
+        .today-card small { font-size: 0.72rem; font-weight: 800; color: #d8d0f0; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+        .today-card.hot { border-color: #ffc400; background: linear-gradient(170deg, rgba(255, 196, 0, 0.3), rgba(22, 22, 42, 0.9)); box-shadow: 0 0 18px rgba(255, 196, 0, 0.3); }
+        .today-card.hot small { color: #ffd75e; }
+        .today-card.hot .tc-icon { animation: tcHop 1.8s ease-in-out infinite; }
+        @keyframes tcHop { 0%, 60%, 100% { transform: translateY(0); } 70% { transform: translateY(-5px) rotate(-8deg); } 80% { transform: translateY(0); } }
+        .today-card.done { border-color: rgba(46, 204, 113, 0.55); background: linear-gradient(170deg, rgba(46, 204, 113, 0.2), rgba(22, 22, 42, 0.9)); }
+        .today-card.done small { color: #9fe0a8; }
+        .today-card.hot::after {
+            content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 45%; pointer-events: none;
+            background: linear-gradient(110deg, transparent, rgba(255, 255, 255, 0.12), transparent);
+            transform: translateX(-120%); animation: sheenMove 5.0s ease-in-out infinite; /* moved, not repainted: cheap */
+        }
+        /* each section's own colour on its icon */
+        .home-menu-btn .home-menu-icon { color: #fff; box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2); }
+        .home-menu-btn:nth-child(1) .home-menu-icon { background: linear-gradient(135deg, #4c6ef5, #233c9e); box-shadow: 0 0 14px rgba(76, 110, 245, 0.45); }
+        .home-menu-btn:nth-child(2) .home-menu-icon { background: linear-gradient(135deg, #f06595, #a61e4d); box-shadow: 0 0 14px rgba(240, 101, 149, 0.45); }
+        .home-menu-btn:nth-child(3) .home-menu-icon { background: linear-gradient(135deg, #fcc419, #e67700); box-shadow: 0 0 14px rgba(252, 196, 25, 0.45); }
+        .home-menu-btn:nth-child(4) .home-menu-icon { background: linear-gradient(135deg, #845ef7, #4c2a9e); box-shadow: 0 0 14px rgba(132, 94, 247, 0.45); }
+        .home-menu-btn:nth-child(5) .home-menu-icon { background: linear-gradient(135deg, #22b8cf, #0b7285); box-shadow: 0 0 14px rgba(34, 184, 207, 0.45); }
+        .home-menu-btn:nth-child(6) .home-menu-icon { background: linear-gradient(135deg, #51cf66, #2b8a3e); box-shadow: 0 0 14px rgba(81, 207, 102, 0.45); }
+        .home-menu-btn { background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015)), var(--kih-panel); }
+        @media (prefers-reduced-motion: reduce) { .home-logo::before, .home-logo img, .home-greet .wave, .today-card, .today-card::after, .today-card.hot .tc-icon { animation: none; } }
+
+        /* Home menu: the buttons slide in one after another, and light up
+           under your finger. */
+        .home-menu-btn { transition: transform 0.15s, border-color 0.15s, box-shadow 0.2s; animation: menuIn 0.45s ease both; }
+        .home-menu-btn:nth-child(2) { animation-delay: 0.05s; }
+        .home-menu-btn:nth-child(3) { animation-delay: 0.1s; }
+        .home-menu-btn:nth-child(4) { animation-delay: 0.15s; }
+        .home-menu-btn:nth-child(5) { animation-delay: 0.2s; }
+        .home-menu-btn:nth-child(6) { animation-delay: 0.25s; }
+        @keyframes menuIn { from { opacity: 0; transform: translateY(12px); } }
+        .home-menu-btn:hover, .home-menu-btn:active { border-color: rgba(160, 130, 255, 0.7); box-shadow: 0 0 22px rgba(138, 77, 255, 0.35); transform: translateY(-2px); }
+        .home-menu-btn:hover .home-menu-icon { animation: iconHop 0.5s ease; }
+        @keyframes iconHop { 40% { transform: translateY(-4px) rotate(-6deg); } }
+        @media (prefers-reduced-motion: reduce) { .home-menu-btn { animation: none; } }
     </style>
 </head>
 
-<body>
+<body class="kih-glow kih-stars">
     <div class="home-shell">
 
         <!-- Topbar shown ONLY on the home landing page -->
@@ -1453,6 +1605,12 @@ body {
         <div class="home-topbar" id="pageTopbar" style="display:none;">
             <button class="back-to-about-btn" title="Back to About" id="backToAboutBtn" onclick="goToPage('about')" style="display:none;">← Back</button>
             <button class="icon-btn" title="Home" onclick="goHome()">🏠</button>
+            <!-- Your tokens, on every page: tap for Daily Quests, + for the Store.
+                 Rewards and purchases fly into it (kihFlyToHud). -->
+            <div class="hud" id="hudPage" style="display:none;">
+                <button type="button" class="hud-bal" onclick="goToPage('quests')" title="Your tokens — Daily Quests"><span class="hud-coin" aria-hidden="true">🪙</span><b class="hud-amt">0</b></button>
+                <button type="button" class="hud-plus" onclick="goToPage('store')" title="Get more tokens" aria-label="Get more tokens">+</button>
+            </div>
             <div class="menu-wrapper">
                 <button class="icon-btn" title="Menu" onclick="toggleMenu()">☰</button>
                 <div class="menu-dropdown" id="menuDropdown">
@@ -1475,8 +1633,17 @@ body {
         <!-- ===== HOME LANDING — big vertical centered buttons ===== -->
         <div class="home-landing" id="homeLanding">
             <div class="home-landing-content">
-            <img src="images/KIH_HP.jpg" alt="Keazyea's Intelligence Hub" class="home-landing-title-img"
-     fetchpriority="high" width="220" height="220">
+            <div class="home-hud-row"><div class="hud" id="hudHome" style="display:none;">
+                <button type="button" class="hud-bal" onclick="goToPage('quests')" title="Your tokens — Daily Quests"><span class="hud-coin" aria-hidden="true">🪙</span><b class="hud-amt">0</b></button>
+                <button type="button" class="hud-plus" onclick="goToPage('store')" title="Get more tokens" aria-label="Get more tokens">+</button>
+            </div></div>
+            <div class="home-logo">
+                <img src="images/KIH_HP.jpg" alt="Keazyea's Intelligence Hub" class="home-landing-title-img"
+                    fetchpriority="high" width="220" height="220">
+            </div>
+            <p class="home-greet" id="homeGreet">Welcome, Commander <span class="wave">👋</span></p>
+            <!-- Today at a glance: live cards for the puzzle, quests and the weekly draw. -->
+            <div class="home-today" id="homeToday"></div>
 
             <div class="home-menu">
                 <button class="home-menu-btn" onclick="goToPage('troops')">
@@ -1563,30 +1730,33 @@ body {
                             <button class="btn-settings-action" onclick="toggleGoogleSignIn()">Sign in with Google</button>
                         </div>
                         <div id="questsSignedIn" style="display:none;">
-                            <div class="quest-wallet">
-                                <div>
-                                    <div class="settings-sub" style="margin:0;">Your tokens</div>
-                                    <div class="quest-wallet-balance">🪙 <span id="questTokenBalance">0</span></div>
+                            <!-- Your wallet: the balance counts up as rewards fly in. -->
+                            <div class="quest-wallet" id="questWallet">
+                                <div class="qw-top">
+                                    <span class="qw-coin" aria-hidden="true">🪙</span>
+                                    <div class="qw-bal">
+                                        <small>Your tokens</small>
+                                        <div class="quest-wallet-balance"><span id="questTokenBalance">0</span></div>
+                                    </div>
+                                    <div class="quest-countdown"><small>New quests in</small><strong id="questCountdown">--:--:--</strong></div>
                                 </div>
-                                <div class="quest-countdown">New quests in<strong id="questCountdown">--:--:--</strong></div>
-                            </div>
-                            <!-- Where tokens come from and where they're used, one tap away. -->
-                            <div class="quest-links">
-                                <button type="button" onclick="goToPage('store')">🪙 Get more tokens</button>
-                                <button type="button" onclick="openPromoTab('secret')">🔒 Use them in Secret Giveaways</button>
+                                <!-- Where tokens come from and where they're used, one tap away. -->
+                                <div class="quest-links">
+                                    <button type="button" onclick="goToPage('store')">＋ Get more tokens</button>
+                                    <button type="button" onclick="openPromoTab('secret')">🔒 Spend in Secret Giveaways</button>
+                                </div>
                             </div>
                             <div id="questList"></div>
-                            <p class="settings-sub" style="margin-top:16px; line-height:1.5;">
-                                Every day: log in for <strong>1 🪙</strong>, plus quests worth <strong>4 🪙</strong> —
-                                "check out" quests pay 1, "do something" quests pay 2 — and finishing today's puzzle in
-                                <strong>Games</strong> pays <strong>1 🪙</strong> straight away. Log in every day Monday to Saturday
-                                and Sunday's chest gives <strong>3–5 🪙</strong> (1 if you missed a day). Finish a quest,
-                                then tap <strong>Claim</strong> — unclaimed rewards wait for you, they don't expire. The
-                                <strong>Store</strong> has token packs, plus subscriptions that add 80 or 180 🪙 every month.
-                                To use tokens, enter a <strong>Secret Giveaway</strong> and add tokens to your entry — every
-                                token adds one more chance on top of your free one. Tokens are spent when your side is
-                                drawn, win or lose, and refunded if you leave before then.
-                            </p>
+                            <details class="quest-how">
+                                <summary>How tokens work</summary>
+                                <ul>
+                                    <li>📅 Log in every day for <strong>1 🪙</strong>. Every day Monday–Saturday unlocks Sunday's chest: <strong>3–5 🪙</strong> (1 if you missed a day).</li>
+                                    <li>⚔️ Daily quests are worth <strong>4 🪙</strong>: "check out" quests pay 1, "do something" quests pay 2. Finish one, then tap <strong>Claim</strong> — unclaimed rewards don't expire.</li>
+                                    <li>🎲 Finishing today's puzzle in <strong>Games</strong> pays <strong>1 🪙</strong> straight away.</li>
+                                    <li>🛒 The <strong>Store</strong> has token packs, and Supporter plans that add 80 or 180 🪙 a month.</li>
+                                    <li>🔒 Spend them in a <strong>Secret Giveaway</strong>: every token you drop in is one more chance on top of your free one. They're used up when the winners are drawn, win or lose, and come back if you take them out before.</li>
+                                </ul>
+                            </details>
                         </div>
                     </div>
                 </div>
@@ -2250,6 +2420,7 @@ body {
     document.getElementById("backToAboutBtn").style.display = cameFromAbout ? "flex" : "none";
 
     document.getElementById("homeLanding").classList.add("hidden");
+    document.body.classList.add("on-section"); // the home background rests under the section
     document.getElementById("homeContentWrap").classList.add("active");
     document.getElementById("homeTopbar").style.display = "none";
     document.getElementById("pageTopbar").style.display = "flex";
@@ -2321,10 +2492,12 @@ body {
             }
             if (fromHistory !== true) recordPageInHistory("home");
             resetSocialIframeIfActive();
+            refreshWeeklyJoined(); // may have just entered on the Promo page
             cameFromAbout = false;
             document.getElementById("backToAboutBtn").style.display = "none";
             document.getElementById("homeContentWrap").classList.remove("active");
             document.getElementById("homeLanding").classList.remove("hidden");
+            document.body.classList.remove("on-section");
             document.getElementById("homeTopbar").style.display = "flex";
             document.getElementById("pageTopbar").style.display = "none";
             document.getElementById("scrollBottomBtn").classList.remove("visible");
@@ -2774,6 +2947,8 @@ function applyTopbarProfile(profile) {
         dropdownFallback.style.display = "flex";
     }
     document.getElementById("topbarName").textContent = "Profile";
+    homeName = (profile && typeof profile.name === "string" ? profile.name.trim() : "").slice(0, 24);
+    renderHomeGreet();
 }
 
 // One-shot read with retries — used on initial page load before the live
@@ -3641,7 +3816,7 @@ window.closeInboxItemModal = closeInboxItemModal;
         // A friend's game challenge (from a chat message, or a shared link):
         // Games on the same puzzle they played. games.html checks the code.
         function openGameChallenge(code) {
-            if (!/^[a-z]+\.[ds][0-9a-z]{1,8}\.(\d{1,2}|x)$/i.test(String(code || ""))) return;
+            if (!/^[a-z]+\.[ds][0-9a-z]{1,8}\.(\d{1,3}|x)$/i.test(String(code || ""))) return;
             let frame = document.querySelector("#page-games iframe");
             setSectionFrameUrl(frame, "games.html?challenge=" + encodeURIComponent(code));
             goToPage("games");
@@ -3754,6 +3929,10 @@ window.closeInboxItemModal = closeInboxItemModal;
         let questReady = [];         // done, not yet claimed, from ANY day: [{ id, questId, dayKey }]
         let questProgressLoaded = false;
         let questClaiming = false;
+        let questBarShown = 0;      // the progress bar fills from where it was
+        let questAnimNext = true;   // rows slide in the next time the page opens
+        let questBalanceHoldUntil = 0;
+        let hudHoldUntil = 0;       // the header balance waits for flying coins to land
         let questBalance = 0;
         let unsubQuestWallet = null;
         let unsubQuestProgress = null;
@@ -3834,7 +4013,7 @@ window.closeInboxItemModal = closeInboxItemModal;
                 if (login && login.status === "ready") {
                     cls = " ready";
                     body = sunday && login.chest ? "🎁<small>Open!</small>" : "🪙<small>Open</small>";
-                    click = ` onclick="handleQuestClaim('${k}_login')"${disabled}`;
+                    click = ` onclick="handleQuestClaim('${k}_login', this)"${disabled}`;
                 } else if (login) {
                     cls = " done";
                     body = `✅<small>+${login.reward || 1}</small>`;
@@ -3861,9 +4040,9 @@ window.closeInboxItemModal = closeInboxItemModal;
             } else if (missedDay) {
                 streak = "You missed a day this week, so Sunday's chest gives 1 🪙. A new streak starts Monday.";
             } else {
-                streak = `🔥 Log in every day Monday to Saturday to unlock Sunday's chest (3–5 🪙) — <strong>${loggedMonSat}/6</strong> so far.`;
+                streak = `🔥 <strong>${loggedMonSat}/6</strong> — log in every day till Saturday for Sunday's chest (3–5 🪙).`;
             }
-            return `<div class="quest-section-label">This week's logins — tap a day to open its token</div>
+            return `<div class="quest-section-label">📅 Your week</div>
                 <div class="quest-calendar">${tiles}</div>
                 <p class="quest-streak">${streak}</p>`;
         }
@@ -3872,7 +4051,10 @@ window.closeInboxItemModal = closeInboxItemModal;
             const signedIn = !!AppState.getCurrentUser();
             document.getElementById("questsSignedOut").style.display = signedIn ? "none" : "block";
             document.getElementById("questsSignedIn").style.display = signedIn ? "block" : "none";
-            document.getElementById("questTokenBalance").textContent = questBalance;
+            setQuestBalance(questBalance);
+            renderHud(questBalance, signedIn);
+            renderHomeToday();
+            renderHomeGreet();
 
             // Topbar icon on the home screen, plus the ☰ menu on every other
             // page: how many rewards are done and waiting to be claimed.
@@ -3902,11 +4084,12 @@ window.closeInboxItemModal = closeInboxItemModal;
             }
             const disabled = questClaiming ? " disabled" : "";
             const claimBtn = (claimId, reward) =>
-                `<button class="quest-claim-btn" onclick="handleQuestClaim('${claimId}')"${disabled}>Claim +${reward} 🪙</button>`;
-            const row = (cls, info, hint, action) => `<div class="quest-row${cls}">
+                `<button class="quest-claim-btn" onclick="handleQuestClaim('${claimId}', this)"${disabled}>Claim +${reward} 🪙</button>`;
+            // reward: the "+1 🪙" chip, shown by the title (not squeezed in by the button).
+            const row = (cls, info, hint, action, reward) => `<div class="quest-row${cls}">
                     <span class="quest-icon">${info.icon}</span>
                     <div class="quest-text">
-                        <div class="quest-title">${info.title}</div>
+                        <div class="quest-title">${info.title}${reward ? ` <span class="quest-reward">+${reward} 🪙</span>` : ""}</div>
                         <div class="quest-hint">${hint}</div>
                     </div>
                     ${action}
@@ -3924,37 +4107,119 @@ window.closeInboxItemModal = closeInboxItemModal;
                 : "";
 
             // Login lives on the calendar; these are the day's quests.
-            const todayHtml = `<div class="quest-section-label" style="margin-top:14px;">Today's quests — worth 4 🪙</div>` +
+            const todayHtml = `<div class="quest-section-label" style="margin-top:16px;">⚔️ Today's quests · worth 4 🪙</div>` +
                 questToday.quests.filter(id => id !== "login").map(id => {
                     const info = QUEST_INFO[id] || { icon: "⭐", title: id, hint: "" };
                     const reward = questRewardOf(id);
                     const status = questProgress[id];
                     if (status === "claimed") return row(" done", info, info.hint, `<span class="quest-done">✅ +${reward} 🪙</span>`);
                     if (status === "ready") return row(" ready", info, info.hint, claimBtn(`${questToday.dayKey}_${id}`, reward));
-                    return row("", info, info.hint, `<span class="quest-reward">+${reward} 🪙</span>` +
-                        (info.go ? `<button class="quest-go-btn" onclick="runQuestAction('${id}')">Go</button>` : ""));
+                    return row("", info, info.hint, info.go ? `<button class="quest-go-btn" onclick="runQuestAction('${id}')">Go</button>` : "", reward);
                 }).join("");
 
             // Today's Puzzle in Games pays its own +1 the moment it's finished
             // (api/tokens.js "dailyPuzzle"), so there's nothing to claim here —
             // this is a way in, ticked once today's token is collected.
             const puzzleDone = !!questProgress.dailyPuzzle;
-            const puzzleHtml = `<div class="quest-section-label" style="margin-top:14px;">Daily game</div>` +
+            const puzzleHtml =
                 // Not played yet: a red 1 on the dice, like an app's notification.
                 row(puzzleDone ? " done" : "", { title: "Play today's puzzle", icon: puzzleDone ? "🎲"
                         : `<span style="position:relative; display:inline-block;">🎲<span class="badge-dot" style="top:-6px; right:-10px;">1</span></span>` },
                     puzzleDone ? "Done for today — a new game after the reset." : "Finish today's game in Games — any score counts.",
                     puzzleDone ? `<span class="quest-done">✅ +1 🪙</span>`
-                        : `<span class="quest-reward">+1 🪙</span><button class="quest-go-btn" onclick="openTodaysPuzzle()">Play</button>`);
+                        : `<button class="quest-go-btn" onclick="openTodaysPuzzle()">Play</button>`, puzzleDone ? 0 : 1);
 
             // A waiting chest stays a surprise: its amount isn't added up here.
             const hasChest = questReady.some(r => r.chest);
             const readyTotal = questReady.filter(r => !r.chest).reduce((a, r) => a + (r.reward || 1), 0);
             const claimAll = questReady.length >= 2
-                ? `<button class="quest-claim-all-btn" onclick="handleQuestClaim()"${disabled}>Claim all (${hasChest ? "🎁 + " : ""}+${readyTotal} 🪙)</button>`
+                ? `<button class="quest-claim-all-btn" onclick="handleQuestClaim(null, this)"${disabled}>Claim all (${hasChest ? "🎁 + " : ""}+${readyTotal} 🪙)</button>`
                 : "";
-            list.innerHTML = claimAll + renderLoginCalendar(disabled) + earlierHtml + todayHtml + puzzleHtml;
+            // Today at a glance: how many of today's quests (and the puzzle) are done.
+            const todayIds = questToday.quests.filter(id => id !== "login");
+            const doneCount = todayIds.filter(id => questProgress[id]).length + (puzzleDone ? 1 : 0);
+            const totalCount = todayIds.length + 1;
+            const pct = Math.round(doneCount / totalCount * 100);
+            const progressHtml = `<div class="quest-progress${doneCount === totalCount ? " all" : ""}">
+                    <div class="quest-progress-top"><b>Today</b><span>${doneCount === totalCount ? "🎉 All done!" : `${doneCount} of ${totalCount} done`}</span></div>
+                    <div class="quest-bar"><div class="quest-bar-fill" style="width:${questBarShown}%" data-to="${pct}"></div></div>
+                </div>`;
+            list.classList.toggle("quest-list-anim", questAnimNext);
+            questAnimNext = false;
+            list.innerHTML = claimAll + progressHtml + renderLoginCalendar(disabled) + earlierHtml + todayHtml + puzzleHtml;
+            questBarShown = pct;
+            setTimeout(() => {
+                const fill = list.querySelector(".quest-bar-fill");
+                if (fill) fill.style.width = fill.dataset.to + "%";
+            }, 40);
         }
+
+        /* ---- 🏠 Home: a greeting, and today's three things to do ---- */
+        let homeName = "";
+        function renderHomeGreet() {
+            const el = document.getElementById("homeGreet");
+            if (!el) return;
+            try { drawHomeGreet(el); } catch (e) { console.warn("greeting:", e); }
+        }
+        function drawHomeGreet(el) {
+            const h = new Date().getHours();
+            const hello = !AppState.getCurrentUser() ? "Welcome" : h < 5 ? "Good night" : h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening";
+            el.innerHTML = `${hello}, ${escapeHomeHtml(homeName || "Commander")} <span class="wave">👋</span>`;
+        }
+        // Time to the weekly draw (Sunday midnight, like the giveaway itself).
+        function untilWeeklyDraw() {
+            let now = typeof AppState.getSimulatedNow === "function" ? AppState.getSimulatedNow() : null;
+            if (!(now instanceof Date) || isNaN(now)) now = new Date();
+            const target = new Date(now);
+            target.setDate(now.getDate() + ((7 - now.getDay()) % 7));
+            target.setHours(0, 0, 0, 0);
+            const m = Math.max(0, Math.floor((target - now) / 60000)), d = Math.floor(m / 1440), hrs = Math.floor((m % 1440) / 60);
+            return m <= 0 ? "drawing now!" : d ? `in ${d}d ${hrs}h` : hrs ? `in ${hrs}h ${m % 60}m` : `in ${m}m`;
+        }
+        let homeTodayHtml = "";
+        // This week's giveaway: entered or not (null: not known / signed out).
+        // Checked on load, on sign-in, and whenever you come back to Home.
+        let weeklyJoined = null;
+        async function refreshWeeklyJoined() {
+            try {
+                weeklyJoined = AppState.getCurrentUser() ? !!(await AppState.hasJoinedGiveaway(AppState.getWeekId())) : null;
+            } catch (e) { weeklyJoined = null; }
+            renderHomeToday();
+        }
+        // Decoration only: whatever goes wrong here must never stop the page.
+        function renderHomeToday() {
+            try { drawHomeToday(); } catch (e) { console.warn("home cards:", e); }
+        }
+        function weeklyCard(card) {
+            const when = untilWeeklyDraw();
+            const open = typeof AppState.isGiveawayOpen !== "function" || AppState.isGiveawayOpen();
+            if (weeklyJoined === true) return card("done", "🎡", "Weekly draw", "✅ In · " + when.replace(/^in /, ""), "openPromoTab('vip')");
+            if (weeklyJoined === false && open) return card("hot", "🎡", "Weekly draw", "Not in — join!", "openPromoTab('vip')");
+            return card("", "🎡", "Weekly draw", when, "openPromoTab('vip')");
+        }
+        function drawHomeToday() {
+            const box = document.getElementById("homeToday");
+            if (!box) return;
+            const signedIn = !!AppState.getCurrentUser();
+            const ready = signedIn && questToday && questProgressLoaded;
+            const card = (cls, icon, title, status, go) =>
+                `<button type="button" class="today-card ${cls}" onclick="${go}"><span class="tc-icon">${icon}</span><b>${title}</b><small>${status}</small></button>`;
+            const puzzleDone = ready && !!questProgress.dailyPuzzle;
+            let quests;
+            if (ready) {
+                const ids = questToday.quests.filter(id => id !== "login");
+                const done = ids.filter(id => questProgress[id]).length;
+                quests = questReady.length ? card("hot", "📅", "Daily Quests", `${questReady.length} to claim!`, "goToPage('quests')")
+                    : card(done === ids.length ? "done" : "", "📅", "Daily Quests", `${done}/${ids.length} done`, "goToPage('quests')");
+            } else {
+                quests = card("", "📅", "Daily Quests", signedIn ? "…" : "Free tokens", "goToPage('quests')");
+            }
+            const html = card(puzzleDone ? "done" : "hot", "🎲", "Today's Puzzle", puzzleDone ? "Done ✅" : "Play · +1 🪙", "openTodaysPuzzle()")
+                + quests
+                + weeklyCard(card);
+            if (html !== homeTodayHtml) { homeTodayHtml = html; box.innerHTML = html; }
+        }
+        setInterval(renderHomeToday, 30000);
 
         // Games, straight onto the Today's Puzzle tab.
         function openTodaysPuzzle() {
@@ -3969,8 +4234,9 @@ window.closeInboxItemModal = closeInboxItemModal;
         // Collects one reward, or every waiting one when no id is given. The
         // server only pays rewards still marked ready, so a double tap or a
         // second device claiming at the same moment can't pay twice.
-        async function handleQuestClaim(claimId) {
+        async function handleQuestClaim(claimId, fromEl) {
             if (questClaiming) return;
+            const fromRect = fromEl && fromEl.getBoundingClientRect ? fromEl.getBoundingClientRect() : null;
             const ids = claimId ? [claimId] : questReady.map(r => r.id).slice(0, 20);
             if (!ids.length) return;
             const openingChest = questReady.some(r => r.chest && ids.includes(r.id));
@@ -3986,6 +4252,7 @@ window.closeInboxItemModal = closeInboxItemModal;
                     if (questId === "login" && questLogins[day]) questLogins[day] = { ...questLogins[day], status: "claimed" };
                 });
                 if (typeof result.balance === "number") questBalance = result.balance;
+                if (result.claimed > 0) flyQuestCoins(fromRect, result.claimed);
                 if (result.claimed > 0) showQuestToast(openingChest && ids.length === 1
                     ? `🎁 Chest opened: +${result.claimed} 🪙!`
                     : `+${result.claimed} 🪙 claimed!`);
@@ -3995,6 +4262,97 @@ window.closeInboxItemModal = closeInboxItemModal;
                 questClaiming = false;
                 renderQuests();
             }
+        }
+
+        /* ---- little animations: coins flying into the wallet, the balance
+           counting up to its new value ---- */
+        function flyQuestCoins(fromRect, amount) {
+            const target = document.getElementById("questTokenBalance");
+            if (!fromRect || !target || !document.body.animate) return;
+            const b = target.getBoundingClientRect();
+            const n = Math.max(3, Math.min(amount * 2, 10));
+            questBalanceHoldUntil = hudHoldUntil = Date.now() + 650; // the counts start as the coins land
+            for (let i = 0; i < n; i++) {
+                const c = document.createElement("span");
+                c.className = "quest-fly";
+                c.textContent = "🪙";
+                document.body.appendChild(c);
+                const sx = fromRect.left + fromRect.width / 2 - 11 + (Math.random() - 0.5) * 30, sy = fromRect.top + fromRect.height / 2 - 11;
+                const ex = b.left + b.width / 2 - 11, ey = b.top + b.height / 2 - 11;
+                const mx = (sx + ex) / 2 + (Math.random() - 0.5) * 80, my = Math.min(sy, ey) - 60 - Math.random() * 50;
+                c.animate([
+                    { transform: `translate(${sx}px, ${sy}px) scale(0.6)`, opacity: 0 },
+                    { transform: `translate(${mx}px, ${my}px) scale(1.3) rotate(180deg)`, opacity: 1, offset: 0.45 },
+                    { transform: `translate(${ex}px, ${ey}px) scale(0.7) rotate(360deg)`, opacity: 0.9 }
+                ], { duration: 650, delay: i * 55, easing: "cubic-bezier(.4,.1,.5,1)", fill: "both" }); setTimeout(() => c.remove(), 750 + i * 55);
+            }
+            const wallet = document.getElementById("questWallet");
+            setTimeout(() => { if (wallet) { wallet.classList.remove("got"); void wallet.offsetWidth; wallet.classList.add("got"); } }, 650);
+        }
+        /* ---- 🪙 the header HUD ---- */
+        function renderHud(balance, signedIn) {
+            ["hudPage", "hudHome"].forEach(id => { const h = document.getElementById(id); if (h) h.style.display = signedIn ? "inline-flex" : "none"; });
+            document.querySelectorAll(".hud-amt").forEach(el => {
+                const from = Number(el.dataset.value);
+                el.dataset.value = String(balance);
+                if (!Number.isFinite(from) || from === balance) { el.textContent = String(balance); return; }
+                const go = () => {
+                    const t0 = Date.now();
+                    (function step() {
+                        if (el.dataset.value !== String(balance)) return;
+                        const p = Math.min(1, (Date.now() - t0) / 800), e = 1 - Math.pow(1 - p, 3);
+                        el.textContent = String(Math.round(from + (balance - from) * e));
+                        if (p < 1) setTimeout(step, 30);
+                    })();
+                    if (balance > from) { const h = el.closest(".hud"); h.classList.remove("got"); void h.offsetWidth; h.classList.add("got"); }
+                };
+                const wait = hudHoldUntil - Date.now();
+                if (wait > 0) setTimeout(go, wait); else go();
+            });
+        }
+        // Coins flying into the header balance from anywhere — this page, or
+        // a section in its frame (which passes its rect in this window's
+        // coordinates). The count waits for them to land.
+        window.kihFlyToHud = function (fromRect, amount) {
+            const huds = ["hudPage", "hudHome"].map(id => document.getElementById(id)).filter(h => h && h.offsetParent !== null);
+            const target = huds[0] && huds[0].querySelector(".hud-amt");
+            if (!fromRect || !target || !document.body.animate) return;
+            const b = target.getBoundingClientRect();
+            const n = Math.max(3, Math.min(Math.ceil(amount / 10) + 3, 12));
+            hudHoldUntil = Date.now() + 700 + n * 50;
+            for (let i = 0; i < n; i++) {
+                const c = document.createElement("span");
+                c.className = "hud-fly";
+                c.textContent = "🪙";
+                document.body.appendChild(c);
+                const sx = fromRect.left + fromRect.width / 2 - 11 + (Math.random() - 0.5) * 50, sy = fromRect.top + fromRect.height / 2 - 11;
+                const ex = b.left + b.width / 2 - 11, ey = b.top + b.height / 2 - 11;
+                const mx = (sx + ex) / 2 + (Math.random() - 0.5) * 120, my = Math.min(sy, ey) + (sy - ey) * 0.15 - 40 - Math.random() * 40;
+                c.animate([
+                    { transform: `translate(${sx}px, ${sy}px) scale(0.5)`, opacity: 0 },
+                    { transform: `translate(${mx}px, ${my}px) scale(1.35) rotate(200deg)`, opacity: 1, offset: 0.45 },
+                    { transform: `translate(${ex}px, ${ey}px) scale(0.6) rotate(380deg)`, opacity: 0.9 }
+                ], { duration: 750, delay: i * 50, easing: "cubic-bezier(.4,.1,.5,1)", fill: "both" }); setTimeout(() => c.remove(), 850 + i * 50);
+            }
+        };
+
+        function setQuestBalance(n) {
+            const el = document.getElementById("questTokenBalance");
+            if (!el) return;
+            const from = Number(el.dataset.value);
+            el.dataset.value = String(n);
+            if (!Number.isFinite(from) || from === n) { el.textContent = String(n); return; }
+            const start = () => {
+                const t0 = Date.now(), dur = 800;
+                (function step() {
+                    if (el.dataset.value !== String(n)) return; // a newer value took over
+                    const p = Math.min(1, (Date.now() - t0) / dur), e = 1 - Math.pow(1 - p, 3);
+                    el.textContent = String(Math.round(from + (n - from) * e));
+                    if (p < 1) setTimeout(step, 30);
+                })();
+            };
+            const wait = questBalanceHoldUntil - Date.now();
+            if (wait > 0) setTimeout(start, wait); else start();
         }
 
         function runQuestAction(id) {
@@ -4025,6 +4383,7 @@ window.closeInboxItemModal = closeInboxItemModal;
         // opens — done earlier today, or on another device. Ask the server to
         // check those; it verifies, and it pays at most once.
         async function onQuestsPageOpened() {
+            questAnimNext = true;
             renderQuests();
             if (!AppState.getCurrentUser() || !questToday || !questProgressLoaded) return;
             const pending = questToday.quests.filter(q => !questProgress[q]);
@@ -4065,6 +4424,10 @@ window.closeInboxItemModal = closeInboxItemModal;
             AppState.waitForAuthReady().then(startQuestListeners);
             AppState.onAuthChange(() => startQuestListeners());
             setInterval(updateQuestCountdown, 1000);
+            renderHomeToday(); // before the quests have loaded too
+            AppState.waitForAuthReady().then(refreshWeeklyJoined);
+            AppState.onAuthChange(() => refreshWeeklyJoined());
+            renderHomeGreet();
 
             startNewsListenerHome();
             AppState.listenToNotifications((notifications) => {
