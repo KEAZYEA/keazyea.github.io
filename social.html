@@ -6307,9 +6307,10 @@ document.getElementById("dmActionsMenu").classList.remove("open");
 const DM_CHALLENGE_RE = /\nhttps:\/\/keazyea\.github\.io\/\?challenge=(([a-z]+)\.([ds])([0-9a-z]{1,8})\.(\d{1,3}|x))\s*$/;
 const CHALLENGE_GAMES = {
     trivia: { icon: "🧠", title: "Trivia", out: 5 },
-    guess: { icon: "🔍", title: "Guess the Unit", out: 3 },
+    guess: { icon: "🪢", title: "Hangman", out: 6 }, // the id stays "guess" (it was Guess the Unit)
     unitle: { icon: "🎯", title: "Unitle", out: 6 },
-    hilo: { icon: "⬆️", title: "Higher or Lower", out: 10 }
+    hilo: { icon: "⬆️", title: "Higher or Lower", out: 10 },
+    blur: { icon: "🔍", title: "Blur", out: 3 }
 };
 function parseDmChallenge(text) {
     const m = DM_CHALLENGE_RE.exec(text || "");
@@ -6321,12 +6322,13 @@ function parseDmChallenge(text) {
     const today = new Date(Date.now() + 8 * 3600e3).toISOString().slice(0, 10);
     const which = !day ? "Endless run" : day === today ? "Today's puzzle" : `Puzzle of ${day}`;
     // A day's puzzle keeps that puzzle's scoring; free play is an endless
-    // run, scored as a streak (Trivia, Hi-Lo) or in points (Unitle, Guess).
+    // run, scored as a streak (Trivia, Hi-Lo) or in points (Unitle, Hangman, Blur).
     let scoreLabel;
     if (!day) scoreLabel = gameId === "trivia" || gameId === "hilo" ? `a streak of ${score === "x" ? 0 : score}` : `${score === "x" ? 0 : score} point${score === "1" ? "" : "s"}`;
     else if (gameId === "hilo") scoreLabel = `${score}/${game.out}`;
-    else if (score === "x") scoreLabel = `didn't get it (X/${game.out})`;
+    else if (score === "x") scoreLabel = gameId === "guess" ? "not solved" : `didn't get it (X/${game.out})`;
     else if (gameId === "trivia") scoreLabel = `${score}/${game.out}`;
+    else if (gameId === "guess") scoreLabel = score === "0" ? "no misses" : `${score} miss${score === "1" ? "" : "es"}`;
     else scoreLabel = `${score} guess${score === "1" ? "" : "es"}`;
     return { code, game, which, scoreLabel };
 }
@@ -6636,9 +6638,7 @@ window.sendDmFromInput = async function () {
             await refreshComposeBox();
             startLiveListeners();
             setupDmViewportHandling();
-            unsubPosts = AppState.listenToClanPosts(renderClanPosts);
-            unsubFormations = AppState.listenToFormations(renderFormationPosts);
-            unsubTierLists = AppState.listenToTierLists(renderTierListPosts);
+            startPostListeners();
             AppState.sweepExpiredFormations();
             AppState.maybeRefreshAd("adBannerSocial");
             AppState.loadAdsterraAdsIfAllowed();
@@ -6674,8 +6674,17 @@ window.sendDmFromInput = async function () {
                 pendingFormationPostIdFromUrl = formationPostId;
             }
         });
+        // Posts carry names and profile pictures, so they're only fetched for
+        // someone signed in — started (again) on sign-in, dropped on sign-out.
+        function startPostListeners() {
+            [unsubPosts, unsubFormations, unsubTierLists].forEach(u => { if (typeof u === "function") u(); });
+            unsubPosts = AppState.listenToClanPosts(renderClanPosts);
+            unsubFormations = AppState.listenToFormations(renderFormationPosts);
+            unsubTierLists = AppState.listenToTierLists(renderTierListPosts);
+        }
         AppState.onAuthChange(async () => {
             await refreshComposeBox();
+            startPostListeners();
             startLiveListeners();
             AppState.maybeRefreshAd("adBannerSocial");
         });

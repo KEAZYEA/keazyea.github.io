@@ -83,6 +83,8 @@ body.kih-stars::after {
 
 /* Idle life on tabs and badges: a tab lifts a little under your finger,
    and a notification badge pops in. */
+/* Taps act at once: no waiting to see if it was a double-tap zoom. */
+button, a, [onclick], input[type="checkbox"], label { touch-action: manipulation; }
 .tab-btn { position: relative; }
 .tab-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(108, 99, 255, 0.25); }
 /* a notification badge pops in when it appears (once — no endless pulsing) */

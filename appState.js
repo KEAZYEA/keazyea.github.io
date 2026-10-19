@@ -316,11 +316,14 @@ async function signOutUser() {
     // Games' ranked runs and weekly leaderboard (api/games.js). A ranked run
     // is played on the server one move at a time, so its answers never
     // reach this page.
+    // Sent as plain text with the token in the body (not an Authorization
+    // header): the browser then sends it at once, without first asking the
+    // server for permission — one trip per move instead of two.
     async function callGamesApi(action, payload = {}) {
         await waitForAuthReady();
-        const headers = { "Content-Type": "application/json" };
-        if (currentUser) headers.Authorization = "Bearer " + await getIdToken();
-        const res = await fetch(BACKEND_BASE + "/api/games", { method: "POST", headers, body: JSON.stringify({ action, ...payload }) });
+        const body = { action, ...payload };
+        if (currentUser) body.idToken = await getIdToken();
+        const res = await fetch(BACKEND_BASE + "/api/games", { method: "POST", headers: { "Content-Type": "text/plain;charset=UTF-8" }, body: JSON.stringify(body) });
         let data = null;
         try { data = await res.json(); } catch (e) { /* non-JSON error page */ }
         if (!res.ok) {
@@ -333,6 +336,8 @@ async function signOutUser() {
     const gamesRunStart = (game) => callGamesApi("runStart", { game });
     const gamesRunAnswer = (runId, input) => callGamesApi("runAnswer", { runId, input });
     const gamesLeaderboard = () => callGamesApi("leaderboard");
+    // Wakes the games server up while the page loads (errors don't matter).
+    const gamesPing = () => callGamesApi("ping").catch(() => null);
 
     async function getMyTokenBalance() {
         await waitForAuthReady();
@@ -1102,7 +1107,17 @@ async function getClanPostCooldownRemaining() {
         return postId;
     }
 
+    // Posts, comments and secret giveaways carry people's names, profile
+    // pictures and (winners) account ids, so they're only for signed-in
+    // players. The Firestore rules enforce it; these just don't ask when
+    // nobody is signed in — they hand back an empty list instead.
+    function signedOutFeed(callback) {
+        try { callback([]); } catch (e) { /* the page's own problem */ }
+        return () => { };
+    }
+
     function listenToClanPosts(callback, maxCount = 100) {
+        if (!currentUser) return signedOutFeed(callback);
         const q = query(collection(db, "clanPosts"), orderBy("createdAt", "desc"), limit(maxCount));
         return onSnapshot(q, (snap) => {
             const items = [];
@@ -1267,6 +1282,7 @@ async function getClanPostCooldownRemaining() {
     // order, and Firestore requires the first orderBy to match a range-
     // filtered field.
     function listenToFormations(callback, maxCount = 200) {
+        if (!currentUser) return signedOutFeed(callback);
         const q = query(
             collection(db, "formationPosts"),
             where("expiresAt", ">", Timestamp.now()),
@@ -1315,6 +1331,7 @@ async function getClanPostCooldownRemaining() {
     // Best-effort: deletes a small batch of already-expired posts whenever
     // called (see the section comment above for the full cleanup story).
     async function sweepExpiredFormations() {
+        if (!currentUser) return;
         try {
             const q = query(collection(db, "formationPosts"), where("expiresAt", "<=", Timestamp.now()), limit(10));
             const snap = await getDocs(q);
@@ -1433,6 +1450,7 @@ async function getClanPostCooldownRemaining() {
     }
 
     function listenToFormationComments(postId, callback) {
+        if (!currentUser) return signedOutFeed(callback);
         const q = query(collection(db, "formationPosts", postId, "comments"), orderBy("createdAt", "asc"));
         return onSnapshot(q, (snap) => {
             const items = [];
@@ -1601,6 +1619,7 @@ async function getClanPostCooldownRemaining() {
     }
 
     function listenToTierLists(callback, maxCount = 200) {
+        if (!currentUser) return signedOutFeed(callback);
         const q = query(collection(db, "tierLists"), orderBy("createdAt", "desc"), limit(maxCount));
         return onSnapshot(q, (snap) => {
             const items = [];
@@ -1779,6 +1798,7 @@ async function getClanPostCooldownRemaining() {
     }
 
     function listenToTierListComments(tierListId, callback) {
+        if (!currentUser) return signedOutFeed(callback);
         const q = query(collection(db, "tierLists", tierListId, "comments"), orderBy("createdAt", "asc"));
         return onSnapshot(q, (snap) => {
             const items = [];
@@ -3798,6 +3818,7 @@ async function sendAdminMessage(uid, title, body) {
     }
 
     function listenToSecretGiveaways(callback, maxCount = 50, onError) {
+        if (!currentUser) return signedOutFeed(callback);
         const q = query(collection(db, "secretGiveaways"), orderBy("createdAt", "desc"), limit(maxCount));
         return onSnapshot(q, (snap) => {
             const items = [];
@@ -3810,6 +3831,8 @@ async function sendAdminMessage(uid, title, body) {
     }
 
     async function getSecretGiveaway(giveawayId) {
+        await waitForAuthReady();
+        if (!currentUser) return null;
         const snap = await getDoc(doc(db, "secretGiveaways", giveawayId));
         return snap.exists() ? { id: snap.id, ...snap.data() } : null;
     }
@@ -4562,7 +4585,7 @@ async function maybeRefreshAd(containerId) {
     return {
         // auth
         signIn, signOut: signOutUser, getCurrentUser, onAuthChange, waitForAuthReady, getIdToken,
-        getTodaysQuests, listenToMyWallet, listenToMyQuestProgress, claimQuestRewards, submitDailyPuzzle, gamesRunStart, gamesRunAnswer, gamesLeaderboard, getMyTokenBalance,
+        getTodaysQuests, listenToMyWallet, listenToMyQuestProgress, claimQuestRewards, submitDailyPuzzle, gamesRunStart, gamesRunAnswer, gamesLeaderboard, gamesPing, getMyTokenBalance,
         listenToMyGiftClaims, claimTokenGift, adminTokens,
         reportQuestProgress, startDailyQuestTracking, stakeTokensOnSecretGiveaway, setSecretGiveawayStake, refreshSecretGiveawayMaxStake,
         // profile

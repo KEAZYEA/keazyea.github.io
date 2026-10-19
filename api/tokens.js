@@ -777,17 +777,7 @@ async function maxStake(db, body) {
 const DAILY_PUZZLE_REWARD = 1;
 // A puzzle started just before the reset can still be handed in a little after.
 const DAILY_PUZZLE_GRACE_MS = 30 * 60 * 1000;
-let gameUnits = null;
-function loadGameUnits() {
-  if (!gameUnits) {
-    gameUnits = GamesCore.buildUnits({
-      troops: require("../troops.json"), troopLevels: require("../troopsLevel.json"),
-      heroes: require("../hero.json"), heroLevels: require("../heroLevel.json"),
-      loc: require("../localization.json"), en: require("../en.json")
-    });
-  }
-  return gameUnits;
-}
+const { loadUnits: loadGameUnits } = require("./_units"); // the same units the page builds
 
 async function dailyPuzzle(db, uid, body, now, dayKey) {
   const { day, play } = body;
