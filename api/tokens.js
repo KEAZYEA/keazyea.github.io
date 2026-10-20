@@ -352,6 +352,10 @@ async function claimRewards(db, uid, body, now) {
    someone with none still has a chance. `stakePlatform` records which
    platform's running total the stake is currently counted in — after a
    device switch, `platform` changes first and reconcile catches the total up. */
+// A secret giveaway admin made without tokens (tokensAllowed: false):
+// everyone in it has the same one chance.
+const NO_TOKENS_HERE = "Tokens can't be used in this giveaway — everyone has the same chance.";
+
 async function stake(db, uid, body, now) {
   const { giveawayId } = body;
   const amount = Number(body.amount);
@@ -369,6 +373,7 @@ async function stake(db, uid, body, now) {
     const gd = g.data();
     const ed = e.data();
     if ((gd.expiresAt || 0) <= now) throw new HttpError(400, "Entries have closed, so tokens can't be added now.");
+    if (gd.tokensAllowed === false) throw new HttpError(400, NO_TOKENS_HERE);
     const platform = ed.platform;
     if (poolDrawn(gd, platform)) {
       throw new HttpError(400, isEveryone(gd) ? "The draw has already happened." : "The draw for your platform has already happened.");
@@ -416,6 +421,8 @@ async function setStake(db, uid, body, now) {
     const gd = g.data();
     const ed = e.data();
     if ((gd.expiresAt || 0) <= now) throw new HttpError(400, "Entries have closed, so your stake can't be changed now.");
+    // Tokens off for this one: they can only come back out, never go in.
+    if (gd.tokensAllowed === false && amount > (e.data().tokens || 0)) throw new HttpError(400, NO_TOKENS_HERE);
     const platform = ed.platform;
     if (poolDrawn(gd, platform)) {
       throw new HttpError(400, isEveryone(gd) ? "The draw has already happened." : "The draw for your platform has already happened.");

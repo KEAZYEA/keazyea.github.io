@@ -412,6 +412,7 @@
         .sc-chip.lock { background: #3a2a16; border-color: #aa7a1e; color: #ffc46b; }
         .sc-chip.open { background: #16301f; border-color: #2e7d32; color: #7ddc92; }
         .sc-chip.draw { background: #16243a; border-color: #4169e1; color: #9db8ff; }
+        .sc-chip.notok { background: #2a1830; border-color: #a0569a; color: #f0a8e8; }
 
         .sc-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin: 0 0 12px; }
         .sc-stats div { text-align: center; padding: 8px 4px; border-radius: 12px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(160, 120, 255, 0.25); }
@@ -2905,6 +2906,11 @@ if (user && user.uid === winnerData.winnerUid) {
 
             function renderStakeHtml(g, entry, isExpired, sideDrawn) {
                 const staked = entry.tokens || 0;
+                // Made without tokens: just your one ball, the same as everyone's.
+                if (g.tokensAllowed === false) {
+                    return `${renderMachine(g, entry.platform, 1, isExpired || sideDrawn)}
+                        <p class="stake-summary">🟡 You're in with <strong>1 ball</strong> — no tokens in this one, so everyone has the same chance.${isExpired || sideDrawn ? " The claw picks the winners soon…" : ""}</p>`;
+                }
                 const machine = stakeSaving.has(g.id) && machineHtml[g.id]
                     ? machineHtml[g.id].replace(/ drop"/g, '"') // frozen mid-save, without replaying the drops
                     : renderMachine(g, entry.platform, staked + 1, isExpired || sideDrawn);
@@ -3321,7 +3327,13 @@ if (user && user.uid === winnerData.winnerUid) {
                 // Players / coins in the pot / top bid, for the draw you're in.
                 const st = drawGroupStats(g, platform);
                 const top = secretTopStake(g, platform);
-                const statsHtml = `<div class="sc-stats">
+                const noTokens = g.tokensAllowed === false;
+                const slots = AppState.secretGiveawaySlotsFor(g, platform);
+                const statsHtml = noTokens ? `<div class="sc-stats">
+                        <div><b>${st.players}</b><span>👥 entries</span></div>
+                        <div><b class="gold">${slots}</b><span>🏆 winner${slots === 1 ? "" : "s"}</span></div>
+                        <div><b>${st.players ? Math.min(100, Math.round(slots / st.players * 100)) + "%" : "–"}</b><span>🎯 your chance</span></div>
+                    </div>` : `<div class="sc-stats">
                         <div><b>${st.players}</b><span>👥 entries</span></div>
                         <div><b class="gold">${st.pot}</b><span>🪙 in the pot</span></div>
                         <div><b>${typeof top === "number" ? top : top === null ? "…" : "–"}</b><span>🔝 top bid</span></div>
@@ -3386,6 +3398,7 @@ if (user && user.uid === winnerData.winnerUid) {
 
                 const chips = [
                     g.requiresPassword ? `<span class="sc-chip lock">🔒 Password</span>` : `<span class="sc-chip open">🔓 No password</span>`,
+                    g.tokensAllowed === false ? `<span class="sc-chip notok">🚫🪙 No tokens · equal chances</span>` : "",
                     everyone ? `<span class="sc-chip draw">🌍 iOS + Android, one draw</span>`
                         : `<span class="sc-chip draw">${platform === "android" ? "🤖 Android" : "🍎 iOS"} draw</span>`
                 ].join("");
