@@ -8,7 +8,7 @@
      tokens   { amount }            site tokens — paid into the winner's wallet automatically
      gold     { amount }
      diamonds { amount }
-     unit     { unitKey, name }     a hero or troop, shown with its picture
+     unit     { unitKey, name, level?, count? }   a hero or troop, shown with its picture
      custom   { label, amount?, image? }
    Older giveaways only have a text description; render() takes that too. */
 (function () {
@@ -64,7 +64,12 @@
         if (it.kind === "tokens" || it.kind === "gold" || it.kind === "diamonds") return hasAmount ? { kind: it.kind, amount } : null;
         if (it.kind === "unit") {
             const key = String(it.unitKey || "").trim();
-            return /^[A-Za-z0-9_]{1,40}$/.test(key) ? { kind: "unit", unitKey: key, name: String(it.name || key).slice(0, 60) } : null;
+            if (!/^[A-Za-z0-9_]{1,40}$/.test(key)) return null;
+            const out = { kind: "unit", unitKey: key, name: String(it.name || key).slice(0, 60) };
+            const level = Math.floor(Number(it.level)), count = Math.floor(Number(it.count));
+            if (level >= 1 && level <= 1000) out.level = level;
+            if (count >= 1 && count <= 1e6) out.count = count;
+            return out;
         }
         const label = String(it.label || "").trim().slice(0, 60);
         if (!label) return null;
@@ -83,7 +88,7 @@
         if (it.kind === "tokens") return `${fmt(it.amount)} Tokens`;
         if (it.kind === "gold") return `${short(it.amount)} Gold`;
         if (it.kind === "diamonds") return `${fmt(it.amount)} Diamonds`;
-        if (it.kind === "unit") return it.name;
+        if (it.kind === "unit") return `${it.count > 1 ? fmt(it.count) + "× " : ""}${it.name}${it.level ? ` (Lv ${it.level})` : ""}`;
         return it.amount ? `${short(it.amount)} ${it.label}` : it.label;
     }
     // "1M Gold + 1,000 Diamonds + 50 Tokens" — for places that only take text.
@@ -103,7 +108,8 @@
         else if (it.kind === "tokens") icon = tokenIcon();
         else if (it.kind === "unit") {
             icon = `<img class="pz-portrait" src="images/${esc(it.unitKey.toUpperCase())}.jpg" alt="" loading="lazy" decoding="async">`;
-            label = it.name; sub = "Unit";
+            label = it.name; sub = it.level ? `Level ${it.level}` : "Unit";
+            if (it.count > 1) big = `<b class="pz-num" data-pre="×" data-to="${it.count}">×${short(it.count)}</b>`;
         } else {
             icon = it.image ? `<img class="pz-portrait" src="${esc(it.image)}" alt="" loading="lazy" decoding="async">` : `<span class="pz-emoji">🎁</span>`;
             label = it.label;
@@ -142,19 +148,19 @@
         });
         if (reduce) return;
         root.querySelectorAll(".pz-num").forEach((el, i) => {
-            const to = Number(el.dataset.to) || 0;
+            const to = Number(el.dataset.to) || 0, pre = el.dataset.pre || "";
             const start = performance.now() + 220 + i * 140, dur = 1100;
-            el.textContent = short(0);
+            el.textContent = pre + short(0);
             let done = false;
             (function step(now) {
                 if (done) return;
                 const f = Math.min(1, Math.max(0, (now - start) / dur));
                 const eased = 1 - Math.pow(1 - f, 3);
-                el.textContent = short(Math.round(to * eased));
+                el.textContent = pre + short(Math.round(to * eased));
                 if (f < 1) requestAnimationFrame(step);
             })(performance.now());
             // Frames pause in a background tab: the final number lands regardless.
-            setTimeout(() => { done = true; el.textContent = short(to); }, 220 + i * 140 + dur + 80);
+            setTimeout(() => { done = true; el.textContent = pre + short(to); }, 220 + i * 140 + dur + 80);
         });
     }
 
