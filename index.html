@@ -2045,7 +2045,8 @@ body {
         </div>
 
         <!-- Prize code reveal (from inbox "View Code") -->
-        <div class="mini-modal-overlay" id="prizeRevealModalOverlay">
+        <!-- above the inbox message it's opened from (both are mini-modal-overlays, and this one comes first in the page) -->
+        <div class="mini-modal-overlay" id="prizeRevealModalOverlay" style="z-index:120;">
             <div class="mini-modal-box" style="max-width:340px;">
                 <div id="prizeRevealTitle" style="font-size:1.3rem; font-weight:700; margin-bottom:14px;">🎉 Your Prize</div>
                 <div id="prizeRevealAnimArea" style="min-height:90px; display:flex; align-items:center; justify-content:center; margin-bottom:16px;">

@@ -404,6 +404,12 @@
                             style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box; margin-bottom:10px;">
                     </div>
 
+                    <label style="display:flex; align-items:center; gap:8px; margin-bottom:4px; cursor:pointer;">
+                        <input type="checkbox" id="secretGiveawayTokensInput" checked>
+                        🪙 Players can throw tokens in for extra chances
+                    </label>
+                    <p class="promo-sub" style="margin:0 0 12px; font-size:0.85rem;">Turn off for a giveaway where everyone who enters has the same single chance — no tokens.</p>
+
                     <label style="display:block; margin-bottom:6px;">Who's in the draw</label>
                     <select id="secretGiveawayPoolInput" onchange="updateSecretPoolInputs()"
                         style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box; margin-bottom:10px;">
@@ -1167,6 +1173,7 @@
                 document.getElementById("secretGiveawayPasswordWrap").style.display = "block";
                 document.getElementById("secretGiveawayPasswordInput").value = "";
                 secretPrize.load(null);
+                document.getElementById("secretGiveawayTokensInput").checked = true;
                 document.getElementById("secretGiveawayIosWinnersInput").value = "0";
                 document.getElementById("secretGiveawayAndroidWinnersInput").value = "0";
                 document.getElementById("secretGiveawayPoolInput").value = "split";
@@ -1321,6 +1328,7 @@
                 if (prize.items.length < secretPrize.rowCount()) { showInfoModal("Something's missing", "One of the rewards isn't filled in yet — give it an amount (or a name)."); return; }
                 const prizeDescription = window.KIHPrize.summary(prize);
                 const requiresPassword = document.getElementById("secretGiveawayRequiresPasswordInput").checked;
+                const tokensAllowed = document.getElementById("secretGiveawayTokensInput").checked;
                 const password = document.getElementById("secretGiveawayPasswordInput").value;
                 const iosWinnerCount = document.getElementById("secretGiveawayIosWinnersInput").value;
                 const androidWinnerCount = document.getElementById("secretGiveawayAndroidWinnersInput").value;
@@ -1335,7 +1343,7 @@
                 btn.textContent = "Creating...";
                 try {
                     await AppState.createSecretGiveaway({
-                        title, prizeDescription, prize, requiresPassword, password,
+                        title, prizeDescription, prize, requiresPassword, password, tokensAllowed,
                         iosWinnerCount, androidWinnerCount, allWinnerCount, durationHours, deleteAfterDays
                     });
                     closeCreateSecretGiveawayForm();
@@ -1464,6 +1472,7 @@
                         `👥 ${g.entryCount || 0}`,
                         g.requiresPassword ? "🔒" : "🔓"
                     ];
+                    if (g.tokensAllowed === false) summaryBits.push("🚫🪙 no tokens");
                     if (everyone) summaryBits.push(`🌍 ${allWon}/${allSlots}`);
                     if (iosSlots > 0) summaryBits.push(`🍎 ${iosWon}/${iosSlots}`);
                     if (androidSlots > 0) summaryBits.push(`🤖 ${androidWon}/${androidSlots}`);

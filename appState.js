@@ -3756,7 +3756,7 @@ async function sendAdminMessage(uid, title, body) {
         await setDoc(doc(db, "config", "weeklyPrize"), { prize: checkPrizeParts(prize), updatedAt: Date.now() });
     }
 
-    async function createSecretGiveaway({ title, prizeDescription, prize, requiresPassword, password, durationHours, deleteAfterDays, iosWinnerCount, androidWinnerCount, allWinnerCount }) {
+    async function createSecretGiveaway({ title, prizeDescription, prize, requiresPassword, password, durationHours, deleteAfterDays, iosWinnerCount, androidWinnerCount, allWinnerCount, tokensAllowed = true }) {
         await waitForAuthReady();
         if (!currentUser || currentUser.uid !== ADMIN_UID) throw new Error("Not authorized.");
 
@@ -3798,6 +3798,9 @@ async function sendAdminMessage(uid, title, body) {
         };
         // Only written when used, so split giveaways don't need the newer rules.
         if (allCount > 0) giveawayData.allWinnerCount = allCount;
+        // No tokens in this one: everyone has the same chance (the server
+        // refuses stakes on it). Only written when off, like allWinnerCount.
+        if (tokensAllowed === false) giveawayData.tokensAllowed = false;
         const docRef = await addDoc(collection(db, "secretGiveaways"), giveawayData);
         // The text stays too: it's what older pages (and anywhere that only
         // takes text) show.
