@@ -8,7 +8,8 @@
      tokens   { amount }            site tokens — paid into the winner's wallet automatically
      gold     { amount }
      diamonds { amount }
-     unit     { unitKey, name, level?, count? }   a hero or troop, shown with its picture
+     unit     { unitKey, name, level?, count?, form? }   a hero or troop, shown with
+                                    its picture; form "shards" = that many of its shards
      custom   { label, amount?, image? }
    Older giveaways only have a text description; render() takes that too. */
 (function () {
@@ -69,6 +70,7 @@
             const level = Math.floor(Number(it.level)), count = Math.floor(Number(it.count));
             if (level >= 1 && level <= 1000) out.level = level;
             if (count >= 1 && count <= 1e6) out.count = count;
+            if (it.form === "shards") out.form = "shards";
             return out;
         }
         const label = String(it.label || "").trim().slice(0, 60);
@@ -88,7 +90,11 @@
         if (it.kind === "tokens") return `${fmt(it.amount)} Tokens`;
         if (it.kind === "gold") return `${short(it.amount)} Gold`;
         if (it.kind === "diamonds") return `${fmt(it.amount)} Diamonds`;
-        if (it.kind === "unit") return `${it.count > 1 ? fmt(it.count) + "× " : ""}${it.name}${it.level ? ` (Lv ${it.level})` : ""}`;
+        if (it.kind === "unit") {
+            const lv = it.level ? ` (Lv ${it.level})` : "";
+            if (it.form === "shards") return `${fmt(it.count || 1)} ${it.name} shards${lv}`;
+            return `${it.count > 1 ? fmt(it.count) + "× " : ""}${it.name}${lv}`;
+        }
         return it.amount ? `${short(it.amount)} ${it.label}` : it.label;
     }
     // "1M Gold + 1,000 Diamonds + 50 Tokens" — for places that only take text.
@@ -107,17 +113,21 @@
         else if (it.kind === "diamonds") icon = gemIcon();
         else if (it.kind === "tokens") icon = tokenIcon();
         else if (it.kind === "unit") {
-            icon = `<img class="pz-portrait" src="images/${esc(it.unitKey.toUpperCase())}.jpg" alt="" loading="lazy" decoding="async">`;
-            label = it.name; sub = it.level ? `Level ${it.level}` : "Unit";
-            if (it.count > 1) big = `<b class="pz-num" data-pre="×" data-to="${it.count}">×${short(it.count)}</b>`;
+            // the level as a badge on the picture, so it can't be missed
+            icon = `<span class="pz-portrait-wrap"><img class="pz-portrait" src="images/${esc(it.unitKey.toUpperCase())}.jpg" alt="" loading="lazy" decoding="async">${it.level ? `<span class="pz-lv">Lv ${it.level}</span>` : ""}${it.form === "shards" ? `<span class="pz-shard">💠</span>` : ""}</span>`;
+            label = it.name;
+            sub = it.form === "shards" ? (it.level ? `Lv ${it.level} shards` : "Shards") : (it.level ? `Level ${it.level}` : "");
+            const n = it.form === "shards" ? (it.count || 1) : it.count;
+            if (n > 1 || it.form === "shards") big = `<b class="pz-num" data-pre="×" data-to="${n}">×${short(n)}</b>`;
         } else {
             icon = it.image ? `<img class="pz-portrait" src="${esc(it.image)}" alt="" loading="lazy" decoding="async">` : `<span class="pz-emoji">🎁</span>`;
             label = it.label;
         }
         if (it.amount) big = `<b class="pz-num" data-to="${it.amount}">${short(it.amount)}</b>`;
+        const subCls = it.kind === "unit" ? " class=\"pz-sub-strong\"" : "";
         return `<div class="pz-tile pz-${it.kind}" style="--pz:${k.tint}">
             <div class="pz-icon">${icon}</div>
-            ${big}<span class="pz-label">${esc(label)}</span>${sub ? `<small>${esc(sub)}</small>` : ""}
+            ${big}<span class="pz-label">${esc(label)}</span>${sub ? `<small${subCls}>${esc(sub)}</small>` : ""}
         </div>`;
     }
 
@@ -186,6 +196,12 @@
 .pz-icon svg { width: 100%; height: 100%; }
 .pz-portrait { width: 58px; height: 58px; border-radius: 12px; object-fit: cover; object-position: top; border: 2px solid rgba(var(--pz), 0.9); }
 .pz-emoji { font-size: 2.2rem; line-height: 1; }
+.pz-portrait-wrap { position: relative; display: block; }
+.pz-lv { position: absolute; left: 50%; bottom: -7px; transform: translateX(-50%); white-space: nowrap; padding: 1px 7px; border-radius: 999px;
+    background: linear-gradient(180deg, #ffe27a, #e0a10c); color: #2a1a00; font-size: 0.72rem; font-weight: 900; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5); border: 1px solid #fff2b0; }
+.pz-shard { position: absolute; top: -6px; right: -8px; font-size: 1rem; filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.6)); }
+.pz-unit .pz-icon { margin-bottom: 9px; }
+.pz-tile small.pz-sub-strong { color: #fff; font-weight: 800; font-size: 0.78rem; }
 .pz-num { font-size: 1.55rem; font-weight: 900; line-height: 1.05; color: #fff; text-shadow: 0 0 12px rgba(var(--pz), 0.8); font-variant-numeric: tabular-nums; }
 .pz-label { font-weight: 800; font-size: 0.92rem; color: rgb(var(--pz)); overflow-wrap: anywhere; }
 .pz-tile small { font-size: 0.72rem; color: #b8b8d0; }

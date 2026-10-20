@@ -1207,7 +1207,7 @@
                 const b = {
                     async add(kind) {
                         if (rows.length >= 8) { showInfoModal("That's plenty", "A prize can have up to 8 rewards."); return; }
-                        const row = { kind, amount: "", unitKey: "", name: "", level: "", count: "", label: "", image: "" };
+                        const row = { kind, amount: "", unitKey: "", name: "", level: "", count: "", form: "unit", label: "", image: "" };
                         if (kind === "unit") {
                             try { const u = (await loadUnitChoices())[0]; if (u) { row.unitKey = u.key; row.name = u.name; } }
                             catch (e) { showInfoModal("Couldn't load units", e.message); return; }
@@ -1239,7 +1239,7 @@
                     async load(prize) {
                         const items = prize && Array.isArray(prize.items) ? prize.items : [];
                         if (items.some(i => i.kind === "unit")) { try { await loadUnitChoices(); } catch (e) { } }
-                        rows = items.map(i => ({ kind: i.kind, amount: i.amount ? String(i.amount) : "", unitKey: i.unitKey || "", name: i.name || "", level: i.level ? String(i.level) : "", count: i.count ? String(i.count) : "", label: i.label || "", image: i.image || "" }));
+                        rows = items.map(i => ({ kind: i.kind, amount: i.amount ? String(i.amount) : "", unitKey: i.unitKey || "", name: i.name || "", level: i.level ? String(i.level) : "", count: i.count ? String(i.count) : "", form: i.form || "unit", label: i.label || "", image: i.image || "" }));
                         document.getElementById(noteId).value = (prize && prize.note) || "";
                         b.paint();
                     },
@@ -1257,6 +1257,7 @@
                                 inputs = `<div style="display:flex; flex-direction:column; gap:6px; flex:1; min-width:0;">
                                     <select onchange="${name}.set(${i}, 'unitKey', this.value)" style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box;">${(unitChoices || []).map(u =>
                                     `<option value="${escapeHtml(u.key)}"${u.key === r.unitKey ? " selected" : ""}>${u.type === "hero" ? "🦸" : "⚔️"} ${escapeHtml(u.name)}</option>`).join("")}</select>
+                                    <select onchange="${name}.set(${i}, 'form', this.value)" style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box;"><option value="unit"${r.form !== "shards" ? " selected" : ""}>The unit itself</option><option value="shards"${r.form === "shards" ? " selected" : ""}>💠 Its shards</option></select>
                                     <div style="display:flex; gap:6px;"><label style="flex:1; min-width:0; display:flex; flex-direction:column; gap:3px; font-size:0.78rem; color:#b8b8d0;">Level${field(i, "level", r.level, "optional", "number")}</label><label style="flex:1; min-width:0; display:flex; flex-direction:column; gap:3px; font-size:0.78rem; color:#b8b8d0;">How many${field(i, "count", r.count, "optional", "number")}</label></div></div>`;
                             } else if (r.kind === "custom") {
                                 const pic = r.uploading ? `<span class="prize-pic busy" title="Uploading…">⏳</span>`
