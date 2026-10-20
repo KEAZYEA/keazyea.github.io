@@ -3704,12 +3704,50 @@ async function sendAdminMessage(uid, title, body) {
         return w.pool || w.platform;
     }
 
-    async function createSecretGiveaway({ title, prizeDescription, requiresPassword, password, durationHours, deleteAfterDays, iosWinnerCount, androidWinnerCount, allWinnerCount }) {
+    // A prize built in admin from parts (prize.js: { items, note } — gold,
+    // diamonds, tokens, a unit, anything custom). Kept small and plain: only
+    // known kinds, at most 8 items, no more than a few KB.
+    const PRIZE_KINDS = ["tokens", "gold", "diamonds", "unit", "custom"];
+    function checkPrizeParts(prize) {
+        if (!prize) return null;
+        const items = Array.isArray(prize.items) ? prize.items : [];
+        if (!items.length || items.length > 8 || !items.every(i => i && PRIZE_KINDS.includes(i.kind))) throw new Error("Add at least one reward to the prize (8 at most).");
+        const clean = { items: items.map(i => ({ ...i })), note: String(prize.note || "").slice(0, 200) };
+        if (JSON.stringify(clean).length > 4000) throw new Error("That prize is too big — shorten the labels or picture links.");
+        return clean;
+    }
+    const prizeTokens = (prize) => (prize && Array.isArray(prize.items) ? prize.items : [])
+        .filter(i => i && i.kind === "tokens" && Number.isInteger(i.amount) && i.amount > 0).reduce((sum, i) => sum + i.amount, 0);
+    // Tokens are paid by the server; everything else is delivered with a code.
+    const prizeNeedsCode = (prize) => !prize || !Array.isArray(prize.items) || prize.items.some(i => i && i.kind !== "tokens");
+
+    // The weekly giveaway's prize, as shown on the promo page — public (the
+    // config collection is readable by anyone), set by admin. Until it's set
+    // (or if it can't be read) it's the usual 500K gold + 500 diamonds.
+    // Display only: the winner is still sent their codes the usual way.
+    const DEFAULT_WEEKLY_PRIZE = { items: [{ kind: "gold", amount: 500000 }, { kind: "diamonds", amount: 500 }], note: "" };
+    async function getWeeklyPrize() {
+        try {
+            const snap = await getDoc(doc(db, "config", "weeklyPrize"));
+            const p = snap.exists() ? snap.data().prize : null;
+            return p && Array.isArray(p.items) && p.items.length ? p : DEFAULT_WEEKLY_PRIZE;
+        } catch (e) {
+            return DEFAULT_WEEKLY_PRIZE;
+        }
+    }
+    async function setWeeklyPrize(prize) {
+        await waitForAuthReady();
+        if (!currentUser || currentUser.uid !== ADMIN_UID) throw new Error("Not authorized.");
+        await setDoc(doc(db, "config", "weeklyPrize"), { prize: checkPrizeParts(prize), updatedAt: Date.now() });
+    }
+
+    async function createSecretGiveaway({ title, prizeDescription, prize, requiresPassword, password, durationHours, deleteAfterDays, iosWinnerCount, androidWinnerCount, allWinnerCount }) {
         await waitForAuthReady();
         if (!currentUser || currentUser.uid !== ADMIN_UID) throw new Error("Not authorized.");
 
         const cleanTitle = (title || "").trim();
         const cleanPrize = (prizeDescription || "").trim();
+        const prizeParts = checkPrizeParts(prize);
         const needsPassword = !!requiresPassword;
         const cleanPassword = (password || "").trim();
         const hours = parseFloat(durationHours);
@@ -3746,8 +3784,11 @@ async function sendAdminMessage(uid, title, body) {
         // Only written when used, so split giveaways don't need the newer rules.
         if (allCount > 0) giveawayData.allWinnerCount = allCount;
         const docRef = await addDoc(collection(db, "secretGiveaways"), giveawayData);
+        // The text stays too: it's what older pages (and anywhere that only
+        // takes text) show.
         await setDoc(doc(db, "secretGiveaways", docRef.id, "private", "config"), {
-            prizeDescription: cleanPrize
+            prizeDescription: cleanPrize,
+            ...(prizeParts ? { prize: prizeParts } : {})
         });
         if (needsPassword) {
             await setDoc(doc(db, "secretGiveaways", docRef.id, "private", "secret"), {
@@ -3965,6 +4006,20 @@ async function sendAdminMessage(uid, title, body) {
     // by a rule that only allows reading this doc if an entries/{you} doc
     // exists (or you're admin), so the prize stays hidden from anyone who
     // hasn't actually committed to an entry.
+    // The same, with the prize's parts when it was built from them:
+    // { description, prize } (prize null for an older, text-only one).
+    async function getSecretGiveawayPrizeInfo(giveawayId) {
+        await waitForAuthReady();
+        if (!currentUser) return null;
+        try {
+            const snap = await getDoc(doc(db, "secretGiveaways", giveawayId, "private", "config"));
+            if (!snap.exists()) return null;
+            const d = snap.data();
+            return { description: d.prizeDescription || null, prize: d.prize || null };
+        } catch (e) {
+            return null;
+        }
+    }
     async function getSecretGiveawayRewardDescription(giveawayId) {
         await waitForAuthReady();
         if (!currentUser) return null;
@@ -4109,8 +4164,11 @@ async function sendAdminMessage(uid, title, body) {
     async function finalizeSecretGiveawayPrize(giveawayId, winnerUid, winnerName, platform, prizeCode) {
         await waitForAuthReady();
         if (!currentUser || currentUser.uid !== ADMIN_UID) throw new Error("Not authorized.");
+        const cfgSnap = await getDoc(doc(db, "secretGiveaways", giveawayId, "private", "config"));
+        const prize = cfgSnap.exists() ? (cfgSnap.data().prize || null) : null;
+        const tokens = prizeTokens(prize);
         const codes = cleanPromoCodes(prizeCode);
-        if (!codes.length) throw new Error("Enter the prize code to send.");
+        if (!codes.length && prizeNeedsCode(prize)) throw new Error("Enter the prize code to send.");
         const code = codes.join(", ");
 
         const giveawayRef = doc(db, "secretGiveaways", giveawayId);
@@ -4128,32 +4186,41 @@ async function sendAdminMessage(uid, title, body) {
             if (wonSoFar >= slotCount) throw new Error(`All ${group === "all" ? "" : platform + " "}winner slots are already filled.`);
         }
 
-        await setDoc(doc(db, "secretGiveaways", giveawayId, "prizeCodes", winnerUid), {
-            code,
-            codes,
-            platform,
-            wonAt: Date.now()
-        });
+        if (codes.length) {
+            await setDoc(doc(db, "secretGiveaways", giveawayId, "prizeCodes", winnerUid), {
+                code,
+                codes,
+                platform,
+                wonAt: Date.now()
+            });
+        }
         if (!alreadyRecorded) {
             await updateDoc(giveawayRef, {
                 winners: arrayUnion({ uid: winnerUid, name: winnerName, platform, pool: group, wonAt: Date.now() })
             });
         }
+        // The prize's tokens go straight into their wallet (the server checks
+        // they're a recorded winner, and never pays the same win twice).
+        if (tokens > 0) await callTokensApi("adminPaySecretPrize", { giveawayId, winnerUid });
         // The code is stored ON the notification, not just in prizeCodes.
         // deleteSecretGiveaway() wipes the prizeCodes subcollection, and
         // giveaways also auto-delete after their deleteAfterDays window — so a
         // winner whose only copy lived there lost it the moment the giveaway
         // went away. This subcollection is readable solely by that winner (or
         // admin), so it's no less private than prizeCodes was.
+        const tokenLine = tokens > 0 ? `🪙 ${tokens} tokens have been added to your wallet.` : "";
+        const codeLine = !codes.length ? ""
+            : codes.length === 1 ? `Here's your prize code: "${code}". Tap to view and copy it.`
+            : `Here are your ${codes.length} prize codes:\n${promoCodesText(codes)}\nTap to view and copy them.`;
         const winNotif = {
             type: "secretGiveawayWin",
             title: `🔒🎉 You won "${data.title}"!`,
-            body: codes.length === 1
-                ? `Here's your prize code: "${code}". Tap to view and copy it.`
-                : `Here are your ${codes.length} prize codes:\n${promoCodesText(codes)}\nTap to view and copy them.`,
+            body: [tokenLine, codeLine].filter(Boolean).join("\n"),
             giveawayId,
             prize: code,
-            prizes: codes
+            prizes: codes,
+            // what the prize was, so the inbox can show it (not just text)
+            ...(prize ? { prizeItems: prize.items, prizeNote: prize.note || "", prizeTokens: tokens } : {})
         };
         try {
             // A resend must UPDATE the existing card rather than add a second
@@ -4603,7 +4670,7 @@ async function maybeRefreshAd(containerId) {
         getMissedGiveawayWeeks, autoPickMissedWinners, getPendingPrizes, sendPendingPrize,
         getAllGiveawayPrizes, getSecretGiveawayPrizeCodes,
         // secret giveaways (admin-created, optionally password-gated, multi-winner)
-        createSecretGiveaway, deleteSecretGiveaway, listenToSecretGiveaways, getSecretGiveaway,
+        createSecretGiveaway, getSecretGiveawayPrizeInfo, getWeeklyPrize, setWeeklyPrize, deleteSecretGiveaway, listenToSecretGiveaways, getSecretGiveaway,
         getSecretGiveawayPassword, hasEnteredSecretGiveaway, getMySecretGiveawayEntry, switchSecretGiveawayPlatform,
         leaveSecretGiveaway, enterSecretGiveaway, getSecretGiveawayEntries, getPublicSecretGiveawayEntries,
         secretGiveawayEligibilityText, isEveryoneSecretGiveaway, secretGiveawaySlotsFor, secretDrawGroup, secretWinnerGroup,

@@ -8,6 +8,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style>
+        .prize-add-btn { padding: 7px 12px; border-radius: 999px; border: 1px solid #4a4a86; background: #26264a; color: white; font-family: inherit; font-size: 0.88rem; font-weight: 700; cursor: pointer; }
+        .prize-add-btn:hover { border-color: #ffd75e; }
         .info-modal-overlay {
             display: none;
             position: fixed;
@@ -281,6 +283,21 @@
             <div id="adminPanelState" style="display:none;">
                 <details class="admin-section">
                 <summary>🎲 Weekly Giveaway Draw</summary>
+                <details style="margin:10px 0 16px; padding:12px 16px; border:1px solid #aa7a1e; border-radius:12px; text-align:left;" ontoggle="if (this.open && !this.dataset.loaded) { this.dataset.loaded = 1; loadWeeklyPrizeEditorNow(); }">
+                    <summary style="cursor:pointer; font-weight:700;">🎁 This week's prize (what the Weekly Giveaway page shows)</summary>
+                    <div id="weeklyPrizeRows" style="display:flex; flex-direction:column; gap:8px; margin:12px 0 8px;"></div>
+                    <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px;">
+                        <button type="button" class="prize-add-btn" onclick="weeklyPrize.add('tokens')">+ 🪙 Tokens</button>
+                        <button type="button" class="prize-add-btn" onclick="weeklyPrize.add('gold')">+ 💰 Gold</button>
+                        <button type="button" class="prize-add-btn" onclick="weeklyPrize.add('diamonds')">+ 💎 Diamonds</button>
+                        <button type="button" class="prize-add-btn" onclick="weeklyPrize.add('unit')">+ 🦸 Hero / troop</button>
+                        <button type="button" class="prize-add-btn" onclick="weeklyPrize.add('custom')">+ ✨ Something else</button>
+                    </div>
+                    <p class="promo-sub" style="margin:0 0 8px; font-size:0.85rem;">Only what players see — you still send the winner their codes below as usual (and tokens with 🪙 Tokens). Until you save one, it shows 500K Gold + 500 Diamonds.</p>
+                    <input type="text" id="weeklyPrizeNote" maxlength="200" placeholder="Note (optional)" oninput="weeklyPrize.preview()" style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box; margin-bottom:10px;">
+                    <div id="weeklyPrizePreview" style="margin-bottom:12px; padding:12px; border-radius:12px; background:#1a1a33; border:1px dashed #3a3a66;"></div>
+                    <button class="btn-primary" id="saveWeeklyPrizeBtn" onclick="handleSaveWeeklyPrize()" style="padding:10px 20px;">💾 Save prize</button>
+                </details>
                 <p class="promo-sub">Current week: <strong id="currentWeekId"></strong></p>
                 <p class="promo-sub" id="entryCountText"></p>
                 <p class="promo-sub" id="alreadyDrawnText" style="display:none; color:gold;"></p>
@@ -354,10 +371,20 @@
                     <input type="text" id="secretGiveawayTitleInput" placeholder="e.g. Discord Announcement Giveaway"
                         style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box; margin-bottom:10px;">
 
-                    <label style="display:block; margin-bottom:6px;">Prize description (hidden until someone
-                        enters)</label>
-                    <textarea id="secretGiveawayPrizeInput" rows="2" placeholder="e.g. $10 gift card"
-                        style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box; margin-bottom:10px; font-family:inherit;"></textarea>
+                    <label style="display:block; margin-bottom:6px;">Prize (hidden until someone enters) — add what the winner gets</label>
+                    <div id="prizeRows" style="display:flex; flex-direction:column; gap:8px; margin-bottom:8px;"></div>
+                    <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px;">
+                        <button type="button" class="prize-add-btn" onclick="secretPrize.add('tokens')">+ 🪙 Tokens</button>
+                        <button type="button" class="prize-add-btn" onclick="secretPrize.add('gold')">+ 💰 Gold</button>
+                        <button type="button" class="prize-add-btn" onclick="secretPrize.add('diamonds')">+ 💎 Diamonds</button>
+                        <button type="button" class="prize-add-btn" onclick="secretPrize.add('unit')">+ 🦸 Hero / troop</button>
+                        <button type="button" class="prize-add-btn" onclick="secretPrize.add('custom')">+ ✨ Something else</button>
+                    </div>
+                    <p class="promo-sub" style="margin:0 0 8px; font-size:0.85rem;">🪙 Tokens are paid into the winner's wallet automatically. Gold, diamonds, units and the rest you send as promo codes when you draw the winner.</p>
+                    <input type="text" id="secretGiveawayPrizeNote" maxlength="200" placeholder="Note (optional) — e.g. I'll send you 2 promo codes" oninput="secretPrize.preview()"
+                        style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box; margin-bottom:10px;">
+                    <label style="display:block; margin-bottom:6px;">How it looks to players</label>
+                    <div id="prizePreview" style="margin-bottom:14px; padding:12px; border-radius:12px; background:#1a1a33; border:1px dashed #3a3a66;"></div>
 
                     <label style="display:flex; align-items:center; gap:8px; margin-bottom:10px; cursor:pointer;">
                         <input type="checkbox" id="secretGiveawayRequiresPasswordInput" checked
@@ -702,6 +729,7 @@
 
         </div>
 
+        <script src="prize.js"></script>
         <script type="module" src="appState.js"></script>
         <script type="module">
             // Remember each collapsible section's open/closed state across
@@ -1129,10 +1157,10 @@
             /* ---------------- SECRET GIVEAWAYS ---------------- */
             window.openCreateSecretGiveawayForm = function () {
                 document.getElementById("secretGiveawayTitleInput").value = "";
-                document.getElementById("secretGiveawayPrizeInput").value = "";
                 document.getElementById("secretGiveawayRequiresPasswordInput").checked = true;
                 document.getElementById("secretGiveawayPasswordWrap").style.display = "block";
                 document.getElementById("secretGiveawayPasswordInput").value = "";
+                secretPrize.load(null);
                 document.getElementById("secretGiveawayIosWinnersInput").value = "0";
                 document.getElementById("secretGiveawayAndroidWinnersInput").value = "0";
                 document.getElementById("secretGiveawayPoolInput").value = "split";
@@ -1153,9 +1181,117 @@
                 document.getElementById("createSecretGiveawayForm").style.display = "none";
             };
 
+            /* ---- the prize builder: one row per reward, with a live preview.
+               Used twice — a secret giveaway's prize, and the weekly one. Each
+               is window[name] (its buttons call name.add('gold') and so on). ---- */
+            let unitChoices = null; // [{ key, name, type }] — loaded the first time a unit is added
+            async function loadUnitChoices() {
+                if (unitChoices) return unitChoices;
+                const get = (f) => fetch(f).then(r => r.json());
+                const [heroes, troops, loc, en] = await Promise.all([get("hero.json"), get("troops.json"), get("localization.json"), get("en.json")]);
+                const text = (k) => { const l = loc[k]; return l ? en[l.value] : null; };
+                const list = (meta, type) => Object.values(meta).filter(m => m.isDisplayed !== false && !/^boss/i.test(m.key))
+                    .map(m => ({ key: m.key, name: text(m.name) || m.key, type }));
+                unitChoices = [...list(heroes, "hero"), ...list(troops, "troop")].sort((a, b) => a.type.localeCompare(b.type) || a.name.localeCompare(b.name));
+                return unitChoices;
+            }
+            const PRIZE_ROW_TITLES = { tokens: "🪙 Tokens", gold: "💰 Gold", diamonds: "💎 Diamonds", unit: "🦸 Hero / troop", custom: "✨ Something else" };
+            function makePrizeBuilder(name, { rowsId, noteId, previewId }) {
+                let rows = [];
+                const b = {
+                    async add(kind) {
+                        if (rows.length >= 8) { showInfoModal("That's plenty", "A prize can have up to 8 rewards."); return; }
+                        const row = { kind, amount: "", unitKey: "", name: "", label: "", image: "" };
+                        if (kind === "unit") {
+                            try { const u = (await loadUnitChoices())[0]; if (u) { row.unitKey = u.key; row.name = u.name; } }
+                            catch (e) { showInfoModal("Couldn't load units", e.message); return; }
+                        }
+                        rows.push(row);
+                        b.paint();
+                    },
+                    remove(i) { rows.splice(i, 1); b.paint(); },
+                    set(i, field, value) {
+                        const row = rows[i];
+                        if (!row) return;
+                        row[field] = value;
+                        if (field === "unitKey") { const u = (unitChoices || []).find(x => x.key === value); row.name = u ? u.name : value; }
+                        b.preview();
+                    },
+                    // Fill it from a saved prize (or empty it with null).
+                    async load(prize) {
+                        const items = prize && Array.isArray(prize.items) ? prize.items : [];
+                        if (items.some(i => i.kind === "unit")) { try { await loadUnitChoices(); } catch (e) { } }
+                        rows = items.map(i => ({ kind: i.kind, amount: i.amount ? String(i.amount) : "", unitKey: i.unitKey || "", name: i.name || "", label: i.label || "", image: i.image || "" }));
+                        document.getElementById(noteId).value = (prize && prize.note) || "";
+                        b.paint();
+                    },
+                    value() {
+                        return window.KIHPrize.clean({ items: rows.map(r => ({ ...r, amount: Number(r.amount) })), note: document.getElementById(noteId).value });
+                    },
+                    rowCount: () => rows.length,
+                    paint() {
+                        const box = document.getElementById(rowsId);
+                        const field = (i, f, v, ph, type = "text") => `<input type="${type}" value="${escapeHtml(v)}" placeholder="${ph}" ${type === "number" ? 'min="1" step="1"' : ""}
+                            oninput="${name}.set(${i}, '${f}', this.value)" style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box; flex:1; min-width:0;">`;
+                        box.innerHTML = rows.map((r, i) => {
+                            let inputs;
+                            if (r.kind === "unit") {
+                                inputs = `<select onchange="${name}.set(${i}, 'unitKey', this.value)" style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box; flex:1; min-width:0;">${(unitChoices || []).map(u =>
+                                    `<option value="${escapeHtml(u.key)}"${u.key === r.unitKey ? " selected" : ""}>${u.type === "hero" ? "🦸" : "⚔️"} ${escapeHtml(u.name)}</option>`).join("")}</select>`;
+                            } else if (r.kind === "custom") {
+                                inputs = `<div style="display:flex; flex-direction:column; gap:6px; flex:1; min-width:0;">
+                                    ${field(i, "label", r.label, "What is it? e.g. Epic chest")}
+                                    <div style="display:flex; gap:6px;">${field(i, "amount", r.amount, "How many (optional)", "number")}${field(i, "image", r.image, "Picture link (optional, https://…)")}</div></div>`;
+                            } else {
+                                inputs = field(i, "amount", r.amount, r.kind === "tokens" ? "How many tokens" : "How much — e.g. 1000000", "number");
+                            }
+                            return `<div style="display:flex; align-items:flex-start; gap:8px; padding:8px; border:1px solid #34345e; border-radius:10px; background:#20203a;">
+                                <span style="flex-shrink:0; width:96px; padding-top:10px; font-weight:700; font-size:0.9rem;">${PRIZE_ROW_TITLES[r.kind]}</span>
+                                ${inputs}
+                                <button type="button" onclick="${name}.remove(${i})" aria-label="Remove" style="flex-shrink:0; margin-top:6px; background:none; border:none; color:#ff8080; font-size:1.1rem; cursor:pointer;">✕</button>
+                            </div>`;
+                        }).join("") || `<p class="promo-sub" style="margin:0; font-size:0.88rem;">No rewards yet — add one below.</p>`;
+                        b.preview();
+                    },
+                    preview() {
+                        const box = document.getElementById(previewId);
+                        const p = b.value();
+                        box.innerHTML = p.items.length ? window.KIHPrize.render(p) : `<p class="promo-sub" style="margin:0;">The prize shows here as you add to it.</p>`;
+                        window.KIHPrize.play(box);
+                    }
+                };
+                window[name] = b;
+                return b;
+            }
+            const secretPrize = makePrizeBuilder("secretPrize", { rowsId: "prizeRows", noteId: "secretGiveawayPrizeNote", previewId: "prizePreview" });
+            const weeklyPrize = makePrizeBuilder("weeklyPrize", { rowsId: "weeklyPrizeRows", noteId: "weeklyPrizeNote", previewId: "weeklyPrizePreview" });
+            // What the weekly giveaway page shows as its prize.
+            async function loadWeeklyPrizeEditor() {
+                try { await weeklyPrize.load(await AppState.getWeeklyPrize()); }
+                catch (e) { document.getElementById("weeklyPrizePreview").textContent = "Couldn't load it: " + e.message; }
+            }
+            window.loadWeeklyPrizeEditorNow = loadWeeklyPrizeEditor;
+            window.handleSaveWeeklyPrize = async function () {
+                const prize = weeklyPrize.value();
+                if (!prize.items.length) { showInfoModal("What's the prize?", "Add at least one reward."); return; }
+                if (prize.items.length < weeklyPrize.rowCount()) { showInfoModal("Something's missing", "One of the rewards isn't filled in yet — give it an amount (or a name). Picture links must start with https://."); return; }
+                const btn = document.getElementById("saveWeeklyPrizeBtn");
+                btn.disabled = true;
+                try {
+                    await AppState.setWeeklyPrize(prize);
+                    showInfoModal("Saved", "The Weekly Giveaway page shows the new prize now.");
+                } catch (e) {
+                    showInfoModal("Couldn't save", e.message);
+                }
+                btn.disabled = false;
+            };
+
             window.handleCreateSecretGiveaway = async function () {
                 const title = document.getElementById("secretGiveawayTitleInput").value;
-                const prizeDescription = document.getElementById("secretGiveawayPrizeInput").value;
+                const prize = secretPrize.value();
+                if (!prize.items.length) { showInfoModal("What's the prize?", "Add at least one reward — and fill in its amount (or pick the unit / name the custom one)."); return; }
+                if (prize.items.length < secretPrize.rowCount()) { showInfoModal("Something's missing", "One of the rewards isn't filled in yet — give it an amount (or a name). Picture links must start with https://."); return; }
+                const prizeDescription = window.KIHPrize.summary(prize);
                 const requiresPassword = document.getElementById("secretGiveawayRequiresPasswordInput").checked;
                 const password = document.getElementById("secretGiveawayPasswordInput").value;
                 const iosWinnerCount = document.getElementById("secretGiveawayIosWinnersInput").value;
@@ -1171,7 +1307,7 @@
                 btn.textContent = "Creating...";
                 try {
                     await AppState.createSecretGiveaway({
-                        title, prizeDescription, requiresPassword, password,
+                        title, prizeDescription, prize, requiresPassword, password,
                         iosWinnerCount, androidWinnerCount, allWinnerCount, durationHours, deleteAfterDays
                     });
                     closeCreateSecretGiveawayForm();
@@ -1332,9 +1468,9 @@
             async function fillSecretPrizeCodes(items) {
                 for (const g of items) {
                     if (!(g.winners || []).length) continue;
-                    let codes;
+                    let codes, info = null;
                     try {
-                        codes = await AppState.getSecretGiveawayPrizeCodes(g.id);
+                        [codes, info] = await Promise.all([AppState.getSecretGiveawayPrizeCodes(g.id), AppState.getSecretGiveawayPrizeInfo(g.id).catch(() => null)]);
                     } catch (e) {
                         console.warn("Couldn't load prize codes for", g.id, e.message);
                         continue;
@@ -1345,8 +1481,10 @@
                         const el = document.getElementById(`secretCode_${g.id}_${w.uid}`);
                         if (!el) continue;
                         const code = codes[w.uid];
-                        el.textContent = code || "no code saved";
-                        if (!code) el.style.color = "#ff8080";
+                        const tokens = info && info.prize ? window.KIHPrize.tokensOf(info.prize) : 0;
+                        const codeless = info && info.prize && !window.KIHPrize.needsCode(info.prize);
+                        el.textContent = [tokens ? `🪙 ${tokens}` : "", code || (codeless ? "" : "no code saved")].filter(Boolean).join(" + ");
+                        if (!code && !codeless) el.style.color = "#ff8080";
                     }
                 }
             }
@@ -1357,28 +1495,35 @@
                 try {
                     const result = await AppState.pickSecretGiveawayWinner(giveawayId, group);
                     const platform = result.winner.platform;
+                    const info = await AppState.getSecretGiveawayPrizeInfo(giveawayId);
+                    const prize = info && info.prize;
+                    const needsCode = !prize || window.KIHPrize.needsCode(prize);
+                    const tokens = prize ? window.KIHPrize.tokensOf(prize) : 0;
                     const container = document.getElementById("secretWinnerPick_" + giveawayId);
                     const safeName = escapeHtml(result.winner.name).replace(/'/g, "\\'");
                     container.innerHTML = `
                         <p style="margin:0 0 4px;"><strong>Winner:</strong> ${escapeHtml(result.winner.name)} (${platform === "ios" ? "🍎 iOS" : "🤖 Android"})</p>
                         <p class="promo-sub" style="margin:0 0 4px;"><strong>Remaining pool:</strong> ${result.entryCount}</p>
                         <p class="promo-sub" style="margin:0 0 10px;"><strong>Staked:</strong> ${result.winner.tokens || 0} 🪙 — their chance was ${result.winnerWeight} in ${result.totalWeight} (${Math.round((result.winnerWeight / result.totalWeight) * 1000) / 10}%)</p>
-                        <label style="display:block; margin-bottom:6px;">Prize code(s) to send:</label>
-                        <div id="secretPrizeCodeList_${giveawayId}"></div>
-                        <button class="btn-primary" onclick="handleConfirmSecretWinner('${giveawayId}', '${result.winner.uid}', '${safeName}', '${platform}')"
+                        ${prize ? `<div style="margin:0 0 10px;">${window.KIHPrize.render(prize, { compact: true })}</div>` : ""}
+                        ${tokens ? `<p class="promo-sub" style="margin:0 0 8px;">🪙 ${tokens} tokens go into their wallet automatically when you confirm.</p>` : ""}
+                        ${needsCode ? `<label style="display:block; margin-bottom:6px;">Prize code(s) to send${tokens ? " (for the rest of the prize)" : ""}:</label>
+                        <div id="secretPrizeCodeList_${giveawayId}"></div>` : ""}
+                        <button class="btn-primary" onclick="handleConfirmSecretWinner('${giveawayId}', '${result.winner.uid}', '${safeName}', '${platform}', ${needsCode}, ${tokens})"
                             style="margin-top:10px; padding:10px 20px;">Confirm &amp; Send Prize</button>
                     `;
-                    renderCodeList("secretPrizeCodeList_" + giveawayId);
+                    if (needsCode) renderCodeList("secretPrizeCodeList_" + giveawayId);
                     container.style.display = "block";
                 } catch (e) {
                     showInfoModal("Pick failed", e.message);
                 }
             };
 
-            window.handleConfirmSecretWinner = async function (giveawayId, winnerUid, winnerName, platform) {
-                const codes = readCodeList("secretPrizeCodeList_" + giveawayId);
-                if (!codes.length) { showInfoModal("Missing code", "Type in the promo code before confirming."); return; }
-                if (!await showConfirmModal("Send prize", `Send ${describeCodes(codes)} to ${winnerName}? This can't be undone.`)) return;
+            window.handleConfirmSecretWinner = async function (giveawayId, winnerUid, winnerName, platform, needsCode = true, tokens = 0) {
+                const codes = needsCode ? readCodeList("secretPrizeCodeList_" + giveawayId) : [];
+                if (needsCode && !codes.length) { showInfoModal("Missing code", "Type in the promo code before confirming."); return; }
+                const what = [tokens ? `${tokens} tokens` : "", codes.length ? describeCodes(codes) : ""].filter(Boolean).join(" and ");
+                if (!await showConfirmModal("Send prize", `Send ${what} to ${winnerName}? This can't be undone.`)) return;
                 try {
                     await AppState.finalizeSecretGiveawayPrize(giveawayId, winnerUid, winnerName, platform, codes);
                     await refreshSecretGiveawaysList();
@@ -1418,6 +1563,18 @@
             };
 
             window.handleResendSecretCode = async function (giveawayId, winnerUid, winnerName, platform) {
+                // A tokens-only prize has no code: resending sends the win notice
+                // again (and pays the tokens if that failed before — never twice).
+                const info = await AppState.getSecretGiveawayPrizeInfo(giveawayId).catch(() => null);
+                if (info && info.prize && !window.KIHPrize.needsCode(info.prize)) {
+                    if (!await showConfirmModal("Resend", `Send ${winnerName} their win notice again? Their ${window.KIHPrize.tokensOf(info.prize)} tokens are only ever paid once.`)) return;
+                    try {
+                        await AppState.finalizeSecretGiveawayPrize(giveawayId, winnerUid, winnerName, platform, []);
+                        showInfoModal("Sent", "Win notice sent — tokens paid (once).");
+                        await refreshSecretGiveawaysList();
+                    } catch (e) { showInfoModal("Failed to send", e.message); }
+                    return;
+                }
                 const codes = await askForCodes(`Prize code(s) to (re)send to ${winnerName}`, []);
                 if (codes === null) return;
                 if (!codes.length) { showInfoModal("Missing code", "Type in the promo code before confirming."); return; }

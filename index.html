@@ -608,37 +608,48 @@ body {
             margin-top: 24px;
         }
 
-        .inbox-empty {
-            text-align: center;
-            color: var(--kih-text-dim);
-            padding: 40px 10px;
-        }
+        /* Filter chips (Inbox, News) */
+        .kih-chips { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin: 0 0 14px; padding-bottom: 2px; }
+        .kih-chips::-webkit-scrollbar { display: none; }
+        .kih-chip { flex-shrink: 0; padding: 7px 13px; border-radius: 999px; border: 1px solid var(--kih-border); background: rgba(255, 255, 255, 0.04);
+            color: var(--kih-text); font-family: inherit; font-size: 0.85rem; font-weight: 700; cursor: pointer; white-space: nowrap; }
+        .kih-chip small { margin-left: 4px; color: var(--kih-text-dim); font-weight: 700; }
+        .kih-chip.active { background: linear-gradient(135deg, #4c6ef5, #845ef7); border-color: transparent; color: #fff; }
+        .kih-chip.active small { color: rgba(255, 255, 255, 0.8); }
 
+        /* Inbox: a card per message — icon, title, when, a two-line peek and
+           its one action. Tap the card for the whole message. */
+        .inbox-empty { text-align: center; color: var(--kih-text-dim); padding: 40px 10px; }
+        .inbox-group { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: var(--kih-text-dim); margin: 16px 2px 8px; }
+        .inbox-group:first-child { margin-top: 0; }
         .inbox-item {
-            padding: 14px 0;
-            border-bottom: 1px solid var(--kih-border);
+            --cat: 132, 94, 247;
+            position: relative; display: flex; gap: 12px; align-items: flex-start; padding: 12px; margin-bottom: 8px; cursor: pointer; text-align: left;
+            border-radius: 14px; border: 1px solid var(--kih-border); background: linear-gradient(100deg, rgba(var(--cat), 0.10), rgba(255, 255, 255, 0.02) 60%), var(--kih-panel);
+            transition: border-color 0.12s, transform 0.12s;
         }
-
-        .inbox-item:last-child {
-            border-bottom: none;
-        }
-
-        .inbox-title {
-            font-weight: 600;
-        }
-
-        .inbox-body {
-            color: var(--kih-text-dim);
-            font-size: 0.9rem;
-            margin: 4px 0;
-            overflow-wrap: break-word;
-            word-break: break-word;
-        }
-
-        .inbox-time {
-            color: var(--kih-text-dim);
-            font-size: 0.75rem;
-        }
+        .inbox-item:hover { border-color: rgba(var(--cat), 0.7); transform: translateY(-1px); }
+        .inbox-item.cat-promo { --cat: 240, 101, 149; }
+        .inbox-item.cat-tip { --cat: 252, 196, 25; }
+        .inbox-item.cat-social { --cat: 34, 184, 207; }
+        .inbox-item.cat-general { --cat: 132, 94, 247; }
+        .inbox-icon { flex-shrink: 0; width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; font-size: 1.25rem;
+            background: rgba(var(--cat, 132, 94, 247), 0.22); box-shadow: inset 0 0 0 1px rgba(var(--cat, 132, 94, 247), 0.45); }
+        .inbox-main { flex: 1; min-width: 0; }
+        .inbox-top { display: flex; align-items: baseline; gap: 8px; }
+        .inbox-title { flex: 1; min-width: 0; font-weight: 700; line-height: 1.3; overflow-wrap: anywhere; }
+        .inbox-time { flex-shrink: 0; color: var(--kih-text-dim); font-size: 0.75rem; }
+        .inbox-body { color: var(--kih-text-dim); font-size: 0.88rem; line-height: 1.4; margin-top: 3px; overflow-wrap: anywhere;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .inbox-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 9px; }
+        .inbox-actions .btn-primary { padding: 6px 14px; font-size: 0.85rem; }
+        .inbox-item.fresh::before { content: ""; position: absolute; top: 12px; right: 12px; width: 8px; height: 8px; border-radius: 50%; background: #ff4d4f; box-shadow: 0 0 8px rgba(255, 77, 79, 0.8); }
+        .inbox-item.fresh .inbox-time { margin-right: 14px; }
+        .inbox-item.fresh .inbox-title { color: #fff; }
+        .inbox-detail-head { display: flex; gap: 12px; align-items: center; margin-bottom: 14px; }
+        .inbox-detail-head .inbox-icon { width: 46px; height: 46px; font-size: 1.45rem; }
+        .inbox-detail-title { font-weight: 800; font-size: 1.1rem; line-height: 1.3; overflow-wrap: anywhere; }
+        .inbox-detail-prize { margin: 0 0 14px; }
 
         .badge-dot {
             position: absolute;
@@ -847,47 +858,39 @@ body {
             padding: 16px 6px;
         }
 
-        .news-panel-backdrop {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.6);
-            z-index: 45;
-        }
-
-        .news-panel-backdrop.open {
-            display: block;
-        }
-
-        .news-preview-item {
-            border: 1px solid var(--kih-accent) !important;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            padding: 10px 12px;
-            transition: border-color 0.12s ease, background 0.12s ease, transform 0.12s ease;
-        }
-
-        .news-preview-item:last-child {
-            margin-bottom: 0;
-        }
-
-        .news-preview-item:hover {
-            background: #1c1c36;
-            border-color: var(--kih-accent-hover);
-            transform: translateY(-1px);
-        }
-        .news-preview-item.type-leak {
-    border-color: #ff6b6b !important;
-    box-shadow: 0 0 8px rgba(255, 107, 107, 0.25);
-}
-
-.news-preview-item.type-confirmed {
-    border-color: #4caf50 !important;
-}
-
-.news-preview-item.type-rumour {
-    border-color: #ffc439 !important;
-}
+        /* News: one sheet — the feed (chips + cards), and a post opened in place. */
+        #newsModalOverlay.mini-modal-overlay { align-items: flex-end; padding: 0; }
+        @media (min-width: 640px) { #newsModalOverlay.mini-modal-overlay { align-items: center; padding: 16px; } }
+        .mini-modal-box.news-sheet { max-width: 600px; width: 100%; height: min(88vh, 860px); display: flex; flex-direction: column; text-align: left; padding: 0; overflow: hidden; border-radius: 18px 18px 0 0; }
+        @media (min-width: 640px) { .mini-modal-box.news-sheet { border-radius: 18px; } }
+        .news-sheet-head { display: flex; align-items: center; gap: 8px; padding: 14px 12px 10px 18px; flex-shrink: 0; }
+        .news-sheet-title { flex: 1; font-weight: 900; font-size: 1.2rem; }
+        .news-back { border: none; background: rgba(255, 255, 255, 0.06); color: var(--kih-text); font-family: inherit; font-weight: 700; padding: 7px 12px; border-radius: 999px; cursor: pointer; }
+        .news-close { border: none; background: none; color: var(--kih-text-dim); font-size: 1.4rem; line-height: 1; padding: 4px 8px; cursor: pointer; }
+        #newsChips { padding: 0 16px; margin-bottom: 10px; }
+        .news-sheet-body { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding: 2px 16px 24px; }
+        .news-card { display: block; width: 100%; text-align: left; font-family: inherit; color: var(--kih-text); cursor: pointer;
+            padding: 13px 14px; margin-bottom: 10px; border-radius: 14px; border: 1px solid var(--kih-border);
+            background: linear-gradient(100deg, rgba(var(--nc, 132, 94, 247), 0.12), rgba(255, 255, 255, 0.02) 65%), rgba(255, 255, 255, 0.02);
+            border-left: 4px solid rgb(var(--nc, 132, 94, 247)); transition: transform 0.12s, border-color 0.12s; }
+        .news-card:hover { transform: translateY(-1px); }
+        .news-card.type-leak, .news-article.type-leak { --nc: 255, 107, 107; }
+        .news-card.type-confirmed, .news-article.type-confirmed { --nc: 107, 214, 114; }
+        .news-card.type-rumour, .news-article.type-rumour { --nc: 255, 196, 57; }
+        .news-card-top { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+        .news-card-top .news-tag { margin: 0; }
+        .news-when { font-size: 0.75rem; color: var(--kih-text-dim); }
+        .news-new { margin-left: auto; font-size: 0.65rem; font-weight: 900; letter-spacing: 0.05em; padding: 2px 7px; border-radius: 999px; background: #ff4d4f; color: #fff; }
+        .news-card-title { font-weight: 800; font-size: 1.02rem; line-height: 1.3; }
+        .news-card-snip { margin-top: 4px; font-size: 0.88rem; line-height: 1.45; color: var(--kih-text-dim);
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .news-empty { text-align: center; color: var(--kih-text-dim); padding: 40px 10px; }
+        .news-article h2 { margin: 4px 0 4px; font-size: 1.35rem; line-height: 1.25; }
+        .news-article-body { margin-top: 14px; line-height: 1.6; overflow-wrap: anywhere; }
+        .news-article-body img { max-width: 100%; height: auto; border-radius: 10px; }
+        .news-article-nav { display: flex; justify-content: space-between; gap: 10px; margin-top: 22px; padding-top: 14px; border-top: 1px solid var(--kih-border); }
+        .news-article-nav button { flex: 1; padding: 10px; border-radius: 10px; border: 1px solid var(--kih-border); background: rgba(255, 255, 255, 0.04); color: var(--kih-text); font-family: inherit; font-weight: 700; cursor: pointer; }
+        .news-article-nav span { flex: 1; }
 
 .news-tag {
     display: inline-block;
@@ -902,6 +905,7 @@ body {
 .news-tag.type-leak { background: rgba(255, 107, 107, 0.18); color: #ff6b6b; }
 .news-tag.type-confirmed { background: rgba(76, 175, 80, 0.18); color: #6bd672; }
 .news-tag.type-rumour { background: rgba(255, 196, 57, 0.18); color: #ffd76b; }
+.news-tag.type-news { background: rgba(132, 94, 247, 0.2); color: #b9a4ff; }
         /* ---- Mini modal (view profile) ---- */
         .mini-modal-overlay {
             display: none;
@@ -1592,14 +1596,6 @@ body {
                     <button class="icon-btn" title="News & Rumours" id="newsBtnHome">
                         📰<span class="badge-dot" id="newsBadgeHome" style="display:none;"></span>
                     </button>
-                    <div class="news-panel-backdrop" id="newsPanelBackdrop"></div>
-                    <div class="friend-req-panel" id="newsPanelHome">
-                        <div class="friend-req-panel-title">Latest News</div>
-                        <button class="btn-settings-action btn-block" style="margin-bottom:10px;" onclick="openNewsModal()">View All News</button>
-                        <div id="newsPreviewListHome">
-                            <div class="friend-req-empty">No news yet.</div>
-                        </div>
-                    </div>
                 </div>
                 <div class="friend-req-wrapper" id="friendReqWrapperHome">
                     <button class="icon-btn" title="Friend requests" id="friendReqBtnHome">
@@ -1949,16 +1945,7 @@ body {
                 <div class="home-page-content" id="page-inbox">
                     <div class="page-panel">
                         <h1>Inbox</h1>
-                        <div style="display:flex; align-items:center; gap:10px; margin-bottom:16px;">
-                            <label for="inboxFilterSelect" class="settings-sub" style="margin:0;">Filter:</label>
-                            <select id="inboxFilterSelect" class="profile-name-input" style="width:auto; flex:1;">
-                                <option value="all">All</option>
-                                <option value="promo">Promo</option>
-                                <option value="tip">Tips</option>
-                                <option value="social">Social</option>
-                                <option value="general">General</option>
-                            </select>
-                        </div>
+                        <div class="kih-chips" id="inboxChips"></div>
                         <div id="inboxList"></div>
                     </div>
                 </div>
@@ -2083,39 +2070,26 @@ body {
 <!-- Legal document viewer (Terms / Privacy) — shown inline instead of navigating away or opening a new tab -->
 <div class="mini-modal-overlay" id="legalModalOverlay" style="z-index:600;">
     <div class="mini-modal-box" style="max-width:700px; width:92vw; height:85vh; display:flex; flex-direction:column; padding:0; overflow:hidden;">
-        <div style="display:flex; justify-content:flex-end; flex-shrink:0; padding:10px 10px 0;">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-shrink:0; padding:12px 12px 10px 20px; border-bottom:1px solid var(--kih-border);">
+            <span id="legalModalTitle" style="font-weight:800; font-size:1.1rem;">📄</span>
             <button onclick="closeLegalModal()" aria-label="Close" style="background:none; border:none; color:var(--kih-text-dim); font-size:1.5rem; line-height:1; cursor:pointer; padding:4px 8px;">✕</button>
         </div>
         <iframe id="legalModalFrame" src="" style="flex:1; width:100%; border:none; background:var(--kih-bg);"></iframe>
     </div>
 </div>
-        <!-- Full News & Rumours modal — scrollable list, HTML content rendered as-is -->
-<div class="mini-modal-overlay" id="newsModalOverlay">
-    <div class="mini-modal-box" style="max-width:560px; max-height:80vh; display:flex; flex-direction:column; text-align:left; padding:0; overflow:hidden;">
-        <div style="display:flex; justify-content:flex-end; flex-shrink:0; padding:10px 10px 0;">
-            <button onclick="closeNewsModal()" aria-label="Close" style="background:none; border:none; color:var(--kih-text-dim); font-size:1.5rem; line-height:1; cursor:pointer; padding:4px 8px;">✕</button>
+        <!-- News & Rumours: the feed, and a post opened in place (its HTML rendered as-is) -->
+<div class="mini-modal-overlay" id="newsModalOverlay" onclick="if (event.target === this) closeNewsModal()">
+    <div class="mini-modal-box news-sheet">
+        <div class="news-sheet-head">
+            <button type="button" class="news-back" id="newsBackBtn" onclick="showNewsList()" style="display:none;">‹ All news</button>
+            <span class="news-sheet-title" id="newsSheetTitle">📰 News</span>
+            <button type="button" class="news-close" onclick="closeNewsModal()" aria-label="Close">✕</button>
         </div>
-        <div style="overflow-y:auto; overscroll-behavior:contain; padding:0 24px 24px;">
-            <h3 style="margin-top:0; text-align:center;">📰 News & Rumours</h3>
-            <div id="newsModalList"></div>
-            <button class="btn-settings-action btn-block" style="margin-top:16px;" onclick="closeNewsModal()">Close</button>
-        </div>
+        <div class="kih-chips" id="newsChips"></div>
+        <div class="news-sheet-body" id="newsSheetBody"></div>
     </div>
 </div>
-
-        <!-- Single news item modal — opened from a preview item's "View More" -->
-<div class="mini-modal-overlay" id="singleNewsModalOverlay">
-    <div class="mini-modal-box" style="max-width:560px; max-height:80vh; display:flex; flex-direction:column; text-align:left; padding:0; overflow:hidden;">
-        <div style="display:flex; justify-content:flex-end; flex-shrink:0; padding:10px 10px 0;">
-            <button onclick="closeSingleNewsModal()" aria-label="Close" style="background:none; border:none; color:var(--kih-text-dim); font-size:1.5rem; line-height:1; cursor:pointer; padding:4px 8px;">✕</button>
-        </div>
-        <div style="overflow-y:auto; overscroll-behavior:contain; padding:0 24px 24px;">
-            <div id="singleNewsModalContent"></div>
-            <button class="btn-settings-action btn-block" style="margin-top:16px;" onclick="closeSingleNewsModal()">Close</button>
-        </div>
-    </div>
-</div>
-<!-- Inbox item full view — opened when a truncated notification is tapped -->
+<!-- Inbox message, in full — opened by tapping its card -->
 <div class="mini-modal-overlay" id="inboxItemModalOverlay">
     <div class="mini-modal-box" style="max-width:420px; max-height:80vh; display:flex; flex-direction:column; text-align:left; padding:0; overflow:hidden;">
         <div style="display:flex; justify-content:flex-end; flex-shrink:0; padding:10px 10px 0;">
@@ -2130,6 +2104,7 @@ body {
 
         </div>
 
+    <script src="prize.js"></script>
     <script type="module" src="appState.js"></script>
     <script>
         /* ---------------- KEYBOARD-SAFE INPUT SCROLLING ----------------
@@ -2415,7 +2390,32 @@ body {
            else goToPage(page, false, true);
        });
 
+       // Leaving Games in the middle of a run: Games asks "Leave this game?"
+       // (and ends the run if you go). false = stay. A Back press that was
+       // turned down is put back, so the next Back still means "leave".
+       function gamesWindow() {
+           const p = document.getElementById("page-games");
+           const showing = p && p.classList.contains("active") && document.getElementById("homeContentWrap").classList.contains("active");
+           try { return showing ? p.querySelector("iframe").contentWindow : null; } catch (e) { return null; }
+       }
+       async function okToLeaveGames(to, fromHistory) {
+           if (to === "games") return true;
+           const w = gamesWindow();
+           let ok = true;
+           try { if (w && typeof w.confirmLeaveRun === "function") ok = await w.confirmLeaveRun(); } catch (e) { ok = true; }
+           if (!ok && fromHistory) history.pushState({ kihPage: "games" }, "");
+           return ok;
+       }
+       // Closing or reloading the site mid-run: the browser's own "Leave site?".
+       window.addEventListener("beforeunload", (e) => {
+           try {
+               const w = gamesWindow();
+               if (w && typeof w.gamesRunInProgress === "function" && w.gamesRunInProgress()) { e.preventDefault(); e.returnValue = ""; }
+           } catch (err) { }
+       });
+
        async function goToPage(page, fromAbout, fromHistory) {
+    if (!(await okToLeaveGames(page, fromHistory))) return;
     if (page !== "profile" && isProfileDirty()) {
         let choice = await showUnsavedModal();
         if (choice === "save") await saveProfile();
@@ -2468,7 +2468,14 @@ body {
 
     if (page === "profile") await loadProfileIntoPage();
     if (page === "settings") await loadSettingsIntoPage();
-    if (page === "inbox") { renderInboxList(mergedNotifications()); markInboxSeen(); }
+    if (page === "inbox") {
+        // A fresh look each visit: All again, and a dot on whatever's unread right now.
+        currentInboxFilter = "all";
+        const seenAt = parseInt(localStorage.getItem("kih_notif_last_seen_at") || "0", 10);
+        inboxFreshIds = new Set(mergedNotifications().filter(n => isInboxUnread(n, seenAt)).map(n => n.id));
+        renderInboxList(mergedNotifications());
+        markInboxSeen();
+    }
     if (page === "quests") onQuestsPageOpened();
     setTimeout(updateScrollBottomBtn, 50);
 }
@@ -2504,6 +2511,7 @@ body {
         }
 
         async function goHome(fromHistory) {
+            if (!(await okToLeaveGames("home", fromHistory === true))) return;
             if (isProfileDirty()) {
                 let choice = await showUnsavedModal();
                 if (choice === "save") {
@@ -2569,7 +2577,15 @@ body {
         function closeAvatarModal() {
             document.getElementById("avatarModalOverlay").classList.remove("open");
         }
+// The document's name in the viewer's title bar (its own heading is
+// hidden there — see the "embedded" note in terms.html / privacy.html).
+const LEGAL_TITLES = { "terms.html": "📄 Terms of Service", "privacy.html": "🔒 Privacy Policy" };
+function legalTitleFor(url) { return LEGAL_TITLES[String(url).split(/[?#]/)[0].split("/").pop()] || "📄"; }
+document.getElementById("legalModalFrame").addEventListener("load", function () {
+    try { if (this.contentWindow.location.href !== "about:blank") document.getElementById("legalModalTitle").textContent = legalTitleFor(this.contentWindow.location.pathname); } catch (e) { }
+});
 function openLegalModal(url) {
+    document.getElementById("legalModalTitle").textContent = legalTitleFor(url);
     document.getElementById("legalModalFrame").src = url;
     document.getElementById("legalModalOverlay").classList.add("open");
 }
@@ -3064,11 +3080,6 @@ async function refreshTopbar(retriesLeft = 3) {
     return String(str || "").replace(/[&<>"']/g, s => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[s]));
 }
 
-function truncateInboxBody(str, maxLen = 100) {
-    str = str || "";
-    return str.length > maxLen ? str.slice(0, maxLen).trimEnd() + "…" : str;
-}
-
 // Keeps the currently-rendered (filtered) notifications around so a click
 // on an item can look itself up by index and show the full text.
 let currentInboxItems = [];
@@ -3144,9 +3155,6 @@ let currentInboxItems = [];
 
         document.getElementById("friendReqBtnHome").addEventListener("click", (e) => {
     e.stopPropagation();
-    // Close the news panel first so the two dropdowns never overlap.
-    document.getElementById("newsPanelHome").classList.remove("open");
-    document.getElementById("newsPanelBackdrop").classList.remove("open");
     document.getElementById("friendReqPanelHome").classList.toggle("open");
 });
 document.addEventListener("click", (e) => {
@@ -3156,13 +3164,19 @@ document.addEventListener("click", (e) => {
     }
 });
 
-        /* ---------------- NEWS (topbar icon + dropdown preview + full modal) ---------------- */
+        /* ---------------- NEWS ----------------
+           📰 opens one sheet: the feed — filter chips and a card per post —
+           and a post opened in place, with Newer / Older to read on. A post's
+           pictures only load once it's opened. The filter is back to All
+           every time the sheet opens. */
         const NEWS_LAST_SEEN_KEY = "kih_news_last_seen_at";
         let latestNewsItems = [];
+        let newsFilter = "all";
+        let newsOpenId = null;    // the post on screen; null = the feed
+        let newsSeenBefore = 0;   // posts newer than this wear a NEW tag while the sheet is open
 
         // Strips any HTML tags down to plain text, then trims to a short
-        // preview length — used ONLY for the dropdown teaser, since that
-        // shouldn't render embedded images/styling, just give a taste.
+        // preview length — for the cards, which only give a taste.
         function stripHtmlForPreview(html, maxLen = 90) {
     // An inert document: putting the HTML into a normal element would start
     // downloading every picture in the post (on every page load), even
@@ -3179,34 +3193,20 @@ function getNewsTypeInfo(type) {
     if (type === "leak") return { cls: "type-leak", label: "🔥 LEAK" };
     if (type === "confirmed") return { cls: "type-confirmed", label: "✅ CONFIRMED" };
     if (type === "rumour") return { cls: "type-rumour", label: "👀 RUMOUR" };
-    return { cls: "", label: "" };
+    return { cls: "type-news", label: "📰 NEWS" };
 }
-       function renderNewsPreviewHome(items) {
-    const list = document.getElementById("newsPreviewListHome");
-    const recent = items;
-    if (!recent.length) {
-        list.innerHTML = '<div class="friend-req-empty">No news yet.</div>';
-        return;
-    }
-    list.innerHTML = recent.map(n => {
-    const typeInfo = getNewsTypeInfo(n.type);
-    return `
-        <div class="friend-req-item news-preview-item ${typeInfo.cls}" data-id="${escapeHomeHtml(n.id)}" style="display:block; cursor:pointer;">
-            ${typeInfo.label ? `<span class="news-tag ${typeInfo.cls}">${typeInfo.label}</span><br>` : ""}
-            <div class="friend-req-name" style="margin-bottom:2px;">${escapeHomeHtml(n.title)}</div>
-            <div class="settings-sub" style="margin:0;">${escapeHomeHtml(stripHtmlForPreview(n.bodyHtml))}</div>
-        </div>
-    `;
-    }).join("");
-
-    list.querySelectorAll(".news-preview-item").forEach(item => {
-        item.addEventListener("click", (e) => {
-            e.stopPropagation();
-            window.scrollTo(0, 0);
-            openSingleNewsModal(item.dataset.id);
-        });
-    });
-}
+        const newsKind = (n) => (["leak", "confirmed", "rumour"].includes(n.type) ? n.type : "news");
+        const NEWS_CHIPS = [["all", "All"], ["leak", "🔥 Leaks"], ["confirmed", "✅ Confirmed"], ["rumour", "👀 Rumours"], ["news", "📰 News"]];
+        // "just now", "5m ago", "3h ago", "2d ago", then the date.
+        function timeAgo(ms) {
+            const sec = Math.max(0, (Date.now() - ms) / 1000);
+            if (sec < 60) return "just now";
+            if (sec < 3600) return Math.floor(sec / 60) + "m ago";
+            if (sec < 86400) return Math.floor(sec / 3600) + "h ago";
+            if (sec < 7 * 86400) return Math.floor(sec / 86400) + "d ago";
+            const d = new Date(ms);
+            return d.toLocaleDateString(undefined, { day: "numeric", month: "short", ...(d.getFullYear() === new Date().getFullYear() ? {} : { year: "numeric" }) });
+        }
         function updateNewsBadgeHome(items) {
             const lastSeenAt = parseInt(localStorage.getItem(NEWS_LAST_SEEN_KEY) || "0", 10);
             const unread = items.filter(n => n.createdAt > lastSeenAt).length;
@@ -3220,123 +3220,100 @@ function getNewsTypeInfo(type) {
             // the shared notifications listener.
             AppState.listenToNews((items) => {
                 latestNewsItems = items;
-                renderNewsPreviewHome(items);
                 updateNewsBadgeHome(items);
-                // keep the full modal live too, in case it's open when a new post lands
-                if (document.getElementById("newsModalOverlay").classList.contains("open")) {
-                    renderNewsModalList(items);
-                }
+                // keep the sheet live too, in case it's open when a new post lands
+                if (document.getElementById("newsModalOverlay").classList.contains("open")) paintNews();
             });
         }
 
-        function renderNewsModalList(items) {
-    const list = document.getElementById("newsModalList");
-    if (!items.length) {
-        list.innerHTML = '<div class="friend-req-empty">No news yet — check back soon.</div>';
-        return;
-    }
-    // bodyHtml is rendered as-is (innerHTML), not escaped — this is
-    // admin-authored content only (Firestore rules restrict writes
-    // to the admin uid), so this is the same trust level as the
-    // rest of the admin-posted content already using innerHTML.
-    list.innerHTML = items.map(n => {
-        const typeInfo = getNewsTypeInfo(n.type);
-        return `
-            <div class="news-preview-item ${typeInfo.cls}" style="padding:14px 0; margin-bottom:20px; border-bottom:none;">
-                ${typeInfo.label ? `<span class="news-tag ${typeInfo.cls}">${typeInfo.label}</span><br>` : ""}
-                <div style="font-weight:700; font-size:1.05rem; margin-bottom:4px;">${escapeHomeHtml(n.title)}</div>
-                <div class="settings-sub" style="margin-bottom:10px;">${new Date(n.createdAt).toLocaleString()}</div>
-                <div>${String(n.bodyHtml || "").replace(/<img(?![^>]*\bloading=)/gi, '<img loading="lazy" decoding="async"')}</div>
-            </div>
-        `;
-    }).join("");
-}
-
-        function openNewsModal() {
-            document.getElementById("friendReqWrapperHome"); // no-op, keeps intent clear
-            document.getElementById("newsPanelHome").classList.remove("open");
-            document.getElementById("newsPanelBackdrop").classList.remove("open");
-            renderNewsModalList(latestNewsItems);
-            document.getElementById("newsModalOverlay").classList.add("open");
-            if (latestNewsItems.length) AppState.reportQuestProgress("readNews", latestNewsItems[0].id);
+        const newsInView = () => (newsFilter === "all" ? latestNewsItems : latestNewsItems.filter(n => newsKind(n) === newsFilter));
+        function paintNews() {
+            const body = document.getElementById("newsSheetBody");
+            const chips = document.getElementById("newsChips");
+            const post = newsOpenId ? latestNewsItems.find(n => n.id === newsOpenId) : null;
+            document.getElementById("newsBackBtn").style.display = post ? "" : "none";
+            document.getElementById("newsSheetTitle").textContent = post ? "" : "📰 News";
+            chips.style.display = post ? "none" : "";
+            if (post) {
+                body.innerHTML = newsArticleHtml(post);
+                body.scrollTop = 0;
+                return;
+            }
+            const count = (k) => (k === "all" ? latestNewsItems.length : latestNewsItems.filter(n => newsKind(n) === k).length);
+            chips.innerHTML = NEWS_CHIPS.filter(([k]) => k === "all" || count(k) > 0)
+                .map(([k, label]) => `<button type="button" class="kih-chip${newsFilter === k ? " active" : ""}" onclick="setNewsFilter('${k}')">${label}<small>${count(k)}</small></button>`).join("");
+            const list = newsInView();
+            body.innerHTML = list.length ? list.map(n => {
+                const t = getNewsTypeInfo(n.type);
+                return `<button type="button" class="news-card ${t.cls}" data-id="${escapeHomeHtml(n.id)}">
+                    <div class="news-card-top"><span class="news-tag ${t.cls}">${t.label}</span><span class="news-when">${timeAgo(n.createdAt)}</span>${n.createdAt > newsSeenBefore ? `<span class="news-new">NEW</span>` : ""}</div>
+                    <div class="news-card-title">${escapeHomeHtml(n.title)}</div>
+                    <div class="news-card-snip">${escapeHomeHtml(stripHtmlForPreview(n.bodyHtml, 180))}</div>
+                </button>`;
+            }).join("") : `<div class="news-empty">📭 No news yet — check back soon.</div>`;
+        }
+        // bodyHtml is rendered as-is (not escaped) — it's admin-authored
+        // (Firestore rules restrict writes to the admin uid), the same trust
+        // as the rest of the admin-posted content shown with innerHTML.
+        function newsArticleHtml(n) {
+            const t = getNewsTypeInfo(n.type);
+            const list = newsInView(), i = list.findIndex(x => x.id === n.id);
+            const newer = i > 0 ? list[i - 1] : null, older = i >= 0 && i < list.length - 1 ? list[i + 1] : null;
+            return `<article class="news-article ${t.cls}">
+                <div class="news-card-top"><span class="news-tag ${t.cls}">${t.label}</span><span class="news-when">${new Date(n.createdAt).toLocaleString()}</span></div>
+                <h2>${escapeHomeHtml(n.title)}</h2>
+                <div class="news-article-body">${String(n.bodyHtml || "").replace(/<img(?![^>]*\bloading=)/gi, '<img loading="lazy" decoding="async"')}</div>
+                <div class="news-article-nav">${newer ? `<button type="button" data-id="${escapeHomeHtml(newer.id)}">‹ Newer</button>` : "<span></span>"}${older ? `<button type="button" data-id="${escapeHomeHtml(older.id)}">Older ›</button>` : "<span></span>"}</div>
+            </article>`;
+        }
+        // Cards and Newer / Older carry the post's id (never spliced into an onclick).
+        document.getElementById("newsSheetBody").addEventListener("click", (e) => {
+            const el = e.target.closest("[data-id]");
+            if (el) openSingleNewsModal(el.dataset.id);
+        });
+        function openNewsSheet() {
+            const overlay = document.getElementById("newsModalOverlay");
+            if (overlay.classList.contains("open")) return;
+            newsSeenBefore = parseInt(localStorage.getItem(NEWS_LAST_SEEN_KEY) || "0", 10);
+            newsFilter = "all";
+            overlay.classList.add("open");
             localStorage.setItem(NEWS_LAST_SEEN_KEY, String(Date.now()));
             updateNewsBadgeHome(latestNewsItems);
         }
+        function openNewsModal() {
+            openNewsSheet();
+            newsOpenId = null;
+            paintNews();
+            if (latestNewsItems.length) AppState.reportQuestProgress("readNews", latestNewsItems[0].id);
+        }
         window.openNewsModal = openNewsModal;
 
-        // Opens a single news item, centered, same treatment as the full
-        // "View All News" modal but scoped to just this one post.
+        // One post, in the sheet ("‹ All news" goes back to the feed).
         function openSingleNewsModal(newsId) {
-    const item = latestNewsItems.find(n => n.id === newsId);
-    const content = document.getElementById("singleNewsModalContent");
-    if (!item) {
-        content.innerHTML = '<div class="friend-req-empty">This post is no longer available.</div>';
-    } else {
-        AppState.reportQuestProgress("readNews", item.id);
-        // bodyHtml is admin-authored (Firestore rules restrict writes
-        // to the admin uid) — same trust level as the full news
-        // modal, which already renders it unescaped.
-        const typeInfo = getNewsTypeInfo(item.type);
-        content.innerHTML = `
-            <div class="news-preview-item ${typeInfo.cls}" style="border-bottom:none;">
-                ${typeInfo.label ? `<span class="news-tag ${typeInfo.cls}">${typeInfo.label}</span><br>` : ""}
-                <div style="font-weight:700; font-size:1.15rem; margin-bottom:4px;">${escapeHomeHtml(item.title)}</div>
-                <div class="settings-sub" style="margin-bottom:14px;">${new Date(item.createdAt).toLocaleString()}</div>
-                <div>${item.bodyHtml}</div>
-            </div>
-        `;
-    }
-    document.getElementById("newsPanelHome").classList.remove("open");
-    const overlay = document.getElementById("singleNewsModalOverlay");
-    overlay.classList.add("open");
-    const box = overlay.querySelector(".mini-modal-box");
-    if (box) box.scrollTop = 0;
-    window.scrollTo(0, 0);
-    localStorage.setItem(NEWS_LAST_SEEN_KEY, String(Date.now()));
-    updateNewsBadgeHome(latestNewsItems);
-}
-        window.openSingleNewsModal = openSingleNewsModal;
-
-        function closeSingleNewsModal() {
-            document.getElementById("singleNewsModalOverlay").classList.remove("open");
-            // Deferred with setTimeout so this runs AFTER the current click
-            // event finishes bubbling to document — otherwise the
-            // "click outside newsWrapperHome" listener immediately undoes
-            // this by removing .open again in the same click.
-            setTimeout(() => {
-                document.getElementById("newsPanelHome").classList.add("open");
-                document.getElementById("newsPanelBackdrop").classList.add("open");
-            }, 0);
+            openNewsSheet();
+            newsOpenId = newsId;
+            if (latestNewsItems.some(n => n.id === newsId)) AppState.reportQuestProgress("readNews", newsId);
+            else newsOpenId = null;
+            paintNews();
         }
-        window.closeSingleNewsModal = closeSingleNewsModal;
+        window.openSingleNewsModal = openSingleNewsModal;
+        function showNewsList() { newsOpenId = null; paintNews(); }
+        window.showNewsList = showNewsList;
+        window.closeSingleNewsModal = showNewsList;
+        function setNewsFilter(k) { newsFilter = k; paintNews(); document.getElementById("newsSheetBody").scrollTop = 0; }
+        window.setNewsFilter = setNewsFilter;
 
         function closeNewsModal() {
             document.getElementById("newsModalOverlay").classList.remove("open");
+            newsOpenId = null;
+            newsFilter = "all";
         }
         window.closeNewsModal = closeNewsModal;
 
         document.getElementById("newsBtnHome").addEventListener("click", (e) => {
-    e.stopPropagation();
-    // Close the friend requests panel first so the two dropdowns never overlap.
-    document.getElementById("friendReqPanelHome").classList.remove("open");
-    const panel = document.getElementById("newsPanelHome");
-    const isOpen = panel.classList.toggle("open");
-    document.getElementById("newsPanelBackdrop").classList.toggle("open", isOpen);
-    if (isOpen) {
-        localStorage.setItem(NEWS_LAST_SEEN_KEY, String(Date.now()));
-        updateNewsBadgeHome(latestNewsItems);
-    }
-});
-        document.addEventListener("click", (e) => {
-            const wrapper = document.getElementById("newsWrapperHome");
-            if (wrapper && !wrapper.contains(e.target)) {
-                document.getElementById("newsPanelHome").classList.remove("open");
-                document.getElementById("newsPanelBackdrop").classList.remove("open");
-            }
-        });
-        document.getElementById("newsPanelBackdrop").addEventListener("click", () => {
-            document.getElementById("newsPanelHome").classList.remove("open");
-            document.getElementById("newsPanelBackdrop").classList.remove("open");
+            e.stopPropagation();
+            document.getElementById("friendReqPanelHome").classList.remove("open");
+            openNewsModal();
         });
 
         window.openViewProfileModalHome = async function (uid, fallbackName, fallbackAvatar) {
@@ -3470,14 +3447,16 @@ function getNewsTypeInfo(type) {
             }).catch(() => {});
         }
 
+        // Personal notifications track their own read state per doc; shared
+        // ones count as unread when newer than the last time the inbox opened.
+        function isInboxUnread(n, lastSeenAt) {
+            if (n.type === "friendAccepted" || n.type === "formationComment" || n.type === "formationReply" || n.type === "secretGiveawayWin" || n.type === "promoCodes") return !n.read;
+            return n.createdAt > lastSeenAt;
+        }
         function renderInboxBadgeFrom(notifications) {
             let lastSeenAt = parseInt(localStorage.getItem("kih_notif_last_seen_at") || "0", 10);
             let inboxOpen = document.getElementById("page-inbox").classList.contains("active");
-            let unread = inboxOpen ? 0 : notifications.filter(n => {
-                // Personal notifications track their own read state per-doc.
-                if (n.type === "friendAccepted" || n.type === "formationComment" || n.type === "formationReply" || n.type === "secretGiveawayWin" || n.type === "promoCodes") return !n.read;
-                return n.createdAt > lastSeenAt;
-            }).length;
+            let unread = inboxOpen ? 0 : notifications.filter(n => isInboxUnread(n, lastSeenAt)).length;
             let show = unread > 0;
             ["inboxBadgeHome", "inboxBadgeMenu"].forEach(id => {
                 let el = document.getElementById(id);
@@ -3499,6 +3478,44 @@ function getNewsTypeInfo(type) {
         }
 
         let currentInboxFilter = "all";
+        let inboxFreshIds = new Set(); // unread when you opened the inbox: they wear a dot until you leave
+        const INBOX_FILTERS = [["all", "All"], ["promo", "🎁 Promo"], ["tip", "💡 Tips"], ["social", "👥 Social"], ["general", "📢 General"]];
+        function inboxIconFor(n) {
+            return ({
+                tokenGift: "🪙", tokensGranted: "🪙", tokenAdjust: "🪙", secretGiveawayWin: "🏆", giveawayWin: "🏆", promoCodes: "🎟️", promo: "🎁",
+                weeklyGiveawayNew: "🎡", secretGiveawayNew: "🔒", tip: "💡", friendAccepted: "🤝", formationComment: "💬", formationReply: "💬"
+            })[n.type] || "📢";
+        }
+        // A message's one action (View Code, Message, Enter Giveaway…) — the
+        // same in its card and in the full view.
+        function inboxActionHtml(n, style) {
+            if (n.type === "promo") return `<button class="btn-primary" style="${style}" onclick="openPromoTab('codes')">View Promo Codes</button>`;
+            if (n.type === "tip") return `<button class="btn-primary" style="${style}" onclick="openInboxTip('${n.sourceId}')">View Tip</button>`;
+            if (n.type === "friendAccepted") return `<button class="btn-primary" style="${style}" onclick="openInboxFriendChat('${n.fromUid}', '${escapeHomeHtml(n.fromName).replace(/'/g, "\\'")}', '${escapeHomeHtml(n.fromAvatar || "")}')">💬 Message</button>`;
+            if (n.type === "giveawayWin" || n.type === "promoCodes") return prizeButtonHtml(n, style);
+            if (n.type === "formationComment" || n.type === "formationReply") return `<button class="btn-primary" style="${style}" onclick="openInboxFormationPost('${n.postId}')">💬 View</button>`;
+            if (n.type === "secretGiveawayWin") {
+                // Newer wins carry the code on the notification, so it can be shown and
+                // copied right here — and it still works after the giveaway is deleted.
+                // A tokens-only prize has no code: its tokens are already in the wallet.
+                // Older ones only have a giveawayId, so they fall back to opening the
+                // promo page, which reads the code from the giveaway itself.
+                if (notificationCodes(n).length) return prizeButtonHtml(n, style);
+                if (n.prizeTokens) return `<button class="btn-primary" style="${style}" onclick="openPromoTab('secret')">🪙 Use your tokens</button>`;
+                return `<button class="btn-primary" style="${style}" onclick="openInboxSecretGiveaway('${n.giveawayId}')">🎁 View Prize</button>`;
+            }
+            if (n.type === "weeklyGiveawayNew") return `<button class="btn-primary" style="${style}" onclick="openPromoTab('vip')">🎡 Enter Giveaway</button>`;
+            if (n.type === "secretGiveawayNew") return `<button class="btn-primary" style="${style}" onclick="openPromoTab('secret')">🔒 Enter Giveaway</button>`;
+            if (n.type === "tokensGranted") return `<button class="btn-primary" style="${style}" onclick="openPromoTab('secret')">🪙 Use Tokens</button>`;
+            if (n.type === "tokenGift") return giftButtonHtml(n, !!style);
+            return ""; // adminMessage and announcement need no button — title + body already contain everything
+        }
+        function inboxGroupOf(ms) {
+            const startOfToday = new Date(); startOfToday.setHours(0, 0, 0, 0);
+            if (ms >= startOfToday.getTime()) return "Today";
+            if (ms >= startOfToday.getTime() - 6 * 86400000) return "This week";
+            return "Earlier";
+        }
 
         // The Claim button on an admin token gift — or what happened to it.
         function giftButtonHtml(n, big) {
@@ -3538,15 +3555,19 @@ function getNewsTypeInfo(type) {
         }
         window.claimInboxGift = claimInboxGift;
 
-                function renderInboxList(notifications) {
+        function renderInboxList(notifications) {
             let list = document.getElementById("inboxList");
             if (!list) return;
+            const count = (f) => (f === "all" ? notifications.length : notifications.filter(n => inboxCategoryFor(n) === f).length);
+            const chips = document.getElementById("inboxChips");
+            if (chips) chips.innerHTML = INBOX_FILTERS.map(([f, label]) =>
+                `<button type="button" class="kih-chip${currentInboxFilter === f ? " active" : ""}" onclick="setInboxFilter('${f}')">${label}<small>${count(f)}</small></button>`).join("");
 
             const filtered = currentInboxFilter === "all"
                 ? notifications
                 : notifications.filter(n => inboxCategoryFor(n) === currentInboxFilter);
 
-            currentInboxItems = filtered; // so the expand modal can look items up by index
+            currentInboxItems = filtered; // so the full view can look items up by index
 
             if (filtered.length === 0) {
                 list.innerHTML = notifications.length === 0
@@ -3554,59 +3575,24 @@ function getNewsTypeInfo(type) {
                     : `<div class="inbox-empty">Nothing in this category yet.</div>`;
                 return;
             }
+            let lastGroup = null;
             list.innerHTML = filtered.map((n, i) => {
-
-                                let button = "";
-                if (n.type === "promo") {
-    button = `<button class="btn-primary" style="padding:6px 16px; font-size:0.85rem;" onclick="openPromoTab('codes')">View Promo Codes</button>`;
-} else if (n.type === "tip") {
-    button = `<button class="btn-primary" style="padding:6px 16px; font-size:0.85rem;" onclick="openInboxTip('${n.sourceId}')">View Tip</button>`;
-} else if (n.type === "friendAccepted") {
-    button = `<button class="btn-primary" style="padding:6px 16px; font-size:0.85rem;" onclick="openInboxFriendChat('${n.fromUid}', '${escapeHomeHtml(n.fromName).replace(/'/g, "\\'")}', '${escapeHomeHtml(n.fromAvatar || "")}')">💬 Message</button>`;
-} else if (n.type === "giveawayWin") {
-    button = prizeButtonHtml(n, "padding:6px 16px; font-size:0.85rem;");
-} else if (n.type === "formationComment" || n.type === "formationReply") {
-    button = `<button class="btn-primary" style="padding:6px 16px; font-size:0.85rem;" onclick="openInboxFormationPost('${n.postId}')">💬 View</button>`;
-} else if (n.type === "secretGiveawayWin") {
-    // Newer wins carry the code on the notification, so it can be shown and
-    // copied right here — and it still works after the giveaway is deleted.
-    // Older ones only have a giveawayId, so they fall back to opening the
-    // promo page, which reads the code from the giveaway itself.
-    button = n.prize
-        ? prizeButtonHtml(n, "padding:6px 16px; font-size:0.85rem;")
-        : `<button class="btn-primary" style="padding:6px 16px; font-size:0.85rem;" onclick="openInboxSecretGiveaway('${n.giveawayId}')">🎁 View Prize</button>`;
-} else if (n.type === "promoCodes") {
-    button = prizeButtonHtml(n, "padding:6px 16px; font-size:0.85rem;");
-} else if (n.type === "weeklyGiveawayNew") {
-    button = `<button class="btn-primary" style="padding:6px 16px; font-size:0.85rem;" onclick="openPromoTab('vip')">🎡 Enter Giveaway</button>`;
-} else if (n.type === "secretGiveawayNew") {
-    button = `<button class="btn-primary" style="padding:6px 16px; font-size:0.85rem;" onclick="openPromoTab('secret')">🔒 Enter Giveaway</button>`;
-} else if (n.type === "tokensGranted") {
-    button = `<button class="btn-primary" style="padding:6px 16px; font-size:0.85rem;" onclick="openPromoTab('secret')">🪙 Use Tokens</button>`;
-} else if (n.type === "tokenGift") {
-    button = giftButtonHtml(n, false);
-}
-// adminMessage and announcement need no button — title + body already contain everything
-
-                // Preview text is stripped of any HTML tags (announcements/
-                // adminMessage can now contain raw HTML) so slicing it for
-                // the truncated preview can't cut a tag in half and break
-                // rendering. The full modal below still shows the raw HTML.
-                const plainBody = stripHtmlForPreview(n.body || "", 100000);
-                const isLong = plainBody.length > 100;
-                const readMoreBtn = isLong
-                    ? `<button class="btn-primary inbox-read-more-btn" data-index="${i}" style="padding:6px 16px; font-size:0.85rem;">Read More</button>`
-                    : "";
-                const hasButtons = button || readMoreBtn;
-
-                return `
-        <div class="inbox-item${isLong ? " inbox-item-expandable" : ""}" ${isLong ? `data-index="${i}" style="cursor:pointer;"` : ""}>
-            <div class="inbox-title">${n.title}</div>
-            <div class="inbox-body">${truncateInboxBody(plainBody)}</div>
-            <div class="inbox-time">${new Date(n.createdAt).toLocaleString()}</div>
-            ${hasButtons ? `<div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;">${button}${readMoreBtn}</div>` : ""}
-        </div>
-    `;
+                const group = inboxGroupOf(n.createdAt);
+                const head = group !== lastGroup ? `<div class="inbox-group">${group}</div>` : "";
+                lastGroup = group;
+                const button = inboxActionHtml(n, "");
+                // The card only gives a peek: plain text (announcements can hold
+                // HTML), two lines. The full view shows it as it was written.
+                const peek = escapeHomeHtml(stripHtmlForPreview(n.body || "", 300));
+                return `${head}
+        <div class="inbox-item cat-${inboxCategoryFor(n)}${inboxFreshIds.has(n.id) ? " fresh" : ""}" data-index="${i}">
+            <div class="inbox-icon">${inboxIconFor(n)}</div>
+            <div class="inbox-main">
+                <div class="inbox-top"><span class="inbox-title">${escapeHomeHtml(stripHtmlForPreview(n.title || "", 200))}</span><span class="inbox-time">${timeAgo(n.createdAt)}</span></div>
+                ${peek ? `<div class="inbox-body">${peek}</div>` : ""}
+                ${button ? `<div class="inbox-actions">${button}</div>` : ""}
+            </div>
+        </div>`;
             }).join("");
 
             list.querySelectorAll(".view-prize-inbox-btn").forEach(btn => {
@@ -3615,20 +3601,9 @@ function getNewsTypeInfo(type) {
                     openPrizeReveal(prizeCodesFromButton(btn), btn.dataset.pending === "1");
                 });
             });
-
-            // Stop a button click inside an expandable item from also
-            // triggering the "open full text" click on the item itself
-            // (applies to both the action button, e.g. "View Promo Codes",
-            // and the explicit "Read More" button).
-            list.querySelectorAll(".inbox-item-expandable button").forEach(btn => {
-                btn.addEventListener("click", (e) => e.stopPropagation());
-            });
-
-            list.querySelectorAll(".inbox-read-more-btn").forEach(btn => {
-                btn.addEventListener("click", () => openInboxItemModal(parseInt(btn.dataset.index, 10)));
-            });
-
-            list.querySelectorAll(".inbox-item-expandable").forEach(item => {
+            // A button inside a card does its own thing, not "open the card".
+            list.querySelectorAll(".inbox-item button").forEach(btn => btn.addEventListener("click", (e) => e.stopPropagation()));
+            list.querySelectorAll(".inbox-item").forEach(item => {
                 item.addEventListener("click", () => openInboxItemModal(parseInt(item.dataset.index, 10)));
             });
         }
@@ -3638,36 +3613,18 @@ function getNewsTypeInfo(type) {
     if (!content || !n) return;
     lastInboxModalIndex = index;
 
-    let button = "";
-    if (n.type === "promo") {
-        button = `<button class="btn-primary" style="margin-top:14px; padding:10px 20px; font-size:0.9rem;" onclick="openPromoTab('codes')">View Promo Codes</button>`;
-    } else if (n.type === "tip") {
-        button = `<button class="btn-primary" style="margin-top:14px; padding:10px 20px; font-size:0.9rem;" onclick="openInboxTip('${n.sourceId}')">View Tip</button>`;
-    } else if (n.type === "friendAccepted") {
-        button = `<button class="btn-primary" style="margin-top:14px; padding:10px 20px; font-size:0.9rem;" onclick="openInboxFriendChat('${n.fromUid}', '${escapeHomeHtml(n.fromName).replace(/'/g, "\\'")}', '${escapeHomeHtml(n.fromAvatar || "")}')">💬 Message</button>`;
-    } else if (n.type === "giveawayWin") {
-        button = prizeButtonHtml(n, "margin-top:14px; padding:10px 20px; font-size:0.9rem;");
-    } else if (n.type === "formationComment" || n.type === "formationReply") {
-        button = `<button class="btn-primary" style="margin-top:14px; padding:10px 20px; font-size:0.9rem;" onclick="openInboxFormationPost('${n.postId}')">💬 View</button>`;
-    } else if (n.type === "secretGiveawayWin") {
-        button = n.prize
-            ? prizeButtonHtml(n, "margin-top:14px; padding:10px 20px; font-size:0.9rem;")
-            : `<button class="btn-primary" style="margin-top:14px; padding:10px 20px; font-size:0.9rem;" onclick="openInboxSecretGiveaway('${n.giveawayId}')">🎁 View Prize</button>`;
-    } else if (n.type === "promoCodes") {
-        button = prizeButtonHtml(n, "margin-top:14px; padding:10px 20px; font-size:0.9rem;");
-    } else if (n.type === "weeklyGiveawayNew") {
-        button = `<button class="btn-primary" style="margin-top:14px; padding:10px 20px; font-size:0.9rem;" onclick="openPromoTab('vip')">🎡 Enter Giveaway</button>`;
-    } else if (n.type === "secretGiveawayNew") {
-        button = `<button class="btn-primary" style="margin-top:14px; padding:10px 20px; font-size:0.9rem;" onclick="openPromoTab('secret')">🔒 Enter Giveaway</button>`;
-    } else if (n.type === "tokensGranted") {
-        button = `<button class="btn-primary" style="margin-top:14px; padding:10px 20px; font-size:0.9rem;" onclick="openPromoTab('secret')">🪙 Use Tokens</button>`;
-    } else if (n.type === "tokenGift") {
-        button = `<div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">${giftButtonHtml(n, true)}</div>`;
-    }
+    const action = inboxActionHtml(n, "margin-top:14px; padding:10px 20px; font-size:0.9rem;");
+    const button = n.type === "tokenGift" ? `<div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">${action}</div>` : action;
+    // A giveaway win shows what was won, as cards (prize.js), not just text.
+    const prize = Array.isArray(n.prizeItems) && n.prizeItems.length && window.KIHPrize
+        ? `<div class="inbox-detail-prize">${window.KIHPrize.render({ items: n.prizeItems, note: n.prizeNote || "" })}</div>` : "";
 
     content.innerHTML = `
-        <div style="font-weight:700; font-size:1.1rem; margin-bottom:6px;">${n.title}</div>
-        <div class="settings-sub" style="margin-bottom:12px;">${new Date(n.createdAt).toLocaleString()}</div>
+        <div class="inbox-detail-head cat-${inboxCategoryFor(n)}" style="--cat:${{ promo: "240, 101, 149", tip: "252, 196, 25", social: "34, 184, 207" }[inboxCategoryFor(n)] || "132, 94, 247"}">
+            <span class="inbox-icon">${inboxIconFor(n)}</span>
+            <div><div class="inbox-detail-title">${n.title}</div><div class="settings-sub" style="margin:2px 0 0;">${new Date(n.createdAt).toLocaleString()}</div></div>
+        </div>
+        ${prize}
         <div style="white-space:pre-wrap;">${n.body}</div>
         ${button}
     `;
@@ -3677,6 +3634,7 @@ function getNewsTypeInfo(type) {
     });
 
     document.getElementById("inboxItemModalOverlay").classList.add("open");
+    if (prize) window.KIHPrize.play(content.querySelector(".inbox-detail-prize"));
 }
 window.openInboxItemModal = openInboxItemModal;
 
@@ -3904,10 +3862,11 @@ window.closeInboxItemModal = closeInboxItemModal;
             badge.textContent = count > 9 ? "9+" : String(count);
             badge.style.display = count > 0 ? "flex" : "none";
         }
-        document.getElementById("inboxFilterSelect").addEventListener("change", (e) => {
-            currentInboxFilter = e.target.value;
+        function setInboxFilter(f) {
+            currentInboxFilter = f;
             renderInboxList(mergedNotifications());
-        });
+        }
+        window.setInboxFilter = setInboxFilter;
 
         /* ---------------- DAILY QUESTS ----------------
            Which quests are on today comes from the server; whether each is

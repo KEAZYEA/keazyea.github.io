@@ -420,10 +420,11 @@
         .sc-stats span { display: block; font-size: 0.72rem; color: #b8b8d8; margin-top: 2px; }
 
         .sc-prize {
-            display: flex; align-items: center; gap: 12px; margin: 0 0 12px; padding: 12px; border-radius: 14px;
+            display: flex; flex-direction: column; gap: 10px; margin: 0 0 12px; padding: 12px; border-radius: 14px;
             background: linear-gradient(135deg, rgba(255, 196, 0, 0.2), rgba(255, 64, 129, 0.14)); border: 1px solid rgba(255, 215, 94, 0.55);
         }
-        .sc-prize-icon { font-size: 2rem; line-height: 1; flex-shrink: 0; filter: drop-shadow(0 0 8px rgba(255, 196, 0, 0.6)); }
+        .sc-prize-head { display: flex; align-items: center; gap: 8px; }
+        .sc-prize-icon { font-size: 1.4rem; line-height: 1; flex-shrink: 0; filter: drop-shadow(0 0 8px rgba(255, 196, 0, 0.6)); }
         .sc-prize small { display: block; font-size: 0.75rem; color: #9fe0a8; font-weight: 700; }
         .sc-prize b { display: block; font-size: 1.05rem; color: #fff; overflow-wrap: anywhere; }
         .sc-prize.reveal { animation: prizeReveal 0.9s cubic-bezier(.2, 1.4, .4, 1) both; }
@@ -616,6 +617,63 @@
         @keyframes cdTick { 40% { transform: translateY(-3px) scale(1.12); color: #fff; } }
         .cd-now { font-size: 1.3rem; font-weight: 900; color: #ffd75e; animation: qPulse 1s ease-in-out infinite; }
         .wk-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 0 0 12px; }
+        /* This week's prize */
+        .wk-prize { margin: 0 0 14px; padding: 12px; border-radius: 16px; text-align: left;
+            background: linear-gradient(135deg, rgba(255, 196, 0, 0.16), rgba(132, 94, 247, 0.12)); border: 1px solid rgba(255, 215, 94, 0.5); }
+        .wk-prize-head { font-weight: 900; font-size: 0.95rem; color: #ffd75e; margin: 0 0 10px; text-align: center; letter-spacing: 0.02em; }
+        /* The ticket box: a lid with a slot, a front with how many tickets are in.
+           Joining drops your ticket (with your name) through the slot. */
+        .wk-ballot { position: relative; display: flex; flex-direction: column; align-items: center; margin: 4px 0 14px; padding-top: 26px; }
+        .wk-box { position: relative; z-index: 2; width: 190px; }
+        .wk-box-lid { position: relative; height: 22px; margin: 0 -10px; border-radius: 10px 10px 4px 4px;
+            background: linear-gradient(180deg, #ffd75e, #c99a1e); box-shadow: 0 3px 0 #8a6510; }
+        .wk-slot { position: absolute; left: 50%; top: 8px; width: 96px; height: 7px; margin-left: -48px; border-radius: 4px; background: #1a1a2e; box-shadow: inset 0 2px 3px rgba(0, 0, 0, 0.8); }
+        .wk-box-front { margin-top: 6px; padding: 16px 10px 14px; border-radius: 6px 6px 16px 16px; text-align: center;
+            background: linear-gradient(160deg, #6a3fc1, #3b2a86); border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: inset 0 -10px 0 rgba(0, 0, 0, 0.18), 0 10px 24px rgba(0, 0, 0, 0.35); }
+        .wk-box-front b { display: block; font-size: 2rem; font-weight: 900; line-height: 1; color: #fff; font-variant-numeric: tabular-nums; }
+        .wk-box-front small { display: block; margin-top: 4px; font-size: 0.8rem; font-weight: 700; color: #e4e0f7; }
+        .wk-box.gulp { animation: boxGulp 0.55s cubic-bezier(.2, 1.6, .4, 1); }
+        .wk-fly-ticket { position: absolute; z-index: 1; left: 50%; top: -40px; display: flex; align-items: center; gap: 6px; padding: 9px 14px;
+            border-radius: 8px; background: linear-gradient(135deg, #fff3c4, #ffd75e); color: #3a2a00; font-weight: 900; font-size: 0.95rem;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35); white-space: nowrap; max-width: 220px; opacity: 0; transform: translateX(-50%); pointer-events: none;
+            border: 2px dashed rgba(138, 101, 16, 0.55); }
+        .wk-fly-ticket b { overflow: hidden; text-overflow: ellipsis; }
+        .wk-fly-ticket.drop { animation: ticketDrop 1.25s cubic-bezier(.45, 0, .55, 1) both; }
+        .wk-ballot-msg { min-height: 1.3em; margin-top: 10px; font-weight: 900; color: #7ddc92; opacity: 0; }
+        .wk-ballot-msg.show { animation: msgIn 0.5s ease both; }
+        /* The weekly draw: a drum of tickets that spins, slows and stops with
+           the winner's ticket in the gold frame. */
+        .tk-wrap { --tkH: 46px; --tkR: 74px; width: 100%; max-width: 330px; margin: 4px auto 6px; }
+        .tk-window { position: relative; height: 214px; perspective: 700px; overflow: hidden;
+            -webkit-mask-image: linear-gradient(transparent, #000 24%, #000 76%, transparent); mask-image: linear-gradient(transparent, #000 24%, #000 76%, transparent); }
+        .tk-drum { position: absolute; left: 0; right: 0; top: 50%; height: var(--tkH); margin-top: calc(var(--tkH) / -2); transform-style: preserve-3d; will-change: transform; }
+        .tk { position: absolute; top: 0; bottom: 0; left: 30px; right: 30px; display: flex; align-items: center; justify-content: center; gap: 8px;
+            border-radius: 10px; backface-visibility: hidden; -webkit-backface-visibility: hidden; box-sizing: border-box; padding: 0 12px;
+            background: linear-gradient(135deg, #fff3c4, #ffd75e); color: #3a2a00; font-weight: 900; font-size: 1rem;
+            border: 2px dashed rgba(138, 101, 16, 0.55); box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); }
+        .tk b { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .tk-icon { flex-shrink: 0; }
+        .tk-marker { position: absolute; left: 14px; right: 14px; top: 50%; height: calc(var(--tkH) + 14px); transform: translateY(-50%); pointer-events: none;
+            border: 3px solid #ffd75e; border-radius: 14px; box-shadow: 0 0 18px rgba(255, 215, 94, 0.55), inset 0 0 14px rgba(255, 215, 94, 0.25); }
+        .tk-marker::before, .tk-marker::after { content: ""; position: absolute; top: 50%; margin-top: -9px; border: 9px solid transparent; }
+        .tk-marker::before { left: -3px; border-left-color: #ffd75e; }
+        .tk-marker::after { right: -3px; border-right-color: #ffd75e; }
+        .tk-wrap.spinning .tk-marker { animation: tkPulse 0.6s ease-in-out infinite alternate; }
+        .tk.win { background: linear-gradient(135deg, #ffffff, #ffd75e); box-shadow: 0 0 28px rgba(255, 215, 94, 0.95); animation: tkWin 0.8s cubic-bezier(.2, 1.6, .4, 1) both; }
+        .tk.win::after { content: "WINNER"; position: absolute; right: -8px; top: -11px; transform: rotate(8deg); padding: 2px 7px; border-radius: 6px;
+            background: #e53935; color: #fff; font-size: 0.62rem; letter-spacing: 0.06em; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4); }
+        @keyframes tkWin { 0% { transform: translateZ(var(--tkR)) scale(1); } 45% { transform: translateZ(var(--tkR)) scale(1.18); } 100% { transform: translateZ(var(--tkR)) scale(1.08); } }
+        @keyframes tkPulse { to { box-shadow: 0 0 30px rgba(255, 215, 94, 0.9), inset 0 0 18px rgba(255, 215, 94, 0.45); } }
+        @keyframes ticketDrop {
+            0% { opacity: 0; transform: translate(-50%, -30px) rotate(-14deg) scale(1.15); }
+            22% { opacity: 1; transform: translate(-50%, 6px) rotate(-6deg) scale(1.05); }
+            48% { opacity: 1; transform: translate(-50%, 14px) rotate(0deg) scale(1); }
+            100% { opacity: 1; transform: translate(-50%, 92px) rotate(0deg) scale(0.9, 0.5); }
+        }
+        @keyframes boxGulp { 0% { transform: none; } 35% { transform: scale(1.08, 0.9); } 70% { transform: scale(0.97, 1.04); } 100% { transform: none; } }
+        @keyframes msgIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+        @media (prefers-reduced-motion: reduce) { .wk-fly-ticket.drop, .wk-box.gulp { animation: none; } }
         .wk-stats div { padding: 10px 6px; border-radius: 14px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(160, 120, 255, 0.28); }
         .wk-stats b { display: block; font-size: 1.5rem; font-weight: 900; font-variant-numeric: tabular-nums; }
         .wk-stats span { display: block; font-size: 0.76rem; color: #b8b8d8; margin-top: 2px; }
@@ -707,7 +765,7 @@
             background: linear-gradient(180deg, #ff6b9e 0%, #c2185b 48.5%, #fff 48.5%, #fff 51.5%, #2d2560 51.5%, #17142f 100%);
         }
         .reveal-box.capsule .reveal-box-label { max-width: 150px; margin-bottom: 8px; font-size: 0.66rem; color: #fff; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8); }
-        .reveal-box.capsule .reveal-box-name { max-width: 172px; min-height: 0; padding: 6px 12px; border-radius: 999px; font-size: 1.1rem; background: rgba(10, 10, 30, 0.78); }
+        .reveal-box.capsule .reveal-box-name { word-break: normal; overflow-wrap: break-word; max-width: 196px; min-height: 0; padding: 6px 12px; border-radius: 999px; font-size: 1.1rem; background: rgba(10, 10, 30, 0.78); }
         .reveal-box.capsule.waiting { display: none; } /* it appears when the claw's ball pops */
         .reveal-box.capsule.appear { animation: capAppear 0.55s cubic-bezier(.2, 1.5, .4, 1); }
         @keyframes capAppear { from { transform: scale(0.3) rotate(-90deg); } }
@@ -990,9 +1048,20 @@
                             <div class="wk-countdown"><small>Next draw in</small><div id="giveawayCountdown"></div></div>
                         </div>
 
-                        <div class="wk-stats">
-                            <div><b id="giveawayParticipantCount">–</b><span>👥 total entries</span></div>
-                            <div><b id="wkPrizeCount">1</b><span>🎁 winner, every Sunday</span></div>
+                        <!-- what you can win (set by admin; 500K gold + 500 diamonds until then) -->
+                        <div class="wk-prize">
+                            <div class="wk-prize-head">🎁 This week's prize</div>
+                            <div id="wkPrizeCards"></div>
+                        </div>
+
+                        <!-- the box every ticket goes into — yours drops in when you join -->
+                        <div class="wk-ballot" id="wkBallot">
+                            <div class="wk-fly-ticket" id="wkFlyTicket" aria-hidden="true"><span>🎟️</span><b id="wkFlyName"></b></div>
+                            <div class="wk-box" id="wkBox">
+                                <div class="wk-box-lid"><i class="wk-slot"></i></div>
+                                <div class="wk-box-front"><b id="giveawayParticipantCount">–</b><small>tickets in the box</small></div>
+                            </div>
+                            <div class="wk-ballot-msg" id="wkBallotMsg"></div>
                         </div>
 
                         <!-- your ticket, once you're in -->
@@ -1105,6 +1174,7 @@
         </div>
     </div>
 
+        <script src="prize.js"></script>
         <script type="module" src="appState.js"></script>
         <script type="module">
 
@@ -1528,8 +1598,8 @@ async function openSecretGiveawayReveal(giveawayId, group) {
             // no need to replay the animation.
             body.innerHTML = renderSecretRevealBox(label, true);
             if (isMineIncluded) {
-                const code = await AppState.getSecretGiveawayPrize(giveawayId);
-                if (code) body.insertAdjacentHTML("beforeend", renderSecretPrizeResult(code));
+                body.insertAdjacentHTML("beforeend", await winnerPrizeHtml(giveawayId));
+                window.KIHPrize.play(body.querySelector(".win-prize-cards"));
                 wireSecretCopyBtn(body);
             } else {
                 body.insertAdjacentHTML("beforeend", renderSecretNonWinnerResult());
@@ -1855,13 +1925,26 @@ async function spinSecretWheel() {
 }
 window.spinSecretWheel = spinSecretWheel;
 
+// What the winner gets, under the reveal: the prize as cards (when it was
+// built from parts), then their code — or, for a prize that's only tokens,
+// that the tokens are already in their wallet.
+async function winnerPrizeHtml(giveawayId) {
+    const [code, info] = await Promise.all([
+        AppState.getSecretGiveawayPrize(giveawayId),
+        AppState.getSecretGiveawayPrizeInfo(giveawayId).catch(() => null)
+    ]);
+    const prize = info && info.prize;
+    const cards = prize ? `<div class="win-prize-cards" style="margin-top:12px;">${window.KIHPrize.render(prize)}</div>` : "";
+    if (code) return cards + renderSecretPrizeResult(code);
+    if (prize && !window.KIHPrize.needsCode(prize)) return cards + `<p class="promo-sub" style="margin-top:10px;">🪙 Your ${window.KIHPrize.tokensOf(prize)} tokens are already in your wallet.</p>`;
+    return cards + "<p class='promo-sub' style='margin-top:12px;'>No prize code found yet — check back shortly.</p>";
+}
+
 async function landSecretPrize() {
     const body = document.getElementById("prizeRevealBody");
     try {
-        const code = await AppState.getSecretGiveawayPrize(secretRevealTarget.giveawayId);
-        body.insertAdjacentHTML("beforeend", code
-            ? renderSecretPrizeResult(code)
-            : "<p class='promo-sub' style='margin-top:12px;'>No prize code found yet — check back shortly.</p>");
+        body.insertAdjacentHTML("beforeend", await winnerPrizeHtml(secretRevealTarget.giveawayId));
+        window.KIHPrize.play(body.querySelector(".win-prize-cards"));
         wireSecretCopyBtn(body);
     } catch (e) {
         body.insertAdjacentHTML("beforeend", `<p class="promo-sub" style="margin-top:12px;">Couldn't load prize: ${escapeHtml(e.message)}</p>`);
@@ -1960,9 +2043,15 @@ document.getElementById("prizeRevealCloseBtn").addEventListener("click", () => {
                 document.getElementById("wheelSection").style.display = "none";
                 document.getElementById("pendingDrawNotice").style.display = "none";
 
+                showWeeklyPrize();
+                // Your ticket only drops into the box the moment you actually join
+                // (not on every visit once you're in).
+                let freshJoin = false;
                 if (shouldJoin && AppState.isGiveawayOpen()) {
+                    const wasIn = await AppState.hasJoinedGiveaway(AppState.getWeekId()).catch(() => true);
                     try {
                         await AppState.joinGiveaway(device);
+                        freshJoin = !wasIn;
                     } catch (e) {
                         alert("Couldn't join: " + e.message);
                     }
@@ -1981,6 +2070,38 @@ document.getElementById("prizeRevealCloseBtn").addEventListener("click", () => {
                 // day after Sunday's draw still sees the reveal immediately.
                 await tryShowWheel();
                 showState("wheel");
+                if (freshJoin) dropTicket(profile.name || "Commander");
+            }
+
+            // This week's prize as cards (prize.js) — admin sets it; the reveal
+            // plays the first time it shows on this visit.
+            let weeklyPrizeShown = false;
+            async function showWeeklyPrize() {
+                const box = document.getElementById("wkPrizeCards");
+                if (!box) return;
+                const prize = await AppState.getWeeklyPrize();
+                box.innerHTML = window.KIHPrize.render(prize);
+                if (!weeklyPrizeShown) { weeklyPrizeShown = true; window.KIHPrize.play(box); }
+            }
+
+            // Joining: your ticket, with your name, drops through the box's
+            // slot; the box gulps it down, sparkles, and says you're in.
+            function dropTicket(name) {
+                const fly = document.getElementById("wkFlyTicket"), box = document.getElementById("wkBox"), msg = document.getElementById("wkBallotMsg");
+                const ticket = document.getElementById("joinedNotice");
+                if (!fly || !box) return;
+                document.getElementById("wkFlyName").textContent = name;
+                fly.classList.remove("drop"); box.classList.remove("gulp"); msg.classList.remove("show");
+                void fly.offsetWidth;
+                if (ticket) ticket.style.visibility = "hidden"; // your ticket stub shows once it's in
+                fly.classList.add("drop");
+                setTimeout(() => {
+                    box.classList.add("gulp");
+                    burst(box, ["🎟️", "✨", "⭐", "🎉"]);
+                    msg.textContent = "✅ You're in! Good luck on Sunday 🍀";
+                    msg.classList.add("show");
+                    if (ticket) { ticket.style.visibility = ""; ticket.animate && ticket.animate([{ opacity: 0, transform: "scale(0.9)" }, { opacity: 1, transform: "none" }], { duration: 400, easing: "ease-out" }); }
+                }, 1150);
             }
 
             function showSwitchDeviceModal() {
@@ -2113,8 +2234,8 @@ function showDrawDayModal() {
                 // Built once and kept: this runs again whenever the tab opens, and
                 // rebuilding it mid-draw would leave the claw animating a lost copy.
                 const drawHost = document.getElementById("weeklyDrawHost");
-                if (isWheelRevealed(weekId)) drawHost.innerHTML = "";
-                else if (!document.getElementById("weeklyDrawMachine")) drawHost.innerHTML = drawMachineHtml("weeklyDrawMachine");
+                if (isWheelRevealed(weekId)) showTicketDrum(drawHost, wheelNames, winnerData.winnerName);
+                else if (!document.getElementById("weeklyTicketDrum")) showTicketDrum(drawHost, wheelNames, null);
                 // the prize capsule: waiting for the claw, or already open
                 const capsuleBox = document.getElementById("revealBoxName").closest(".reveal-box");
                 if (!capsuleBox.classList.contains("rolling")) capsuleBox.className = "reveal-box capsule " + (isWheelRevealed(weekId) ? "open" : "waiting");
@@ -2169,9 +2290,68 @@ if (user && user.uid === winnerData.winnerUid) {
                 resultDiv.insertAdjacentHTML("beforeend", renderEntrantsList(wheelNames));
             }
 
+            /* ---------------- WEEKLY DRAW: THE TICKET DRUM ----------------
+               The tickets go round a drum: it spins fast, slows down, and stops
+               with the winner's ticket in the gold frame. Tickets are relabelled
+               as they pass round the back, so every entrant's name rolls past the
+               front during the spin (with a very big draw, as many as fit). */
+            const DRUM_FACES = 10, DRUM_STEP = 360 / DRUM_FACES;
+            function ticketDrumHtml(labels) {
+                return `<div class="tk-wrap" id="weeklyTicketDrum"><div class="tk-window"><div class="tk-drum">${labels.map((n, i) =>
+                    `<div class="tk" style="transform: rotateX(${i * DRUM_STEP}deg) translateZ(var(--tkR))"><span class="tk-icon">🎟️</span><b>${escapeHtml(n)}</b></div>`).join("")}</div><div class="tk-marker"></div></div></div>`;
+            }
+            // Before the draw (still), or after it (stopped on the winner).
+            function showTicketDrum(host, names, winner) {
+                const others = shuffledCopy(names.filter(n => n !== winner));
+                const labels = Array.from({ length: DRUM_FACES }, (_, i) => (winner && i === 0) ? winner : (others.length ? others[i % others.length] : "🎟️"));
+                host.innerHTML = ticketDrumHtml(labels);
+                if (winner) { host.querySelector(".tk").classList.add("win"); host.querySelector(".tk-wrap").classList.add("landed"); }
+            }
+            function playTicketDrum(host, names, winner) {
+                return new Promise(resolve => {
+                    const others = shuffledCopy(names.filter(n => n !== winner));
+                    let qi = 0;
+                    const next = () => (others.length ? others[qi++ % others.length] : "🎟️");
+                    // Enough turns for every name to come round once (4 to 12).
+                    const turns = Math.min(12, Math.max(4, Math.ceil((others.length + DRUM_FACES) / DRUM_FACES)));
+                    host.innerHTML = ticketDrumHtml(Array.from({ length: DRUM_FACES }, next));
+                    const wrap = host.querySelector(".tk-wrap"), drum = host.querySelector(".tk-drum"), faces = [...host.querySelectorAll(".tk")];
+                    const end = turns * 360, dur = Math.min(9500, 5500 + turns * 350);
+                    // A ticket is at the back each time the drum has turned it 180° from the front.
+                    const lap = (th, i) => Math.floor((th - i * DRUM_STEP + 180) / 360);
+                    const laps = faces.map((_, i) => lap(0, i));
+                    const land = () => {
+                        drum.style.transform = `rotateX(${-end}deg)`;
+                        faces[0].querySelector("b").textContent = winner;
+                        wrap.classList.remove("spinning");
+                        wrap.classList.add("landed");
+                        faces[0].classList.add("win");
+                        burst(faces[0], ["🎟️", "🎉", "✨", "⭐", "🏆"]);
+                        setTimeout(resolve, 900);
+                    };
+                    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) { land(); return; }
+                    wrap.classList.add("spinning");
+                    const t0 = performance.now();
+                    (function frame(now) {
+                        const p = Math.min(1, (now - t0) / dur);
+                        const th = end * (1 - Math.pow(1 - p, 3)); // fast, then slowing right down
+                        drum.style.transform = `rotateX(${-th}deg)`;
+                        faces.forEach((face, i) => {
+                            const l = lap(th, i);
+                            if (l === laps[i]) return;
+                            laps[i] = l;
+                            // round the back: a new name — the winner's, on the ticket that stops in the frame
+                            face.querySelector("b").textContent = i === 0 && end - th < 360 ? winner : next();
+                        });
+                        if (p < 1) requestAnimationFrame(frame); else land();
+                    })(t0);
+                });
+            }
+
             /* ---------------- REVEAL ANIMATION ----------------
-               Every entrant's name flashes up once (playNameReveal), slowing
-               down over 5–10 seconds, then it lands on the real winner. */
+               The ticket drum spins (every entrant's name rolls past), slows
+               down and stops on the real winner; the capsule then opens with
+               their name. */
             async function spinWheel() {
                 const spinBtn = document.getElementById("spinBtn");
                 const nameEl = document.getElementById("revealBoxName");
@@ -2179,13 +2359,13 @@ if (user && user.uid === winnerData.winnerUid) {
                 spinBtn.disabled = true;
                 spinBtn.style.display = "none";
                 const capsule = nameEl.closest(".reveal-box");
-                await playClawDraw(document.getElementById("weeklyDrawMachine"), capsule);
-                capsuleSpin(capsule);
-                playNameReveal(nameEl, wheelNames, [winnerData.winnerName], winnerData.winnerName, () => {
-                    capsuleOpen(capsule);
-                    markWheelRevealed(currentWeekId);
-                    showWinnerResult();
-                });
+                await playTicketDrum(document.getElementById("weeklyDrawHost"), wheelNames, winnerData.winnerName);
+                nameEl.classList.remove("cycling");
+                nameEl.classList.add("landed");
+                nameEl.textContent = winnerData.winnerName;
+                capsuleOpen(capsule);
+                markWheelRevealed(currentWeekId);
+                showWinnerResult();
             }
             window.spinWheel = spinWheel;
 
@@ -2251,8 +2431,10 @@ if (user && user.uid === winnerData.winnerUid) {
                 if (!secretDetailCache.has(giveawayId)) {
                     const p = (async () => {
                         const entry = await AppState.getMySecretGiveawayEntry(giveawayId);
-                        const reward = entry ? await AppState.getSecretGiveawayRewardDescription(giveawayId) : null;
-                        return { entry, reward };
+                        // the prize: its parts (gold, tokens, a hero…) when it was built
+                        // from them, otherwise just its description
+                        const info = entry ? await AppState.getSecretGiveawayPrizeInfo(giveawayId) : null;
+                        return { entry, reward: info ? info.description : null, prize: info ? info.prize : null };
                     })();
                     // A failed read shouldn't be remembered.
                     p.catch(() => secretDetailCache.delete(giveawayId));
@@ -2576,6 +2758,7 @@ if (user && user.uid === winnerData.winnerUid) {
             const machineHtml = {};        // the last globe drawn per card, shown again (still) while saving
             const MAX_BALLS = 90;
             const justEntered = new Set(); // cards whose prize was just revealed
+            const prizesShown = new Map(); // giveaway id → when its prize first played its reveal this visit
             const celebrate = {};          // cards that just had coins dropped in / taken back
             const enterFrom = {};          // where the Enter button was, for the first ball's flight
 
@@ -3057,6 +3240,15 @@ if (user && user.uid === winnerData.winnerUid) {
                     }
                     setTimeout(() => { pop.remove(); m.classList.remove("mixing"); }, 2600);
                 }
+                // Each prize plays its reveal (cards pop, amounts count up) the
+                // first time it shows on this visit — again if the list redraws
+                // while that's still going, so it never stops half-way.
+                list.querySelectorAll(".sc-prize").forEach(p => {
+                    const first = prizesShown.get(p.dataset.id);
+                    if (first && Date.now() - first > 1500) return;
+                    if (!first) prizesShown.set(p.dataset.id, Date.now());
+                    window.KIHPrize.play(p);
+                });
                 list.querySelectorAll(".sc-prize.reveal").forEach(p => {
                     const id = p.dataset.id;
                     if (!justEntered.has(id)) return;
@@ -3156,8 +3348,9 @@ if (user && user.uid === winnerData.winnerUid) {
                     const warn = myPlatformHasSlots ? ""
                         : `<p class="sc-warn">⚠️ This giveaway has no ${platformLabel} slots — you can't win as entered.${otherHasSlots ? " Switch below to fix it." : ""}</p>`;
                     bodyHtml = `
-                        <div class="sc-prize${justEntered.has(g.id) ? " reveal" : ""}" data-id="${g.id}"><span class="sc-prize-icon">🎁</span>
-                            <div><small>✅ You're in (${platformLabel}) — the prize:</small><b>${escapeHtml(detail.reward || "...")}</b></div></div>
+                        <div class="sc-prize${justEntered.has(g.id) ? " reveal" : ""}" data-id="${g.id}">
+                            <div class="sc-prize-head"><span class="sc-prize-icon">🎁</span><small>✅ You're in (${platformLabel}) — you could win:</small></div>
+                            ${window.KIHPrize.render(detail.prize || detail.reward || "…")}</div>
                         ${warn}
                         ${statsHtml}
                         ${myPlatformHasSlots ? renderStakeHtml(g, detail.entry, isExpired, sideDrawn) : ""}

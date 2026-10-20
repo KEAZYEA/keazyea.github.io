@@ -28,7 +28,8 @@
  *   dailyPuzzle     { day, play }          -> pays 1 for finishing the day's puzzle in
  *                                              Games (checked against the puzzle), once a day
  *   admin*          (admin only)           -> look up / give / remove / set tokens,
- *                                              send and end gifts, refund alerts
+ *                                              send and end gifts, refund alerts, pay a
+ *                                              secret giveaway winner the tokens in its prize
  *
  * Why double-counting can't happen: each claim is a document with a fixed id
  * (`<day>_<quest>`) created inside a transaction. A second device, or the
@@ -704,6 +705,40 @@ async function adminSendGift(db, adminUid, body, now) {
   return { ok: true, giftId, expiresAt };
 }
 
+/* A secret giveaway whose prize includes tokens: once a winner is recorded,
+   admin calls this and their tokens go straight into their wallet. The
+   amount comes from the giveaway's own prize (its private config), never
+   from the request. Paying is logged under a fixed id per giveaway and
+   winner, so a double tap or a resend never pays twice. */
+async function adminPaySecretPrize(db, adminUid, body, now) {
+  const { giveawayId, winnerUid } = body;
+  if (!isDocId(giveawayId) || !isDocId(winnerUid)) throw new HttpError(400, "Missing giveaway or winner.");
+  const giveawayRef = db.collection("secretGiveaways").doc(giveawayId);
+  const [gSnap, cfgSnap] = await Promise.all([giveawayRef.get(), giveawayRef.collection("private").doc("config").get()]);
+  if (!gSnap.exists) throw new HttpError(404, "No such giveaway.");
+  const g = gSnap.data();
+  if (!(g.winners || []).some(w => w.uid === winnerUid)) throw new HttpError(400, "Record them as a winner first.");
+  const prize = cfgSnap.exists ? cfgSnap.data().prize : null;
+  const items = prize && Array.isArray(prize.items) ? prize.items : [];
+  const amount = items.filter(i => i && i.kind === "tokens" && Number.isInteger(i.amount) && i.amount > 0).reduce((s, i) => s + i.amount, 0);
+  if (!(amount > 0)) throw new HttpError(400, "This giveaway's prize has no tokens.");
+  if (amount > MAX_GIFT_TOKENS) throw new HttpError(400, "That prize is more tokens than one payment allows.");
+
+  const walletRef = db.collection("tokenWallets").doc(winnerUid);
+  const logRef = db.collection("tokenAdjustments").doc(`secretPrize_${giveawayId}_${winnerUid}`);
+  return db.runTransaction(async (tx) => {
+    const [logSnap, walletSnap] = await tx.getAll(logRef, walletRef);
+    const before = walletSnap.exists ? (walletSnap.data().balance || 0) : 0;
+    if (logSnap.exists) return { ok: true, paid: 0, alreadyPaid: true, amount, balance: before };
+    tx.set(walletRef, { balance: before + amount, lifetimeGifted: FieldValue.increment(amount), updatedAt: now }, { merge: true });
+    tx.set(logRef, {
+      uid: winnerUid, mode: "add", amount, before, after: before + amount,
+      reason: cleanText(`Secret giveaway prize: ${g.title || giveawayId}`, 200), by: adminUid, at: now, giveawayId
+    });
+    return { ok: true, paid: amount, amount, balance: before + amount };
+  });
+}
+
 async function adminListGifts(db, now) {
   const since = now - 180 * 24 * 3600 * 1000;
   const snap = await db.collection("tokenGifts").where("createdAt", ">", since).get();
@@ -852,6 +887,7 @@ module.exports = async (req, res) => {
       case "adminUserTokens": assertAdmin(uid); result = await adminUserTokens(db, body); break;
       case "adminAdjust": assertAdmin(uid); result = await adminAdjust(db, uid, body, now); break;
       case "adminSendGift": assertAdmin(uid); result = await adminSendGift(db, uid, body, now); break;
+      case "adminPaySecretPrize": assertAdmin(uid); result = await adminPaySecretPrize(db, uid, body, now); break;
       case "adminListGifts": assertAdmin(uid); result = await adminListGifts(db, now); break;
       case "adminEndGift": assertAdmin(uid); result = await adminEndGift(db, body, now); break;
       case "adminListAlerts": assertAdmin(uid); result = await adminListAlerts(db); break;
