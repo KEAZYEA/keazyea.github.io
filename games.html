@@ -168,6 +168,16 @@
         .hilo-card:disabled { cursor: default; }
 
         /* Send to a friend */
+        /* "Leave this game?" — asked before a run you've played is ended by leaving */
+        .leave-modal { position: fixed; inset: 0; z-index: 60; display: none; align-items: center; justify-content: center; padding: 16px; background: rgba(0, 0, 0, 0.65); }
+        .leave-modal.open { display: flex; }
+        .leave-box { width: 100%; max-width: 360px; box-sizing: border-box; padding: 22px 18px 18px; border-radius: 18px; text-align: center;
+            background: #20203a; border: 1px solid #4a4a86; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5); animation: pop 0.25s ease; }
+        .leave-icon { font-size: 2.4rem; line-height: 1; }
+        .leave-box h3 { margin: 8px 0 6px; font-size: 1.25rem; }
+        .leave-box p { margin: 0 0 4px; color: #c8c8e0; font-size: 0.95rem; line-height: 1.45; }
+        .leave-box .game-actions { margin-top: 16px; }
+        .leave-box #leaveGoBtn { background: linear-gradient(135deg, #e53935, #ff6b35); }
         .friend-modal { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.65); display: none; align-items: flex-end; justify-content: center; z-index: 50; }
         .friend-modal.open { display: flex; }
         .friend-sheet {
@@ -370,6 +380,18 @@
         <div id="gameArea"><p class="dim" style="text-align:center;">Loading…</p></div>
     </div>
 
+    <div class="leave-modal" id="leaveModal" role="dialog" aria-modal="true" aria-labelledby="leaveTitle">
+        <div class="leave-box">
+            <div class="leave-icon">🏃</div>
+            <h3 id="leaveTitle">Leave this game?</h3>
+            <p id="leaveText"></p>
+            <div class="game-actions">
+                <button type="button" class="btn-ghost" id="leaveStayBtn">Keep playing</button>
+                <button type="button" class="btn-primary" id="leaveGoBtn">Leave &amp; end run</button>
+            </div>
+        </div>
+    </div>
+
     <div class="friend-modal" id="friendModal" onclick="if (event.target === this) closeFriends()">
         <div class="friend-sheet">
             <div class="friend-sheet-head"><span>⚔️ Challenge a friend</span><button type="button" onclick="closeFriends()" aria-label="Close">✕</button></div>
@@ -487,7 +509,14 @@
             tab = id;
             document.querySelectorAll(".games-tabs .tab-btn").forEach(b => b.classList.toggle("active", b.dataset.tab === id));
         }
+        // Leaving a game's tab ends its run (nothing carries on in the
+        // background) — after asking, if you've played any of it.
         function switchTab(id) {
+            if (id !== tab && runInProgress(runUi)) {
+                confirmLeaveRun().then(ok => { if (ok) { showTab(id); render(); } });
+                return;
+            }
+            if (id !== tab && runUi && !runUi.over) endRun(runUi); // opened but not played: just dropped
             showTab(id);
             render();
         }
@@ -1360,9 +1389,59 @@
         }
 
         // One move: an answer, a pick, a guess, a hint — or null when time runs out.
+        /* ---------------- leaving a run ----------------
+           A run you've made a move in ends when you leave it — another tab,
+           another part of the site, closing the page — after "Leave this
+           game?". A ranked run's best so far has already counted. */
+        const runInProgress = (ui) => !!(ui && !ui.over && !ui.starting && ui.moved);
+        window.gamesRunInProgress = () => runInProgress(runUi);
+        function endRun(ui) {
+            if (!ui || ui.over) return;
+            clearTimeout(ui.holdTimer);
+            // The server ends it too (a move of "nothing" is time up).
+            if (ui.ranked && ui.runId && window.AppState) window.AppState.gamesRunAnswer(ui.runId, null).catch(() => { });
+            ui.over = true;
+            ui.abandoned = true;
+            if (runs[ui.game] === ui) delete runs[ui.game];
+            if (runUi === ui) hideRun();
+            if (ui.ranked) lbLoadedAt = 0;
+            markRunTabs();
+        }
+        function askLeaveRun(ui) {
+            const what = runScoreLabel(ui.game, ui.score);
+            document.getElementById("leaveText").innerHTML = ui.ranked
+                ? `Your run ends now, at <b>${esc(what)}</b>. Your best this week still counts on the leaderboard.`
+                : `Your run ends now, at <b>${esc(what)}</b>.`;
+            const modal = $("leaveModal");
+            modal.classList.add("open");
+            return new Promise(resolve => {
+                const done = (ok) => { modal.classList.remove("open"); resolve(ok); };
+                $("leaveStayBtn").onclick = () => done(false);
+                $("leaveGoBtn").onclick = () => done(true);
+                modal.onclick = (e) => { if (e.target === modal) done(false); };
+            });
+        }
+        // true = go ahead (the run, if any, is ended); false = stay. index.html
+        // asks this too before taking you out of Games.
+        async function confirmLeaveRun() {
+            const ui = runUi;
+            if (!ui || ui.over) return true;
+            if (!runInProgress(ui)) { endRun(ui); return true; }
+            if (!(await askLeaveRun(ui))) return false;
+            endRun(ui);
+            return true;
+        }
+        window.confirmLeaveRun = confirmLeaveRun;
+        // Games opened on its own (not inside the site): the browser asks
+        // before closing or reloading mid-run.
+        if (window.top === window) {
+            window.addEventListener("beforeunload", (e) => { if (runInProgress(runUi)) { e.preventDefault(); e.returnValue = ""; } });
+        }
+
         async function runMove(input) {
             const ui = runUi;
             if (!ui || ui.starting || ui.busy || ui.over || ui.holding) return;
+            if (input) ui.moved = true;
             ui.busy = true;
             ui.msg = "";
             ui.error = null;
