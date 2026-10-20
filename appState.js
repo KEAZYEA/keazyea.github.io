@@ -3546,6 +3546,21 @@ async function sendAdminMessage(uid, title, body) {
         return { imageUrl, imagePath: path };
     }
 
+    // A picture for a giveaway prize (admin's "+" in the prize builder). Kept
+    // with the tip pictures, a folder the Storage rules already let admin
+    // upload to; the name says what it's for.
+    async function uploadPrizeImage(file) {
+        await waitForAuthReady();
+        if (!currentUser || currentUser.uid !== ADMIN_UID) throw new Error("Not authorized.");
+        if (!file || !String(file.type).startsWith("image/")) throw new Error("That isn't a picture.");
+        if (file.size > 5 * 1024 * 1024) throw new Error("Pictures must be under 5MB.");
+        const safeName = String(file.name || "prize.jpg").replace(/[^\w.\-]/g, "_").slice(-60);
+        const path = "tipImages/prize-" + Date.now() + "-" + safeName;
+        const storageRef = ref(storage, path);
+        await uploadBytes(storageRef, file, { contentType: file.type });
+        return { imageUrl: await getDownloadURL(storageRef), imagePath: path };
+    }
+
     // Fixed category set for tips — kept in sync with the filter dropdown
     // on tips.html and the tag <select> on admin.html. Anything else
     // (missing, old data, bad input) falls back to "others".
@@ -4670,7 +4685,7 @@ async function maybeRefreshAd(containerId) {
         getMissedGiveawayWeeks, autoPickMissedWinners, getPendingPrizes, sendPendingPrize,
         getAllGiveawayPrizes, getSecretGiveawayPrizeCodes,
         // secret giveaways (admin-created, optionally password-gated, multi-winner)
-        createSecretGiveaway, getSecretGiveawayPrizeInfo, getWeeklyPrize, setWeeklyPrize, deleteSecretGiveaway, listenToSecretGiveaways, getSecretGiveaway,
+        createSecretGiveaway, getSecretGiveawayPrizeInfo, getWeeklyPrize, setWeeklyPrize, uploadPrizeImage, deleteSecretGiveaway, listenToSecretGiveaways, getSecretGiveaway,
         getSecretGiveawayPassword, hasEnteredSecretGiveaway, getMySecretGiveawayEntry, switchSecretGiveawayPlatform,
         leaveSecretGiveaway, enterSecretGiveaway, getSecretGiveawayEntries, getPublicSecretGiveawayEntries,
         secretGiveawayEligibilityText, isEveryoneSecretGiveaway, secretGiveawaySlotsFor, secretDrawGroup, secretWinnerGroup,

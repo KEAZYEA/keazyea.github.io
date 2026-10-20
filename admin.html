@@ -10,6 +10,12 @@
     <style>
         .prize-add-btn { padding: 7px 12px; border-radius: 999px; border: 1px solid #4a4a86; background: #26264a; color: white; font-family: inherit; font-size: 0.88rem; font-weight: 700; cursor: pointer; }
         .prize-add-btn:hover { border-color: #ffd75e; }
+        /* a custom reward's picture: + to add one, then a thumbnail with ✕ */
+        .prize-pic { position: relative; flex-shrink: 0; width: 64px; height: 64px; border-radius: 10px; display: grid; place-items: center; overflow: hidden; background: #2a2a4a; font-size: 1.4rem; }
+        .prize-pic.add { border: 2px dashed #6a6aa6; color: #b8b8e0; font-size: 2rem; line-height: 1; cursor: pointer; box-sizing: border-box; }
+        .prize-pic.add:hover { border-color: #ffd75e; color: #ffd75e; }
+        .prize-pic img { width: 100%; height: 100%; object-fit: cover; }
+        .prize-pic button { position: absolute; top: 3px; right: 3px; width: 22px; height: 22px; padding: 0; border: none; border-radius: 50%; background: rgba(0, 0, 0, 0.75); color: #fff; font-size: 0.75rem; cursor: pointer; }
         .info-modal-overlay {
             display: none;
             position: fixed;
@@ -1201,7 +1207,7 @@
                 const b = {
                     async add(kind) {
                         if (rows.length >= 8) { showInfoModal("That's plenty", "A prize can have up to 8 rewards."); return; }
-                        const row = { kind, amount: "", unitKey: "", name: "", label: "", image: "" };
+                        const row = { kind, amount: "", unitKey: "", name: "", level: "", count: "", label: "", image: "" };
                         if (kind === "unit") {
                             try { const u = (await loadUnitChoices())[0]; if (u) { row.unitKey = u.key; row.name = u.name; } }
                             catch (e) { showInfoModal("Couldn't load units", e.message); return; }
@@ -1210,6 +1216,18 @@
                         b.paint();
                     },
                     remove(i) { rows.splice(i, 1); b.paint(); },
+                    // The "+" on a custom reward: pick a picture, it's uploaded, and shows there.
+                    async upload(i, file) {
+                        const row = rows[i];
+                        if (!row || !file) return;
+                        row.uploading = true;
+                        b.paint();
+                        try { row.image = (await AppState.uploadPrizeImage(file)).imageUrl; }
+                        catch (e) { showInfoModal("Couldn't add the picture", e.message); }
+                        row.uploading = false;
+                        b.paint();
+                    },
+                    clearImage(i) { if (rows[i]) { rows[i].image = ""; b.paint(); } },
                     set(i, field, value) {
                         const row = rows[i];
                         if (!row) return;
@@ -1221,12 +1239,12 @@
                     async load(prize) {
                         const items = prize && Array.isArray(prize.items) ? prize.items : [];
                         if (items.some(i => i.kind === "unit")) { try { await loadUnitChoices(); } catch (e) { } }
-                        rows = items.map(i => ({ kind: i.kind, amount: i.amount ? String(i.amount) : "", unitKey: i.unitKey || "", name: i.name || "", label: i.label || "", image: i.image || "" }));
+                        rows = items.map(i => ({ kind: i.kind, amount: i.amount ? String(i.amount) : "", unitKey: i.unitKey || "", name: i.name || "", level: i.level ? String(i.level) : "", count: i.count ? String(i.count) : "", label: i.label || "", image: i.image || "" }));
                         document.getElementById(noteId).value = (prize && prize.note) || "";
                         b.paint();
                     },
                     value() {
-                        return window.KIHPrize.clean({ items: rows.map(r => ({ ...r, amount: Number(r.amount) })), note: document.getElementById(noteId).value });
+                        return window.KIHPrize.clean({ items: rows.map(r => ({ ...r, amount: Number(r.amount), level: Number(r.level), count: Number(r.count) })), note: document.getElementById(noteId).value });
                     },
                     rowCount: () => rows.length,
                     paint() {
@@ -1236,19 +1254,28 @@
                         box.innerHTML = rows.map((r, i) => {
                             let inputs;
                             if (r.kind === "unit") {
-                                inputs = `<select onchange="${name}.set(${i}, 'unitKey', this.value)" style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box; flex:1; min-width:0;">${(unitChoices || []).map(u =>
-                                    `<option value="${escapeHtml(u.key)}"${u.key === r.unitKey ? " selected" : ""}>${u.type === "hero" ? "🦸" : "⚔️"} ${escapeHtml(u.name)}</option>`).join("")}</select>`;
-                            } else if (r.kind === "custom") {
                                 inputs = `<div style="display:flex; flex-direction:column; gap:6px; flex:1; min-width:0;">
+                                    <select onchange="${name}.set(${i}, 'unitKey', this.value)" style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box;">${(unitChoices || []).map(u =>
+                                    `<option value="${escapeHtml(u.key)}"${u.key === r.unitKey ? " selected" : ""}>${u.type === "hero" ? "🦸" : "⚔️"} ${escapeHtml(u.name)}</option>`).join("")}</select>
+                                    <div style="display:flex; gap:6px;"><label style="flex:1; min-width:0; display:flex; flex-direction:column; gap:3px; font-size:0.78rem; color:#b8b8d0;">Level${field(i, "level", r.level, "optional", "number")}</label><label style="flex:1; min-width:0; display:flex; flex-direction:column; gap:3px; font-size:0.78rem; color:#b8b8d0;">How many${field(i, "count", r.count, "optional", "number")}</label></div></div>`;
+                            } else if (r.kind === "custom") {
+                                const pic = r.uploading ? `<span class="prize-pic busy" title="Uploading…">⏳</span>`
+                                    : r.image ? `<span class="prize-pic"><img src="${escapeHtml(r.image)}" alt=""><button type="button" onclick="${name}.clearImage(${i})" aria-label="Remove the picture">✕</button></span>`
+                                    : `<label class="prize-pic add" title="Add a picture (optional)">+<input type="file" accept="image/*" hidden onchange="${name}.upload(${i}, this.files[0])"></label>`;
+                                inputs = `<div style="display:flex; gap:8px; flex:1; min-width:0; align-items:flex-start;">${pic}
+                                    <div style="display:flex; flex-direction:column; gap:6px; flex:1; min-width:0;">
                                     ${field(i, "label", r.label, "What is it? e.g. Epic chest")}
-                                    <div style="display:flex; gap:6px;">${field(i, "amount", r.amount, "How many (optional)", "number")}${field(i, "image", r.image, "Picture link (optional, https://…)")}</div></div>`;
+                                    ${field(i, "amount", r.amount, "How many (optional)", "number")}</div></div>`;
                             } else {
                                 inputs = field(i, "amount", r.amount, r.kind === "tokens" ? "How many tokens" : "How much — e.g. 1000000", "number");
                             }
-                            return `<div style="display:flex; align-items:flex-start; gap:8px; padding:8px; border:1px solid #34345e; border-radius:10px; background:#20203a;">
-                                <span style="flex-shrink:0; width:96px; padding-top:10px; font-weight:700; font-size:0.9rem;">${PRIZE_ROW_TITLES[r.kind]}</span>
+                            // the reward's name and ✕ on top, its boxes full width below (room on a phone)
+                            return `<div style="display:flex; flex-direction:column; gap:8px; padding:8px 10px 10px; border:1px solid #34345e; border-radius:10px; background:#20203a;">
+                                <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
+                                    <span style="font-weight:700; font-size:0.9rem;">${PRIZE_ROW_TITLES[r.kind]}</span>
+                                    <button type="button" onclick="${name}.remove(${i})" aria-label="Remove" style="background:none; border:none; color:#ff8080; font-size:1.1rem; cursor:pointer; padding:2px 6px;">✕</button>
+                                </div>
                                 ${inputs}
-                                <button type="button" onclick="${name}.remove(${i})" aria-label="Remove" style="flex-shrink:0; margin-top:6px; background:none; border:none; color:#ff8080; font-size:1.1rem; cursor:pointer;">✕</button>
                             </div>`;
                         }).join("") || `<p class="promo-sub" style="margin:0; font-size:0.88rem;">No rewards yet — add one below.</p>`;
                         b.preview();
@@ -1274,7 +1301,7 @@
             window.handleSaveWeeklyPrize = async function () {
                 const prize = weeklyPrize.value();
                 if (!prize.items.length) { showInfoModal("What's the prize?", "Add at least one reward."); return; }
-                if (prize.items.length < weeklyPrize.rowCount()) { showInfoModal("Something's missing", "One of the rewards isn't filled in yet — give it an amount (or a name). Picture links must start with https://."); return; }
+                if (prize.items.length < weeklyPrize.rowCount()) { showInfoModal("Something's missing", "One of the rewards isn't filled in yet — give it an amount (or a name)."); return; }
                 const btn = document.getElementById("saveWeeklyPrizeBtn");
                 btn.disabled = true;
                 try {
@@ -1290,7 +1317,7 @@
                 const title = document.getElementById("secretGiveawayTitleInput").value;
                 const prize = secretPrize.value();
                 if (!prize.items.length) { showInfoModal("What's the prize?", "Add at least one reward — and fill in its amount (or pick the unit / name the custom one)."); return; }
-                if (prize.items.length < secretPrize.rowCount()) { showInfoModal("Something's missing", "One of the rewards isn't filled in yet — give it an amount (or a name). Picture links must start with https://."); return; }
+                if (prize.items.length < secretPrize.rowCount()) { showInfoModal("Something's missing", "One of the rewards isn't filled in yet — give it an amount (or a name)."); return; }
                 const prizeDescription = window.KIHPrize.summary(prize);
                 const requiresPassword = document.getElementById("secretGiveawayRequiresPasswordInput").checked;
                 const password = document.getElementById("secretGiveawayPasswordInput").value;
