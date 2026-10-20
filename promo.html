@@ -568,6 +568,11 @@
         .stake-hint a { color: #7ddc92; font-weight: 800; }
         .stake-fine { margin: 6px 0 0; text-align: center; font-size: 0.75rem; color: #8a8aa6; }
         .stake-summary { margin: 0; text-align: center; font-size: 0.92rem; color: #e0d8ff; }
+        .no-tokens-note { display: flex; align-items: center; gap: 12px; margin: 0 0 12px; padding: 12px 14px; border-radius: 14px; text-align: left;
+            background: linear-gradient(135deg, rgba(160, 86, 154, 0.28), rgba(65, 105, 225, 0.12)); border: 1px solid #a0569a; }
+        .no-tokens-icon { flex-shrink: 0; font-size: 1.6rem; line-height: 1; }
+        .no-tokens-note b { display: block; font-size: 1.02rem; color: #fff; }
+        .no-tokens-note small { display: block; margin-top: 2px; font-size: 0.85rem; line-height: 1.4; color: #e8d6f0; }
         .switch-link { display: block; margin: 14px auto 0; padding: 9px 16px; border-radius: 999px; border: 1px solid rgba(140, 160, 255, 0.45); background: rgba(65, 105, 225, 0.16); color: #c8d4ff; font: inherit; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
         .switch-link:active { transform: scale(0.97); }
 
@@ -2904,13 +2909,16 @@ if (user && user.uid === winnerData.winnerUid) {
                 return raw !== "" && Number.isInteger(n) && n >= 0 ? n : null;
             }
 
+            // A giveaway made without tokens: said plainly, in place of the
+            // globe and everything you'd use to add tokens.
+            function noTokensNotice(extra) {
+                return `<div class="no-tokens-note"><span class="no-tokens-icon">🚫🪙</span>
+                    <div><b>No tokens in this giveaway</b><small>Everyone who enters gets exactly <strong>one equal chance</strong> — tokens can't be added.${extra ? " " + extra : ""}</small></div></div>`;
+            }
             function renderStakeHtml(g, entry, isExpired, sideDrawn) {
                 const staked = entry.tokens || 0;
                 // Made without tokens: just your one ball, the same as everyone's.
-                if (g.tokensAllowed === false) {
-                    return `${renderMachine(g, entry.platform, 1, isExpired || sideDrawn)}
-                        <p class="stake-summary">🟡 You're in with <strong>1 ball</strong> — no tokens in this one, so everyone has the same chance.${isExpired || sideDrawn ? " The claw picks the winners soon…" : ""}</p>`;
-                }
+                if (g.tokensAllowed === false) return noTokensNotice(isExpired || sideDrawn ? "The claw picks the winners soon…" : "");
                 const machine = stakeSaving.has(g.id) && machineHtml[g.id]
                     ? machineHtml[g.id].replace(/ drop"/g, '"') // frozen mid-save, without replaying the drops
                     : renderMachine(g, entry.platform, staked + 1, isExpired || sideDrawn);
@@ -3375,8 +3383,9 @@ if (user && user.uid === winnerData.winnerUid) {
                             onkeydown="if(event.key==='Enter') handleEnterSecretGiveaway('${g.id}');">` : "";
                     bodyHtml = `
                         ${statsHtml}
+                        ${g.tokensAllowed === false ? noTokensNotice("") : ""}
                         <div class="mystery"><div class="mystery-box">🎁<span>?</span></div>
-                            <div><b>Mystery prize</b><small>Enter to reveal it. It's free, and puts your first ball in the globe.</small></div></div>
+                            <div><b>Mystery prize</b><small>${g.tokensAllowed === false ? "Enter to reveal it. It's free." : "Enter to reveal it. It's free, and puts your first ball in the globe."}</small></div></div>
                         ${passwordInput}
                         <button class="enter-btn" id="secretEnterBtn_${g.id}" onclick="handleEnterSecretGiveaway('${g.id}')">🔓 Enter &amp; reveal</button>
                         <p class="enter-as">Entering as ${device === "ios" ? "🍎 iOS" : "🤖 Android"}</p>`;
