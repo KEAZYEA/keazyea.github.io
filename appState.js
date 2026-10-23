@@ -4160,6 +4160,35 @@ async function sendAdminMessage(uid, title, body) {
         return { giveawayId, group, platform: winner.platform, entryCount: pool.length, winner, totalWeight, winnerWeight: weightOf(winner) };
     }
 
+    // Several winners in one go (all of a draw's remaining places): each one
+    // drawn the same way as above, from whoever hasn't been picked yet, so no
+    // one can come up twice. Fewer people than places → as many as there are.
+    async function pickSecretGiveawayWinners(giveawayId, group, count) {
+        await waitForAuthReady();
+        if (!currentUser || currentUser.uid !== ADMIN_UID) throw new Error("Not authorized.");
+        const giveawaySnap = await getDoc(doc(db, "secretGiveaways", giveawayId));
+        if (!giveawaySnap.exists()) throw new Error("Giveaway not found.");
+        const alreadyWon = new Set((giveawaySnap.data().winners || []).map(w => w.uid));
+        const entries = await getSecretGiveawayEntries(giveawayId, group === "all" ? null : group);
+        let pool = entries.filter(e => !alreadyWon.has(e.uid));
+        if (!pool.length) throw new Error(`No remaining ${group === "all" ? "" : group + " "}entries to pick from.`);
+        const weightOf = (e) => 1 + Math.max(0, Math.floor(Number(e.tokens) || 0));
+        const entryCount = pool.length;
+        const picks = [];
+        while (picks.length < count && pool.length) {
+            const totalWeight = pool.reduce((sum, e) => sum + weightOf(e), 0);
+            let ticket = secureRandom() * totalWeight;
+            let winner = pool[pool.length - 1];
+            for (const e of pool) {
+                ticket -= weightOf(e);
+                if (ticket < 0) { winner = e; break; }
+            }
+            picks.push({ winner, platform: winner.platform, totalWeight, winnerWeight: weightOf(winner) });
+            pool = pool.filter(e => e.uid !== winner.uid);
+        }
+        return { giveawayId, group, entryCount, wanted: count, picks };
+    }
+
     // Uniform in [0, 1). Uses the browser's cryptographic source rather than
     // Math.random, since this decides who wins something people staked on.
     function secureRandom() {
@@ -4692,7 +4721,7 @@ async function maybeRefreshAd(containerId) {
         getSecretGiveawayPassword, hasEnteredSecretGiveaway, getMySecretGiveawayEntry, switchSecretGiveawayPlatform,
         leaveSecretGiveaway, enterSecretGiveaway, getSecretGiveawayEntries, getPublicSecretGiveawayEntries,
         secretGiveawayEligibilityText, isEveryoneSecretGiveaway, secretGiveawaySlotsFor, secretDrawGroup, secretWinnerGroup,
-        pickSecretGiveawayWinner, finalizeSecretGiveawayPrize, getSecretGiveawayPrize, getSecretGiveawayRewardDescription,
+        pickSecretGiveawayWinner, pickSecretGiveawayWinners, finalizeSecretGiveawayPrize, getSecretGiveawayPrize, getSecretGiveawayRewardDescription,
         // promo codes
         addPromoCode, getPromoCodes, updatePromoCode, deletePromoCode,
         // tips
