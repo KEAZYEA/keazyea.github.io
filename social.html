@@ -4998,6 +4998,10 @@ window.removeClanIconPreview = function () {
             renderTierPool();
         };
 
+        // The search box calls this straight from the page (oninput), and this
+        // script is a module — so it has to be on window, or typing does
+        // nothing until something else (a type button) redraws the pool.
+        window.renderTierPool = renderTierPool;
         function renderTierPool() {
             const container = document.getElementById("tierPoolContainer");
             if (!allTierUnits) { container.innerHTML = ""; return; }
@@ -5015,7 +5019,7 @@ window.removeClanIconPreview = function () {
                     if (tierPoolTypeFilter === "hero" && u.type !== "hero") return false;
                     if (tierPoolTypeFilter === "troop" && u.type !== "troop") return false;
                     if (search) {
-                        const haystack = `${u.displayName} ${u.rarity} ${u.attackType}`.toLowerCase();
+                        const haystack = `${u.displayName} ${u.rarity} ${u.attackType} ${u.type}`.toLowerCase();
                         if (!haystack.includes(search)) return false;
                     }
                     return true;
