@@ -3718,6 +3718,27 @@ async function sendAdminMessage(uid, title, body) {
     function secretWinnerGroup(w) {
         return w.pool || w.platform;
     }
+    // Ranked giveaways (1st, 2nd, 3rd… prizes) keep their places in the
+    // private config as tiers: [{ count, prize }], 1st place first. Winners
+    // fill the places in the order they're drawn: the first `count` of a
+    // pool's winners get 1st place, the next ones 2nd, and so on.
+    function secretRankedTiers(cfg) {
+        return cfg && Array.isArray(cfg.tiers) && cfg.tiers.length ? cfg.tiers : null;
+    }
+    function secretPlaceForSlot(tiers, slot) {
+        if (!Array.isArray(tiers) || !tiers.length) return 0;
+        let upTo = 0;
+        for (let i = 0; i < tiers.length; i++) {
+            upTo += Math.max(1, parseInt(tiers[i].count, 10) || 1);
+            if (slot < upTo) return i + 1;
+        }
+        return tiers.length;
+    }
+    function secretPlaceText(place) {
+        const t = place % 100;
+        const ord = place + (t >= 11 && t <= 13 ? "th" : ({ 1: "st", 2: "nd", 3: "rd" }[place % 10] || "th"));
+        return `${({ 1: "🥇", 2: "🥈", 3: "🥉" })[place] || "🏅"} ${ord} place`;
+    }
 
     // A prize built in admin from parts (prize.js: { items, note } — gold,
     // diamonds, tokens, a unit, anything custom). Kept small and plain: only
@@ -3756,18 +3777,26 @@ async function sendAdminMessage(uid, title, body) {
         await setDoc(doc(db, "config", "weeklyPrize"), { prize: checkPrizeParts(prize), updatedAt: Date.now() });
     }
 
-    async function createSecretGiveaway({ title, prizeDescription, prize, requiresPassword, password, durationHours, deleteAfterDays, iosWinnerCount, androidWinnerCount, allWinnerCount, tokensAllowed = true }) {
+    async function createSecretGiveaway({ title, prizeDescription, prize, tiers, requiresPassword, password, durationHours, deleteAfterDays, iosWinnerCount, androidWinnerCount, allWinnerCount, tokensAllowed = true }) {
         await waitForAuthReady();
         if (!currentUser || currentUser.uid !== ADMIN_UID) throw new Error("Not authorized.");
 
         const cleanTitle = (title || "").trim();
         const cleanPrize = (prizeDescription || "").trim();
-        const prizeParts = checkPrizeParts(prize);
+        // Ranked: a prize per place (2 to 5 places), one draw for everyone.
+        const ranked = Array.isArray(tiers) && tiers.length > 0;
+        if (ranked && (tiers.length < 2 || tiers.length > 5)) throw new Error("A ranked giveaway has 2 to 5 places.");
+        const cleanTiers = ranked ? tiers.map((t, i) => {
+            const count = parseInt(t && t.count, 10);
+            if (!(count >= 1 && count <= 20)) throw new Error(`Set how many win ${secretPlaceText(i + 1)} (1 to 20).`);
+            return { count, prize: checkPrizeParts(t.prize) };
+        }) : null;
+        const prizeParts = ranked ? null : checkPrizeParts(prize);
         const needsPassword = !!requiresPassword;
         const cleanPassword = (password || "").trim();
         const hours = parseFloat(durationHours);
         const deleteDays = parseFloat(deleteAfterDays) || 30;
-        const allCount = Math.max(0, parseInt(allWinnerCount, 10) || 0);
+        const allCount = ranked ? cleanTiers.reduce((sum, t) => sum + t.count, 0) : Math.max(0, parseInt(allWinnerCount, 10) || 0);
         // An everyone giveaway has only the shared pool, never per-device slots.
         const iosCount = allCount > 0 ? 0 : Math.max(0, parseInt(iosWinnerCount, 10) || 0);
         const androidCount = allCount > 0 ? 0 : Math.max(0, parseInt(androidWinnerCount, 10) || 0);
@@ -3806,7 +3835,8 @@ async function sendAdminMessage(uid, title, body) {
         // takes text) show.
         await setDoc(doc(db, "secretGiveaways", docRef.id, "private", "config"), {
             prizeDescription: cleanPrize,
-            ...(prizeParts ? { prize: prizeParts } : {})
+            ...(prizeParts ? { prize: prizeParts } : {}),
+            ...(cleanTiers ? { tiers: cleanTiers } : {})
         });
         if (needsPassword) {
             await setDoc(doc(db, "secretGiveaways", docRef.id, "private", "secret"), {
@@ -4033,7 +4063,7 @@ async function sendAdminMessage(uid, title, body) {
             const snap = await getDoc(doc(db, "secretGiveaways", giveawayId, "private", "config"));
             if (!snap.exists()) return null;
             const d = snap.data();
-            return { description: d.prizeDescription || null, prize: d.prize || null };
+            return { description: d.prizeDescription || null, prize: d.prize || null, tiers: secretRankedTiers(d) };
         } catch (e) {
             return null;
         }
@@ -4168,7 +4198,11 @@ async function sendAdminMessage(uid, title, body) {
         if (!currentUser || currentUser.uid !== ADMIN_UID) throw new Error("Not authorized.");
         const giveawaySnap = await getDoc(doc(db, "secretGiveaways", giveawayId));
         if (!giveawaySnap.exists()) throw new Error("Giveaway not found.");
-        const alreadyWon = new Set((giveawaySnap.data().winners || []).map(w => w.uid));
+        const pastWinners = giveawaySnap.data().winners || [];
+        const alreadyWon = new Set(pastWinners.map(w => w.uid));
+        // how many of this pool's places are already filled (a ranked
+        // giveaway's next winner takes the next place)
+        const wonBefore = pastWinners.filter(w => secretWinnerGroup(w) === group).length;
         const entries = await getSecretGiveawayEntries(giveawayId, group === "all" ? null : group);
         let pool = entries.filter(e => !alreadyWon.has(e.uid));
         if (!pool.length) throw new Error(`No remaining ${group === "all" ? "" : group + " "}entries to pick from.`);
@@ -4186,7 +4220,7 @@ async function sendAdminMessage(uid, title, body) {
             picks.push({ winner, platform: winner.platform, totalWeight, winnerWeight: weightOf(winner) });
             pool = pool.filter(e => e.uid !== winner.uid);
         }
-        return { giveawayId, group, entryCount, wanted: count, picks };
+        return { giveawayId, group, entryCount, wanted: count, wonBefore, picks };
     }
 
     // Uniform in [0, 1). Uses the browser's cryptographic source rather than
@@ -4212,26 +4246,33 @@ async function sendAdminMessage(uid, title, body) {
         await waitForAuthReady();
         if (!currentUser || currentUser.uid !== ADMIN_UID) throw new Error("Not authorized.");
         const cfgSnap = await getDoc(doc(db, "secretGiveaways", giveawayId, "private", "config"));
-        const prize = cfgSnap.exists() ? (cfgSnap.data().prize || null) : null;
-        const tokens = prizeTokens(prize);
-        const codes = cleanPromoCodes(prizeCode);
-        if (!codes.length && prizeNeedsCode(prize)) throw new Error("Enter the prize code to send.");
-        const code = codes.join(", ");
+        const cfg = cfgSnap.exists() ? cfgSnap.data() : {};
+        const tiers = secretRankedTiers(cfg);
 
         const giveawayRef = doc(db, "secretGiveaways", giveawayId);
         const snap = await getDoc(giveawayRef);
         if (!snap.exists()) throw new Error("Giveaway not found.");
         const data = snap.data();
         const winners = data.winners || [];
-        const alreadyRecorded = winners.some(w => w.uid === winnerUid);
+        const record = winners.find(w => w.uid === winnerUid);
+        const alreadyRecorded = !!record;
         // `platform` is the winner's own device; which pool they were drawn
         // from depends on the giveaway (everyone giveaways share one).
         const group = secretDrawGroup(data, platform);
+        let place = record ? (record.place || 0) : 0;
         if (!alreadyRecorded) {
             const slotCount = secretGiveawaySlotsFor(data, platform);
             const wonSoFar = winners.filter(w => secretWinnerGroup(w) === group).length;
             if (wonSoFar >= slotCount) throw new Error(`All ${group === "all" ? "" : platform + " "}winner slots are already filled.`);
+            // ranked: the next place in this pool
+            if (tiers) place = secretPlaceForSlot(tiers, wonSoFar);
         }
+        // Ranked: what their place wins. Otherwise the giveaway's one prize.
+        const prize = tiers ? ((tiers[place - 1] || {}).prize || null) : (cfg.prize || null);
+        const tokens = prizeTokens(prize);
+        const codes = cleanPromoCodes(prizeCode);
+        if (!codes.length && prizeNeedsCode(prize)) throw new Error("Enter the prize code to send.");
+        const code = codes.join(", ");
 
         if (codes.length) {
             await setDoc(doc(db, "secretGiveaways", giveawayId, "prizeCodes", winnerUid), {
@@ -4243,7 +4284,7 @@ async function sendAdminMessage(uid, title, body) {
         }
         if (!alreadyRecorded) {
             await updateDoc(giveawayRef, {
-                winners: arrayUnion({ uid: winnerUid, name: winnerName, platform, pool: group, wonAt: Date.now() })
+                winners: arrayUnion({ uid: winnerUid, name: winnerName, platform, pool: group, wonAt: Date.now(), ...(place ? { place } : {}) })
             });
         }
         // The prize's tokens go straight into their wallet (the server checks
@@ -4261,7 +4302,7 @@ async function sendAdminMessage(uid, title, body) {
             : `Here are your ${codes.length} prize codes:\n${promoCodesText(codes)}\nTap to view and copy them.`;
         const winNotif = {
             type: "secretGiveawayWin",
-            title: `🔒🎉 You won "${data.title}"!`,
+            title: place ? `🔒🎉 You won ${secretPlaceText(place)} in "${data.title}"!` : `🔒🎉 You won "${data.title}"!`,
             body: [tokenLine, codeLine].filter(Boolean).join("\n"),
             giveawayId,
             prize: code,
@@ -4720,7 +4761,7 @@ async function maybeRefreshAd(containerId) {
         createSecretGiveaway, getSecretGiveawayPrizeInfo, getWeeklyPrize, setWeeklyPrize, uploadPrizeImage, deleteSecretGiveaway, listenToSecretGiveaways, getSecretGiveaway,
         getSecretGiveawayPassword, hasEnteredSecretGiveaway, getMySecretGiveawayEntry, switchSecretGiveawayPlatform,
         leaveSecretGiveaway, enterSecretGiveaway, getSecretGiveawayEntries, getPublicSecretGiveawayEntries,
-        secretGiveawayEligibilityText, isEveryoneSecretGiveaway, secretGiveawaySlotsFor, secretDrawGroup, secretWinnerGroup,
+        secretGiveawayEligibilityText, isEveryoneSecretGiveaway, secretGiveawaySlotsFor, secretDrawGroup, secretWinnerGroup, secretPlaceForSlot, secretPlaceText,
         pickSecretGiveawayWinner, pickSecretGiveawayWinners, finalizeSecretGiveawayPrize, getSecretGiveawayPrize, getSecretGiveawayRewardDescription,
         // promo codes
         addPromoCode, getPromoCodes, updatePromoCode, deletePromoCode,

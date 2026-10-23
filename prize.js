@@ -147,6 +147,23 @@
         </div>`;
     }
 
+    // Ranked giveaways: "🥇 1st place", "🥈 2nd place", "🥉 3rd place", "🏅 4th place".
+    function ordinal(n) {
+        const t = n % 100;
+        return n + (t >= 11 && t <= 13 ? "th" : ({ 1: "st", 2: "nd", 3: "rd" }[n % 10] || "th"));
+    }
+    const placeMedal = (n) => ({ 1: "🥇", 2: "🥈", 3: "🥉" }[n] || "🏅");
+    const placeLabel = (n) => `${placeMedal(n)} ${ordinal(n)} place`;
+    // Each place's prize, 1st place first (tiers: [{ count, prize }]).
+    function renderTiers(tiers, opts = {}) {
+        injectCss();
+        return `<div class="pz-tiers">${(tiers || []).map((t, i) => `<div class="pz-tier pz-place-${Math.min(i + 1, 4)}">
+            <div class="pz-tier-head"><b>${placeLabel(i + 1)}</b>${t.count > 1 ? `<span>${t.count} winners</span>` : ""}</div>
+            ${render(t.prize, { compact: opts.compact !== false })}</div>`).join("")}</div>`;
+    }
+    // "🥇 1st: 1M Gold · 🥈 2nd (×2): 500 Diamonds" — for places that only take text.
+    const tiersSummary = (tiers) => (tiers || []).map((t, i) => `${placeMedal(i + 1)} ${ordinal(i + 1)}${t.count > 1 ? ` (×${t.count})` : ""}: ${summary(t.prize)}`).join(" · ");
+
     // The reveal: cards pop in one after another, numbers count up from 0,
     // a shine runs across each card once. Only transforms and opacity move.
     function play(root) {
@@ -203,7 +220,7 @@
 .pz-unit .pz-icon { margin-bottom: 9px; }
 .pz-tile small.pz-sub-strong { color: #fff; font-weight: 800; font-size: 0.78rem; }
 .pz-num { font-size: 1.55rem; font-weight: 900; line-height: 1.05; color: #fff; text-shadow: 0 0 12px rgba(var(--pz), 0.8); font-variant-numeric: tabular-nums; }
-.pz-label { font-weight: 800; font-size: 0.92rem; color: rgb(var(--pz)); overflow-wrap: anywhere; }
+.pz-label { font-weight: 800; font-size: 0.92rem; color: rgb(var(--pz)); overflow-wrap: break-word; }
 .pz-tile small { font-size: 0.72rem; color: #b8b8d0; }
 .pz-note { margin: 8px 0 0; font-size: 0.85rem; color: #d0d0e4; text-align: center; }
 .pz-text { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px; background: rgba(255, 196, 0, 0.08); border: 1px solid rgba(255, 196, 0, 0.35); }
@@ -218,9 +235,17 @@
 @keyframes pzPop { from { opacity: 0; transform: scale(0.6) translateY(10px); } }
 @keyframes pzShine { to { transform: translateX(260%); } }
 @keyframes pzBounce { 0% { transform: scale(0.4) rotate(-12deg); } 60% { transform: scale(1.15) rotate(4deg); } 100% { transform: none; } }
-@media (prefers-reduced-motion: reduce) { .pz-tile.pz-in, .pz-tile.pz-in::after, .pz-tile.pz-in .pz-icon { animation: none; } }`;
+@media (prefers-reduced-motion: reduce) { .pz-tile.pz-in, .pz-tile.pz-in::after, .pz-tile.pz-in .pz-icon { animation: none; } }
+.pz-tiers { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+.pz-tier { --pl: 205, 127, 50; padding: 8px 10px 10px; border-radius: 14px; border: 1px solid rgba(var(--pl), 0.6); background: linear-gradient(180deg, rgba(var(--pl), 0.14), rgba(255, 255, 255, 0.02)); }
+.pz-place-1 { --pl: 255, 200, 40; }
+.pz-place-2 { --pl: 200, 210, 225; }
+.pz-place-4 { --pl: 140, 150, 255; }
+.pz-tier-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 0 0 8px; }
+.pz-tier-head b { color: rgb(var(--pl)); font-size: 0.98rem; }
+.pz-tier-head span { font-size: 0.78rem; color: #b8b8d0; }`;
         document.head.appendChild(st);
     }
 
-    window.KIHPrize = { render, play, summary, clean, tokensOf, needsCode, short, KINDS };
+    window.KIHPrize = { render, play, summary, clean, tokensOf, needsCode, short, KINDS, ordinal, placeMedal, placeLabel, renderTiers, tiersSummary };
 })();
