@@ -795,6 +795,24 @@
         .draw-start-btn { display: block; width: 100%; max-width: 320px; margin: 14px auto 0; padding: 14px 16px; border-radius: 14px; font-size: 1.05rem; font-weight: 800; }
         .draw-start-btn small { display: block; font-size: 0.75rem; font-weight: 600; opacity: 0.85; margin-top: 2px; }
         .draw-start-btn b { font-size: 1.25rem; }
+        /* Several winners: drawn one at a time. The line above the capsule says
+           which one is being drawn; the board below fills in as each lands. */
+        .draw-step { margin: 0 auto 10px; text-align: center; font-weight: 900; font-size: 1.15rem; color: #ffd75e; min-height: 1.4em; text-shadow: 0 0 14px rgba(255, 196, 0, 0.45); }
+        .draw-step.go { animation: stepIn 0.5s cubic-bezier(.2, 1.5, .4, 1); }
+        @keyframes stepIn { from { opacity: 0; transform: translateY(-8px) scale(0.85); } }
+        .win-board { list-style: none; max-width: 340px; margin: 14px auto 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+        .wb-row { --pl: 140, 150, 255; display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 12px; border: 1px solid rgba(var(--pl), 0.45); background: rgba(var(--pl), 0.07); text-align: left; }
+        .wb-row.place-1 { --pl: 255, 200, 40; }
+        .wb-row.place-2 { --pl: 200, 210, 225; }
+        .wb-row.place-3 { --pl: 205, 127, 50; }
+        .wb-tag { flex-shrink: 0; min-width: 58px; font-weight: 800; color: rgb(var(--pl)); font-size: 0.9rem; }
+        .wb-name { flex: 1; min-width: 0; overflow-wrap: anywhere; font-weight: 700; color: #6c6c90; }
+        .wb-row.landed { border-color: rgba(var(--pl), 0.9); background: rgba(var(--pl), 0.16); animation: wbLand 0.6s cubic-bezier(.2, 1.5, .4, 1); }
+        .wb-row.landed .wb-name { color: #fff; }
+        .wb-row.now { box-shadow: 0 0 0 2px rgba(var(--pl), 0.9), 0 0 18px rgba(var(--pl), 0.45); }
+        .wb-row.mine .wb-name::after { content: " — you! 🎉"; color: #7dffa8; }
+        @keyframes wbLand { from { transform: scale(0.9); opacity: 0.4; } }
+        @media (prefers-reduced-motion: reduce) { .draw-step.go, .wb-row.landed { animation: none; } }
         .draw-machine {
             position: relative; height: 160px; max-width: 340px; margin: 0 auto 14px; border-radius: 18px; overflow: hidden;
             border: 2px solid rgba(255, 215, 94, 0.65);
@@ -1589,10 +1607,15 @@ async function openSecretGiveawayReveal(giveawayId, group) {
         const groupWinners = (giveaway.winners || []).filter(w => AppState.secretWinnerGroup(w) === group);
         if (!groupWinners.length) { body.innerHTML = "<p class='promo-sub'>No winners drawn for this one yet.</p>"; return; }
 
-        const isMineIncluded = !!(user && groupWinners.some(w => w.uid === user.uid));
-        const landedText = groupWinners.map(w => w.name).join(", ");
+        const mine = user ? groupWinners.find(w => w.uid === user.uid) : null;
+        const isMineIncluded = !!mine;
+        // Drawn one at a time, in this order: a ranked giveaway goes from
+        // last place up to 1st; otherwise the order they were drawn.
+        const ranked = groupWinners.some(w => w.place);
+        const steps = groupWinners.map((w, i) => ({ uid: w.uid, name: w.name, place: w.place || 0, i }))
+            .sort((a, b) => (ranked ? b.place - a.place : 0) || a.i - b.i);
         const revealKey = "secret_" + giveawayId + "_" + group;
-        secretRevealTarget = { giveawayId, name: landedText, winnerNames: groupWinners.map(w => w.name), revealKey, isMineIncluded };
+        secretRevealTarget = { giveawayId, steps, ranked, name: steps[steps.length - 1].name, winnerNames: groupWinners.map(w => w.name), revealKey, isMineIncluded, myPlace: mine ? mine.place || 0 : 0, myUid: user ? user.uid : null };
         const realEntrants = await AppState.getPublicSecretGiveawayEntries(giveawayId, group === "all" ? null : group);
         secretRevealNames = realEntrants.map(e => e.name);
         // Winners stay on the list even if they left afterwards.
@@ -1604,7 +1627,7 @@ async function openSecretGiveawayReveal(giveawayId, group) {
             // no need to replay the animation.
             body.innerHTML = renderSecretRevealBox(label, true);
             if (isMineIncluded) {
-                body.insertAdjacentHTML("beforeend", await winnerPrizeHtml(giveawayId));
+                body.insertAdjacentHTML("beforeend", await winnerPrizeHtml(giveawayId, secretRevealTarget.myPlace));
                 window.KIHPrize.play(body.querySelector(".win-prize-cards"));
                 wireSecretCopyBtn(body);
             } else {
@@ -1643,16 +1666,39 @@ async function openSecretPrizeRevealFromNotification(giveawayId) {
 window.openSecretPrizeRevealFromNotification = openSecretPrizeRevealFromNotification;
 
 function renderSecretRevealBox(title, landedInstantly, buttonLabel) {
+    const t = secretRevealTarget, many = t.steps.length > 1;
     return `
         ${landedInstantly ? "" : drawMachineHtml("secretDrawMachine")}
+        ${many ? `<div class="draw-step" id="secretDrawStep">${landedInstantly ? `🏆 All ${t.steps.length} winners` : ""}</div>` : ""}
         <div class="reveal-box capsule ${landedInstantly ? "open" : "waiting"}" style="margin:0 auto;">
             <div class="reveal-box-label">${escapeHtml(title)}</div>
-            <div class="reveal-box-name${landedInstantly ? " landed" : ""}" id="secretRevealBoxName">${landedInstantly ? escapeHtml(secretRevealTarget.name) : "?"}</div>
+            <div class="reveal-box-name${landedInstantly ? " landed" : ""}" id="secretRevealBoxName">${landedInstantly ? escapeHtml(t.name) : "?"}</div>
         </div>
         ${landedInstantly ? "" : `
         <button class="btn-primary draw-start-btn" id="secretSpinBtn" onclick="spinSecretWheel()">${buttonLabel}</button>
+        <button class="btn-primary draw-start-btn" id="secretNextBtn" style="display:none;"></button>
         `}
+        ${many ? renderWinBoard(landedInstantly) : ""}
     `;
+}
+// What step k is drawing: "🥉 3rd place" (ranked) or "Winner 2 of 3".
+function secretStepTitle(k) {
+    const t = secretRevealTarget, s = t.steps[k];
+    if (!t.ranked) return `🎟️ Winner ${k + 1} of ${t.steps.length}`;
+    const samePlace = t.steps.filter(x => x.place === s.place);
+    return window.KIHPrize.placeLabel(s.place) + (samePlace.length > 1 ? ` (${samePlace.indexOf(s) + 1} of ${samePlace.length})` : "");
+}
+// Every winner's row, blank until their turn: ranked ones as standings
+// (1st place at the top, so it fills from the bottom up), others in draw order.
+function renderWinBoard(filled) {
+    const t = secretRevealTarget;
+    const rows = t.steps.map((s, k) => ({ s, k }));
+    if (t.ranked) rows.sort((a, b) => a.s.place - b.s.place || a.s.i - b.s.i);
+    return `<ol class="win-board" id="secretWinBoard">${rows.map(({ s, k }) => {
+        const tag = t.ranked ? `${window.KIHPrize.placeMedal(s.place)} ${window.KIHPrize.ordinal(s.place)}` : `#${k + 1}`;
+        const cls = ["wb-row", t.ranked ? "place-" + Math.min(s.place, 4) : "", filled ? "landed" : "", filled && s.uid === t.myUid ? "mine" : ""].filter(Boolean).join(" ");
+        return `<li class="${cls}" data-step="${k}"><span class="wb-tag">${tag}</span><span class="wb-name">${filled ? escapeHtml(s.name) : "?"}</span></li>`;
+    }).join("")}</ol>`;
 }
 
 /* A prize can be several promo codes: each gets its own box and Copy button,
@@ -1840,11 +1886,11 @@ async function playClawDraw(machine, capsule) {
 // The draw starts by itself a few seconds after the reveal opens (the button
 // counts down; tap it to start straight away). It stops counting if the
 // reveal is closed or the tab changes.
-function startDrawCountdown(btn, go, secs = 5) {
+function startDrawCountdown(btn, go, secs = 5, lead = "🎰 Drawing") {
     if (!btn || btn.dataset.counting) return;
     btn.dataset.counting = "1";
     let left = secs;
-    const show = () => { btn.innerHTML = `🎰 Drawing in <b>${left}</b>…<small>tap to start now</small>`; };
+    const show = () => { btn.innerHTML = `${lead} in <b>${left}</b>…<small>tap to start now</small>`; };
     show();
     const t = setInterval(() => {
         if (btn.disabled || !btn.isConnected || btn.offsetParent === null) { clearInterval(t); delete btn.dataset.counting; return; }
@@ -1860,9 +1906,10 @@ function capsuleOpen(capsule) {
     if (typeof burst === "function") burst(capsule, ["🎉", "✨", "⭐", "🏆", "🪙"]);
 }
 
-function playNameReveal(nameEl, names, winnerNames, finalText, onDone) {
+// `span` [min, max] ms shortens it — the 2nd, 3rd… spins of a multi-winner draw.
+function playNameReveal(nameEl, names, winnerNames, finalText, onDone, span = [5000, 10000]) {
     const { seq, entrantCount } = buildRevealSequence(names, winnerNames);
-    const duration = Math.min(10000, Math.max(5000, entrantCount * 150));
+    const duration = Math.min(span[1], Math.max(span[0], entrantCount * 150));
     // Step i's share of the time grows from 1x to 4x, so it slows down.
     const weights = seq.map((_, i) => 1 + 3 * Math.pow(i / Math.max(1, seq.length - 1), 2));
     const total = weights.reduce((a, b) => a + b, 0);
@@ -1918,29 +1965,75 @@ async function spinSecretWheel() {
     spinBtn.style.display = "none"; // the machine says what's happening now
     const capsule = nameEl.closest(".reveal-box");
     await playClawDraw(document.getElementById("secretDrawMachine"), capsule);
-    capsuleSpin(capsule);
-    playNameReveal(nameEl, secretRevealNames, secretRevealTarget.winnerNames, secretRevealTarget.name, () => {
-        capsuleOpen(capsule);
-        markWheelRevealed(secretRevealTarget.revealKey);
-        if (secretRevealTarget.isMineIncluded) {
-            landSecretPrize();
-        } else {
-            landSecretNonWinnerMessage();
-        }
-    });
+    revealSecretStep(0);
 }
 window.spinSecretWheel = spinSecretWheel;
+
+// One winner at a time: the capsule spins through everyone still in the
+// draw and lands on step k's winner, their row on the board fills in, and
+// the next spin starts after a short countdown (or a tap). The last one —
+// 1st place, in a ranked giveaway — gets the full-length spin.
+function revealSecretStep(k) {
+    const t = secretRevealTarget;
+    const nameEl = document.getElementById("secretRevealBoxName");
+    if (!t || !nameEl) return;
+    const capsule = nameEl.closest(".reveal-box");
+    const step = t.steps[k], last = k === t.steps.length - 1;
+    const stepEl = document.getElementById("secretDrawStep");
+    if (stepEl) {
+        stepEl.textContent = (last && t.steps.length > 1 && t.ranked ? "🥁 And finally… " : "") + secretStepTitle(k);
+        stepEl.classList.remove("go"); void stepEl.offsetWidth; stepEl.classList.add("go");
+    }
+    const board = document.getElementById("secretWinBoard");
+    const row = board && board.querySelector(`[data-step="${k}"]`);
+    if (board) board.querySelectorAll(".now").forEach(r => r.classList.remove("now"));
+    if (row) row.classList.add("now");
+    // Whoever has already been drawn is out of it.
+    const out = new Set(t.steps.slice(0, k).map(s => s.name));
+    const stillIn = secretRevealNames.filter(n => !out.has(n));
+    const toCome = t.steps.slice(k).map(s => s.name);
+    capsuleSpin(capsule);
+    playNameReveal(nameEl, stillIn, toCome, step.name, () => {
+        capsuleOpen(capsule);
+        if (row) {
+            row.querySelector(".wb-name").textContent = step.name;
+            row.classList.add("landed");
+            if (step.uid === t.myUid) row.classList.add("mine");
+        }
+        if (!last) {
+            const next = document.getElementById("secretNextBtn");
+            const go = () => {
+                if (next.disabled) return;
+                next.disabled = true;
+                next.style.display = "none";
+                revealSecretStep(k + 1);
+            };
+            next.disabled = false;
+            delete next.dataset.counting;
+            next.onclick = go;
+            next.style.display = "block";
+            startDrawCountdown(next, go, 3, "🎰 Next: " + secretStepTitle(k + 1));
+            return;
+        }
+        if (row) setTimeout(() => row.classList.remove("now"), 1200);
+        markWheelRevealed(t.revealKey);
+        if (t.isMineIncluded) landSecretPrize();
+        else landSecretNonWinnerMessage();
+    }, k === 0 || (last && t.ranked) ? undefined : [3500, 6000]);
+}
 
 // What the winner gets, under the reveal: the prize as cards (when it was
 // built from parts), then their code — or, for a prize that's only tokens,
 // that the tokens are already in their wallet.
-async function winnerPrizeHtml(giveawayId) {
+async function winnerPrizeHtml(giveawayId, place = 0) {
     const [code, info] = await Promise.all([
         AppState.getSecretGiveawayPrize(giveawayId),
         AppState.getSecretGiveawayPrizeInfo(giveawayId).catch(() => null)
     ]);
-    const prize = info && info.prize;
-    const cards = prize ? `<div class="win-prize-cards" style="margin-top:12px;">${window.KIHPrize.render(prize)}</div>` : "";
+    // ranked: what their place wins
+    const prize = info && (info.tiers ? (info.tiers[place - 1] || {}).prize : info.prize);
+    const placeLine = place ? `<p class="reveal-place" style="margin:14px 0 0; text-align:center; font-weight:900; font-size:1.2rem; color:#ffd75e;">You came ${window.KIHPrize.placeLabel(place).replace(" place", "")}!</p>` : "";
+    const cards = placeLine + (prize ? `<div class="win-prize-cards" style="margin-top:12px;">${window.KIHPrize.render(prize)}</div>` : "");
     if (code) return cards + renderSecretPrizeResult(code);
     if (prize && !window.KIHPrize.needsCode(prize)) return cards + `<p class="promo-sub" style="margin-top:10px;">🪙 Your ${window.KIHPrize.tokensOf(prize)} tokens are already in your wallet.</p>`;
     return cards + "<p class='promo-sub' style='margin-top:12px;'>No prize code found yet — check back shortly.</p>";
@@ -1949,7 +2042,7 @@ async function winnerPrizeHtml(giveawayId) {
 async function landSecretPrize() {
     const body = document.getElementById("prizeRevealBody");
     try {
-        body.insertAdjacentHTML("beforeend", await winnerPrizeHtml(secretRevealTarget.giveawayId));
+        body.insertAdjacentHTML("beforeend", await winnerPrizeHtml(secretRevealTarget.giveawayId, secretRevealTarget.myPlace));
         window.KIHPrize.play(body.querySelector(".win-prize-cards"));
         wireSecretCopyBtn(body);
     } catch (e) {
@@ -2440,7 +2533,7 @@ if (user && user.uid === winnerData.winnerUid) {
                         // the prize: its parts (gold, tokens, a hero…) when it was built
                         // from them, otherwise just its description
                         const info = entry ? await AppState.getSecretGiveawayPrizeInfo(giveawayId) : null;
-                        return { entry, reward: info ? info.description : null, prize: info ? info.prize : null };
+                        return { entry, reward: info ? info.description : null, prize: info ? info.prize : null, tiers: info ? info.tiers : null };
                     })();
                     // A failed read shouldn't be remembered.
                     p.catch(() => secretDetailCache.delete(giveawayId));
@@ -3369,8 +3462,8 @@ if (user && user.uid === winnerData.winnerUid) {
                         : `<p class="sc-warn">⚠️ This giveaway has no ${platformLabel} slots — you can't win as entered.${otherHasSlots ? " Switch below to fix it." : ""}</p>`;
                     bodyHtml = `
                         <div class="sc-prize${justEntered.has(g.id) ? " reveal" : ""}" data-id="${g.id}">
-                            <div class="sc-prize-head"><span class="sc-prize-icon">🎁</span><small>✅ You're in (${platformLabel}) — you could win:</small></div>
-                            ${window.KIHPrize.render(detail.prize || detail.reward || "…")}</div>
+                            <div class="sc-prize-head"><span class="sc-prize-icon">🎁</span><small>✅ You're in (${platformLabel}) — you could win${detail.tiers ? " one of these" : ""}:</small></div>
+                            ${detail.tiers ? window.KIHPrize.renderTiers(detail.tiers) : window.KIHPrize.render(detail.prize || detail.reward || "…")}</div>
                         ${warn}
                         ${statsHtml}
                         ${myPlatformHasSlots ? renderStakeHtml(g, detail.entry, isExpired, sideDrawn) : ""}

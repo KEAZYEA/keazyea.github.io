@@ -13,6 +13,23 @@
         /* a giveaway that hasn't closed yet: don't end it by accident */
         .still-open-warn { margin: 0 0 10px; padding: 10px 12px; border-radius: 10px; background: rgba(229, 57, 53, 0.14); border: 1px solid #e53935; color: #ff8a80; font-size: 0.9rem; line-height: 1.45; }
         .still-open-warn b { color: #ffb3ad; }
+        /* same prize for everyone, or 1st / 2nd / 3rd… */
+        .prize-mode { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+        .prize-mode label { cursor: pointer; }
+        .prize-mode input { position: absolute; opacity: 0; pointer-events: none; }
+        .prize-mode span { display: block; height: 100%; box-sizing: border-box; padding: 10px 12px; border-radius: 10px; border: 1px solid #3a3a66; background: #20203a; font-weight: 700; }
+        .prize-mode small { display: block; font-weight: 400; font-size: 0.78rem; color: #b8b8d0; margin-top: 2px; }
+        .prize-mode input:checked + span { border-color: #ffd75e; background: rgba(255, 215, 94, 0.12); box-shadow: 0 0 0 1px #ffd75e inset; }
+        .prize-mode input:focus-visible + span { outline: 2px solid #ffd75e; outline-offset: 2px; }
+        .tier-card { --pl: 205, 127, 50; padding: 10px 12px 12px; border-radius: 12px; border: 1px solid rgba(var(--pl), 0.7); background: linear-gradient(180deg, rgba(var(--pl), 0.12), rgba(255, 255, 255, 0.01)); }
+        .tier-card.place-1 { --pl: 255, 200, 40; }
+        .tier-card.place-2 { --pl: 200, 210, 225; }
+        .tier-card.place-4 { --pl: 140, 150, 255; }
+        .tier-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+        .tier-place { flex: 1; color: rgb(var(--pl)); font-size: 1.02rem; }
+        .tier-count { display: flex; align-items: center; gap: 6px; font-size: 0.82rem; color: #b8b8d0; }
+        .tier-count input { width: 58px; padding: 6px 8px; font-size: 0.95rem; border-radius: 6px; border: 1px solid gray; background: #2a2a4a; color: white; box-sizing: border-box; }
+        .tier-remove { background: none; border: none; color: #ff8080; font-size: 1.1rem; cursor: pointer; padding: 2px 6px; }
         /* a custom reward's picture: + to add one, then a thumbnail with ✕ */
         .prize-pic { position: relative; flex-shrink: 0; width: 64px; height: 64px; border-radius: 10px; display: grid; place-items: center; overflow: hidden; background: #2a2a4a; font-size: 1.4rem; }
         .prize-pic.add { border: 2px dashed #6a6aa6; color: #b8b8e0; font-size: 2rem; line-height: 1; cursor: pointer; box-sizing: border-box; }
@@ -380,7 +397,17 @@
                     <input type="text" id="secretGiveawayTitleInput" placeholder="e.g. Discord Announcement Giveaway"
                         style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box; margin-bottom:10px;">
 
-                    <label style="display:block; margin-bottom:6px;">Prize (hidden until someone enters) — add what the winner gets</label>
+                    <label style="display:block; margin-bottom:6px;">Prize (hidden until someone enters)</label>
+                    <div class="prize-mode" role="radiogroup">
+                        <label><input type="radio" name="secretPrizeMode" value="same" checked onchange="updateSecretPrizeMode()"><span>🎁 Same prize<small>every winner gets it</small></span></label>
+                        <label><input type="radio" name="secretPrizeMode" value="ranked" onchange="updateSecretPrizeMode()"><span>🏅 1st, 2nd, 3rd…<small>a prize per place</small></span></label>
+                    </div>
+                    <div id="rankedPrizeWrap" style="display:none; margin-bottom:10px;">
+                        <div id="prizeTierList" style="display:flex; flex-direction:column; gap:12px; margin-bottom:8px;"></div>
+                        <button type="button" class="prize-add-btn" id="addPrizeTierBtn" onclick="addPrizeTier()">+ Add another place</button>
+                        <p class="promo-sub" style="margin:8px 0 0; font-size:0.85rem;">One draw for everyone (iOS + Android). You draw 1st place first; players watch it the other way round — last place first, 1st place last.</p>
+                    </div>
+                    <div id="samePrizeWrap">
                     <div id="prizeRows" style="display:flex; flex-direction:column; gap:8px; margin-bottom:8px;"></div>
                     <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px;">
                         <button type="button" class="prize-add-btn" onclick="secretPrize.add('tokens')">+ 🪙 Tokens</button>
@@ -389,11 +416,12 @@
                         <button type="button" class="prize-add-btn" onclick="secretPrize.add('unit')">+ 🦸 Hero / troop</button>
                         <button type="button" class="prize-add-btn" onclick="secretPrize.add('custom')">+ ✨ Something else</button>
                     </div>
-                    <p class="promo-sub" style="margin:0 0 8px; font-size:0.85rem;">🪙 Tokens are paid into the winner's wallet automatically. Gold, diamonds, units and the rest you send as promo codes when you draw the winner.</p>
                     <input type="text" id="secretGiveawayPrizeNote" maxlength="200" placeholder="Note (optional) — e.g. I'll send you 2 promo codes" oninput="secretPrize.preview()"
                         style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box; margin-bottom:10px;">
                     <label style="display:block; margin-bottom:6px;">How it looks to players</label>
                     <div id="prizePreview" style="margin-bottom:14px; padding:12px; border-radius:12px; background:#1a1a33; border:1px dashed #3a3a66;"></div>
+                    </div>
+                    <p class="promo-sub" style="margin:0 0 14px; font-size:0.85rem;">🪙 Tokens are paid into the winner's wallet automatically. Gold, diamonds, units and the rest you send as promo codes when you draw the winner.</p>
 
                     <label style="display:flex; align-items:center; gap:8px; margin-bottom:10px; cursor:pointer;">
                         <input type="checkbox" id="secretGiveawayRequiresPasswordInput" checked
@@ -413,6 +441,8 @@
                     </label>
                     <p class="promo-sub" style="margin:0 0 12px; font-size:0.85rem;">Turn off for a giveaway where everyone who enters has the same single chance — no tokens.</p>
 
+                    <p id="rankedPoolNote" class="promo-sub" style="display:none; margin:0 0 12px;"></p>
+                    <div id="secretPoolWrap">
                     <label style="display:block; margin-bottom:6px;">Who's in the draw</label>
                     <select id="secretGiveawayPoolInput" onchange="updateSecretPoolInputs()"
                         style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box; margin-bottom:10px;">
@@ -436,6 +466,7 @@
                             <input type="number" id="secretGiveawayAndroidWinnersInput" min="0" step="1" value="0"
                                 style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box;">
                         </div>
+                    </div>
                     </div>
 
                     <div style="display:flex; gap:10px; margin-bottom:14px;">
@@ -1185,6 +1216,9 @@
                 document.getElementById("secretGiveawayPasswordWrap").style.display = "block";
                 document.getElementById("secretGiveawayPasswordInput").value = "";
                 secretPrize.load(null);
+                document.querySelector('input[name="secretPrizeMode"][value="same"]').checked = true;
+                prizeTiers.splice(0).forEach(t => { document.getElementById("tierCard_" + t.id).remove(); delete window[t.name]; });
+                updateSecretPrizeMode();
                 document.getElementById("secretGiveawayTokensInput").checked = true;
                 document.getElementById("secretGiveawayIosWinnersInput").value = "0";
                 document.getElementById("secretGiveawayAndroidWinnersInput").value = "0";
@@ -1201,6 +1235,66 @@
                 const everyone = document.getElementById("secretGiveawayPoolInput").value === "all";
                 document.getElementById("secretGiveawayAllWrap").style.display = everyone ? "block" : "none";
                 document.getElementById("secretGiveawaySplitWrap").style.display = everyone ? "none" : "flex";
+            };
+            /* ---- ranked prizes: 1st, 2nd, 3rd… each place its own prize (and
+               how many win it). One draw for everyone. Each place has its own
+               prize builder, window["tierPrize_<id>"]. ---- */
+            const prizeTiers = []; // [{ id, name, builder }], 1st place first
+            let prizeTierSeq = 0;
+            const secretPrizeRanked = () => document.querySelector('input[name="secretPrizeMode"]:checked').value === "ranked";
+            window.updateSecretPrizeMode = function () {
+                const ranked = secretPrizeRanked();
+                document.getElementById("samePrizeWrap").style.display = ranked ? "none" : "block";
+                document.getElementById("rankedPrizeWrap").style.display = ranked ? "block" : "none";
+                document.getElementById("secretPoolWrap").style.display = ranked ? "none" : "block";
+                document.getElementById("rankedPoolNote").style.display = ranked ? "block" : "none";
+                if (ranked && !prizeTiers.length) { addPrizeTier(); addPrizeTier(); addPrizeTier(); }
+                updateRankedSummary();
+            };
+            window.addPrizeTier = function () {
+                if (prizeTiers.length >= 5) { showInfoModal("That's plenty", "A ranked giveaway can have up to 5 places."); return; }
+                const id = ++prizeTierSeq, name = "tierPrize_" + id;
+                const kinds = [["tokens", "🪙 Tokens"], ["gold", "💰 Gold"], ["diamonds", "💎 Diamonds"], ["unit", "🦸 Hero / troop"], ["custom", "✨ Something else"]];
+                const card = document.createElement("div");
+                card.className = "tier-card";
+                card.id = "tierCard_" + id;
+                card.innerHTML = `
+                    <div class="tier-head">
+                        <b class="tier-place"></b>
+                        <label class="tier-count">Winners <input type="number" id="tierCount_${id}" min="1" max="20" step="1" value="1" oninput="updateRankedSummary()"></label>
+                        <button type="button" class="tier-remove" onclick="removePrizeTier(${id})" aria-label="Remove this place">✕</button>
+                    </div>
+                    <div id="tierRows_${id}" style="display:flex; flex-direction:column; gap:8px; margin-bottom:8px;"></div>
+                    <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px;">${kinds.map(([k, t]) => `<button type="button" class="prize-add-btn" onclick="${name}.add('${k}')">+ ${t}</button>`).join("")}</div>
+                    <input type="text" id="tierNote_${id}" maxlength="200" placeholder="Note (optional)" oninput="${name}.preview()"
+                        style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box; margin-bottom:8px;">
+                    <div id="tierPreview_${id}" style="padding:10px; border-radius:12px; background:#1a1a33; border:1px dashed #3a3a66;"></div>`;
+                document.getElementById("prizeTierList").appendChild(card);
+                const builder = makePrizeBuilder(name, { rowsId: "tierRows_" + id, noteId: "tierNote_" + id, previewId: "tierPreview_" + id });
+                builder.paint();
+                prizeTiers.push({ id, name, builder });
+                updateRankedSummary();
+            };
+            window.removePrizeTier = function (id) {
+                if (prizeTiers.length <= 2) { showInfoModal("Keep at least 2", "A ranked giveaway needs at least 2 places. For one prize, choose 🎁 Same prize instead."); return; }
+                const i = prizeTiers.findIndex(t => t.id === id);
+                if (i < 0) return;
+                const [t] = prizeTiers.splice(i, 1);
+                document.getElementById("tierCard_" + id).remove();
+                delete window[t.name];
+                updateRankedSummary();
+            };
+            // the medals follow the order (remove 2nd and 3rd becomes 2nd), and the total
+            window.updateRankedSummary = function () {
+                let total = 0;
+                prizeTiers.forEach((t, i) => {
+                    const card = document.getElementById("tierCard_" + t.id);
+                    card.querySelector(".tier-place").textContent = window.KIHPrize.placeLabel(i + 1);
+                    card.className = "tier-card place-" + Math.min(i + 1, 4);
+                    total += Math.max(1, parseInt(document.getElementById("tierCount_" + t.id).value, 10) || 1);
+                });
+                document.getElementById("rankedPoolNote").textContent = `🌍 One draw for everyone (iOS + Android) — ${total} winner${total === 1 ? "" : "s"} in all, across ${prizeTiers.length} places.`;
+                document.getElementById("addPrizeTierBtn").style.display = prizeTiers.length >= 5 ? "none" : "";
             };
             window.closeCreateSecretGiveawayForm = function () {
                 document.getElementById("createSecretGiveawayForm").style.display = "none";
@@ -1335,10 +1429,24 @@
 
             window.handleCreateSecretGiveaway = async function () {
                 const title = document.getElementById("secretGiveawayTitleInput").value;
-                const prize = secretPrize.value();
-                if (!prize.items.length) { showInfoModal("What's the prize?", "Add at least one reward — and fill in its amount (or pick the unit / name the custom one)."); return; }
-                if (prize.items.length < secretPrize.rowCount()) { showInfoModal("Something's missing", "One of the rewards isn't filled in yet — give it an amount (or a name)."); return; }
-                const prizeDescription = window.KIHPrize.summary(prize);
+                const ranked = secretPrizeRanked();
+                let prize = null, tiers = null, prizeDescription;
+                if (ranked) {
+                    tiers = [];
+                    for (const [i, t] of prizeTiers.entries()) {
+                        const p = t.builder.value(), place = window.KIHPrize.placeLabel(i + 1);
+                        if (!p.items.length || p.items.length < t.builder.rowCount()) { showInfoModal("Something's missing", `${place}: add a reward and fill in its amount (or pick the unit / name the custom one).`); return; }
+                        const count = parseInt(document.getElementById("tierCount_" + t.id).value, 10);
+                        if (!(count >= 1 && count <= 20)) { showInfoModal("How many winners?", `Set how many win ${place} (1 to 20).`); return; }
+                        tiers.push({ count, prize: p });
+                    }
+                    prizeDescription = window.KIHPrize.tiersSummary(tiers);
+                } else {
+                    prize = secretPrize.value();
+                    if (!prize.items.length) { showInfoModal("What's the prize?", "Add at least one reward — and fill in its amount (or pick the unit / name the custom one)."); return; }
+                    if (prize.items.length < secretPrize.rowCount()) { showInfoModal("Something's missing", "One of the rewards isn't filled in yet — give it an amount (or a name)."); return; }
+                    prizeDescription = window.KIHPrize.summary(prize);
+                }
                 const requiresPassword = document.getElementById("secretGiveawayRequiresPasswordInput").checked;
                 const tokensAllowed = document.getElementById("secretGiveawayTokensInput").checked;
                 const password = document.getElementById("secretGiveawayPasswordInput").value;
@@ -1346,7 +1454,7 @@
                 const androidWinnerCount = document.getElementById("secretGiveawayAndroidWinnersInput").value;
                 const everyone = document.getElementById("secretGiveawayPoolInput").value === "all";
                 const allWinnerCount = everyone ? document.getElementById("secretGiveawayAllWinnersInput").value : 0;
-                if (everyone && !(parseInt(allWinnerCount, 10) > 0)) { showInfoModal("How many winners?", "Set at least 1 winner."); return; }
+                if (!ranked && everyone && !(parseInt(allWinnerCount, 10) > 0)) { showInfoModal("How many winners?", "Set at least 1 winner."); return; }
                 const durationHours = document.getElementById("secretGiveawayDurationInput").value;
                 const deleteAfterDays = document.getElementById("secretGiveawayDeleteDaysInput").value;
 
@@ -1355,7 +1463,7 @@
                 btn.textContent = "Creating...";
                 try {
                     await AppState.createSecretGiveaway({
-                        title, prizeDescription, prize, requiresPassword, password, tokensAllowed,
+                        title, prizeDescription, prize, tiers, requiresPassword, password, tokensAllowed,
                         iosWinnerCount, androidWinnerCount, allWinnerCount, durationHours, deleteAfterDays
                     });
                     closeCreateSecretGiveawayForm();
@@ -1452,9 +1560,10 @@
                     // this function renders from.
                     function winnerLine(list, label, emoji) {
                         if (!list.length) return "";
-                        const items = list.map(w => {
+                        // ranked: 1st place first, with its medal
+                        const items = list.slice().sort((a, b) => (a.place || 0) - (b.place || 0)).map(w => {
                             const safeName = escapeHtml(w.name).replace(/'/g, "\\'");
-                            return `<span style="display:inline-block; margin:2px 0;">${everyone ? deviceEmoji(w.platform) + " " : ""}${escapeHtml(w.name)}
+                            return `<span style="display:inline-block; margin:2px 0;">${w.place ? `<b title="${window.KIHPrize.placeLabel(w.place)}">${window.KIHPrize.placeMedal(w.place)}</b> ` : ""}${everyone ? deviceEmoji(w.platform) + " " : ""}${escapeHtml(w.name)}
                                 <code id="secretCode_${g.id}_${w.uid}" style="background:#2a2a4a; padding:2px 6px; border-radius:4px; font-size:0.78rem;">…</code>
                                 <button onclick="handleResendSecretCode('${g.id}', '${w.uid}', '${safeName}', '${w.platform}')" style="font-size:0.7rem; padding:2px 8px; margin-left:2px; border-radius:4px; border:1px solid gray; background:#2a2a4a; color:white; cursor:pointer;">✉️ Resend</button>
                                 <button class="prize-tokens-btn" data-uid="${escapeHtml(w.uid)}" data-name="${escapeHtml(w.name || "")}" title="Send tokens as (part of) the prize" style="font-size:0.7rem; padding:2px 8px; margin-left:2px; border-radius:4px; border:1px solid #aa7a1e; background:#2a2a4a; color:white; cursor:pointer;">🪙 Tokens</button></span>`;
@@ -1540,8 +1649,10 @@
                         const el = document.getElementById(`secretCode_${g.id}_${w.uid}`);
                         if (!el) continue;
                         const code = codes[w.uid];
-                        const tokens = info && info.prize ? window.KIHPrize.tokensOf(info.prize) : 0;
-                        const codeless = info && info.prize && !window.KIHPrize.needsCode(info.prize);
+                        // ranked: what their place won
+                        const prize = info && (info.tiers ? (info.tiers[(w.place || 0) - 1] || {}).prize : info.prize);
+                        const tokens = prize ? window.KIHPrize.tokensOf(prize) : 0;
+                        const codeless = prize && !window.KIHPrize.needsCode(prize);
                         el.textContent = [tokens ? `🪙 ${tokens}` : "", code || (codeless ? "" : "no code saved")].filter(Boolean).join(" + ");
                         if (!code && !codeless) el.style.color = "#ff8080";
                     }
@@ -1551,37 +1662,47 @@
             // Draws all of a pool's remaining winners at once (each a different
             // person, the same odds as one at a time), then one Confirm sends
             // every winner their prize. Nothing is saved until Confirm.
-            const pendingPicks = {}; // giveawayId -> { group, count, result, prize, needsCode, tokens }
+            // A ranked giveaway's winners fill its places in draw order: #1 gets
+            // 1st place, and so on — each with that place's prize.
+            const pendingPicks = {}; // giveawayId -> { group, count, result, ranked, prizes: [{ place, prize, needsCode, tokens }] }
             window.handlePickSecretWinner = async function (giveawayId, group, count = 1, again = false) {
                 const groupText = group === "all" ? "from everyone (iOS + Android)" : "from " + (group === "ios" ? "iOS" : "Android");
                 if (!again && !await showConfirmModal(`Pick ${count} winner${count === 1 ? "" : "s"}`, `${stillOpenWarning(giveawayId)}Pick ${count} random winner${count === 1 ? "" : "s"} ${groupText} from this giveaway's entries?`)) return;
                 try {
                     const result = await AppState.pickSecretGiveawayWinners(giveawayId, group, count);
                     const info = await AppState.getSecretGiveawayPrizeInfo(giveawayId);
-                    const prize = info && info.prize;
-                    const needsCode = !prize || window.KIHPrize.needsCode(prize);
-                    const tokens = prize ? window.KIHPrize.tokensOf(prize) : 0;
-                    pendingPicks[giveawayId] = { group, count, result, needsCode, tokens };
+                    const tiers = info && info.tiers;
+                    const prizeOf = (prize, place) => ({ place, prize, needsCode: !prize || window.KIHPrize.needsCode(prize), tokens: prize ? window.KIHPrize.tokensOf(prize) : 0 });
+                    const prizes = result.picks.map((_, i) => {
+                        if (!tiers) return prizeOf(info && info.prize, 0);
+                        const place = AppState.secretPlaceForSlot(tiers, (result.wonBefore || 0) + i);
+                        return prizeOf((tiers[place - 1] || {}).prize, place);
+                    });
+                    const same = !tiers ? prizes[0] : null; // one prize for all of them
+                    pendingPicks[giveawayId] = { group, count, result, ranked: !!tiers, prizes };
                     const container = document.getElementById("secretWinnerPick_" + giveawayId);
                     const short = result.picks.length < count
                         ? `<p class="promo-sub" style="margin:0 0 10px; color:#ffb74d;">Only ${result.entryCount} ${result.entryCount === 1 ? "person" : "people"} entered, so only ${result.picks.length} of the ${count} places can be filled.</p>` : "";
                     container.innerHTML = `
                         <p style="margin:0 0 6px;"><strong>${result.picks.length} winner${result.picks.length === 1 ? "" : "s"} picked</strong> <span class="promo-sub">(from ${result.entryCount} entries — not saved yet)</span></p>
                         ${short}
-                        ${prize ? `<div style="margin:0 0 10px;">${window.KIHPrize.render(prize, { compact: true })}</div>` : ""}
-                        ${tokens ? `<p class="promo-sub" style="margin:0 0 8px;">🪙 ${tokens} tokens go into each winner's wallet automatically when you confirm.</p>` : ""}
-                        ${result.picks.map((p, i) => `<div style="margin:0 0 10px; padding:10px 12px; border:1px solid #34345e; border-radius:10px; background:#20203a;">
+                        ${same && same.prize ? `<div style="margin:0 0 10px;">${window.KIHPrize.render(same.prize, { compact: true })}</div>` : ""}
+                        ${same && same.tokens ? `<p class="promo-sub" style="margin:0 0 8px;">🪙 ${same.tokens} tokens go into each winner's wallet automatically when you confirm.</p>` : ""}
+                        ${result.picks.map((p, i) => { const z = prizes[i]; return `<div class="${z.place ? "tier-card place-" + Math.min(z.place, 4) : ""}" style="margin:0 0 10px; padding:10px 12px; border:1px solid ${z.place ? "rgba(var(--pl), 0.7)" : "#34345e"}; border-radius:10px; background:${z.place ? "" : "#20203a"};">
+                            ${z.place ? `<p class="tier-place" style="margin:0 0 4px; font-weight:800;">${window.KIHPrize.placeLabel(z.place)}</p>` : ""}
                             <p style="margin:0 0 2px;"><strong>#${i + 1} ${escapeHtml(p.winner.name)}</strong> (${p.platform === "ios" ? "🍎 iOS" : "🤖 Android"})</p>
-                            <p class="promo-sub" style="margin:0 0 ${needsCode ? 8 : 0}px;">Staked ${p.winner.tokens || 0} 🪙 — chance ${p.winnerWeight} in ${p.totalWeight} (${Math.round((p.winnerWeight / p.totalWeight) * 1000) / 10}%)</p>
-                            ${needsCode ? `<label style="display:block; margin-bottom:6px; font-size:0.9rem;">Prize code(s) for ${escapeHtml(p.winner.name)}${tokens ? " (for the rest of the prize)" : ""}:</label>
+                            <p class="promo-sub" style="margin:0 0 8px;">Staked ${p.winner.tokens || 0} 🪙 — chance ${p.winnerWeight} in ${p.totalWeight} (${Math.round((p.winnerWeight / p.totalWeight) * 1000) / 10}%)</p>
+                            ${z.place && z.prize ? `<div style="margin:0 0 8px;">${window.KIHPrize.render(z.prize, { compact: true })}</div>` : ""}
+                            ${z.place && z.tokens ? `<p class="promo-sub" style="margin:0 0 8px;">🪙 ${z.tokens} tokens go into their wallet automatically.</p>` : ""}
+                            ${z.needsCode ? `<label style="display:block; margin-bottom:6px; font-size:0.9rem;">Prize code(s) for ${escapeHtml(p.winner.name)}${z.tokens ? " (for the rest of the prize)" : ""}:</label>
                             <div id="secretPrizeCodeList_${giveawayId}_${i}"></div>` : ""}
-                        </div>`).join("")}
+                        </div>`; }).join("")}
                         <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:4px;">
                             <button class="btn-primary" id="confirmSecretWinners_${giveawayId}" onclick="handleConfirmSecretWinners('${giveawayId}')" style="padding:10px 20px;">Confirm &amp; send to ${result.picks.length === 1 ? "the winner" : "all " + result.picks.length}</button>
                             <button class="btn-primary" onclick="handlePickSecretWinner('${giveawayId}', '${group}', ${count}, true)" style="padding:10px 20px; background:#555; border-color:#555;">🔄 Draw again</button>
                         </div>
                     `;
-                    if (needsCode) result.picks.forEach((_, i) => renderCodeList(`secretPrizeCodeList_${giveawayId}_${i}`));
+                    prizes.forEach((z, i) => { if (z.needsCode) renderCodeList(`secretPrizeCodeList_${giveawayId}_${i}`); });
                     container.style.display = "block";
                 } catch (e) {
                     showInfoModal("Pick failed", e.message);
@@ -1591,12 +1712,14 @@
             window.handleConfirmSecretWinners = async function (giveawayId) {
                 const pick = pendingPicks[giveawayId];
                 if (!pick) return;
-                const { result, needsCode, tokens } = pick;
-                const codesFor = result.picks.map((_, i) => needsCode ? readCodeList(`secretPrizeCodeList_${giveawayId}_${i}`) : []);
-                const missing = result.picks.filter((_, i) => needsCode && !codesFor[i].length).map(p => p.winner.name);
+                const { result, prizes, ranked } = pick;
+                const codesFor = result.picks.map((_, i) => prizes[i].needsCode ? readCodeList(`secretPrizeCodeList_${giveawayId}_${i}`) : []);
+                const missing = result.picks.filter((_, i) => prizes[i].needsCode && !codesFor[i].length).map(p => p.winner.name);
                 if (missing.length) { showInfoModal("Missing code", "Type in the promo code for " + missing.join(", ") + " before confirming."); return; }
-                const what = [tokens ? `${tokens} tokens` : "", needsCode ? "their codes" : ""].filter(Boolean).join(" and ");
-                const names = result.picks.map(p => p.winner.name).join(", ");
+                const anyTokens = prizes.some(z => z.tokens), anyCodes = prizes.some(z => z.needsCode);
+                const what = ranked ? "their prizes"
+                    : [anyTokens ? `${prizes[0].tokens} tokens` : "", anyCodes ? "their codes" : ""].filter(Boolean).join(" and ");
+                const names = result.picks.map((p, i) => (prizes[i].place ? window.KIHPrize.placeMedal(prizes[i].place) + " " : "") + p.winner.name).join(", ");
                 if (!await showConfirmModal("Send prizes", `${stillOpenWarning(giveawayId)}Send ${what} to ${names}? This can't be undone.`)) return;
                 const btn = document.getElementById("confirmSecretWinners_" + giveawayId);
                 if (btn) btn.disabled = true;
@@ -1605,11 +1728,15 @@
                     const p = result.picks[i];
                     if (btn) btn.textContent = `Sending ${i + 1} of ${result.picks.length}…`;
                     try { await AppState.finalizeSecretGiveawayPrize(giveawayId, p.winner.uid, p.winner.name, p.platform, codesFor[i]); }
-                    catch (e) { failed.push(`${p.winner.name}: ${e.message}`); }
+                    catch (e) {
+                        failed.push(`${p.winner.name}: ${e.message}`);
+                        // ranked: places go in order, so stop rather than let the next person take this place
+                        if (ranked) { failed.push(`(Stopped there so the places stay in order — ${result.picks.length - i - 1} not sent yet. Pick again for the places left.)`); break; }
+                    }
                 }
                 delete pendingPicks[giveawayId];
                 await refreshSecretGiveawaysList();
-                if (failed.length) showInfoModal("Some didn't send", failed.join("\n") + "\n\nThe others are saved. Use ✉️ Resend next to a winner to try again.");
+                if (failed.length) showInfoModal("Some didn't send", failed.join("\n") + "\n\nAnyone listed as a winner is saved. Use ✉️ Resend next to a winner to try again.");
                 else showInfoModal("Sent", `${result.picks.length === 1 ? "The winner has" : "All " + result.picks.length + " winners have"} their prize.`);
             };
 

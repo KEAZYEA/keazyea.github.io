@@ -724,8 +724,12 @@ async function adminPaySecretPrize(db, adminUid, body, now) {
   const [gSnap, cfgSnap] = await Promise.all([giveawayRef.get(), giveawayRef.collection("private").doc("config").get()]);
   if (!gSnap.exists) throw new HttpError(404, "No such giveaway.");
   const g = gSnap.data();
-  if (!(g.winners || []).some(w => w.uid === winnerUid)) throw new HttpError(400, "Record them as a winner first.");
-  const prize = cfgSnap.exists ? cfgSnap.data().prize : null;
+  const record = (g.winners || []).find(w => w.uid === winnerUid);
+  if (!record) throw new HttpError(400, "Record them as a winner first.");
+  // A ranked giveaway (1st, 2nd, 3rd… prizes): what their place wins.
+  const cfg = cfgSnap.exists ? cfgSnap.data() : {};
+  const tiers = Array.isArray(cfg.tiers) && cfg.tiers.length ? cfg.tiers : null;
+  const prize = tiers ? ((tiers[(record.place || 0) - 1] || {}).prize || null) : (cfg.prize || null);
   const items = prize && Array.isArray(prize.items) ? prize.items : [];
   const amount = items.filter(i => i && i.kind === "tokens" && Number.isInteger(i.amount) && i.amount > 0).reduce((s, i) => s + i.amount, 0);
   if (!(amount > 0)) throw new HttpError(400, "This giveaway's prize has no tokens.");
