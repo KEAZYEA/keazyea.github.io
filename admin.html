@@ -10,6 +10,9 @@
     <style>
         .prize-add-btn { padding: 7px 12px; border-radius: 999px; border: 1px solid #4a4a86; background: #26264a; color: white; font-family: inherit; font-size: 0.88rem; font-weight: 700; cursor: pointer; }
         .prize-add-btn:hover { border-color: #ffd75e; }
+        /* a giveaway that hasn't closed yet: don't end it by accident */
+        .still-open-warn { margin: 0 0 10px; padding: 10px 12px; border-radius: 10px; background: rgba(229, 57, 53, 0.14); border: 1px solid #e53935; color: #ff8a80; font-size: 0.9rem; line-height: 1.45; }
+        .still-open-warn b { color: #ffb3ad; }
         /* a custom reward's picture: + to add one, then a thumbnail with ✕ */
         .prize-pic { position: relative; flex-shrink: 0; width: 64px; height: 64px; border-radius: 10px; display: grid; place-items: center; overflow: hidden; background: #2a2a4a; font-size: 1.4rem; }
         .prize-pic.add { border: 2px dashed #6a6aa6; color: #b8b8e0; font-size: 2rem; line-height: 1; cursor: pointer; box-sizing: border-box; }
@@ -364,7 +367,7 @@
                 <summary>🔒 Secret Giveaways</summary>
                 <p class="promo-sub">Admin-created, one-off giveaways — separate from the automatic weekly draw above.
                     Optionally password-gate entry (you hand the password out yourself, anywhere you like); set
-                    independent iOS/Android winner slots and draw them one at a time. The reward description stays
+                    independent iOS/Android winner slots (or one pool for everyone) and draw all of a pool's winners in one go. The reward description stays
                     hidden from everyone until they actually enter. Giveaways auto-delete after the number of days
                     you set below (cleanup happens next time this admin panel loads past that date, not on a timer).</p>
 
@@ -803,7 +806,16 @@
             function showConfirmModal(title, message) {
                 return new Promise((resolve) => {
                     document.getElementById("confirmModalTitle").textContent = title;
-                    document.getElementById("confirmModalBody").textContent = message;
+                    // A "still open" warning (stillOpenWarning) shows as its own red box.
+                    const body = document.getElementById("confirmModalBody");
+                    const warn = /^⚠️ STILL OPEN[^\n]*\n\n/.exec(message);
+                    body.textContent = warn ? message.slice(warn[0].length) : message;
+                    if (warn) {
+                        const box = document.createElement("div");
+                        box.className = "still-open-warn";
+                        box.textContent = warn[0].trim();
+                        body.prepend(box);
+                    }
                     const overlay = document.getElementById("confirmModalOverlay");
                     overlay.classList.add("open");
 
@@ -1356,6 +1368,13 @@
                 btn.textContent = "Create";
             };
 
+            const adminSecretById = new Map(); // the giveaways on screen, for the warnings below
+            // "This one is still open" — said in the confirm pop-ups too.
+            function stillOpenWarning(giveawayId) {
+                const g = adminSecretById.get(giveawayId);
+                if (!g || g.expiresAt <= Date.now()) return "";
+                return `⚠️ STILL OPEN — entries close in ${formatSecretGiveawayTimeLeft(g.expiresAt).replace(/ left$/, "")}. Doing this now ends it early.\n\n`;
+            }
             function formatSecretGiveawayTimeLeft(expiresAt) {
                 const msLeft = expiresAt - Date.now();
                 if (msLeft <= 0) return "Ended";
@@ -1443,7 +1462,9 @@
                         return `<p class="promo-sub" style="margin:0 0 4px;">${emoji} ${label}: ${items}</p>`;
                     }
 
-                    let statusHtml = `<p class="promo-sub" style="margin:0 0 4px;">👥 ${g.entryCount || 0} entries (🍎 ${g.iosEntryCount || 0} · 🤖 ${g.androidEntryCount || 0}) ${g.requiresPassword ? "🔒" : "🔓"}${everyone ? " · 🌍 one draw for everyone" : ""}</p>`;
+                    adminSecretById.set(g.id, g);
+                    let statusHtml = isExpired ? "" : `<div class="still-open-warn">⚠️ <b>Still open</b> — entries close in ${formatSecretGiveawayTimeLeft(g.expiresAt).replace(/ left$/, "")}. Picking winners or ending it now ends it <b>early</b>: anyone who enters after that isn't in the draw.</div>`;
+                    statusHtml += `<p class="promo-sub" style="margin:0 0 4px;">👥 ${g.entryCount || 0} entries (🍎 ${g.iosEntryCount || 0} · 🤖 ${g.androidEntryCount || 0}) ${g.requiresPassword ? "🔒" : "🔓"}${everyone ? " · 🌍 one draw for everyone" : ""}</p>`;
                     statusHtml += `<p class="promo-sub" style="margin:0 0 4px;">${isExpired ? "⏰ Entries closed" : "🟢 " + formatSecretGiveawayTimeLeft(g.expiresAt)}</p>`;
                     if (everyone) statusHtml += `<p class="promo-sub" style="margin:0 0 4px;">🌍 Winners: ${allWon}/${allSlots}</p>` + winnerLine(winners, "Winners", "🌍");
                     if (iosSlots > 0) statusHtml += `<p class="promo-sub" style="margin:0 0 4px;">🍎 iOS winners: ${iosWon}/${iosSlots}</p>` + winnerLine(winners.filter(w => w.platform === "ios"), "iOS", "🍎");
@@ -1451,9 +1472,10 @@
                     if (fullyDrawn) statusHtml += `<p class="promo-sub" style="color:gold; margin:0 0 4px;">🏆 Fully drawn</p>`;
 
                     let pickButtons = "";
-                    if (everyone && allWon < allSlots) pickButtons += `<button class="btn-primary" onclick="handlePickSecretWinner('${g.id}', 'all')" style="padding:8px 16px; margin-right:8px;">🎲 Pick Winner (everyone)</button>`;
-                    if (iosWon < iosSlots) pickButtons += `<button class="btn-primary" onclick="handlePickSecretWinner('${g.id}', 'ios')" style="padding:8px 16px; margin-right:8px;">🎲 Pick iOS Winner</button>`;
-                    if (androidWon < androidSlots) pickButtons += `<button class="btn-primary" onclick="handlePickSecretWinner('${g.id}', 'android')" style="padding:8px 16px; margin-right:8px;">🎲 Pick Android Winner</button>`;
+                    const pickLabel = (n, who) => `🎲 Pick ${n} ${who}winner${n === 1 ? "" : "s"}`;
+                    if (everyone && allWon < allSlots) pickButtons += `<button class="btn-primary" onclick="handlePickSecretWinner('${g.id}', 'all', ${allSlots - allWon})" style="padding:8px 16px; margin-right:8px;">${pickLabel(allSlots - allWon, "")} (everyone)</button>`;
+                    if (iosWon < iosSlots) pickButtons += `<button class="btn-primary" onclick="handlePickSecretWinner('${g.id}', 'ios', ${iosSlots - iosWon})" style="padding:8px 16px; margin-right:8px;">${pickLabel(iosSlots - iosWon, "iOS ")}</button>`;
+                    if (androidWon < androidSlots) pickButtons += `<button class="btn-primary" onclick="handlePickSecretWinner('${g.id}', 'android', ${androidSlots - androidWon})" style="padding:8px 16px; margin-right:8px;">${pickLabel(androidSlots - androidWon, "Android ")}</button>`;
 
                     const deleteLabel = fullyDrawn ? "🗑️ Delete" : (isExpired ? "🗑️ Delete" : "🗑️ End Early / Delete");
                     const viewPasswordBtn = g.requiresPassword
@@ -1526,47 +1548,69 @@
                 }
             }
 
-            window.handlePickSecretWinner = async function (giveawayId, group) {
-                const groupText = group === "all" ? "winner from everyone (iOS + Android)" : group + " winner";
-                if (!await showConfirmModal("Pick winner", `Pick a random ${groupText} from this giveaway's entries?`)) return;
+            // Draws all of a pool's remaining winners at once (each a different
+            // person, the same odds as one at a time), then one Confirm sends
+            // every winner their prize. Nothing is saved until Confirm.
+            const pendingPicks = {}; // giveawayId -> { group, count, result, prize, needsCode, tokens }
+            window.handlePickSecretWinner = async function (giveawayId, group, count = 1, again = false) {
+                const groupText = group === "all" ? "from everyone (iOS + Android)" : "from " + (group === "ios" ? "iOS" : "Android");
+                if (!again && !await showConfirmModal(`Pick ${count} winner${count === 1 ? "" : "s"}`, `${stillOpenWarning(giveawayId)}Pick ${count} random winner${count === 1 ? "" : "s"} ${groupText} from this giveaway's entries?`)) return;
                 try {
-                    const result = await AppState.pickSecretGiveawayWinner(giveawayId, group);
-                    const platform = result.winner.platform;
+                    const result = await AppState.pickSecretGiveawayWinners(giveawayId, group, count);
                     const info = await AppState.getSecretGiveawayPrizeInfo(giveawayId);
                     const prize = info && info.prize;
                     const needsCode = !prize || window.KIHPrize.needsCode(prize);
                     const tokens = prize ? window.KIHPrize.tokensOf(prize) : 0;
+                    pendingPicks[giveawayId] = { group, count, result, needsCode, tokens };
                     const container = document.getElementById("secretWinnerPick_" + giveawayId);
-                    const safeName = escapeHtml(result.winner.name).replace(/'/g, "\\'");
+                    const short = result.picks.length < count
+                        ? `<p class="promo-sub" style="margin:0 0 10px; color:#ffb74d;">Only ${result.entryCount} ${result.entryCount === 1 ? "person" : "people"} entered, so only ${result.picks.length} of the ${count} places can be filled.</p>` : "";
                     container.innerHTML = `
-                        <p style="margin:0 0 4px;"><strong>Winner:</strong> ${escapeHtml(result.winner.name)} (${platform === "ios" ? "🍎 iOS" : "🤖 Android"})</p>
-                        <p class="promo-sub" style="margin:0 0 4px;"><strong>Remaining pool:</strong> ${result.entryCount}</p>
-                        <p class="promo-sub" style="margin:0 0 10px;"><strong>Staked:</strong> ${result.winner.tokens || 0} 🪙 — their chance was ${result.winnerWeight} in ${result.totalWeight} (${Math.round((result.winnerWeight / result.totalWeight) * 1000) / 10}%)</p>
+                        <p style="margin:0 0 6px;"><strong>${result.picks.length} winner${result.picks.length === 1 ? "" : "s"} picked</strong> <span class="promo-sub">(from ${result.entryCount} entries — not saved yet)</span></p>
+                        ${short}
                         ${prize ? `<div style="margin:0 0 10px;">${window.KIHPrize.render(prize, { compact: true })}</div>` : ""}
-                        ${tokens ? `<p class="promo-sub" style="margin:0 0 8px;">🪙 ${tokens} tokens go into their wallet automatically when you confirm.</p>` : ""}
-                        ${needsCode ? `<label style="display:block; margin-bottom:6px;">Prize code(s) to send${tokens ? " (for the rest of the prize)" : ""}:</label>
-                        <div id="secretPrizeCodeList_${giveawayId}"></div>` : ""}
-                        <button class="btn-primary" onclick="handleConfirmSecretWinner('${giveawayId}', '${result.winner.uid}', '${safeName}', '${platform}', ${needsCode}, ${tokens})"
-                            style="margin-top:10px; padding:10px 20px;">Confirm &amp; Send Prize</button>
+                        ${tokens ? `<p class="promo-sub" style="margin:0 0 8px;">🪙 ${tokens} tokens go into each winner's wallet automatically when you confirm.</p>` : ""}
+                        ${result.picks.map((p, i) => `<div style="margin:0 0 10px; padding:10px 12px; border:1px solid #34345e; border-radius:10px; background:#20203a;">
+                            <p style="margin:0 0 2px;"><strong>#${i + 1} ${escapeHtml(p.winner.name)}</strong> (${p.platform === "ios" ? "🍎 iOS" : "🤖 Android"})</p>
+                            <p class="promo-sub" style="margin:0 0 ${needsCode ? 8 : 0}px;">Staked ${p.winner.tokens || 0} 🪙 — chance ${p.winnerWeight} in ${p.totalWeight} (${Math.round((p.winnerWeight / p.totalWeight) * 1000) / 10}%)</p>
+                            ${needsCode ? `<label style="display:block; margin-bottom:6px; font-size:0.9rem;">Prize code(s) for ${escapeHtml(p.winner.name)}${tokens ? " (for the rest of the prize)" : ""}:</label>
+                            <div id="secretPrizeCodeList_${giveawayId}_${i}"></div>` : ""}
+                        </div>`).join("")}
+                        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:4px;">
+                            <button class="btn-primary" id="confirmSecretWinners_${giveawayId}" onclick="handleConfirmSecretWinners('${giveawayId}')" style="padding:10px 20px;">Confirm &amp; send to ${result.picks.length === 1 ? "the winner" : "all " + result.picks.length}</button>
+                            <button class="btn-primary" onclick="handlePickSecretWinner('${giveawayId}', '${group}', ${count}, true)" style="padding:10px 20px; background:#555; border-color:#555;">🔄 Draw again</button>
+                        </div>
                     `;
-                    if (needsCode) renderCodeList("secretPrizeCodeList_" + giveawayId);
+                    if (needsCode) result.picks.forEach((_, i) => renderCodeList(`secretPrizeCodeList_${giveawayId}_${i}`));
                     container.style.display = "block";
                 } catch (e) {
                     showInfoModal("Pick failed", e.message);
                 }
             };
 
-            window.handleConfirmSecretWinner = async function (giveawayId, winnerUid, winnerName, platform, needsCode = true, tokens = 0) {
-                const codes = needsCode ? readCodeList("secretPrizeCodeList_" + giveawayId) : [];
-                if (needsCode && !codes.length) { showInfoModal("Missing code", "Type in the promo code before confirming."); return; }
-                const what = [tokens ? `${tokens} tokens` : "", codes.length ? describeCodes(codes) : ""].filter(Boolean).join(" and ");
-                if (!await showConfirmModal("Send prize", `Send ${what} to ${winnerName}? This can't be undone.`)) return;
-                try {
-                    await AppState.finalizeSecretGiveawayPrize(giveawayId, winnerUid, winnerName, platform, codes);
-                    await refreshSecretGiveawaysList();
-                } catch (e) {
-                    showInfoModal("Failed to save", e.message);
+            window.handleConfirmSecretWinners = async function (giveawayId) {
+                const pick = pendingPicks[giveawayId];
+                if (!pick) return;
+                const { result, needsCode, tokens } = pick;
+                const codesFor = result.picks.map((_, i) => needsCode ? readCodeList(`secretPrizeCodeList_${giveawayId}_${i}`) : []);
+                const missing = result.picks.filter((_, i) => needsCode && !codesFor[i].length).map(p => p.winner.name);
+                if (missing.length) { showInfoModal("Missing code", "Type in the promo code for " + missing.join(", ") + " before confirming."); return; }
+                const what = [tokens ? `${tokens} tokens` : "", needsCode ? "their codes" : ""].filter(Boolean).join(" and ");
+                const names = result.picks.map(p => p.winner.name).join(", ");
+                if (!await showConfirmModal("Send prizes", `${stillOpenWarning(giveawayId)}Send ${what} to ${names}? This can't be undone.`)) return;
+                const btn = document.getElementById("confirmSecretWinners_" + giveawayId);
+                if (btn) btn.disabled = true;
+                const failed = [];
+                for (let i = 0; i < result.picks.length; i++) {
+                    const p = result.picks[i];
+                    if (btn) btn.textContent = `Sending ${i + 1} of ${result.picks.length}…`;
+                    try { await AppState.finalizeSecretGiveawayPrize(giveawayId, p.winner.uid, p.winner.name, p.platform, codesFor[i]); }
+                    catch (e) { failed.push(`${p.winner.name}: ${e.message}`); }
                 }
+                delete pendingPicks[giveawayId];
+                await refreshSecretGiveawaysList();
+                if (failed.length) showInfoModal("Some didn't send", failed.join("\n") + "\n\nThe others are saved. Use ✉️ Resend next to a winner to try again.");
+                else showInfoModal("Sent", `${result.picks.length === 1 ? "The winner has" : "All " + result.picks.length + " winners have"} their prize.`);
             };
 
             // Everyone entered, with their device and stake — biggest stakes first.
@@ -1626,7 +1670,7 @@
             };
 
             window.handleDeleteSecretGiveaway = async function (giveawayId) {
-                if (!await showConfirmModal("Delete this giveaway?", "This removes it and all its entries permanently. If any winners were already drawn, this does not un-send prizes that were already delivered.")) return;
+                if (!await showConfirmModal("Delete this giveaway?", stillOpenWarning(giveawayId) + "This removes it and all its entries permanently. If any winners were already drawn, this does not un-send prizes that were already delivered.")) return;
                 try {
                     await AppState.deleteSecretGiveaway(giveawayId);
                     await refreshSecretGiveawaysList();
