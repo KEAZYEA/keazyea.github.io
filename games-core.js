@@ -58,11 +58,28 @@
         if (o[0] === prev) [o[0], o[1]] = [o[1], o[0]];
         return o[m % list.length];
     }
+    // From DAILY_WEEKS_FROM (a Monday) every Monday–Sunday week has all five:
+    // Monday to Friday are the five in a shuffled order, and Saturday and
+    // Sunday two more of them — so a week of Today's Puzzles is a week of
+    // every game's double-points day. Never the same game two days running.
+    const DAILY_WEEKS_FROM = "2026-11-02";
+    function dailyWeekOrder(w, prevDay) {
+        const o = shuffle(seededRandom(hashString("kih-daily-week:" + w)), GAMES);
+        if (o[0] === prevDay) [o[0], o[1]] = [o[1], o[0]];
+        const r = seededRandom(hashString("kih-daily-weekend:" + w));
+        const sat = pick(r, GAMES.filter(g => g !== o[4]));
+        const sun = pick(r, GAMES.filter(g => g !== sat));
+        return [...o, sat, sun];
+    }
     function dailyGameFor(day) {
-        const n = dayNumber(day), from = dayNumber(DAILY_FIVE_FROM);
+        const n = dayNumber(day), from = dayNumber(DAILY_FIVE_FROM), weeks = dayNumber(DAILY_WEEKS_FROM);
         if (n < from) return inBlocks(DAILY_FOUR, "kih-daily-game:", n);
         const lastFour = inBlocks(DAILY_FOUR, "kih-daily-game:", from - 1);
-        return inBlocks(GAMES, "kih-daily-game5:", n - from, lastFour);
+        if (n < weeks) return inBlocks(GAMES, "kih-daily-game5:", n - from, lastFour);
+        const w = Math.floor((n - weeks) / 7);
+        // the Sunday before (one step back: a Sunday never looks further)
+        const prevSunday = w === 0 ? inBlocks(GAMES, "kih-daily-game5:", weeks - 1 - from, lastFour) : dailyWeekOrder(w - 1, null)[6];
+        return dailyWeekOrder(w, prevSunday)[(n - weeks) % 7];
     }
 
     /* ---------------- units ---------------- */
@@ -672,13 +689,29 @@
     const RUN_BLUR_HINTS = 5;
     const hintsLeftOf = (run) => (Number.isInteger(run.hintsLeft) ? run.hintsLeft : RUN_BLUR_HINTS);
 
-    /* Weekly leaderboard: every game is worth the same — at most LB_CAP
-       points — so no one game is the way to the top. A run's score turns
-       into points against what counts as a great run in that game. */
+    /* Weekly leaderboard: every game is worth the same, so no one game is
+       the way to the top. A run's score IS its points: a run stops when it
+       reaches LB_CAP, and what it shows is what counts (no converting).
+       ⭐ Each day, the game that's Today's Puzzle counts double: a run
+       started that day in that game is worth twice its score. A game's
+       place on the board is its best run this week, doubled or not — so up
+       to LB_CAP × 2, and LB_MAX for the week (every game comes up as the
+       puzzle at least once a week). */
     const LB_CAP = 20;
-    const LB_TARGET = { trivia: 20, hilo: 20, unitle: 24, guess: 24, blur: 24 };
-    const lbPoints = (game, raw) => Math.round(LB_CAP * Math.min(1, Math.max(0, Number(raw) || 0) / LB_TARGET[game]));
-    const lbTotal = (best) => GAMES.reduce((sum, g) => sum + lbPoints(g, (best || {})[g]), 0);
+    const LB_GAME_MAX = LB_CAP * 2;
+    const LB_MAX = LB_GAME_MAX * GAMES.length;
+    const lbPoints = (game, raw) => Math.min(LB_CAP, Math.max(0, Math.floor(Number(raw) || 0)));
+    const BONUS_FROM = "2026-10-26";
+    // Today's ⭐ double-points game: the day's puzzle game (none before it started).
+    const bonusGameFor = (day) => (typeof day === "string" && day >= BONUS_FROM ? dailyGameFor(day) : null);
+    // What one run adds to its game on the board.
+    const lbRunPoints = (game, raw, bonus) => lbPoints(game, raw) * (bonus ? 2 : 1);
+    // A week's board points per game, from what's saved: `pts` (each game's
+    // best run, doubled or not), or for a row from before that, its best scores.
+    const lbPts = (row) => Object.fromEntries(GAMES.map(g => [g, row && row.pts
+        ? Math.min(LB_GAME_MAX, Math.max(0, Math.floor(Number(row.pts[g]) || 0)))
+        : lbPoints(g, ((row && row.best) || {})[g])]));
+    const lbTotal = (row) => { const p = lbPts(row); return GAMES.reduce((sum, g) => sum + p[g], 0); };
 
     function runTriviaQuestion(units, seed, step) {
         const rand = runRng("trivia", seed, step);
@@ -738,10 +771,15 @@
         const r = { ...run, guesses: run.guesses.slice(), letters: (run.letters || []).slice() };
         const late = now > run.deadline + grace;
         const unitInfo = (key) => { const u = unitByKey(units, key); return { key, name: u.name, img: u.img }; };
+        // A run tops out at LB_CAP: the unit that gets there scores only what's
+        // left, and the run ends there — a perfect run.
         const nextUnit = (points) => {
-            r.score += points; r.step++; r.guesses = []; r.letters = [];
+            const got = Math.max(0, Math.min(points, LB_CAP - r.score)); // (a run from before the cap may already be past it)
+            r.score += got; r.step++; r.guesses = []; r.letters = [];
             if (r.game === "blur") r.hints = 0;
             r.deadline = now + RUN_PAUSE_MS + RUN_LIMIT_MS[r.game];
+            if (r.score >= LB_CAP) r.over = true;
+            return got;
         };
         const finish = (fb) => { r.over = true; return { run: r, feedback: { ...fb, timedOut: late || input == null } }; };
         const validGuess = (key) => {
@@ -764,9 +802,8 @@
                 fb = { correct: right, winner, picked, values: { [rd.a]: unitByKey(units, rd.a)[rd.stat], [rd.b]: unitByKey(units, rd.b)[rd.stat] } };
             }
             if (!right) return finish(fb);
-            r.score++; r.step++;
-            r.deadline = now + RUN_PAUSE_MS + RUN_LIMIT_MS[r.game];
-            return { run: r, feedback: { ...fb, points: 1 } };
+            nextUnit(1);
+            return { run: r, feedback: { ...fb, points: 1, ...(r.over ? { maxed: true } : {}) } };
         }
 
         if (r.game === "guess") {
@@ -779,10 +816,9 @@
             const st = hangState(name, r.letters);
             const hit = nameLetters(name).has(letter);
             if (st.solved) {
-                const points = hangPoints(st.wrong.length);
                 const misses = st.wrong.length;
-                nextUnit(points);
-                return { run: r, feedback: { solved: true, points, misses, letter, hit, answer: unitInfo(target) } };
+                const points = nextUnit(hangPoints(misses));
+                return { run: r, feedback: { solved: true, points, misses, letter, hit, answer: unitInfo(target), ...(r.over ? { maxed: true } : {}) } };
             }
             if (st.lost) return finish({ failed: true, letter, hit, answer: unitInfo(target), mask: hangMask(name, nameLetters(name) ? [...nameLetters(name)] : []) });
             return { run: r, feedback: { letter, hit } };
@@ -797,10 +833,9 @@
         validGuess(input.guess);
         if (input.guess === target) {
             const tries = r.guesses.length + 1;
-            const points = r.game === "blur" ? blurPoints(tries) : unitlePoints(tries);
             const solvedIn = [...r.guesses, input.guess];
-            nextUnit(points);
-            return { run: r, feedback: { solved: true, points, tries, answer: unitInfo(target), guesses: solvedIn } };
+            const points = nextUnit(r.game === "blur" ? blurPoints(tries) : unitlePoints(tries));
+            return { run: r, feedback: { solved: true, points, tries, answer: unitInfo(target), guesses: solvedIn, ...(r.over ? { maxed: true } : {}) } };
         }
         r.guesses.push(input.guess);
         if (r.guesses.length >= (r.game === "blur" ? BLUR_GUESSES : UNITLE_TRIES)) return finish({ failed: true, answer: unitInfo(target), lastGuess: input.guess });
@@ -810,7 +845,7 @@
 
     return {
         RUN_LIMIT_MS, RUN_PAUSE_MS, RUN_GRACE_MS, RUN_TRIVIA_KINDS, RUN_BLUR_HINTS, unitlePoints, hangPoints, blurPoints,
-        LB_CAP, LB_TARGET, lbPoints, lbTotal,
+        LB_CAP, LB_GAME_MAX, LB_MAX, lbPoints, lbRunPoints, lbPts, lbTotal, bonusGameFor, BONUS_FROM, DAILY_WEEKS_FROM,
         runNew, runView, runStep, runTriviaQuestion, runHiloRound, runUnitleTarget, runHangTarget, runBlurPuzzle,
         RARITIES, GAMES, GAME_TITLES, GAME_ICONS, DAILY_FIVE_FROM,
         hashString, seededRandom, dayRng, pick, shuffle, sample, dailyGameFor,

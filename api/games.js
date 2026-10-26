@@ -25,16 +25,18 @@
  *                                    a signed-in caller; anyone else gets just the
  *                                    week's end and the prizes
  *
- * Weekly score = your best run this week in each of the five games, each
- * turned into at most G.LB_CAP points (G.lbPoints), added up — so every
- * game counts the same. Weeks run Monday–Sunday, Singapore time. The first leaderboard or run
- * request after a week ends pays its top 3 (WEEKLY_PRIZES), once — the
- * week's summary doc records it inside the same transaction.
+ * Weekly score = your best run this week in each of the five games — a
+ * run's score is its points, at most G.LB_CAP; a run started on the day its
+ * game is Today's Puzzle (G.bonusGameFor) counts double — added up, so at
+ * most G.LB_MAX. Weeks run Monday–Sunday,
+ * Singapore time. The first leaderboard or run request after a week ends
+ * pays its top 5 (WEEKLY_PRIZES), once — the week's summary doc records it
+ * inside the same transaction.
  *
  * Data (server-only; the Firestore rules give clients no access):
  *   gameRuns/{runId}                          one run: owner, name, week, state
  *   gameLeaderboards/{week}                   { finalizedAt, winners } once paid
- *   gameLeaderboards/{week}/players/{uid}     { name, best: {game: score}, total, updatedAt }
+ *   gameLeaderboards/{week}/players/{uid}     { name, best: {game: score}, pts: {game: board points}, total, updatedAt }
  */
 
 const crypto = require("crypto");
@@ -44,7 +46,7 @@ const G = require("../games-core.js");
 const { loadUnits } = require("./_units");
 const jpeg = require("../vendor/jpeg-js");
 
-const WEEKLY_PRIZES = [15, 10, 5]; // 🪙 for 1st, 2nd, 3rd
+const WEEKLY_PRIZES = [30, 20, 15, 10, 10]; // 🪙 for 1st to 5th
 const LEADERBOARD_SIZE = 20;
 const SITE = "https://keazyea.github.io";
 
@@ -75,7 +77,7 @@ function weekEndsAt(ms) {
 }
 const weeksBefore = (week, n) => new Date(Date.parse(week + "T00:00:00Z") - 7 * n * DAY_MS).toISOString().slice(0, 10);
 const blankBest = () => Object.fromEntries(G.GAMES.map(g => [g, 0]));
-const totalOf = (best) => G.lbTotal(best); // each game at most G.LB_CAP points
+const blankPts = () => Object.fromEntries(G.GAMES.map(g => [g, 0]));
 
 /* ---------------- Blur pictures ----------------
    The page shows the picture zoomed in and blurred with CSS, which would
@@ -184,9 +186,14 @@ async function runStart(db, uid, body, now) {
   ]);
   const run = G.runNew(game, crypto.randomInt(2 ** 31), now);
   const runId = crypto.randomBytes(12).toString("hex");
-  await db.collection("gameRuns").doc(runId).set({ uid, name, game, week, run, createdAt: now, updatedAt: now });
+  // ⭐ Today's Puzzle game counts double for runs started today (even one
+  // that finishes after midnight).
+  const bonusGame = G.bonusGameFor(dayKeyFor(now));
+  const bonus = bonusGame === game;
+  await db.collection("gameRuns").doc(runId).set({ uid, name, game, week, bonus, run, createdAt: now, updatedAt: now });
   const best = lb.exists ? (lb.data().best || {})[game] || 0 : 0;
-  return { ok: true, runId, game, week, score: 0, over: false, best, deadline: run.deadline, now, view: await publicView(run) };
+  const pts = lb.exists ? G.lbPts(lb.data())[game] : 0;
+  return { ok: true, runId, game, week, bonus, bonusGame, score: 0, over: false, best, pts, deadline: run.deadline, now, view: await publicView(run) };
 }
 
 // Only the fields a move can have, with the right types.
@@ -224,14 +231,20 @@ async function runAnswer(db, uid, body, now) {
       throw new HttpError(400, e.message);
     }
     tx.update(runRef, { run: step.run, updatedAt: now });
-    const best = { ...blankBest(), ...(lbSnap.exists ? lbSnap.data().best || {} : {}) };
-    let newBest = false;
-    if (step.run.score > (best[doc.game] || 0)) {
-      best[doc.game] = step.run.score;
-      newBest = true;
-      tx.set(lbRef, { uid, name: doc.name, week: doc.week, best, total: totalOf(best), updatedAt: now }, { merge: true });
+    const row = lbSnap.exists ? lbSnap.data() : {};
+    const best = { ...blankBest(), ...(row.best || {}) };
+    const pts = { ...blankPts(), ...G.lbPts(row) };
+    // A better score, or more points on the board (a doubled run can beat a
+    // higher plain one) — either is saved.
+    const runPts = G.lbRunPoints(doc.game, step.run.score, doc.bonus);
+    const betterScore = step.run.score > (best[doc.game] || 0);
+    const morePts = runPts > pts[doc.game];
+    if (betterScore) best[doc.game] = step.run.score;
+    if (morePts) pts[doc.game] = runPts;
+    if (betterScore || morePts) {
+      tx.set(lbRef, { uid, name: doc.name, week: doc.week, best, pts, total: G.lbTotal({ pts }), updatedAt: now }, { merge: true });
     }
-    return { step, best: best[doc.game] || 0, newBest, game: doc.game };
+    return { step, best: best[doc.game] || 0, pts: pts[doc.game], newBest: betterScore || morePts, game: doc.game };
   });
   const { run } = result.step;
   return {
@@ -240,6 +253,7 @@ async function runAnswer(db, uid, body, now) {
     over: run.over,
     feedback: result.step.feedback,
     best: result.best,
+    pts: result.pts,
     newBest: result.newBest,
     deadline: run.deadline,
     now,
@@ -283,7 +297,7 @@ async function finalizeWeek(db, week, now) {
   });
   finalizedWeeks.add(week);
   if (!paid) return;
-  const place = ["1st 🥇", "2nd 🥈", "3rd 🥉"];
+  const place = ["1st 🥇", "2nd 🥈", "3rd 🥉", "4th 🏅", "5th 🏅"];
   await Promise.all(winners.map(w => db.collection("users").doc(w.uid).collection("personalNotifications").add({
     type: "tokensGranted",
     title: `🏆 You came ${place[w.rank - 1]} in Games this week! +${w.prize} tokens`,
@@ -302,7 +316,7 @@ async function finalizePastWeeks(db, now) {
 }
 
 /* ---------------- leaderboard ---------------- */
-const SCORING = 2; // 2: each game scaled to at most G.LB_CAP points
+const SCORING = 3; // 3: a run's score is its points (at most G.LB_CAP), Today's Puzzle game ×2, kept as pts
 const rescored = new Set();
 async function rescoreWeek(db, week) {
   if (rescored.has(week)) return;
@@ -312,8 +326,8 @@ async function rescoreWeek(db, week) {
     const snap = await metaRef.collection("players").get();
     let batch = db.batch(), n = 0;
     for (const d of snap.docs) {
-      const total = totalOf({ ...blankBest(), ...(d.data().best || {}) });
-      if (total !== d.data().total) { batch.update(d.ref, { total }); if (++n % 400 === 0) { await batch.commit(); batch = db.batch(); } }
+      const pts = G.lbPts(d.data()), total = G.lbTotal({ pts });
+      if (total !== d.data().total || !d.data().pts) { batch.update(d.ref, { pts, total }); if (++n % 400 === 0) { await batch.commit(); batch = db.batch(); } }
     }
     if (n % 400) await batch.commit();
     await metaRef.set({ week, scoring: SCORING }, { merge: true });
@@ -325,7 +339,9 @@ async function leaderboard(db, uid, now) {
   await finalizePastWeeks(db, now);
   const week = weekOf(now);
   // Names are only for signed-in players.
-  if (!uid) return { ok: true, week, endsAt: weekEndsAt(now), now, prizes: WEEKLY_PRIZES, cap: G.LB_CAP, top: [], me: null, lastWeek: [], signedOut: true };
+  const bonus = G.bonusGameFor(dayKeyFor(now)); // today's ⭐ double-points game
+  const base = { ok: true, week, bonus, endsAt: weekEndsAt(now), now, prizes: WEEKLY_PRIZES, cap: G.LB_CAP, gameMax: G.LB_GAME_MAX, max: G.LB_MAX };
+  if (!uid) return { ...base, top: [], me: null, lastWeek: [], signedOut: true };
   await rescoreWeek(db, week);
   const players = db.collection("gameLeaderboards").doc(week).collection("players");
   const [topSnap, meSnap, lastMeta] = await Promise.all([
@@ -336,20 +352,20 @@ async function leaderboard(db, uid, now) {
   const rows = topSnap.docs.map(d => d.data()).filter(p => p.total > 0)
     .sort((a, b) => b.total - a.total || a.updatedAt - b.updatedAt)
     .slice(0, LEADERBOARD_SIZE)
-    .map((p, i) => ({ rank: i + 1, name: p.name, total: p.total, best: { ...blankBest(), ...p.best }, me: p.uid === uid }));
+    .map((p, i) => ({ rank: i + 1, name: p.name, total: p.total, best: { ...blankBest(), ...p.best }, pts: G.lbPts(p), me: p.uid === uid }));
   let me = null;
   if (meSnap && meSnap.exists && meSnap.data().total > 0) {
     const mine = meSnap.data();
     const listed = rows.find(r => r.me);
     const rank = listed ? listed.rank : 1 + (await players.where("total", ">", mine.total).count().get()).data().count;
-    me = { rank, total: mine.total, best: { ...blankBest(), ...mine.best } };
+    me = { rank, total: mine.total, best: { ...blankBest(), ...mine.best }, pts: G.lbPts(mine) };
   } else if (uid) {
-    me = { rank: null, total: 0, best: blankBest() };
+    me = { rank: null, total: 0, best: blankBest(), pts: blankPts() };
   }
   const lastWeek = lastMeta.exists && lastMeta.data().winners
     ? lastMeta.data().winners.map(w => ({ rank: w.rank, name: w.name, total: w.total, prize: w.prize }))
     : [];
-  return { ok: true, week, endsAt: weekEndsAt(now), now, prizes: WEEKLY_PRIZES, cap: G.LB_CAP, top: rows, me, lastWeek };
+  return { ...base, top: rows, me, lastWeek };
 }
 
 module.exports = async (req, res) => {
