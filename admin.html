@@ -1923,8 +1923,10 @@ async function refreshMaintenanceStatus() {
 }
 
 async function refreshRecentAnnouncements() {
-    const items = await AppState.getAnnouncements(20);
     const list = document.getElementById("recentAnnouncementsList");
+    let items;
+    try { items = await AppState.getAnnouncements(20); }
+    catch (e) { list.innerHTML = `<p class="promo-sub">${escapeHtml(e.message)}</p>`; return; } // e.g. not signed in as admin
     if (!items.length) {
         list.innerHTML = '<p class="promo-sub">No announcements posted yet.</p>';
         return;

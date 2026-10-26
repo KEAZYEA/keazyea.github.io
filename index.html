@@ -2,13 +2,17 @@
 <html lang="en">
 
 <head>
-    <title>Keazyea's Intelligence Hub</title>
+    <title>Keazyea's Intelligence Hub — Kingdom Cash promo codes, unit stats &amp; tips</title>
+    <meta name="description" content="Free fan-made companion for Kingdom Cash: the latest promo codes, every troop and hero's stats, tips and team comps, giveaways, daily puzzle games and a player community.">
     <link rel="icon" href="images/KIH.jpg">
     <link rel="preload" as="image" href="images/KIH_HP.jpg" fetchpriority="high">
     <link rel="stylesheet" href="style.css">
     <link rel="canonical" href="https://keazyea.github.io/" />
-    <!-- <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7081980567861066"
-     crossorigin="anonymous"></script> -->
+    <!-- Google AdSense: lets Google verify the site and review it. Keep "Auto ads"
+         OFF in AdSense — ad-free (No Ads / Supporter) players mustn't get ads. -->
+    <meta name="google-adsense-account" content="ca-pub-7081980567861066">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7081980567861066"
+     crossorigin="anonymous"></script>
     <script type="text/javascript">     (function(c,l,a,r,i,t,y){         c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};         t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;         y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);     })(window, document, "clarity", "script", "xupis8786d"); </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
@@ -1454,6 +1458,9 @@ body {
         .inbox-gift-state { font-weight: 700; color: #7ddc92; align-self: center; }
         .inbox-gift-state.expired { color: var(--kih-text-dim); }
         .inbox-gift-expiry { font-size: 0.78rem; color: var(--kih-text-dim); align-self: center; }
+        .home-guide-links { display: flex; justify-content: center; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0; margin-top: 2px; font-size: clamp(0.75rem, 2vh, 0.85rem); }
+        .home-guide-links a { color: var(--kih-text-dim); text-underline-offset: 3px; }
+        .home-guide-links span { color: var(--kih-text-dim); }
         /* 📣 Share the site: a button under the home menu, and its pop-up. */
         .share-site-btn { width: 100%; max-width: 420px; margin-top: clamp(8px, 1.6vh, 14px); padding: 12px 16px; border-radius: 12px; cursor: pointer; flex-shrink: 0;
             font-family: inherit; font-size: 0.98rem; font-weight: 800; color: #1a1a2e; border: none;
@@ -1752,6 +1759,8 @@ body {
             </div>
             <button type="button" class="share-site-btn" onclick="openShareSite()">📣 Share KIH with friends</button>
             <button class="about-creator-link" onclick="goToPage('about')">About the Creator</button>
+            <!-- Plain links (search engines follow these, not the buttons above) -->
+            <nav class="home-guide-links"><a href="units/">📖 Troops &amp; heroes guide</a><span>·</span><a href="about.html">About &amp; contact</a></nav>
             </div>
             <!-- Adsterra ad slots — hidden by default, shown via JS if not VIP/No-Ads -->
             <div class="adsterra-slot" id="adSlot728x90"></div>

@@ -36,7 +36,8 @@
  * Data (server-only; the Firestore rules give clients no access):
  *   gameRuns/{runId}                          one run: owner, name, week, state
  *   gameLeaderboards/{week}                   { finalizedAt, winners } once paid
- *   gameLeaderboards/{week}/players/{uid}     { name, best: {game: score}, pts: {game: board points}, total, updatedAt }
+ *   gameLeaderboards/{week}/players/{uid}     { name, best: {game: score}, pts: {game: board points},
+ *                                             dbl: {game: true if those points were a doubled run}, total, updatedAt }
  */
 
 const crypto = require("crypto");
@@ -234,15 +235,16 @@ async function runAnswer(db, uid, body, now) {
     const row = lbSnap.exists ? lbSnap.data() : {};
     const best = { ...blankBest(), ...(row.best || {}) };
     const pts = { ...blankPts(), ...G.lbPts(row) };
+    const dbl = { ...(row.dbl || {}) }; // which games' points came from a doubled run
     // A better score, or more points on the board (a doubled run can beat a
     // higher plain one) — either is saved.
     const runPts = G.lbRunPoints(doc.game, step.run.score, doc.bonus);
     const betterScore = step.run.score > (best[doc.game] || 0);
     const morePts = runPts > pts[doc.game];
     if (betterScore) best[doc.game] = step.run.score;
-    if (morePts) pts[doc.game] = runPts;
+    if (morePts) { pts[doc.game] = runPts; dbl[doc.game] = !!doc.bonus; }
     if (betterScore || morePts) {
-      tx.set(lbRef, { uid, name: doc.name, week: doc.week, best, pts, total: G.lbTotal({ pts }), updatedAt: now }, { merge: true });
+      tx.set(lbRef, { uid, name: doc.name, week: doc.week, best, pts, dbl, total: G.lbTotal({ pts }), updatedAt: now }, { merge: true });
     }
     return { step, best: best[doc.game] || 0, pts: pts[doc.game], newBest: betterScore || morePts, game: doc.game };
   });
@@ -352,15 +354,15 @@ async function leaderboard(db, uid, now) {
   const rows = topSnap.docs.map(d => d.data()).filter(p => p.total > 0)
     .sort((a, b) => b.total - a.total || a.updatedAt - b.updatedAt)
     .slice(0, LEADERBOARD_SIZE)
-    .map((p, i) => ({ rank: i + 1, name: p.name, total: p.total, best: { ...blankBest(), ...p.best }, pts: G.lbPts(p), me: p.uid === uid }));
+    .map((p, i) => ({ rank: i + 1, name: p.name, total: p.total, best: { ...blankBest(), ...p.best }, pts: G.lbPts(p), dbl: p.dbl || {}, me: p.uid === uid }));
   let me = null;
   if (meSnap && meSnap.exists && meSnap.data().total > 0) {
     const mine = meSnap.data();
     const listed = rows.find(r => r.me);
     const rank = listed ? listed.rank : 1 + (await players.where("total", ">", mine.total).count().get()).data().count;
-    me = { rank, total: mine.total, best: { ...blankBest(), ...mine.best }, pts: G.lbPts(mine) };
+    me = { rank, total: mine.total, best: { ...blankBest(), ...mine.best }, pts: G.lbPts(mine), dbl: mine.dbl || {} };
   } else if (uid) {
-    me = { rank: null, total: 0, best: blankBest(), pts: blankPts() };
+    me = { rank: null, total: 0, best: blankBest(), pts: blankPts(), dbl: {} };
   }
   const lastWeek = lastMeta.exists && lastMeta.data().winners
     ? lastMeta.data().winners.map(w => ({ rank: w.rank, name: w.name, total: w.total, prize: w.prize }))

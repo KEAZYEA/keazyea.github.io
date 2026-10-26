@@ -3,6 +3,7 @@
 
 <head>
     <title>Games — Keazyea's Intelligence Hub</title>
+    <meta name="description" content="Daily Kingdom Cash puzzle and quiz games — Unitle, Hangman, Higher or Lower, Trivia and Blur — with a weekly leaderboard.">
     <link rel="icon" href="images/KIH.jpg">
     <link rel="stylesheet" href="style.css">
     <!-- the games server: open the connection while the page loads -->
@@ -254,6 +255,9 @@
             background: linear-gradient(90deg, #f7c325, #ff8a50); box-shadow: 0 0 16px rgba(255, 170, 60, 0.35); }
         .lb-bonus small { display: block; font-weight: 700; font-size: 0.78rem; opacity: 0.85; }
         .lb-chips span.bonus { background: linear-gradient(90deg, rgba(247, 195, 37, 0.3), rgba(255, 138, 80, 0.3)); box-shadow: inset 0 0 0 1px rgba(255, 215, 94, 0.6); }
+        .lb-chips span small { margin-left: 3px; font-size: 0.68rem; font-weight: 900; color: #1a1a2e; background: #ffd75e; padding: 0 4px; border-radius: 999px; }
+        .lb-hint { margin-top: 8px; padding: 8px 10px; border-radius: 10px; background: rgba(255, 215, 94, 0.1); border: 1px solid rgba(255, 215, 94, 0.35); font-size: 0.82rem; line-height: 1.45; color: #f3e6b8; }
+        .lb-hint b { color: #ffd75e; }
         .lb-prize-tag { flex-shrink: 0; font-size: 0.74rem; font-weight: 800; color: #1a1a2e; background: #ffd75e; padding: 2px 7px; border-radius: 999px; }
 
         /* Weekly leaderboard: a tab on the right edge opens it as a side
@@ -1610,7 +1614,7 @@
             const tag = ui.challenge ? `<span class="run-tag challenge">⚔️ Challenge</span>`
                 : ui.ranked ? `<span class="run-tag ranked">🏆 Ranked</span>` : `<span class="run-tag">Unranked</span>`;
             const head = `${ui.challenge ? `<div class="challenge-bar">⚔️ Your friend's score: <b>${esc(challengeLabel(ui.challenge))}</b> — beat it!</div>` : ""}
-                <div class="run-bar"><span class="run-score${ui.gained ? " bump" : ""}">🔥 ${ui.score}<small>/${C.LB_CAP}</small></span><span class="run-best">${ui.challenge ? "" : `${ui.ranked ? "Best this week" : "Your best"}: <b>${ui.best}</b>`}</span>${ui.ranked && ui.bonus ? `<span class="run-tag bonus" title="Today's Puzzle game: double leaderboard points">⭐ ×2</span>` : ""}${tag}</div>
+                <div class="run-bar"><span class="run-score${ui.gained ? " bump" : ""}">🔥 ${ui.score}<small>/${C.LB_CAP}</small></span><span class="run-best">${ui.challenge ? "" : ui.ranked ? `On the leaderboard: <b>${ui.pts || 0}</b>` : `Your best: <b>${ui.best}</b>`}</span>${ui.ranked && ui.bonus ? `<span class="run-tag bonus" title="Today's Puzzle game: double leaderboard points">⭐ ×2 = ${ui.score * 2}</span>` : ""}${tag}</div>
                 ${ui.over ? "" : `<div class="run-timer"><div class="run-timer-fill" id="runTimerFill"></div></div><div class="run-timer-text" id="runTimerText"></div>`}`;
             const body = { trivia: runTriviaBody, hilo: runHiloBody, unitle: runUnitleBody, guess: runGuessBody, blur: runBlurBody }[ui.game]();
             const err = ui.error ? `<div class="reward-box">${esc(ui.error.message)}<br><button class="btn-primary" onclick="retryRunMove()">Try again</button></div>` : "";
@@ -1798,7 +1802,7 @@
             const counts = ui.ranked && ui.bonus && ui.score > 0
                 ? `<div class="run-points">⭐ Double-points day: counts as <b>${ui.score * 2}</b> leaderboard points</div>` : "";
             // Ranked: what this game now has on the board (doubled runs included).
-            const board = ui.ranked ? ` · ${C.GAME_TITLES[ui.game]} on the leaderboard: <b>${ui.pts}</b>/${C.LB_GAME_MAX}` : "";
+            const board = ui.ranked ? ` · ${C.GAME_TITLES[ui.game]} on the leaderboard: <b>${ui.pts}</b>` : "";
             const best = ui.challenge ? "" : ui.newBest
                 ? `<div class="run-newbest">🏆 New best${ui.ranked ? " this week" : ""}!</div>${board ? `<div class="dim" style="margin-top:6px; font-size:0.85rem;">${board.slice(3)}</div>` : ""}`
                 : `<div class="dim" style="margin-top:6px; font-size:0.9rem;">${ui.ranked ? "Your best this week" : "Your best"}: ${ui.best}${board}</div>`;
@@ -1915,10 +1919,26 @@
             // 4th and 5th win too: their prize sits on their row.
             const rows = list.map(r => `<div class="lb-row${r.me ? " me" : ""}"><span class="lb-rank">#${r.rank}</span><span class="lb-name">${esc(r.name)}${r.me ? " (you)" : ""}</span>${d.prizes[r.rank - 1] ? `<span class="lb-prize-tag">+${d.prizes[r.rank - 1]} 🪙</span>` : ""}<span class="lb-total">${r.total}</span></div>`).join("");
             const more = rest.length > 7 ? `<button class="lb-more" onclick="lbShowAll = !lbShowAll; renderLeaderboard();">${lbShowAll ? "Show fewer" : `Show all ${d.top.length}`}</button>` : "";
-            // Each game's points on the board this week (up to 40), today's double game starred.
-            const chips = (row) => { const p = row.pts || C.lbPts(row); return `<div class="lb-chips">${LB_ORDER.map(g => `<span${g === d.bonus ? ` class="bonus" title="Double points today"` : ""}>${C.GAME_ICONS[g]} <b>${p[g] || 0}</b>/${C.LB_GAME_MAX}${g === d.bonus ? " ⭐" : ""}</span>`).join("")}</div>`; };
+            // Each game's points on the board this week — "×2" when they came from a
+            // doubled run — and today's double game starred.
+            const chips = (row) => {
+                const p = row.pts || C.lbPts(row), dbl = row.dbl || {};
+                return `<div class="lb-chips">${LB_ORDER.map(g => `<span class="${[g === d.bonus ? "bonus" : "", dbl[g] ? "dbl" : ""].join(" ").trim()}"
+                    title="${dbl[g] ? "From a doubled run" : "From a normal run"}${g === d.bonus ? " · double points today" : ""}">${C.GAME_ICONS[g]} <b>${p[g] || 0}</b>${dbl[g] ? `<small>×2</small>` : ""}${g === d.bonus ? " ⭐" : ""}</span>`).join("")}</div>`;
+            };
+            // Where you stand on today's double game, so a plain 20 there doesn't look like a missing ×2.
+            function bonusHint(row) {
+                if (!d.bonus) return "";
+                const g = d.bonus, t = `${C.GAME_ICONS[g]} ${C.GAME_TITLES[g]}`, p = (row.pts || {})[g] || 0, dbl = (row.dbl || {})[g];
+                let s;
+                if (dbl && p >= C.LB_GAME_MAX) s = `⭐ ${t} is maxed for the week: <b>${p}</b> from a perfect doubled run.`;
+                else if (dbl) s = `⭐ Your ${p} in ${t} is from a doubled run today. A better run today raises it — ${C.LB_CAP} makes it ${C.LB_GAME_MAX}.`;
+                else if (p > 0) s = `⭐ Your ${p} in ${t} was a normal run, so it didn't count double. ${t} is double today — play it now and a run of ${C.LB_CAP} makes it <b>${C.LB_GAME_MAX}</b>.`;
+                else s = `⭐ ${t} counts double today — a run of ${C.LB_CAP} makes it <b>${C.LB_GAME_MAX}</b>.`;
+                return `<div class="lb-hint">${s}</div>`;
+            }
             const me = d.me && d.me.rank
-                ? `<div class="lb-me"><div>You're <b>#${d.me.rank}</b> · <b>${d.me.total}</b> of ${d.max || C.LB_MAX} points</div>${chips(d.me)}</div>`
+                ? `<div class="lb-me"><div>You're <b>#${d.me.rank}</b> · <b>${d.me.total}</b> points <span class="dim">(most a week can score: ${d.max || C.LB_MAX})</span></div>${chips(d.me)}${bonusHint(d.me)}</div>`
                 : `<div class="lb-me">You're not on the board yet — finish a run in any game to get on it. 🚀</div>`;
             const last = d.lastWeek && d.lastWeek.length
                 ? `<div class="lb-last">Last week: ${d.lastWeek.map(w => `${placeIcon(w.rank - 1)} ${esc(w.name)}`).join(" · ")}</div>` : "";
