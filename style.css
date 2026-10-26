@@ -80,6 +80,12 @@ body.kih-stars::after {
 @media (prefers-reduced-motion: reduce) {
     body.kih-glow::before, body.kih-stars::after { animation: none; }
 }
+/* Pinch-zoomed in (each page adds .kih-zoomed to <html>): no full-screen
+   glow or specks, and decorative animations pause. Zoomed right in, a phone
+   would have to draw these layers enormous, which can turn the screen black. */
+html.kih-zoomed body.kih-glow::before,
+html.kih-zoomed body.kih-stars::after { display: none; }
+html.kih-zoomed *, html.kih-zoomed *::before, html.kih-zoomed *::after { animation-play-state: paused !important; }
 
 /* Idle life on tabs and badges: a tab lifts a little under your finger,
    and a notification badge pops in. */

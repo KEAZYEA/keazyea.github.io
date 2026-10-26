@@ -1083,6 +1083,26 @@
         // if VIP status changes without a full page reload.
         setInterval(() => AppState.maybeRefreshAd("adBannerStore"), 25000);
     </script>
+
+    <script>
+        // Pinch-zoomed in: the decorative full-screen glow and specks switch off
+        // (and decorative animations pause). At a big zoom a phone has to draw
+        // them huge, which can turn the screen black. The sections shown inside
+        // this page zoom along with it, so they're told too.
+        (function () {
+            var vv = window.visualViewport;
+            if (!vv) return;
+            function mark() {
+                var on = vv.scale > 1.05;
+                document.documentElement.classList.toggle("kih-zoomed", on);
+                document.querySelectorAll("iframe").forEach(function (f) {
+                    try { f.contentDocument.documentElement.classList.toggle("kih-zoomed", on); } catch (e) { }
+                });
+            }
+            vv.addEventListener("resize", mark);
+            mark();
+        })();
+    </script>
 </body>
 
 </html>
