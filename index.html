@@ -1454,6 +1454,66 @@ body {
         .inbox-gift-state { font-weight: 700; color: #7ddc92; align-self: center; }
         .inbox-gift-state.expired { color: var(--kih-text-dim); }
         .inbox-gift-expiry { font-size: 0.78rem; color: var(--kih-text-dim); align-self: center; }
+        /* 📣 Share the site: a button under the home menu, and its pop-up. */
+        .share-site-btn { width: 100%; max-width: 420px; margin-top: clamp(8px, 1.6vh, 14px); padding: 12px 16px; border-radius: 12px; cursor: pointer; flex-shrink: 0;
+            font-family: inherit; font-size: 0.98rem; font-weight: 800; color: #1a1a2e; border: none;
+            background: linear-gradient(90deg, #ffd75e, #ff9f5a); box-shadow: 0 0 16px rgba(255, 170, 70, 0.35); }
+        .share-site-btn:active { transform: scale(0.98); }
+        .kih-pop { position: fixed; inset: 0; z-index: 3000; display: flex; align-items: center; justify-content: center; padding: 16px;
+            background: rgba(6, 6, 18, 0.72); animation: popFade 0.2s ease; }
+        @keyframes popFade { from { opacity: 0; } }
+        .kih-pop-card { width: 100%; max-width: 380px; padding: 18px 16px 16px; border-radius: 16px; background: #17172e; border: 1px solid #3a3a66;
+            box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55); color: #fff; animation: popIn 0.3s cubic-bezier(.2, 1.4, .4, 1); }
+        @keyframes popIn { from { transform: scale(0.9) translateY(10px); opacity: 0; } }
+        .kih-pop-card h3 { margin: 0 0 4px; font-size: 1.15rem; }
+        .kih-pop-card p.sub { margin: 0 0 12px; font-size: 0.85rem; color: #b8b8d0; }
+        .share-msg { padding: 12px; border-radius: 12px; background: #0f0f22; border: 1px dashed #4a4a7a; font-size: 0.92rem; line-height: 1.45; white-space: pre-wrap; word-break: break-word; user-select: all; }
+        .share-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+        .share-actions a, .share-actions button { display: flex; align-items: center; justify-content: center; gap: 6px; padding: 11px 8px; border-radius: 10px; border: none;
+            font-family: inherit; font-size: 0.92rem; font-weight: 800; cursor: pointer; text-decoration: none; color: #fff; background: #2a2a4a; }
+        .share-actions .copy { grid-column: 1 / -1; background: linear-gradient(90deg, #4169e1, #8a4dff); }
+        .share-actions .copy.done { background: #2e7d32; }
+        .share-actions .wa { background: #1f9e55; }
+        .share-actions .tg { background: #2a8bd1; }
+        .share-actions .native { grid-column: 1 / -1; }
+        .kih-pop-close { display: block; width: 100%; margin-top: 10px; padding: 9px; border: none; background: none; color: #b8b8d0; font-family: inherit; font-size: 0.9rem; cursor: pointer; }
+
+        /* 🎁 Sunday's chest: it shakes while it's being opened, the lid flies
+           up in a burst of light, coins spill out and the amount counts up. */
+        .chest-pop { flex-direction: column; text-align: center; background: rgba(6, 6, 18, 0.9); }
+        .chest-stage { position: relative; width: 220px; height: 210px; }
+        .chest-rays { position: absolute; left: 50%; top: 46%; width: 340px; height: 340px; margin: -170px 0 0 -170px; border-radius: 50%; opacity: 0; pointer-events: none;
+            background: repeating-conic-gradient(rgba(255, 215, 94, 0.5) 0 10deg, transparent 10deg 24deg);
+            -webkit-mask: radial-gradient(circle, #000 18%, transparent 68%); mask: radial-gradient(circle, #000 18%, transparent 68%); }
+        .chest-glow { position: absolute; left: 50%; top: 52%; width: 160px; height: 160px; margin: -80px 0 0 -80px; border-radius: 50%; opacity: 0;
+            background: radial-gradient(circle, rgba(255, 240, 170, 0.95), rgba(255, 196, 0, 0.35) 45%, transparent 70%); }
+        .chest { position: absolute; left: 50%; bottom: 18px; width: 150px; height: 120px; margin-left: -75px; }
+        .chest-body { position: absolute; left: 0; right: 0; bottom: 0; height: 78px; border-radius: 6px 6px 12px 12px;
+            background: linear-gradient(180deg, #a0522d, #6b3015); border: 3px solid #3d1a08;
+            box-shadow: inset 0 -10px 0 rgba(0, 0, 0, 0.25), 0 10px 20px rgba(0, 0, 0, 0.5); }
+        .chest-body::before { content: ""; position: absolute; top: 0; bottom: 0; left: 50%; width: 22px; margin-left: -11px; background: linear-gradient(180deg, #ffd75e, #c8900c); border-left: 2px solid #3d1a08; border-right: 2px solid #3d1a08; }
+        .chest-body::after { content: ""; position: absolute; top: 10px; left: 50%; width: 18px; height: 22px; margin-left: -9px; border-radius: 4px; background: #3d1a08; box-shadow: inset 0 0 0 3px #ffd75e; }
+        .chest-lid { position: absolute; left: -2px; right: -2px; bottom: 74px; height: 48px; border-radius: 40px 40px 6px 6px; transform-origin: 50% 100%;
+            background: linear-gradient(180deg, #b8653a, #7a3a1a); border: 3px solid #3d1a08; z-index: 2; }
+        .chest-lid::before { content: ""; position: absolute; top: 0; bottom: 0; left: 50%; width: 22px; margin-left: -11px; background: linear-gradient(180deg, #ffe58a, #c8900c); border-left: 2px solid #3d1a08; border-right: 2px solid #3d1a08; }
+        .chest-pop.shaking .chest { animation: chestShake 0.5s ease-in-out infinite; }
+        @keyframes chestShake { 0%, 100% { transform: rotate(0); } 20% { transform: rotate(-6deg) translateY(-2px); } 40% { transform: rotate(5deg); } 60% { transform: rotate(-4deg) translateY(-3px); } 80% { transform: rotate(3deg); } }
+        .chest-pop.open .chest-lid { animation: lidOff 0.7s cubic-bezier(.3, 1.4, .5, 1) forwards; }
+        @keyframes lidOff { to { transform: translateY(-46px) rotate(-24deg) translateX(-18px); } }
+        .chest-pop.open .chest { animation: chestHop 0.5s ease; }
+        @keyframes chestHop { 30% { transform: scale(1.08, 0.92); } 60% { transform: scale(0.96, 1.06) translateY(-6px); } }
+        .chest-pop.open .chest-glow { animation: glowIn 0.6s ease forwards; }
+        @keyframes glowIn { from { opacity: 0; transform: scale(0.3); } to { opacity: 1; transform: scale(1); } }
+        .chest-pop.open .chest-rays { animation: raysIn 0.6s ease forwards, raysSpin 9s linear infinite; }
+        @keyframes raysIn { to { opacity: 1; } }
+        @keyframes raysSpin { to { transform: rotate(360deg); } }
+        .chest-coin { position: absolute; left: 50%; top: 58%; font-size: 1.6rem; margin: -14px 0 0 -14px; pointer-events: none; z-index: 3; }
+        .chest-amount { min-height: 3.2rem; font-size: 2.6rem; font-weight: 900; line-height: 1.2; color: #ffd75e; text-shadow: 0 0 18px rgba(255, 196, 0, 0.7); font-variant-numeric: tabular-nums; }
+        .chest-label { min-height: 1.4em; margin: 0 0 14px; font-weight: 800; color: #fff; }
+        .chest-collect { padding: 12px 30px; border-radius: 12px; border: none; font-family: inherit; font-size: 1rem; font-weight: 900; color: #1a1a2e; cursor: pointer;
+            background: linear-gradient(90deg, #ffd75e, #ff9f5a); visibility: hidden; }
+        .chest-pop.open .chest-collect { visibility: visible; animation: popIn 0.4s 0.6s cubic-bezier(.2, 1.4, .4, 1) both; }
+        @media (prefers-reduced-motion: reduce) { .chest-pop.shaking .chest, .chest-pop.open .chest, .chest-pop.open .chest-rays { animation: none; } .chest-pop.open .chest-rays { opacity: 1; } }
         .quest-toast {
             position: fixed;
             left: 50%;
@@ -1690,6 +1750,7 @@ body {
                     <span class="home-menu-text">Store<small>Tokens & supporter plans</small></span>
                 </button>
             </div>
+            <button type="button" class="share-site-btn" onclick="openShareSite()">📣 Share KIH with friends</button>
             <button class="about-creator-link" onclick="goToPage('about')">About the Creator</button>
             </div>
             <!-- Adsterra ad slots — hidden by default, shown via JS if not VIP/No-Ads -->
@@ -4223,11 +4284,34 @@ window.closeInboxItemModal = closeInboxItemModal;
             const fromRect = fromEl && fromEl.getBoundingClientRect ? fromEl.getBoundingClientRect() : null;
             const ids = claimId ? [claimId] : questReady.map(r => r.id).slice(0, 20);
             if (!ids.length) return;
-            const openingChest = questReady.some(r => r.chest && ids.includes(r.id));
+            const claimedItems = questReady.filter(r => ids.includes(r.id));
+            const openingChest = claimedItems.some(r => r.chest);
             questClaiming = true;
             renderQuests();
+            // The chest starts shaking straight away, while the server opens it.
+            const chestPop = openingChest ? showChest() : null;
             try {
                 const result = await AppState.claimQuestRewards(ids);
+                if (chestPop && result.claimed > 0) {
+                    // The chest's own share: everything claimed, less the other rewards opened with it.
+                    const others = claimedItems.filter(r => !r.chest).reduce((a, r) => a + (r.reward || 1), 0);
+                    const chestAmount = Math.max(1, result.claimed - others);
+                    questReady = questReady.filter(r => !ids.includes(r.id));
+                    ids.forEach(id => {
+                        const [day, questId] = id.split("_");
+                        if (questToday && day === questToday.dayKey) questProgress[questId] = "claimed";
+                        if (questId === "login" && questLogins[day]) questLogins[day] = { ...questLogins[day], status: "claimed", reward: questId === "login" && claimedItems.find(r => r.id === id && r.chest) ? chestAmount : questLogins[day].reward };
+                    });
+                    questClaiming = false;
+                    renderQuests();
+                    // The wallet waits until Collect: the coins fly in, then it counts up.
+                    const rect = await openChest(chestPop, chestAmount);
+                    if (typeof result.balance === "number") questBalance = result.balance;
+                    flyQuestCoins(rect, result.claimed);
+                    showQuestToast(ids.length === 1 ? `🎁 Chest opened: +${result.claimed} 🪙!` : `🎁 +${chestAmount} from the chest — +${result.claimed} 🪙 in all!`);
+                    return;
+                }
+                if (chestPop) chestPop.remove();
                 // Show it straight away; the live listeners confirm it a moment later.
                 questReady = questReady.filter(r => !ids.includes(r.id));
                 ids.forEach(id => {
@@ -4241,6 +4325,7 @@ window.closeInboxItemModal = closeInboxItemModal;
                     ? `🎁 Chest opened: +${result.claimed} 🪙!`
                     : `+${result.claimed} 🪙 claimed!`);
             } catch (e) {
+                if (chestPop) chestPop.remove();
                 showQuestToast(e.message || "Couldn't claim — check your connection and try again.");
             } finally {
                 questClaiming = false;
@@ -4379,6 +4464,108 @@ window.closeInboxItemModal = closeInboxItemModal;
                     if (await AppState.hasJoinedGiveaway(weekId)) AppState.reportQuestProgress("enterWeekly", weekId);
                 } catch (e) { /* not entered, or offline — nothing to claim */ }
             }
+        }
+
+        /* ---- 📣 Share the site: the message to send, with Copy, WhatsApp,
+           Telegram and (on phones) the phone's own share sheet ---- */
+        const SHARE_URL = "https://keazyea.github.io";
+        const SHARE_TEXT = "⚔️ Keazyea's Intelligence Hub — free promo codes, giveaways with real prizes, daily games and every troop & hero's stats in one place. Come join me 👉 " + SHARE_URL;
+        function openShareSite() {
+            if (document.getElementById("shareSitePop")) return;
+            const enc = encodeURIComponent;
+            const pop = document.createElement("div");
+            pop.className = "kih-pop";
+            pop.id = "shareSitePop";
+            pop.setAttribute("role", "dialog");
+            pop.setAttribute("aria-label", "Share KIH");
+            pop.innerHTML = `<div class="kih-pop-card">
+                    <h3>📣 Share KIH</h3>
+                    <p class="sub">Copy this and paste it to your friends, your clan or your Discord.</p>
+                    <div class="share-msg">${escapeHomeHtml(SHARE_TEXT)}</div>
+                    <div class="share-actions">
+                        <button type="button" class="copy" id="shareSiteCopy">📋 Copy message</button>
+                        <a class="wa" href="https://wa.me/?text=${enc(SHARE_TEXT)}" target="_blank" rel="noopener">WhatsApp</a>
+                        <a class="tg" href="https://t.me/share/url?url=${enc(SHARE_URL)}&text=${enc(SHARE_TEXT.replace(" 👉 " + SHARE_URL, ""))}" target="_blank" rel="noopener">Telegram</a>
+                        ${navigator.share ? `<button type="button" class="native" id="shareSiteNative">📤 More ways to share…</button>` : ""}
+                    </div>
+                    <button type="button" class="kih-pop-close">Close</button>
+                </div>`;
+            const close = () => pop.remove();
+            pop.addEventListener("click", (e) => { if (e.target === pop || e.target.classList.contains("kih-pop-close")) close(); });
+            document.body.appendChild(pop);
+            const copyBtn = pop.querySelector("#shareSiteCopy");
+            copyBtn.addEventListener("click", async () => {
+                let ok = false;
+                try { await navigator.clipboard.writeText(SHARE_TEXT); ok = true; } catch (e) {
+                    // older browsers: select the message and copy it
+                    try { const r = document.createRange(); r.selectNodeContents(pop.querySelector(".share-msg")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); ok = document.execCommand("copy"); } catch (e2) { }
+                }
+                copyBtn.textContent = ok ? "✅ Copied — paste it anywhere" : "Press and hold the message to copy it";
+                copyBtn.classList.toggle("done", ok);
+            });
+            const nat = pop.querySelector("#shareSiteNative");
+            if (nat) nat.addEventListener("click", () => { navigator.share({ title: "Keazyea's Intelligence Hub", text: SHARE_TEXT.replace(" " + SHARE_URL, ""), url: SHARE_URL }).catch(() => { }); });
+            copyBtn.focus();
+        }
+
+        /* ---- 🎁 Sunday's chest, opened on screen: it shakes while the
+           server opens it, then the lid flies off, coins spill out and the
+           amount counts up. Collect sends the coins to the wallet. ---- */
+        function showChest() {
+            const pop = document.createElement("div");
+            pop.className = "kih-pop chest-pop shaking";
+            pop.setAttribute("role", "dialog");
+            pop.setAttribute("aria-label", "Sunday's chest");
+            pop.innerHTML = `<div class="chest-stage"><div class="chest-rays"></div><div class="chest-glow"></div>
+                    <div class="chest"><div class="chest-lid"></div><div class="chest-body"></div></div></div>
+                <div class="chest-amount" aria-live="polite"></div>
+                <p class="chest-label">Opening Sunday's chest…</p>
+                <button type="button" class="chest-collect">Collect</button>`;
+            document.body.appendChild(pop);
+            pop.shownAt = Date.now();
+            return pop;
+        }
+        // Resolves with where the chest was once Collect is tapped (for the coins' flight).
+        async function openChest(pop, amount) {
+            const wait = 1100 - (Date.now() - pop.shownAt); // a moment of shaking, however fast the server
+            if (wait > 0) await new Promise(r => setTimeout(r, wait));
+            pop.classList.remove("shaking");
+            pop.classList.add("open");
+            const stage = pop.querySelector(".chest-stage");
+            const still = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+            if (stage.animate && !still) {
+                const n = Math.min(14, 4 + amount * 2);
+                for (let i = 0; i < n; i++) {
+                    const c = document.createElement("span");
+                    c.className = "chest-coin";
+                    c.textContent = "🪙";
+                    stage.appendChild(c);
+                    const side = (i % 2 ? 1 : -1) * (20 + Math.random() * 80), up = 90 + Math.random() * 70;
+                    c.animate([
+                        { transform: "translate(0, 0) scale(0.4)", opacity: 0 },
+                        { transform: `translate(${side * 0.5}px, ${-up}px) scale(1.2) rotate(${side * 2}deg)`, opacity: 1, offset: 0.45 },
+                        { transform: `translate(${side}px, ${30 + Math.random() * 30}px) scale(0.9) rotate(${side * 4}deg)`, opacity: 0 }
+                    ], { duration: 1100, delay: 120 + i * 60, easing: "cubic-bezier(.3,.6,.5,1)", fill: "both" });
+                    setTimeout(() => c.remove(), 1400 + i * 60);
+                }
+            }
+            const el = pop.querySelector(".chest-amount");
+            const t0 = Date.now();
+            (function count() {
+                const p = still ? 1 : Math.min(1, (Date.now() - t0) / 900);
+                el.textContent = `+${Math.round(amount * (1 - Math.pow(1 - p, 3)))} 🪙`;
+                if (p < 1) setTimeout(count, 40);
+            })();
+            pop.querySelector(".chest-label").textContent = amount > 1 ? "🔥 A full week of logins — your chest!" : "Sunday's chest. Log in every day next week for 3–5 🪙!";
+            const btn = pop.querySelector(".chest-collect");
+            btn.focus();
+            await new Promise(resolve => {
+                btn.addEventListener("click", resolve, { once: true });
+                pop.addEventListener("click", (e) => { if (e.target === pop) resolve(); });
+            });
+            const rect = pop.querySelector(".chest").getBoundingClientRect();
+            pop.remove();
+            return rect;
         }
 
         function showQuestToast(text, onClick) {

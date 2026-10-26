@@ -239,6 +239,22 @@
             background: #ff8a50; box-shadow: 0 0 6px rgba(255, 138, 80, 0.8); animation: livePulse 1.6s ease-in-out infinite;
         }
         @keyframes livePulse { 50% { transform: scale(1.35); opacity: 0.6; } }
+        /* ⭐ This week's bonus game: its points count double on the leaderboard. */
+        .games-tabs .tab-btn.bonus { box-shadow: inset 0 0 0 1px rgba(255, 215, 94, 0.7); }
+        .games-tabs .tab-btn.bonus::before {
+            content: "×2"; position: absolute; top: -6px; left: 50%; transform: translateX(-50%); padding: 0 6px; border-radius: 999px;
+            background: linear-gradient(90deg, #f7c325, #ff8a50); color: #1a1a2e; font-size: 0.62rem; font-weight: 900; line-height: 1.5; letter-spacing: 0;
+        }
+        .run-score small { font-size: 0.8rem; font-weight: 800; opacity: 0.7; }
+        .run-tag.bonus { margin-left: 0; background: linear-gradient(90deg, #f7c325, #ff8a50); color: #1a1a2e; }
+        .run-points { margin-top: 6px; font-size: 0.92rem; color: #ffd75e; font-weight: 800; }
+        .run-over.maxed { border-color: #ffd75e; box-shadow: 0 0 26px rgba(255, 215, 94, 0.35); }
+        .lb-bonus { display: block; width: 100%; border: none; cursor: pointer; font-family: inherit; font-size: 0.95rem;
+            margin: 0 0 12px; padding: 10px 12px; border-radius: 12px; text-align: center; font-weight: 800; color: #1a1a2e;
+            background: linear-gradient(90deg, #f7c325, #ff8a50); box-shadow: 0 0 16px rgba(255, 170, 60, 0.35); }
+        .lb-bonus small { display: block; font-weight: 700; font-size: 0.78rem; opacity: 0.85; }
+        .lb-chips span.bonus { background: linear-gradient(90deg, rgba(247, 195, 37, 0.3), rgba(255, 138, 80, 0.3)); box-shadow: inset 0 0 0 1px rgba(255, 215, 94, 0.6); }
+        .lb-prize-tag { flex-shrink: 0; font-size: 0.74rem; font-weight: 800; color: #1a1a2e; background: #ffd75e; padding: 2px 7px; border-radius: 999px; }
 
         /* Weekly leaderboard: a tab on the right edge opens it as a side
            panel. The tab is narrow enough to sit over the page's margin and
@@ -755,7 +771,8 @@
             const send = `<button class="btn-primary" onclick="openFriends()">⚔️ Challenge a friend</button>`;
             if (game.daily) {
                 return `<div id="dailyReward">${rewardHtml()}</div>
-                    <div class="game-actions">${send}<button class="btn-ghost" onclick="switchTab('${game.id}')">▶️ Play more</button></div>`;
+                    ${game.id === bonusGame() ? `<p class="dim" style="text-align:center; font-size:0.85rem; margin:10px 0 0;">⭐ ${C.GAME_TITLES[game.id]} counts <b>double</b> on the weekly leaderboard today — ${C.LB_CAP} points = ${C.LB_GAME_MAX}.</p>` : ""}
+                    <div class="game-actions">${send}<button class="${game.id === bonusGame() ? "btn-primary" : "btn-ghost"}" onclick="switchTab('${game.id}')">▶️ Play more${game.id === bonusGame() ? " · ⭐ ×2 points" : ""}</button></div>`;
             }
             return `<div class="game-actions">${send}<button class="btn-ghost" onclick="switchTab('${game.id}')">▶️ Play again</button></div>`;
         }
@@ -1305,7 +1322,20 @@
         const runIsStreak = (g) => g === "trivia" || g === "hilo";
         const runScoreLabel = (g, n) => (runIsStreak(g) ? `a streak of ${n}` : `${n} point${n === 1 ? "" : "s"}`);
         const localBestKey = (g) => "kih_games_run_best_" + g;
-        function localBest(g) { try { return parseInt(localStorage.getItem(localBestKey(g)) || "0", 10) || 0; } catch (e) { return 0; } }
+        // (a best from before runs stopped at C.LB_CAP can be higher)
+        function localBest(g) { try { return Math.min(C.LB_CAP, parseInt(localStorage.getItem(localBestKey(g)) || "0", 10) || 0); } catch (e) { return 0; } }
+        // ⭐ Today's double-points game: whichever game is Today's Puzzle
+        // (Singapore day, like the server). Its tab wears a "×2".
+        const bonusGame = () => C.bonusGameFor(dayKey());
+        function markBonusTab() {
+            const g = bonusGame();
+            document.querySelectorAll(".games-tabs .tab-btn").forEach(b => {
+                const on = b.dataset.tab === g;
+                b.classList.toggle("bonus", on);
+                b.title = on ? "⭐ Today's Puzzle game — double leaderboard points today" : "";
+            });
+        }
+        setInterval(markBonusTab, 60000); // it moves on at midnight
         function saveLocalBest(g, n) { try { if (n > localBest(g)) localStorage.setItem(localBestKey(g), String(n)); } catch (e) { } }
 
         // Taking the run off screen (another tab, today's puzzle). It isn't
@@ -1364,6 +1394,8 @@
                         if (!runViewFits(id, resp && resp.view)) throw new Error("server out of date");
                         ui.ranked = true;
                         ui.runId = resp.runId;
+                        // the server decides (its clock, near midnight) — and an older one never doubles
+                        ui.bonus = resp.bonus === true;
                     } catch (e) {
                         resp = null;
                         ui.note = "Couldn't reach the leaderboard just now — this run isn't ranked.";
@@ -1377,13 +1409,15 @@
                 ui.local = C.runNew(id, opts.seed != null ? opts.seed : newSeed(), Date.now());
                 resp = { score: 0, over: false, deadline: ui.local.deadline, now: Date.now(), view: C.runView(UNITS, ui.local), best: ui.challenge ? 0 : localBest(id) };
             }
-            ui.bestBefore = resp.best || 0;
+            ui.bestBefore = Math.min(C.LB_CAP, resp.best || 0);
+            ui.pts = ui.ptsBefore = resp.pts || 0; // this game's points on the board this week
             ui.starting = false;
             applyRunResp(ui, resp, true);
         }
         function runIntro(ui) {
             const note = ui.starting ? "" : ui.challenge ? "⚔️ A friend's challenge — the same run they played. Not ranked."
-                : ui.ranked ? "🏆 Ranked — your best run this week counts on the weekly leaderboard."
+                : ui.ranked && ui.bonus ? `⭐ Today's Puzzle game — runs you start today count <b>double</b> on the leaderboard (${C.LB_CAP} points = ${C.LB_GAME_MAX}).`
+                : ui.ranked ? `🏆 Ranked — your best run this week counts on the weekly leaderboard: your score is your points (up to ${C.LB_CAP}).`
                 : ui.note === "signin" ? "Sign in to put your runs on the weekly leaderboard." : esc(ui.note);
             return `${INTROS[ui.game].free}${note ? `<small>${note}</small>` : ""}`;
         }
@@ -1504,16 +1538,18 @@
             ui.gained = resp.score > ui.score;
             ui.score = resp.score;
             ui.over = resp.over;
-            ui.best = Math.max(ui.best, resp.best || 0, ui.challenge ? 0 : ui.score);
+            ui.best = Math.min(C.LB_CAP, Math.max(ui.best, resp.best || 0, ui.challenge ? 0 : ui.score));
             if (resp.seed != null) ui.seed = resp.seed;
+            if (typeof resp.pts === "number") ui.pts = resp.pts;
             markRunTabs();
             if (first) { ui.view = resp.view; paintRun(ui); return; }
             const fb = resp.feedback || {};
             ui.feedback = fb;
             if (ui.over) {
-                ui.newBest = ui.ranked ? !!resp.newBest || (ui.score > ui.bestBefore && ui.score > 0) : !ui.challenge && ui.score > ui.bestBefore;
+                // ranked: a better score, or more points on the board (a doubled run can do that with a lower score)
+                ui.newBest = ui.ranked ? !!resp.newBest || (ui.score > ui.bestBefore && ui.score > 0) || ui.pts > ui.ptsBefore : !ui.challenge && ui.score > ui.bestBefore;
                 if (!ui.ranked && !ui.challenge) saveLocalBest(ui.game, ui.score);
-                if (ui.game === "unitle") ui.reveal = { rows: [...ui.view.guesses.map(g => g.key), ...(fb.lastGuess ? [fb.lastGuess] : [])], answer: fb.answer };
+                if (ui.game === "unitle") ui.reveal = { rows: fb.solved ? fb.guesses : [...ui.view.guesses.map(g => g.key), ...(fb.lastGuess ? [fb.lastGuess] : [])], answer: fb.answer };
                 if (ui.game === "guess" || ui.game === "blur") ui.reveal = { answer: fb.answer };
                 paintRun(ui);
                 if (ui.ranked) lbLoadedAt = 0; // the leaderboard tab fetches fresh next time
@@ -1574,7 +1610,7 @@
             const tag = ui.challenge ? `<span class="run-tag challenge">⚔️ Challenge</span>`
                 : ui.ranked ? `<span class="run-tag ranked">🏆 Ranked</span>` : `<span class="run-tag">Unranked</span>`;
             const head = `${ui.challenge ? `<div class="challenge-bar">⚔️ Your friend's score: <b>${esc(challengeLabel(ui.challenge))}</b> — beat it!</div>` : ""}
-                <div class="run-bar"><span class="run-score${ui.gained ? " bump" : ""}">🔥 ${ui.score}</span><span class="run-best">${ui.challenge ? "" : `${ui.ranked ? "Best this week" : "Your best"}: <b>${ui.best}</b>`}</span>${tag}</div>
+                <div class="run-bar"><span class="run-score${ui.gained ? " bump" : ""}">🔥 ${ui.score}<small>/${C.LB_CAP}</small></span><span class="run-best">${ui.challenge ? "" : `${ui.ranked ? "Best this week" : "Your best"}: <b>${ui.best}</b>`}</span>${ui.ranked && ui.bonus ? `<span class="run-tag bonus" title="Today's Puzzle game: double leaderboard points">⭐ ×2</span>` : ""}${tag}</div>
                 ${ui.over ? "" : `<div class="run-timer"><div class="run-timer-fill" id="runTimerFill"></div></div><div class="run-timer-text" id="runTimerText"></div>`}`;
             const body = { trivia: runTriviaBody, hilo: runHiloBody, unitle: runUnitleBody, guess: runGuessBody, blur: runBlurBody }[ui.game]();
             const err = ui.error ? `<div class="reward-box">${esc(ui.error.message)}<br><button class="btn-primary" onclick="retryRunMove()">Try again</button></div>` : "";
@@ -1753,12 +1789,19 @@
         function runOverHtml() {
             const ui = runUi, fb = ui.feedback || {};
             const timedOut = fb.timedOut && (runIsStreak(ui.game) ? fb.picked == null : !fb.lastGuess);
-            const why = timedOut ? "⏰ Time's up!" : runIsStreak(ui.game) ? "💥 Wrong answer — run over" : ui.game === "guess" ? "💀 Out of misses — run over" : "💥 Out of guesses — run over";
-            const unit = fb.answer && fb.answer.name ? `<div class="run-over-unit"><img src="${esc(fb.answer.img)}" alt=""><span>It was <b>${esc(fb.answer.name)}</b></span></div>` : "";
-            const what = runIsStreak(ui.game) ? `right answer${ui.score === 1 ? "" : "s"} in a row` : `point${ui.score === 1 ? "" : "s"}`;
+            // Reaching C.LB_CAP ends a run: the most a game can score.
+            const maxed = !!fb.maxed || ui.score >= C.LB_CAP;
+            const why = maxed ? `🏆 Perfect run — ${C.LB_CAP}/${C.LB_CAP}!` : timedOut ? "⏰ Time's up!" : runIsStreak(ui.game) ? "💥 Wrong answer — run over" : ui.game === "guess" ? "💀 Out of misses — run over" : "💥 Out of guesses — run over";
+            const unit = fb.answer && fb.answer.name ? `<div class="run-over-unit"><img src="${esc(fb.answer.img)}" alt=""><span>${maxed ? "Last one:" : "It was"} <b>${esc(fb.answer.name)}</b></span></div>` : "";
+            const what = `point${ui.score === 1 ? "" : "s"}${maxed ? " — the most a game can score" : ""}`;
+            // What it adds to the leaderboard: the same number (double on its puzzle day).
+            const counts = ui.ranked && ui.bonus && ui.score > 0
+                ? `<div class="run-points">⭐ Double-points day: counts as <b>${ui.score * 2}</b> leaderboard points</div>` : "";
+            // Ranked: what this game now has on the board (doubled runs included).
+            const board = ui.ranked ? ` · ${C.GAME_TITLES[ui.game]} on the leaderboard: <b>${ui.pts}</b>/${C.LB_GAME_MAX}` : "";
             const best = ui.challenge ? "" : ui.newBest
-                ? `<div class="run-newbest">🏆 New best${ui.ranked ? " this week" : ""}!</div>`
-                : `<div class="dim" style="margin-top:6px; font-size:0.9rem;">${ui.ranked ? "Your best this week" : "Your best"}: ${ui.best}</div>`;
+                ? `<div class="run-newbest">🏆 New best${ui.ranked ? " this week" : ""}!</div>${board ? `<div class="dim" style="margin-top:6px; font-size:0.85rem;">${board.slice(3)}</div>` : ""}`
+                : `<div class="dim" style="margin-top:6px; font-size:0.9rem;">${ui.ranked ? "Your best this week" : "Your best"}: ${ui.best}${board}</div>`;
             let outcome = "";
             if (ui.challenge) {
                 const d = ui.score - (ui.challenge.score || 0);
@@ -1768,12 +1811,12 @@
             const note = !ui.ranked && !ui.challenge
                 ? `<p class="dim" style="font-size:0.85rem; margin:10px 0 0;">${ui.note === "signin" ? "Sign in to put your runs on the weekly leaderboard 🏆" : esc(ui.note)}</p>` : "";
             const share = ui.score > 0 && ui.seed != null ? `<button class="btn-primary" onclick="openFriends()">⚔️ Challenge a friend</button>` : "";
-            return `<div class="run-over">
+            return `<div class="run-over${maxed ? " maxed" : ""}">
                 <div class="run-over-title">${why}</div>
                 ${unit}
                 <div class="run-over-score">${ui.score}</div>
                 <div class="dim">${what}</div>
-                ${best}${outcome}${note}
+                ${counts}${best}${outcome}${note}
                 ${ui.ranked ? `<button class="lb-link" onclick="switchTab('ranks')">🏆 See where you rank</button>` : ""}
                 <div class="game-actions"><button class="${share ? "btn-ghost" : "btn-primary"}" onclick="startRun('${ui.game}', { fresh: true })">▶️ Play again</button>${share}</div>
             </div>`;
@@ -1789,10 +1832,10 @@
         /* ================================================================
            🏆 WEEKLY LEADERBOARD — its own tab: the top 3 on a podium, everyone
            else in order below, your place, and how points work (folded away).
-           Every game counts the same: your best run this week in each turns
-           into at most C.LB_CAP points, added up. Top 3 when the week ends
-           win tokens (paid by api/games.js). Names are only sent to
-           signed-in players.
+           Every game counts the same: your best run this week in each is its
+           points (at most C.LB_CAP), added up — the week's ⭐ bonus game
+           double. The top 5 when the week ends win tokens (paid by
+           api/games.js). Names are only sent to signed-in players.
            ================================================================ */
         let lbData = null, lbLoadedAt = 0, lbLoading = false, lbError = false, lbShowAll = false;
         const LB_ORDER = ["unitle", "hilo", "trivia", "guess", "blur"];
@@ -1822,20 +1865,27 @@
             return d ? `${d}d ${h}h` : h ? `${h}h ${m % 60}m` : `${m}m`;
         }
         function renderRanks() {
-            setIntro("This week's best players. Your best run in each game counts — every game is worth up to " + C.LB_CAP + " points.");
+            setIntro(`This week's best players. Your best run in each game counts — up to ${C.LB_CAP} points, or ${C.LB_GAME_MAX} on the day it's Today's Puzzle.`);
             $("gameArea").innerHTML = `<div class="ranks" id="lbCard"><div class="lb-empty">Loading the weekly leaderboard…</div></div>`;
             loadLeaderboard();
             renderLeaderboard();
         }
-        function lbRulesHtml(prizes) {
-            const pay = prizes ? prizes.map((p, i) => `${["🥇", "🥈", "🥉"][i]} ${p}`).join(" · ") + " 🪙" : "tokens";
+        const placeIcon = (i) => ["🥇", "🥈", "🥉"][i] || `#${i + 1}`;
+        function lbRulesHtml(prizes, bonus) {
+            const pay = prizes ? prizes.map((p, i) => `${placeIcon(i)} ${p}`).join(" · ") + " 🪙" : "tokens";
             return `<details class="lb-how"><summary>How points work</summary><ul>
-                    <li>Every game is worth up to <b>${C.LB_CAP} points</b>, so no one game is the way to the top — play them all.</li>
-                    <li>🧠 Trivia · ⬆️ Hi-Lo: a streak of ${C.LB_TARGET.trivia} right answers = ${C.LB_CAP} points.</li>
-                    <li>🎯 Unitle · 🪢 Hangman: ${C.LB_TARGET.unitle} run points = ${C.LB_CAP} points (fewer guesses or misses score more each unit).</li>
+                    <li>Your score in a game <b>is</b> your points — what you see is what counts. A run stops at <b>${C.LB_CAP}</b>, the most a game can score.</li>
+                    <li>🧠 Trivia · ⬆️ Hi-Lo: 1 point per right answer. 🎯 Unitle · 🪢 Hangman · 🔍 Blur: more points for fewer guesses or misses on each unit.</li>
+                    <li>⭐ Each day, the game that's <b>🎲 Today's Puzzle</b> counts <b>double</b>: a run you start that day is worth twice its score (${C.LB_CAP} = ${C.LB_GAME_MAX}).${bonus ? ` Today: ${C.GAME_ICONS[bonus]} <b>${C.GAME_TITLES[bonus]}</b>.` : ""}</li>
+                    <li>Each game counts its best run of the week, doubled or not — so up to ${C.LB_GAME_MAX} each, and <b>${C.LB_MAX}</b> for the week if you hit ${C.LB_CAP} in every game on its double day (every game comes up at least once a week).</li>
                     <li>Only your best run this week in each game counts, played signed in (not friends' challenges or 🎲 Today's Puzzle).</li>
-                    <li>The week ends Sunday midnight (Singapore time). Top 3 win ${pay}, sent to your inbox.</li>
+                    <li>The week ends Sunday midnight (Singapore time). The top ${prizes ? prizes.length : 5} win ${pay}, sent to your inbox.</li>
                 </ul></details>`;
+        }
+        function lbBonusHtml(d) {
+            if (!d.bonus) return "";
+            return `<button type="button" class="lb-bonus" onclick="switchTab('${d.bonus}')">⭐ Double points today: ${C.GAME_ICONS[d.bonus]} ${C.GAME_TITLES[d.bonus]}
+                <small>It's Today's Puzzle game — score ${C.LB_CAP} in it today for ${C.LB_GAME_MAX}. Tap to play ›</small></button>`;
         }
         function renderLeaderboard() {
             const box = $("lbCard");
@@ -1849,8 +1899,8 @@
             const left = d.endsAt - (d.now + (Date.now() - d.receivedAt));
             const head = `<div class="lb-hero"><div class="lb-hero-title">🏆 Weekly leaderboard</div><div class="lb-ends">⏳ Ends in <b>${fmtLeft(left)}</b></div></div>`;
             if (!d.signedIn) {
-                box.innerHTML = `${head}<div class="lb-signin"><p>Sign in to see who's on top this week and race for <b>${d.prizes.map(p => "+" + p).join(" / ")} 🪙</b>.</p>
-                    <button class="btn-primary" onclick="signInForBoard(this)">Sign in</button></div>${lbRulesHtml(d.prizes)}`;
+                box.innerHTML = `${head}${lbBonusHtml(d)}<div class="lb-signin"><p>Sign in to see who's on top this week and race for <b>${d.prizes.map(p => "+" + p).join(" / ")} 🪙</b>.</p>
+                    <button class="btn-primary" onclick="signInForBoard(this)">Sign in</button></div>${lbRulesHtml(d.prizes, d.bonus)}`;
                 return;
             }
             const medals = ["🥇", "🥈", "🥉"];
@@ -1862,16 +1912,18 @@
             const podium = `<div class="podium">${spot(d.top[1], 2)}${spot(d.top[0], 1)}${spot(d.top[2], 3)}</div>`;
             const rest = d.top.slice(3);
             const list = lbShowAll ? rest : rest.slice(0, 7);
-            const rows = list.map(r => `<div class="lb-row${r.me ? " me" : ""}"><span class="lb-rank">#${r.rank}</span><span class="lb-name">${esc(r.name)}${r.me ? " (you)" : ""}</span><span class="lb-total">${r.total}</span></div>`).join("");
+            // 4th and 5th win too: their prize sits on their row.
+            const rows = list.map(r => `<div class="lb-row${r.me ? " me" : ""}"><span class="lb-rank">#${r.rank}</span><span class="lb-name">${esc(r.name)}${r.me ? " (you)" : ""}</span>${d.prizes[r.rank - 1] ? `<span class="lb-prize-tag">+${d.prizes[r.rank - 1]} 🪙</span>` : ""}<span class="lb-total">${r.total}</span></div>`).join("");
             const more = rest.length > 7 ? `<button class="lb-more" onclick="lbShowAll = !lbShowAll; renderLeaderboard();">${lbShowAll ? "Show fewer" : `Show all ${d.top.length}`}</button>` : "";
-            const chips = (best) => `<div class="lb-chips">${LB_ORDER.map(g => `<span>${C.GAME_ICONS[g]} <b>${C.lbPoints(g, best[g])}</b>/${C.LB_CAP}</span>`).join("")}</div>`;
+            // Each game's points on the board this week (up to 40), today's double game starred.
+            const chips = (row) => { const p = row.pts || C.lbPts(row); return `<div class="lb-chips">${LB_ORDER.map(g => `<span${g === d.bonus ? ` class="bonus" title="Double points today"` : ""}>${C.GAME_ICONS[g]} <b>${p[g] || 0}</b>/${C.LB_GAME_MAX}${g === d.bonus ? " ⭐" : ""}</span>`).join("")}</div>`; };
             const me = d.me && d.me.rank
-                ? `<div class="lb-me"><div>You're <b>#${d.me.rank}</b> · <b>${d.me.total}</b> of ${C.LB_CAP * LB_ORDER.length} points</div>${chips(d.me.best)}</div>`
+                ? `<div class="lb-me"><div>You're <b>#${d.me.rank}</b> · <b>${d.me.total}</b> of ${d.max || C.LB_MAX} points</div>${chips(d.me)}</div>`
                 : `<div class="lb-me">You're not on the board yet — finish a run in any game to get on it. 🚀</div>`;
             const last = d.lastWeek && d.lastWeek.length
-                ? `<div class="lb-last">Last week: ${d.lastWeek.map(w => `${medals[w.rank - 1]} ${esc(w.name)}`).join(" · ")}</div>` : "";
-            box.innerHTML = `${head}${d.top.length ? podium : `<div class="lb-empty">No scores yet this week — be the first! 🚀</div>`}
-                ${me}${rows ? `<div class="lb-list">${rows}</div>` : ""}${more}${last}${lbRulesHtml(d.prizes)}`;
+                ? `<div class="lb-last">Last week: ${d.lastWeek.map(w => `${placeIcon(w.rank - 1)} ${esc(w.name)}`).join(" · ")}</div>` : "";
+            box.innerHTML = `${head}${lbBonusHtml(d)}${d.top.length ? podium : `<div class="lb-empty">No scores yet this week — be the first! 🚀</div>`}
+                ${me}${rows ? `<div class="lb-list">${rows}</div>` : ""}${more}${last}${lbRulesHtml(d.prizes, d.bonus)}`;
         }
         async function signInForBoard(btn) {
             try { btn.disabled = true; const AS = await appStateReady(); await AS.signIn(); } catch (e) { }
@@ -1888,6 +1940,7 @@
                 const asked = params.get("game");
                 const valid = (t) => t === "today" || t === "ranks" || C.GAMES.includes(t);
                 showTab(valid(asked) ? asked : "today");
+                markBonusTab();
                 // While the game data downloads, wake the games server (and its
                 // sign-in check) so the first ranked move doesn't wait for it.
                 signedInAppState().then(AS => AS && AS.gamesPing && AS.gamesPing()).catch(() => { });
