@@ -1402,6 +1402,7 @@ function unlockBackgroundScroll() {
                 troopList.sort((a, b) => (a.meta.order || 99) - (b.meta.order || 99));
                 document.getElementById("loadingMsg").textContent = "";
                 showTroopsGallery();
+                openUnitFromLink();
 
                 // build summon map now that troopMeta is loaded
                 for (let key in troopMeta) {
@@ -1590,6 +1591,35 @@ function switchTab(tab) {
                 }
 
                 return html;
+            }
+            // A link straight to a unit (the guide pages use these):
+            // ?unit=<key> opens that unit; with &compare=1 it goes on the left
+            // of Compare, ready to pick what to compare it with.
+            function openUnitFromLink(tries = 0) {
+                const p = new URLSearchParams(location.search);
+                const key = p.get("unit");
+                if (!key) return;
+                // The game data can arrive (from cache) before the site's main
+                // script is ready, and showing a unit needs it.
+                if (!window.AppState) { if (tries < 100) setTimeout(() => openUnitFromLink(tries + 1), 100); return; }
+                const troop = troopList.find(t => t.key === key);
+                const unit = troop || heroList.find(h => h.key === key);
+                if (!unit) return;
+                const type = troop ? "troop" : "hero";
+                if (p.get("compare")) {
+                    switchTab("compare");
+                    selectleft = unit;
+                    leftType = type;
+                    document.getElementById("leftSearch").value = unit.displayName;
+                    updateCards();
+                } else {
+                    galleryScrollY = 0;
+                    selectTroop = unit;
+                    troopType = type;
+                    document.getElementById("troopsResults").innerHTML = "";
+                    updateTroopsCard();
+                }
+                recordTroopsView();
             }
             function goBackToGallery() {
     selectTroop = null;

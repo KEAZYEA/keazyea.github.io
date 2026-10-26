@@ -2490,6 +2490,7 @@ body {
     if (page !== "profile" && isProfileDirty()) {
         let choice = await showUnsavedModal();
         if (choice === "save") await saveProfile();
+        else discardProfileEdits();
     }
     if (!fromHistory) recordPageInHistory(page);
 
@@ -2590,6 +2591,7 @@ body {
                     return;
                 }
                 // "discard" falls through and continues leaving
+                discardProfileEdits();
             }
             if (fromHistory !== true) recordPageInHistory("home");
             resetSocialIframeIfActive();
@@ -2870,6 +2872,10 @@ window.closeLegalModal = closeLegalModal;
                 highestTrophies: profile.highestTrophies || 0, currentClan: profile.currentClan || "",
                 currentLevel: profile.currentLevel || 0, currentPower: profile.currentPower || 0
             };
+            // Compare against the form exactly as it now shows the profile: a
+            // stored value the form can't show as-is (an old server choice,
+            // spaces, a missing name) mustn't count as an edit.
+            profileSnapshot = getCurrentProfileFormValues();
         }
 
         function getCurrentProfileFormValues() {
@@ -2887,10 +2893,17 @@ window.closeLegalModal = closeLegalModal;
             return { name, avatar, bio, server, favoriteTroop, favoriteHero, highestTrophies, currentClan, currentLevel, currentPower };
         }
 
+        // Only while the Profile page is actually on screen — Home covers the
+        // page without closing it, and it mustn't keep asking from there.
         function isProfileDirty() {
             if (!document.getElementById("page-profile").classList.contains("active")) return false;
+            if (!document.getElementById("homeContentWrap").classList.contains("active")) return false;
             let current = getCurrentProfileFormValues();
             return Object.keys(current).some(k => current[k] !== profileSnapshot[k]);
+        }
+        // "Don't Save": put the form back as it was, so the edits are really gone.
+        function discardProfileEdits() {
+            loadProfileIntoPage().catch(e => console.warn("Couldn't reset the profile form:", e));
         }
 
                 async function saveProfile() {
@@ -2945,6 +2958,7 @@ window.closeLegalModal = closeLegalModal;
                     highestTrophies: updated.highestTrophies || 0, currentClan: updated.currentClan || "",
                     currentLevel: updated.currentLevel || 0, currentPower: updated.currentPower || 0
                 };
+                profileSnapshot = getCurrentProfileFormValues(); // as the form now shows it (see loadProfileIntoPage)
                                 await refreshTopbar();
                 goHome();
             } catch (e) {
@@ -4663,6 +4677,12 @@ if (challengeCode) {
     history.replaceState(history.state, "", window.location.pathname); // consume it — refresh won't replay it
 } else if (gotoPage) {
     history.replaceState({ kihPage: "home" }, ""); // Back from the linked page lands on Home
+    // ?goto=troops&unit=<key>[&compare=1]: straight to that unit (the guide pages link here)
+    const linkUnit = urlParams.get("unit");
+    if (gotoPage === "troops" && linkUnit && /^[A-Za-z0-9_]+$/.test(linkUnit)) {
+        setSectionFrameUrl(document.querySelector("#page-troops iframe"),
+            "troopsandheroes.html?unit=" + encodeURIComponent(linkUnit) + (urlParams.get("compare") ? "&compare=1" : ""));
+    }
     goToPage(gotoPage);
     history.replaceState(history.state, "", window.location.pathname); // consume it — refresh won't re-trigger this
 } else if (pageBeforeRefresh && pageBeforeRefresh !== "home") {
@@ -4671,8 +4691,16 @@ if (challengeCode) {
     history.replaceState({ kihPage: "home" }, "");
 }
         });
+// The app is as tall as the visible screen, so the on-screen keyboard
+// shrinks it instead of covering it. Pinch-zooming also shrinks the
+// "visible screen" — by the zoom — and following that squashed the app to a
+// strip at the top with black below, so while zoomed it keeps its height.
+let appHeightUnzoomed = 0;
 function setAppHeight() {
-    let vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+    const vv = window.visualViewport;
+    if (vv && vv.scale > 1.01 && appHeightUnzoomed) return;
+    let vh = vv ? vv.height : window.innerHeight;
+    appHeightUnzoomed = vh;
     document.querySelector(".home-shell").style.height = vh + "px";
 }
 const throttledSetAppHeight = rafThrottle(setAppHeight);

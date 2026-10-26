@@ -4,15 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gravedigger — Kingdom Cash troop stats &amp; guide | Keazyea&#39;s Intelligence Hub</title>
-    <meta name="description" content="Gravedigger (Rare Undead troop) in Kingdom Cash: HP, attack, defence and power at every level, Underground Passage ability numbers.">
+    <meta name="description" content="Gravedigger (Rare Undead troop) in Kingdom Cash: every stat at every level, Underground Passage ability stats, as shown in the app.">
     <link rel="canonical" href="https://keazyea.github.io/units/gravedigger.html">
     <meta property="og:type" content="article">
     <meta property="og:site_name" content="Keazyea's Intelligence Hub">
     <meta property="og:title" content="Gravedigger — Kingdom Cash troop stats &amp; guide | Keazyea&#39;s Intelligence Hub">
-    <meta property="og:description" content="Gravedigger (Rare Undead troop) in Kingdom Cash: HP, attack, defence and power at every level, Underground Passage ability numbers.">
+    <meta property="og:description" content="Gravedigger (Rare Undead troop) in Kingdom Cash: every stat at every level, Underground Passage ability stats, as shown in the app.">
     <meta property="og:image" content="https://keazyea.github.io/images/GRAVEDIGGER.jpg">
     <link rel="icon" href="../images/KIH.jpg">
-    <link rel="stylesheet" href="units.css?v=1">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="units.css?v=2">
     <meta name="google-adsense-account" content="ca-pub-7081980567861066">
     <script>
         // Google's ad code (about 650 KB) loads once the page has finished
@@ -25,36 +26,3222 @@
         }, 2500));
     </script>
 </head>
-<body>
-    <header class="top"><a class="brand" href="../"><img src="../images/KIH.jpg" alt="" width="28" height="28">Keazyea's Intelligence Hub</a>
-    <nav class="crumbs"><a href="./">All troops &amp; heroes</a> <span>›</span> Gravedigger</nav></header>
-    <main>
-        <div class="hero-card">
+<body class="kih-glow glow-troops kih-stars guide-page">
+    <nav class="guide-bar" aria-label="Guide">
+        <button type="button" class="gb-back" onclick="guideBack()">← Back</button>
+        <a class="gb-step" href="royal-guard.html" title="Previous: Royal Guard" aria-label="Previous: Royal Guard">‹</a><a class="gb-all" href="./">📖 All units</a><a class="gb-step" href="immortal.html" title="Next: Immortal" aria-label="Next: Immortal">›</a>
+        <a class="gb-app" href="../">🏠 App</a>
+    </nav>
+    <main class="guide-main">
+        <p class="crumbs"><a href="./">Troops &amp; Heroes</a> › <a href="./?type=troop">Troops</a> › Gravedigger</p>
+        <div class="guide-hero">
             <img src="../images/GRAVEDIGGER.jpg" alt="Gravedigger" width="120" height="120">
-            <div><h1>Gravedigger</h1><div class="chips"><span class="chip r-rare">Rare</span><span class="chip">Undead</span><span class="chip">Troop</span><span class="chip">Melee</span></div></div>
+            <div><h1>Gravedigger</h1><div class="chips"><span class="chip r-rare">Rare</span><a class="chip" href="./?q=Undead">Undead</a><span class="chip">Troop</span><span class="chip">Melee</span></div></div>
         </div>
         <p class="lead"><strong>Gravedigger</strong> is a Rare Undead troop in Kingdom Cash that fights in melee. They like to dig into the ground near less popular roads and attack lone travelers. At level 1, it has 850 HP and 100 attack. By level 10 (its maximum), that grows to 18,000 HP and 975 attack — 21.2× the HP and 9.8× the attack. The squad grows from 3 to 9 units as it levels up. Its ability is <em>Underground Passage</em>.</p>
-        <div class="facts"><div><b>18,000</b><span>Max HP</span></div><div><b>975</b><span>Max attack</span></div><div><b>55</b><span>Max defence</span></div><div><b>46,080</b><span>Max power</span></div><div><b>10</b><span>Max level</span></div><div><b>4.5</b><span>Speed</span></div><div><b>9</b><span>Squad size (max)</span></div></div>
-        <section><h2>Ability</h2><article class="ability"><h3>Underground Passage</h3>
-            <p>At the start of battle, the gravedigger burrows and moves underground to the enemy army&#39;s backlines.</p>
-            
-            
-        </article></section>
+        <div class="guide-actions">
+            <a class="ga-btn" href="../?goto=troops&amp;unit=gravedigger">📊 Open in the app</a>
+            <a class="ga-btn alt" href="../?goto=troops&amp;unit=gravedigger&amp;compare=1">⚔️ Compare with another unit</a>
+        </div>
         
-        <section><h2>Stats by level</h2>
+        <section class="guide-section">
+            <h2>📊 Unit card</h2>
+            <p class="dim">Exactly as the app shows it. Slide to see any level; tap <b>i</b> next to a stat for what it means.</p>
+            <div class="slider-row guide-slider">
+                <input type="range" min="1" max="10" value="1" id="guideLevel" aria-label="Level">
+                <span id="guideLevelText">Level 1</span>
+            </div>
+            <div id="troopsCard">
+    <div class="video-thumb-wrap" onclick="openUnitVideo('gravedigger')">
+        <img class="troop-img" src="../images/GRAVEDIGGER.jpg" alt="Gravedigger">
+        <div class="video-play-overlay">
+             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#FF0000"></circle><path fill="white" d="M9.6 15.6 15.8 12 9.6 8.4z"></path></svg>
+           </div>
+    </div>
+        <h3 style="display:flex; align-items:center; justify-content:center; gap:16px;">
+      Gravedigger (Lvl 1)
+      
+    </h3>
+        <div style="display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:6px; margin-top:6px; width:100%;">
+        <span style="background:#6c63ff; color:white; padding:4px 12px; border-radius:12px; font-size:14px; font-weight:bold; white-space:nowrap;">Undead</span>
+        <span style="background:purple; color:white; padding:4px 12px; border-radius:12px; font-size:14px; font-weight:bold; white-space:nowrap;">Trickster</span>
+    </div>
+    <table>
+  
+          <tbody><tr>
+            <td>
+              <span class="stat-name">
+<span>Health <button onclick="
+                  let d = document.getElementById('desc-troop-extra-health');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/HEALTH.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>850</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-health" style="display:none;">
+            <td colspan="2" class="desc-text">The total amount of damage this unit can take before being defeated.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Attack <button onclick="
+                  let d = document.getElementById('desc-troop-extra-attack');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/ATTACK.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>100</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-attack" style="display:none;">
+            <td colspan="2" class="desc-text">Base damage dealt by this ability per hit.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Attack Range <button onclick="
+                  let d = document.getElementById('desc-troop-extra-attackRange');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/ATTACKRANGE.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>0.9</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-attackRange" style="display:none;">
+            <td colspan="2" class="desc-text">Distance at which this ability or unit can attack.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>AOE Radius <button onclick="
+                  let d = document.getElementById('desc-troop-extra-aoeRadius');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/AOERADIUS.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>-1</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-aoeRadius" style="display:none;">
+            <td colspan="2" class="desc-text">Radius of the area-of-effect. Larger = more units hit. -1 = single target</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Attack Speed <button onclick="
+                  let d = document.getElementById('desc-troop-extra-aspd');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/ASPD.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>1</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-aspd" style="display:none;">
+            <td colspan="2" class="desc-text">Attacks per second. Lower value = Faster attack rate.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Attack Cooldown <button onclick="
+                  let d = document.getElementById('desc-troop-extra-attackCooldown');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/ATTACKCOOLDOWN.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>0</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-attackCooldown" style="display:none;">
+            <td colspan="2" class="desc-text">Extra delay in seconds after attacking before the unit can attack again. Lower is better.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Defense <button onclick="
+                  let d = document.getElementById('desc-troop-extra-defense');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/DEFENSE.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>10</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-defense" style="display:none;">
+            <td colspan="2" class="desc-text">Reduces incoming damage. Higher defense = less damage taken per hit.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Move Speed <button onclick="
+                  let d = document.getElementById('desc-troop-extra-moveSpeed');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/MOVESPEED.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>4.5</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-moveSpeed" style="display:none;">
+            <td colspan="2" class="desc-text">Movement speed of the unit or summoned entity.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Count <button onclick="
+                  let d = document.getElementById('desc-troop-extra-count');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/COUNT.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>3</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-count" style="display:none;">
+            <td colspan="2" class="desc-text">The number of units deployed per placement.</td>
+          </tr>
+          
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+              <span>Evasion <button onclick="
+                  let d = document.getElementById('desc-troop-evasion');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/EVASION.jpg" class="stat-icon">
+            </span>
+          </td>
+          <td>0.5%</td>
+        </tr>
+        
+        <tr id="desc-troop-evasion" style="display:none;">
+          <td colspan="2" class="desc-text">Chance to completely dodge an incoming attack. Innate to every Trickster-role unit, scaling with the unit's level (0.5% per level, up to 5% at level 10).</td>
+        </tr>
+        <tr><td colspan="2" class="section-header">📊 Extra Info</td></tr>
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Attack Type <button onclick="
+                  let d = document.getElementById('desc-troop-attackType');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/ATTACKTYPE.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>Melee</td>
+          </tr>
+          
+          <tr id="desc-troop-attackType" style="display:none;">
+          <td colspan="2" class="desc-text">Melee or ranged — the type of damage this ability deals.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Faction <button onclick="
+                  let d = document.getElementById('desc-troop-faction');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/FACTION.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>Undead</td>
+          </tr>
+          
+          <tr id="desc-troop-faction" style="display:none;">
+          <td colspan="2" class="desc-text">The faction this unit belongs to.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Stopping Distance <button onclick="
+                  let d = document.getElementById('desc-troop-stoppingDistance');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/STOPPINGDISTANCE.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>1</td>
+          </tr>
+          
+          <tr id="desc-troop-stoppingDistance" style="display:none;">
+          <td colspan="2" class="desc-text">How close the unit gets to its target before stopping to attack.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Navigation Priority <button onclick="
+                  let d = document.getElementById('desc-troop-navigationPriority');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/NAVIGATIONPRIORITY.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>50</td>
+          </tr>
+          
+          <tr id="desc-troop-navigationPriority" style="display:none;">
+          <td colspan="2" class="desc-text">Priority used when pathfinding. Higher = more likely to find a path.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Navigation Mask <button onclick="
+                  let d = document.getElementById('desc-troop-navigationMask');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/NAVIGATIONMASK.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>Land</td>
+          </tr>
+          
+          <tr id="desc-troop-navigationMask" style="display:none;">
+          <td colspan="2" class="desc-text">Whether this unit moves on Land or Air.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Engagement Movement <button onclick="
+                  let d = document.getElementById('desc-troop-engagementMovement');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/ENGAGEMENTMOVEMENT.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>false</td>
+          </tr>
+          
+          <tr id="desc-troop-engagementMovement" style="display:none;">
+          <td colspan="2" class="desc-text">Whether the unit engages from range (true) or closes into melee distance (false).</td>
+        </tr>
+        
+        <tr><td colspan="2" class="section-header">⚔️ Abilities</td></tr>
+                          <tr>
+                            <td colspan="2" class="img-row">
+                              <img class="troop-img" src="../images/GRAVEDIGGER_UNDERMINE.jpg" alt="undermine">
+                              <div class="ability-name">Underground Passage</div>
+                              <div class="ability-desc-block">At the start of battle, the gravedigger burrows and moves underground to the enemy army's backlines.</div>
+                                </td>
+                              </tr>
+                        <tr><td>Attack Speed <button onclick="let d = document.getElementById('desc-troop-ability-undermine-aspd'); d.style.display = d.style.display === 'none' ? 'table-row' : 'none';" class="info-btn">i</button></td><td>0.633</td></tr><tr id="desc-troop-ability-undermine-aspd" style="display:none;"><td colspan="2" class="desc-text">Attacks per second. Lower value = Faster attack rate.</td></tr><tr><td>Teleport Delay <button onclick="let d = document.getElementById('desc-troop-ability-undermine-teleportDelay'); d.style.display = d.style.display === 'none' ? 'table-row' : 'none';" class="info-btn">i</button></td><td>2</td></tr><tr id="desc-troop-ability-undermine-teleportDelay" style="display:none;"><td colspan="2" class="desc-text">Delay before the teleport triggers.</td></tr></tbody></table></div>
+            <template id="lv-2">
+    <div class="video-thumb-wrap" onclick="openUnitVideo('gravedigger')">
+        <img class="troop-img" src="../images/GRAVEDIGGER.jpg" alt="Gravedigger">
+        <div class="video-play-overlay">
+             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#FF0000"></circle><path fill="white" d="M9.6 15.6 15.8 12 9.6 8.4z"></path></svg>
+           </div>
+    </div>
+        <h3 style="display:flex; align-items:center; justify-content:center; gap:16px;">
+      Gravedigger (Lvl 2)
+      
+    </h3>
+        <div style="display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:6px; margin-top:6px; width:100%;">
+        <span style="background:#6c63ff; color:white; padding:4px 12px; border-radius:12px; font-size:14px; font-weight:bold; white-space:nowrap;">Undead</span>
+        <span style="background:purple; color:white; padding:4px 12px; border-radius:12px; font-size:14px; font-weight:bold; white-space:nowrap;">Trickster</span>
+    </div>
+    <table>
+  
+          <tbody><tr>
+            <td>
+              <span class="stat-name">
+<span>Health <button onclick="
+                  let d = document.getElementById('desc-troop-extra-health');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/HEALTH.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>1000</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-health" style="display:none;">
+            <td colspan="2" class="desc-text">The total amount of damage this unit can take before being defeated.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Attack <button onclick="
+                  let d = document.getElementById('desc-troop-extra-attack');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/ATTACK.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>120</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-attack" style="display:none;">
+            <td colspan="2" class="desc-text">Base damage dealt by this ability per hit.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Attack Range <button onclick="
+                  let d = document.getElementById('desc-troop-extra-attackRange');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/ATTACKRANGE.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>0.9</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-attackRange" style="display:none;">
+            <td colspan="2" class="desc-text">Distance at which this ability or unit can attack.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>AOE Radius <button onclick="
+                  let d = document.getElementById('desc-troop-extra-aoeRadius');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/AOERADIUS.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>-1</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-aoeRadius" style="display:none;">
+            <td colspan="2" class="desc-text">Radius of the area-of-effect. Larger = more units hit. -1 = single target</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Attack Speed <button onclick="
+                  let d = document.getElementById('desc-troop-extra-aspd');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/ASPD.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>1</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-aspd" style="display:none;">
+            <td colspan="2" class="desc-text">Attacks per second. Lower value = Faster attack rate.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Attack Cooldown <button onclick="
+                  let d = document.getElementById('desc-troop-extra-attackCooldown');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/ATTACKCOOLDOWN.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>0</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-attackCooldown" style="display:none;">
+            <td colspan="2" class="desc-text">Extra delay in seconds after attacking before the unit can attack again. Lower is better.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Defense <button onclick="
+                  let d = document.getElementById('desc-troop-extra-defense');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/DEFENSE.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>15</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-defense" style="display:none;">
+            <td colspan="2" class="desc-text">Reduces incoming damage. Higher defense = less damage taken per hit.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Move Speed <button onclick="
+                  let d = document.getElementById('desc-troop-extra-moveSpeed');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/MOVESPEED.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>4.5</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-moveSpeed" style="display:none;">
+            <td colspan="2" class="desc-text">Movement speed of the unit or summoned entity.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Count <button onclick="
+                  let d = document.getElementById('desc-troop-extra-count');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/COUNT.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>5</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-count" style="display:none;">
+            <td colspan="2" class="desc-text">The number of units deployed per placement.</td>
+          </tr>
+          
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+              <span>Evasion <button onclick="
+                  let d = document.getElementById('desc-troop-evasion');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/EVASION.jpg" class="stat-icon">
+            </span>
+          </td>
+          <td>1%</td>
+        </tr>
+        
+        <tr id="desc-troop-evasion" style="display:none;">
+          <td colspan="2" class="desc-text">Chance to completely dodge an incoming attack. Innate to every Trickster-role unit, scaling with the unit's level (0.5% per level, up to 5% at level 10).</td>
+        </tr>
+        <tr><td colspan="2" class="section-header">📊 Extra Info</td></tr>
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Attack Type <button onclick="
+                  let d = document.getElementById('desc-troop-attackType');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/ATTACKTYPE.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>Melee</td>
+          </tr>
+          
+          <tr id="desc-troop-attackType" style="display:none;">
+          <td colspan="2" class="desc-text">Melee or ranged — the type of damage this ability deals.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Faction <button onclick="
+                  let d = document.getElementById('desc-troop-faction');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/FACTION.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>Undead</td>
+          </tr>
+          
+          <tr id="desc-troop-faction" style="display:none;">
+          <td colspan="2" class="desc-text">The faction this unit belongs to.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Stopping Distance <button onclick="
+                  let d = document.getElementById('desc-troop-stoppingDistance');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/STOPPINGDISTANCE.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>1</td>
+          </tr>
+          
+          <tr id="desc-troop-stoppingDistance" style="display:none;">
+          <td colspan="2" class="desc-text">How close the unit gets to its target before stopping to attack.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Navigation Priority <button onclick="
+                  let d = document.getElementById('desc-troop-navigationPriority');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/NAVIGATIONPRIORITY.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>50</td>
+          </tr>
+          
+          <tr id="desc-troop-navigationPriority" style="display:none;">
+          <td colspan="2" class="desc-text">Priority used when pathfinding. Higher = more likely to find a path.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Navigation Mask <button onclick="
+                  let d = document.getElementById('desc-troop-navigationMask');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/NAVIGATIONMASK.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>Land</td>
+          </tr>
+          
+          <tr id="desc-troop-navigationMask" style="display:none;">
+          <td colspan="2" class="desc-text">Whether this unit moves on Land or Air.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Engagement Movement <button onclick="
+                  let d = document.getElementById('desc-troop-engagementMovement');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/ENGAGEMENTMOVEMENT.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>false</td>
+          </tr>
+          
+          <tr id="desc-troop-engagementMovement" style="display:none;">
+          <td colspan="2" class="desc-text">Whether the unit engages from range (true) or closes into melee distance (false).</td>
+        </tr>
+        
+        <tr><td colspan="2" class="section-header">⚔️ Abilities</td></tr>
+                          <tr>
+                            <td colspan="2" class="img-row">
+                              <img class="troop-img" src="../images/GRAVEDIGGER_UNDERMINE.jpg" alt="undermine">
+                              <div class="ability-name">Underground Passage</div>
+                              <div class="ability-desc-block">At the start of battle, the gravedigger burrows and moves underground to the enemy army's backlines.</div>
+                                </td>
+                              </tr>
+                        <tr><td>Attack Speed <button onclick="let d = document.getElementById('desc-troop-ability-undermine-aspd'); d.style.display = d.style.display === 'none' ? 'table-row' : 'none';" class="info-btn">i</button></td><td>0.633</td></tr><tr id="desc-troop-ability-undermine-aspd" style="display:none;"><td colspan="2" class="desc-text">Attacks per second. Lower value = Faster attack rate.</td></tr><tr><td>Teleport Delay <button onclick="let d = document.getElementById('desc-troop-ability-undermine-teleportDelay'); d.style.display = d.style.display === 'none' ? 'table-row' : 'none';" class="info-btn">i</button></td><td>2</td></tr><tr id="desc-troop-ability-undermine-teleportDelay" style="display:none;"><td colspan="2" class="desc-text">Delay before the teleport triggers.</td></tr></tbody></table></template>
+            <template id="lv-3">
+    <div class="video-thumb-wrap" onclick="openUnitVideo('gravedigger')">
+        <img class="troop-img" src="../images/GRAVEDIGGER.jpg" alt="Gravedigger">
+        <div class="video-play-overlay">
+             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#FF0000"></circle><path fill="white" d="M9.6 15.6 15.8 12 9.6 8.4z"></path></svg>
+           </div>
+    </div>
+        <h3 style="display:flex; align-items:center; justify-content:center; gap:16px;">
+      Gravedigger (Lvl 3)
+      
+    </h3>
+        <div style="display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:6px; margin-top:6px; width:100%;">
+        <span style="background:#6c63ff; color:white; padding:4px 12px; border-radius:12px; font-size:14px; font-weight:bold; white-space:nowrap;">Undead</span>
+        <span style="background:purple; color:white; padding:4px 12px; border-radius:12px; font-size:14px; font-weight:bold; white-space:nowrap;">Trickster</span>
+    </div>
+    <table>
+  
+          <tbody><tr>
+            <td>
+              <span class="stat-name">
+<span>Health <button onclick="
+                  let d = document.getElementById('desc-troop-extra-health');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/HEALTH.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>1250</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-health" style="display:none;">
+            <td colspan="2" class="desc-text">The total amount of damage this unit can take before being defeated.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Attack <button onclick="
+                  let d = document.getElementById('desc-troop-extra-attack');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/ATTACK.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>160</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-attack" style="display:none;">
+            <td colspan="2" class="desc-text">Base damage dealt by this ability per hit.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Attack Range <button onclick="
+                  let d = document.getElementById('desc-troop-extra-attackRange');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/ATTACKRANGE.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>0.9</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-attackRange" style="display:none;">
+            <td colspan="2" class="desc-text">Distance at which this ability or unit can attack.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>AOE Radius <button onclick="
+                  let d = document.getElementById('desc-troop-extra-aoeRadius');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/AOERADIUS.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>-1</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-aoeRadius" style="display:none;">
+            <td colspan="2" class="desc-text">Radius of the area-of-effect. Larger = more units hit. -1 = single target</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Attack Speed <button onclick="
+                  let d = document.getElementById('desc-troop-extra-aspd');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/ASPD.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>1</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-aspd" style="display:none;">
+            <td colspan="2" class="desc-text">Attacks per second. Lower value = Faster attack rate.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Attack Cooldown <button onclick="
+                  let d = document.getElementById('desc-troop-extra-attackCooldown');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/ATTACKCOOLDOWN.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>0</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-attackCooldown" style="display:none;">
+            <td colspan="2" class="desc-text">Extra delay in seconds after attacking before the unit can attack again. Lower is better.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Defense <button onclick="
+                  let d = document.getElementById('desc-troop-extra-defense');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/DEFENSE.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>20</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-defense" style="display:none;">
+            <td colspan="2" class="desc-text">Reduces incoming damage. Higher defense = less damage taken per hit.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Move Speed <button onclick="
+                  let d = document.getElementById('desc-troop-extra-moveSpeed');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/MOVESPEED.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>4.5</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-moveSpeed" style="display:none;">
+            <td colspan="2" class="desc-text">Movement speed of the unit or summoned entity.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Count <button onclick="
+                  let d = document.getElementById('desc-troop-extra-count');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/COUNT.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>7</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-count" style="display:none;">
+            <td colspan="2" class="desc-text">The number of units deployed per placement.</td>
+          </tr>
+          
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+              <span>Evasion <button onclick="
+                  let d = document.getElementById('desc-troop-evasion');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/EVASION.jpg" class="stat-icon">
+            </span>
+          </td>
+          <td>1.5%</td>
+        </tr>
+        
+        <tr id="desc-troop-evasion" style="display:none;">
+          <td colspan="2" class="desc-text">Chance to completely dodge an incoming attack. Innate to every Trickster-role unit, scaling with the unit's level (0.5% per level, up to 5% at level 10).</td>
+        </tr>
+        <tr><td colspan="2" class="section-header">📊 Extra Info</td></tr>
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Attack Type <button onclick="
+                  let d = document.getElementById('desc-troop-attackType');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/ATTACKTYPE.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>Melee</td>
+          </tr>
+          
+          <tr id="desc-troop-attackType" style="display:none;">
+          <td colspan="2" class="desc-text">Melee or ranged — the type of damage this ability deals.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Faction <button onclick="
+                  let d = document.getElementById('desc-troop-faction');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/FACTION.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>Undead</td>
+          </tr>
+          
+          <tr id="desc-troop-faction" style="display:none;">
+          <td colspan="2" class="desc-text">The faction this unit belongs to.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Stopping Distance <button onclick="
+                  let d = document.getElementById('desc-troop-stoppingDistance');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/STOPPINGDISTANCE.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>1</td>
+          </tr>
+          
+          <tr id="desc-troop-stoppingDistance" style="display:none;">
+          <td colspan="2" class="desc-text">How close the unit gets to its target before stopping to attack.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Navigation Priority <button onclick="
+                  let d = document.getElementById('desc-troop-navigationPriority');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/NAVIGATIONPRIORITY.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>50</td>
+          </tr>
+          
+          <tr id="desc-troop-navigationPriority" style="display:none;">
+          <td colspan="2" class="desc-text">Priority used when pathfinding. Higher = more likely to find a path.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Navigation Mask <button onclick="
+                  let d = document.getElementById('desc-troop-navigationMask');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/NAVIGATIONMASK.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>Land</td>
+          </tr>
+          
+          <tr id="desc-troop-navigationMask" style="display:none;">
+          <td colspan="2" class="desc-text">Whether this unit moves on Land or Air.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Engagement Movement <button onclick="
+                  let d = document.getElementById('desc-troop-engagementMovement');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/ENGAGEMENTMOVEMENT.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>false</td>
+          </tr>
+          
+          <tr id="desc-troop-engagementMovement" style="display:none;">
+          <td colspan="2" class="desc-text">Whether the unit engages from range (true) or closes into melee distance (false).</td>
+        </tr>
+        
+        <tr><td colspan="2" class="section-header">⚔️ Abilities</td></tr>
+                          <tr>
+                            <td colspan="2" class="img-row">
+                              <img class="troop-img" src="../images/GRAVEDIGGER_UNDERMINE.jpg" alt="undermine">
+                              <div class="ability-name">Underground Passage</div>
+                              <div class="ability-desc-block">At the start of battle, the gravedigger burrows and moves underground to the enemy army's backlines.</div>
+                                </td>
+                              </tr>
+                        <tr><td>Attack Speed <button onclick="let d = document.getElementById('desc-troop-ability-undermine-aspd'); d.style.display = d.style.display === 'none' ? 'table-row' : 'none';" class="info-btn">i</button></td><td>0.633</td></tr><tr id="desc-troop-ability-undermine-aspd" style="display:none;"><td colspan="2" class="desc-text">Attacks per second. Lower value = Faster attack rate.</td></tr><tr><td>Teleport Delay <button onclick="let d = document.getElementById('desc-troop-ability-undermine-teleportDelay'); d.style.display = d.style.display === 'none' ? 'table-row' : 'none';" class="info-btn">i</button></td><td>2</td></tr><tr id="desc-troop-ability-undermine-teleportDelay" style="display:none;"><td colspan="2" class="desc-text">Delay before the teleport triggers.</td></tr></tbody></table></template>
+            <template id="lv-4">
+    <div class="video-thumb-wrap" onclick="openUnitVideo('gravedigger')">
+        <img class="troop-img" src="../images/GRAVEDIGGER.jpg" alt="Gravedigger">
+        <div class="video-play-overlay">
+             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#FF0000"></circle><path fill="white" d="M9.6 15.6 15.8 12 9.6 8.4z"></path></svg>
+           </div>
+    </div>
+        <h3 style="display:flex; align-items:center; justify-content:center; gap:16px;">
+      Gravedigger (Lvl 4)
+      
+    </h3>
+        <div style="display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:6px; margin-top:6px; width:100%;">
+        <span style="background:#6c63ff; color:white; padding:4px 12px; border-radius:12px; font-size:14px; font-weight:bold; white-space:nowrap;">Undead</span>
+        <span style="background:purple; color:white; padding:4px 12px; border-radius:12px; font-size:14px; font-weight:bold; white-space:nowrap;">Trickster</span>
+    </div>
+    <table>
+  
+          <tbody><tr>
+            <td>
+              <span class="stat-name">
+<span>Health <button onclick="
+                  let d = document.getElementById('desc-troop-extra-health');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/HEALTH.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>1750</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-health" style="display:none;">
+            <td colspan="2" class="desc-text">The total amount of damage this unit can take before being defeated.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Attack <button onclick="
+                  let d = document.getElementById('desc-troop-extra-attack');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/ATTACK.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>225</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-attack" style="display:none;">
+            <td colspan="2" class="desc-text">Base damage dealt by this ability per hit.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Attack Range <button onclick="
+                  let d = document.getElementById('desc-troop-extra-attackRange');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/ATTACKRANGE.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>0.9</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-attackRange" style="display:none;">
+            <td colspan="2" class="desc-text">Distance at which this ability or unit can attack.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>AOE Radius <button onclick="
+                  let d = document.getElementById('desc-troop-extra-aoeRadius');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/AOERADIUS.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>-1</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-aoeRadius" style="display:none;">
+            <td colspan="2" class="desc-text">Radius of the area-of-effect. Larger = more units hit. -1 = single target</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Attack Speed <button onclick="
+                  let d = document.getElementById('desc-troop-extra-aspd');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/ASPD.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>1</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-aspd" style="display:none;">
+            <td colspan="2" class="desc-text">Attacks per second. Lower value = Faster attack rate.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Attack Cooldown <button onclick="
+                  let d = document.getElementById('desc-troop-extra-attackCooldown');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/ATTACKCOOLDOWN.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>0</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-attackCooldown" style="display:none;">
+            <td colspan="2" class="desc-text">Extra delay in seconds after attacking before the unit can attack again. Lower is better.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Defense <button onclick="
+                  let d = document.getElementById('desc-troop-extra-defense');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/DEFENSE.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>25</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-defense" style="display:none;">
+            <td colspan="2" class="desc-text">Reduces incoming damage. Higher defense = less damage taken per hit.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Move Speed <button onclick="
+                  let d = document.getElementById('desc-troop-extra-moveSpeed');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/MOVESPEED.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>4.5</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-moveSpeed" style="display:none;">
+            <td colspan="2" class="desc-text">Movement speed of the unit or summoned entity.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Count <button onclick="
+                  let d = document.getElementById('desc-troop-extra-count');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/COUNT.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>9</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-count" style="display:none;">
+            <td colspan="2" class="desc-text">The number of units deployed per placement.</td>
+          </tr>
+          
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+              <span>Evasion <button onclick="
+                  let d = document.getElementById('desc-troop-evasion');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/EVASION.jpg" class="stat-icon">
+            </span>
+          </td>
+          <td>2%</td>
+        </tr>
+        
+        <tr id="desc-troop-evasion" style="display:none;">
+          <td colspan="2" class="desc-text">Chance to completely dodge an incoming attack. Innate to every Trickster-role unit, scaling with the unit's level (0.5% per level, up to 5% at level 10).</td>
+        </tr>
+        <tr><td colspan="2" class="section-header">📊 Extra Info</td></tr>
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Attack Type <button onclick="
+                  let d = document.getElementById('desc-troop-attackType');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/ATTACKTYPE.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>Melee</td>
+          </tr>
+          
+          <tr id="desc-troop-attackType" style="display:none;">
+          <td colspan="2" class="desc-text">Melee or ranged — the type of damage this ability deals.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Faction <button onclick="
+                  let d = document.getElementById('desc-troop-faction');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/FACTION.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>Undead</td>
+          </tr>
+          
+          <tr id="desc-troop-faction" style="display:none;">
+          <td colspan="2" class="desc-text">The faction this unit belongs to.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Stopping Distance <button onclick="
+                  let d = document.getElementById('desc-troop-stoppingDistance');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/STOPPINGDISTANCE.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>1</td>
+          </tr>
+          
+          <tr id="desc-troop-stoppingDistance" style="display:none;">
+          <td colspan="2" class="desc-text">How close the unit gets to its target before stopping to attack.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Navigation Priority <button onclick="
+                  let d = document.getElementById('desc-troop-navigationPriority');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/NAVIGATIONPRIORITY.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>50</td>
+          </tr>
+          
+          <tr id="desc-troop-navigationPriority" style="display:none;">
+          <td colspan="2" class="desc-text">Priority used when pathfinding. Higher = more likely to find a path.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Navigation Mask <button onclick="
+                  let d = document.getElementById('desc-troop-navigationMask');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/NAVIGATIONMASK.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>Land</td>
+          </tr>
+          
+          <tr id="desc-troop-navigationMask" style="display:none;">
+          <td colspan="2" class="desc-text">Whether this unit moves on Land or Air.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Engagement Movement <button onclick="
+                  let d = document.getElementById('desc-troop-engagementMovement');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/ENGAGEMENTMOVEMENT.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>false</td>
+          </tr>
+          
+          <tr id="desc-troop-engagementMovement" style="display:none;">
+          <td colspan="2" class="desc-text">Whether the unit engages from range (true) or closes into melee distance (false).</td>
+        </tr>
+        
+        <tr><td colspan="2" class="section-header">⚔️ Abilities</td></tr>
+                          <tr>
+                            <td colspan="2" class="img-row">
+                              <img class="troop-img" src="../images/GRAVEDIGGER_UNDERMINE.jpg" alt="undermine">
+                              <div class="ability-name">Underground Passage</div>
+                              <div class="ability-desc-block">At the start of battle, the gravedigger burrows and moves underground to the enemy army's backlines.</div>
+                                </td>
+                              </tr>
+                        <tr><td>Attack Speed <button onclick="let d = document.getElementById('desc-troop-ability-undermine-aspd'); d.style.display = d.style.display === 'none' ? 'table-row' : 'none';" class="info-btn">i</button></td><td>0.633</td></tr><tr id="desc-troop-ability-undermine-aspd" style="display:none;"><td colspan="2" class="desc-text">Attacks per second. Lower value = Faster attack rate.</td></tr><tr><td>Teleport Delay <button onclick="let d = document.getElementById('desc-troop-ability-undermine-teleportDelay'); d.style.display = d.style.display === 'none' ? 'table-row' : 'none';" class="info-btn">i</button></td><td>2</td></tr><tr id="desc-troop-ability-undermine-teleportDelay" style="display:none;"><td colspan="2" class="desc-text">Delay before the teleport triggers.</td></tr></tbody></table></template>
+            <template id="lv-5">
+    <div class="video-thumb-wrap" onclick="openUnitVideo('gravedigger')">
+        <img class="troop-img" src="../images/GRAVEDIGGER.jpg" alt="Gravedigger">
+        <div class="video-play-overlay">
+             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#FF0000"></circle><path fill="white" d="M9.6 15.6 15.8 12 9.6 8.4z"></path></svg>
+           </div>
+    </div>
+        <h3 style="display:flex; align-items:center; justify-content:center; gap:16px;">
+      Gravedigger (Lvl 5)
+      
+    </h3>
+        <div style="display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:6px; margin-top:6px; width:100%;">
+        <span style="background:#6c63ff; color:white; padding:4px 12px; border-radius:12px; font-size:14px; font-weight:bold; white-space:nowrap;">Undead</span>
+        <span style="background:purple; color:white; padding:4px 12px; border-radius:12px; font-size:14px; font-weight:bold; white-space:nowrap;">Trickster</span>
+    </div>
+    <table>
+  
+          <tbody><tr>
+            <td>
+              <span class="stat-name">
+<span>Health <button onclick="
+                  let d = document.getElementById('desc-troop-extra-health');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/HEALTH.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>3100</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-health" style="display:none;">
+            <td colspan="2" class="desc-text">The total amount of damage this unit can take before being defeated.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Attack <button onclick="
+                  let d = document.getElementById('desc-troop-extra-attack');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/ATTACK.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>265</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-attack" style="display:none;">
+            <td colspan="2" class="desc-text">Base damage dealt by this ability per hit.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Attack Range <button onclick="
+                  let d = document.getElementById('desc-troop-extra-attackRange');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/ATTACKRANGE.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>0.9</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-attackRange" style="display:none;">
+            <td colspan="2" class="desc-text">Distance at which this ability or unit can attack.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>AOE Radius <button onclick="
+                  let d = document.getElementById('desc-troop-extra-aoeRadius');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/AOERADIUS.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>-1</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-aoeRadius" style="display:none;">
+            <td colspan="2" class="desc-text">Radius of the area-of-effect. Larger = more units hit. -1 = single target</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Attack Speed <button onclick="
+                  let d = document.getElementById('desc-troop-extra-aspd');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/ASPD.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>1</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-aspd" style="display:none;">
+            <td colspan="2" class="desc-text">Attacks per second. Lower value = Faster attack rate.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Attack Cooldown <button onclick="
+                  let d = document.getElementById('desc-troop-extra-attackCooldown');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/ATTACKCOOLDOWN.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>0</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-attackCooldown" style="display:none;">
+            <td colspan="2" class="desc-text">Extra delay in seconds after attacking before the unit can attack again. Lower is better.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Defense <button onclick="
+                  let d = document.getElementById('desc-troop-extra-defense');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/DEFENSE.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>30</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-defense" style="display:none;">
+            <td colspan="2" class="desc-text">Reduces incoming damage. Higher defense = less damage taken per hit.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Move Speed <button onclick="
+                  let d = document.getElementById('desc-troop-extra-moveSpeed');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/MOVESPEED.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>4.5</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-moveSpeed" style="display:none;">
+            <td colspan="2" class="desc-text">Movement speed of the unit or summoned entity.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Count <button onclick="
+                  let d = document.getElementById('desc-troop-extra-count');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/COUNT.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>9</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-count" style="display:none;">
+            <td colspan="2" class="desc-text">The number of units deployed per placement.</td>
+          </tr>
+          
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+              <span>Evasion <button onclick="
+                  let d = document.getElementById('desc-troop-evasion');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/EVASION.jpg" class="stat-icon">
+            </span>
+          </td>
+          <td>2.5%</td>
+        </tr>
+        
+        <tr id="desc-troop-evasion" style="display:none;">
+          <td colspan="2" class="desc-text">Chance to completely dodge an incoming attack. Innate to every Trickster-role unit, scaling with the unit's level (0.5% per level, up to 5% at level 10).</td>
+        </tr>
+        <tr><td colspan="2" class="section-header">📊 Extra Info</td></tr>
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Attack Type <button onclick="
+                  let d = document.getElementById('desc-troop-attackType');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/ATTACKTYPE.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>Melee</td>
+          </tr>
+          
+          <tr id="desc-troop-attackType" style="display:none;">
+          <td colspan="2" class="desc-text">Melee or ranged — the type of damage this ability deals.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Faction <button onclick="
+                  let d = document.getElementById('desc-troop-faction');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/FACTION.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>Undead</td>
+          </tr>
+          
+          <tr id="desc-troop-faction" style="display:none;">
+          <td colspan="2" class="desc-text">The faction this unit belongs to.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Stopping Distance <button onclick="
+                  let d = document.getElementById('desc-troop-stoppingDistance');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/STOPPINGDISTANCE.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>1</td>
+          </tr>
+          
+          <tr id="desc-troop-stoppingDistance" style="display:none;">
+          <td colspan="2" class="desc-text">How close the unit gets to its target before stopping to attack.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Navigation Priority <button onclick="
+                  let d = document.getElementById('desc-troop-navigationPriority');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/NAVIGATIONPRIORITY.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>50</td>
+          </tr>
+          
+          <tr id="desc-troop-navigationPriority" style="display:none;">
+          <td colspan="2" class="desc-text">Priority used when pathfinding. Higher = more likely to find a path.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Navigation Mask <button onclick="
+                  let d = document.getElementById('desc-troop-navigationMask');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/NAVIGATIONMASK.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>Land</td>
+          </tr>
+          
+          <tr id="desc-troop-navigationMask" style="display:none;">
+          <td colspan="2" class="desc-text">Whether this unit moves on Land or Air.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Engagement Movement <button onclick="
+                  let d = document.getElementById('desc-troop-engagementMovement');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/ENGAGEMENTMOVEMENT.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>false</td>
+          </tr>
+          
+          <tr id="desc-troop-engagementMovement" style="display:none;">
+          <td colspan="2" class="desc-text">Whether the unit engages from range (true) or closes into melee distance (false).</td>
+        </tr>
+        
+        <tr><td colspan="2" class="section-header">⚔️ Abilities</td></tr>
+                          <tr>
+                            <td colspan="2" class="img-row">
+                              <img class="troop-img" src="../images/GRAVEDIGGER_UNDERMINE.jpg" alt="undermine">
+                              <div class="ability-name">Underground Passage</div>
+                              <div class="ability-desc-block">At the start of battle, the gravedigger burrows and moves underground to the enemy army's backlines.</div>
+                                </td>
+                              </tr>
+                        <tr><td>Attack Speed <button onclick="let d = document.getElementById('desc-troop-ability-undermine-aspd'); d.style.display = d.style.display === 'none' ? 'table-row' : 'none';" class="info-btn">i</button></td><td>0.633</td></tr><tr id="desc-troop-ability-undermine-aspd" style="display:none;"><td colspan="2" class="desc-text">Attacks per second. Lower value = Faster attack rate.</td></tr><tr><td>Teleport Delay <button onclick="let d = document.getElementById('desc-troop-ability-undermine-teleportDelay'); d.style.display = d.style.display === 'none' ? 'table-row' : 'none';" class="info-btn">i</button></td><td>2</td></tr><tr id="desc-troop-ability-undermine-teleportDelay" style="display:none;"><td colspan="2" class="desc-text">Delay before the teleport triggers.</td></tr></tbody></table></template>
+            <template id="lv-6">
+    <div class="video-thumb-wrap" onclick="openUnitVideo('gravedigger')">
+        <img class="troop-img" src="../images/GRAVEDIGGER.jpg" alt="Gravedigger">
+        <div class="video-play-overlay">
+             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#FF0000"></circle><path fill="white" d="M9.6 15.6 15.8 12 9.6 8.4z"></path></svg>
+           </div>
+    </div>
+        <h3 style="display:flex; align-items:center; justify-content:center; gap:16px;">
+      Gravedigger (Lvl 6)
+      
+    </h3>
+        <div style="display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:6px; margin-top:6px; width:100%;">
+        <span style="background:#6c63ff; color:white; padding:4px 12px; border-radius:12px; font-size:14px; font-weight:bold; white-space:nowrap;">Undead</span>
+        <span style="background:purple; color:white; padding:4px 12px; border-radius:12px; font-size:14px; font-weight:bold; white-space:nowrap;">Trickster</span>
+    </div>
+    <table>
+  
+          <tbody><tr>
+            <td>
+              <span class="stat-name">
+<span>Health <button onclick="
+                  let d = document.getElementById('desc-troop-extra-health');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/HEALTH.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>4500</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-health" style="display:none;">
+            <td colspan="2" class="desc-text">The total amount of damage this unit can take before being defeated.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Attack <button onclick="
+                  let d = document.getElementById('desc-troop-extra-attack');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/ATTACK.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>320</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-attack" style="display:none;">
+            <td colspan="2" class="desc-text">Base damage dealt by this ability per hit.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Attack Range <button onclick="
+                  let d = document.getElementById('desc-troop-extra-attackRange');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/ATTACKRANGE.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>0.9</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-attackRange" style="display:none;">
+            <td colspan="2" class="desc-text">Distance at which this ability or unit can attack.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>AOE Radius <button onclick="
+                  let d = document.getElementById('desc-troop-extra-aoeRadius');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/AOERADIUS.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>-1</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-aoeRadius" style="display:none;">
+            <td colspan="2" class="desc-text">Radius of the area-of-effect. Larger = more units hit. -1 = single target</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Attack Speed <button onclick="
+                  let d = document.getElementById('desc-troop-extra-aspd');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/ASPD.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>1</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-aspd" style="display:none;">
+            <td colspan="2" class="desc-text">Attacks per second. Lower value = Faster attack rate.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Attack Cooldown <button onclick="
+                  let d = document.getElementById('desc-troop-extra-attackCooldown');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/ATTACKCOOLDOWN.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>0</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-attackCooldown" style="display:none;">
+            <td colspan="2" class="desc-text">Extra delay in seconds after attacking before the unit can attack again. Lower is better.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Defense <button onclick="
+                  let d = document.getElementById('desc-troop-extra-defense');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/DEFENSE.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>35</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-defense" style="display:none;">
+            <td colspan="2" class="desc-text">Reduces incoming damage. Higher defense = less damage taken per hit.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Move Speed <button onclick="
+                  let d = document.getElementById('desc-troop-extra-moveSpeed');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/MOVESPEED.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>4.5</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-moveSpeed" style="display:none;">
+            <td colspan="2" class="desc-text">Movement speed of the unit or summoned entity.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Count <button onclick="
+                  let d = document.getElementById('desc-troop-extra-count');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/COUNT.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>9</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-count" style="display:none;">
+            <td colspan="2" class="desc-text">The number of units deployed per placement.</td>
+          </tr>
+          
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+              <span>Evasion <button onclick="
+                  let d = document.getElementById('desc-troop-evasion');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/EVASION.jpg" class="stat-icon">
+            </span>
+          </td>
+          <td>3%</td>
+        </tr>
+        
+        <tr id="desc-troop-evasion" style="display:none;">
+          <td colspan="2" class="desc-text">Chance to completely dodge an incoming attack. Innate to every Trickster-role unit, scaling with the unit's level (0.5% per level, up to 5% at level 10).</td>
+        </tr>
+        <tr><td colspan="2" class="section-header">📊 Extra Info</td></tr>
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Attack Type <button onclick="
+                  let d = document.getElementById('desc-troop-attackType');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/ATTACKTYPE.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>Melee</td>
+          </tr>
+          
+          <tr id="desc-troop-attackType" style="display:none;">
+          <td colspan="2" class="desc-text">Melee or ranged — the type of damage this ability deals.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Faction <button onclick="
+                  let d = document.getElementById('desc-troop-faction');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/FACTION.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>Undead</td>
+          </tr>
+          
+          <tr id="desc-troop-faction" style="display:none;">
+          <td colspan="2" class="desc-text">The faction this unit belongs to.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Stopping Distance <button onclick="
+                  let d = document.getElementById('desc-troop-stoppingDistance');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/STOPPINGDISTANCE.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>1</td>
+          </tr>
+          
+          <tr id="desc-troop-stoppingDistance" style="display:none;">
+          <td colspan="2" class="desc-text">How close the unit gets to its target before stopping to attack.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Navigation Priority <button onclick="
+                  let d = document.getElementById('desc-troop-navigationPriority');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/NAVIGATIONPRIORITY.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>50</td>
+          </tr>
+          
+          <tr id="desc-troop-navigationPriority" style="display:none;">
+          <td colspan="2" class="desc-text">Priority used when pathfinding. Higher = more likely to find a path.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Navigation Mask <button onclick="
+                  let d = document.getElementById('desc-troop-navigationMask');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/NAVIGATIONMASK.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>Land</td>
+          </tr>
+          
+          <tr id="desc-troop-navigationMask" style="display:none;">
+          <td colspan="2" class="desc-text">Whether this unit moves on Land or Air.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Engagement Movement <button onclick="
+                  let d = document.getElementById('desc-troop-engagementMovement');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/ENGAGEMENTMOVEMENT.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>false</td>
+          </tr>
+          
+          <tr id="desc-troop-engagementMovement" style="display:none;">
+          <td colspan="2" class="desc-text">Whether the unit engages from range (true) or closes into melee distance (false).</td>
+        </tr>
+        
+        <tr><td colspan="2" class="section-header">⚔️ Abilities</td></tr>
+                          <tr>
+                            <td colspan="2" class="img-row">
+                              <img class="troop-img" src="../images/GRAVEDIGGER_UNDERMINE.jpg" alt="undermine">
+                              <div class="ability-name">Underground Passage</div>
+                              <div class="ability-desc-block">At the start of battle, the gravedigger burrows and moves underground to the enemy army's backlines.</div>
+                                </td>
+                              </tr>
+                        <tr><td>Attack Speed <button onclick="let d = document.getElementById('desc-troop-ability-undermine-aspd'); d.style.display = d.style.display === 'none' ? 'table-row' : 'none';" class="info-btn">i</button></td><td>0.633</td></tr><tr id="desc-troop-ability-undermine-aspd" style="display:none;"><td colspan="2" class="desc-text">Attacks per second. Lower value = Faster attack rate.</td></tr><tr><td>Teleport Delay <button onclick="let d = document.getElementById('desc-troop-ability-undermine-teleportDelay'); d.style.display = d.style.display === 'none' ? 'table-row' : 'none';" class="info-btn">i</button></td><td>2</td></tr><tr id="desc-troop-ability-undermine-teleportDelay" style="display:none;"><td colspan="2" class="desc-text">Delay before the teleport triggers.</td></tr></tbody></table></template>
+            <template id="lv-7">
+    <div class="video-thumb-wrap" onclick="openUnitVideo('gravedigger')">
+        <img class="troop-img" src="../images/GRAVEDIGGER.jpg" alt="Gravedigger">
+        <div class="video-play-overlay">
+             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#FF0000"></circle><path fill="white" d="M9.6 15.6 15.8 12 9.6 8.4z"></path></svg>
+           </div>
+    </div>
+        <h3 style="display:flex; align-items:center; justify-content:center; gap:16px;">
+      Gravedigger (Lvl 7)
+      
+    </h3>
+        <div style="display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:6px; margin-top:6px; width:100%;">
+        <span style="background:#6c63ff; color:white; padding:4px 12px; border-radius:12px; font-size:14px; font-weight:bold; white-space:nowrap;">Undead</span>
+        <span style="background:purple; color:white; padding:4px 12px; border-radius:12px; font-size:14px; font-weight:bold; white-space:nowrap;">Trickster</span>
+    </div>
+    <table>
+  
+          <tbody><tr>
+            <td>
+              <span class="stat-name">
+<span>Health <button onclick="
+                  let d = document.getElementById('desc-troop-extra-health');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/HEALTH.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>6000</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-health" style="display:none;">
+            <td colspan="2" class="desc-text">The total amount of damage this unit can take before being defeated.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Attack <button onclick="
+                  let d = document.getElementById('desc-troop-extra-attack');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/ATTACK.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>370</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-attack" style="display:none;">
+            <td colspan="2" class="desc-text">Base damage dealt by this ability per hit.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Attack Range <button onclick="
+                  let d = document.getElementById('desc-troop-extra-attackRange');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/ATTACKRANGE.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>0.9</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-attackRange" style="display:none;">
+            <td colspan="2" class="desc-text">Distance at which this ability or unit can attack.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>AOE Radius <button onclick="
+                  let d = document.getElementById('desc-troop-extra-aoeRadius');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/AOERADIUS.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>-1</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-aoeRadius" style="display:none;">
+            <td colspan="2" class="desc-text">Radius of the area-of-effect. Larger = more units hit. -1 = single target</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Attack Speed <button onclick="
+                  let d = document.getElementById('desc-troop-extra-aspd');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/ASPD.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>1</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-aspd" style="display:none;">
+            <td colspan="2" class="desc-text">Attacks per second. Lower value = Faster attack rate.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Attack Cooldown <button onclick="
+                  let d = document.getElementById('desc-troop-extra-attackCooldown');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/ATTACKCOOLDOWN.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>0</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-attackCooldown" style="display:none;">
+            <td colspan="2" class="desc-text">Extra delay in seconds after attacking before the unit can attack again. Lower is better.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Defense <button onclick="
+                  let d = document.getElementById('desc-troop-extra-defense');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/DEFENSE.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>40</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-defense" style="display:none;">
+            <td colspan="2" class="desc-text">Reduces incoming damage. Higher defense = less damage taken per hit.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Move Speed <button onclick="
+                  let d = document.getElementById('desc-troop-extra-moveSpeed');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/MOVESPEED.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>4.5</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-moveSpeed" style="display:none;">
+            <td colspan="2" class="desc-text">Movement speed of the unit or summoned entity.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Count <button onclick="
+                  let d = document.getElementById('desc-troop-extra-count');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/COUNT.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>9</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-count" style="display:none;">
+            <td colspan="2" class="desc-text">The number of units deployed per placement.</td>
+          </tr>
+          
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+              <span>Evasion <button onclick="
+                  let d = document.getElementById('desc-troop-evasion');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/EVASION.jpg" class="stat-icon">
+            </span>
+          </td>
+          <td>3.5%</td>
+        </tr>
+        
+        <tr id="desc-troop-evasion" style="display:none;">
+          <td colspan="2" class="desc-text">Chance to completely dodge an incoming attack. Innate to every Trickster-role unit, scaling with the unit's level (0.5% per level, up to 5% at level 10).</td>
+        </tr>
+        <tr><td colspan="2" class="section-header">📊 Extra Info</td></tr>
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Attack Type <button onclick="
+                  let d = document.getElementById('desc-troop-attackType');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/ATTACKTYPE.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>Melee</td>
+          </tr>
+          
+          <tr id="desc-troop-attackType" style="display:none;">
+          <td colspan="2" class="desc-text">Melee or ranged — the type of damage this ability deals.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Faction <button onclick="
+                  let d = document.getElementById('desc-troop-faction');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/FACTION.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>Undead</td>
+          </tr>
+          
+          <tr id="desc-troop-faction" style="display:none;">
+          <td colspan="2" class="desc-text">The faction this unit belongs to.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Stopping Distance <button onclick="
+                  let d = document.getElementById('desc-troop-stoppingDistance');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/STOPPINGDISTANCE.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>1</td>
+          </tr>
+          
+          <tr id="desc-troop-stoppingDistance" style="display:none;">
+          <td colspan="2" class="desc-text">How close the unit gets to its target before stopping to attack.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Navigation Priority <button onclick="
+                  let d = document.getElementById('desc-troop-navigationPriority');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/NAVIGATIONPRIORITY.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>50</td>
+          </tr>
+          
+          <tr id="desc-troop-navigationPriority" style="display:none;">
+          <td colspan="2" class="desc-text">Priority used when pathfinding. Higher = more likely to find a path.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Navigation Mask <button onclick="
+                  let d = document.getElementById('desc-troop-navigationMask');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/NAVIGATIONMASK.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>Land</td>
+          </tr>
+          
+          <tr id="desc-troop-navigationMask" style="display:none;">
+          <td colspan="2" class="desc-text">Whether this unit moves on Land or Air.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Engagement Movement <button onclick="
+                  let d = document.getElementById('desc-troop-engagementMovement');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/ENGAGEMENTMOVEMENT.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>false</td>
+          </tr>
+          
+          <tr id="desc-troop-engagementMovement" style="display:none;">
+          <td colspan="2" class="desc-text">Whether the unit engages from range (true) or closes into melee distance (false).</td>
+        </tr>
+        
+        <tr><td colspan="2" class="section-header">⚔️ Abilities</td></tr>
+                          <tr>
+                            <td colspan="2" class="img-row">
+                              <img class="troop-img" src="../images/GRAVEDIGGER_UNDERMINE.jpg" alt="undermine">
+                              <div class="ability-name">Underground Passage</div>
+                              <div class="ability-desc-block">At the start of battle, the gravedigger burrows and moves underground to the enemy army's backlines.</div>
+                                </td>
+                              </tr>
+                        <tr><td>Attack Speed <button onclick="let d = document.getElementById('desc-troop-ability-undermine-aspd'); d.style.display = d.style.display === 'none' ? 'table-row' : 'none';" class="info-btn">i</button></td><td>0.633</td></tr><tr id="desc-troop-ability-undermine-aspd" style="display:none;"><td colspan="2" class="desc-text">Attacks per second. Lower value = Faster attack rate.</td></tr><tr><td>Teleport Delay <button onclick="let d = document.getElementById('desc-troop-ability-undermine-teleportDelay'); d.style.display = d.style.display === 'none' ? 'table-row' : 'none';" class="info-btn">i</button></td><td>2</td></tr><tr id="desc-troop-ability-undermine-teleportDelay" style="display:none;"><td colspan="2" class="desc-text">Delay before the teleport triggers.</td></tr></tbody></table></template>
+            <template id="lv-8">
+    <div class="video-thumb-wrap" onclick="openUnitVideo('gravedigger')">
+        <img class="troop-img" src="../images/GRAVEDIGGER.jpg" alt="Gravedigger">
+        <div class="video-play-overlay">
+             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#FF0000"></circle><path fill="white" d="M9.6 15.6 15.8 12 9.6 8.4z"></path></svg>
+           </div>
+    </div>
+        <h3 style="display:flex; align-items:center; justify-content:center; gap:16px;">
+      Gravedigger (Lvl 8)
+      
+    </h3>
+        <div style="display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:6px; margin-top:6px; width:100%;">
+        <span style="background:#6c63ff; color:white; padding:4px 12px; border-radius:12px; font-size:14px; font-weight:bold; white-space:nowrap;">Undead</span>
+        <span style="background:purple; color:white; padding:4px 12px; border-radius:12px; font-size:14px; font-weight:bold; white-space:nowrap;">Trickster</span>
+    </div>
+    <table>
+  
+          <tbody><tr>
+            <td>
+              <span class="stat-name">
+<span>Health <button onclick="
+                  let d = document.getElementById('desc-troop-extra-health');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/HEALTH.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>7500</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-health" style="display:none;">
+            <td colspan="2" class="desc-text">The total amount of damage this unit can take before being defeated.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Attack <button onclick="
+                  let d = document.getElementById('desc-troop-extra-attack');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/ATTACK.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>420</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-attack" style="display:none;">
+            <td colspan="2" class="desc-text">Base damage dealt by this ability per hit.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Attack Range <button onclick="
+                  let d = document.getElementById('desc-troop-extra-attackRange');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/ATTACKRANGE.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>0.9</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-attackRange" style="display:none;">
+            <td colspan="2" class="desc-text">Distance at which this ability or unit can attack.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>AOE Radius <button onclick="
+                  let d = document.getElementById('desc-troop-extra-aoeRadius');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/AOERADIUS.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>-1</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-aoeRadius" style="display:none;">
+            <td colspan="2" class="desc-text">Radius of the area-of-effect. Larger = more units hit. -1 = single target</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Attack Speed <button onclick="
+                  let d = document.getElementById('desc-troop-extra-aspd');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/ASPD.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>1</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-aspd" style="display:none;">
+            <td colspan="2" class="desc-text">Attacks per second. Lower value = Faster attack rate.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Attack Cooldown <button onclick="
+                  let d = document.getElementById('desc-troop-extra-attackCooldown');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/ATTACKCOOLDOWN.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>0</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-attackCooldown" style="display:none;">
+            <td colspan="2" class="desc-text">Extra delay in seconds after attacking before the unit can attack again. Lower is better.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Defense <button onclick="
+                  let d = document.getElementById('desc-troop-extra-defense');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/DEFENSE.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>45</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-defense" style="display:none;">
+            <td colspan="2" class="desc-text">Reduces incoming damage. Higher defense = less damage taken per hit.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Move Speed <button onclick="
+                  let d = document.getElementById('desc-troop-extra-moveSpeed');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/MOVESPEED.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>4.5</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-moveSpeed" style="display:none;">
+            <td colspan="2" class="desc-text">Movement speed of the unit or summoned entity.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Count <button onclick="
+                  let d = document.getElementById('desc-troop-extra-count');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/COUNT.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>9</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-count" style="display:none;">
+            <td colspan="2" class="desc-text">The number of units deployed per placement.</td>
+          </tr>
+          
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+              <span>Evasion <button onclick="
+                  let d = document.getElementById('desc-troop-evasion');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/EVASION.jpg" class="stat-icon">
+            </span>
+          </td>
+          <td>4%</td>
+        </tr>
+        
+        <tr id="desc-troop-evasion" style="display:none;">
+          <td colspan="2" class="desc-text">Chance to completely dodge an incoming attack. Innate to every Trickster-role unit, scaling with the unit's level (0.5% per level, up to 5% at level 10).</td>
+        </tr>
+        <tr><td colspan="2" class="section-header">📊 Extra Info</td></tr>
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Attack Type <button onclick="
+                  let d = document.getElementById('desc-troop-attackType');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/ATTACKTYPE.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>Melee</td>
+          </tr>
+          
+          <tr id="desc-troop-attackType" style="display:none;">
+          <td colspan="2" class="desc-text">Melee or ranged — the type of damage this ability deals.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Faction <button onclick="
+                  let d = document.getElementById('desc-troop-faction');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/FACTION.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>Undead</td>
+          </tr>
+          
+          <tr id="desc-troop-faction" style="display:none;">
+          <td colspan="2" class="desc-text">The faction this unit belongs to.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Stopping Distance <button onclick="
+                  let d = document.getElementById('desc-troop-stoppingDistance');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/STOPPINGDISTANCE.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>1</td>
+          </tr>
+          
+          <tr id="desc-troop-stoppingDistance" style="display:none;">
+          <td colspan="2" class="desc-text">How close the unit gets to its target before stopping to attack.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Navigation Priority <button onclick="
+                  let d = document.getElementById('desc-troop-navigationPriority');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/NAVIGATIONPRIORITY.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>50</td>
+          </tr>
+          
+          <tr id="desc-troop-navigationPriority" style="display:none;">
+          <td colspan="2" class="desc-text">Priority used when pathfinding. Higher = more likely to find a path.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Navigation Mask <button onclick="
+                  let d = document.getElementById('desc-troop-navigationMask');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/NAVIGATIONMASK.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>Land</td>
+          </tr>
+          
+          <tr id="desc-troop-navigationMask" style="display:none;">
+          <td colspan="2" class="desc-text">Whether this unit moves on Land or Air.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Engagement Movement <button onclick="
+                  let d = document.getElementById('desc-troop-engagementMovement');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/ENGAGEMENTMOVEMENT.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>false</td>
+          </tr>
+          
+          <tr id="desc-troop-engagementMovement" style="display:none;">
+          <td colspan="2" class="desc-text">Whether the unit engages from range (true) or closes into melee distance (false).</td>
+        </tr>
+        
+        <tr><td colspan="2" class="section-header">⚔️ Abilities</td></tr>
+                          <tr>
+                            <td colspan="2" class="img-row">
+                              <img class="troop-img" src="../images/GRAVEDIGGER_UNDERMINE.jpg" alt="undermine">
+                              <div class="ability-name">Underground Passage</div>
+                              <div class="ability-desc-block">At the start of battle, the gravedigger burrows and moves underground to the enemy army's backlines.</div>
+                                </td>
+                              </tr>
+                        <tr><td>Attack Speed <button onclick="let d = document.getElementById('desc-troop-ability-undermine-aspd'); d.style.display = d.style.display === 'none' ? 'table-row' : 'none';" class="info-btn">i</button></td><td>0.633</td></tr><tr id="desc-troop-ability-undermine-aspd" style="display:none;"><td colspan="2" class="desc-text">Attacks per second. Lower value = Faster attack rate.</td></tr><tr><td>Teleport Delay <button onclick="let d = document.getElementById('desc-troop-ability-undermine-teleportDelay'); d.style.display = d.style.display === 'none' ? 'table-row' : 'none';" class="info-btn">i</button></td><td>2</td></tr><tr id="desc-troop-ability-undermine-teleportDelay" style="display:none;"><td colspan="2" class="desc-text">Delay before the teleport triggers.</td></tr></tbody></table></template>
+            <template id="lv-9">
+    <div class="video-thumb-wrap" onclick="openUnitVideo('gravedigger')">
+        <img class="troop-img" src="../images/GRAVEDIGGER.jpg" alt="Gravedigger">
+        <div class="video-play-overlay">
+             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#FF0000"></circle><path fill="white" d="M9.6 15.6 15.8 12 9.6 8.4z"></path></svg>
+           </div>
+    </div>
+        <h3 style="display:flex; align-items:center; justify-content:center; gap:16px;">
+      Gravedigger (Lvl 9)
+      
+    </h3>
+        <div style="display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:6px; margin-top:6px; width:100%;">
+        <span style="background:#6c63ff; color:white; padding:4px 12px; border-radius:12px; font-size:14px; font-weight:bold; white-space:nowrap;">Undead</span>
+        <span style="background:purple; color:white; padding:4px 12px; border-radius:12px; font-size:14px; font-weight:bold; white-space:nowrap;">Trickster</span>
+    </div>
+    <table>
+  
+          <tbody><tr>
+            <td>
+              <span class="stat-name">
+<span>Health <button onclick="
+                  let d = document.getElementById('desc-troop-extra-health');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/HEALTH.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>12950</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-health" style="display:none;">
+            <td colspan="2" class="desc-text">The total amount of damage this unit can take before being defeated.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Attack <button onclick="
+                  let d = document.getElementById('desc-troop-extra-attack');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/ATTACK.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>740</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-attack" style="display:none;">
+            <td colspan="2" class="desc-text">Base damage dealt by this ability per hit.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Attack Range <button onclick="
+                  let d = document.getElementById('desc-troop-extra-attackRange');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/ATTACKRANGE.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>0.9</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-attackRange" style="display:none;">
+            <td colspan="2" class="desc-text">Distance at which this ability or unit can attack.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>AOE Radius <button onclick="
+                  let d = document.getElementById('desc-troop-extra-aoeRadius');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/AOERADIUS.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>-1</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-aoeRadius" style="display:none;">
+            <td colspan="2" class="desc-text">Radius of the area-of-effect. Larger = more units hit. -1 = single target</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Attack Speed <button onclick="
+                  let d = document.getElementById('desc-troop-extra-aspd');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/ASPD.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>1</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-aspd" style="display:none;">
+            <td colspan="2" class="desc-text">Attacks per second. Lower value = Faster attack rate.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Attack Cooldown <button onclick="
+                  let d = document.getElementById('desc-troop-extra-attackCooldown');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/ATTACKCOOLDOWN.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>0</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-attackCooldown" style="display:none;">
+            <td colspan="2" class="desc-text">Extra delay in seconds after attacking before the unit can attack again. Lower is better.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Defense <button onclick="
+                  let d = document.getElementById('desc-troop-extra-defense');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/DEFENSE.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>50</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-defense" style="display:none;">
+            <td colspan="2" class="desc-text">Reduces incoming damage. Higher defense = less damage taken per hit.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Move Speed <button onclick="
+                  let d = document.getElementById('desc-troop-extra-moveSpeed');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/MOVESPEED.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>4.5</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-moveSpeed" style="display:none;">
+            <td colspan="2" class="desc-text">Movement speed of the unit or summoned entity.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Count <button onclick="
+                  let d = document.getElementById('desc-troop-extra-count');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/COUNT.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>9</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-count" style="display:none;">
+            <td colspan="2" class="desc-text">The number of units deployed per placement.</td>
+          </tr>
+          
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+              <span>Evasion <button onclick="
+                  let d = document.getElementById('desc-troop-evasion');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/EVASION.jpg" class="stat-icon">
+            </span>
+          </td>
+          <td>4.5%</td>
+        </tr>
+        
+        <tr id="desc-troop-evasion" style="display:none;">
+          <td colspan="2" class="desc-text">Chance to completely dodge an incoming attack. Innate to every Trickster-role unit, scaling with the unit's level (0.5% per level, up to 5% at level 10).</td>
+        </tr>
+        <tr><td colspan="2" class="section-header">📊 Extra Info</td></tr>
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Attack Type <button onclick="
+                  let d = document.getElementById('desc-troop-attackType');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/ATTACKTYPE.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>Melee</td>
+          </tr>
+          
+          <tr id="desc-troop-attackType" style="display:none;">
+          <td colspan="2" class="desc-text">Melee or ranged — the type of damage this ability deals.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Faction <button onclick="
+                  let d = document.getElementById('desc-troop-faction');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/FACTION.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>Undead</td>
+          </tr>
+          
+          <tr id="desc-troop-faction" style="display:none;">
+          <td colspan="2" class="desc-text">The faction this unit belongs to.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Stopping Distance <button onclick="
+                  let d = document.getElementById('desc-troop-stoppingDistance');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/STOPPINGDISTANCE.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>1</td>
+          </tr>
+          
+          <tr id="desc-troop-stoppingDistance" style="display:none;">
+          <td colspan="2" class="desc-text">How close the unit gets to its target before stopping to attack.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Navigation Priority <button onclick="
+                  let d = document.getElementById('desc-troop-navigationPriority');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/NAVIGATIONPRIORITY.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>50</td>
+          </tr>
+          
+          <tr id="desc-troop-navigationPriority" style="display:none;">
+          <td colspan="2" class="desc-text">Priority used when pathfinding. Higher = more likely to find a path.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Navigation Mask <button onclick="
+                  let d = document.getElementById('desc-troop-navigationMask');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/NAVIGATIONMASK.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>Land</td>
+          </tr>
+          
+          <tr id="desc-troop-navigationMask" style="display:none;">
+          <td colspan="2" class="desc-text">Whether this unit moves on Land or Air.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Engagement Movement <button onclick="
+                  let d = document.getElementById('desc-troop-engagementMovement');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/ENGAGEMENTMOVEMENT.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>false</td>
+          </tr>
+          
+          <tr id="desc-troop-engagementMovement" style="display:none;">
+          <td colspan="2" class="desc-text">Whether the unit engages from range (true) or closes into melee distance (false).</td>
+        </tr>
+        
+        <tr><td colspan="2" class="section-header">⚔️ Abilities</td></tr>
+                          <tr>
+                            <td colspan="2" class="img-row">
+                              <img class="troop-img" src="../images/GRAVEDIGGER_UNDERMINE.jpg" alt="undermine">
+                              <div class="ability-name">Underground Passage</div>
+                              <div class="ability-desc-block">At the start of battle, the gravedigger burrows and moves underground to the enemy army's backlines.</div>
+                                </td>
+                              </tr>
+                        <tr><td>Attack Speed <button onclick="let d = document.getElementById('desc-troop-ability-undermine-aspd'); d.style.display = d.style.display === 'none' ? 'table-row' : 'none';" class="info-btn">i</button></td><td>0.633</td></tr><tr id="desc-troop-ability-undermine-aspd" style="display:none;"><td colspan="2" class="desc-text">Attacks per second. Lower value = Faster attack rate.</td></tr><tr><td>Teleport Delay <button onclick="let d = document.getElementById('desc-troop-ability-undermine-teleportDelay'); d.style.display = d.style.display === 'none' ? 'table-row' : 'none';" class="info-btn">i</button></td><td>2</td></tr><tr id="desc-troop-ability-undermine-teleportDelay" style="display:none;"><td colspan="2" class="desc-text">Delay before the teleport triggers.</td></tr></tbody></table></template>
+            <template id="lv-10">
+    <div class="video-thumb-wrap" onclick="openUnitVideo('gravedigger')">
+        <img class="troop-img" src="../images/GRAVEDIGGER.jpg" alt="Gravedigger">
+        <div class="video-play-overlay">
+             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#FF0000"></circle><path fill="white" d="M9.6 15.6 15.8 12 9.6 8.4z"></path></svg>
+           </div>
+    </div>
+        <h3 style="display:flex; align-items:center; justify-content:center; gap:16px;">
+      Gravedigger (Lvl 10)
+      
+    </h3>
+        <div style="display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:6px; margin-top:6px; width:100%;">
+        <span style="background:#6c63ff; color:white; padding:4px 12px; border-radius:12px; font-size:14px; font-weight:bold; white-space:nowrap;">Undead</span>
+        <span style="background:purple; color:white; padding:4px 12px; border-radius:12px; font-size:14px; font-weight:bold; white-space:nowrap;">Trickster</span>
+    </div>
+    <table>
+  
+          <tbody><tr>
+            <td>
+              <span class="stat-name">
+<span>Health <button onclick="
+                  let d = document.getElementById('desc-troop-extra-health');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/HEALTH.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>18000</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-health" style="display:none;">
+            <td colspan="2" class="desc-text">The total amount of damage this unit can take before being defeated.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Attack <button onclick="
+                  let d = document.getElementById('desc-troop-extra-attack');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/ATTACK.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>975</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-attack" style="display:none;">
+            <td colspan="2" class="desc-text">Base damage dealt by this ability per hit.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Attack Range <button onclick="
+                  let d = document.getElementById('desc-troop-extra-attackRange');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/ATTACKRANGE.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>0.9</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-attackRange" style="display:none;">
+            <td colspan="2" class="desc-text">Distance at which this ability or unit can attack.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>AOE Radius <button onclick="
+                  let d = document.getElementById('desc-troop-extra-aoeRadius');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/AOERADIUS.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>-1</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-aoeRadius" style="display:none;">
+            <td colspan="2" class="desc-text">Radius of the area-of-effect. Larger = more units hit. -1 = single target</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Attack Speed <button onclick="
+                  let d = document.getElementById('desc-troop-extra-aspd');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/ASPD.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>1</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-aspd" style="display:none;">
+            <td colspan="2" class="desc-text">Attacks per second. Lower value = Faster attack rate.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Attack Cooldown <button onclick="
+                  let d = document.getElementById('desc-troop-extra-attackCooldown');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/ATTACKCOOLDOWN.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>0</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-attackCooldown" style="display:none;">
+            <td colspan="2" class="desc-text">Extra delay in seconds after attacking before the unit can attack again. Lower is better.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Defense <button onclick="
+                  let d = document.getElementById('desc-troop-extra-defense');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/DEFENSE.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>55</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-defense" style="display:none;">
+            <td colspan="2" class="desc-text">Reduces incoming damage. Higher defense = less damage taken per hit.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Move Speed <button onclick="
+                  let d = document.getElementById('desc-troop-extra-moveSpeed');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/MOVESPEED.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>4.5</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-moveSpeed" style="display:none;">
+            <td colspan="2" class="desc-text">Movement speed of the unit or summoned entity.</td>
+          </tr>
+          
+        
+          <tr>
+            <td>
+              <span class="stat-name">
+<span>Count <button onclick="
+                  let d = document.getElementById('desc-troop-extra-count');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/thumbs/COUNT.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+            </span>
+          </td>
+          <td>9</td>
+        </tr>
+        
+        <tr id="desc-troop-extra-count" style="display:none;">
+            <td colspan="2" class="desc-text">The number of units deployed per placement.</td>
+          </tr>
+          
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+              <span>Evasion <button onclick="
+                  let d = document.getElementById('desc-troop-evasion');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+              <img src="../images/EVASION.jpg" class="stat-icon">
+            </span>
+          </td>
+          <td>5%</td>
+        </tr>
+        
+        <tr id="desc-troop-evasion" style="display:none;">
+          <td colspan="2" class="desc-text">Chance to completely dodge an incoming attack. Innate to every Trickster-role unit, scaling with the unit's level (0.5% per level, up to 5% at level 10).</td>
+        </tr>
+        <tr><td colspan="2" class="section-header">📊 Extra Info</td></tr>
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Attack Type <button onclick="
+                  let d = document.getElementById('desc-troop-attackType');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/ATTACKTYPE.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>Melee</td>
+          </tr>
+          
+          <tr id="desc-troop-attackType" style="display:none;">
+          <td colspan="2" class="desc-text">Melee or ranged — the type of damage this ability deals.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Faction <button onclick="
+                  let d = document.getElementById('desc-troop-faction');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/FACTION.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>Undead</td>
+          </tr>
+          
+          <tr id="desc-troop-faction" style="display:none;">
+          <td colspan="2" class="desc-text">The faction this unit belongs to.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Stopping Distance <button onclick="
+                  let d = document.getElementById('desc-troop-stoppingDistance');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/STOPPINGDISTANCE.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>1</td>
+          </tr>
+          
+          <tr id="desc-troop-stoppingDistance" style="display:none;">
+          <td colspan="2" class="desc-text">How close the unit gets to its target before stopping to attack.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Navigation Priority <button onclick="
+                  let d = document.getElementById('desc-troop-navigationPriority');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/NAVIGATIONPRIORITY.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>50</td>
+          </tr>
+          
+          <tr id="desc-troop-navigationPriority" style="display:none;">
+          <td colspan="2" class="desc-text">Priority used when pathfinding. Higher = more likely to find a path.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Navigation Mask <button onclick="
+                  let d = document.getElementById('desc-troop-navigationMask');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/NAVIGATIONMASK.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>Land</td>
+          </tr>
+          
+          <tr id="desc-troop-navigationMask" style="display:none;">
+          <td colspan="2" class="desc-text">Whether this unit moves on Land or Air.</td>
+        </tr>
+        
+        
+        <tr>
+          <td>
+            <span class="stat-name">
+<span>Engagement Movement <button onclick="
+                  let d = document.getElementById('desc-troop-engagementMovement');
+                  d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
+                " class="info-btn">i</button></span>
+                <img src="../images/thumbs/ENGAGEMENTMOVEMENT.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
+              </span>
+            </td>
+            <td>false</td>
+          </tr>
+          
+          <tr id="desc-troop-engagementMovement" style="display:none;">
+          <td colspan="2" class="desc-text">Whether the unit engages from range (true) or closes into melee distance (false).</td>
+        </tr>
+        
+        <tr><td colspan="2" class="section-header">⚔️ Abilities</td></tr>
+                          <tr>
+                            <td colspan="2" class="img-row">
+                              <img class="troop-img" src="../images/GRAVEDIGGER_UNDERMINE.jpg" alt="undermine">
+                              <div class="ability-name">Underground Passage</div>
+                              <div class="ability-desc-block">At the start of battle, the gravedigger burrows and moves underground to the enemy army's backlines.</div>
+                                </td>
+                              </tr>
+                        <tr><td>Attack Speed <button onclick="let d = document.getElementById('desc-troop-ability-undermine-aspd'); d.style.display = d.style.display === 'none' ? 'table-row' : 'none';" class="info-btn">i</button></td><td>0.633</td></tr><tr id="desc-troop-ability-undermine-aspd" style="display:none;"><td colspan="2" class="desc-text">Attacks per second. Lower value = Faster attack rate.</td></tr><tr><td>Teleport Delay <button onclick="let d = document.getElementById('desc-troop-ability-undermine-teleportDelay'); d.style.display = d.style.display === 'none' ? 'table-row' : 'none';" class="info-btn">i</button></td><td>2</td></tr><tr id="desc-troop-ability-undermine-teleportDelay" style="display:none;"><td colspan="2" class="desc-text">Delay before the teleport triggers.</td></tr></tbody></table></template>
+        </section>
+        <section class="guide-section"><h2>📈 Stats by level</h2>
         <p class="dim">HP, attack and defence for each unit in the squad at every level, with how many units the squad has. Power is the game's overall strength rating.</p>
         <div class="tbl"><table><thead><tr><th>Level</th><th>HP</th><th>Attack</th><th>Defence</th><th>Units</th><th>Power</th></tr></thead>
         <tbody><tr><td>1</td><td>850</td><td>100</td><td>10</td><td>3</td><td>120</td></tr><tr><td>2</td><td>1,000</td><td>120</td><td>15</td><td>5</td><td>240</td></tr><tr><td>3</td><td>1,250</td><td>160</td><td>20</td><td>7</td><td>480</td></tr><tr><td>4</td><td>1,750</td><td>225</td><td>25</td><td>9</td><td>960</td></tr><tr><td>5</td><td>3,100</td><td>265</td><td>30</td><td>9</td><td>1,920</td></tr><tr><td>6</td><td>4,500</td><td>320</td><td>35</td><td>9</td><td>3,840</td></tr><tr><td>7</td><td>6,000</td><td>370</td><td>40</td><td>9</td><td>7,680</td></tr><tr><td>8</td><td>7,500</td><td>420</td><td>45</td><td>9</td><td>11,520</td></tr><tr><td>9</td><td>12,950</td><td>740</td><td>50</td><td>9</td><td>23,040</td></tr><tr><td>10</td><td>18,000</td><td>975</td><td>55</td><td>9</td><td>46,080</td></tr></tbody></table></div>
     </section>
-        <p class="cta"><a href="../">⚔️ Compare Gravedigger side by side with any other unit in the app →</a></p>
-        <section><h2>Related troops</h2>
-        <h3>Other Undead troops</h3><div class="cards"><a class="card" href="necromancer.html"><img src="../images/thumbs/NECROMANCER.jpg" alt="Necromancer" loading="lazy" decoding="async" width="56" height="56"><span><b>Necromancer</b><small>Epic Undead · Ranged · 18,365 max HP</small></span></a><a class="card" href="undead-mage.html"><img src="../images/thumbs/UNDEADMAGE.jpg" alt="Undead Mage" loading="lazy" decoding="async" width="56" height="56"><span><b>Undead Mage</b><small>Rare Undead · Ranged · 18,900 max HP</small></span></a><a class="card" href="imp.html"><img src="../images/thumbs/IMP.jpg" alt="Imp" loading="lazy" decoding="async" width="56" height="56"><span><b>Imp</b><small>Rare Undead · Ranged · 42,840 max HP</small></span></a><a class="card" href="bone-warrior.html"><img src="../images/thumbs/UNDEADINFANTRY.jpg" alt="Bone Warrior" loading="lazy" decoding="async" width="56" height="56"><span><b>Bone Warrior</b><small>Common Undead · Melee · 16,540 max HP</small></span></a><a class="card" href="bone-spearthrower.html"><img src="../images/thumbs/UNDEADJAVELIN.jpg" alt="Bone Spearthrower" loading="lazy" decoding="async" width="56" height="56"><span><b>Bone Spearthrower</b><small>Common Undead · Ranged · 15,280 max HP</small></span></a><a class="card" href="headless.html"><img src="../images/thumbs/UNDEADHEADLESS.jpg" alt="Headless" loading="lazy" decoding="async" width="56" height="56"><span><b>Headless</b><small>Legendary Undead · Melee · 69,930 max HP</small></span></a><a class="card" href="explosive-spider.html"><img src="../images/thumbs/SPIDERBLAST.jpg" alt="Explosive Spider" loading="lazy" decoding="async" width="56" height="56"><span><b>Explosive Spider</b><small>Rare Undead · Melee · 100 max HP</small></span></a><a class="card" href="cursed-catapult.html"><img src="../images/thumbs/DAMNCATAPULT.jpg" alt="Cursed Catapult" loading="lazy" decoding="async" width="56" height="56"><span><b>Cursed Catapult</b><small>Rare Undead · Ranged · 9,000 max HP</small></span></a></div>
-        <h3>Other Rare troops</h3><div class="cards"><a class="card" href="iron-guards.html"><img src="../images/thumbs/IRONGUARDS.jpg" alt="Iron Guards" loading="lazy" decoding="async" width="56" height="56"><span><b>Iron Guards</b><small>Rare Human · Melee · 16,800 max HP</small></span></a><a class="card" href="bombers.html"><img src="../images/thumbs/BOMBER.jpg" alt="Bombers" loading="lazy" decoding="async" width="56" height="56"><span><b>Bombers</b><small>Rare Human · Ranged · 13,020 max HP</small></span></a><a class="card" href="assassins.html"><img src="../images/thumbs/ASSASIN.jpg" alt="Assassins" loading="lazy" decoding="async" width="56" height="56"><span><b>Assassins</b><small>Rare Human · Melee · 17,500 max HP</small></span></a><a class="card" href="butcher.html"><img src="../images/thumbs/BUTCHER.jpg" alt="Butcher" loading="lazy" decoding="async" width="56" height="56"><span><b>Butcher</b><small>Rare Human · Melee · 63,000 max HP</small></span></a></div>
+        <section class="guide-section"><h2>🔗 Related troops</h2>
+        <div id="troopsResults"><div class="gallery-section-label">More Undead troops</div><div class="unit-gallery"><a class="gallery-item epic" href="necromancer.html" data-name="necromancer" data-type="troop" data-rarity="epic" data-faction="undead" data-attack="ranged">
+            <img src="../images/thumbs/NECROMANCER.jpg" alt="" loading="lazy" decoding="async" width="100" height="100"><span>Necromancer</span></a><a class="gallery-item rare" href="undead-mage.html" data-name="undead mage" data-type="troop" data-rarity="rare" data-faction="undead" data-attack="ranged">
+            <img src="../images/thumbs/UNDEADMAGE.jpg" alt="" loading="lazy" decoding="async" width="100" height="100"><span>Undead Mage</span></a><a class="gallery-item rare" href="imp.html" data-name="imp" data-type="troop" data-rarity="rare" data-faction="undead" data-attack="ranged">
+            <img src="../images/thumbs/IMP.jpg" alt="" loading="lazy" decoding="async" width="100" height="100"><span>Imp</span></a><a class="gallery-item common" href="bone-warrior.html" data-name="bone warrior" data-type="troop" data-rarity="common" data-faction="undead" data-attack="melee">
+            <img src="../images/thumbs/UNDEADINFANTRY.jpg" alt="" loading="lazy" decoding="async" width="100" height="100"><span>Bone Warrior</span></a><a class="gallery-item common" href="bone-spearthrower.html" data-name="bone spearthrower" data-type="troop" data-rarity="common" data-faction="undead" data-attack="ranged">
+            <img src="../images/thumbs/UNDEADJAVELIN.jpg" alt="" loading="lazy" decoding="async" width="100" height="100"><span>Bone Spearthrower</span></a><a class="gallery-item legendary" href="headless.html" data-name="headless" data-type="troop" data-rarity="legendary" data-faction="undead" data-attack="melee">
+            <img src="../images/thumbs/UNDEADHEADLESS.jpg" alt="" loading="lazy" decoding="async" width="100" height="100"><span>Headless</span></a><a class="gallery-item rare" href="explosive-spider.html" data-name="explosive spider" data-type="troop" data-rarity="rare" data-faction="undead" data-attack="melee">
+            <img src="../images/thumbs/SPIDERBLAST.jpg" alt="" loading="lazy" decoding="async" width="100" height="100"><span>Explosive Spider</span></a><a class="gallery-item rare" href="cursed-catapult.html" data-name="cursed catapult" data-type="troop" data-rarity="rare" data-faction="undead" data-attack="ranged">
+            <img src="../images/thumbs/DAMNCATAPULT.jpg" alt="" loading="lazy" decoding="async" width="100" height="100"><span>Cursed Catapult</span></a><a class="gallery-item legendary" href="night-hunter.html" data-name="night hunter" data-type="troop" data-rarity="legendary" data-faction="undead" data-attack="melee">
+            <img src="../images/thumbs/FLYINGMONSTER.jpg" alt="" loading="lazy" decoding="async" width="100" height="100"><span>Night Hunter</span></a><a class="gallery-item epic" href="immortal.html" data-name="immortal" data-type="troop" data-rarity="epic" data-faction="undead" data-attack="melee">
+            <img src="../images/thumbs/SKELETONWARRIOR.jpg" alt="" loading="lazy" decoding="async" width="100" height="100"><span>Immortal</span></a><a class="gallery-item legendary" href="steel-revenant.html" data-name="steel revenant" data-type="troop" data-rarity="legendary" data-faction="undead" data-attack="melee">
+            <img src="../images/thumbs/CACTUS.jpg" alt="" loading="lazy" decoding="async" width="100" height="100"><span>Steel Revenant</span></a></div><div class="gallery-section-label">More Rare troops</div><div class="unit-gallery"><a class="gallery-item rare" href="iron-guards.html" data-name="iron guards" data-type="troop" data-rarity="rare" data-faction="human" data-attack="melee">
+            <img src="../images/thumbs/IRONGUARDS.jpg" alt="" loading="lazy" decoding="async" width="100" height="100"><span>Iron Guards</span></a><a class="gallery-item rare" href="bombers.html" data-name="bombers" data-type="troop" data-rarity="rare" data-faction="human" data-attack="ranged">
+            <img src="../images/thumbs/BOMBER.jpg" alt="" loading="lazy" decoding="async" width="100" height="100"><span>Bombers</span></a><a class="gallery-item rare" href="assassins.html" data-name="assassins" data-type="troop" data-rarity="rare" data-faction="human" data-attack="melee">
+            <img src="../images/thumbs/ASSASIN.jpg" alt="" loading="lazy" decoding="async" width="100" height="100"><span>Assassins</span></a><a class="gallery-item rare" href="butcher.html" data-name="butcher" data-type="troop" data-rarity="rare" data-faction="human" data-attack="melee">
+            <img src="../images/thumbs/BUTCHER.jpg" alt="" loading="lazy" decoding="async" width="100" height="100"><span>Butcher</span></a></div></div>
     </section>
+        <nav class="guide-prevnext" aria-label="More units">
+            <a href="royal-guard.html">‹ Royal Guard</a>
+            <a href="immortal.html">Immortal ›</a>
+        </nav>
     </main>
-    <footer class="foot">
+    <footer class="guide-foot">
         <p><a href="../">Open the app</a> · <a href="./">Troops &amp; heroes guide</a> · <a href="../about.html">About &amp; contact</a> · <a href="../privacy.html">Privacy</a> · <a href="../terms.html">Terms</a></p>
         <p class="disclaimer">Keazyea's Intelligence Hub is an unofficial, fan-made guide to Kingdom Cash. It isn't affiliated with or endorsed by the game's publisher or developer; game names, characters and images belong to their owners. Stats come from the game's data files (updated 2026-10-26).</p>
     </footer>
+    <script>
+        // Back: to the page you came from on this site, or else the guide's list.
+        function guideBack() {
+            try { if (document.referrer && new URL(document.referrer).origin === location.origin && history.length > 1) { history.back(); return; } } catch (e) { }
+            location.href = "./";
+        }
+        // The card's own buttons, here on their own page.
+        var UNIT_VIDEOS = {"gravedigger":"https://youtu.be/G-_lzVOY1l0?si=gCHe6TeuHFKg6Q3-"};
+        function openUnitVideo(key) { if (UNIT_VIDEOS[key]) window.open(UNIT_VIDEOS[key], "_blank", "noopener"); }
+        function openAppliesToList(value) { location.href = "./?q=" + encodeURIComponent(value); }
+        // The level slider shows that level's card (and remembers it in the address).
+        (function () {
+            var slider = document.getElementById("guideLevel");
+            if (!slider) return;
+            var text = document.getElementById("guideLevelText"), card = document.getElementById("troopsCard"), first = card.innerHTML;
+            function show(level, remember) {
+                var tpl = document.getElementById("lv-" + level);
+                card.innerHTML = level === 1 ? first : tpl ? tpl.innerHTML : card.innerHTML;
+                text.textContent = "Level " + level;
+                slider.value = level;
+                if (remember) history.replaceState(history.state, "", level > 1 ? "#level-" + level : location.pathname + location.search);
+            }
+            slider.addEventListener("input", function () { show(Number(slider.value), true); });
+            function fromAddress() {
+                var m = /#level-(\d+)/.exec(location.hash);
+                var level = m ? Number(m[1]) : 1;
+                if (level >= 1 && level <= 10) show(level, false);
+            }
+            addEventListener("hashchange", fromAddress);
+            if (location.hash) fromAddress();
+        })();
+        (function () {
+            var vv = window.visualViewport;
+            if (!vv) return;
+            function mark() { document.documentElement.classList.toggle("kih-zoomed", vv.scale > 1.05); }
+            vv.addEventListener("resize", mark);
+            mark();
+        })();
+    </script>
 </body>
 </html>
