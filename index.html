@@ -1684,7 +1684,7 @@ body {
 
         <!-- Topbar shown on every other page -->
         <div class="home-topbar" id="pageTopbar" style="display:none;">
-            <button class="back-to-about-btn" title="Back to About" id="backToAboutBtn" onclick="goToPage('about')" style="display:none;">← Back</button>
+            <button class="back-to-about-btn" title="Back" id="backToAboutBtn" onclick="pageBack()" style="display:none;">← Back</button>
             <button class="icon-btn" title="Home" onclick="goHome()">🏠</button>
             <!-- Your tokens, on every page: tap for Daily Quests, + for the Store.
                  Rewards and purchases fly into it (kihFlyToHud). -->
@@ -2299,6 +2299,12 @@ body {
            sections AND settings/profile/inbox. Each just loads
            its own data right before it's shown. */
         let cameFromAbout = false;
+        let cameFromOtherPage = null; // { page, url, label } — see goToPage
+        function pageBack() {
+            if (cameFromAbout) { goToPage("about"); return; }
+            if (cameFromOtherPage) { location.href = cameFromOtherPage.url; return; }
+            goHome();
+        }
 
         /* ---------------- TERMS/PRIVACY ACCEPTANCE GATE ---------------- */
         // Bump this whenever terms.html or privacy.html changes in a way that
@@ -2506,7 +2512,13 @@ body {
     closeInboxItemModal();
 
     cameFromAbout = page !== "about" && !!fromAbout;
-    document.getElementById("backToAboutBtn").style.display = cameFromAbout ? "flex" : "none";
+    // Opened from another page of the site (About & contact, the troops &
+    // heroes guide) — Back returns there. Only on the page it opened; moving
+    // on within the app drops it.
+    if (cameFromOtherPage && cameFromOtherPage.page !== page) cameFromOtherPage = null;
+    const backBtn = document.getElementById("backToAboutBtn");
+    backBtn.style.display = cameFromAbout || cameFromOtherPage ? "flex" : "none";
+    backBtn.title = cameFromAbout ? "Back to About" : cameFromOtherPage ? "Back to " + cameFromOtherPage.label : "Back";
 
     document.getElementById("homeLanding").classList.add("hidden");
     document.body.classList.add("on-section"); // the home background rests under the section
@@ -2596,6 +2608,7 @@ body {
             resetSocialIframeIfActive();
             refreshWeeklyJoined(); // may have just entered on the Promo page
             cameFromAbout = false;
+            cameFromOtherPage = null;
             document.getElementById("backToAboutBtn").style.display = "none";
             document.getElementById("homeContentWrap").classList.remove("active");
             document.getElementById("homeLanding").classList.remove("hidden");
@@ -3361,7 +3374,9 @@ function getNewsTypeInfo(type) {
             newsSeenBefore = parseInt(localStorage.getItem(NEWS_LAST_SEEN_KEY) || "0", 10);
             newsFilter = "all";
             overlay.classList.add("open");
-            localStorage.setItem(NEWS_LAST_SEEN_KEY, String(Date.now()));
+            const now = Date.now();
+            localStorage.setItem(NEWS_LAST_SEEN_KEY, String(now));
+            AppState.saveSeenMarkers && AppState.saveSeenMarkers({ newsSeenAt: now }); // your other devices too
             updateNewsBadgeHome(latestNewsItems);
         }
         function openNewsModal() {
@@ -3465,6 +3480,7 @@ function getNewsTypeInfo(type) {
             }
             unsubPersonalNotifs = AppState.listenToPersonalNotifications((items) => {
                 latestPersonalNotifications = items;
+                personalNotifIds = new Set(items.map(n => n.id));
                 renderInboxBadgeFrom(mergedNotifications());
                 if (document.getElementById("page-inbox").classList.contains("active")) {
                     renderInboxList(mergedNotifications());
@@ -3531,11 +3547,28 @@ function getNewsTypeInfo(type) {
             }).catch(() => {});
         }
 
-        // Personal notifications track their own read state per doc; shared
-        // ones count as unread when newer than the last time the inbox opened.
+        // Personal notifications (yours alone) track their own read state on
+        // your account; shared ones count as unread when newer than the last
+        // time you opened the inbox — on any of your devices (see
+        // applySeenMarkers).
         function isInboxUnread(n, lastSeenAt) {
-            if (n.type === "friendAccepted" || n.type === "formationComment" || n.type === "formationReply" || n.type === "secretGiveawayWin" || n.type === "promoCodes") return !n.read;
+            if (personalNotifIds.has(n.id)) return !n.read;
             return n.createdAt > lastSeenAt;
+        }
+        let personalNotifIds = new Set();
+        // Your account remembers when you last opened the inbox and the news;
+        // a newer time from another device clears the badges here too.
+        function applySeenMarkers(profile) {
+            if (!profile) return;
+            const inboxAt = Number(profile.inboxSeenAt) || 0, newsAt = Number(profile.newsSeenAt) || 0;
+            if (inboxAt > (parseInt(localStorage.getItem("kih_notif_last_seen_at") || "0", 10) || 0)) {
+                localStorage.setItem("kih_notif_last_seen_at", String(inboxAt));
+                renderInboxBadgeFrom(mergedNotifications());
+            }
+            if (newsAt > (parseInt(localStorage.getItem(NEWS_LAST_SEEN_KEY) || "0", 10) || 0)) {
+                localStorage.setItem(NEWS_LAST_SEEN_KEY, String(newsAt));
+                updateNewsBadgeHome(latestNewsItems);
+            }
         }
         function renderInboxBadgeFrom(notifications) {
             let lastSeenAt = parseInt(localStorage.getItem("kih_notif_last_seen_at") || "0", 10);
@@ -3825,7 +3858,9 @@ window.closeInboxItemModal = closeInboxItemModal;
         });
 
         function markInboxSeen() {
-            localStorage.setItem("kih_notif_last_seen_at", String(Date.now()));
+            const now = Date.now();
+            localStorage.setItem("kih_notif_last_seen_at", String(now));
+            AppState.saveSeenMarkers && AppState.saveSeenMarkers({ inboxSeenAt: now }); // your other devices too
             latestPersonalNotifications
                 .filter(n => !n.read)
                 .forEach(n => AppState.markPersonalNotificationRead(n.id));
@@ -4645,6 +4680,7 @@ function startTopbarProfileListener() {
     if (!AppState.getCurrentUser()) { refreshTopbar(0); return; } // 0 retries — signed out, nothing to wait on
     unsubTopbarProfile = AppState.listenToMyProfile((profile) => {
         if (profile) applyTopbarProfile(profile);
+        applySeenMarkers(profile); // read the inbox / news on another device: clear the badges here
     });
 }
 
@@ -4676,6 +4712,15 @@ if (challengeCode) {
     history.replaceState(history.state, "", window.location.pathname); // consume it — refresh won't replay it
 } else if (gotoPage) {
     history.replaceState({ kihPage: "home" }, ""); // Back from the linked page lands on Home
+    // Came from another page of this site (About & contact, the guide): the
+    // app's Back button returns there (see goToPage).
+    try {
+        const ref = document.referrer ? new URL(document.referrer) : null;
+        if (ref && ref.origin === location.origin && ref.pathname !== location.pathname && !/\/index\.html$/.test(ref.pathname)) {
+            const label = /about\.html$/.test(ref.pathname) ? "About & contact" : /\/units\//.test(ref.pathname) ? "the Troops & Heroes guide" : "the previous page";
+            cameFromOtherPage = { page: gotoPage, url: ref.href, label };
+        }
+    } catch (e) { }
     // ?goto=troops&unit=<key>[&compare=1]: straight to that unit (the guide pages link here)
     const linkUnit = urlParams.get("unit");
     if (gotoPage === "troops" && linkUnit && /^[A-Za-z0-9_]+$/.test(linkUnit)) {
