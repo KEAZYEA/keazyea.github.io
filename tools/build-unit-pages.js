@@ -1,5 +1,10 @@
-/* Builds the static Troops & Heroes guide: one page per unit (units/<slug>.html),
-   an index of them all (units/index.html) and the sitemap.
+/* Builds everything that comes from the game data files:
+   - the static Troops & Heroes guide: one page per unit (units/<slug>.html),
+     an index of them all (units/index.html) and the sitemap;
+   - small thumbnails of every unit portrait (images/thumbs/), for lists and
+     icons — a fraction of the full picture's size;
+   - data/bundle.json: every game data file in one download, which Games and
+     Troops & Heroes read instead of fetching ~120 files one by one.
    The interactive Troops & Heroes page builds everything in the browser, so
    search engines (and Google's ad review) see almost no text there; these
    pages carry the same game data as plain, readable HTML.
@@ -40,6 +45,7 @@ units.forEach(u => {
 });
 const urlOf = (u) => `${slugs.get(u.key)}.html`;
 const imgOf = (u) => "../" + u.img;
+const thumbOf = (u) => "../" + u.img.replace(/^images\//, "images/thumbs/"); // small cards
 
 /* ---------------- page parts ---------------- */
 const CSS_VERSION = "1";
@@ -60,7 +66,16 @@ function head({ title, description, canonical, image }) {
     <link rel="icon" href="../images/KIH.jpg">
     <link rel="stylesheet" href="units.css?v=${CSS_VERSION}">
     <meta name="google-adsense-account" content="ca-pub-7081980567861066">
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7081980567861066" crossorigin="anonymous"></script>
+    <script>
+        // Google's ad code (about 650 KB) loads once the page has finished
+        // showing, so it never holds up the guide itself.
+        addEventListener("load", () => setTimeout(() => {
+            const s = document.createElement("script");
+            s.async = true; s.crossOrigin = "anonymous";
+            s.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7081980567861066";
+            document.head.appendChild(s);
+        }, 2500));
+    </script>
 </head>`;
 }
 const topbar = (crumb) => `<header class="top"><a class="brand" href="../"><img src="../images/KIH.jpg" alt="" width="28" height="28">Keazyea's Intelligence Hub</a>
@@ -160,7 +175,7 @@ function levelTable(u) {
 
 function card(u) {
     const last = levelsOf(u).slice(-1)[0] || {};
-    return `<a class="card" href="${urlOf(u)}"><img src="${imgOf(u)}" alt="${esc(u.name)}" loading="lazy" width="56" height="56"><span><b>${esc(u.name)}</b><small>${cap(u.rarity)} ${esc(u.faction)} · ${esc(u.attack)}${last.hp ? ` · ${fmt(last.hp)} max HP` : ""}</small></span></a>`;
+    return `<a class="card" href="${urlOf(u)}"><img src="${thumbOf(u)}" alt="${esc(u.name)}" loading="lazy" decoding="async" width="56" height="56"><span><b>${esc(u.name)}</b><small>${cap(u.rarity)} ${esc(u.faction)} · ${esc(u.attack)}${last.hp ? ` · ${fmt(last.hp)} max HP` : ""}</small></span></a>`;
 }
 
 function related(u) {
@@ -238,3 +253,54 @@ ${pages.map(p => `  <url><loc>${SITE}/${p}</loc><lastmod>${TODAY}</lastmod></url
 </urlset>
 `);
 console.log(`wrote ${units.length} unit pages, units/index.html and sitemap.xml (${pages.length} URLs)`);
+
+/* ---------------- thumbnails ----------------
+   160 px wide (sharp at up to 80 px on a phone's screen), averaged down from
+   the full picture. Only (re)made when the picture is newer than its thumb. */
+const jpeg = require(path.join(ROOT, "vendor", "jpeg-js"));
+const THUMB_W = 160;
+function shrink(src, w) {
+    const h = Math.max(1, Math.round(src.height * w / src.width));
+    const out = Buffer.alloc(w * h * 4);
+    const sx = src.width / w, sy = src.height / h;
+    for (let y = 0; y < h; y++) {
+        const y0 = Math.floor(y * sy), y1 = Math.max(y0 + 1, Math.floor((y + 1) * sy));
+        for (let x = 0; x < w; x++) {
+            const x0 = Math.floor(x * sx), x1 = Math.max(x0 + 1, Math.floor((x + 1) * sx));
+            let r = 0, g = 0, b = 0, n = 0;
+            for (let yy = y0; yy < y1; yy++) for (let xx = x0; xx < x1; xx++) {
+                const i = (yy * src.width + xx) * 4;
+                r += src.data[i]; g += src.data[i + 1]; b += src.data[i + 2]; n++;
+            }
+            const o = (y * w + x) * 4;
+            out[o] = r / n; out[o + 1] = g / n; out[o + 2] = b / n; out[o + 3] = 255;
+        }
+    }
+    return { width: w, height: h, data: out };
+}
+const THUMBS = path.join(ROOT, "images", "thumbs");
+fs.mkdirSync(THUMBS, { recursive: true });
+let made = 0, thumbBytes = 0;
+for (const u of units) {
+    const srcFile = path.join(ROOT, u.img), dst = path.join(THUMBS, path.basename(u.img));
+    if (!fs.existsSync(srcFile)) continue;
+    if (!fs.existsSync(dst) || fs.statSync(dst).mtimeMs < fs.statSync(srcFile).mtimeMs) {
+        const pic = jpeg.decode(fs.readFileSync(srcFile), { useTArray: true, formatAsRGBA: true });
+        fs.writeFileSync(dst, jpeg.encode(pic.width > THUMB_W ? shrink(pic, THUMB_W) : pic, 78).data);
+        made++;
+    }
+    thumbBytes += fs.statSync(dst).size;
+}
+console.log(`thumbnails: ${made} made, ${units.length} in all, ${(thumbBytes / 1024).toFixed(0)} KB`);
+
+/* ---------------- data bundle ----------------
+   Every game data file (abilities, heroes, troops, unit modifiers and the
+   text files), minified, in one file: { "hero.json": ..., ... }. A page
+   reads a file from here, and only fetches it on its own if it's missing. */
+const DATA_FILE = /^(ability|hero|troop|unit)[A-Za-z0-9_]*\.json$|^(en|localization)\.json$/;
+const bundle = {};
+fs.readdirSync(ROOT).filter(f => DATA_FILE.test(f)).sort().forEach(f => { bundle[f] = JSON.parse(fs.readFileSync(path.join(ROOT, f), "utf8")); });
+fs.mkdirSync(path.join(ROOT, "data"), { recursive: true });
+const bundleText = JSON.stringify(bundle);
+fs.writeFileSync(path.join(ROOT, "data", "bundle.json"), bundleText);
+console.log(`data/bundle.json: ${Object.keys(bundle).length} files, ${(bundleText.length / 1024).toFixed(0)} KB (${(require("zlib").gzipSync(bundleText).length / 1024).toFixed(0)} KB compressed)`);

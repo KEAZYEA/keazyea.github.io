@@ -9,7 +9,15 @@
     <link rel="icon" href="images/KIH.jpg">
     <link rel="stylesheet" href="units/units.css?v=1">
     <meta name="google-adsense-account" content="ca-pub-7081980567861066">
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7081980567861066" crossorigin="anonymous"></script>
+    <script>
+        // Google's ad code loads once the page has finished showing.
+        addEventListener("load", () => setTimeout(() => {
+            const s = document.createElement("script");
+            s.async = true; s.crossOrigin = "anonymous";
+            s.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7081980567861066";
+            document.head.appendChild(s);
+        }, 2500));
+    </script>
 </head>
 <body>
     <header class="top"><a class="brand" href="./"><img src="images/KIH.jpg" alt="" width="28" height="28">Keazyea's Intelligence Hub</a>

@@ -114,7 +114,7 @@
         else if (it.kind === "tokens") icon = tokenIcon();
         else if (it.kind === "unit") {
             // the level as a badge on the picture, so it can't be missed
-            icon = `<span class="pz-portrait-wrap"><img class="pz-portrait" src="images/${esc(it.unitKey.toUpperCase())}.jpg" alt="" loading="lazy" decoding="async">${it.level ? `<span class="pz-lv">Lv ${it.level}</span>` : ""}${it.form === "shards" ? `<span class="pz-shard">💠</span>` : ""}</span>`;
+            icon = `<span class="pz-portrait-wrap"><img class="pz-portrait" src="images/thumbs/${esc(it.unitKey.toUpperCase())}.jpg" alt="" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">${it.level ? `<span class="pz-lv">Lv ${it.level}</span>` : ""}${it.form === "shards" ? `<span class="pz-shard">💠</span>` : ""}</span>`;
             label = it.name;
             sub = it.form === "shards" ? (it.level ? `Lv ${it.level} shards` : "Shards") : (it.level ? `Level ${it.level}` : "");
             const n = it.form === "shards" ? (it.count || 1) : it.count;

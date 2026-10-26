@@ -1112,7 +1112,7 @@ function unlockBackgroundScroll() {
         <div class="applies-to-grid">
             ${group.map(u => `
                 <div class="applies-to-item" onclick="selectUnitFromAppliesTo('${u.key}', '${u.unitType}', '${context}')">
-                    <img src="images/${u.key.toUpperCase()}.jpg" alt="${u.displayName}" loading="lazy" onerror="this.style.visibility='hidden'">
+                    <img src="images/thumbs/${u.key.toUpperCase()}.jpg" alt="${u.displayName}" loading="lazy" decoding="async" onerror="if(this.src.includes('/thumbs/')){this.src=this.src.replace('/thumbs/','/')}else{this.onerror=null;this.style.visibility='hidden'}">
                     <span>${u.displayName}</span>
                     ${u.note ? `<span style="color:#ffc46b;">${u.note}</span>` : ""}
                 </div>
@@ -1255,7 +1255,14 @@ function unlockBackgroundScroll() {
                heroList / summonMap, then kicks off the initial render.
                ================================================================ */
 
+            // Every game data file comes in one download (data/bundle.json, built by
+            // tools/build-unit-pages.js) instead of ~120 separate ones; a file
+            // that isn't in it (or if the bundle fails) is fetched on its own.
+            const dataBundle = fetch("data/bundle.json").then(r => (r.ok ? r.json() : null)).catch(() => null);
                         function loadJSON(path, retries = 2) {
+                return dataBundle.then(b => (b && b[path] !== undefined ? b[path] : fetchJSON(path, retries)));
+            }
+            function fetchJSON(path, retries) {
                 return fetch(path).then(r => {
                     if (!r.ok) throw new Error(`${path} returned ${r.status}`);
                     return r.json();
@@ -1695,7 +1702,7 @@ function goBackToCompareTab() {
                     troopList.forEach(function (troop) {
                         let item = document.createElement("div");
                         item.className = "gallery-item " + troop.rarity;
-                        item.innerHTML = `<img src="images/${troop.key.toUpperCase()}.jpg" alt="${troop.displayName}" loading="lazy" decoding="async"><span>${troop.displayName}</span>`;
+                        item.innerHTML = `<img src="images/thumbs/${troop.key.toUpperCase()}.jpg" alt="${troop.displayName}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')"><span>${troop.displayName}</span>`;
                         item.addEventListener("click", function () {
                             galleryScrollY = window.scrollY;
                             troopNavStack = [];
@@ -1722,7 +1729,7 @@ function goBackToCompareTab() {
                     heroList.forEach(function (hero) {
     let item = document.createElement("div");
     item.className = "gallery-item " + hero.rarity;
-    item.innerHTML = `<img src="images/${hero.key.toUpperCase()}.jpg" alt="${hero.displayName}" loading="lazy" decoding="async"><span>${hero.displayName}</span>`;
+    item.innerHTML = `<img src="images/thumbs/${hero.key.toUpperCase()}.jpg" alt="${hero.displayName}" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')"><span>${hero.displayName}</span>`;
     item.addEventListener("click", function () {
         galleryScrollY = window.scrollY;
         troopNavStack = [];
@@ -1761,7 +1768,7 @@ function goBackToCompareTab() {
 
                 troopMatches.forEach(function (troop) {
                     let item = document.createElement("div");
-                    item.innerHTML = `<img src="images/${troop.key.toUpperCase()}.jpg" class="stat-icon"> ${troop.displayName}`;
+                    item.innerHTML = `<img src="images/thumbs/${troop.key.toUpperCase()}.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')"> ${troop.displayName}`;
                     item.classList.add(troop.rarity.toLowerCase());
                     item.classList.add("search-result-item");
                     item.addEventListener("click", function () {
@@ -1778,7 +1785,7 @@ function goBackToCompareTab() {
 
                 heroMatches.forEach(function (hero) {
                     let item = document.createElement("div");
-                    item.innerHTML = `<img src="images/${hero.key.toUpperCase()}.jpg" class="stat-icon"> ${hero.displayName}`;
+                    item.innerHTML = `<img src="images/thumbs/${hero.key.toUpperCase()}.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')"> ${hero.displayName}`;
                     item.classList.add(hero.rarity.toLowerCase());
                     item.classList.add("search-result-item");
                     item.addEventListener("click", function () {
@@ -1875,7 +1882,7 @@ function goBackToCompareTab() {
                   let d = document.getElementById('desc-troop-extra-${key}');
                   d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
                 " class="info-btn">i</button>` : ""}</span>
-              <img src="images/${key.toUpperCase()}.jpg" class="stat-icon">
+              <img src="images/thumbs/${key.toUpperCase()}.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
             </span>
           </td>
           <td>${displayVal}</td>
@@ -1935,7 +1942,7 @@ function goBackToCompareTab() {
                   let d = document.getElementById('desc-troop-${key}');
                   d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
                 " class="info-btn">i</button>` : ""}</span>
-                <img src="images/${key.toUpperCase()}.jpg" class="stat-icon">
+                <img src="images/thumbs/${key.toUpperCase()}.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
               </span>
             </td>
             <td>${displayVal}</td>
@@ -2639,7 +2646,7 @@ let rightDisplay = rightVal === "—" ? "—" : formatStatValue(key, rightVal, "
                       let d = document.getElementById('desc-${key}');
                       d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
                     " class="info-btn">i</button>` : ""}</span>
-                    <img src="images/${key.toUpperCase()}.jpg" class="stat-icon">
+                    <img src="images/thumbs/${key.toUpperCase()}.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
                   </span>
                 </td>
                 <td class="${colors.right}">${rightDisplay}</td>
@@ -2724,7 +2731,7 @@ ${evasionDesc ? `
                     let d = document.getElementById('desc-cmp-extra-${displayKey}');
                     d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
                   " class="info-btn">i</button>` : ""}</span>
-                  <img src="images/${displayKey.toUpperCase()}.jpg" class="stat-icon">
+                  <img src="images/thumbs/${displayKey.toUpperCase()}.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
                 </span>
               </td>
               <td class="${colors.right}">${rightDisplay !== undefined ? rightDisplay : "—"}</td>
@@ -2835,7 +2842,7 @@ ${desc ? `
                   let d = document.getElementById('desc-single-stat-${key}');
                   d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
                 " class="info-btn info-btn-block">i</button>` : ""}
-    <img src="images/${key.toUpperCase()}.jpg" class="stat-icon">
+    <img src="images/thumbs/${key.toUpperCase()}.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
   </span>
           </td>
           <td>${displayVal}</td>
@@ -2872,7 +2879,7 @@ ${desc ? `
                     let d = document.getElementById('desc-single-extra-${displayKey}');
                     d.style.display = d.style.display === 'none' ? 'table-row' : 'none';
                   " class="info-btn">i</button>` : ""}</span>
-                  <img src="images/${displayKey.toUpperCase()}.jpg" class="stat-icon">
+                  <img src="images/thumbs/${displayKey.toUpperCase()}.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">
                 </span>
               </td>
               <td>${displayVal}</td>
@@ -3069,7 +3076,7 @@ ${desc ? `
 
                 troopMatches.forEach(function (troop) {
                     let item = document.createElement("div");
-                    item.innerHTML = `<img src="images/${troop.key.toUpperCase()}.jpg" class="stat-icon"> ${troop.displayName}`;
+                    item.innerHTML = `<img src="images/thumbs/${troop.key.toUpperCase()}.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')"> ${troop.displayName}`;
                     item.classList.add(troop.rarity.toLowerCase());
                     item.classList.add("search-result-item");
                     item.addEventListener("click", function () {
@@ -3085,7 +3092,7 @@ ${desc ? `
 
                 heroMatches.forEach(function (hero) {
                     let item = document.createElement("div");
-                    item.innerHTML = `<img src="images/${hero.key.toUpperCase()}.jpg" class="stat-icon"> ${hero.displayName}`;
+                    item.innerHTML = `<img src="images/thumbs/${hero.key.toUpperCase()}.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')"> ${hero.displayName}`;
                     item.classList.add(hero.rarity.toLowerCase());
                     item.classList.add("search-result-item");
                     item.addEventListener("click", function () {
@@ -3117,7 +3124,7 @@ ${desc ? `
 
                 troopMatches.forEach(function (troop) {
                     let item = document.createElement("div");
-                    item.innerHTML = `<img src="images/${troop.key.toUpperCase()}.jpg" class="stat-icon"> ${troop.displayName}`;
+                    item.innerHTML = `<img src="images/thumbs/${troop.key.toUpperCase()}.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')"> ${troop.displayName}`;
                     item.classList.add(troop.rarity.toLowerCase());
                     item.classList.add("search-result-item");
                     item.addEventListener("click", function () {
@@ -3133,7 +3140,7 @@ ${desc ? `
 
                 heroMatches.forEach(function (hero) {
                     let item = document.createElement("div");
-                    item.innerHTML = `<img src="images/${hero.key.toUpperCase()}.jpg" class="stat-icon"> ${hero.displayName}`;
+                    item.innerHTML = `<img src="images/thumbs/${hero.key.toUpperCase()}.jpg" class="stat-icon" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')"> ${hero.displayName}`;
                     item.classList.add(hero.rarity.toLowerCase());
                     item.classList.add("search-result-item");
                     item.addEventListener("click", function () {
@@ -3162,6 +3169,26 @@ ${desc ? `
 
         </script>
     </div>
+
+    <script>
+        // Pinch-zoomed in: the decorative full-screen glow and specks switch off
+        // (and decorative animations pause). At a big zoom a phone has to draw
+        // them huge, which can turn the screen black. The sections shown inside
+        // this page zoom along with it, so they're told too.
+        (function () {
+            var vv = window.visualViewport;
+            if (!vv) return;
+            function mark() {
+                var on = vv.scale > 1.05;
+                document.documentElement.classList.toggle("kih-zoomed", on);
+                document.querySelectorAll("iframe").forEach(function (f) {
+                    try { f.contentDocument.documentElement.classList.toggle("kih-zoomed", on); } catch (e) { }
+                });
+            }
+            vv.addEventListener("resize", mark);
+            mark();
+        })();
+    </script>
 </body>
 
 </html>

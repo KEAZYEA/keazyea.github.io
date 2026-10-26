@@ -480,8 +480,14 @@
         }, true);
 
         // Every file at once (the same list the server uses, so questions match).
+        // The game data comes in one download (data/bundle.json, built by
+        // tools/build-unit-pages.js) instead of ~60 separate files; anything
+        // missing from it is fetched on its own.
+        const thumb = (src) => String(src || "").replace(/^images\//, "images/thumbs/");
+        const THUMB_FALLBACK = `decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')"`;
         async function loadUnits() {
-            const get = (f) => fetch(f).then(r => { if (!r.ok) throw new Error(f); return r.json(); });
+            const bundle = await fetch("data/bundle.json").then(r => (r.ok ? r.json() : null)).catch(() => null);
+            const get = (f) => (bundle && bundle[f] !== undefined ? bundle[f] : fetch(f).then(r => { if (!r.ok) throw new Error(f); return r.json(); }));
             const files = await Promise.all(C.ALL_DATA_FILES.map(get));
             const byName = Object.fromEntries(C.ALL_DATA_FILES.map((f, i) => [f, files[i]]));
             UNITS = C.unitsFromFiles(f => byName[f]);
@@ -818,7 +824,7 @@
                 else if (answered && k === chosen) cls = " wrong";
                 const extra = answered && q.reveal ? `<span class="opt-extra">${q.reveal[k]}</span>` : "";
                 return `<button class="opt-btn${cls}" onclick="answerTrivia(${k})"${answered ? " disabled" : ""}>
-                    ${unit ? `<img src="${esc(unit.img)}" alt="">` : ""}<span>${esc(o)}</span>${extra}</button>`;
+                    ${unit ? `<img src="${esc(thumb(unit.img))}" alt="" ${THUMB_FALLBACK}>` : ""}<span>${esc(o)}</span>${extra}</button>`;
             }).join("");
             const right = g.answers.filter((a, k) => k < (answered ? qi + 1 : qi) && a === g.questions[k].answer).length;
             area.innerHTML = `${bar}<div class="game-card">
@@ -1092,7 +1098,7 @@
             const done = won || g.guesses.length >= C.UNITLE_TRIES;
             const rows = g.guesses.map(k => {
                 const u = unitByKey(k);
-                return `<div class="unitle-name-line">${esc(u.name)}</div><div class="unitle-row"><div class="unitle-cell name"><img src="${esc(u.img)}" alt=""></div>
+                return `<div class="unitle-name-line">${esc(u.name)}</div><div class="unitle-row"><div class="unitle-cell name"><img src="${esc(thumb(u.img))}" alt="" ${THUMB_FALLBACK}></div>
                     ${C.unitleCells(u, t).map(([c, label, arrow]) => `<div class="unitle-cell ${c}"><span>${esc(label)}</span>${arrow ? `<span>${arrow}</span>` : ""}</div>`).join("")}</div>`;
             }).join("");
             let body;
@@ -1126,7 +1132,7 @@
             if (!q) { box.innerHTML = ""; return; }
             const guessed = new Set(game.guesses);
             const matches = UNITS.filter(u => !guessed.has(u.key) && C.normName(u.name).includes(q)).slice(0, 6);
-            box.innerHTML = matches.map(u => `<button type="button" onclick="makeUnitleGuess('${u.key}')"><img src="${esc(u.img)}" alt="">${esc(u.name)}</button>`).join("")
+            box.innerHTML = matches.map(u => `<button type="button" onclick="makeUnitleGuess('${u.key}')"><img src="${esc(thumb(u.img))}" alt="" loading="lazy" ${THUMB_FALLBACK}>${esc(u.name)}</button>`).join("")
                 || `<span class="dim" style="font-size:0.88rem;">No troop or hero matches that.</span>`;
         }
         // Enter / the Guess button: an exact name, a short form, or the only match.
@@ -1633,7 +1639,7 @@
                 if (fb && k === fb.answer) cls = " correct";
                 else if (fb && k === fb.picked) cls = " wrong";
                 const extra = fb && fb.reveal ? `<span class="opt-extra">${esc(fb.reveal[k])}</span>` : "";
-                return `<button class="opt-btn${cls}" onclick="runMove({ answer: ${k} })"${locked ? " disabled" : ""}>${unit ? `<img src="${esc(unit.img)}" alt="">` : ""}<span>${esc(o)}</span>${extra}</button>`;
+                return `<button class="opt-btn${cls}" onclick="runMove({ answer: ${k} })"${locked ? " disabled" : ""}>${unit ? `<img src="${esc(thumb(unit.img))}" alt="" ${THUMB_FALLBACK}>` : ""}<span>${esc(o)}</span>${extra}</button>`;
             }).join("");
             const banner = fb && fb.correct ? `<div class="run-banner good">✅ Right! +1</div>` : "";
             return `${v.img ? `<div class="game-q-pic"><img src="${esc(v.img)}" alt=""></div>` : ""}<p class="game-q">${v.q}</p><div class="opt-list">${opts}</div>${banner}`;
@@ -1657,7 +1663,7 @@
         function unitleRowsHtml(rows) {
             return rows.map(r => {
                 const u = unitByKey(r.key);
-                return `<div class="unitle-name-line">${esc(u.name)}</div><div class="unitle-row"><div class="unitle-cell name"><img src="${esc(u.img)}" alt=""></div>
+                return `<div class="unitle-name-line">${esc(u.name)}</div><div class="unitle-row"><div class="unitle-cell name"><img src="${esc(thumb(u.img))}" alt="" ${THUMB_FALLBACK}></div>
                     ${r.cells.map(([c, label, arrow]) => `<div class="unitle-cell ${c}"><span>${esc(label)}</span>${arrow ? `<span>${arrow}</span>` : ""}</div>`).join("")}</div>`;
             }).join("");
         }
@@ -1689,7 +1695,7 @@
             if (!q) { box.innerHTML = ""; return; }
             const guessed = new Set(runUi.view.guesses.map(g => g.key));
             const matches = UNITS.filter(u => !guessed.has(u.key) && C.normName(u.name).includes(q)).slice(0, 6);
-            box.innerHTML = matches.map(u => `<button type="button" onclick="runMove({ guess: '${u.key}' })"><img src="${esc(u.img)}" alt="">${esc(u.name)}</button>`).join("")
+            box.innerHTML = matches.map(u => `<button type="button" onclick="runMove({ guess: '${u.key}' })"><img src="${esc(thumb(u.img))}" alt="" loading="lazy" ${THUMB_FALLBACK}>${esc(u.name)}</button>`).join("")
                 || `<span class="dim" style="font-size:0.88rem;">No troop or hero matches that.</span>`;
         }
         function submitRunUnitle() {
@@ -1796,7 +1802,7 @@
             // Reaching C.LB_CAP ends a run: the most a game can score.
             const maxed = !!fb.maxed || ui.score >= C.LB_CAP;
             const why = maxed ? `🏆 Perfect run — ${C.LB_CAP}/${C.LB_CAP}!` : timedOut ? "⏰ Time's up!" : runIsStreak(ui.game) ? "💥 Wrong answer — run over" : ui.game === "guess" ? "💀 Out of misses — run over" : "💥 Out of guesses — run over";
-            const unit = fb.answer && fb.answer.name ? `<div class="run-over-unit"><img src="${esc(fb.answer.img)}" alt=""><span>${maxed ? "Last one:" : "It was"} <b>${esc(fb.answer.name)}</b></span></div>` : "";
+            const unit = fb.answer && fb.answer.name ? `<div class="run-over-unit"><img src="${esc(thumb(fb.answer.img))}" alt="" ${THUMB_FALLBACK}><span>${maxed ? "Last one:" : "It was"} <b>${esc(fb.answer.name)}</b></span></div>` : "";
             const what = `point${ui.score === 1 ? "" : "s"}${maxed ? " — the most a game can score" : ""}`;
             // What it adds to the leaderboard: the same number (double on its puzzle day).
             const counts = ui.ranked && ui.bonus && ui.score > 0

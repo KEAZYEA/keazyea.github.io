@@ -14,7 +14,16 @@
     <link rel="icon" href="../images/KIH.jpg">
     <link rel="stylesheet" href="units.css?v=1">
     <meta name="google-adsense-account" content="ca-pub-7081980567861066">
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7081980567861066" crossorigin="anonymous"></script>
+    <script>
+        // Google's ad code (about 650 KB) loads once the page has finished
+        // showing, so it never holds up the guide itself.
+        addEventListener("load", () => setTimeout(() => {
+            const s = document.createElement("script");
+            s.async = true; s.crossOrigin = "anonymous";
+            s.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7081980567861066";
+            document.head.appendChild(s);
+        }, 2500));
+    </script>
 </head>
 <body>
     <header class="top"><a class="brand" href="../"><img src="../images/KIH.jpg" alt="" width="28" height="28">Keazyea's Intelligence Hub</a>
@@ -45,8 +54,8 @@
     </section>
         <p class="cta"><a href="../">⚔️ Compare Herald of Flame Harkon side by side with any other unit in the app →</a></p>
         <section><h2>Related heroes</h2>
-        <h3>Other Demon heroes</h3><div class="cards"><a class="card" href="brutallus-the-terrorbringer.html"><img src="../images/DEMONTANK.jpg" alt="Brutallus the Terrorbringer" loading="lazy" width="56" height="56"><span><b>Brutallus the Terrorbringer</b><small>Mythic Demon · Melee · 105,500 max HP</small></span></a><a class="card" href="fire-fury-xana.html"><img src="../images/DEMONMAGE.jpg" alt="Fire Fury Xana" loading="lazy" width="56" height="56"><span><b>Fire Fury Xana</b><small>Mythic Demon · Ranged · 55,250 max HP</small></span></a></div>
-        <h3>Other Mythic heroes</h3><div class="cards"><a class="card" href="remus-the-indestructible.html"><img src="../images/ELEVATETANK.jpg" alt="Remus the Indestructible" loading="lazy" width="56" height="56"><span><b>Remus the Indestructible</b><small>Mythic Elevate · Melee · 95,250 max HP</small></span></a><a class="card" href="atreya-hand-of-vengeance.html"><img src="../images/ELEVATEARCHER.jpg" alt="Atreya, Hand of Vengeance" loading="lazy" width="56" height="56"><span><b>Atreya, Hand of Vengeance</b><small>Mythic Elevate · Ranged · 57,750 max HP</small></span></a><a class="card" href="calyra-celestial-healer.html"><img src="../images/ELEVATESUPPORT.jpg" alt="Calyra, Celestial Healer" loading="lazy" width="56" height="56"><span><b>Calyra, Celestial Healer</b><small>Mythic Elevate · Ranged · 51,250 max HP</small></span></a></div>
+        <h3>Other Demon heroes</h3><div class="cards"><a class="card" href="brutallus-the-terrorbringer.html"><img src="../images/thumbs/DEMONTANK.jpg" alt="Brutallus the Terrorbringer" loading="lazy" decoding="async" width="56" height="56"><span><b>Brutallus the Terrorbringer</b><small>Mythic Demon · Melee · 105,500 max HP</small></span></a><a class="card" href="fire-fury-xana.html"><img src="../images/thumbs/DEMONMAGE.jpg" alt="Fire Fury Xana" loading="lazy" decoding="async" width="56" height="56"><span><b>Fire Fury Xana</b><small>Mythic Demon · Ranged · 55,250 max HP</small></span></a></div>
+        <h3>Other Mythic heroes</h3><div class="cards"><a class="card" href="remus-the-indestructible.html"><img src="../images/thumbs/ELEVATETANK.jpg" alt="Remus the Indestructible" loading="lazy" decoding="async" width="56" height="56"><span><b>Remus the Indestructible</b><small>Mythic Elevate · Melee · 95,250 max HP</small></span></a><a class="card" href="atreya-hand-of-vengeance.html"><img src="../images/thumbs/ELEVATEARCHER.jpg" alt="Atreya, Hand of Vengeance" loading="lazy" decoding="async" width="56" height="56"><span><b>Atreya, Hand of Vengeance</b><small>Mythic Elevate · Ranged · 57,750 max HP</small></span></a><a class="card" href="calyra-celestial-healer.html"><img src="../images/thumbs/ELEVATESUPPORT.jpg" alt="Calyra, Celestial Healer" loading="lazy" decoding="async" width="56" height="56"><span><b>Calyra, Celestial Healer</b><small>Mythic Elevate · Ranged · 51,250 max HP</small></span></a></div>
     </section>
     </main>
     <footer class="foot">
