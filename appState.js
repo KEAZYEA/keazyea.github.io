@@ -1976,6 +1976,22 @@ async function getClanPostCooldownRemaining() {
         }
     }
 
+    // When you last opened the inbox / read the news, saved on your account
+    // (not just this device), so reading on your phone clears the badges on
+    // your computer too. Each device keeps whichever time is newest.
+    async function saveSeenMarkers(patch) {
+        await waitForAuthReady();
+        if (!currentUser) return;
+        const clean = {};
+        ["inboxSeenAt", "newsSeenAt"].forEach(k => { if (Number.isFinite(patch[k]) && patch[k] > 0) clean[k] = Math.round(patch[k]); });
+        if (!Object.keys(clean).length) return;
+        try {
+            await updateDoc(doc(db, "users", currentUser.uid), clean);
+        } catch (e) {
+            console.warn("Couldn't save what you've read:", e.message);
+        }
+    }
+
     // Live incoming pending requests (people who want to friend ME).
     function listenToIncomingFriendRequests(callback) {
         const q = query(
@@ -4792,7 +4808,7 @@ async function maybeRefreshAd(containerId) {
         unfriend, friendshipId, getPublicProfile,
         searchUsersByName, getSuggestedFriends, touchLastActive,
         // personal notifications (NEW)
-        addPersonalNotification, listenToPersonalNotifications, markPersonalNotificationRead, sendAdminMessage, sendPromoCodes, listPromoSends, cleanPromoCodes,
+        addPersonalNotification, listenToPersonalNotifications, markPersonalNotificationRead, saveSeenMarkers, sendAdminMessage, sendPromoCodes, listPromoSends, cleanPromoCodes,
         // DMs
         getOrCreateDmThread, sendDmMessage, editDmMessage, listenToDmMessages, listenToMyDmThreads, deleteDmMessagesOnly,
         markDmThreadRead, listenToUnreadDmCount,

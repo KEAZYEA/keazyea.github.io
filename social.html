@@ -1827,14 +1827,31 @@
             border-top: 1px solid #2a2a4a;
         }
 
-        .dm-input-row input {
+        .dm-input-row {
+            align-items: flex-end; /* Send stays at the bottom as the box grows */
+        }
+        .dm-input-row input,
+        .dm-input-row textarea {
             flex: 1;
+            min-width: 0;
             padding: 10px 12px;
             border-radius: 8px;
             border: 1px solid #2a2a4a;
             background: #1a1a2e;
             color: white;
         }
+        /* The message box: Enter starts a new line; it grows with what you
+           type, up to about 5 lines, then scrolls. */
+        .dm-input-row textarea {
+            font: inherit;
+            font-size: 16px; /* 16px+ stops iPhones zooming in on tap */
+            line-height: 1.35;
+            resize: none;
+            overflow-y: auto;
+            max-height: 7.5em;
+            box-sizing: border-box;
+        }
+        .dm-msg-text { white-space: pre-wrap; }
 
         /* ---- Friends list ---- */
         .friends-section-title {
@@ -2825,8 +2842,8 @@
                 <button class="dm-reply-bar-cancel" onclick="cancelReplyToMessage()" title="Cancel reply">✕</button>
             </div>
             <div class="dm-input-row" id="dmInputRow">
-                <input type="text" id="dmInput" placeholder="Type a message..." maxlength="2000"
-                    data-requires-not-banned>
+                <textarea id="dmInput" rows="1" placeholder="Type a message..." maxlength="2000"
+                    enterkeyhint="enter" data-requires-not-banned></textarea>
                 <button class="btn-primary" style="padding:10px 18px; border-radius:8px;"
                     id="dmSendBtn"
                     data-requires-not-banned>Send</button>
@@ -6339,7 +6356,7 @@ function parseDmChallenge(text) {
 }
 function dmBodyHtml(text, mine) {
     const c = parseDmChallenge(text);
-    if (!c) return escapeHtml(text);
+    if (!c) return `<span class="dm-msg-text">${escapeHtml(text)}</span>`; // keeps the sender's line breaks
     return `<div class="dm-challenge-card" role="button" onclick='openGameChallenge("${c.code}")'>
         <div class="dmc-tag">⚔️ ${mine ? "Your challenge" : "Challenge"}</div>
         <div class="dmc-game"><span class="dmc-icon">${c.game.icon}</span><span><b>${c.game.title}</b><small>${escapeHtml(c.which)}</small></span></div>
@@ -6547,6 +6564,7 @@ window.sendDmFromInput = async function () {
     // stops mashing Send from firing the same message multiple times,
     // since there's nothing left in the box to re-send after the first tap.
     input.value = "";
+    input.style.height = ""; // back to one line
     const replyContext = replyingToMsg;
     cancelReplyToMessage();
 
@@ -6556,6 +6574,7 @@ window.sendDmFromInput = async function () {
     } catch (e) {
         // Send actually failed — put the text back so nothing is lost.
         input.value = text;
+        input.dispatchEvent(new Event("input")); // the box grows back to fit it
         if (e.message === "__BLOCKED_BY_ME__") {
             showInfoModal("User blocked", "You've blocked this user. Unblock them to send a message.");
         } else if (e.message !== "__RESTRICTED__") {
@@ -6565,9 +6584,17 @@ window.sendDmFromInput = async function () {
     isDmSending = false;
     sendBtn.disabled = false;
 };
-        document.getElementById("dmInput").addEventListener("keydown", (e) => {
-            if (e.key === "Enter") window.sendDmFromInput();
+        // Enter starts a new line (the Send button sends); on a computer,
+        // Ctrl+Enter / Cmd+Enter sends too. The box grows as you type.
+        const dmInputEl = document.getElementById("dmInput");
+        function fitDmInput() {
+            dmInputEl.style.height = "auto";
+            dmInputEl.style.height = Math.min(dmInputEl.scrollHeight + 2, 160) + "px";
+        }
+        dmInputEl.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); window.sendDmFromInput(); }
         });
+        dmInputEl.addEventListener("input", fitDmInput);
 
         // Mobile Send handling: don't rely on click at all. preventDefault()
         // on touchstart (the old approach) unreliably suppresses the browser's
