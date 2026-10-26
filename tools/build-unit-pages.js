@@ -17,7 +17,7 @@ const zlib = require("zlib");
 
 const ROOT = path.join(__dirname, "..");
 const SITE = "https://keazyea.github.io";
-const GAME = "Kingdom Cash";
+const GAME = "Kingdom Clash";
 const G = require(path.join(ROOT, "games-core.js"));
 const { renderUnitCards } = require(path.join(__dirname, "render-unit-cards.js"));
 const units = G.unitsFromFiles(f => require(path.join(ROOT, f)));

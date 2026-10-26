@@ -4,10 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About &amp; contact | Keazyea's Intelligence Hub</title>
-    <meta name="description" content="Keazyea's Intelligence Hub is a free, fan-made companion for Kingdom Cash: troop and hero stats, promo codes, tips, giveaways and daily games. Who runs it and how to get in touch.">
+    <meta name="description" content="Keazyea's Intelligence Hub is a free, fan-made companion for Kingdom Clash: troop and hero stats, promo codes, tips, giveaways and daily games. Who runs it and how to get in touch.">
     <link rel="canonical" href="https://keazyea.github.io/about.html">
     <link rel="icon" href="images/KIH.jpg">
-    <link rel="stylesheet" href="units/units.css?v=1">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="units/units.css?v=2">
     <meta name="google-adsense-account" content="ca-pub-7081980567861066">
     <script>
         // Google's ad code loads once the page has finished showing.
@@ -18,47 +19,121 @@
             document.head.appendChild(s);
         }, 2500));
     </script>
+    <style>
+        /* The About page: the same look as the app's About screen and home menu. */
+        .about-hero { text-align: center; margin: 14px 0 6px; }
+        .about-hero img { width: 200px; height: auto; max-width: 70%; border-radius: 22px; object-fit: contain; box-shadow: 0 10px 34px rgba(108, 99, 255, 0.35), 0 0 0 1px rgba(140, 160, 255, 0.25); }
+        .about-hero h1 { margin: 14px 0 6px; font-size: clamp(28px, 7vw, 40px); text-align: center; }
+        .about-hero p { margin: 0 auto; max-width: 520px; color: #c8c8e0; font-size: 16px; line-height: 1.55; }
+
+        .about-card { margin: 18px 0 0; padding: 16px; border-radius: 16px; background: linear-gradient(180deg, #23234a, #1c1c38); border: 1px solid rgba(140, 160, 255, 0.18); box-shadow: 0 6px 22px rgba(0, 0, 0, 0.3); }
+        .about-card-title { margin: 0 0 10px; font: 700 13px Arial, sans-serif; letter-spacing: 0.06em; text-transform: uppercase; color: #8fa8ff; }
+        .about-card p { margin: 0 0 8px; color: #ecebff; font-size: 15px; line-height: 1.55; }
+        .about-card p:last-child { margin-bottom: 0; }
+
+        /* what's on the site: tiles in the home menu's colours */
+        .about-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .about-tile {
+            --sec: 76, 110, 245;
+            display: flex; flex-direction: column; gap: 4px; padding: 12px; border-radius: 14px; text-decoration: none; color: #fff !important;
+            background: linear-gradient(140deg, rgba(var(--sec), 0.45), rgba(var(--sec), 0.12)); border: 1px solid rgba(var(--sec), 0.75); box-shadow: inset 4px 0 0 rgb(var(--sec));
+            transition: transform 0.12s ease;
+        }
+        .about-tile:active { transform: scale(0.98); }
+        .about-tile b { font-size: 15px; }
+        .about-tile small { font-size: 12.5px; color: rgba(255, 255, 255, 0.82); line-height: 1.4; }
+        .about-tile .ic { font-size: 22px; line-height: 1; }
+        .about-tile.t2 { --sec: 240, 101, 149; } .about-tile.t3 { --sec: 252, 196, 25; } .about-tile.t4 { --sec: 132, 94, 247; }
+        .about-tile.t5 { --sec: 34, 184, 207; } .about-tile.t6 { --sec: 81, 207, 102; }
+
+        .creator { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+        .creator .wave { font-size: 34px; }
+        .creator p { margin: 0; }
+        .clan { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px; background: rgba(255, 196, 57, 0.1); border: 1px solid rgba(255, 196, 57, 0.35); color: #ffe3a3 !important; text-decoration: none; font-weight: 700; }
+        .clan small { display: block; font-weight: 400; color: #e8d5a8; }
+
+        /* the same buttons as the app's About screen */
+        .social-btn-row { display: flex; gap: 10px; margin-top: 12px; }
+        .social-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 10px; border-radius: 10px; font: 700 14px Arial, sans-serif; text-decoration: none; border: 1px solid rgba(140, 160, 255, 0.2); }
+        .social-btn-youtube { background: rgba(255, 0, 0, 0.12); color: #ff6b6b !important; }
+        .social-btn-discord { background: rgba(88, 101, 242, 0.15); color: #9aa3ff !important; }
+        .social-btn-donate { background: rgba(255, 196, 57, 0.15); color: #ffd76b !important; }
+
+        .mail-btn { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; padding: 12px; border-radius: 10px; background: linear-gradient(135deg, #4169e1, #8a4dff); color: #fff !important; font: 700 15px Arial, sans-serif; text-decoration: none; }
+        .about-note { margin-top: 18px; font-size: 13px; line-height: 1.55; color: #a9a9c6; }
+        .about-note a { color: #8fa8ff; }
+        .about-cta { margin: 20px 0 0; }
+    </style>
 </head>
-<body>
-    <header class="top"><a class="brand" href="./"><img src="images/KIH.jpg" alt="" width="28" height="28">Keazyea's Intelligence Hub</a>
-        <nav class="crumbs"><a href="units/">Troops &amp; heroes guide</a></nav></header>
-    <main>
-        <h1>About Keazyea's Intelligence Hub</h1>
-        <p class="lead">Keazyea's Intelligence Hub is a free companion site for players of <strong>Kingdom Cash</strong>.
-            It's made and run by Keazyea, and puts unit stats, promo codes, tips and community features in one place.</p>
+<body class="kih-glow kih-stars guide-page">
+    <nav class="guide-bar" aria-label="Site">
+        <button type="button" class="gb-back" onclick="aboutBack()">← Back</button>
+        <span class="gb-title">ℹ️ About &amp; contact</span>
+        <a class="gb-app" href="./">🏠 App</a>
+    </nav>
 
-        <h2>What you'll find here</h2>
-        <ul>
-            <li><a href="units/"><strong>Troops &amp; heroes guide</strong></a>: every unit's HP, attack, defence and power at each
-                level, ability numbers and hero talents, plus a tool in the app to compare any two units side by side.</li>
-            <li><strong>Promo codes</strong>: the latest working codes, and giveaways with real prizes.</li>
-            <li><strong>Tips</strong>: team compositions, talents and event strategy.</li>
-            <li><strong>Games</strong>: a daily puzzle and quick quiz games about the game's units, with a weekly leaderboard.</li>
-            <li><strong>Community</strong>: clan recruitment, friends, tier lists and formations.</li>
-        </ul>
+    <main class="guide-main">
+        <div class="about-hero">
+            <img src="images/KIH_HP.jpg" alt="Keazyea's Intelligence Hub" width="200">
+            <h1>Keazyea's Intelligence Hub</h1>
+            <p>A free, fan-made companion for <strong>Kingdom Clash</strong>: unit stats, promo codes, tips, giveaways, daily games and a player community, all in one place.</p>
+        </div>
 
-        <h2>Who's behind it</h2>
-        <p>Hello, I'm Keazyea, the creator of this site. The stats on the unit pages come from the game's own data
-            files. You can also find me on
-            <a href="https://www.youtube.com/@keazyea" target="_blank" rel="noopener noreferrer">YouTube</a> and on
-            <a href="https://discord.gg/j3Zqb6GVmq" target="_blank" rel="noopener noreferrer">Discord</a>, and you're
-            welcome to <a href="https://play.google.com/store/apps/details?id=azurgames.idle.war&amp;hl=en_SG" target="_blank"
-                rel="noopener noreferrer">join my clan in Kingdom Cash</a> (Android).</p>
+        <section class="about-card">
+            <div class="about-card-title">What you'll find</div>
+            <div class="about-tiles">
+                <a class="about-tile" href="units/"><span class="ic">⚔️</span><b>Troops &amp; heroes</b><small>Every unit's stats at every level, abilities and talents</small></a>
+                <a class="about-tile t2" href="./?goto=promo"><span class="ic">🎁</span><b>Promo codes</b><small>The latest working codes</small></a>
+                <a class="about-tile t3" href="./?goto=tips"><span class="ic">💡</span><b>Tips</b><small>Team comps, talents and event strategy</small></a>
+                <a class="about-tile t4" href="./?goto=games"><span class="ic">🎮</span><b>Games</b><small>A daily puzzle and quick unit quizzes, with a weekly leaderboard</small></a>
+                <a class="about-tile t5" href="./?goto=promo"><span class="ic">🎡</span><b>Giveaways</b><small>A weekly draw and secret giveaways with real prizes</small></a>
+                <a class="about-tile t6" href="./?goto=social"><span class="ic">👥</span><b>Community</b><small>Clan recruitment, friends, tier lists and formations</small></a>
+            </div>
+        </section>
 
-        <h2>Contact</h2>
-        <p>Got feedback, a bug report, a stat that looks wrong, or a suggestion? Email
-            <a href="mailto:keazyea@gmail.com">keazyea@gmail.com</a>.</p>
+        <section class="about-card">
+            <div class="about-card-title">Who's behind it</div>
+            <div class="creator"><span class="wave">👋</span><p>Hello, I'm <strong>Keazyea</strong>, the creator of this site. The stats on the unit pages come from the game's own data files.</p></div>
+            <a class="clan" href="https://play.google.com/store/apps/details?id=azurgames.idle.war&amp;hl=en_SG" target="_blank" rel="noopener noreferrer">🏰<span>Join my clan in Kingdom Clash<small>Android only for now</small></span></a>
+            <div class="social-btn-row">
+                <a class="social-btn social-btn-youtube" href="https://www.youtube.com/@keazyea" target="_blank" rel="noopener noreferrer">
+                    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="#FF0000" d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.4 31.4 0 0 0 0 12a31.4 31.4 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31.4 31.4 0 0 0 24 12a31.4 31.4 0 0 0-.5-5.8z"></path><path fill="white" d="M9.6 15.6 15.8 12 9.6 8.4z"></path></svg>
+                    <span>YouTube</span></a>
+                <a class="social-btn social-btn-discord" href="https://discord.gg/j3Zqb6GVmq" target="_blank" rel="noopener noreferrer">
+                    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="#5865F2" d="M20.3 4.4A19.7 19.7 0 0 0 15.4 3c-.2.4-.5.9-.7 1.3a18.3 18.3 0 0 0-5.4 0A11 11 0 0 0 8.6 3 19.6 19.6 0 0 0 3.7 4.4C1 8.4.3 12.3.6 16.2A19.8 19.8 0 0 0 6.6 19c.5-.7.9-1.4 1.3-2.2-.7-.3-1.4-.6-2-1l.5-.4c3.8 1.8 7.9 1.8 11.7 0l.5.4c-.6.4-1.3.7-2 1 .4.8.8 1.5 1.3 2.2a19.7 19.7 0 0 0 6-2.8c.4-4.5-.7-8.4-2.9-11.8zM9.7 13.8c-1 0-1.8-1-1.8-2.1 0-1.2.8-2.2 1.8-2.2s1.9 1 1.8 2.2c0 1.1-.8 2.1-1.8 2.1zm6.6 0c-1 0-1.8-1-1.8-2.1 0-1.2.8-2.2 1.8-2.2s1.9 1 1.8 2.2c0 1.1-.8 2.1-1.8 2.1z"></path></svg>
+                    <span>Discord</span></a>
+                <a class="social-btn social-btn-donate" href="https://www.paypal.me/keazyea" target="_blank" rel="noopener noreferrer"><span>💸</span><span>Donate</span></a>
+            </div>
+        </section>
 
-        <h2>Unofficial fan site</h2>
-        <p class="dim">Keazyea's Intelligence Hub is unofficial and fan-made. It isn't affiliated with, endorsed by or
-            sponsored by the publisher or developer of Kingdom Cash. Game names, characters, images and trademarks
-            belong to their owners and are used only to identify and describe them. See the
-            <a href="terms.html">Terms of Service</a> and <a href="privacy.html">Privacy Policy</a>.</p>
+        <section class="about-card">
+            <div class="about-card-title">Get in touch</div>
+            <p>Got feedback, a bug report, a stat that looks wrong, or a suggestion? Reach out anytime.</p>
+            <a class="mail-btn" href="mailto:keazyea@gmail.com">📧 keazyea@gmail.com</a>
+        </section>
 
-        <p class="cta"><a href="./">Open the app →</a></p>
+        <p class="about-cta"><a class="ga-btn" href="./">🏠 Open the app</a></p>
+
+        <p class="about-note">Keazyea's Intelligence Hub is unofficial and fan-made. It isn't affiliated with, endorsed by or sponsored by the publisher or developer of Kingdom Clash. Game names, characters, images and trademarks belong to their owners and are used only to identify and describe them. See the <a href="terms.html">Terms of Service</a> and <a href="privacy.html">Privacy Policy</a>.</p>
     </main>
-    <footer class="foot">
+
+    <footer class="guide-foot">
         <p><a href="./">Open the app</a> · <a href="units/">Troops &amp; heroes guide</a> · <a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a></p>
     </footer>
+
+    <script>
+        // Back: to the page you came from on this site, or else the app.
+        function aboutBack() {
+            try { if (document.referrer && new URL(document.referrer).origin === location.origin && history.length > 1) { history.back(); return; } } catch (e) { }
+            location.href = "./";
+        }
+        (function () {
+            var vv = window.visualViewport;
+            if (!vv) return;
+            function mark() { document.documentElement.classList.toggle("kih-zoomed", vv.scale > 1.05); }
+            vv.addEventListener("resize", mark);
+            mark();
+        })();
+    </script>
 </body>
 </html>
