@@ -44,6 +44,7 @@ const crypto = require("crypto");
 const { getFirebaseAdmin, DAY_MS, dayKeyFor, dayStartMs, weekDayKeys, isBannedNow } = require("./_lib");
 const { FieldValue } = require("firebase-admin/firestore");
 const G = require("../games-core.js");
+const P = require("../progress-core.js");
 const { loadUnits } = require("./_units");
 const jpeg = require("../vendor/jpeg-js");
 
@@ -219,7 +220,8 @@ async function runAnswer(db, uid, body, now) {
     // before the weekly reset reads its own week's row separately.
     const thisWeek = weekOf(now);
     const guessRef = db.collection("gameLeaderboards").doc(thisWeek).collection("players").doc(uid);
-    const [runSnap, guessSnap] = await tx.getAll(runRef, guessRef);
+    const invRef = db.collection("inventories").doc(uid); // item perks add to the total
+    const [runSnap, guessSnap, invSnap] = await tx.getAll(runRef, guessRef, invRef);
     if (!runSnap.exists || runSnap.data().uid !== uid) throw new HttpError(404, "That run doesn't exist.");
     const doc = runSnap.data();
     if (doc.run.over) throw new HttpError(409, "This run has already ended.");
@@ -244,8 +246,13 @@ async function runAnswer(db, uid, body, now) {
     if (betterScore) best[doc.game] = step.run.score;
     if (morePts) { pts[doc.game] = runPts; dbl[doc.game] = !!doc.bonus; }
     if (betterScore || morePts) {
-      tx.set(lbRef, { uid, name: doc.name, week: doc.week, best, pts, dbl, total: G.lbTotal({ pts }), updatedAt: now }, { merge: true });
+      const perk = P.gamePerkBonus(invSnap.exists ? invSnap.data().perks : null, pts);
+      tx.set(lbRef, { uid, name: doc.name, week: doc.week, best, pts, dbl, perk, total: G.lbTotal({ pts }) + perk, updatedAt: now }, { merge: true });
     }
+    // Every point a run scores counts towards the Gamer achievement (as it's
+    // scored, so a run left unfinished still counts what it got).
+    const gained = runPts - G.lbRunPoints(doc.game, doc.run.score, doc.bonus);
+    if (gained > 0) tx.set(db.collection("achievementStats").doc(uid), { gamePoints: FieldValue.increment(gained) }, { merge: true });
     return { step, best: best[doc.game] || 0, pts: pts[doc.game], newBest: betterScore || morePts, game: doc.game };
   });
   const { run } = result.step;
@@ -328,7 +335,7 @@ async function rescoreWeek(db, week) {
     const snap = await metaRef.collection("players").get();
     let batch = db.batch(), n = 0;
     for (const d of snap.docs) {
-      const pts = G.lbPts(d.data()), total = G.lbTotal({ pts });
+      const pts = G.lbPts(d.data()), total = G.lbTotal({ pts }) + (d.data().perk || 0); // keeps item perks
       if (total !== d.data().total || !d.data().pts) { batch.update(d.ref, { pts, total }); if (++n % 400 === 0) { await batch.commit(); batch = db.batch(); } }
     }
     if (n % 400) await batch.commit();
@@ -354,15 +361,15 @@ async function leaderboard(db, uid, now) {
   const rows = topSnap.docs.map(d => d.data()).filter(p => p.total > 0)
     .sort((a, b) => b.total - a.total || a.updatedAt - b.updatedAt)
     .slice(0, LEADERBOARD_SIZE)
-    .map((p, i) => ({ rank: i + 1, name: p.name, total: p.total, best: { ...blankBest(), ...p.best }, pts: G.lbPts(p), dbl: p.dbl || {}, me: p.uid === uid }));
+    .map((p, i) => ({ rank: i + 1, name: p.name, total: p.total, best: { ...blankBest(), ...p.best }, pts: G.lbPts(p), dbl: p.dbl || {}, perk: p.perk || 0, me: p.uid === uid }));
   let me = null;
   if (meSnap && meSnap.exists && meSnap.data().total > 0) {
     const mine = meSnap.data();
     const listed = rows.find(r => r.me);
     const rank = listed ? listed.rank : 1 + (await players.where("total", ">", mine.total).count().get()).data().count;
-    me = { rank, total: mine.total, best: { ...blankBest(), ...mine.best }, pts: G.lbPts(mine), dbl: mine.dbl || {} };
+    me = { rank, total: mine.total, best: { ...blankBest(), ...mine.best }, pts: G.lbPts(mine), dbl: mine.dbl || {}, perk: mine.perk || 0 };
   } else if (uid) {
-    me = { rank: null, total: 0, best: blankBest(), pts: blankPts(), dbl: {} };
+    me = { rank: null, total: 0, best: blankBest(), pts: blankPts(), dbl: {}, perk: 0 };
   }
   const lastWeek = lastMeta.exists && lastMeta.data().winners
     ? lastMeta.data().winners.map(w => ({ rank: w.rank, name: w.name, total: w.total, prize: w.prize }))

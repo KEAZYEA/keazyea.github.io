@@ -612,6 +612,79 @@ body {
             margin-top: 24px;
         }
 
+        /* ---- Profile: your card, badges, achievements, items ---- */
+        .pf-hero { display: flex; align-items: center; gap: 14px; margin: 0 0 14px; padding: 14px; border-radius: 16px;
+            background: linear-gradient(135deg, rgba(108, 99, 255, 0.18), rgba(255, 107, 214, 0.08)); border: 1px solid var(--kih-border); }
+        .pf-hero-avatar { width: 68px; height: 68px; flex-shrink: 0; border-radius: 50%; object-fit: cover; background: var(--kih-border); border: 2px solid var(--kih-accent); }
+        .pf-hero-main { min-width: 0; flex: 1; }
+        .pf-hero-name { font-size: 1.2rem; font-weight: 900; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .pf-hero-stats { margin-top: 6px; color: var(--kih-text-dim); font-size: 0.82rem; font-weight: 700; }
+        .pf-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+        .pf-badges.center { justify-content: center; margin: 0 0 12px; }
+        .pf-badges:empty { display: none; }
+        .pf-badge { display: inline-flex; align-items: center; gap: 5px; max-width: 100%; padding: 3px 9px 3px 3px; border-radius: 999px;
+            border: 1px solid var(--tc); background: color-mix(in srgb, var(--tc) 14%, transparent); font-size: 0.74rem; font-weight: 800; }
+        .pf-badge-ico { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: rgba(0, 0, 0, 0.35);
+            box-shadow: inset 0 0 0 2px var(--tc); font-size: 0.8rem; }
+        .pf-badge-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .pf-badge-tier { color: var(--tc); }
+        .pf-like-btn { display: inline-flex; align-items: center; gap: 6px; margin: 0 auto 14px; padding: 8px 16px; border-radius: 999px;
+            border: 1px solid var(--kih-border); background: rgba(255, 255, 255, 0.05); color: var(--kih-text); font: inherit; font-weight: 800; cursor: pointer; }
+        .pf-like-btn.on { border-color: #4c6ef5; background: rgba(76, 110, 245, 0.22); }
+        .pf-like-btn:disabled { opacity: 0.6; cursor: default; }
+        .pf-tabs .kih-chip { position: relative; }
+        .pf-tab-dot { display: none; position: absolute; top: -2px; right: -2px; width: 10px; height: 10px; border-radius: 50%; background: #ff4d6d; box-shadow: 0 0 0 2px var(--kih-bg); }
+        .pf-tab-dot.on { display: block; }
+        .ach-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 6px; }
+        .ach-head-sum { font-size: 0.85rem; color: var(--kih-text-dim); font-weight: 700; }
+        .ach-head-sum b { color: var(--kih-text); }
+        .ach-claim-all { padding: 10px 16px; border: none; border-radius: 12px; font: inherit; font-weight: 900; color: #1a1a2e; cursor: pointer;
+            background: linear-gradient(90deg, #ffd75e, #ff9f5a); box-shadow: 0 4px 14px rgba(255, 170, 60, 0.3); }
+        .ach-claim-all:disabled { background: rgba(255, 255, 255, 0.08); color: var(--kih-text-dim); box-shadow: none; cursor: default; }
+        .ach-hint { margin: 0 0 12px; font-size: 0.8rem; color: var(--kih-text-dim); }
+        .ach-card { display: flex; gap: 12px; align-items: flex-start; padding: 12px; margin-bottom: 8px; border-radius: 14px; background: var(--kih-panel); border: 1px solid var(--kih-border); }
+        .ach-card.ready { border-color: #ffb84d; box-shadow: 0 0 0 1px rgba(255, 184, 77, 0.35), 0 4px 16px rgba(255, 170, 60, 0.12); }
+        .ach-card.flash { animation: achFlash 0.9s ease; }
+        @keyframes achFlash { 30% { transform: scale(1.03); background: rgba(255, 215, 94, 0.18); } }
+        .ach-icon { position: relative; flex-shrink: 0; display: grid; place-items: center; width: 50px; height: 50px; border-radius: 50%; font-size: 1.5rem;
+            background: rgba(0, 0, 0, 0.3); box-shadow: inset 0 0 0 3px var(--tc, #3a3a5a); }
+        .ach-icon.none { filter: grayscale(1); opacity: 0.6; }
+        .ach-card.ready .ach-icon.none { filter: none; opacity: 1; box-shadow: inset 0 0 0 3px #ffb84d; }
+        .ach-body { flex: 1; min-width: 0; }
+        .ach-name { font-weight: 900; font-size: 0.95rem; }
+        .ach-name small { margin-left: 6px; color: var(--tc); font-weight: 800; }
+        .ach-desc { font-size: 0.78rem; color: var(--kih-text-dim); margin: 1px 0 7px; }
+        .ach-bar { height: 7px; border-radius: 99px; background: rgba(255, 255, 255, 0.08); overflow: hidden; }
+        .ach-bar i { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, #6c63ff, #ff6bd6); }
+        .ach-meta { display: flex; justify-content: space-between; gap: 8px; margin-top: 5px; font-size: 0.74rem; color: var(--kih-text-dim); font-weight: 700; }
+        .ach-pips { display: inline-flex; gap: 3px; }
+        .ach-pips i { width: 8px; height: 8px; border-radius: 50%; background: rgba(255, 255, 255, 0.12); }
+        .ach-pips i.got { background: var(--pc); }
+        .ach-pips i.ready { background: #ffb84d; box-shadow: 0 0 6px #ffb84d; }
+        .ach-actions { display: flex; align-items: center; justify-content: flex-end; gap: 8px; margin-top: 8px; }
+        .ach-actions:empty { display: none; }
+        .ach-claim { padding: 8px 12px; border: none; border-radius: 10px; font: inherit; font-size: 0.82rem; font-weight: 900; color: #1a1a2e; cursor: pointer;
+            background: linear-gradient(90deg, #ffd75e, #ff9f5a); white-space: nowrap; }
+        .ach-pin { width: 34px; height: 34px; border-radius: 10px; border: 1px solid var(--kih-border); background: transparent; font-size: 1rem; cursor: pointer; filter: grayscale(1); opacity: 0.55; }
+        .ach-pin.on { filter: none; opacity: 1; border-color: #ff6bd6; background: rgba(255, 107, 214, 0.15); }
+        .it-perks { padding: 14px; margin-bottom: 14px; border-radius: 14px; background: linear-gradient(135deg, rgba(95, 211, 138, 0.14), rgba(90, 168, 255, 0.1)); border: 1px solid var(--kih-border); }
+        .it-perks-title { font-weight: 900; margin-bottom: 8px; }
+        .it-perks-title small { margin-left: 6px; color: var(--kih-text-dim); font-weight: 700; }
+        .it-perk { display: flex; justify-content: space-between; gap: 10px; padding: 5px 0; font-size: 0.88rem; }
+        .it-perk b { color: #7ddc92; }
+        .it-head { display: flex; justify-content: space-between; align-items: baseline; margin: 0 0 8px; font-weight: 900; }
+        .it-head small { color: var(--kih-text-dim); font-weight: 700; }
+        .it-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; margin-bottom: 14px; }
+        .it-card { padding: 12px 10px; border-radius: 14px; text-align: center; background: var(--kih-panel); border: 1px solid var(--rc); box-shadow: inset 0 -30px 40px -30px var(--rc); }
+        .it-card.locked { border-style: dashed; box-shadow: none; opacity: 0.75; }
+        .it-icon { font-size: 2rem; line-height: 1.2; }
+        .it-card.locked .it-icon { filter: grayscale(1) brightness(0.6); }
+        .it-name { font-weight: 900; font-size: 0.86rem; margin-top: 4px; }
+        .it-rarity { color: var(--rc); font-size: 0.72rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; }
+        .it-perk-text { margin-top: 4px; font-size: 0.74rem; color: var(--kih-text-dim); }
+        .it-chest { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px; border-radius: 14px; border: 1px dashed #ffb84d; text-align: center; }
+        .it-chest small { color: var(--kih-text-dim); }
+
         /* Filter chips (Inbox, News) */
         .kih-chips { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin: 0 0 14px; padding-bottom: 2px; }
         .kih-chips::-webkit-scrollbar { display: none; }
@@ -1608,7 +1681,8 @@ body {
         .home-menu-btn:nth-child(3) .home-menu-icon { background: linear-gradient(135deg, #fcc419, #e67700); box-shadow: 0 0 14px rgba(252, 196, 25, 0.45); }
         .home-menu-btn:nth-child(4) .home-menu-icon { background: linear-gradient(135deg, #845ef7, #4c2a9e); box-shadow: 0 0 14px rgba(132, 94, 247, 0.45); }
         .home-menu-btn:nth-child(5) .home-menu-icon { background: linear-gradient(135deg, #22b8cf, #0b7285); box-shadow: 0 0 14px rgba(34, 184, 207, 0.45); }
-        .home-menu-btn:nth-child(6) .home-menu-icon { background: linear-gradient(135deg, #51cf66, #2b8a3e); box-shadow: 0 0 14px rgba(81, 207, 102, 0.45); }
+        .home-menu-btn:nth-child(6) .home-menu-icon { background: linear-gradient(135deg, #ff922b, #c2410c); box-shadow: 0 0 14px rgba(255, 146, 43, 0.45); }
+        .home-menu-btn:nth-child(7) .home-menu-icon { background: linear-gradient(135deg, #51cf66, #2b8a3e); box-shadow: 0 0 14px rgba(81, 207, 102, 0.45); }
         /* ...and the whole button in it too: a tinted face, a coloured edge and
            a bright stripe down the left, so each section stands out. */
         .home-menu-btn:nth-child(1) { --sec: 76, 110, 245; }
@@ -1616,7 +1690,8 @@ body {
         .home-menu-btn:nth-child(3) { --sec: 252, 196, 25; }
         .home-menu-btn:nth-child(4) { --sec: 132, 94, 247; }
         .home-menu-btn:nth-child(5) { --sec: 34, 184, 207; }
-        .home-menu-btn:nth-child(6) { --sec: 81, 207, 102; }
+        .home-menu-btn:nth-child(6) { --sec: 255, 146, 43; }
+        .home-menu-btn:nth-child(7) { --sec: 81, 207, 102; }
         .home-menu-btn {
             background: linear-gradient(100deg, rgba(var(--sec, 255, 255, 255), 0.5), rgba(var(--sec, 255, 255, 255), 0.16) 80%), var(--kih-panel);
             border-color: rgba(var(--sec, 255, 255, 255), 0.85);
@@ -1638,6 +1713,7 @@ body {
         .home-menu-btn:nth-child(4) { animation-delay: 0.15s; }
         .home-menu-btn:nth-child(5) { animation-delay: 0.2s; }
         .home-menu-btn:nth-child(6) { animation-delay: 0.25s; }
+        .home-menu-btn:nth-child(7) { animation-delay: 0.3s; }
         @keyframes menuIn { from { opacity: 0; transform: translateY(12px); } }
         .home-menu-btn:hover, .home-menu-btn:active { border-color: rgb(var(--sec, 160, 130, 255)); box-shadow: inset 4px 0 0 rgb(var(--sec, 160, 130, 255)), 0 0 22px rgba(var(--sec, 138, 77, 255), 0.4); transform: translateY(-2px); }
         .home-menu-btn:hover .home-menu-icon { animation: iconHop 0.5s ease; }
@@ -1654,6 +1730,7 @@ body {
             <button class="icon-btn" title="Profile" onclick="goToPage('profile')">
                 <img id="topbarAvatarIcon" src="" alt="Profile" class="topbar-avatar-icon">
                 <span id="topbarAvatarFallback" class="topbar-avatar-fallback">👤</span>
+                <span class="badge-dot" id="profileBadgeHome" style="display:none;" title="Achievements ready to claim"></span>
             </button>
             <div class="topbar-right">
                 <button class="icon-btn" title="Daily Quests" onclick="goToPage('quests')">
@@ -1752,6 +1829,12 @@ body {
                     <span class="badge-dot" id="socialUnreadBadgeHome"
                         style="display:none; position:absolute; top:10px; right:14px;"></span>
                 </button>
+                <button class="home-menu-btn" onclick="goToPage('profile')" style="position:relative;">
+                    <span class="home-menu-icon">🏅</span>
+                    <span class="home-menu-text">Profile<small>Achievements, badges & items</small></span>
+                    <span class="badge-dot" id="profileMenuBadgeHome"
+                        style="display:none; position:absolute; top:10px; right:14px;"></span>
+                </button>
                 <button class="home-menu-btn" onclick="goToPage('store')">
                     <span class="home-menu-icon">🛒</span>
                     <span class="home-menu-text">Store<small>Tokens & supporter plans</small></span>
@@ -1827,7 +1910,7 @@ body {
                                 <!-- Where tokens come from and where they're used, one tap away. -->
                                 <div class="quest-links">
                                     <button type="button" onclick="goToPage('store')">＋ Get more tokens</button>
-                                    <button type="button" onclick="openPromoTab('secret')">🔒 Spend in Secret Giveaways</button>
+                                    <button type="button" onclick="openPromoTab('secret')">🎁 Spend in Secret Giveaways</button>
                                 </div>
                             </div>
                             <div id="questList"></div>
@@ -1838,7 +1921,7 @@ body {
                                     <li>⚔️ Daily quests are worth <strong>4 🪙</strong>: "check out" quests pay 1, "do something" quests pay 2. Finish one, then tap <strong>Claim</strong> — unclaimed rewards don't expire.</li>
                                     <li>🎲 Finishing today's puzzle in <strong>Games</strong> pays <strong>1 🪙</strong> straight away.</li>
                                     <li>🛒 The <strong>Store</strong> has token packs, and Supporter plans that add 80 or 180 🪙 a month.</li>
-                                    <li>🔒 Spend them in a <strong>Secret Giveaway</strong>: every token you drop in is one more chance on top of your free one. They're used up when the winners are drawn, win or lose, and come back if you take them out before.</li>
+                                    <li>🎁 Spend them in a <strong>Secret Giveaway</strong>: every token you drop in is one more chance on top of your free one. They're used up when the winners are drawn, win or lose, and come back if you take them out before.</li>
                                 </ul>
                             </details>
                         </div>
@@ -1953,8 +2036,30 @@ body {
                 <!-- PROFILE (was a modal, now its own page) -->
                 <div class="home-page-content" id="page-profile">
                     <div class="page-panel">
-                        <h1>In-Game Profile</h1>
+                        <!-- Your card as others see it: avatar, name, the badges you
+                             show, likes and items. -->
+                        <div class="pf-hero">
+                            <img id="pfHeroAvatar" class="pf-hero-avatar" src="" alt="" onerror="this.src='images/KIH.jpg'">
+                            <div class="pf-hero-main">
+                                <div class="pf-hero-name" id="pfHeroName">Commander</div>
+                                <div class="pf-badges" id="pfHeroBadges"></div>
+                                <div class="pf-hero-stats" id="pfHeroStats"></div>
+                            </div>
+                        </div>
+                        <div class="kih-chips pf-tabs" id="pfTabs">
+                            <button type="button" class="kih-chip active" data-tab="edit" onclick="switchProfileTab('edit')">✏️ Profile</button>
+                            <button type="button" class="kih-chip" data-tab="ach" onclick="switchProfileTab('ach')">🏅 Achievements<span class="pf-tab-dot" id="pfAchDot"></span></button>
+                            <button type="button" class="kih-chip" data-tab="items" onclick="switchProfileTab('items')">🎒 Items</button>
+                        </div>
 
+                        <div id="pfTabAch" class="pf-tab" style="display:none;">
+                            <div id="pfAchBody"><p class="settings-sub">Loading…</p></div>
+                        </div>
+                        <div id="pfTabItems" class="pf-tab" style="display:none;">
+                            <div id="pfItemsBody"><p class="settings-sub">Loading…</p></div>
+                        </div>
+
+                        <div id="pfTabEdit" class="pf-tab">
                         <label class="field-label">In-game name</label>
                         <input type="text" id="profileNameInput" class="profile-name-input"
                             placeholder="Enter a name" />
@@ -1980,16 +2085,6 @@ body {
                             <option value="both">Both</option>
                         </select>
 
-                        <label class="field-label">Favorite Troop</label>
-                        <input type="text" id="profileFavTroopInput" class="profile-name-input" list="troopNamesList"
-                            placeholder="Start typing...">
-                        <datalist id="troopNamesList"></datalist>
-
-                        <label class="field-label">Favorite Hero</label>
-                        <input type="text" id="profileFavHeroInput" class="profile-name-input" list="heroNamesList"
-                            placeholder="Start typing...">
-                        <datalist id="heroNamesList"></datalist>
-
                         <label class="field-label">Highest Trophies</label>
                         <input type="number" id="profileTrophiesInput" class="profile-name-input" min="0"
                             placeholder="e.g. 5000">
@@ -2007,6 +2102,7 @@ body {
                             placeholder="e.g. 6,700,000">
 
                                                <button class="btn-primary btn-block" id="saveProfileBtn" onclick="saveProfile()" style="font-size:1.15rem; padding:16px 24px;">Save profile</button>
+                        </div>
                     </div>
                 </div>
 
@@ -2081,7 +2177,9 @@ body {
                         onerror="this.src='images/KIH.jpg'">
                     <div id="viewProfileNameHome" style="font-weight:800; font-size:1.2rem; margin-bottom:4px;"></div>
                     <div id="viewProfileBioHome"
-                        style="color:var(--kih-text-dim); font-size:0.85rem; margin-bottom:14px;"></div>
+                        style="color:var(--kih-text-dim); font-size:0.85rem; margin-bottom:10px;"></div>
+                    <div class="pf-badges center" id="viewProfileBadgesHome"></div>
+                    <button type="button" class="pf-like-btn" id="viewProfileLikeHome" style="display:none;"></button>
                 </div>
                 <div style="display:flex; flex-direction:column; margin-bottom:16px;">
                     <div class="settings-row" style="padding:8px 0;">
@@ -2099,14 +2197,6 @@ body {
                     <div class="settings-row" style="padding:8px 0;">
                         <span class="settings-label" style="font-size:0.85rem;">🏰 Clan</span>
                         <span id="viewProfileClanHome"></span>
-                    </div>
-                    <div class="settings-row" style="padding:8px 0;">
-                        <span class="settings-label" style="font-size:0.85rem;">🗡️ Favorite Troop</span>
-                        <span id="viewProfileFavTroopHome"></span>
-                    </div>
-                    <div class="settings-row" style="padding:8px 0; border-bottom:none;">
-                        <span class="settings-label" style="font-size:0.85rem;">🦸 Favorite Hero</span>
-                        <span id="viewProfileFavHeroHome"></span>
                     </div>
                 </div>
                 <button class="btn-settings-action btn-block" onclick="closeViewProfileModalHome()">Close</button>
@@ -2175,6 +2265,7 @@ body {
         </div>
 
     <script src="prize.js"></script>
+    <script src="progress-core.js"></script>
     <script type="module" src="appState.js"></script>
     <script>
         /* ---------------- KEYBOARD-SAFE INPUT SCROLLING ----------------
@@ -2710,57 +2801,6 @@ window.closeLegalModal = closeLegalModal;
             let pos = Math.max(0, this.value.length - cursorFromEnd);
             this.setSelectionRange(pos, pos);
         });
-        // Real troop/hero display names, loaded straight from the same JSON
-        // files troopsAndHeroes.html uses (troops.json/hero.json for the
-        // keys + isDisplayed flag, troopsLevel.json/heroLevel.json to know
-        // which ones actually have level data, localization.json + en.json
-        // to resolve the display name). Loaded once and cached.
-        let TROOP_NAMES = [];
-        let HERO_NAMES = [];
-        let troopHeroNamesLoaded = false;
-
-        async function loadTroopHeroNames() {
-            if (troopHeroNamesLoaded) return;
-            try {
-                const [troopsData, troopLevelData, heroData, heroLevelData, locData, enData] = await Promise.all([
-                    fetch("troops.json").then(r => r.json()),
-                    fetch("troopsLevel.json").then(r => r.json()),
-                    fetch("hero.json").then(r => r.json()),
-                    fetch("heroLevel.json").then(r => r.json()),
-                    fetch("localization.json").then(r => r.json()),
-                    fetch("en.json").then(r => r.json())
-                ]);
-
-                function resolveName(meta, key) {
-                    let locEntry = locData[meta.name];
-                    return locEntry ? (enData[locEntry.value] || meta.name) : (meta.name || key);
-                }
-
-                let troopHasLevels = new Set(Object.values(troopLevelData).map(t => t.troopId));
-                let heroHasLevels = new Set(Object.values(heroLevelData).map(h => h.heroId));
-
-                TROOP_NAMES = Object.keys(troopsData)
-                    .filter(key => troopsData[key].isDisplayed !== false && troopHasLevels.has(key))
-                    .map(key => resolveName(troopsData[key], key))
-                    .sort((a, b) => a.localeCompare(b));
-
-                HERO_NAMES = Object.keys(heroData)
-                    .filter(key => heroData[key].isDisplayed !== false && heroHasLevels.has(key))
-                    .map(key => resolveName(heroData[key], key))
-                    .sort((a, b) => a.localeCompare(b));
-
-                troopHeroNamesLoaded = true;
-            } catch (e) {
-                console.warn("Couldn't load troop/hero names:", e.message);
-            }
-        }
-
-        async function populateNameDatalists() {
-            await loadTroopHeroNames();
-            document.getElementById("troopNamesList").innerHTML = TROOP_NAMES.map(n => `<option value="${n}">`).join("");
-            document.getElementById("heroNamesList").innerHTML = HERO_NAMES.map(n => `<option value="${n}">`).join("");
-        }
-
         let profileSnapshot = { name: "", avatar: "", bio: "", server: "", favoriteTroop: "", favoriteHero: "", highestTrophies: 0, currentClan: "", currentLevel: 0, currentPower: 0 };
 
         /* ---- live name availability check ---- */
@@ -2868,10 +2908,7 @@ window.closeLegalModal = closeLegalModal;
             isNameCurrentlyValid = true;
             document.getElementById("profileNameInput").value = profile.name;
             document.getElementById("profileBioInput").value = profile.bio || "";
-            await populateNameDatalists();
             document.getElementById("profileServerInput").value = profile.server || "";
-            document.getElementById("profileFavTroopInput").value = profile.favoriteTroop || "";
-            document.getElementById("profileFavHeroInput").value = profile.favoriteHero || "";
             document.getElementById("profileTrophiesInput").value = profile.highestTrophies || "";
             document.getElementById("profileClanInput").value = profile.currentClan || "";
             document.getElementById("profileLevelInput").value = profile.currentLevel || "";
@@ -2888,6 +2925,8 @@ window.closeLegalModal = closeLegalModal;
             // stored value the form can't show as-is (an old server choice,
             // spaces, a missing name) mustn't count as an edit.
             profileSnapshot = getCurrentProfileFormValues();
+            renderProfileHero(profile);
+            if (profileTab !== "edit") loadProgress();
         }
 
         function getCurrentProfileFormValues() {
@@ -2896,8 +2935,9 @@ window.closeLegalModal = closeLegalModal;
             let chosen = document.querySelector(".avatar-option.selected");
             let avatar = chosen ? chosen.getAttribute("src") : profileSnapshot.avatar;
             let server = document.getElementById("profileServerInput").value;
-            let favoriteTroop = document.getElementById("profileFavTroopInput").value.trim();
-            let favoriteHero = document.getElementById("profileFavHeroInput").value.trim();
+            // No longer on the page; whatever was saved stays as it was.
+            let favoriteTroop = profileSnapshot.favoriteTroop || "";
+            let favoriteHero = profileSnapshot.favoriteHero || "";
             let highestTrophies = parseInt(document.getElementById("profileTrophiesInput").value, 10) || 0;
             let currentClan = document.getElementById("profileClanInput").value.trim();
             let currentLevel = parseInt(document.getElementById("profileLevelInput").value, 10) || 0;
@@ -2916,6 +2956,243 @@ window.closeLegalModal = closeLegalModal;
         // "Don't Save": put the form back as it was, so the edits are really gone.
         function discardProfileEdits() {
             loadProfileIntoPage().catch(e => console.warn("Couldn't reset the profile form:", e));
+        }
+
+        /* ---------------- PROFILE: badges, achievements, items ----------------
+           Everything here comes from api/progress.js (AppState.getProgressStatus):
+           it counts, pays and hands out items; this only shows it. */
+        const PC = window.ProgressCore;
+        let profileTab = "edit";
+        let progressStatus = null;
+        let progressBusy = false;
+
+        function escText(s) {
+            return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+        }
+        const badgeHtml = (b) => PC.badgeHtml(b);
+        // Someone else's badges and the 👍 button, under their name in a profile popup.
+        async function fillProfileCardExtras(uid, badgesEl, likeBtn) {
+            const me = AppState.getCurrentUser();
+            const [card, liked] = await Promise.all([AppState.getPlayerCard(uid), me && me.uid !== uid ? AppState.haveILikedProfile(uid) : false]);
+            badgesEl.innerHTML = (card.badges || []).map(badgeHtml).join("");
+            let count = Math.max(0, card.likeCount || 0);
+            let on = liked;
+            const draw = () => { likeBtn.textContent = `👍 ${count} like${count === 1 ? "" : "s"}`; likeBtn.classList.toggle("on", on); };
+            draw();
+            likeBtn.style.display = "inline-flex";
+            likeBtn.disabled = !me || me.uid === uid;
+            likeBtn.title = !me ? "Sign in to like profiles" : me.uid === uid ? "That's you!" : on ? "Take your like back" : "Like this profile";
+            likeBtn.onclick = async () => {
+                likeBtn.disabled = true;
+                const want = !on;
+                on = want; count = Math.max(0, count + (want ? 1 : -1)); draw();
+                try {
+                    const r = await AppState.setProfileLike(uid, want);
+                    on = r.liked; count = r.likeCount; draw();
+                } catch (e) {
+                    on = !want; count = Math.max(0, count + (want ? -1 : 1)); draw();
+                    showQuestToast("Couldn't update your like — " + e.message);
+                }
+                likeBtn.disabled = false;
+            };
+        }
+
+        function renderProfileHero(profile) {
+            if (profile) {
+                document.getElementById("pfHeroAvatar").src = profile.avatar || "images/KIH.jpg";
+                document.getElementById("pfHeroName").textContent = profile.name || "Commander";
+            }
+            const st = progressStatus;
+            document.getElementById("pfHeroBadges").innerHTML = st ? (st.badges || []).map(badgeHtml).join("") : "";
+            document.getElementById("pfHeroStats").textContent = st
+                ? `👍 ${st.likeCount} like${st.likeCount === 1 ? "" : "s"} · 🎒 ${st.items.length}/${PC.ITEMS.length} items`
+                : (AppState.getCurrentUser() ? "" : "Sign in to earn badges and items");
+        }
+
+        function showProfileTab(tab) {
+            profileTab = tab;
+            document.querySelectorAll("#pfTabs .kih-chip").forEach(c => c.classList.toggle("active", c.dataset.tab === tab));
+            document.getElementById("pfTabEdit").style.display = tab === "edit" ? "" : "none";
+            document.getElementById("pfTabAch").style.display = tab === "ach" ? "" : "none";
+            document.getElementById("pfTabItems").style.display = tab === "items" ? "" : "none";
+        }
+        window.switchProfileTab = function (tab) {
+            showProfileTab(tab);
+            if (tab !== "edit") loadProgress();
+        };
+
+        // Fetches (or re-fetches) your achievements, badges and items, then
+        // redraws whatever shows them.
+        async function loadProgress() {
+            const signedOut = `<div class="it-chest"><b>Sign in to earn achievements and items</b><small>They pay tokens, and your badges show on your profile.</small><button class="btn-settings-action" onclick="toggleGoogleSignIn()">Sign in with Google</button></div>`;
+            if (!AppState.getCurrentUser()) {
+                document.getElementById("pfAchBody").innerHTML = signedOut;
+                document.getElementById("pfItemsBody").innerHTML = signedOut;
+                return;
+            }
+            try {
+                progressStatus = await AppState.getProgressStatus();
+            } catch (e) {
+                const err = `<p class="settings-sub">Couldn't load this — ${escText(e.message)}</p><button class="btn-settings-action" onclick="loadProgress()">Try again</button>`;
+                if (!progressStatus) { document.getElementById("pfAchBody").innerHTML = err; document.getElementById("pfItemsBody").innerHTML = err; }
+                return;
+            }
+            renderAchievements();
+            renderItems();
+            renderProfileHero(null);
+            updateAchievementDots();
+        }
+        window.loadProgress = loadProgress;
+
+        function updateAchievementDots() {
+            const ready = progressStatus ? PC.achievementStates(progressStatus.stats, progressStatus.claimed).some(x => x.ready > 0) : false;
+            document.getElementById("pfAchDot").classList.toggle("on", ready);
+            ["profileBadgeHome", "profileMenuBadgeHome"].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = ready ? "block" : "none";
+            });
+        }
+
+        function renderAchievements() {
+            const st = progressStatus;
+            const states = PC.achievementStates(st.stats, st.claimed);
+            const readyTokens = states.reduce((n, x) => n + x.readyTokens, 0);
+            const tiersDone = states.reduce((n, x) => n + x.claimed, 0);
+            const shown = (st.badges || []).map(b => b.a);
+            // Ready to claim first, then the closest to their next tier, maxed last.
+            const order = (x) => {
+                const a = PC.ACHIEVEMENT_BY_ID[x.id];
+                if (x.ready > 0) return -1;
+                if (x.claimed >= a.targets.length) return 2;
+                return 1 - Math.min(1, x.value / a.targets[x.reached]);
+            };
+            const cards = states.slice().sort((p, q) => order(p) - order(q)).map(x => {
+                const a = PC.ACHIEVEMENT_BY_ID[x.id];
+                const maxed = x.reached >= a.targets.length;
+                const tier = x.claimed ? PC.TIERS[x.claimed - 1] : null;
+                const target = maxed ? a.targets[a.targets.length - 1] : a.targets[x.reached];
+                const pct = maxed ? 100 : Math.min(100, Math.round(x.value / target * 100));
+                const pips = a.targets.map((t, i) => `<i class="${i < x.claimed ? "got" : i < x.reached ? "ready" : ""}" title="${t}"></i>`).join("");
+                const meta = maxed ? `${x.value.toLocaleString()} · all tiers reached` : `${x.value.toLocaleString()} / ${target.toLocaleString()} · next +${PC.TIER_REWARDS[x.reached]} 🪙`;
+                return `<div class="ach-card${x.ready ? " ready" : ""}" id="ach_${a.id}" style="${tier ? `--tc:${tier.color};` : ""}--pc:${tier ? tier.color : "#6c63ff"}">
+                    <div class="ach-icon${tier ? "" : " none"}">${a.icon}</div>
+                    <div class="ach-body">
+                        <div class="ach-name">${escText(a.name)}${tier ? `<small>${tier.name}</small>` : ""}</div>
+                        <div class="ach-desc">${escText(a.desc)}</div>
+                        <div class="ach-bar"><i style="width:${pct}%"></i></div>
+                        <div class="ach-meta"><span>${meta}</span><span class="ach-pips">${pips}</span></div>
+                        <div class="ach-actions">${x.claimed ? `<button type="button" class="ach-pin${shown.includes(a.id) ? " on" : ""}" onclick="toggleShownBadge('${a.id}')" title="${shown.includes(a.id) ? "Shown on your profile — tap to hide" : "Show this badge on your profile"}" aria-label="Show badge">📌</button>` : ""}${x.ready ? `<button type="button" class="ach-claim" onclick="claimAchievements('${a.id}')">Claim +${x.readyTokens} 🪙</button>` : ""}</div>
+                    </div>
+                </div>`;
+            }).join("");
+            document.getElementById("pfAchBody").innerHTML = `
+                <div class="ach-head">
+                    <div class="ach-head-sum"><b>${tiersDone}</b> of ${PC.ACHIEVEMENTS.length * PC.TIERS.length} tiers · <b>${shown.length}</b>/${PC.MAX_BADGES} badges shown</div>
+                    <button type="button" class="ach-claim-all" id="achClaimAllBtn" onclick="claimAchievements(null)" ${readyTokens ? "" : "disabled"}>🎁 Claim all${readyTokens ? ` · +${readyTokens} 🪙` : ""}</button>
+                </div>
+                <p class="ach-hint">Tap 📌 on a claimed achievement to show its badge on your profile (up to ${PC.MAX_BADGES}).</p>
+                ${cards}`;
+        }
+
+        window.claimAchievements = async function (id) {
+            if (progressBusy) return;
+            progressBusy = true;
+            document.querySelectorAll("#pfAchBody .ach-claim, #achClaimAllBtn").forEach(b => { b.disabled = true; });
+            try {
+                const r = await AppState.claimAchievement(id);
+                progressStatus.claimed = r.claimedTiers || progressStatus.claimed;
+                if (r.badges) progressStatus.badges = r.badges;
+                if (typeof r.balance === "number") progressStatus.balance = r.balance;
+                renderAchievements();
+                renderProfileHero(null);
+                updateAchievementDots();
+                (r.claimed || []).forEach(c => { const el = document.getElementById("ach_" + c.id); if (el) el.classList.add("flash"); });
+                showQuestToast(r.paid ? `🎉 +${r.paid} 🪙 claimed!` : "Nothing new to claim yet.");
+            } catch (e) {
+                showGenericErrorModal(e.message, "Couldn't claim");
+                renderAchievements();
+            } finally {
+                progressBusy = false;
+            }
+        };
+
+        window.toggleShownBadge = async function (id) {
+            if (progressBusy) return;
+            const before = (progressStatus.badges || []).slice();
+            const ids = before.map(b => b.a);
+            let next;
+            if (ids.includes(id)) next = ids.filter(x => x !== id);
+            else if (ids.length >= PC.MAX_BADGES) { showQuestToast(`You can show ${PC.MAX_BADGES} badges — unpin one first.`); return; }
+            else next = [...ids, id];
+            progressBusy = true;
+            progressStatus.badges = next.map(a => ({ a, t: progressStatus.claimed[a] || 1 }));
+            renderAchievements(); renderProfileHero(null);
+            try {
+                const r = await AppState.setShownBadges(next);
+                progressStatus.badges = r.badges;
+            } catch (e) {
+                progressStatus.badges = before;
+                showGenericErrorModal(e.message, "Couldn't update your badges");
+            }
+            progressBusy = false;
+            renderAchievements(); renderProfileHero(null);
+        };
+
+        function renderItems() {
+            const st = progressStatus;
+            const owned = new Set(st.items || []);
+            const p = st.perks || {};
+            const rates = PC.dropRates();
+            const perkRows = [
+                p.gameFlat ? `<div class="it-perk"><span>🎮 Weekly Games score</span><b>+${p.gameFlat}</b></div>` : "",
+                p.gameBest ? `<div class="it-perk"><span>🏅 Your strongest game's points</span><b>+${p.gameBest}%</b></div>` : "",
+                p.secretChance ? `<div class="it-perk"><span>🎁 Chances in every Secret Giveaway</span><b>+${p.secretChance}</b></div>` : ""
+            ].join("");
+            const cards = PC.ITEMS.map(it => {
+                const r = PC.RARITIES[it.rarity];
+                const has = owned.has(it.id);
+                return `<div class="it-card${has ? "" : " locked"}" style="--rc:${r.color}">
+                    <div class="it-icon">${has ? it.icon : "❔"}</div>
+                    <div class="it-name">${has ? escText(it.name) : "???"}</div>
+                    <div class="it-rarity">${r.label}</div>
+                    <div class="it-perk-text">${has ? PC.perkText(it.perk) : `${rates[it.id].toFixed(rates[it.id] < 10 ? 1 : 0)}% per chest`}</div>
+                </div>`;
+            }).join("");
+            document.getElementById("pfItemsBody").innerHTML = `
+                <div class="it-perks">
+                    <div class="it-perks-title">Your bonuses<small>always on — every item counts, and they add up</small></div>
+                    ${perkRows || `<div class="it-perk"><span>No items yet — open a chest for your first bonus.</span></div>`}
+                </div>
+                <div class="it-head"><span>Collection</span><small>${owned.size} / ${PC.ITEMS.length}</small></div>
+                <div class="it-grid">${cards}</div>
+                <div class="it-chest">
+                    <div style="font-size:2rem;">${PC.CHEST.icon}</div>
+                    <b>${PC.CHEST.name} · ${PC.CHEST.price} 🪙</b>
+                    <small>One random item. Already have it? You get ${PC.CHEST.duplicateRefund} 🪙 back.</small>
+                    <button type="button" class="ach-claim-all" onclick="openChestInStore()">Open chests in the Store</button>
+                </div>`;
+        }
+
+        // From the Store's "My items" button: Profile, on that tab.
+        window.openProfileTab = function (tab) {
+            showProfileTab(tab);
+            goToPage("profile"); // loads the tab
+        };
+        window.openChestInStore = function () {
+            const frame = document.querySelector("#page-store iframe");
+            setSectionFrameUrl(frame, "store.html#chest");
+            goToPage("store");
+        };
+
+        // One look after signing in, so the 🏅 dot shows when something's
+        // ready to claim without opening the page first.
+        let progressDotChecked = false;
+        function checkAchievementsSoon() {
+            if (progressDotChecked || !AppState.getCurrentUser()) return;
+            progressDotChecked = true;
+            setTimeout(() => {
+                AppState.getProgressStatus().then(st => { progressStatus = st; updateAchievementDots(); }).catch(() => { progressDotChecked = false; });
+            }, 4000);
         }
 
                 async function saveProfile() {
@@ -3427,12 +3704,14 @@ function getNewsTypeInfo(type) {
             document.getElementById("viewProfileTrophiesHome").textContent = "—";
             document.getElementById("viewProfilePowerHome").textContent = "—";
             document.getElementById("viewProfileClanHome").textContent = "—";
-            document.getElementById("viewProfileFavTroopHome").textContent = "—";
-            document.getElementById("viewProfileFavHeroHome").textContent = "—";
+            document.getElementById("viewProfileBadgesHome").innerHTML = "";
+            document.getElementById("viewProfileLikeHome").style.display = "none";
             overlay.classList.add("open");
 
             if (!uid) return;
             AppState.reportQuestProgress("viewProfile", uid);
+            AppState.trackProgress("visit", uid);
+            fillProfileCardExtras(uid, document.getElementById("viewProfileBadgesHome"), document.getElementById("viewProfileLikeHome"));
             let profile = await AppState.getPublicProfile(uid);
             if (!profile) return; // fallback name/avatar stay as-is
 
@@ -3443,8 +3722,6 @@ function getNewsTypeInfo(type) {
             document.getElementById("viewProfileTrophiesHome").textContent = profile.highestTrophies || "—";
             document.getElementById("viewProfilePowerHome").textContent = profile.currentPower || "—";
             document.getElementById("viewProfileClanHome").textContent = profile.currentClan || "—";
-            document.getElementById("viewProfileFavTroopHome").textContent = profile.favoriteTroop || "—";
-            document.getElementById("viewProfileFavHeroHome").textContent = profile.favoriteHero || "—";
         };
         window.closeViewProfileModalHome = function () {
             document.getElementById("viewProfileModalOverlayHome").classList.remove("open");
@@ -3590,7 +3867,7 @@ function getNewsTypeInfo(type) {
             if (n.type === "promo" || n.type === "giveawayWin" || n.type === "secretGiveawayWin" || n.type === "promoCodes"
                 || n.type === "weeklyGiveawayNew" || n.type === "secretGiveawayNew") return "promo";
             if (n.type === "tip") return "tip";
-            if (n.type === "friendAccepted" || n.type === "formationComment" || n.type === "formationReply") return "social";
+            if (n.type === "friendAccepted" || COMMENT_NOTIF_TYPES.includes(n.type)) return "social";
             return "general";
         }
 
@@ -3600,7 +3877,7 @@ function getNewsTypeInfo(type) {
         function inboxIconFor(n) {
             return ({
                 tokenGift: "🪙", tokensGranted: "🪙", tokenAdjust: "🪙", secretGiveawayWin: "🏆", giveawayWin: "🏆", promoCodes: "🎟️", promo: "🎁",
-                weeklyGiveawayNew: "🎡", secretGiveawayNew: "🔒", tip: "💡", friendAccepted: "🤝", formationComment: "💬", formationReply: "💬"
+                weeklyGiveawayNew: "🎡", secretGiveawayNew: "🎁", tip: "💡", friendAccepted: "🤝", formationComment: "💬", formationReply: "💬", tierListComment: "💬", tierListReply: "💬"
             })[n.type] || "📢";
         }
         // A message's one action (View Code, Message, Enter Giveaway…) — the
@@ -3610,7 +3887,7 @@ function getNewsTypeInfo(type) {
             if (n.type === "tip") return `<button class="btn-primary" style="${style}" onclick="openInboxTip('${n.sourceId}')">View Tip</button>`;
             if (n.type === "friendAccepted") return `<button class="btn-primary" style="${style}" onclick="openInboxFriendChat('${n.fromUid}', '${escapeHomeHtml(n.fromName).replace(/'/g, "\\'")}', '${escapeHomeHtml(n.fromAvatar || "")}')">💬 Message</button>`;
             if (n.type === "giveawayWin" || n.type === "promoCodes") return prizeButtonHtml(n, style);
-            if (n.type === "formationComment" || n.type === "formationReply") return `<button class="btn-primary" style="${style}" onclick="openInboxFormationPost('${n.postId}')">💬 View</button>`;
+            if (COMMENT_NOTIF_TYPES.includes(n.type)) return `<button class="btn-primary" style="${style}" onclick="openInboxComment('${n.postId ? "formation" : "tierList"}', '${n.postId || n.tierListId || ""}', '${n.commentId || ""}')">💬 View &amp; reply</button>`;
             if (n.type === "secretGiveawayWin") {
                 // Newer wins carry the code on the notification, so it can be shown and
                 // copied right here — and it still works after the giveaway is deleted.
@@ -3622,7 +3899,7 @@ function getNewsTypeInfo(type) {
                 return `<button class="btn-primary" style="${style}" onclick="openInboxSecretGiveaway('${n.giveawayId}')">🎁 View Prize</button>`;
             }
             if (n.type === "weeklyGiveawayNew") return `<button class="btn-primary" style="${style}" onclick="openPromoTab('vip')">🎡 Enter Giveaway</button>`;
-            if (n.type === "secretGiveawayNew") return `<button class="btn-primary" style="${style}" onclick="openPromoTab('secret')">🔒 Enter Giveaway</button>`;
+            if (n.type === "secretGiveawayNew") return `<button class="btn-primary" style="${style}" onclick="openPromoTab('secret')">🎁 Enter Giveaway</button>`;
             if (n.type === "tokensGranted") return `<button class="btn-primary" style="${style}" onclick="openPromoTab('secret')">🪙 Use Tokens</button>`;
             if (n.type === "tokenGift") return giftButtonHtml(n, !!style);
             return ""; // adminMessage and announcement need no button — title + body already contain everything
@@ -3949,6 +4226,19 @@ window.closeInboxItemModal = closeInboxItemModal;
 
         // Jump into Social's Formation Help tab and open this specific post
         // (used by "commented on your post" / "replied to your comment").
+        // Someone commented on your post / replied to you: open it in Social
+        // at that comment (highlighted, its thread open), ready to reply.
+        const COMMENT_NOTIF_TYPES = ["formationComment", "formationReply", "tierListComment", "tierListReply"];
+        function openInboxComment(kind, id, commentId) {
+            if (!id) return;
+            const frame = document.querySelector("#page-social iframe");
+            const url = new URL(currentSectionFrameUrl(frame, "social.html"), window.location.href);
+            ["formationPostId", "tierListId", "commentId", "dmUid", "dmName", "dmAvatar"].forEach(k => url.searchParams.delete(k));
+            url.searchParams.set(kind === "formation" ? "formationPostId" : "tierListId", id);
+            if (commentId) url.searchParams.set("commentId", commentId);
+            setSectionFrameUrl(frame, url.toString());
+            goToPage("social");
+        }
         function openInboxFormationPost(postId) {
             let frame = document.querySelector("#page-social iframe");
             let url = new URL(currentSectionFrameUrl(frame, "social.html"), window.location.href);
@@ -4651,6 +4941,8 @@ window.closeInboxItemModal = closeInboxItemModal;
             // generation check inside startQuestListeners keeps only the newest.
             AppState.waitForAuthReady().then(startQuestListeners);
             AppState.onAuthChange(() => startQuestListeners());
+            AppState.onAuthChange(() => { progressStatus = null; progressDotChecked = false; updateAchievementDots(); checkAchievementsSoon(); });
+            AppState.waitForAuthReady().then(checkAchievementsSoon);
             setInterval(updateQuestCountdown, 1000);
             renderHomeToday(); // before the quests have loaded too
             AppState.waitForAuthReady().then(refreshWeeklyJoined);

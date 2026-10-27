@@ -26,7 +26,8 @@ import {
     documentId,
     increment,
     runTransaction,
-    arrayUnion
+    arrayUnion,
+    deleteField
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
 import {
@@ -69,7 +70,18 @@ const storage = getStorage(app);
 const googleProvider = new GoogleAuthProvider();
 
 const ADMIN_UID = "Ts92RY0ipMYDRJa2s5toQfDYxtp1"; // your uid — only this account can use admin.html
-const BACKEND_BASE = "https://kih-store.vercel.app"; // same Vercel API store.html calls
+// Same Vercel API store.html calls. Only when the site is run on your own
+// computer (localhost) can it point somewhere else, to try a test deployment
+// of the API before it goes live: localStorage.setItem("kih_api_base", "<url>").
+const BACKEND_BASE = (() => {
+    const live = "https://kih-store.vercel.app";
+    try {
+        const local = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) && localStorage.getItem("kih_api_base");
+        return local && /^https:\/\/[a-z0-9.-]+\.vercel\.app$/i.test(local) ? local : live;
+    } catch (e) {
+        return live;
+    }
+})();
 const AppState = (function () {
     const KEYS = {
         inbox: "kih_inbox",
@@ -190,6 +202,89 @@ async function signOutUser() {
             throw err;
         }
         return data;
+    }
+
+    /* ---------------- Achievements, badges, profile likes, items ----------------
+       All through api/progress.js: tokens and items only ever change on the
+       server. The rules (targets, items, perks) are in progress-core.js. */
+    async function callProgressApi(action, payload = {}) {
+        await waitForAuthReady();
+        if (!currentUser) throw new Error("Sign in with Google first.");
+        const res = await fetch(BACKEND_BASE + "/api/progress", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Authorization: "Bearer " + await getIdToken() },
+            body: JSON.stringify({ action, ...payload })
+        });
+        let data = null;
+        try { data = await res.json(); } catch (e) { /* non-JSON error page */ }
+        if (!res.ok) {
+            const err = new Error((data && data.error) || `Request failed (${res.status})`);
+            err.status = res.status;
+            throw err;
+        }
+        return data;
+    }
+    // Counts something you just did towards an achievement (a post, a
+    // comment, a visit, a giveaway entry). The server checks it by id; this
+    // never holds up or fails the thing itself.
+    const trackedHere = new Set();
+    function trackProgress(kind, proofId) {
+        const key = kind + "|" + proofId;
+        if (trackedHere.has(key)) return;
+        trackedHere.add(key);
+        waitForAuthReady().then(() => {
+            if (!currentUser) return;
+            return callProgressApi("track", { kind, proofId });
+        }).catch(e => { trackedHere.delete(key); console.warn("Achievement not counted:", e.message); });
+    }
+    // { stats, claimed, badges, likeCount, items, perks, balance }
+    async function getProgressStatus() {
+        return callProgressApi("status");
+    }
+    async function claimAchievement(achievementId) {
+        return callProgressApi("claim", achievementId ? { achievementId } : { all: true });
+    }
+    async function setShownBadges(ids) {
+        return callProgressApi("badges", { badges: ids });
+    }
+    async function setProfileLike(targetUid, on) {
+        return callProgressApi(on ? "like" : "unlike", { targetUid });
+    }
+    async function openItemChest() {
+        return callProgressApi("openChest");
+    }
+    // Someone's public card: { badges: [{a, t}], likeCount, itemCount }.
+    async function getPlayerCard(uid) {
+        await waitForAuthReady();
+        if (!currentUser || !uid) return {};
+        try {
+            const snap = await getDoc(doc(db, "playerCards", uid));
+            return snap.exists() ? snap.data() : {};
+        } catch (e) {
+            return {};
+        }
+    }
+    async function haveILikedProfile(uid) {
+        await waitForAuthReady();
+        if (!currentUser || !uid) return false;
+        try {
+            const snap = await getDoc(doc(db, "profileLikes", uid, "likers", currentUser.uid));
+            return snap.exists() && snap.data().active === true;
+        } catch (e) {
+            return false;
+        }
+    }
+    // Your items' perks added up: { gameFlat, gameBest, secretChance }.
+    async function getMyPerks() {
+        await waitForAuthReady();
+        const none = { gameFlat: 0, gameBest: 0, secretChance: 0 };
+        if (!currentUser) return none;
+        try {
+            const snap = await getDoc(doc(db, "inventories", currentUser.uid));
+            return snap.exists() ? { ...none, ...(snap.data().perks || {}) } : none;
+        } catch (e) {
+            return none;
+        }
     }
 
     function readCachedTodaysQuests() {
@@ -1058,6 +1153,7 @@ async function getClanPostCooldownRemaining() {
             lastClanPostData: { clanName, server, minTrophies, clanRank, country, memberCount, description, tags }
         });
         reportQuestProgress("postClan", postId);
+        trackProgress("post", "clan");
         return postId;
     }
     // Edits an existing clan post's content without touching the posting
@@ -1241,6 +1337,7 @@ async function getClanPostCooldownRemaining() {
             expiresAt: Timestamp.fromMillis(Date.now() + FORMATION_POST_LIFETIME_MS)
         });
         reportQuestProgress("shareFormation", docRef.id);
+        trackProgress("post", "f/" + docRef.id);
         return docRef.id;
     }
 
@@ -1372,6 +1469,7 @@ async function getClanPostCooldownRemaining() {
         });
         await updateDoc(doc(db, "formationPosts", postId), { commentCount: increment(1) });
         reportQuestProgress("comment", "f/" + postId + "/" + docRef.id);
+        trackProgress("comment", "f/" + postId + "/" + docRef.id);
 
         // Notify whoever should know about this — best-effort, never lets a
         // notification failure block the comment/reply itself from landing.
@@ -1391,7 +1489,8 @@ async function getClanPostCooldownRemaining() {
                             fromUid: currentUser.uid,
                             fromName: profile.name,
                             fromAvatar: profile.avatar || "",
-                            postId
+                            postId,
+                            commentId: docRef.id
                         });
                     }
                 }
@@ -1407,7 +1506,8 @@ async function getClanPostCooldownRemaining() {
                             fromUid: currentUser.uid,
                             fromName: profile.name,
                             fromAvatar: profile.avatar || "",
-                            postId
+                            postId,
+                            commentId: docRef.id
                         });
                     }
                 }
@@ -1586,6 +1686,7 @@ async function getClanPostCooldownRemaining() {
             createdAt: Date.now()
         });
         reportQuestProgress("shareTierList", docRef.id);
+        trackProgress("post", "t/" + docRef.id);
         return docRef.id;
     }
 
@@ -1731,6 +1832,7 @@ async function getClanPostCooldownRemaining() {
         });
         await updateDoc(doc(db, "tierLists", tierListId), { commentCount: increment(1) });
         reportQuestProgress("comment", "t/" + tierListId + "/" + docRef.id);
+        trackProgress("comment", "t/" + tierListId + "/" + docRef.id);
 
         try {
             if (parentId) {
@@ -1745,7 +1847,8 @@ async function getClanPostCooldownRemaining() {
                             fromUid: currentUser.uid,
                             fromName: profile.name,
                             fromAvatar: profile.avatar || "",
-                            tierListId
+                            tierListId,
+                            commentId: docRef.id
                         });
                     }
                 }
@@ -1761,7 +1864,8 @@ async function getClanPostCooldownRemaining() {
                             fromUid: currentUser.uid,
                             fromName: profile.name,
                             fromAvatar: profile.avatar || "",
-                            tierListId
+                            tierListId,
+                            commentId: docRef.id
                         });
                     }
                 }
@@ -2345,6 +2449,23 @@ async function getClanPostCooldownRemaining() {
 // Lets a user edit the text of their own already-sent message. Also
     // keeps the thread's lastMessageText preview in sync if the edited
     // message happens to be the most recent one in the thread.
+    /* Reactions on a comment or a chat message: one per person, from this
+       set (the Firestore rules only accept these), stored on the comment /
+       message as reactions: { uid: emoji }. emoji null takes yours off.
+       target: { kind: "formation", postId, commentId }
+             | { kind: "tierList", tierListId, commentId }
+             | { kind: "dm", threadId, msgId } */
+    const REACTIONS = ["❤️", "😂", "😮", "😢", "👍", "🔥"];
+    async function setReaction(target, emoji) {
+        await waitForAuthReady();
+        if (!currentUser) throw new Error("Sign in with Google first to react.");
+        if (emoji !== null && !REACTIONS.includes(emoji)) throw new Error("That reaction isn't available.");
+        const ref = target.kind === "formation" ? doc(db, "formationPosts", target.postId, "comments", target.commentId)
+            : target.kind === "tierList" ? doc(db, "tierLists", target.tierListId, "comments", target.commentId)
+            : doc(db, "dmThreads", target.threadId, "messages", target.msgId);
+        await updateDoc(ref, { ["reactions." + currentUser.uid]: emoji === null ? deleteField() : emoji });
+    }
+
     async function editDmMessage(threadId, messageId, newText) {
         await waitForAuthReady();
         if (!currentUser) throw new Error("Not signed in.");
@@ -3692,10 +3813,10 @@ async function sendAdminMessage(uid, title, body) {
        publicly-readable document — it's in a `private/secret` subdoc only
        admin can read directly. An entrant's guess is validated server-side
        by a rule comparing it against that private doc, so the correct
-       password is never exposed by simply reading the giveaway. Likewise
-       the reward description lives in `private/config`, readable only once
-       you've actually entered — so nobody can see what's up for grabs
-       without committing an entry first. Each winner's redemption code is
+       password is never exposed by simply reading the giveaway. The reward
+       description lives in `private/config`, readable by anyone signed in
+       (it used to be hidden until you entered, which made people think
+       entering cost something). Each winner's redemption code is
        written to its own `prizeCodes/{uid}` doc, readable only by
        that winner, so winners can never see each other's codes.
        ====================================================== */
@@ -3866,7 +3987,7 @@ async function sendAdminMessage(uid, title, body) {
             try {
                 await addNotification(
                     "secretGiveawayNew",
-                    "🔒 New Secret Giveaway!",
+                    "🎁 New Secret Giveaway!",
                     `${cleanTitle}\n\n${secretGiveawayEligibilityText(iosCount, androidCount, allCount)}\n🔓 No password needed — tap below to enter.`,
                     docRef.id
                 );
@@ -4066,12 +4187,8 @@ async function sendAdminMessage(uid, title, body) {
         }
     }
 
-    // Reveals the reward description once you've entered — gated server-side
-    // by a rule that only allows reading this doc if an entries/{you} doc
-    // exists (or you're admin), so the prize stays hidden from anyone who
-    // hasn't actually committed to an entry.
-    // The same, with the prize's parts when it was built from them:
-    // { description, prize } (prize null for an older, text-only one).
+    // The prize, for anyone signed in: { description, prize, tiers }
+    // (prize null for an older, text-only one).
     async function getSecretGiveawayPrizeInfo(giveawayId) {
         await waitForAuthReady();
         if (!currentUser) return null;
@@ -4156,6 +4273,7 @@ async function sendAdminMessage(uid, title, body) {
         } catch (e) {
             console.warn("Couldn't bump the per-device entry count:", e.message);
         }
+        trackProgress("secret", giveawayId);
     }
 
     // Anyone signed in can see who's competing — no password or identity
@@ -4193,9 +4311,10 @@ async function sendAdminMessage(uid, title, body) {
         const entries = await getSecretGiveawayEntries(giveawayId, group === "all" ? null : group);
         const pool = entries.filter(e => !alreadyWon.has(e.uid));
         if (!pool.length) throw new Error(`No remaining ${group === "all" ? "" : group + " "}entries to pick from.`);
-        // Each entry's chance is 1 + the tokens staked on it, so everyone keeps
-        // a free base chance and every token adds exactly one more.
-        const weightOf = (e) => 1 + Math.max(0, Math.floor(Number(e.tokens) || 0));
+        // Each entry's chance is 1 + the tokens staked on it + its owner's
+        // item chances, so everyone keeps a free base chance and every token
+        // adds exactly one more.
+        const weightOf = await secretWeightFn(giveawaySnap.data(), pool);
         const totalWeight = pool.reduce((sum, e) => sum + weightOf(e), 0);
         let ticket = secureRandom() * totalWeight;
         let winner = pool[pool.length - 1];
@@ -4222,7 +4341,7 @@ async function sendAdminMessage(uid, title, body) {
         const entries = await getSecretGiveawayEntries(giveawayId, group === "all" ? null : group);
         let pool = entries.filter(e => !alreadyWon.has(e.uid));
         if (!pool.length) throw new Error(`No remaining ${group === "all" ? "" : group + " "}entries to pick from.`);
-        const weightOf = (e) => 1 + Math.max(0, Math.floor(Number(e.tokens) || 0));
+        const weightOf = await secretWeightFn(giveawaySnap.data(), pool);
         const entryCount = pool.length;
         const picks = [];
         while (picks.length < count && pool.length) {
@@ -4237,6 +4356,24 @@ async function sendAdminMessage(uid, title, body) {
             pool = pool.filter(e => e.uid !== winner.uid);
         }
         return { giveawayId, group, entryCount, wanted: count, wonBefore, picks };
+    }
+
+    // An entry's chances in a draw: 1, + its staked tokens, + the Secret
+    // Giveaway chances from its owner's items (read now, at the draw, so an
+    // item found yesterday counts). A giveaway made without tokens stays one
+    // equal chance each, items included.
+    async function secretWeightFn(giveaway, pool) {
+        if (giveaway.tokensAllowed === false) return () => 1;
+        const bonus = {};
+        await Promise.all(pool.map(async (e) => {
+            try {
+                const snap = await getDoc(doc(db, "inventories", e.uid));
+                bonus[e.uid] = snap.exists() ? Math.max(0, Math.floor(Number((snap.data().perks || {}).secretChance) || 0)) : 0;
+            } catch (err) {
+                bonus[e.uid] = 0;
+            }
+        }));
+        return (e) => 1 + Math.max(0, Math.floor(Number(e.tokens) || 0)) + (bonus[e.uid] || 0);
     }
 
     // Uniform in [0, 1). Uses the browser's cryptographic source rather than
@@ -4318,7 +4455,7 @@ async function sendAdminMessage(uid, title, body) {
             : `Here are your ${codes.length} prize codes:\n${promoCodesText(codes)}\nTap to view and copy them.`;
         const winNotif = {
             type: "secretGiveawayWin",
-            title: place ? `🔒🎉 You won ${secretPlaceText(place)} in "${data.title}"!` : `🔒🎉 You won "${data.title}"!`,
+            title: place ? `🎉 You won ${secretPlaceText(place)} in "${data.title}"!` : `🎉 You won "${data.title}"!`,
             body: [tokenLine, codeLine].filter(Boolean).join("\n"),
             giveawayId,
             prize: code,
@@ -4759,6 +4896,9 @@ async function maybeRefreshAd(containerId) {
         getTodaysQuests, listenToMyWallet, listenToMyQuestProgress, claimQuestRewards, submitDailyPuzzle, gamesRunStart, gamesRunAnswer, gamesLeaderboard, gamesPing, getMyTokenBalance,
         listenToMyGiftClaims, claimTokenGift, adminTokens,
         reportQuestProgress, startDailyQuestTracking, stakeTokensOnSecretGiveaway, setSecretGiveawayStake, refreshSecretGiveawayMaxStake,
+        // achievements, badges, profile likes, items
+        trackProgress, getProgressStatus, claimAchievement, setShownBadges, setProfileLike, openItemChest,
+        getPlayerCard, haveILikedProfile, getMyPerks,
         // profile
         getProfile, setProfile, isVipActive, isNoAdsActive, isBannedNow, shouldShowAds, listenToMyProfile,
         // unique names
@@ -4808,7 +4948,7 @@ async function maybeRefreshAd(containerId) {
         unfriend, friendshipId, getPublicProfile,
         searchUsersByName, getSuggestedFriends, touchLastActive,
         // personal notifications (NEW)
-        addPersonalNotification, listenToPersonalNotifications, markPersonalNotificationRead, saveSeenMarkers, sendAdminMessage, sendPromoCodes, listPromoSends, cleanPromoCodes,
+        addPersonalNotification, listenToPersonalNotifications, markPersonalNotificationRead, saveSeenMarkers, REACTIONS, setReaction, sendAdminMessage, sendPromoCodes, listPromoSends, cleanPromoCodes,
         // DMs
         getOrCreateDmThread, sendDmMessage, editDmMessage, listenToDmMessages, listenToMyDmThreads, deleteDmMessagesOnly,
         markDmThreadRead, listenToUnreadDmCount,

@@ -354,6 +354,27 @@
         .pack-option.ripple-host { overflow: visible; }
         .pack-option .ripple { clip-path: inset(0 round 16px); }
 
+        /* 🧰 Item chest: one random item per open, its bonus always on. */
+        .chest-card { position: relative; margin: 0 0 18px; padding: 18px 16px; border-radius: 20px; text-align: center; overflow: hidden;
+            border: 1px solid rgba(180, 107, 255, 0.55);
+            background: radial-gradient(circle at 50% 0%, rgba(180, 107, 255, 0.28), transparent 65%), linear-gradient(170deg, #241d48, #17172e); }
+        .chest-art { font-size: 3.4rem; line-height: 1.1; filter: drop-shadow(0 0 16px rgba(180, 107, 255, 0.7)); animation: floaty 2.6s ease-in-out infinite; }
+        .chest-title { font-weight: 900; font-size: 1.1rem; margin-top: 6px; }
+        .chest-desc { color: #c8c0e8; font-size: 0.86rem; margin: 4px 0 12px; }
+        .chest-odds { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-bottom: 14px; }
+        .chest-odds span { padding: 4px 10px; border-radius: 999px; font-size: 0.76rem; font-weight: 800; border: 1px solid var(--rc); color: var(--rc); background: rgba(0, 0, 0, 0.25); }
+        .chest-actions { display: flex; flex-direction: column; gap: 8px; max-width: 320px; margin: 0 auto; }
+        .chest-actions .cel-primary:disabled, #chestAgainBtn:disabled { filter: grayscale(1); opacity: 0.6; cursor: default; transform: none; }
+        .item-reveal { position: relative; margin-top: 6px; }
+        .item-reveal-icon { font-size: 4.2rem; line-height: 1; height: 80px; }
+        .item-reveal-rarity { display: inline-block; margin-top: 8px; padding: 3px 12px; border-radius: 999px; font-size: 0.78rem; font-weight: 900; letter-spacing: 0.05em;
+            text-transform: uppercase; color: #1a1a2e; background: var(--rc); }
+        .item-reveal-name { font-size: 1.5rem; font-weight: 900; margin-top: 6px; color: #fff; }
+        .item-reveal-perk { color: #7ddc92; font-weight: 800; margin-top: 4px; }
+        .item-reveal-dup { color: #ffd75e; font-weight: 800; margin-top: 6px; }
+        #chestOverlay .celebrate-box { border-color: var(--rc, rgba(255, 215, 94, 0.7)); }
+        #chestOverlay .celebrate-rays { background: repeating-conic-gradient(color-mix(in srgb, var(--rc, #ffd75e) 30%, transparent) 0 9deg, transparent 9deg 18deg); }
+
         /* sparks / coins in flight */
         .fx { position: fixed; z-index: 9999; left: 0; top: 0; pointer-events: none; font-size: 20px; }
 
@@ -505,6 +526,20 @@
             <div id="packButtonBox"></div>
         </div>
 
+        <!-- ITEM CHEST. What's inside, the odds and the price come from
+             progress-core.js; api/progress.js does the actual roll. -->
+        <h2 class="store-section" id="chest"><span>🧰</span> Item chest</h2>
+        <div class="chest-card">
+            <div class="chest-art" id="chestArt">🧰</div>
+            <div class="chest-title" id="chestTitle"></div>
+            <p class="chest-desc" id="chestDesc"></p>
+            <div class="chest-odds" id="chestOdds"></div>
+            <div class="chest-actions">
+                <button type="button" class="cel-primary ripple-host" id="openChestBtn" onclick="openStoreChest()"></button>
+                <button type="button" class="cel-ghost" onclick="goMyItems()">🎒 My items &amp; bonuses</button>
+            </div>
+        </div>
+
         <div class="donate-box">
             <span class="donate-icon">☕</span>
             <div class="donate-text"><b>Enjoying the site?</b><small>Buy me a coffee — no perks, just appreciated.</small></div>
@@ -518,6 +553,7 @@
                 <li>📅 Plan tokens arrive each time a monthly payment goes through; pack tokens as soon as PayPal confirms the payment.</li>
                 <li>🎁 Drop tokens into a Secret Giveaway for extra chances. You can also earn them free from Daily Quests.</li>
                 <li>⚖️ Tokens have no cash value and can't be exchanged for money or moved to another account.</li>
+                <li>🧰 Chest items are random (the odds are shown on the chest), have no cash value, and can't be traded or moved to another account.</li>
             </ul>
         </details>
     </div>
@@ -530,8 +566,28 @@
             <div class="celebrate-amount">+<span id="celebrateAmount">0</span> 🪙</div>
             <div class="celebrate-sub" id="celebrateSub">Added to your wallet</div>
             <div class="celebrate-actions">
-                <button type="button" class="cel-primary ripple-host" onclick="goSecretGiveaways()">🔒 Use them in Secret Giveaways</button>
+                <button type="button" class="cel-primary ripple-host" onclick="goSecretGiveaways()">🎁 Use them in Secret Giveaways</button>
                 <button type="button" class="cel-ghost" onclick="closeCelebrate()">Nice!</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🧰 Opening a chest: it shakes, bursts, and the item comes out. -->
+    <div class="celebrate-overlay" id="chestOverlay" onclick="if (event.target === this) closeChestOverlay()">
+        <div class="celebrate-box" role="dialog" aria-label="Chest opened">
+            <div class="celebrate-rays"></div>
+            <div class="item-reveal">
+                <div class="item-reveal-icon celebrate-chest" id="chestRevealIcon">🧰</div>
+                <div id="chestRevealInfo" style="visibility:hidden;">
+                    <span class="item-reveal-rarity" id="chestRevealRarity"></span>
+                    <div class="item-reveal-name" id="chestRevealName"></div>
+                    <div class="item-reveal-perk" id="chestRevealPerk"></div>
+                    <div class="item-reveal-dup" id="chestRevealDup"></div>
+                </div>
+            </div>
+            <div class="celebrate-actions" id="chestRevealActions" style="visibility:hidden; margin-top:16px;">
+                <button type="button" class="cel-primary ripple-host" id="chestAgainBtn" onclick="openStoreChest(true)"></button>
+                <button type="button" class="cel-ghost" onclick="closeChestOverlay()">Nice!</button>
             </div>
         </div>
     </div>
@@ -547,6 +603,7 @@
         </div>
     </div>
 
+    <script src="progress-core.js"></script>
     <script type="module" src="appState.js"></script>
     <script>
         if (window.self === window.top) {
@@ -823,7 +880,9 @@
         function startWalletListenerStore() {
             if (unsubWalletStore) { unsubWalletStore(); unsubWalletStore = null; }
             unsubWalletStore = AppState.listenToMyWallet((wallet) => {
-                countUp(document.getElementById("storeTokenBalance"), (wallet && wallet.balance) || 0);
+                storeBalance = (wallet && wallet.balance) || 0;
+                countUp(document.getElementById("storeTokenBalance"), storeBalance);
+                updateChestButtons();
             });
         }
 
@@ -1036,6 +1095,92 @@
             } catch (e) { }
             window.location.href = "promo.html?tab=secret";
         };
+
+        /* ---------------- ITEM CHEST ---------------- */
+        const PC = window.ProgressCore;
+        let storeBalance = 0;
+        let chestBusy = false;
+        function renderChestCard() {
+            const rates = PC.dropRates();
+            const byRarity = {};
+            PC.ITEMS.forEach(it => { byRarity[it.rarity] = (byRarity[it.rarity] || 0) + rates[it.id]; });
+            document.getElementById("chestArt").textContent = PC.CHEST.icon;
+            document.getElementById("chestTitle").textContent = PC.CHEST.name;
+            document.getElementById("chestDesc").textContent = `One random item with a bonus that's always on — every item counts, and they add up. Already have it? ${PC.CHEST.duplicateRefund} 🪙 back.`;
+            document.getElementById("chestOdds").innerHTML = Object.keys(PC.RARITIES).filter(r => byRarity[r]).map(r =>
+                `<span style="--rc:${PC.RARITIES[r].color}">${PC.RARITIES[r].label} ${byRarity[r].toFixed(byRarity[r] < 10 ? 1 : 0)}%</span>`).join("");
+            updateChestButtons();
+        }
+        function updateChestButtons() {
+            const short = storeBalance < PC.CHEST.price;
+            const btn = document.getElementById("openChestBtn");
+            btn.textContent = short ? `Need ${PC.CHEST.price} 🪙 (you have ${storeBalance})` : `Open · ${PC.CHEST.price} 🪙`;
+            btn.disabled = chestBusy || short;
+            const again = document.getElementById("chestAgainBtn");
+            again.textContent = short ? `Need ${PC.CHEST.price} 🪙 for another` : `Open another · ${PC.CHEST.price} 🪙`;
+            again.disabled = chestBusy || short;
+        }
+        window.openStoreChest = async function () {
+            if (chestBusy || storeBalance < PC.CHEST.price) return;
+            chestBusy = true;
+            updateChestButtons();
+            const overlay = document.getElementById("chestOverlay");
+            const icon = document.getElementById("chestRevealIcon");
+            const info = document.getElementById("chestRevealInfo");
+            const actions = document.getElementById("chestRevealActions");
+            overlay.style.removeProperty("--rc");
+            info.style.visibility = "hidden";
+            actions.style.visibility = "hidden";
+            icon.textContent = PC.CHEST.icon;
+            icon.className = "item-reveal-icon celebrate-chest shake";
+            overlay.classList.add("open");
+            let r;
+            try {
+                [r] = await Promise.all([AppState.openItemChest(), sleep(900)]);
+            } catch (e) {
+                overlay.classList.remove("open");
+                chestBusy = false;
+                updateChestButtons();
+                showResultModal("Couldn't open the chest", e.message);
+                return;
+            }
+            const it = PC.ITEM_BY_ID[r.item];
+            const rar = PC.RARITIES[it.rarity];
+            storeBalance = r.balance;
+            countUp(document.getElementById("storeTokenBalance"), r.balance);
+            overlay.style.setProperty("--rc", rar.color);
+            icon.textContent = it.icon;
+            icon.className = "item-reveal-icon celebrate-chest open";
+            burstFrom(icon, r.duplicate ? ["🪙", "✨"] : ["✨", "⭐", it.icon, "🎉"], r.duplicate ? 12 : 24);
+            document.getElementById("chestRevealRarity").textContent = rar.label;
+            document.getElementById("chestRevealName").textContent = it.name;
+            document.getElementById("chestRevealPerk").textContent = PC.perkText(it.perk);
+            document.getElementById("chestRevealDup").textContent = r.duplicate ? `Already in your collection — ${r.refund} 🪙 back` : "New! Its bonus is on now.";
+            info.style.visibility = "visible";
+            await sleep(500);
+            actions.style.visibility = "visible";
+            chestBusy = false;
+            updateChestButtons();
+        };
+        window.closeChestOverlay = function () {
+            if (chestBusy) return;
+            document.getElementById("chestOverlay").classList.remove("open");
+        };
+        window.goMyItems = function () {
+            try {
+                if (window.top !== window && window.top.openProfileTab) { window.top.openProfileTab("items"); return; }
+            } catch (e) { }
+            window.location.href = "index.html?goto=profile";
+        };
+        renderChestCard();
+        // Sent here from the profile's Items tab (store.html#chest): once the
+        // store is showing, and again if only the #chest part changes.
+        function scrollToChestIfAsked() {
+            if (location.hash !== "#chest") return;
+            setTimeout(() => { const el = document.getElementById("chest"); if (el && el.offsetParent) el.scrollIntoView({ block: "start" }); }, 300);
+        }
+        window.addEventListener("hashchange", scrollToChestIfAsked);
+        AppState.waitForAuthReady().then(scrollToChestIfAsked);
 
         window.handleCancel = handleCancel;
 
