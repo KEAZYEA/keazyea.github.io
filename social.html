@@ -968,22 +968,32 @@
             color: white;
         }
 
+        /* The whole picture, never cropped: one photo fills the card at its
+           own shape; several swipe sideways, one at a time with the next
+           peeking in. */
         .formation-card-images {
             display: grid;
             grid-auto-flow: column;
-            grid-auto-columns: minmax(90px, 1fr);
+            grid-auto-columns: 86%;
             gap: 6px;
             margin-bottom: 10px;
             overflow-x: auto;
+            scroll-snap-type: x mandatory;
         }
+        .formation-card-images.single { grid-auto-columns: 100%; }
 
         .formation-card-images img {
             width: 100%;
-            height: 100px;
-            object-fit: cover;
+            height: 220px;
+            object-fit: contain;
             border-radius: 10px;
-            background: #2a2a4a;
+            background: #0d0d1a;
             cursor: pointer;
+            scroll-snap-align: start;
+        }
+        .formation-card-images.single img {
+            height: auto;
+            max-height: 360px;
         }
 
         .formation-needs-help-badge {
@@ -1510,6 +1520,32 @@
             border-top: 1px solid #2a2a4a;
         }
 
+        /* Comments, Instagram-style: replies sit one step in (never further),
+           a reply to a reply starts with @name, and a thread's replies fold
+           behind "View N replies". */
+        .formation-comment-item.reply { margin-left: 46px; border-top: none; padding-top: 6px; }
+        .formation-comment-item.reply .clan-post-avatar { width: 28px; height: 28px; }
+        .formation-comment-item.flash { animation: cmtFlash 2.6s ease; border-radius: 10px; }
+        @keyframes cmtFlash { 0%, 45% { background: rgba(65, 105, 225, 0.3); } }
+        .cmt-at { color: #8fa8ff; font-weight: 700; }
+        .cmt-thread-toggle { display: flex; align-items: center; gap: 10px; margin: 0 0 6px 46px; padding: 4px 0; background: none; border: none; color: #9a9ab0; font-weight: 700; font-size: 0.82rem; cursor: pointer; }
+        .cmt-thread-toggle::before { content: ""; width: 26px; height: 1px; background: #4a4a6a; }
+        /* reactions: one per person, shown as chips; tap yours to take it off */
+        .rx-row { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+        .rx-chip { border: 1px solid #34345e; background: #20203a; color: #eaeaf0; border-radius: 999px; padding: 2px 8px; font-size: 0.8rem; cursor: pointer; line-height: 1.5; }
+        .rx-chip.mine { border-color: #4169e1; background: rgba(65, 105, 225, 0.28); }
+        .dm-msg.mine .rx-chip { background: rgba(0, 0, 0, 0.22); border-color: rgba(255, 255, 255, 0.3); color: #fff; }
+        .dm-msg.mine .rx-chip.mine { background: rgba(255, 255, 255, 0.25); }
+        .rx-picker { position: fixed; z-index: 400; display: flex; gap: 2px; padding: 6px 8px; border-radius: 999px; background: #23234a; border: 1px solid #3a3a66; box-shadow: 0 8px 26px rgba(0, 0, 0, 0.55); animation: rxIn 0.18s ease; }
+        @keyframes rxIn { from { transform: scale(0.85); opacity: 0; } }
+        .rx-picker button { font-size: 1.5rem; line-height: 1; background: none; border: none; cursor: pointer; padding: 4px; border-radius: 10px; transition: transform 0.1s; }
+        .rx-picker button:hover, .rx-picker button.mine { transform: scale(1.18); background: rgba(65, 105, 225, 0.3); }
+        /* typing emojis (phones have them on the keyboard; computers don't) */
+        .emoji-btn { flex-shrink: 0; width: 40px; height: 40px; align-self: flex-end; border-radius: 8px; border: 1px solid #2a2a4a; background: #1a1a2e; font-size: 1.2rem; cursor: pointer; }
+        .emoji-panel { position: fixed; z-index: 400; width: min(320px, calc(100vw - 24px)); max-height: 230px; overflow-y: auto; display: grid; grid-template-columns: repeat(8, 1fr); gap: 2px; padding: 8px; box-sizing: border-box; border-radius: 14px; background: #23234a; border: 1px solid #3a3a66; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55); }
+        .emoji-panel button { font-size: 1.35rem; line-height: 1; background: none; border: none; cursor: pointer; padding: 6px 0; border-radius: 8px; }
+        .emoji-panel button:hover { background: rgba(255, 255, 255, 0.08); }
+
         .formation-comment-images {
             display: flex;
             gap: 6px;
@@ -1531,6 +1567,14 @@
             align-items: flex-end;
             gap: 8px;
             margin-top: 12px;
+        }
+        /* Send sits level with the 😊 button instead of a thin pill. */
+        .formation-comment-input-row .btn-primary {
+            height: 40px;
+            padding: 0 14px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 700;
         }
 
         /* Enter now inserts a newline (native textarea behavior) instead of
@@ -2060,6 +2104,20 @@
             object-fit: cover;
         }
 
+        /* A player's shown badges and the 👍 like button (profile popup) */
+        .pf-badges { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin: 0 0 12px; }
+        .pf-badges:empty { display: none; }
+        .pf-badge { display: inline-flex; align-items: center; gap: 5px; max-width: 100%; padding: 3px 9px 3px 3px; border-radius: 999px;
+            border: 1px solid var(--tc); background: color-mix(in srgb, var(--tc) 14%, transparent); font-size: 0.74rem; font-weight: 800; color: #f0f0f5; }
+        .pf-badge-ico { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: rgba(0, 0, 0, 0.35);
+            box-shadow: inset 0 0 0 2px var(--tc); font-size: 0.8rem; }
+        .pf-badge-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .pf-badge-tier { color: var(--tc); }
+        .pf-like-btn { display: inline-flex; align-items: center; gap: 6px; margin: 0 auto 14px; padding: 8px 16px; border-radius: 999px;
+            border: 1px solid #2a2a4a; background: rgba(255, 255, 255, 0.05); color: #f0f0f5; font: inherit; font-weight: 800; cursor: pointer; }
+        .pf-like-btn.on { border-color: #4c6ef5; background: rgba(76, 110, 245, 0.22); }
+        .pf-like-btn:disabled { opacity: 0.6; cursor: default; }
+
         .profile-stat-row {
             display: flex;
             justify-content: space-between;
@@ -2537,7 +2595,8 @@
                     <button type="button" class="formation-attach-btn" onclick="triggerFormationCommentImagePick()"
                         title="Attach up to 3 photos">+</button>
                     <textarea id="formationCommentTextInput" class="modal-field-input comment-textarea"
-                        placeholder="Suggest a formation, give tips..." style="margin-bottom:0; flex:1;" rows="1"></textarea>
+                        placeholder="Add a comment..." style="margin-bottom:0; flex:1;" rows="1"></textarea>
+                    <button type="button" class="emoji-btn" onclick="toggleEmojiPanel(this, 'formationCommentTextInput')" title="Emoji" aria-label="Add an emoji">😊</button>
                     <button class="btn-primary" id="formationCommentSendBtn" onclick="submitFormationComment()" style="flex-shrink:0;">Send</button>
                 </div>
             </div>
@@ -2673,7 +2732,8 @@
                     <button type="button" class="formation-attach-btn" onclick="triggerTierListCommentImagePick()"
                         title="Attach up to 3 photos">+</button>
                     <textarea id="tierListCommentTextInput" class="modal-field-input comment-textarea"
-                        placeholder="Give feedback on this tier list..." style="margin-bottom:0; flex:1;" rows="1"></textarea>
+                        placeholder="Add a comment..." style="margin-bottom:0; flex:1;" rows="1"></textarea>
+                    <button type="button" class="emoji-btn" onclick="toggleEmojiPanel(this, 'tierListCommentTextInput')" title="Emoji" aria-label="Add an emoji">😊</button>
                     <button class="btn-primary" id="tierListCommentSendBtn" onclick="submitTierListComment()" style="flex-shrink:0;">Send</button>
                 </div>
             </div>
@@ -2748,15 +2808,13 @@
             <div id="friendProfileAvatar" style="width:84px; height:84px; margin:0 auto 14px;"></div>
             <div id="friendProfileName" style="font-weight:800; font-size:1.2rem; margin-bottom:6px;"></div>
             <div id="friendProfileBio" class="compose-hint" style="margin-bottom:14px; display:none;"></div>
+            <div class="pf-badges" id="friendProfileBadges"></div>
+            <button type="button" class="pf-like-btn" id="friendProfileLikeBtn" style="display:none;"></button>
 
             <div id="friendProfileStats"
                 style="text-align:left; background:#1a1a2e; border:1px solid #2a2a4a; border-radius:10px; padding:12px 16px; margin-bottom:16px; display:none;">
                 <div id="statServer" class="profile-stat-row" style="display:none;"><span>📱
                         Server</span><span></span></div>
-                <div id="statFavTroop" class="profile-stat-row" style="display:none;"><span>⚔️ Favorite
-                        Troop</span><span></span></div>
-                <div id="statFavHero" class="profile-stat-row" style="display:none;"><span>🦸 Favorite
-                        Hero</span><span></span></div>
                 <div id="statTrophies" class="profile-stat-row" style="display:none;"><span>🏆 Highest
                         Trophies</span><span></span></div>
                 <div id="statClan" class="profile-stat-row" style="display:none;"><span>🏰 Current
@@ -2844,6 +2902,7 @@
             <div class="dm-input-row" id="dmInputRow">
                 <textarea id="dmInput" rows="1" placeholder="Type a message..." maxlength="2000"
                     enterkeyhint="enter" data-requires-not-banned></textarea>
+                <button type="button" class="emoji-btn" onclick="toggleEmojiPanel(this, 'dmInput')" title="Emoji" aria-label="Add an emoji" data-requires-not-banned>😊</button>
                 <button class="btn-primary" style="padding:10px 18px; border-radius:8px;"
                     id="dmSendBtn"
                     data-requires-not-banned>Send</button>
@@ -2851,6 +2910,7 @@
         </div>
     </div>
 
+    <script src="progress-core.js"></script>
     <script type="module" src="appState.js"></script>
     <script type="module">
         /* ---------------- KEYBOARD-SAFE INPUT SCROLLING ----------------
@@ -4265,7 +4325,7 @@ window.removeClanIconPreview = function () {
                     : `<button class="report-link" onclick="event.stopPropagation(); openReportModal('post', '${p.uid}', '${escapeHtml(p.name).replace(/'/g, "\\'")}', '${p.id}', ${escapeHtml(JSON.stringify(p.description || ""))})">🚩 Report</button>`;
                 return `
                 <div class="clan-post${isMine ? " my-post" : ""}" onclick="openFormationDetailModal('${p.id}')">
-                    <div class="formation-card-images">
+                    <div class="formation-card-images${(p.imageUrls || []).length === 1 ? " single" : ""}">
                         ${(p.imageUrls || []).map((u, idx) => `<img src="${escapeHtml(u)}" onerror="this.style.opacity='0.2'" onclick="event.stopPropagation(); openFormationDetailModal('${p.id}', ${idx})">`).join("")}
                     </div>
                     <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
@@ -4561,74 +4621,210 @@ window.removeClanIconPreview = function () {
             });
         })("ivStage", () => window.imageViewerPrev(), () => window.imageViewerNext());
 
-        // Comments are stored flat with an optional parentId — this builds
-        // a tree from that (a reply whose parent got deleted just falls
-        // back to top-level, since its parentId no longer resolves) and
-        // flattens it depth-first so replies render right under their
-        // parent. Indentation is capped so deep threads stay readable on a
-        // phone screen instead of marching off the right edge.
-        const FORMATION_COMMENT_MAX_INDENT_PX = 72;
-        const FORMATION_COMMENT_INDENT_STEP_PX = 18;
+        /* ===== Comments, the Instagram way =====
+           Top-level comments in order. Under each, every reply in its thread
+           (replies to replies too) one step in, oldest first, folded behind
+           "View N replies" — so a long back-and-forth never runs off the
+           right edge. A reply to a reply starts with @name. Shared by
+           Formation Help and Tier Lists. */
+        const COMMENT_KINDS = {
+            formation: {
+                listId: "formationCommentsList", close: "closeFormationDetailModal", reply: "startReplyFormationComment",
+                edit: "startEditFormationComment", del: "deleteFormationCommentConfirm", viewImg: "openImageViewerForComment",
+                empty: "No comments yet — be the first to help!",
+                target: (id) => ({ kind: "formation", postId: currentFormationDetailId, commentId: id })
+            },
+            tierList: {
+                listId: "tierListCommentsList", close: "closeTierListDetailModal", reply: "startReplyTierListComment",
+                edit: "startEditTierListComment", del: "deleteTierListCommentConfirm", viewImg: "openImageViewerForTierListComment",
+                empty: "No comments yet — be the first to give feedback!",
+                target: (id) => ({ kind: "tierList", tierListId: currentTierListDetailId, commentId: id })
+            }
+        };
+        const commentState = { formation: { comments: [], byId: {} }, tierList: { comments: [], byId: {} } };
+        const openCommentThreads = new Set(); // "<kind>:<top comment id>" whose replies are showing
+        let pendingCommentFocus = null; // { kind, id } from an inbox "View & reply"
 
-        function buildFormationCommentThread(comments) {
-            const byId = {};
-            comments.forEach(c => { byId[c.id] = { ...c, children: [] }; });
-            const roots = [];
-            comments.forEach(c => {
-                const node = byId[c.id];
-                if (c.parentId && byId[c.parentId]) {
-                    byId[c.parentId].children.push(node);
-                } else {
-                    roots.push(node);
-                }
-            });
-            const flat = [];
-            (function visit(nodes, depth) {
-                nodes.forEach(node => {
-                    flat.push({ node, depth });
-                    visit(node.children, depth + 1);
-                });
-            })(roots, 0);
-            return flat;
+        function commentRootId(kind, id) {
+            const byId = commentState[kind].byId;
+            let c = byId[id], guard = 0;
+            while (c && c.parentId && byId[c.parentId] && guard++ < 100) c = byId[c.parentId];
+            return c ? c.id : id;
         }
 
-        function renderFormationComments(comments) {
-            formationCommentsById = {};
-            comments.forEach(c => { formationCommentsById[c.id] = c; });
+        // Reactions under a comment or a chat message: a chip per emoji with
+        // its count (yours highlighted — tap it to take yours off).
+        // From appState.js; the same six as a fallback so a stale cached
+        // appState.js (just after an update) can't break chat and comments.
+        function reactionSet() {
+            return Array.isArray(AppState.REACTIONS) ? AppState.REACTIONS : ["❤️", "😂", "😮", "😢", "👍", "🔥"];
+        }
+        function reactionsHtml(kind, item) {
+            const r = item.reactions || {}, myUid = AppState.getCurrentUser()?.uid;
+            const counts = {};
+            Object.values(r).forEach(e => { counts[e] = (counts[e] || 0) + 1; });
+            const list = reactionSet().filter(e => counts[e]);
+            if (!list.length) return "";
+            return `<div class="rx-row">${list.map(e => `<button type="button" class="rx-chip${r[myUid] === e ? " mine" : ""}" onclick="reactTo('${kind}', '${item.id}', '${e}')" title="${r[myUid] === e ? "Take your reaction off" : "React " + e}">${e} ${counts[e]}</button>`).join("")}</div>`;
+        }
 
-            const list = document.getElementById("formationCommentsList");
-            if (!comments.length) {
-                list.innerHTML = '<div class="compose-hint" style="padding:10px 0;">No comments yet — be the first to help!</div>';
-                return;
-            }
+        function commentRowHtml(kind, c, isReply, rootId) {
+            const cfg = COMMENT_KINDS[kind], byId = commentState[kind].byId;
             const myUid = AppState.getCurrentUser()?.uid;
-            const thread = buildFormationCommentThread(comments);
-            list.innerHTML = thread.map(({ node: c, depth }) => {
-                const indent = Math.min(depth * FORMATION_COMMENT_INDENT_STEP_PX, FORMATION_COMMENT_MAX_INDENT_PX);
-                const nameEscaped = escapeHtml(c.name).replace(/'/g, "\\'");
-                return `
-                <div class="formation-comment-item" style="margin-left:${indent}px;">
+            const nameEscaped = escapeHtml(c.name).replace(/'/g, "\\'");
+            const parent = isReply && c.parentId !== rootId ? byId[c.parentId] : null;
+            const at = parent ? `<span class="cmt-at">@${escapeHtml(parent.name)}</span> ` : "";
+            return `
+                <div class="formation-comment-item${isReply ? " reply" : ""}" id="cmt_${kind}_${c.id}">
                     <img class="clan-post-avatar" src="${escapeHtml(c.avatar)}" onerror="this.style.visibility='hidden'"
-                        style="cursor:pointer;" onclick="closeFormationDetailModal(); onPosterClick('${c.uid}', '${nameEscaped}');">
+                        style="cursor:pointer;" onclick="${cfg.close}(); onPosterClick('${c.uid}', '${nameEscaped}');">
                     <div style="flex:1; min-width:0;">
                         <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-                            <span class="clan-post-name" style="cursor:pointer;" onclick="closeFormationDetailModal(); onPosterClick('${c.uid}', '${nameEscaped}');">${escapeHtml(c.name)}</span>
+                            <span class="clan-post-name" style="cursor:pointer;" onclick="${cfg.close}(); onPosterClick('${c.uid}', '${nameEscaped}');">${escapeHtml(c.name)}</span>
                             <span class="clan-post-time" style="margin-left:0;">${timeAgo(c.createdAt)}</span>
                         </div>
-                        ${c.text ? `<div style="margin-top:4px; white-space:pre-wrap;">${escapeHtml(c.text)}</div>` : ""}
-                        ${(c.imageUrls && c.imageUrls.length) ? `<div class="formation-comment-images">${c.imageUrls.map((u, i) => `<img src="${escapeHtml(u)}" onerror="this.remove();" onclick="openImageViewerForComment('${c.id}', ${i})">`).join("")}</div>` : ""}
+                        ${c.text || at ? `<div style="margin-top:4px; white-space:pre-wrap;">${at}${escapeHtml(c.text || "")}</div>` : ""}
+                        ${(c.imageUrls && c.imageUrls.length) ? `<div class="formation-comment-images">${c.imageUrls.map((u, i) => `<img src="${escapeHtml(u)}" onerror="this.remove();" onclick="${cfg.viewImg}('${c.id}', ${i})">`).join("")}</div>` : ""}
+                        ${reactionsHtml(kind, c)}
                         <div style="margin-top:4px;">
-                            <button class="edit-post-link" onclick="startReplyFormationComment('${c.id}', '${nameEscaped}')">↩ Reply</button>
+                            <button class="edit-post-link" onclick="${cfg.reply}('${c.id}', '${nameEscaped}')">↩ Reply</button>
+                            <button class="edit-post-link" onclick="openReactionPicker(event, '${kind}', '${c.id}')">😊 React</button>
                             ${c.uid === myUid
-                                ? `<button class="edit-post-link" onclick="startEditFormationComment('${c.id}')">✏️ Edit</button>
-                                   <button class="delete-post-link" onclick="deleteFormationCommentConfirm('${c.id}')">🗑️ Delete</button>`
+                                ? `<button class="edit-post-link" onclick="${cfg.edit}('${c.id}')">✏️ Edit</button>
+                                   <button class="delete-post-link" onclick="${cfg.del}('${c.id}')">🗑️ Delete</button>`
                                 : `<button class="report-link" onclick="openReportModal('post', '${c.uid}', '${nameEscaped}', '${c.id}', ${escapeHtml(JSON.stringify(c.text || ""))})">🚩 Report</button>`}
                         </div>
                     </div>
                 </div>`;
-            }).join("");
         }
 
+        function renderCommentList(kind, comments) {
+            const cfg = COMMENT_KINDS[kind];
+            const byId = {};
+            comments.forEach(c => { byId[c.id] = c; });
+            commentState[kind] = { comments, byId };
+            const list = document.getElementById(cfg.listId);
+            if (!comments.length) {
+                list.innerHTML = `<div class="compose-hint" style="padding:10px 0;">${cfg.empty}</div>`;
+                return;
+            }
+            const byTime = (a, b) => (a.createdAt || 0) - (b.createdAt || 0);
+            const roots = comments.filter(c => !c.parentId || !byId[c.parentId]).sort(byTime);
+            const replies = {};
+            comments.forEach(c => {
+                if (c.parentId && byId[c.parentId]) (replies[commentRootId(kind, c.id)] = replies[commentRootId(kind, c.id)] || []).push(c);
+            });
+            // landing on a comment from the inbox: its thread opens
+            if (pendingCommentFocus && pendingCommentFocus.kind === kind && byId[pendingCommentFocus.id]) {
+                openCommentThreads.add(kind + ":" + commentRootId(kind, pendingCommentFocus.id));
+            }
+            list.innerHTML = roots.map(root => {
+                const rs = (replies[root.id] || []).sort(byTime);
+                const open = openCommentThreads.has(kind + ":" + root.id);
+                const toggle = rs.length
+                    ? `<button type="button" class="cmt-thread-toggle" onclick="toggleCommentThread('${kind}', '${root.id}')">${open ? "Hide replies" : `View ${rs.length} ${rs.length === 1 ? "reply" : "replies"}`}</button>`
+                    : "";
+                return commentRowHtml(kind, root, false, root.id) + (open ? rs.map(c => commentRowHtml(kind, c, true, root.id)).join("") : "") + toggle;
+            }).join("");
+            if (pendingCommentFocus && pendingCommentFocus.kind === kind && byId[pendingCommentFocus.id]) {
+                const target = byId[pendingCommentFocus.id];
+                pendingCommentFocus = null;
+                const row = document.getElementById(`cmt_${kind}_${target.id}`);
+                if (row) {
+                    row.classList.add("flash");
+                    setTimeout(() => row.scrollIntoView({ block: "center", behavior: "smooth" }), 150);
+                }
+                window[cfg.reply](target.id, target.name); // ready to answer them
+            }
+        }
+
+        window.toggleCommentThread = function (kind, rootId) {
+            const key = kind + ":" + rootId;
+            if (openCommentThreads.has(key)) openCommentThreads.delete(key); else openCommentThreads.add(key);
+            renderCommentList(kind, commentState[kind].comments);
+        };
+
+        // Your reaction: set it, change it, or (same emoji again) take it off.
+        // Shown straight away; the live listener confirms it.
+        window.reactTo = async function (kind, id, emoji) {
+            const myUid = AppState.getCurrentUser()?.uid;
+            if (!myUid) { showInfoModal("Sign in required", "Sign in with Google first to react."); return; }
+            const item = kind === "dm" ? (window._lastDmMessages || []).find(m => m.id === id) : commentState[kind].byId[id];
+            if (!item) return;
+            const next = (item.reactions || {})[myUid] === emoji ? null : emoji;
+            const before = item.reactions;
+            const reactions = { ...(item.reactions || {}) };
+            if (next) reactions[myUid] = next; else delete reactions[myUid];
+            item.reactions = reactions;
+            if (kind === "dm") renderDmMessages(window._lastDmMessages); else renderCommentList(kind, commentState[kind].comments);
+            try {
+                const target = kind === "dm" ? { kind: "dm", threadId: currentDmThreadId, msgId: id } : COMMENT_KINDS[kind].target(id);
+                if (typeof AppState.setReaction !== "function") throw new Error("The site just updated — refresh the page to use reactions.");
+                await AppState.setReaction(target, next);
+            } catch (e) {
+                item.reactions = before;
+                if (kind === "dm") renderDmMessages(window._lastDmMessages); else renderCommentList(kind, commentState[kind].comments);
+                if (e.message !== "__RESTRICTED__") showInfoModal("Couldn't react", e.message);
+            }
+        };
+
+        // The little bar of reactions, by the button that opened it.
+        function closeFloatingPickers() { document.querySelectorAll(".rx-picker, .emoji-panel").forEach(el => el.remove()); }
+        function placeFloating(el, anchor) {
+            document.body.appendChild(el);
+            const a = anchor.getBoundingClientRect(), w = el.offsetWidth, h = el.offsetHeight;
+            const left = Math.max(8, Math.min(window.innerWidth - w - 8, a.left + a.width / 2 - w / 2));
+            const top = a.top - h - 8 > 8 ? a.top - h - 8 : Math.min(window.innerHeight - h - 8, a.bottom + 8);
+            el.style.left = left + "px"; el.style.top = top + "px";
+        }
+        window.openReactionPicker = function (ev, kind, id) {
+            ev.stopPropagation();
+            closeFloatingPickers();
+            const myUid = AppState.getCurrentUser()?.uid;
+            const item = kind === "dm" ? (window._lastDmMessages || []).find(m => m.id === id) : commentState[kind].byId[id];
+            const mine = item && item.reactions ? item.reactions[myUid] : null;
+            const bar = document.createElement("div");
+            bar.className = "rx-picker";
+            const set = reactionSet();
+            bar.innerHTML = set.map(e => `<button type="button" class="${mine === e ? "mine" : ""}" aria-label="React ${e}">${e}</button>`).join("");
+            bar.querySelectorAll("button").forEach((b, i) => b.addEventListener("click", (e) => { e.stopPropagation(); closeFloatingPickers(); reactTo(kind, id, set[i]); }));
+            placeFloating(bar, ev.currentTarget);
+        };
+
+        // Emojis for typing: tap one and it goes in where you're typing.
+        const TYPING_EMOJIS = ["😀", "😂", "🤣", "😊", "😍", "😎", "🤔", "😅", "😭", "😡", "😮", "🥳", "😴", "🤯", "😇", "🙃",
+            "👍", "👎", "👏", "🙏", "💪", "👀", "🤝", "✌️", "❤️", "💔", "🔥", "✨", "💯", "🎉", "⭐", "💀",
+            "⚔️", "🛡️", "🏹", "🏰", "👑", "💎", "🪙", "🎁", "🏆", "⚡", "🐉", "🧙", "☠️", "💥", "✅", "❌"];
+        window.toggleEmojiPanel = function (btn, targetId) {
+            const open = document.querySelector(".emoji-panel");
+            closeFloatingPickers();
+            if (open && open.dataset.for === targetId) return;
+            const panel = document.createElement("div");
+            panel.className = "emoji-panel";
+            panel.dataset.for = targetId;
+            panel.innerHTML = TYPING_EMOJIS.map(e => `<button type="button">${e}</button>`).join("");
+            panel.addEventListener("click", (e) => {
+                e.stopPropagation();
+                const b = e.target.closest("button");
+                if (!b) return;
+                const input = document.getElementById(targetId);
+                const start = input.selectionStart ?? input.value.length, end = input.selectionEnd ?? input.value.length;
+                input.value = input.value.slice(0, start) + b.textContent + input.value.slice(end);
+                const at = start + b.textContent.length;
+                input.focus();
+                try { input.setSelectionRange(at, at); } catch (err) { }
+                input.dispatchEvent(new Event("input", { bubbles: true })); // the box grows to fit
+            });
+            placeFloating(panel, btn);
+        };
+        document.addEventListener("click", (e) => { if (!e.target.closest(".rx-picker, .emoji-panel, .emoji-btn")) closeFloatingPickers(); });
+        window.addEventListener("scroll", closeFloatingPickers, true);
+
+        function renderFormationComments(comments) {
+            formationCommentsById = {};
+            comments.forEach(c => { formationCommentsById[c.id] = c; });
+            renderCommentList("formation", comments);
+        }
         // Renders existing (already-saved) images first, then newly-picked
         // files — removal is index-based into that combined order, same
         // pattern as the post composer's image picker.
@@ -4717,6 +4913,7 @@ window.removeClanIconPreview = function () {
             formationCommentExistingImages = [];
             formationCommentImageFiles = [];
             replyingToFormationCommentId = commentId;
+            openCommentThreads.add("formation:" + commentRootId("formation", commentId)); // your reply shows when it lands
             document.getElementById("formationCommentTextInput").value = "";
             autoGrowCommentTextarea(document.getElementById("formationCommentTextInput"));
             renderFormationCommentImagePreviews();
@@ -5221,9 +5418,16 @@ window.removeClanIconPreview = function () {
             return "Heroes and Troops";
         }
 
+        let pendingTierListIdFromUrl = null; // from ?tierListId=… until that list shows up
         function renderTierListPosts(posts) {
             allTierListPosts = posts;
             applyTierListFiltersAndRender();
+            if (pendingTierListIdFromUrl && allTierListPosts.some(x => x.id === pendingTierListIdFromUrl)) {
+                const id = pendingTierListIdFromUrl;
+                pendingTierListIdFromUrl = null;
+                switchSocialTab("tierlist");
+                openTierListDetailModal(id);
+            }
             if (currentTierListDetailId) {
                 const t = allTierListPosts.find(x => x.id === currentTierListDetailId);
                 if (t) renderTierListDetailStatic(t);
@@ -5433,22 +5637,6 @@ window.removeClanIconPreview = function () {
         /* ---- Comments (same threaded/editable/multi-image pattern as
            Formation Help's comments) ---- */
 
-        function buildTierListCommentThread(comments) {
-            const byId = {};
-            comments.forEach(c => { byId[c.id] = { ...c, children: [] }; });
-            const roots = [];
-            comments.forEach(c => {
-                const node = byId[c.id];
-                if (c.parentId && byId[c.parentId]) byId[c.parentId].children.push(node);
-                else roots.push(node);
-            });
-            const flat = [];
-            (function visit(nodes, depth) {
-                nodes.forEach(node => { flat.push({ node, depth }); visit(node.children, depth + 1); });
-            })(roots, 0);
-            return flat;
-        }
-
         window.openImageViewerForTierListComment = function (commentId, index) {
             const c = tierListCommentsById[commentId];
             if (!c) return;
@@ -5458,40 +5646,8 @@ window.removeClanIconPreview = function () {
         function renderTierListComments(comments) {
             tierListCommentsById = {};
             comments.forEach(c => { tierListCommentsById[c.id] = c; });
-
-            const list = document.getElementById("tierListCommentsList");
-            if (!comments.length) {
-                list.innerHTML = '<div class="compose-hint" style="padding:10px 0;">No comments yet — be the first to give feedback!</div>';
-                return;
-            }
-            const myUid = AppState.getCurrentUser()?.uid;
-            const thread = buildTierListCommentThread(comments);
-            list.innerHTML = thread.map(({ node: c, depth }) => {
-                const indent = Math.min(depth * 18, 72);
-                const nameEscaped = escapeHtml(c.name).replace(/'/g, "\\'");
-                return `
-                <div class="formation-comment-item" style="margin-left:${indent}px;">
-                    <img class="clan-post-avatar" src="${escapeHtml(c.avatar)}" onerror="this.style.visibility='hidden'"
-                        style="cursor:pointer;" onclick="closeTierListDetailModal(); onPosterClick('${c.uid}', '${nameEscaped}');">
-                    <div style="flex:1; min-width:0;">
-                        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-                            <span class="clan-post-name" style="cursor:pointer;" onclick="closeTierListDetailModal(); onPosterClick('${c.uid}', '${nameEscaped}');">${escapeHtml(c.name)}</span>
-                            <span class="clan-post-time" style="margin-left:0;">${timeAgo(c.createdAt)}</span>
-                        </div>
-                        ${c.text ? `<div style="margin-top:4px; white-space:pre-wrap;">${escapeHtml(c.text)}</div>` : ""}
-                        ${(c.imageUrls && c.imageUrls.length) ? `<div class="formation-comment-images">${c.imageUrls.map((u, i) => `<img src="${escapeHtml(u)}" onerror="this.remove();" onclick="openImageViewerForTierListComment('${c.id}', ${i})">`).join("")}</div>` : ""}
-                        <div style="margin-top:4px;">
-                            <button class="edit-post-link" onclick="startReplyTierListComment('${c.id}', '${nameEscaped}')">↩ Reply</button>
-                            ${c.uid === myUid
-                                ? `<button class="edit-post-link" onclick="startEditTierListComment('${c.id}')">✏️ Edit</button>
-                                   <button class="delete-post-link" onclick="deleteTierListCommentConfirm('${c.id}')">🗑️ Delete</button>`
-                                : `<button class="report-link" onclick="openReportModal('post', '${c.uid}', '${nameEscaped}', '${c.id}', ${escapeHtml(JSON.stringify(c.text || ""))})">🚩 Report</button>`}
-                        </div>
-                    </div>
-                </div>`;
-            }).join("");
+            renderCommentList("tierList", comments);
         }
-
         function renderTierListCommentImagePreviews() {
             const wrap = document.getElementById("tierListCommentImagePreviews");
             const items = [
@@ -5573,6 +5729,7 @@ window.removeClanIconPreview = function () {
             tierListCommentExistingImages = [];
             tierListCommentImageFiles = [];
             replyingToTierListCommentId = commentId;
+            openCommentThreads.add("tierList:" + commentRootId("tierList", commentId));
             document.getElementById("tierListCommentTextInput").value = "";
             autoGrowCommentTextarea(document.getElementById("tierListCommentTextInput"));
             renderTierListCommentImagePreviews();
@@ -5791,7 +5948,11 @@ window.removeClanIconPreview = function () {
         const SERVER_LABELS = { ios: "iOS 🍎", android: "Android 🤖", both: "iOS & Android" };
 
         window.showProfileModal = function (profile, isFriend) {
-            if (profile && profile.uid) AppState.reportQuestProgress("viewProfile", profile.uid);
+            if (profile && profile.uid) {
+                AppState.reportQuestProgress("viewProfile", profile.uid);
+                AppState.trackProgress("visit", profile.uid);
+            }
+            fillProfileExtras(profile && profile.uid);
     document.body.style.overflow = "hidden";
     document.documentElement.style.overflow = "hidden";
             document.getElementById("friendProfileAvatar").innerHTML = avatarHtml(profile.avatar, profile.name, "");
@@ -5803,8 +5964,6 @@ window.removeClanIconPreview = function () {
 
             const statMap = [
                 ["statServer", profile.server ? SERVER_LABELS[profile.server] || profile.server : null],
-                ["statFavTroop", profile.favoriteTroop],
-                ["statFavHero", profile.favoriteHero],
                 ["statTrophies", profile.highestTrophies ? Number(profile.highestTrophies).toLocaleString() : null],
                 ["statClan", profile.currentClan],
                 ["statLevel", profile.currentLevel || null],
@@ -5836,6 +5995,41 @@ window.removeClanIconPreview = function () {
 
             document.getElementById("friendProfileModalOverlay").classList.add("open");
         };
+        // Their shown badges and the 👍 like button. A newer popup supersedes
+        // an older one still loading, so a slow answer never lands on the
+        // wrong person.
+        let profileExtrasFor = null;
+        async function fillProfileExtras(uid) {
+            const badgesEl = document.getElementById("friendProfileBadges");
+            const likeBtn = document.getElementById("friendProfileLikeBtn");
+            profileExtrasFor = uid;
+            badgesEl.innerHTML = "";
+            likeBtn.style.display = "none";
+            if (!uid || !window.ProgressCore) return;
+            const me = AppState.getCurrentUser();
+            const [card, liked] = await Promise.all([AppState.getPlayerCard(uid), me && me.uid !== uid ? AppState.haveILikedProfile(uid) : false]);
+            if (profileExtrasFor !== uid) return;
+            badgesEl.innerHTML = (card.badges || []).map(b => ProgressCore.badgeHtml(b)).join("");
+            let count = Math.max(0, card.likeCount || 0), on = liked;
+            const draw = () => { likeBtn.textContent = `👍 ${count} like${count === 1 ? "" : "s"}`; likeBtn.classList.toggle("on", on); };
+            draw();
+            likeBtn.style.display = "inline-flex";
+            likeBtn.disabled = !me || me.uid === uid;
+            likeBtn.title = !me ? "Sign in to like profiles" : me.uid === uid ? "That's you!" : on ? "Take your like back" : "Like this profile";
+            likeBtn.onclick = async () => {
+                likeBtn.disabled = true;
+                const want = !on;
+                on = want; count = Math.max(0, count + (want ? 1 : -1)); draw();
+                try {
+                    const r = await AppState.setProfileLike(uid, want);
+                    on = r.liked; count = r.likeCount; draw();
+                } catch (e) {
+                    on = !want; count = Math.max(0, count + (want ? -1 : 1)); draw();
+                    showInfoModal("Couldn't update your like", e.message);
+                }
+                likeBtn.disabled = false;
+            };
+        }
         window.closeFriendProfileModal = function () {
     document.getElementById("friendProfileModalOverlay").classList.remove("open");
     document.body.style.overflow = "";
@@ -6306,12 +6500,14 @@ document.getElementById("dmActionsMenu").classList.remove("open");
         const reportBtn = mine ? "" :
             `<button class="dm-msg-action-link" onclick='openReportModal("message", "${m.senderUid}", "${currentDmOtherName.replace(/"/g, '')}", "${m.id}", ${JSON.stringify(m.text)})'>🚩 Report</button>`;
 
+        const reactBtn = `<button class="dm-msg-action-link" onclick="openReactionPicker(event, 'dm', '${m.id}')">😊 React</button>`;
         html += `<div class="dm-msg ${mine ? "mine" : "theirs"}${parseDmChallenge(m.text) ? " has-challenge" : ""}" id="dmMsgRow_${m.id}">
             ${quoteHtml}
             ${dmBodyHtml(m.text, mine)}${editedTag}
             ${timeHtml}
+            ${reactionsHtml("dm", m)}
             <div class="dm-msg-actions">
-                ${replyBtn}${editBtn}${reportBtn}
+                ${replyBtn}${reactBtn}${editBtn}${reportBtn}
             </div>
         </div>`;
     });
@@ -6704,6 +6900,14 @@ window.sendDmFromInput = async function () {
             const formationPostId = params.get("formationPostId");
             if (formationPostId) {
                 pendingFormationPostIdFromUrl = formationPostId;
+            }
+            // …or a tier list's. With commentId, that comment's thread opens,
+            // it's highlighted and you're ready to reply to it.
+            const tierListIdFromUrl = params.get("tierListId");
+            if (tierListIdFromUrl) pendingTierListIdFromUrl = tierListIdFromUrl;
+            const commentIdFromUrl = params.get("commentId");
+            if (commentIdFromUrl && (formationPostId || tierListIdFromUrl)) {
+                pendingCommentFocus = { kind: formationPostId ? "formation" : "tierList", id: commentIdFromUrl };
             }
         });
         // Posts carry names and profile pictures, so they're only fetched for

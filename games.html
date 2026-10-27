@@ -258,6 +258,8 @@
         .lb-chips span small { margin-left: 3px; font-size: 0.68rem; font-weight: 900; color: #1a1a2e; background: #ffd75e; padding: 0 4px; border-radius: 999px; }
         .lb-hint { margin-top: 8px; padding: 8px 10px; border-radius: 10px; background: rgba(255, 215, 94, 0.1); border: 1px solid rgba(255, 215, 94, 0.35); font-size: 0.82rem; line-height: 1.45; color: #f3e6b8; }
         .lb-hint b { color: #ffd75e; }
+        .lb-perk { flex-shrink: 0; font-size: 0.74rem; font-weight: 800; color: #7ddc92; padding: 2px 6px; border-radius: 999px; background: rgba(95, 211, 138, 0.14); }
+        .lb-chips span.perk { background: rgba(95, 211, 138, 0.16); box-shadow: inset 0 0 0 1px rgba(95, 211, 138, 0.55); }
         .lb-prize-tag { flex-shrink: 0; font-size: 0.74rem; font-weight: 800; color: #1a1a2e; background: #ffd75e; padding: 2px 7px; border-radius: 999px; }
 
         /* Weekly leaderboard: a tab on the right edge opens it as a side
@@ -1923,14 +1925,14 @@
             const rest = d.top.slice(3);
             const list = lbShowAll ? rest : rest.slice(0, 7);
             // 4th and 5th win too: their prize sits on their row.
-            const rows = list.map(r => `<div class="lb-row${r.me ? " me" : ""}"><span class="lb-rank">#${r.rank}</span><span class="lb-name">${esc(r.name)}${r.me ? " (you)" : ""}</span>${d.prizes[r.rank - 1] ? `<span class="lb-prize-tag">+${d.prizes[r.rank - 1]} 🪙</span>` : ""}<span class="lb-total">${r.total}</span></div>`).join("");
+            const rows = list.map(r => `<div class="lb-row${r.me ? " me" : ""}"><span class="lb-rank">#${r.rank}</span><span class="lb-name">${esc(r.name)}${r.me ? " (you)" : ""}</span>${r.perk ? `<span class="lb-perk" title="Bonus points from items">🎒+${r.perk}</span>` : ""}${d.prizes[r.rank - 1] ? `<span class="lb-prize-tag">+${d.prizes[r.rank - 1]} 🪙</span>` : ""}<span class="lb-total">${r.total}</span></div>`).join("");
             const more = rest.length > 7 ? `<button class="lb-more" onclick="lbShowAll = !lbShowAll; renderLeaderboard();">${lbShowAll ? "Show fewer" : `Show all ${d.top.length}`}</button>` : "";
             // Each game's points on the board this week — "×2" when they came from a
             // doubled run — and today's double game starred.
             const chips = (row) => {
                 const p = row.pts || C.lbPts(row), dbl = row.dbl || {};
                 return `<div class="lb-chips">${LB_ORDER.map(g => `<span class="${[g === d.bonus ? "bonus" : "", dbl[g] ? "dbl" : ""].join(" ").trim()}"
-                    title="${dbl[g] ? "From a doubled run" : "From a normal run"}${g === d.bonus ? " · double points today" : ""}">${C.GAME_ICONS[g]} <b>${p[g] || 0}</b>${dbl[g] ? `<small>×2</small>` : ""}${g === d.bonus ? " ⭐" : ""}</span>`).join("")}</div>`;
+                    title="${dbl[g] ? "From a doubled run" : "From a normal run"}${g === d.bonus ? " · double points today" : ""}">${C.GAME_ICONS[g]} <b>${p[g] || 0}</b>${dbl[g] ? `<small>×2</small>` : ""}${g === d.bonus ? " ⭐" : ""}</span>`).join("")}${row.perk ? `<span class="perk" title="Bonus points from your items">🎒 <b>+${row.perk}</b></span>` : ""}</div>`;
             };
             // Where you stand on today's double game, so a plain 20 there doesn't look like a missing ×2.
             function bonusHint(row) {
@@ -1944,7 +1946,7 @@
                 return `<div class="lb-hint">${s}</div>`;
             }
             const me = d.me && d.me.rank
-                ? `<div class="lb-me"><div>You're <b>#${d.me.rank}</b> · <b>${d.me.total}</b> points <span class="dim">(most a week can score: ${d.max || C.LB_MAX})</span></div>${chips(d.me)}${bonusHint(d.me)}</div>`
+                ? `<div class="lb-me"><div>You're <b>#${d.me.rank}</b> · <b>${d.me.total}</b> points <span class="dim">(most a week can score: ${d.max || C.LB_MAX}${d.me.perk ? `, plus your items' ${d.me.perk}` : ""})</span></div>${chips(d.me)}${bonusHint(d.me)}</div>`
                 : `<div class="lb-me">You're not on the board yet — finish a run in any game to get on it. 🚀</div>`;
             const last = d.lastWeek && d.lastWeek.length
                 ? `<div class="lb-last">Last week: ${d.lastWeek.map(w => `${placeIcon(w.rank - 1)} ${esc(w.name)}`).join(" · ")}</div>` : "";

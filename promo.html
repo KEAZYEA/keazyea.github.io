@@ -577,6 +577,7 @@
         .switch-link { display: block; margin: 14px auto 0; padding: 9px 16px; border-radius: 999px; border: 1px solid rgba(140, 160, 255, 0.45); background: rgba(65, 105, 225, 0.16); color: #c8d4ff; font: inherit; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
         .switch-link:active { transform: scale(0.97); }
 
+        .enter-free-note { margin: 0 0 10px; text-align: center; color: #c8c8e0; font-size: 0.85rem; }
         /* not entered yet: a mystery box */
         .mystery { display: flex; align-items: center; gap: 20px; margin: 0 0 12px; padding: 12px; border-radius: 14px; background: rgba(138, 77, 255, 0.12); border: 1px dashed rgba(180, 150, 255, 0.5); }
         .mystery-box { position: relative; font-size: 2.6rem; line-height: 1; flex-shrink: 0; animation: wobble 2.2s ease-in-out infinite; filter: drop-shadow(0 0 10px rgba(180, 120, 255, 0.7)); }
@@ -983,7 +984,7 @@
         <button class="tab-btn" id="vipTabBtn" onclick="switchPromoTab('vip')" style="position:relative;">Weekly Giveaway
             <span class="badge-dot" id="vipTabBadge" style="display:none;"></span>
         </button>
-        <button class="tab-btn" id="secretTabBtn" onclick="switchPromoTab('secret')" style="position:relative;">🔒 Secret Giveaways
+        <button class="tab-btn" id="secretTabBtn" onclick="switchPromoTab('secret')" style="position:relative;">🎁 Secret Giveaways
             <span class="badge-dot" id="secretTabBadge" style="display:none;"></span>
         </button>
     </div>
@@ -1007,7 +1008,7 @@
                         <div class="more-ways-title">✨ More ways to win</div>
                         <div class="more-ways-grid">
                             <button class="way-tile way-weekly" onclick="switchPromoTab('vip')"><span class="way-icon">🎡</span><b>Weekly Giveaway</b><small>Free to enter — a new winner every Sunday</small></button>
-                            <button class="way-tile way-secret" onclick="switchPromoTab('secret')"><span class="way-icon">🔒</span><b>Secret Giveaways</b><small>Add tokens for more chances at bigger prizes</small></button>
+                            <button class="way-tile way-secret" onclick="switchPromoTab('secret')"><span class="way-icon">🎁</span><b>Secret Giveaways</b><small>Free to enter — tokens optional for extra chances</small></button>
                             <button class="way-tile way-puzzle" onclick="if (window.top.openTodaysPuzzle) window.top.openTodaysPuzzle(); else location.href = 'games.html?game=today';"><span class="way-icon">🎲</span><b>Today's Puzzle</b><small>Finish it for +1 🪙 — any score</small></button>
                             <button class="way-tile way-quests" onclick="if (window.top.goToPage) window.top.goToPage('quests');"><span class="way-icon">📅</span><b>Daily Quests</b><small>Earn tokens every day</small></button>
                         </div>
@@ -1174,9 +1175,9 @@
                             <button type="button" class="device-pill" onclick="switchSecretDevice()" aria-label="Switch device"><span id="secretDeviceLabel"></span> 🔄</button>
                         </div>
                         <div class="wk-hero compact">
-                            <div class="wk-trophy"><span>🔒</span></div>
+                            <div class="wk-trophy"><span>🎁</span></div>
                             <h2 class="wk-title">Secret Giveaways</h2>
-                            <p class="wk-sub">Enter free to reveal the prize · throw 🪙 in for extra chances</p>
+                            <p class="wk-sub">Free to enter · tokens are optional, for extra chances</p>
                         </div>
                         <div id="secretGiveawayList">
                             <p class="promo-sub" style="text-align:center;">Loading...</p>
@@ -2474,7 +2475,7 @@ if (user && user.uid === winnerData.winnerUid) {
             let unsubSecretGiveaways = null;
             let latestSecretGiveaways = [];
 
-            // Runs regardless of which tab is open, so the "🔒 Secret
+            // Runs regardless of which tab is open, so the "🎁 Secret
             // Giveaways" tab badge (and the home screen badge on index.html,
             // which reads the same "seen" keys independently) can show a
             // count even before the user ever clicks into that tab. Safe to
@@ -2533,7 +2534,7 @@ if (user && user.uid === winnerData.winnerUid) {
                         const entry = await AppState.getMySecretGiveawayEntry(giveawayId);
                         // the prize: its parts (gold, tokens, a hero…) when it was built
                         // from them, otherwise just its description
-                        const info = entry ? await AppState.getSecretGiveawayPrizeInfo(giveawayId) : null;
+                        const info = await AppState.getSecretGiveawayPrizeInfo(giveawayId);
                         return { entry, reward: info ? info.description : null, prize: info ? info.prize : null, tiers: info ? info.tiers : null };
                     })();
                     // A failed read shouldn't be remembered.
@@ -2541,6 +2542,16 @@ if (user && user.uid === winnerData.winnerUid) {
                     secretDetailCache.set(giveawayId, p);
                 }
                 return secretDetailCache.get(giveawayId);
+            }
+            // Extra chances your items give in every giveaway that allows
+            // tokens (counted at the draw). Read once per visit to the tab.
+            let myItemChances = 0;
+            let myItemChancesPromise = null;
+            function getMyItemChances() {
+                if (!myItemChancesPromise) {
+                    myItemChancesPromise = AppState.getMyPerks().then(p => Math.max(0, Math.floor(p.secretChance || 0))).catch(() => { myItemChancesPromise = null; return 0; });
+                }
+                return myItemChancesPromise;
             }
             function getSecretBalance() {
                 if (!secretBalancePromise) {
@@ -2551,7 +2562,7 @@ if (user && user.uid === winnerData.winnerUid) {
             // After your own action on one giveaway (or all, with no id).
             function forgetSecretDetails(giveawayId) {
                 if (giveawayId) secretDetailCache.delete(giveawayId);
-                else secretDetailCache.clear();
+                else { secretDetailCache.clear(); myItemChancesPromise = null; }
                 secretBalancePromise = null;
             }
 
@@ -2807,6 +2818,7 @@ if (user && user.uid === winnerData.winnerUid) {
                     details = await Promise.all(notDeleted.map(g => getSecretDetail(g.id)));
                     // Shared by every card's "Add tokens" box.
                     secretTokenBalance = user ? await getSecretBalance() : 0;
+                    myItemChances = user ? await getMyItemChances() : 0;
                 } catch (e) {
                     if (seq !== secretRenderSeq) return;
                     list.innerHTML = `<p class='promo-sub' style='text-align:center;'>Couldn't load your entries. <button class="switch-device-btn" onclick="retrySecretGiveaways()" style="display:inline; margin:0 0 0 6px; padding:4px 10px; font-size:0.85rem;">Try again</button></p>`;
@@ -3467,6 +3479,7 @@ if (user && user.uid === winnerData.winnerUid) {
                             ${detail.tiers ? window.KIHPrize.renderTiers(detail.tiers) : window.KIHPrize.render(detail.prize || detail.reward || "…")}</div>
                         ${warn}
                         ${statsHtml}
+                        ${!noTokens && myItemChances ? `<p class="enter-free-note">🎒 Your items add <b>+${myItemChances}</b> chance${myItemChances === 1 ? "" : "s"} to this entry.</p>` : ""}
                         ${myPlatformHasSlots ? renderStakeHtml(g, detail.entry, isExpired, sideDrawn) : ""}
                         ${switchBtn}`;
                 } else if (isExpired) {
@@ -3478,10 +3491,13 @@ if (user && user.uid === winnerData.winnerUid) {
                     bodyHtml = `
                         ${statsHtml}
                         ${g.tokensAllowed === false ? noTokensNotice("") : ""}
-                        <div class="mystery"><div class="mystery-box">🎁<span>?</span></div>
-                            <div><b>Mystery prize</b><small>${g.tokensAllowed === false ? "Enter to reveal it. It's free." : "Enter to reveal it. It's free, and puts your first ball in the globe."}</small></div></div>
+                        ${detail.prize || detail.reward || detail.tiers ? `
+                        <div class="sc-prize" data-id="${g.id}">
+                            <div class="sc-prize-head"><span class="sc-prize-icon">🎁</span><small>Up for grabs${detail.tiers ? " (one of these)" : ""}:</small></div>
+                            ${detail.tiers ? window.KIHPrize.renderTiers(detail.tiers) : window.KIHPrize.render(detail.prize || detail.reward)}</div>` : ""}
+                        <p class="enter-free-note">${g.tokensAllowed === false ? "Entering is free." : "Entering is free. Tokens are optional: each one you add is an extra chance."}${g.tokensAllowed !== false && myItemChances ? ` Your items add +${myItemChances}.` : ""}</p>
                         ${passwordInput}
-                        <button class="enter-btn" id="secretEnterBtn_${g.id}" onclick="handleEnterSecretGiveaway('${g.id}')">🔓 Enter &amp; reveal</button>
+                        <button class="enter-btn" id="secretEnterBtn_${g.id}" onclick="handleEnterSecretGiveaway('${g.id}')">🎟️ Enter free</button>
                         <p class="enter-as">Entering as ${device === "ios" ? "🍎 iOS" : "🤖 Android"}</p>`;
                 }
 
