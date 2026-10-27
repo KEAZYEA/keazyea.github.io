@@ -76,7 +76,7 @@ const ADMIN_UID = "Ts92RY0ipMYDRJa2s5toQfDYxtp1"; // your uid — only this acco
 const BACKEND_BASE = (() => {
     const live = "https://kih-store.vercel.app";
     try {
-        const local = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) && localStorage.getItem("kih_api_base");
+        const local = /^(localhost|127\.0\.0\.1)$/.test(location.hostname) && (localStorage.getItem("kih_api_base") || "").trim().replace(/\/+$/, "");
         return local && /^https:\/\/[a-z0-9.-]+\.vercel\.app$/i.test(local) ? local : live;
     } catch (e) {
         return live;
