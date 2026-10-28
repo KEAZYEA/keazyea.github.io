@@ -716,6 +716,8 @@ body {
         .st-none { color: var(--kih-text-dim); font-size: 0.8rem; }
         .st-av { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; display: block; }
         .st-name { font-weight: 900; font-size: 0.9rem; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .st-bg { display: block; width: 76px; height: 44px; border-radius: 10px; }
+        .st-bg::after { font-size: 0.8rem !important; right: 4px !important; bottom: 2px !important; top: auto !important; }
         .st-bubble { padding: 6px 10px; border-radius: 12px; background: #2a2a4a; font-size: 0.8rem; font-weight: 700; }
         .st-locked { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
         .st-locked span { padding: 2px 8px; border-radius: 999px; border: 1px dashed var(--kih-border); color: var(--kih-text-dim); font-size: 0.72rem; opacity: 0.7; }
@@ -3027,6 +3029,7 @@ window.closeLegalModal = closeLegalModal;
                 const bd = card.style && PC.STYLE_BY_ID[card.style.border];
                 wrap.className = bd ? `fx-av fx-border-${bd.css}${bd.anim ? " fx-" + bd.anim : ""}` : "";
                 nameEl.className = PC.styleClass(card.style, "name");
+                wrap.closest(".mini-modal-box").className = "mini-modal-box " + PC.styleClass(card.style, "background");
             }
             let count = Math.max(0, card.likeCount || 0);
             let on = liked;
@@ -3066,6 +3069,7 @@ window.closeLegalModal = closeLegalModal;
             const b = style && PC.STYLE_BY_ID[style.border];
             document.getElementById("pfHeroAvatarWrap").className = b ? `fx-av fx-border-${b.css}${b.anim ? " fx-" + b.anim : ""}` : "";
             document.getElementById("pfHeroName").className = "pf-hero-name " + PC.styleClass(style, "name");
+            document.querySelector("#page-profile .pf-hero").className = "pf-hero " + PC.styleClass(style, "background");
         }
 
         function showProfileTab(tab) {
@@ -3271,13 +3275,14 @@ window.closeLegalModal = closeLegalModal;
         }
 
         /* ---- 🎨 Style: which border, name effect and chat bubble you show ---- */
-        const STYLE_SLOTS = [["border", "Avatar border"], ["name", "Name effect"], ["bubble", "Chat bubble"]];
+        const STYLE_SLOTS = [["border", "Avatar border"], ["name", "Name effect"], ["bubble", "Chat bubble"], ["background", "Profile background"]];
         function stylePreview(s) {
             const st = progressStatus;
             const avatar = document.getElementById("pfHeroAvatar").getAttribute("src") || "images/KIH.jpg";
             const name = document.getElementById("pfHeroName").textContent || "You";
             if (s.type === "border") return PC.withBorder(`<img class="st-av" src="${escText(avatar)}" alt="">`, { border: s.id });
             if (s.type === "name") return `<span class="st-name ${PC.styleClass({ name: s.id }, "name")}">${escText(name)}</span>`;
+            if (s.type === "background") return `<span class="st-bg ${PC.styleClass({ background: s.id }, "background")}"></span>`;
             return `<span class="st-bubble ${PC.styleClass({ bubble: s.id }, "bubble")}">gg wp!</span>`;
         }
         function renderStyle() {
@@ -3301,7 +3306,7 @@ window.closeLegalModal = closeLegalModal;
                     const where = s.chest ? (s.season && !PC.inSeason(s, day) ? "seasonal — not in the chest right now" : `from the chest (${PC.RARITIES[s.rarity].label})`) : rewardSource(s.id);
                     return `<div class="st-pack${has ? "" : " locked"}"><b>${s.icon} ${escText(s.name)}</b><span>${PC.EMOTE_PACKS[s.pack].join(" ")}</span>${has ? "" : `<small>${escText(where)}</small>`}</div>`;
                 }).join("")}</div>`;
-            document.getElementById("pfStyleBody").innerHTML = `<p class="ach-hint">What you pick shows to everyone — on your profile, in comments, chat and the Games leaderboard. Faded ones aren't yours yet.</p>${sections}${packsHtml}`;
+            document.getElementById("pfStyleBody").innerHTML = `<p class="ach-hint">What you pick shows to everyone — on your profile, your posts and comments, in chat and on the Games leaderboard. Faded ones aren't yours yet.</p>${sections}${packsHtml}`;
         }
         window.pickStyle = async function (type, id) {
             if (progressBusy) return;
@@ -3852,6 +3857,7 @@ function getNewsTypeInfo(type) {
             document.getElementById("viewProfileClanHome").textContent = "—";
             document.getElementById("viewProfileBadgesHome").innerHTML = "";
             document.getElementById("viewProfileAvatarWrapHome").className = "";
+            document.querySelector("#viewProfileModalOverlayHome .mini-modal-box").className = "mini-modal-box";
             document.getElementById("viewProfileNameHome").className = "";
             document.getElementById("viewProfileLikeHome").style.display = "none";
             overlay.classList.add("open");

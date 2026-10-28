@@ -2576,7 +2576,7 @@
                 <div class="clan-post-body" id="formationDetailDescription"></div>
 
                 <div class="clan-post-head" id="formationDetailPosterRow" style="margin-top:16px; cursor:pointer;">
-                    <img class="clan-post-avatar" id="formationDetailAvatar" onerror="this.style.visibility='hidden'">
+                    <span id="formationDetailAvatarWrap"><img class="clan-post-avatar" id="formationDetailAvatar" onerror="this.style.visibility='hidden'"></span>
                     <span class="clan-post-name" id="formationDetailPosterName"></span>
                     <span class="clan-post-time" id="formationDetailTime"></span>
                 </div>
@@ -2713,7 +2713,7 @@
                 </div>
 
                 <div class="clan-post-head" id="tierListDetailPosterRow" style="margin-top:12px; cursor:pointer;">
-                    <img class="clan-post-avatar" id="tierListDetailAvatar" onerror="this.style.visibility='hidden'">
+                    <span id="tierListDetailAvatarWrap"><img class="clan-post-avatar" id="tierListDetailAvatar" onerror="this.style.visibility='hidden'"></span>
                     <span class="clan-post-name" id="tierListDetailPosterName"></span>
                     <span class="clan-post-time" id="tierListDetailTime"></span>
                 </div>
@@ -2857,7 +2857,7 @@
             <div class="clan-post-body" id="clanDetailDescription"></div>
 
             <div class="clan-post-head" id="clanDetailPosterRow" style="margin-top:16px; cursor:pointer;">
-                <img class="clan-post-avatar" id="clanDetailAvatar" onerror="this.style.visibility='hidden'">
+                <span id="clanDetailAvatarWrap"><img class="clan-post-avatar" id="clanDetailAvatar" onerror="this.style.visibility='hidden'"></span>
                 <span class="clan-post-name" id="clanDetailPosterName"></span>
                 <span class="clan-post-time" id="clanDetailTime"></span>
             </div>
@@ -3837,6 +3837,7 @@ window.removeClanIconPreview = function () {
         }
 
         function renderClanPosts(posts) {
+            ensureCards((posts || []).map(p => p.uid), () => renderClanPosts(posts));
             allClanPosts = posts;
             applyClanFiltersAndRender();
         }
@@ -3890,8 +3891,8 @@ window.removeClanIconPreview = function () {
                     </div>
                     
 <div class="clan-post-head" style="margin-top:16px; padding-top:10px; border-top:1px solid #2a2a4a; cursor:pointer;" onclick="event.stopPropagation(); onPosterClick('${p.uid}', '${escapeHtml(p.name).replace(/'/g, "\\'")}')">
-                        <img class="clan-post-avatar" src="${escapeHtml(p.avatar)}" onerror="this.style.visibility='hidden'">
-                        <span class="clan-post-name">${escapeHtml(p.name)}</span>
+                        ${bordered(p.uid, `<img class="clan-post-avatar" src="${escapeHtml(p.avatar)}" onerror="this.style.visibility='hidden'">`)}
+                        <span class="clan-post-name"><span class="${nameFx(p.uid)}">${escapeHtml(p.name)}</span></span>
                         <span class="clan-post-time">${timeAgo(p.createdAt)}</span>
                     </div>
                     <div class="clan-post-footer">
@@ -3919,6 +3920,7 @@ window.removeClanIconPreview = function () {
             document.getElementById("clanDetailDescription").textContent = p.description || "No additional description.";
             document.getElementById("clanDetailAvatar").src = p.avatar;
             document.getElementById("clanDetailPosterName").textContent = p.name;
+            styleDetailPoster("clanDetail", p.uid);
             document.getElementById("clanDetailTime").textContent = timeAgo(p.createdAt);
 
             document.getElementById("clanDetailPosterRow").onclick = () => {
@@ -4279,6 +4281,7 @@ window.removeClanIconPreview = function () {
         };
 
         function renderFormationPosts(posts) {
+            ensureCards((posts || []).map(p => p.uid), () => renderFormationPosts(posts));
             allFormationPosts = posts;
             applyFormationFiltersAndRender();
             // Keep the open detail modal (if any) in sync with live updates
@@ -4340,8 +4343,8 @@ window.removeClanIconPreview = function () {
                     ${p.description ? `<div class="clan-post-body" style="margin-top:8px; max-height:4.2em; overflow:hidden;">${escapeHtml(p.description)}</div>` : ""}
 
                     <div class="clan-post-head" style="margin-top:12px; padding-top:10px; border-top:1px solid #2a2a4a; cursor:pointer;" onclick="event.stopPropagation(); onPosterClick('${p.uid}', '${escapeHtml(p.name).replace(/'/g, "\\'")}')">
-                        <img class="clan-post-avatar" src="${escapeHtml(p.avatar)}" onerror="this.style.visibility='hidden'">
-                        <span class="clan-post-name">${escapeHtml(p.name)}${isMine ? '<span class="my-post-badge">Your Post</span>' : ""}</span>
+                        ${bordered(p.uid, `<img class="clan-post-avatar" src="${escapeHtml(p.avatar)}" onerror="this.style.visibility='hidden'">`)}
+                        <span class="clan-post-name"><span class="${nameFx(p.uid)}">${escapeHtml(p.name)}</span>${isMine ? '<span class="my-post-badge">Your Post</span>' : ""}</span>
                         <span class="clan-post-time">${timeAgo(p.createdAt)}</span>
                     </div>
                     <div class="clan-post-footer">
@@ -4370,6 +4373,7 @@ window.removeClanIconPreview = function () {
             document.getElementById("formationDetailDescription").textContent = p.description || "No description.";
             document.getElementById("formationDetailAvatar").src = p.avatar;
             document.getElementById("formationDetailPosterName").textContent = p.name;
+            styleDetailPoster("formationDetail", p.uid);
             document.getElementById("formationDetailTime").textContent = timeAgo(p.createdAt);
 
             document.getElementById("formationDetailPosterRow").onclick = () => {
@@ -4677,18 +4681,34 @@ window.removeClanIconPreview = function () {
            From their public card; read once a minute at most (AppState).
            Lists draw straight away and redraw once the cards arrive. */
         const cardsByUid = {};
+        const cardsAt = {}; // when each was read: a minute later it's read again (a changed style shows up)
         function ensureCards(uids, redraw) {
-            const missing = [...new Set(uids.filter(u => u && !(u in cardsByUid)))];
+            const now = Date.now();
+            const missing = [...new Set(uids.filter(u => u && !(u in cardsByUid && now - (cardsAt[u] || 0) < 60000)))];
             if (!missing.length || !AppState.getPlayerCards) return;
-            missing.forEach(u => { cardsByUid[u] = {}; });
+            missing.forEach(u => { cardsAt[u] = now; if (!(u in cardsByUid)) cardsByUid[u] = {}; });
             AppState.getPlayerCards(missing).then(found => {
                 let changed = false;
-                for (const [u, card] of Object.entries(found)) { cardsByUid[u] = card || {}; if (card && card.style) changed = true; }
+                for (const [u, card] of Object.entries(found)) {
+                    const next = card || {};
+                    if (JSON.stringify(next.style || null) !== JSON.stringify((cardsByUid[u] || {}).style || null)) changed = true;
+                    cardsByUid[u] = next;
+                }
                 if (changed && redraw) redraw();
             }).catch(() => { });
         }
         const styleOf = (uid) => (cardsByUid[uid] || {}).style || null;
         const nameFx = (uid) => window.ProgressCore ? ProgressCore.styleClass(styleOf(uid), "name") : "";
+        // An opened post's poster row: their border and name effect.
+        function styleDetailPoster(prefix, uid) {
+            const paint = () => {
+                const s = styleOf(uid), b = s && window.ProgressCore && ProgressCore.STYLE_BY_ID[s.border];
+                document.getElementById(prefix + "AvatarWrap").className = b ? `fx-av fx-border-${b.css}${b.anim ? " fx-" + b.anim : ""}` : "";
+                document.getElementById(prefix + "PosterName").className = "clan-post-name " + nameFx(uid);
+            };
+            paint();
+            ensureCards([uid], paint);
+        }
         const bordered = (uid, html) => window.ProgressCore ? ProgressCore.withBorder(html, styleOf(uid)) : html;
         function reactionsHtml(kind, item) {
             const r = item.reactions || {}, myUid = AppState.getCurrentUser()?.uid;
@@ -5455,6 +5475,7 @@ window.removeClanIconPreview = function () {
 
         let pendingTierListIdFromUrl = null; // from ?tierListId=… until that list shows up
         function renderTierListPosts(posts) {
+            ensureCards((posts || []).map(p => p.uid), () => renderTierListPosts(posts));
             allTierListPosts = posts;
             applyTierListFiltersAndRender();
             if (pendingTierListIdFromUrl && allTierListPosts.some(x => x.id === pendingTierListIdFromUrl)) {
@@ -5533,8 +5554,8 @@ window.removeClanIconPreview = function () {
                         ${score >= 0 ? "▲" : "▼"} ${score} net votes${(t.commentCount || 0) > 0 ? ` &middot; 💬 ${t.commentCount} comment${t.commentCount === 1 ? "" : "s"}` : ""}
                     </div>
                     <div class="clan-post-head" style="margin-top:12px; padding-top:10px; border-top:1px solid #2a2a4a; cursor:pointer;" onclick="event.stopPropagation(); onPosterClick('${t.uid}', '${nameEscaped}')">
-                        <img class="clan-post-avatar" src="${escapeHtml(t.avatar)}" onerror="this.style.visibility='hidden'">
-                        <span class="clan-post-name">${escapeHtml(t.name)}${isMine ? '<span class="my-post-badge">Your Post</span>' : ""}</span>
+                        ${bordered(t.uid, `<img class="clan-post-avatar" src="${escapeHtml(t.avatar)}" onerror="this.style.visibility='hidden'">`)}
+                        <span class="clan-post-name"><span class="${nameFx(t.uid)}">${escapeHtml(t.name)}</span>${isMine ? '<span class="my-post-badge">Your Post</span>' : ""}</span>
                         <span class="clan-post-time">${timeAgo(t.createdAt)}</span>
                     </div>
                     <div class="clan-post-footer">${footer}</div>
@@ -5580,6 +5601,7 @@ window.removeClanIconPreview = function () {
 
             document.getElementById("tierListDetailAvatar").src = t.avatar;
             document.getElementById("tierListDetailPosterName").textContent = t.name;
+            styleDetailPoster("tierListDetail", t.uid);
             document.getElementById("tierListDetailTime").textContent = timeAgo(t.createdAt);
             document.getElementById("tierListDetailPosterRow").onclick = () => {
                 closeTierListDetailModal();
@@ -5993,6 +6015,8 @@ window.removeClanIconPreview = function () {
             document.getElementById("friendProfileAvatar").innerHTML = avatarHtml(profile.avatar, profile.name, "");
             document.getElementById("friendProfileName").textContent = profile.name;
             document.getElementById("friendProfileName").className = "";
+            const box = document.querySelector("#friendProfileModalOverlay .modal-box");
+            [...box.classList].filter(c => c.startsWith("fx-")).forEach(c => box.classList.remove(c));
 
             const bioEl = document.getElementById("friendProfileBio");
             if (profile.bio) { bioEl.textContent = profile.bio; bioEl.style.display = "block"; }
@@ -6050,6 +6074,7 @@ window.removeClanIconPreview = function () {
             const av = document.getElementById("friendProfileAvatar");
             if (card.style && card.style.border) av.innerHTML = ProgressCore.withBorder(av.innerHTML, card.style);
             document.getElementById("friendProfileName").className = ProgressCore.styleClass(card.style, "name");
+            document.querySelector("#friendProfileModalOverlay .modal-box").classList.add(...(ProgressCore.styleClass(card.style, "background") || "fx-none").split(" "));
             let count = Math.max(0, card.likeCount || 0), on = liked;
             const draw = () => { likeBtn.textContent = `👍 ${count} like${count === 1 ? "" : "s"}`; likeBtn.classList.toggle("on", on); };
             draw();

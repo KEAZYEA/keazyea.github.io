@@ -164,6 +164,17 @@ async function computeStats(db, uid, now) {
   };
 }
 
+// Weekly Scroll and the like: their free draws arrive once a week (the
+// week starting Monday, Singapore time), the first time you look that week.
+function weeklyTopUp(invData, now) {
+  const d = invData || {};
+  const per = P.perksOf(Object.keys(d.items || {})).weeklyFreeDraw;
+  const free = Math.max(0, d.freeDraws || 0);
+  const week = weekOf(now);
+  if (!(per > 0) || d.weeklyFreeWeek === week) return { freeDraws: free, changed: false };
+  return { freeDraws: free + per, weeklyFreeWeek: week, changed: true };
+}
+
 // Super Supporter (VIP) right now: it comes with the Supporter Gold border.
 async function isVip(db, uid, now) {
   const u = await db.collection("users").doc(uid).get();
@@ -178,7 +189,16 @@ async function status(db, uid, now) {
   ]);
   const items = Object.keys(inv.items || {});
   const perks = P.perksOf(items);
-  const style = { border: null, name: null, bubble: null, ...(card.style || {}) };
+  const style = { border: null, name: null, bubble: null, background: null, ...(card.style || {}) };
+  let freeDraws = Math.max(0, inv.freeDraws || 0);
+  if (weeklyTopUp(inv, now).changed) {
+    freeDraws = await db.runTransaction(async (tx) => {
+      const [fresh] = await tx.getAll(invRef(db, uid));
+      const top = weeklyTopUp(fresh.exists ? fresh.data() : {}, now);
+      if (top.changed) tx.set(invRef(db, uid), { freeDraws: top.freeDraws, weeklyFreeWeek: top.weeklyFreeWeek }, { merge: true });
+      return top.freeDraws;
+    });
+  }
   // The VIP border goes when VIP does.
   if (style.border === "b_supporter" && !vip) {
     style.border = null;
@@ -190,7 +210,7 @@ async function status(db, uid, now) {
     badgeLimit: P.badgeLimit(perks),
     likeCount: Math.max(0, card.likeCount || 0),
     items, perks, style, vip,
-    freeDraws: Math.max(0, inv.freeDraws || 0),
+    freeDraws,
     pity: inv.pity || { epic: 0, legendary: 0 },
     balance: wallet.exists ? (wallet.data().balance || 0) : 0
   };
@@ -283,12 +303,15 @@ async function claim(db, uid, body, now) {
     let paid = 0, freeDraws = 0;
     const newly = [], gifts = [];
     const items = { ...((inv.exists && inv.data().items) || {}) };
+    const perTier = Math.max(0, Math.floor(P.perksOf(Object.keys(items)).tierBonus || 0)); // Medal Polish
+    let tiers = 0;
     for (const id of ids) {
       const a = P.ACHIEVEMENT_BY_ID[id];
       const have = Math.max(0, Math.floor(claimed[id] || 0));
       const reached = P.tiersReached(a, stats[a.stat]);
       if (reached <= have) continue;
       paid += P.rewardBetween(have, reached);
+      tiers += reached - have;
       claimed[id] = reached;
       newly.push({ id, from: have, to: reached });
       // Gold: a free chest draw. Mythic: its exclusive rewards.
@@ -299,6 +322,8 @@ async function claim(db, uid, body, now) {
     }
     const balance = w.exists ? (w.data().balance || 0) : 0;
     if (!newly.length) return { ok: true, paid: 0, claimed: [], balance, claimedTiers: claimed };
+    const tierBonus = tiers * perTier;
+    paid += tierBonus;
     tx.set(statsRef(db, uid), { claimed }, { merge: true });
     tx.set(walletRef, { balance: balance + paid, lifetimeEarned: FieldValue.increment(paid), updatedAt: now }, { merge: true });
     const totalFree = Math.max(0, (inv.exists && inv.data().freeDraws) || 0) + freeDraws;
@@ -309,7 +334,7 @@ async function claim(db, uid, body, now) {
     let badges = ((c.exists && c.data().badges) || []).filter(b => P.ACHIEVEMENT_BY_ID[b.a]).map(b => ({ a: b.a, t: claimed[b.a] || b.t }));
     if (!badges.length) badges = newly.slice(0, P.badgeLimit(perks)).map(x => ({ a: x.id, t: x.to }));
     tx.set(cardRef(db, uid), { badges, updatedAt: now }, { merge: true });
-    return { ok: true, paid, claimed: newly, balance: balance + paid, claimedTiers: claimed, badges, freeDraws: totalFree, newFreeDraws: freeDraws, gifts };
+    return { ok: true, paid, tierBonus, claimed: newly, balance: balance + paid, claimedTiers: claimed, badges, freeDraws: totalFree, newFreeDraws: freeDraws, gifts };
   });
 }
 
@@ -372,7 +397,8 @@ async function openChest(db, uid, body, now) {
     const balance = w.exists ? (w.data().balance || 0) : 0;
     const items = { ...((inv.exists && inv.data().items) || {}) };
     const perksBefore = P.perksOf(Object.keys(items));
-    const freeLeft = Math.max(0, (inv.exists && inv.data().freeDraws) || 0);
+    const top = weeklyTopUp(inv.exists ? inv.data() : {}, now);
+    const freeLeft = top.freeDraws;
     if (free && freeLeft < 1) throw new HttpError(400, "You don't have a free draw.");
     const price = free ? 0 : P.chestPrice(count, perksBefore);
     if (balance < price) throw new HttpError(400, `That costs ${price} 🪙 — you have ${balance}.`);
@@ -393,7 +419,7 @@ async function openChest(db, uid, body, now) {
     });
     const after = balance - price + refund;
     tx.set(walletRef, { balance: after, updatedAt: now }, { merge: true });
-    const extra = { pity: drawn.pity, ...(free ? { freeDraws: freeLeft - 1 } : {}) };
+    const extra = { pity: drawn.pity, ...(free || top.changed ? { freeDraws: freeLeft - (free ? 1 : 0) } : {}), ...(top.changed ? { weeklyFreeWeek: top.weeklyFreeWeek } : {}) };
     const perks = writeInventory(tx, db, uid, items, extra, lbRef, row, now);
     tx.set(logRef, { uid, count, free, price, refund, results, pity: drawn.pity, at: now });
     return { ok: true, count, free, price, refund, results, balance: after, items: Object.keys(items), perks, pity: drawn.pity, freeDraws: free ? freeLeft - 1 : freeLeft };
@@ -403,10 +429,10 @@ async function openChest(db, uid, body, now) {
 /* ---------------- styles ----------------
    One border, one name effect and one chat bubble show at a time, on your
    public card. The Supporter Gold border needs Super Supporter (VIP). */
-const STYLE_SLOTS = ["border", "name", "bubble"];
+const STYLE_SLOTS = ["border", "name", "bubble", "background"];
 async function equipStyle(db, uid, body, now) {
   const type = body.type;
-  if (!STYLE_SLOTS.includes(type)) throw new HttpError(400, "Pick a border, name effect or chat bubble.");
+  if (!STYLE_SLOTS.includes(type)) throw new HttpError(400, "Pick a border, name effect, chat bubble or background.");
   const id = body.id == null ? null : body.id;
   if (id !== null) {
     const st = P.STYLE_BY_ID[id];

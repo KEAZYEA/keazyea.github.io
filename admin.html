@@ -236,6 +236,15 @@
             }
         }
     </style>
+    <style>
+        .acct-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+        .acct-give { margin-top: 12px; padding: 10px; border: 1px solid #4a4a86; border-radius: 10px; background: rgba(180, 107, 255, 0.08); }
+        .acct-give-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+        .acct-give-row label { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; }
+        .acct-give-row input { width: 70px; padding: 8px; border-radius: 6px; border: 1px solid gray; background: #2a2a4a; color: white; }
+        .acct-give-row select { flex: 1; min-width: 180px; padding: 8px; border-radius: 6px; border: 1px solid gray; background: #2a2a4a; color: white; }
+        .acct-chip { padding: 2px 8px; border-radius: 999px; border: 1px solid #555; font-size: 0.78rem; background: rgba(255, 255, 255, 0.04); }
+    </style>
 </head>
 
 <body>
@@ -318,15 +327,23 @@
                         <button type="button" class="prize-add-btn" onclick="weeklyPrize.add('diamonds')">+ 💎 Diamonds</button>
                         <button type="button" class="prize-add-btn" onclick="weeklyPrize.add('unit')">+ 🦸 Hero / troop</button>
                         <button type="button" class="prize-add-btn" onclick="weeklyPrize.add('custom')">+ ✨ Something else</button>
+                        <button type="button" class="prize-add-btn" onclick="weeklyPrize.add('draws')">+ 🧰 Chest draws</button>
+                        <button type="button" class="prize-add-btn" onclick="weeklyPrize.add('item')">+ 🎒 Item / style</button>
                     </div>
                     <p class="promo-sub" style="margin:0 0 8px; font-size:0.85rem;">Only what players see — you still send the winner their codes below as usual (and tokens with 🪙 Tokens). Until you save one, it shows 500K Gold + 500 Diamonds.</p>
                     <input type="text" id="weeklyPrizeNote" maxlength="200" placeholder="Note (optional)" oninput="weeklyPrize.preview()" style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box; margin-bottom:10px;">
                     <div id="weeklyPrizePreview" style="margin-bottom:12px; padding:12px; border-radius:12px; background:#1a1a33; border:1px dashed #3a3a66;"></div>
                     <button class="btn-primary" id="saveWeeklyPrizeBtn" onclick="handleSaveWeeklyPrize()" style="padding:10px 20px;">💾 Save prize</button>
                 </details>
-                <p class="promo-sub">Current week: <strong id="currentWeekId"></strong></p>
+                <p class="promo-sub">Draw for the week ending: <strong id="currentWeekId"></strong></p>
                 <p class="promo-sub" id="entryCountText"></p>
                 <p class="promo-sub" id="alreadyDrawnText" style="display:none; color:gold;"></p>
+                <p class="promo-sub" id="nextDrawText" style="display:none;"></p>
+                <div id="earlyDrawWarning" style="display:none; margin:12px 0; padding:12px; border:1px solid #e05555; border-radius:10px; background:rgba(224, 85, 85, 0.12); color:#ffb3b3; text-align:left;">
+                    <b>⚠️ <span id="earlyDrawText"></span></b>
+                    <p style="margin:6px 0 10px; font-size:0.85rem;">That week is still open for entries, so its draw should happen on Sunday. Undo removes this draw and its prize record so you can draw it properly then. The winner's inbox message with the code can't be taken back.</p>
+                    <button class="btn-primary" style="background:#c62828; border-color:#c62828; padding:8px 16px;" onclick="handleUndoEarlyDraw()">↩️ Undo this early draw</button>
+                </div>
 
                 <!-- Step 1: pick a winner (no code involved yet) -->
                 <button class="btn-primary" id="drawBtn" onclick="handlePick()"
@@ -415,6 +432,8 @@
                         <button type="button" class="prize-add-btn" onclick="secretPrize.add('diamonds')">+ 💎 Diamonds</button>
                         <button type="button" class="prize-add-btn" onclick="secretPrize.add('unit')">+ 🦸 Hero / troop</button>
                         <button type="button" class="prize-add-btn" onclick="secretPrize.add('custom')">+ ✨ Something else</button>
+                        <button type="button" class="prize-add-btn" onclick="secretPrize.add('draws')">+ 🧰 Chest draws</button>
+                        <button type="button" class="prize-add-btn" onclick="secretPrize.add('item')">+ 🎒 Item / style</button>
                     </div>
                     <input type="text" id="secretGiveawayPrizeNote" maxlength="200" placeholder="Note (optional) — e.g. I'll send you 2 promo codes" oninput="secretPrize.preview()"
                         style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box; margin-bottom:10px;">
@@ -776,7 +795,8 @@
         </div>
 
         <script src="prize.js"></script>
-        <script type="module" src="appState.js"></script>
+        <script src="progress-core.js"></script>
+    <script type="module" src="appState.js"></script>
         <script type="module">
             // Remember each collapsible section's open/closed state across
             // visits, keyed by its own summary text (stable and readable,
@@ -916,11 +936,28 @@
                     return;
                 }
 
-                const weekId = AppState.getWeekId();
-                document.getElementById("currentWeekId").textContent = weekId;
+                // The week that has ended (Sunday: today's; otherwise last Sunday's) —
+                // never the one still taking entries.
+                const draw = AppState.getDrawWeek();
+                const weekId = draw.weekId;
+                drawWeekId = weekId;
+                document.getElementById("currentWeekId").textContent = weekId + (draw.isSunday ? " (today — entries closed)" : " (last Sunday)");
 
                 const entries = await AppState.getGiveawayEntries(weekId);
-                document.getElementById("entryCountText").textContent = entries.length + " entr" + (entries.length === 1 ? "y" : "ies") + " so far this week.";
+                document.getElementById("entryCountText").textContent = entries.length + " entr" + (entries.length === 1 ? "y" : "ies") + " in that week.";
+                const nextText = document.getElementById("nextDrawText");
+                const early = document.getElementById("earlyDrawWarning");
+                early.style.display = "none";
+                nextText.style.display = "none";
+                if (draw.openWeekId) {
+                    const [openEntries, openWinner] = await Promise.all([AppState.getGiveawayEntries(draw.openWeekId), AppState.getWeekWinner(draw.openWeekId)]);
+                    nextText.style.display = "block";
+                    nextText.textContent = "Next draw: Sunday " + draw.openWeekId + " — " + openEntries.length + " entr" + (openEntries.length === 1 ? "y" : "ies") + " so far (still open).";
+                    if (openWinner) {
+                        early.style.display = "block";
+                        document.getElementById("earlyDrawText").textContent = "The week ending " + draw.openWeekId + " was already drawn (" + (openWinner.winnerName || "?") + (openWinner.drawnAt ? ", " + new Date(openWinner.drawnAt).toLocaleString() : "") + ").";
+                    }
+                }
 
                 const existing = await AppState.getWeekWinner(weekId);
                 const drawBtn = document.getElementById("drawBtn");
@@ -930,14 +967,15 @@
 
                 if (existing) {
                     drawBtn.disabled = true;
-                    drawBtn.textContent = "Already drawn";
+                    // On Sunday the next week becomes the one to draw; until then there's nothing to do.
+                    drawBtn.textContent = draw.openWeekId ? "✅ Done — the next draw unlocks Sunday " + draw.openWeekId : "✅ Already drawn";
                     drawBtn.style.display = "";
                     alreadyText.style.display = "block";
                     const deviceLabel = existing.device === "ios" ? "iOS 🍎" : existing.device === "android" ? "Android 🤖" : existing.device || "Unknown";
                     alreadyText.textContent = "Winner already drawn: " + existing.winnerName + " (played on " + deviceLabel + ")";
                 } else {
-                    drawBtn.disabled = false;
-                    drawBtn.textContent = "Pick This Week's Winner";
+                    drawBtn.disabled = !entries.length;
+                    drawBtn.textContent = entries.length ? "Pick the winner for " + weekId : "No entries that week";
                     drawBtn.style.display = "";
                     alreadyText.style.display = "none";
                 }
@@ -947,13 +985,13 @@
 
             async function handlePick() {
                 const btn = document.getElementById("drawBtn");
-                if (!await showConfirmModal("Pick winner", "Pick a random winner for this week?")) return;
+                if (!await showConfirmModal("Pick winner", "Pick a random winner for the week ending " + drawWeekId + "?")) return;
 
                 btn.disabled = true;
                 btn.textContent = "Picking...";
 
                 try {
-                    const result = await AppState.pickWeeklyWinner();
+                    const result = await AppState.pickWeeklyWinner(drawWeekId);
                     pickedWinner = result.winner;
                     pickedWeekId = result.weekId;
 
@@ -967,10 +1005,24 @@
                 } catch (e) {
                     showInfoModal("Pick failed", e.message);
                     btn.disabled = false;
-                    btn.textContent = "Pick This Week's Winner";
+                    btn.textContent = "Pick the winner for " + drawWeekId;
                 }
             }
             window.handlePick = handlePick;
+            let drawWeekId = null;
+
+            window.handleUndoEarlyDraw = async function () {
+                const draw = AppState.getDrawWeek();
+                if (!draw.openWeekId) return;
+                if (!await showConfirmModal("Undo early draw", "Remove the draw for the week ending " + draw.openWeekId + " so it can be drawn on Sunday? The winner already got an inbox message with the code — that can't be taken back.")) return;
+                try {
+                    const r = await AppState.undoWeeklyDraw(draw.openWeekId);
+                    showInfoModal("Undone", r.undone ? "The early draw (" + r.winnerName + ") was removed. Draw that week on Sunday." : "There was nothing to undo.");
+                    await refreshAdminState();
+                } catch (e) {
+                    showInfoModal("Couldn't undo", e.message);
+                }
+            };
 
             /* ---------------- PROMO CODE LISTS ----------------
                A prize can be several promo codes. Each list starts with one box
@@ -1254,7 +1306,7 @@
             window.addPrizeTier = function () {
                 if (prizeTiers.length >= 5) { showInfoModal("That's plenty", "A ranked giveaway can have up to 5 places."); return; }
                 const id = ++prizeTierSeq, name = "tierPrize_" + id;
-                const kinds = [["tokens", "🪙 Tokens"], ["gold", "💰 Gold"], ["diamonds", "💎 Diamonds"], ["unit", "🦸 Hero / troop"], ["custom", "✨ Something else"]];
+                const kinds = [["tokens", "🪙 Tokens"], ["gold", "💰 Gold"], ["diamonds", "💎 Diamonds"], ["unit", "🦸 Hero / troop"], ["custom", "✨ Something else"], ["draws", "🧰 Chest draws"], ["item", "🎒 Item / style"]];
                 const card = document.createElement("div");
                 card.className = "tier-card";
                 card.id = "tierCard_" + id;
@@ -1314,13 +1366,28 @@
                 unitChoices = [...list(heroes, "hero"), ...list(troops, "troop")].sort((a, b) => a.type.localeCompare(b.type) || a.name.localeCompare(b.name));
                 return unitChoices;
             }
-            const PRIZE_ROW_TITLES = { tokens: "🪙 Tokens", gold: "💰 Gold", diamonds: "💎 Diamonds", unit: "🦸 Hero / troop", custom: "✨ Something else" };
+            const PRIZE_ROW_TITLES = { tokens: "🪙 Tokens", gold: "💰 Gold", diamonds: "💎 Diamonds", unit: "🦸 Hero / troop", custom: "✨ Something else", draws: "🧰 Free chest draws (sent automatically)", item: "🎒 Item / style (sent automatically)" };
+            // Every item and style, grouped, for a <select>.
+            function itemOptionsHtml(selected) {
+                const PC = window.ProgressCore;
+                if (!PC) return "";
+                const opt = (x) => `<option value="${x.id}"${x.id === selected ? " selected" : ""}>${x.icon} ${escapeHtml(x.name)} · ${PC.RARITIES[x.rarity].label}${x.perks ? " — " + escapeHtml(x.perks.map(PC.perkText).join(", ")) : ""}</option>`;
+                const byRarity = (list) => PC.RARITY_ORDER.slice().reverse().flatMap(r => list.filter(x => x.rarity === r));
+                return `<optgroup label="Perk items">${byRarity(PC.ITEMS.filter(i => i.chest)).map(opt).join("")}</optgroup>
+                    <optgroup label="Achievement-only items">${PC.ITEMS.filter(i => !i.chest).map(opt).join("")}</optgroup>
+                    ${Object.keys(PC.STYLE_TYPES).map(t => `<optgroup label="${PC.STYLE_TYPES[t]}s">${byRarity(PC.STYLES.filter(x => x.type === t)).map(opt).join("")}</optgroup>`).join("")}`;
+            }
+            function itemFields(id) {
+                const x = window.ProgressCore && window.ProgressCore.BY_ID[id];
+                return x ? { itemId: x.id, name: x.name, icon: x.icon, rarity: x.rarity } : { itemId: "", name: "", icon: "", rarity: "" };
+            }
             function makePrizeBuilder(name, { rowsId, noteId, previewId }) {
                 let rows = [];
                 const b = {
                     async add(kind) {
                         if (rows.length >= 8) { showInfoModal("That's plenty", "A prize can have up to 8 rewards."); return; }
-                        const row = { kind, amount: "", unitKey: "", name: "", level: "", count: "", form: "unit", label: "", image: "" };
+                        const row = { kind, amount: kind === "draws" ? "1" : "", unitKey: "", name: "", level: "", count: "", form: "unit", label: "", image: "", itemId: "", icon: "", rarity: "" };
+                        if (kind === "item") Object.assign(row, itemFields((window.ProgressCore && window.ProgressCore.ITEMS[0].id) || ""));
                         if (kind === "unit") {
                             try { const u = (await loadUnitChoices())[0]; if (u) { row.unitKey = u.key; row.name = u.name; } }
                             catch (e) { showInfoModal("Couldn't load units", e.message); return; }
@@ -1346,13 +1413,14 @@
                         if (!row) return;
                         row[field] = value;
                         if (field === "unitKey") { const u = (unitChoices || []).find(x => x.key === value); row.name = u ? u.name : value; }
+                        if (field === "itemId") Object.assign(row, itemFields(value));
                         b.preview();
                     },
                     // Fill it from a saved prize (or empty it with null).
                     async load(prize) {
                         const items = prize && Array.isArray(prize.items) ? prize.items : [];
                         if (items.some(i => i.kind === "unit")) { try { await loadUnitChoices(); } catch (e) { } }
-                        rows = items.map(i => ({ kind: i.kind, amount: i.amount ? String(i.amount) : "", unitKey: i.unitKey || "", name: i.name || "", level: i.level ? String(i.level) : "", count: i.count ? String(i.count) : "", form: i.form || "unit", label: i.label || "", image: i.image || "" }));
+                        rows = items.map(i => ({ kind: i.kind, amount: i.amount ? String(i.amount) : "", unitKey: i.unitKey || "", name: i.name || "", level: i.level ? String(i.level) : "", count: i.count ? String(i.count) : "", form: i.form || "unit", label: i.label || "", image: i.image || "", itemId: i.itemId || "", icon: i.icon || "", rarity: i.rarity || "" }));
                         document.getElementById(noteId).value = (prize && prize.note) || "";
                         b.paint();
                     },
@@ -1380,8 +1448,10 @@
                                     <div style="display:flex; flex-direction:column; gap:6px; flex:1; min-width:0;">
                                     ${field(i, "label", r.label, "What is it? e.g. Epic chest")}
                                     ${field(i, "amount", r.amount, "How many (optional)", "number")}</div></div>`;
+                            } else if (r.kind === "item") {
+                                inputs = `<select onchange="${name}.set(${i}, 'itemId', this.value)" style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box;">${itemOptionsHtml(r.itemId)}</select>`;
                             } else {
-                                inputs = field(i, "amount", r.amount, r.kind === "tokens" ? "How many tokens" : "How much — e.g. 1000000", "number");
+                                inputs = field(i, "amount", r.amount, r.kind === "tokens" ? "How many tokens" : r.kind === "draws" ? "How many free draws (1–100)" : "How much — e.g. 1000000", "number");
                             }
                             // the reward's name and ✕ on top, its boxes full width below (room on a phone)
                             return `<div style="display:flex; flex-direction:column; gap:8px; padding:8px 10px 10px; border:1px solid #34345e; border-radius:10px; background:#20203a;">
@@ -1651,9 +1721,9 @@
                         const code = codes[w.uid];
                         // ranked: what their place won
                         const prize = info && (info.tiers ? (info.tiers[(w.place || 0) - 1] || {}).prize : info.prize);
-                        const tokens = prize ? window.KIHPrize.tokensOf(prize) : 0;
+                        const auto = prize ? window.KIHPrize.autoText(prize) : "";
                         const codeless = prize && !window.KIHPrize.needsCode(prize);
-                        el.textContent = [tokens ? `🪙 ${tokens}` : "", code || (codeless ? "" : "no code saved")].filter(Boolean).join(" + ");
+                        el.textContent = [auto, code || (codeless ? "" : "no code saved")].filter(Boolean).join(" + ");
                         if (!code && !codeless) el.style.color = "#ff8080";
                     }
                 }
@@ -3027,14 +3097,69 @@ async function handleLookupUserByUid() {
                             <button class="set" onclick="handleTokenAdjust('set')">✏️ Set balance</button>
                             <button class="gift" onclick="handleGiftToAccount()">🎁 Send a gift to claim</button>
                         </div>
+                        <div class="acct-give">
+                            <b>🎒 Give chest draws or an item / style</b>
+                            <div class="acct-give-row">
+                                <label>Free draws <input type="number" id="grantDraws" min="0" max="100" step="1" value="0"></label>
+                                <select id="grantItem"><option value="">— no item —</option>${itemOptionsHtml("")}</select>
+                            </div>
+                            <button type="button" class="give" onclick="handleGrantItems()">🎁 Give</button>
+                            <p class="promo-sub" style="margin:4px 0 0; font-size:0.78rem;">Sent straight to their account (the inbox message box above applies). Something they already own turns into its duplicate tokens.</p>
+                        </div>
                         <p class="promo-sub" style="margin:14px 0 4px;">Manual changes (newest first):</p>
                         ${history}
+                        ${accountItemsHtml(a)}
                     </div>`;
                 } catch (e) {
                     result.innerHTML = `<p class="promo-sub">Error: ${escapeHtml(e.message)}</p>`;
                 }
             }
             window.openTokenAccount = openTokenAccount;
+
+            window.handleGrantItems = async function () {
+                if (!tokenAccountUid) return;
+                const draws = parseInt(document.getElementById("grantDraws").value, 10) || 0;
+                const itemId = document.getElementById("grantItem").value;
+                if (!draws && !itemId) { showInfoModal("Nothing picked", "Choose some free draws or an item."); return; }
+                const x = itemId && window.ProgressCore.BY_ID[itemId];
+                const what = [draws ? `${draws} free chest draw${draws === 1 ? "" : "s"}` : "", x ? `${x.icon} ${x.name}` : ""].filter(Boolean).join(" + ");
+                if (!await showConfirmModal("Give", `Give ${tokenAccountName} ${what}?`)) return;
+                const reason = await showPromptModal("Reason (kept in the history; shown to them if you message them)", "Giveaway prize");
+                if (reason === null) return;
+                try {
+                    const r = await AppState.adminTokens("adminGrantItems", { uid: tokenAccountUid, draws, itemIds: itemId ? [itemId] : [], reason, notify: !!(document.getElementById("tokenNotifyBox") || {}).checked });
+                    showInfoModal("Done", `Gave ${tokenAccountName} ${what}.${r.dups && r.dups.length ? ` They already had ${r.dups.map(id => window.ProgressCore.BY_ID[id].name).join(", ")}, so they got ${r.dupTokens} 🪙 instead.` : ""}`);
+                    await openTokenAccount(tokenAccountUid);
+                } catch (e) {
+                    showInfoModal("Couldn't give that", e.message);
+                }
+            };
+
+            // What they own (items, styles), what they show, their chest draws
+            // and their payments — read-only.
+            function accountItemsHtml(a) {
+                const PC = window.ProgressCore;
+                if (!PC || !a.items) return "";
+                const label = (id) => { const x = PC.BY_ID[id]; return x ? `${x.icon} ${escapeHtml(x.name)}` : escapeHtml(id); };
+                const chip = (id) => { const x = PC.BY_ID[id]; return `<span class="acct-chip" style="border-color:${x ? PC.RARITIES[x.rarity].color : "#555"}" title="${x ? escapeHtml(PC.RARITIES[x.rarity].label) : ""}">${label(id)}</span>`; };
+                const items = a.items.filter(id => PC.ITEM_BY_ID[id]), styles = a.items.filter(id => PC.STYLE_BY_ID[id]);
+                const left = PC.pityLeft(a.pity);
+                const shown = ["border", "name", "bubble", "background"].filter(t => a.style[t]).map(t => `${PC.STYLE_TYPES[t]}: ${label(a.style[t])}`).join(" · ") || "nothing";
+                const lines = PC.perkLines(PC.perksOf(a.items)).map(l => escapeHtml(l.text)).join(" · ") || "none";
+                const opens = a.chestOpens.length ? a.chestOpens.map(o => `<div class="token-history-row">${escapeHtml(fmtDate(o.at))} · ${o.free ? "🎁 free draw" : `×${o.count} · ${o.price} 🪙`}${o.refund ? ` · +${o.refund} 🪙 back` : ""}<br>${o.results.map(r => `${label(r.id)}${r.duplicate ? " (dup)" : ""}`).join(", ")}</div>`).join("") : "<p class='promo-sub'>No chest draws yet.</p>";
+                const pay = a.purchases.length ? a.purchases.map(p => `<div class="token-history-row">${escapeHtml(fmtDate(p.at))} · ${p.kind === "pack" ? `Token pack (${escapeHtml(p.pack)})${p.amount ? ` · ${escapeHtml(p.currency)} ${escapeHtml(p.amount)}` : ""}` : `${p.plan === "vip" ? "Super Supporter" : p.plan === "noAds" ? "Supporter" : escapeHtml(p.plan)} payment`} · +${p.tokens} 🪙</div>`).join("") : "<p class='promo-sub'>No payments.</p>";
+                return `
+                    <h4 style="margin:18px 0 6px;">🎒 Items & styles <span class="promo-sub">(${items.length} items · ${styles.length} styles)</span></h4>
+                    <div class="acct-chips">${items.map(chip).join("") || "<span class='promo-sub'>No items.</span>"}</div>
+                    <div class="acct-chips" style="margin-top:6px;">${styles.map(chip).join("") || "<span class='promo-sub'>No styles.</span>"}</div>
+                    <p class="promo-sub" style="margin:8px 0 2px;">Their bonuses: ${lines}</p>
+                    <p class="promo-sub" style="margin:2px 0;">Showing: ${shown} · 👍 ${a.likeCount} likes</p>
+                    <p class="promo-sub" style="margin:2px 0;">🎁 Free draws: ${a.freeDraws} · Epic+ within ${left.epic} draws · Legendary within ${left.legendary}</p>
+                    <h4 style="margin:16px 0 6px;">🧰 Chest draws <span class="promo-sub">(newest first, last 30)</span></h4>
+                    ${opens}
+                    <h4 style="margin:16px 0 6px;">🛒 Payments <span class="promo-sub">(token packs and plan payments)</span></h4>
+                    ${pay}`;
+            }
 
             async function handleTokenAdjust(mode) {
                 if (!tokenAccountUid) return;
