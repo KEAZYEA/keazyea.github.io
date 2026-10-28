@@ -723,10 +723,16 @@
     const runHangTarget = (units, seed, step) => hangTarget(units, runRng("guess", seed, step));
     const runBlurPuzzle = (units, seed, step) => blurPuzzle(units, runRng("blur", seed, step));
 
-    function runNew(game, seed, now) {
+    // perks (from items, ranked runs only): { extraMs } more time on every
+    // question, { lives } wrong answers forgiven, { blurHints } more Blur hints.
+    function runNew(game, seed, now, perks) {
         if (!GAMES.includes(game)) throw new Error("Unknown game.");
-        const run = { game, seed, step: 0, score: 0, over: false, guesses: [], letters: [], deadline: now + RUN_LIMIT_MS[game] };
-        if (game === "blur") { run.hints = 0; run.hintsLeft = RUN_BLUR_HINTS; }
+        const p = perks || {};
+        const extraMs = Math.max(0, Math.floor(Number(p.extraMs) || 0));
+        const run = { game, seed, step: 0, score: 0, over: false, guesses: [], letters: [], deadline: now + RUN_LIMIT_MS[game] + extraMs };
+        if (extraMs) run.extraMs = extraMs;
+        if (p.lives > 0) run.lives = Math.floor(p.lives);
+        if (game === "blur") { run.hints = 0; run.hintsLeft = RUN_BLUR_HINTS + Math.max(0, Math.floor(Number(p.blurHints) || 0)); }
         return run;
     }
 
@@ -777,11 +783,22 @@
             const got = Math.max(0, Math.min(points, LB_CAP - r.score)); // (a run from before the cap may already be past it)
             r.score += got; r.step++; r.guesses = []; r.letters = [];
             if (r.game === "blur") r.hints = 0;
-            r.deadline = now + RUN_PAUSE_MS + RUN_LIMIT_MS[r.game];
+            r.deadline = now + RUN_PAUSE_MS + RUN_LIMIT_MS[r.game] + (r.extraMs || 0);
             if (r.score >= LB_CAP) r.over = true;
             return got;
         };
-        const finish = (fb) => { r.over = true; return { run: r, feedback: { ...fb, timedOut: late || input == null } }; };
+        // A miss ends the run — unless there's an extra life left: then this
+        // one scores nothing and the run moves on to the next.
+        const finish = (fb) => {
+            const timedOut = late || input == null;
+            if (r.lives > 0) {
+                r.lives--;
+                nextUnit(0);
+                return { run: r, feedback: { ...fb, timedOut, lifeUsed: true, livesLeft: r.lives } };
+            }
+            r.over = true;
+            return { run: r, feedback: { ...fb, timedOut } };
+        };
         const validGuess = (key) => {
             if (typeof key !== "string" || !unitByKey(units, key)) throw new Error("That's not a troop or hero.");
             if (r.guesses.includes(key)) throw new Error("You already guessed that one.");

@@ -250,8 +250,46 @@ async function signOutUser() {
     async function setProfileLike(targetUid, on) {
         return callProgressApi(on ? "like" : "unlike", { targetUid });
     }
-    async function openItemChest() {
-        return callProgressApi("openChest");
+    // count 1 or 10; free: spend a free draw (from a Gold achievement tier).
+    async function openItemChest(count = 1, free = false) {
+        return callProgressApi("openChest", { count, free });
+    }
+    // type "border" | "name" | "bubble"; id null takes it off.
+    async function equipStyle(type, id) {
+        return callProgressApi("equipStyle", { type, id });
+    }
+    // Several players' cards at once ({ uid: card }), each read at most
+    // once a minute — for borders and name effects in lists.
+    const cardCache = new Map();
+    async function getPlayerCards(uids) {
+        await waitForAuthReady();
+        const out = {};
+        if (!currentUser) return out;
+        const now = Date.now();
+        await Promise.all([...new Set((uids || []).filter(Boolean))].map(async (uid) => {
+            const hit = cardCache.get(uid);
+            if (hit && now - hit.at < 60000) { out[uid] = hit.card; return; }
+            try {
+                const snap = await getDoc(doc(db, "playerCards", uid));
+                const card = snap.exists() ? snap.data() : {};
+                cardCache.set(uid, { at: now, card });
+                out[uid] = card;
+            } catch (e) {
+                out[uid] = {};
+            }
+        }));
+        return out;
+    }
+    // Your own items and styles (ids), e.g. to know which emote packs you have.
+    async function getMyItemIds() {
+        await waitForAuthReady();
+        if (!currentUser) return [];
+        try {
+            const snap = await getDoc(doc(db, "inventories", currentUser.uid));
+            return snap.exists() ? Object.keys(snap.data().items || {}) : [];
+        } catch (e) {
+            return [];
+        }
     }
     // Someone's public card: { badges: [{a, t}], likeCount, itemCount }.
     async function getPlayerCard(uid) {
@@ -2455,7 +2493,10 @@ async function getClanPostCooldownRemaining() {
        target: { kind: "formation", postId, commentId }
              | { kind: "tierList", tierListId, commentId }
              | { kind: "dm", threadId, msgId } */
-    const REACTIONS = ["❤️", "😂", "😮", "😢", "👍", "🔥"];
+    // Everyone has the first six; the rest come with emote packs (the same
+    // list as ProgressCore.ALL_REACTIONS and the Firestore rules).
+    const REACTIONS = ["❤️", "😂", "😮", "😢", "👍", "🔥", "🎉", "🥳", "🍾", "🎊", "🍕", "🍔", "🍟", "🍩", "🐶", "🦊", "🐼", "🐸",
+        "😺", "😹", "😻", "🙀", "⚔️", "🛡️", "🏹", "💥", "🎃", "👻", "💀", "🦇", "❄️", "⛄", "🎄", "🦌", "💞", "💖", "💘", "💝"];
     async function setReaction(target, emoji) {
         await waitForAuthReady();
         if (!currentUser) throw new Error("Sign in with Google first to react.");
@@ -3261,8 +3302,33 @@ async function getGiveawayHistory(maxCount = 20) {
             throw new Error("No entries found for " + weekId + ".");
         }
 
-        const winner = entries[Math.floor(Math.random() * entries.length)];
-        return { weekId, entryCount: entries.length, winner };
+        // One ticket each, plus any extra tickets from items (Golden Ticket…),
+        // read now, at the draw.
+        const extra = await perkValues(entries.map(e => e.uid), "weeklyTickets");
+        const ticketsOf = (e) => 1 + (extra[e.uid] || 0);
+        const totalTickets = entries.reduce((sum, e) => sum + ticketsOf(e), 0);
+        let ticket = secureRandom() * totalTickets;
+        let winner = entries[entries.length - 1];
+        for (const e of entries) {
+            ticket -= ticketsOf(e);
+            if (ticket < 0) { winner = e; break; }
+        }
+        return { weekId, entryCount: entries.length, winner, totalTickets, winnerTickets: ticketsOf(winner) };
+    }
+
+    // { uid: value } of one perk for each of these players (0 when they have
+    // no items). Admin reads inventories at a draw.
+    async function perkValues(uids, kind) {
+        const out = {};
+        await Promise.all([...new Set(uids.filter(Boolean))].map(async (uid) => {
+            try {
+                const snap = await getDoc(doc(db, "inventories", uid));
+                out[uid] = snap.exists() ? Math.max(0, Number((snap.data().perks || {})[kind]) || 0) : 0;
+            } catch (e) {
+                out[uid] = 0;
+            }
+        }));
+        return out;
     }
 
     /* A prize can be several promo codes. Codes arrive as an array or as text
@@ -4362,18 +4428,12 @@ async function sendAdminMessage(uid, title, body) {
     // Giveaway chances from its owner's items (read now, at the draw, so an
     // item found yesterday counts). A giveaway made without tokens stays one
     // equal chance each, items included.
+    // Staked tokens count ×(1 + stakeMult%) — Lucky Beads, Star of Fortune.
     async function secretWeightFn(giveaway, pool) {
         if (giveaway.tokensAllowed === false) return () => 1;
-        const bonus = {};
-        await Promise.all(pool.map(async (e) => {
-            try {
-                const snap = await getDoc(doc(db, "inventories", e.uid));
-                bonus[e.uid] = snap.exists() ? Math.max(0, Math.floor(Number((snap.data().perks || {}).secretChance) || 0)) : 0;
-            } catch (err) {
-                bonus[e.uid] = 0;
-            }
-        }));
-        return (e) => 1 + Math.max(0, Math.floor(Number(e.tokens) || 0)) + (bonus[e.uid] || 0);
+        const uids = pool.map(e => e.uid);
+        const [chances, stakeMult] = await Promise.all([perkValues(uids, "secretChance"), perkValues(uids, "stakeMult")]);
+        return (e) => 1 + Math.max(0, Math.floor(Number(e.tokens) || 0)) * (1 + (stakeMult[e.uid] || 0) / 100) + Math.floor(chances[e.uid] || 0);
     }
 
     // Uniform in [0, 1). Uses the browser's cryptographic source rather than
@@ -4898,7 +4958,7 @@ async function maybeRefreshAd(containerId) {
         reportQuestProgress, startDailyQuestTracking, stakeTokensOnSecretGiveaway, setSecretGiveawayStake, refreshSecretGiveawayMaxStake,
         // achievements, badges, profile likes, items
         trackProgress, getProgressStatus, claimAchievement, setShownBadges, setProfileLike, openItemChest,
-        getPlayerCard, haveILikedProfile, getMyPerks,
+        getPlayerCard, getPlayerCards, haveILikedProfile, getMyPerks, getMyItemIds, equipStyle,
         // profile
         getProfile, setProfile, isVipActive, isNoAdsActive, isBannedNow, shouldShowAds, listenToMyProfile,
         // unique names

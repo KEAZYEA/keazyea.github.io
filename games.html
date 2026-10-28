@@ -6,6 +6,7 @@
     <meta name="description" content="Daily Kingdom Clash puzzle and quiz games — Unitle, Hangman, Higher or Lower, Trivia and Blur — with a weekly leaderboard.">
     <link rel="icon" href="images/KIH.jpg">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="fx-styles.css">
     <!-- the games server: open the connection while the page loads -->
     <link rel="preconnect" href="https://kih-store.vercel.app" crossorigin>
     <meta charset="UTF-8" />
@@ -258,6 +259,12 @@
         .lb-chips span small { margin-left: 3px; font-size: 0.68rem; font-weight: 900; color: #1a1a2e; background: #ffd75e; padding: 0 4px; border-radius: 999px; }
         .lb-hint { margin-top: 8px; padding: 8px 10px; border-radius: 10px; background: rgba(255, 215, 94, 0.1); border: 1px solid rgba(255, 215, 94, 0.35); font-size: 0.82rem; line-height: 1.45; color: #f3e6b8; }
         .lb-hint b { color: #ffd75e; }
+        .run-lives { display: inline-flex; align-items: center; gap: 4px; margin-left: 8px; padding: 1px 8px; border-radius: 999px; font-size: 0.78rem; font-weight: 800;
+            color: #ff8fa3; background: rgba(255, 77, 109, 0.14); }
+        .run-toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 500; max-width: calc(100% - 32px); padding: 10px 16px; border-radius: 12px;
+            background: #2a1520; border: 1px solid rgba(255, 77, 109, 0.6); color: #ffd0da; font-weight: 800; text-align: center; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45); animation: runToastIn 0.3s ease; }
+        @keyframes runToastIn { from { opacity: 0; transform: translate(-50%, 14px); } }
+        .run-banner.life { background: rgba(255, 77, 109, 0.16); border-color: rgba(255, 77, 109, 0.5); color: #ffb3c1; }
         .lb-perk { flex-shrink: 0; font-size: 0.74rem; font-weight: 800; color: #7ddc92; padding: 2px 6px; border-radius: 999px; background: rgba(95, 211, 138, 0.14); }
         .lb-chips span.perk { background: rgba(95, 211, 138, 0.16); box-shadow: inset 0 0 0 1px rgba(95, 211, 138, 0.55); }
         .lb-prize-tag { flex-shrink: 0; font-size: 0.74rem; font-weight: 800; color: #1a1a2e; background: #ffd75e; padding: 2px 7px; border-radius: 999px; }
@@ -1408,6 +1415,8 @@
                         ui.runId = resp.runId;
                         // the server decides (its clock, near midnight) — and an older one never doubles
                         ui.bonus = resp.bonus === true;
+                        ui.extraMs = resp.extraMs || 0; // items: more time per question
+                        ui.lives = resp.lives || 0;     // items: wrong answers forgiven
                     } catch (e) {
                         resp = null;
                         ui.note = "Couldn't reach the leaderboard just now — this run isn't ranked.";
@@ -1431,7 +1440,9 @@
                 : ui.ranked && ui.bonus ? `⭐ Today's Puzzle game — runs you start today count <b>double</b> on the leaderboard (${C.LB_CAP} points = ${C.LB_GAME_MAX}).`
                 : ui.ranked ? `🏆 Ranked — your best run this week counts on the weekly leaderboard: your score is your points (up to ${C.LB_CAP}).`
                 : ui.note === "signin" ? "Sign in to put your runs on the weekly leaderboard." : esc(ui.note);
-            return `${INTROS[ui.game].free}${note ? `<small>${note}</small>` : ""}`;
+            const perks = ui.ranked && (ui.lives || ui.extraMs)
+                ? `<small>🎒 Your items: ${ui.lives ? `<span class="run-lives">❤️ × ${ui.lives}</span>` : ""}${ui.extraMs ? ` +${ui.extraMs / 1000}s per question` : ""}</small>` : "";
+            return `${INTROS[ui.game].free}${note ? `<small>${note}</small>` : ""}${perks}`;
         }
 
         // One move: an answer, a pick, a guess, a hint — or null when time runs out.
@@ -1484,6 +1495,14 @@
             window.addEventListener("beforeunload", (e) => { if (runInProgress(runUi)) { e.preventDefault(); e.returnValue = ""; } });
         }
 
+        // A short note over the game (an extra life used, a token from an item).
+        function showRunToast(text) {
+            const t = document.createElement("div");
+            t.className = "run-toast";
+            t.textContent = text;
+            document.body.appendChild(t);
+            setTimeout(() => t.remove(), 2600);
+        }
         async function runMove(input) {
             const ui = runUi;
             if (!ui || ui.starting || ui.busy || ui.over || ui.holding) return;
@@ -1553,6 +1572,8 @@
             ui.best = Math.min(C.LB_CAP, Math.max(ui.best, resp.best || 0, ui.challenge ? 0 : ui.score));
             if (resp.seed != null) ui.seed = resp.seed;
             if (typeof resp.pts === "number") ui.pts = resp.pts;
+            if (typeof resp.lives === "number") ui.lives = resp.lives;
+            if (resp.tenPaid) showRunToast(`🥾 Muddy Boots: +${resp.tenPaid} 🪙 for reaching 10 today!`);
             markRunTabs();
             if (first) { ui.view = resp.view; paintRun(ui); return; }
             const fb = resp.feedback || {};
@@ -1570,7 +1591,12 @@
             }
             // Show what just happened, then move on to the next one.
             let hold = 0;
-            if (runIsStreak(ui.game)) hold = 800;
+            if (fb.lifeUsed) {
+                // An extra life (from items) took that miss: show the answer, then on.
+                hold = runIsStreak(ui.game) ? 1100 : 1600;
+                showRunToast(`❤️ Extra life used — ${fb.livesLeft ? `${fb.livesLeft} left` : "that was the last one"}. Keep going!`);
+                if (!runIsStreak(ui.game)) ui.reveal = { answer: fb.answer, lifeUsed: true };
+            } else if (runIsStreak(ui.game)) hold = 800;
             else if (fb.solved) {
                 hold = 1300;
                 ui.reveal = { rows: fb.guesses, answer: fb.answer, points: fb.points, tries: fb.tries, misses: fb.misses };
@@ -1590,7 +1616,7 @@
                 ui.holding = false;
                 ui.view = resp.view;
                 ui.feedback = null;
-                if (ui.reveal && ui.reveal.points) ui.unitNo++;
+                if (ui.reveal && (ui.reveal.points || ui.reveal.lifeUsed)) ui.unitNo++;
                 ui.reveal = null;
                 ui.gained = false;
                 paintRun(ui, true);
@@ -1604,7 +1630,7 @@
         function tickRun() {
             const ui = runUi;
             if (!ui || ui.over || ui.starting) return;
-            const total = C.RUN_LIMIT_MS[ui.game];
+            const total = C.RUN_LIMIT_MS[ui.game] + (ui.extraMs || 0);
             const left = ui.deadline - (Date.now() + (ui.skew || 0));
             const shown = Math.max(0, Math.min(total, left));
             const fill = $("runTimerFill"), text = $("runTimerText");
@@ -1917,7 +1943,7 @@
             }
             const medals = ["🥇", "🥈", "🥉"];
             const spot = (r, place) => r
-                ? `<div class="pod p${place}${r.me ? " me" : ""}"><div class="pod-medal">${medals[place - 1]}</div><div class="pod-name">${esc(r.name)}${r.me ? " (you)" : ""}</div><div class="pod-score">${r.total}</div>
+                ? `<div class="pod p${place}${r.me ? " me" : ""}"><div class="pod-medal">${medals[place - 1]}</div><div class="pod-name"><span class="${esc(r.nameFx || "")}">${esc(r.name)}</span>${r.me ? " (you)" : ""}</div><div class="pod-score">${r.total}</div>
                     <div class="pod-block"><b>${place}</b><small>+${d.prizes[place - 1]} 🪙</small></div></div>`
                 : `<div class="pod p${place} empty"><div class="pod-medal">${medals[place - 1]}</div><div class="pod-name">—</div><div class="pod-score">&nbsp;</div>
                     <div class="pod-block"><b>${place}</b><small>+${d.prizes[place - 1]} 🪙</small></div></div>`;
@@ -1925,7 +1951,7 @@
             const rest = d.top.slice(3);
             const list = lbShowAll ? rest : rest.slice(0, 7);
             // 4th and 5th win too: their prize sits on their row.
-            const rows = list.map(r => `<div class="lb-row${r.me ? " me" : ""}"><span class="lb-rank">#${r.rank}</span><span class="lb-name">${esc(r.name)}${r.me ? " (you)" : ""}</span>${r.perk ? `<span class="lb-perk" title="Bonus points from items">🎒+${r.perk}</span>` : ""}${d.prizes[r.rank - 1] ? `<span class="lb-prize-tag">+${d.prizes[r.rank - 1]} 🪙</span>` : ""}<span class="lb-total">${r.total}</span></div>`).join("");
+            const rows = list.map(r => `<div class="lb-row${r.me ? " me" : ""}"><span class="lb-rank">#${r.rank}</span><span class="lb-name"><span class="${esc(r.nameFx || "")}">${esc(r.name)}</span>${r.me ? " (you)" : ""}</span>${r.perk ? `<span class="lb-perk" title="Bonus points from items">🎒+${r.perk}</span>` : ""}${d.prizes[r.rank - 1] ? `<span class="lb-prize-tag">+${d.prizes[r.rank - 1]} 🪙</span>` : ""}<span class="lb-total">${r.total}</span></div>`).join("");
             const more = rest.length > 7 ? `<button class="lb-more" onclick="lbShowAll = !lbShowAll; renderLeaderboard();">${lbShowAll ? "Show fewer" : `Show all ${d.top.length}`}</button>` : "";
             // Each game's points on the board this week — "×2" when they came from a
             // doubled run — and today's double game starred.

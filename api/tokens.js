@@ -40,6 +40,13 @@ const { getFirebaseAdmin, DAY_MS, dayKeyFor, dayStartMs, questsForDay, isBannedN
   questReward, questRewardsFor, weekDayKeys, isSundayKey, sundayLoginReward } = require("./_lib");
 const { FieldValue } = require("firebase-admin/firestore");
 const GamesCore = require("../games-core.js");
+const P = require("../progress-core.js");
+
+// Your items' perks (all zero without any).
+async function perksFor(db, uid) {
+  const inv = await db.collection("inventories").doc(uid).get();
+  return { ...P.perksOf([]), ...((inv.exists && inv.data().perks) || {}) };
+}
 
 // Same admin uid used in appState.js and cancel-subscription.js.
 const ADMIN_UID = "Ts92RY0ipMYDRJa2s5toQfDYxtp1";
@@ -271,6 +278,7 @@ async function completeQuest(db, uid, body, now, dayKey, resetAt) {
     return { ...base, completed: false, reason: "not-verified" };
   }
 
+  const perks = questId === "login" ? await perksFor(db, uid) : null;
   const claims = db.collection("tokenWallets").doc(uid).collection("claims");
   const claimRef = claims.doc(`${dayKey}_${questId}`);
   // Sunday's login is the weekly chest: it needs this week's Mon–Sat logins.
@@ -286,7 +294,9 @@ async function completeQuest(db, uid, body, now, dayKey, resetAt) {
     if (sundayChest) {
       const loggedIn = new Set(weekSnaps.filter(s => s.exists).map(s => s.data().dayKey));
       ({ reward, fullStreak } = sundayLoginReward(dayKey, loggedIn));
+      if (fullStreak) reward += Math.max(0, Math.floor(perks.sundayBonus || 0)); // Juice Box, Torch
     }
+    if (questId === "login") reward += Math.max(0, Math.floor(perks.loginBonus || 0)); // Ration Pack
     tx.set(claimRef, {
       questId,
       dayKey,
@@ -302,10 +312,11 @@ async function completeQuest(db, uid, body, now, dayKey, resetAt) {
 
 const MAX_CLAIMS_PER_CALL = 20;
 
-// What one ready reward pays. Never more than 5, whatever a doc says.
+// What one ready reward pays. Never more than 12 (a Sunday chest with every
+// login item), whatever a doc says.
 function rewardOf(claim) {
   const r = Math.floor(Number(claim.reward));
-  return Number.isFinite(r) && r >= 1 ? Math.min(r, 5) : 1;
+  return Number.isFinite(r) && r >= 1 ? Math.min(r, 12) : 1;
 }
 
 // Pays each listed reward that's still "ready" — its `reward` (1 or 2, 3–5
@@ -324,18 +335,45 @@ async function claimRewards(db, uid, body, now) {
   await assertNotBanned(db, uid);
 
   const walletRef = db.collection("tokenWallets").doc(uid);
-  const claimRefs = unique.map(id => walletRef.collection("claims").doc(id));
+  const claimsColl = walletRef.collection("claims");
+  const claimRefs = unique.map(id => claimsColl.doc(id));
+  // Quest-token items (Quill, Coin Pouch…): once every quest of a day is
+  // claimed, that day's quest tokens × the items' bonus, rounded up, once.
+  const perks = await perksFor(db, uid);
+  const days = perks.questMult > 0 ? [...new Set(unique.map(id => id.slice(0, 10)))] : [];
+  const dayInfo = days.map(d => ({ d, ids: questsForDay(d).map(q => `${d}_${q}`), bonusRef: claimsColl.doc(`${d}_itemBonus`) }));
+  // Each document read once, even when it's both being claimed and checked.
+  const extraIds = [...new Set(dayInfo.flatMap(x => [...x.ids, `${x.d}_itemBonus`]))].filter(id => !unique.includes(id));
+  const extraRefs = extraIds.map(id => claimsColl.doc(id));
   return db.runTransaction(async (tx) => {
-    const [walletSnap, ...claimSnaps] = await tx.getAll(walletRef, ...claimRefs);
+    const [walletSnap, ...snaps] = await tx.getAll(walletRef, ...claimRefs, ...extraRefs);
+    const claimSnaps = snaps.slice(0, claimRefs.length);
+    const byId = new Map([...unique, ...extraIds].map((id, i) => [id, snaps[i]]));
     const balance = walletSnap.exists ? (walletSnap.data().balance || 0) : 0;
     let paid = 0;
     let count = 0;
+    const claimedNow = new Set();
     claimSnaps.forEach((snap, i) => {
       if (!snap.exists || snap.data().status !== "ready") return;
       tx.update(claimRefs[i], { status: "claimed", claimedAt: now });
       paid += rewardOf(snap.data());
       count++;
+      claimedNow.add(unique[i]);
     });
+    let itemBonus = 0;
+    for (const { d, ids, bonusRef } of dayInfo) {
+      const bonusSnap = byId.get(`${d}_itemBonus`);
+      if (bonusSnap && bonusSnap.exists) continue;
+      // Claimed: claimed just now, or before (old claim docs have no status).
+      const done = ids.every(id => { const sn = byId.get(id); return claimedNow.has(id) || (sn && sn.exists && sn.data().status !== "ready"); });
+      if (!done) continue;
+      const earned = ids.reduce((sum, id) => sum + rewardOf(byId.get(id).data()), 0);
+      const bonus = P.questBonus(perks, earned);
+      if (!bonus) continue;
+      tx.set(bonusRef, { questId: "itemBonus", dayKey: d, status: "claimed", reward: bonus, earned, questMult: perks.questMult, completedAt: now, claimedAt: now });
+      itemBonus += bonus;
+    }
+    paid += itemBonus;
     if (paid) {
       tx.set(walletRef, {
         balance: balance + paid,
@@ -343,7 +381,7 @@ async function claimRewards(db, uid, body, now) {
         updatedAt: now
       }, { merge: true });
     }
-    return { ok: true, claimed: paid, count, balance: balance + paid };
+    return { ok: true, claimed: paid, count, itemBonus, balance: balance + paid };
   });
 }
 
@@ -833,6 +871,7 @@ async function dailyPuzzle(db, uid, body, now, dayKey) {
   if (!result) throw new HttpError(400, "Couldn't check that puzzle — reload Games and try again.");
   if (!result.finished) throw new HttpError(400, "Finish the puzzle first.");
   await assertNotBanned(db, uid);
+  const reward = DAILY_PUZZLE_REWARD + Math.max(0, Math.floor((await perksFor(db, uid)).puzzleBonus || 0)); // Candle
 
   const walletRef = db.collection("tokenWallets").doc(uid);
   const claimRef = walletRef.collection("claims").doc(`${day}_dailyPuzzle`);
@@ -846,16 +885,16 @@ async function dailyPuzzle(db, uid, body, now, dayKey) {
       game: result.game,
       score: result.score,
       status: "claimed",
-      reward: DAILY_PUZZLE_REWARD,
+      reward,
       completedAt: now,
       claimedAt: now
     });
     tx.set(walletRef, {
-      balance: balance + DAILY_PUZZLE_REWARD,
-      lifetimeEarned: FieldValue.increment(DAILY_PUZZLE_REWARD),
+      balance: balance + reward,
+      lifetimeEarned: FieldValue.increment(reward),
       updatedAt: now
     }, { merge: true });
-    return { ok: true, paid: DAILY_PUZZLE_REWARD, balance: balance + DAILY_PUZZLE_REWARD };
+    return { ok: true, paid: reward, balance: balance + reward };
   });
 }
 
