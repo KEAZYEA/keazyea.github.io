@@ -394,6 +394,16 @@ async function claimRewards(db, uid, body, now) {
 // everyone in it has the same one chance.
 const NO_TOKENS_HERE = "Tokens can't be used in this giveaway — everyone has the same chance.";
 
+// One line per token movement on a Secret Giveaway, so admin can see where a
+// player's tokens went: amount > 0 went onto the giveaway, < 0 came back.
+// tokenSpends is server-only (no rule matches it, so clients can't read it).
+function logSpend(writer, db, uid, now, { amount, giveawayId, title, kind, balanceAfter }) {
+  writer.set(db.collection("tokenSpends").doc(newId(now)), {
+    uid, kind, amount, giveawayId, title: String(title || "").slice(0, 100),
+    ...(balanceAfter == null ? {} : { balanceAfter }), at: now
+  });
+}
+
 async function stake(db, uid, body, now) {
   const { giveawayId } = body;
   const amount = Number(body.amount);
@@ -430,6 +440,7 @@ async function stake(db, uid, body, now) {
     tx.set(wRef, { balance: balance - amount, updatedAt: now }, { merge: true });
     tx.update(eRef, { tokens: prev + amount, stakePlatform: platform });
     tx.update(gRef, { ...incrementsFrom(deltas), ...max });
+    logSpend(tx, db, uid, now, { amount, giveawayId, title: gd.title, kind: "stake", balanceAfter: balance - amount });
     return { ok: true, balance: balance - amount, tokens: prev + amount, ...max };
   });
 }
@@ -482,6 +493,7 @@ async function setStake(db, uid, body, now) {
     tx.set(wRef, { balance: balance - change, updatedAt: now }, { merge: true });
     tx.update(eRef, { tokens: amount, stakePlatform: platform });
     tx.update(gRef, { ...incrementsFrom(deltas), ...max });
+    logSpend(tx, db, uid, now, { amount: change, giveawayId, title: gd.title, kind: change > 0 ? "stake" : "back", balanceAfter: balance - change });
     return { ok: true, balance: balance - change, tokens: amount, refunded: Math.max(0, -change), ...max };
   });
 }
@@ -505,6 +517,7 @@ async function unstake(db, uid, body, now) {
     tx.set(wRef, { balance: FieldValue.increment(prev), updatedAt: now }, { merge: true });
     tx.update(eRef, { tokens: 0 });
     if (g.exists) tx.update(gRef, { [counterField(ed.stakePlatform || ed.platform)]: FieldValue.increment(-prev), ...max });
+    logSpend(tx, db, uid, now, { amount: -prev, giveawayId, title: g.exists ? g.data().title : "", kind: "back" });
     return { ok: true, refunded: prev, ...max };
   });
 }
@@ -568,9 +581,10 @@ async function refundGiveaway(db, uid, body, now) {
     const prev = ed.tokens || 0;
     batch.set(db.collection("tokenWallets").doc(doc.id), { balance: FieldValue.increment(prev), updatedAt: now }, { merge: true });
     batch.update(doc.ref, { tokens: 0 });
+    logSpend(batch, db, doc.id, now, { amount: -prev, giveawayId, title: g.exists ? g.data().title : "", kind: "refund" });
     const field = counterField(ed.stakePlatform || ed.platform);
     deltas[field] = (deltas[field] || 0) - prev;
-    ops += 2;
+    ops += 3;
     refundedEntries++;
     refundedTokens += prev;
     if (ops >= 400) await flush();
@@ -689,7 +703,9 @@ async function adminUserTokens(db, body) {
     ...packsSnap.docs.map(d => ({ kind: "pack", at: d.data().processedAt || 0, pack: d.data().packId || "", tokens: d.data().tokensGranted || 0, amount: d.data().amount || "", currency: d.data().currency || "" })),
     ...salesSnap.docs.map(d => ({ kind: "plan", at: d.data().processedAt || 0, plan: d.data().planKey || "", tokens: d.data().tokensGranted || 0 }))
   ].sort((a, b) => b.at - a.at).slice(0, 40);
+  const spending = await spendingOf(db, body.uid, w, adjSnap.docs.map(d => d.data()), opensSnap.docs.map(d => d.data()));
   return {
+    spending,
     ok: true,
     uid: body.uid,
     name: profile.name || "",
@@ -707,6 +723,61 @@ async function adminUserTokens(db, body) {
     claimed: (statsSnap.exists && statsSnap.data().claimed) || {},
     chestOpens,
     purchases
+  };
+}
+
+// Where a player's tokens went: everything in (earned, bought, gifts,
+// duplicate refunds, admin) against everything out (chests, Secret Giveaway
+// tokens, admin removals). A giveaway's tokens are read from their entry
+// while the giveaway still exists (that's exact, even from before the
+// tokenSpends log), otherwise from the log. Whatever is left over after
+// that is "untraced": tokens on giveaways deleted before the log existed.
+async function spendingOf(db, uid, w, adjustments, opens) {
+  const [gSnap, logSnap] = await Promise.all([
+    db.collection("secretGiveaways").get(),
+    db.collection("tokenSpends").where("uid", "==", uid).get()
+  ]);
+  const log = logSnap.docs.map(d => d.data()).sort((a, b) => b.at - a.at);
+  const logNet = {};
+  for (const s of log) {
+    const n = logNet[s.giveawayId] || (logNet[s.giveawayId] = { net: 0, title: s.title || "", at: 0 });
+    n.net += s.amount || 0;
+    n.at = Math.max(n.at, s.at || 0);
+  }
+  const entries = await Promise.all(gSnap.docs.map(g => g.ref.collection("entries").doc(uid).get()));
+  const giveaways = [];
+  gSnap.docs.forEach((g, i) => {
+    const gd = g.data();
+    const e = entries[i];
+    const tokens = e.exists ? (e.data().tokens || 0) : 0;
+    if (tokens > 0) {
+      giveaways.push({ giveawayId: g.id, title: gd.title || "", tokens, used: poolDrawn(gd, e.data().platform), expiresAt: gd.expiresAt || 0 });
+    }
+  });
+  const live = new Set(gSnap.docs.map(g => g.id));
+  for (const [id, n] of Object.entries(logNet)) {
+    // Deleted since: anything not refunded before deletion was used in its draw.
+    if (!live.has(id) && n.net > 0) giveaways.push({ giveawayId: id, title: n.title, tokens: n.net, used: true, deleted: true, expiresAt: n.at });
+  }
+  giveaways.sort((a, b) => b.expiresAt - a.expiresAt);
+
+  const sum = (xs, f) => xs.reduce((s, x) => s + (f(x) || 0), 0);
+  const chestPaid = sum(opens, o => o.price);
+  const chestBack = sum(opens, o => o.refund);
+  const chestDraws = sum(opens, o => o.count || 1);
+  // Manual changes only (prize payments and grants already count as gifts).
+  const manual = adjustments.filter(a => ["add", "remove", "set"].includes(a.mode) && !a.giveawayId);
+  const adminIn = sum(manual, a => Math.max(0, (a.after || 0) - (a.before || 0)));
+  const adminOut = sum(manual, a => Math.max(0, (a.before || 0) - (a.after || 0)));
+  const onGiveaways = sum(giveaways.filter(g => !g.used), g => g.tokens);
+  const usedInDraws = sum(giveaways.filter(g => g.used), g => g.tokens);
+  const totalIn = (w.lifetimeEarned || 0) + (w.lifetimePurchased || 0) + (w.lifetimeGifted || 0) + chestBack + adminIn;
+  const totalOut = chestPaid + onGiveaways + usedInDraws + adminOut;
+  return {
+    chestDraws, chestPaid, chestBack, adminIn, adminOut, onGiveaways, usedInDraws, totalIn, totalOut,
+    untraced: totalIn - totalOut - (w.balance || 0),
+    giveaways: giveaways.slice(0, 40),
+    log: log.slice(0, 40).map(s => ({ at: s.at, kind: s.kind, amount: s.amount, title: s.title || "", balanceAfter: s.balanceAfter }))
   };
 }
 

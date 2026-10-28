@@ -238,6 +238,13 @@
     </style>
     <style>
         .acct-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+        .spend-box { padding: 10px 12px; border: 1px solid #3a3a66; border-radius: 10px; background: rgba(255, 255, 255, 0.03); }
+        .spend-row { display: flex; justify-content: space-between; gap: 10px; font-size: 0.85rem; color: #c8c8d8; padding: 3px 0; }
+        .spend-row b { white-space: nowrap; }
+        .spend-row b.in { color: #6fe39a; }
+        .spend-row b.out { color: #ff9b9b; }
+        .spend-row.total { font-size: 0.95rem; color: #fff; }
+        .spend-sep { border-top: 1px dashed #3a3a66; margin: 6px 0; }
         .acct-give { margin-top: 12px; padding: 10px; border: 1px solid #4a4a86; border-radius: 10px; background: rgba(180, 107, 255, 0.08); }
         .acct-give-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
         .acct-give-row label { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; }
@@ -3083,13 +3090,17 @@ async function handleLookupUserByUid() {
                     tokenAccountUid = a.uid;
                     tokenAccountName = a.name || "this player";
                     const modeLabel = { add: "Gave", remove: "Removed", set: "Set to" };
+                    const PCa = window.ProgressCore;
+                    const grantText = (h) => [h.draws ? `${h.draws} free chest draw${h.draws === 1 ? "" : "s"}` : "",
+                        ...(h.items || []).map(id => PCa && PCa.BY_ID[id] ? `${PCa.BY_ID[id].icon} ${PCa.BY_ID[id].name}` : id),
+                        h.amount ? `${h.amount} 🪙 for duplicates (${h.before} → ${h.after})` : ""].filter(Boolean).join(" + ") || "nothing";
                     const history = a.adjustments.length
-                        ? a.adjustments.map(h => `<div class="token-history-row">${escapeHtml(fmtDate(h.at))} · ${modeLabel[h.mode] || h.mode} ${h.amount} · ${h.before} → ${h.after}${h.reason ? " · " + escapeHtml(h.reason) : ""}</div>`).join("")
+                        ? a.adjustments.map(h => `<div class="token-history-row">${escapeHtml(fmtDate(h.at))} · ${h.mode === "grant" ? `🎒 Gave ${escapeHtml(grantText(h))}` : `${modeLabel[h.mode] || h.mode} ${h.amount} · ${h.before} → ${h.after}`}${h.reason ? " · " + escapeHtml(h.reason) : ""}</div>`).join("")
                         : "<p class='promo-sub'>No manual changes yet.</p>";
                     result.innerHTML = `<div class="token-card">
                         <div><strong>${escapeHtml(a.name || "Unknown name")}</strong> <span class="promo-sub">(uid: ${escapeHtml(a.uid)})</span></div>
                         <div class="token-balance-big">🪙 ${a.balance}</div>
-                        <p class="promo-sub" style="margin:2px 0 0;">All-time: ${a.lifetimeEarned} from quests · ${a.lifetimePurchased} bought · ${a.lifetimeGifted} from gifts</p>
+                        <p class="promo-sub" style="margin:2px 0 0;">All-time: ${a.lifetimeEarned} earned (quests, achievements, Games) · ${a.lifetimePurchased} bought · ${a.lifetimeGifted} from gifts &amp; prizes</p>
                         <label class="promo-sub" style="display:flex; align-items:center; gap:6px; margin-top:10px; cursor:pointer;">
                             <input type="checkbox" id="tokenNotifyBox" checked> Send them an inbox message when I give or remove tokens
                         </label>
@@ -3108,6 +3119,7 @@ async function handleLookupUserByUid() {
                             <button type="button" class="give" onclick="handleGrantItems()">🎁 Give</button>
                             <p class="promo-sub" style="margin:4px 0 0; font-size:0.78rem;">Sent straight to their account (the inbox message box above applies). Something they already own turns into its duplicate tokens.</p>
                         </div>
+                        ${spendingHtml(a)}
                         <p class="promo-sub" style="margin:14px 0 4px;">Manual changes (newest first):</p>
                         ${history}
                         ${accountItemsHtml(a)}
@@ -3136,6 +3148,43 @@ async function handleLookupUserByUid() {
                     showInfoModal("Couldn't give that", e.message);
                 }
             };
+
+            // Where their tokens went: in vs out, each Secret Giveaway they put
+            // tokens on, and the token log (from when it started recording).
+            function spendingHtml(a) {
+                const s = a.spending;
+                if (!s) return "";
+                const row = (label, n, sign) => `<div class="spend-row"><span>${label}</span><b class="${sign}">${sign === "out" ? "−" : sign === "in" ? "+" : ""}${n} 🪙</b></div>`;
+                const ins = [
+                    row("Earned (quests, achievements, Games)", a.lifetimeEarned, "in"),
+                    a.lifetimePurchased ? row("Bought", a.lifetimePurchased, "in") : "",
+                    a.lifetimeGifted ? row("Gifts &amp; prizes", a.lifetimeGifted, "in") : "",
+                    s.chestBack ? row("Chest duplicates paid back", s.chestBack, "in") : "",
+                    s.adminIn ? row("Given by admin", s.adminIn, "in") : ""
+                ].join("");
+                const outs = [
+                    s.chestPaid ? row(`🧰 Chests (${s.chestDraws} draw${s.chestDraws === 1 ? "" : "s"})`, s.chestPaid, "out") : "",
+                    s.usedInDraws ? row("🎁 Secret Giveaway tokens used up in draws", s.usedInDraws, "out") : "",
+                    s.onGiveaways ? row("🎁 On Secret Giveaways now (can still come back)", s.onGiveaways, "out") : "",
+                    s.adminOut ? row("Removed by admin", s.adminOut, "out") : "",
+                    s.untraced > 0 ? row("❔ Untraced (giveaways deleted before tokens were logged)", s.untraced, "out") : ""
+                ].join("") || "<p class='promo-sub'>Nothing spent.</p>";
+                const gw = s.giveaways.length ? s.giveaways.map(g => `<div class="token-history-row">🎁 <b>${escapeHtml(g.title || g.giveawayId)}</b> · ${g.tokens} 🪙 · ${g.used ? "used up in the draw" : "on it now (comes back if they leave before the draw)"}${g.deleted ? " · giveaway since deleted" : ""}</div>`).join("") : "";
+                const kind = { stake: "Put", back: "Took back", refund: "Refunded (giveaway removed)" };
+                const log = s.log.length ? s.log.map(l => `<div class="token-history-row">${escapeHtml(fmtDate(l.at))} · ${kind[l.kind] || escapeHtml(l.kind)} ${Math.abs(l.amount)} 🪙 ${l.amount > 0 ? "on" : "from"} “${escapeHtml(l.title)}”${l.balanceAfter != null ? ` · balance ${l.balanceAfter}` : ""}</div>`).join("") : "";
+                return `
+                    <h4 style="margin:18px 0 6px;">💸 Where their tokens went</h4>
+                    <div class="spend-box">
+                        ${ins}
+                        <div class="spend-sep"></div>
+                        ${outs}
+                        <div class="spend-sep"></div>
+                        <div class="spend-row total"><span>Balance now</span><b>${a.balance} 🪙</b></div>
+                        ${s.untraced < 0 ? `<p class="promo-sub" style="margin:4px 0 0; font-size:0.78rem;">${-s.untraced} 🪙 more came in than shows above (from before some of this was recorded).</p>` : ""}
+                    </div>
+                    ${gw ? `<p class="promo-sub" style="margin:10px 0 4px;">Secret Giveaways they put tokens on:</p>${gw}` : ""}
+                    ${log ? `<p class="promo-sub" style="margin:10px 0 4px;">Giveaway token log (newest first):</p>${log}` : ""}`;
+            }
 
             // What they own (items, styles), what they show, their chest draws
             // and their payments — read-only.
