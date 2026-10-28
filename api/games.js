@@ -180,13 +180,16 @@ async function runStart(db, uid, body, now) {
   const week = weekOf(now);
   // All at once rather than one after another: each is a trip to the database.
   // (Rescoring only changes totals, never the per-game bests read here.)
-  const [, , name, lb] = await Promise.all([
+  const [, , name, lb, inv] = await Promise.all([
     assertNotBanned(db, uid),
     rescoreWeek(db, week),
     playerName(db, uid),
-    db.collection("gameLeaderboards").doc(week).collection("players").doc(uid).get()
+    db.collection("gameLeaderboards").doc(week).collection("players").doc(uid).get(),
+    db.collection("inventories").doc(uid).get()
   ]);
-  const run = G.runNew(game, crypto.randomInt(2 ** 31), now);
+  // Items: more time per question, extra lives, more Blur hints.
+  const rp = P.runPerks(inv.exists ? inv.data().perks : null);
+  const run = G.runNew(game, crypto.randomInt(2 ** 31), now, rp);
   const runId = crypto.randomBytes(12).toString("hex");
   // ⭐ Today's Puzzle game counts double for runs started today (even one
   // that finishes after midnight).
@@ -195,7 +198,7 @@ async function runStart(db, uid, body, now) {
   await db.collection("gameRuns").doc(runId).set({ uid, name, game, week, bonus, run, createdAt: now, updatedAt: now });
   const best = lb.exists ? (lb.data().best || {})[game] || 0 : 0;
   const pts = lb.exists ? G.lbPts(lb.data())[game] : 0;
-  return { ok: true, runId, game, week, bonus, bonusGame, score: 0, over: false, best, pts, deadline: run.deadline, now, view: await publicView(run) };
+  return { ok: true, runId, game, week, bonus, bonusGame, score: 0, over: false, best, pts, deadline: run.deadline, now, extraMs: run.extraMs || 0, lives: run.lives || 0, view: await publicView(run) };
 }
 
 // Only the fields a move can have, with the right types.
@@ -233,7 +236,20 @@ async function runAnswer(db, uid, body, now) {
     } catch (e) {
       throw new HttpError(400, e.message);
     }
+    const perks = invSnap.exists ? invSnap.data().perks || {} : {};
+    // Muddy Boots: a token the first time each day a ranked run reaches 10.
+    const day = dayKeyFor(now);
+    const tenRef = db.collection("tokenWallets").doc(uid).collection("claims").doc(`${day}_gameTen`);
+    const walletRef = db.collection("tokenWallets").doc(uid);
+    const hitTen = perks.gameTen > 0 && doc.run.score < 10 && step.run.score >= 10;
+    const [tenSnap, walletSnap] = hitTen ? await tx.getAll(tenRef, walletRef) : [null, null];
     tx.update(runRef, { run: step.run, updatedAt: now });
+    let tenPaid = 0;
+    if (hitTen && !tenSnap.exists) {
+      tenPaid = Math.min(5, Math.floor(perks.gameTen));
+      tx.set(tenRef, { questId: "gameTen", dayKey: day, status: "claimed", reward: tenPaid, completedAt: now, claimedAt: now });
+      tx.set(walletRef, { balance: (walletSnap.exists ? walletSnap.data().balance || 0 : 0) + tenPaid, lifetimeEarned: FieldValue.increment(tenPaid), updatedAt: now }, { merge: true });
+    }
     const row = lbSnap.exists ? lbSnap.data() : {};
     const best = { ...blankBest(), ...(row.best || {}) };
     const pts = { ...blankPts(), ...G.lbPts(row) };
@@ -246,14 +262,14 @@ async function runAnswer(db, uid, body, now) {
     if (betterScore) best[doc.game] = step.run.score;
     if (morePts) { pts[doc.game] = runPts; dbl[doc.game] = !!doc.bonus; }
     if (betterScore || morePts) {
-      const perk = P.gamePerkBonus(invSnap.exists ? invSnap.data().perks : null, pts);
+      const perk = P.gamePerkBonus(perks, pts, dbl);
       tx.set(lbRef, { uid, name: doc.name, week: doc.week, best, pts, dbl, perk, total: G.lbTotal({ pts }) + perk, updatedAt: now }, { merge: true });
     }
     // Every point a run scores counts towards the Gamer achievement (as it's
     // scored, so a run left unfinished still counts what it got).
     const gained = runPts - G.lbRunPoints(doc.game, doc.run.score, doc.bonus);
     if (gained > 0) tx.set(db.collection("achievementStats").doc(uid), { gamePoints: FieldValue.increment(gained) }, { merge: true });
-    return { step, best: best[doc.game] || 0, pts: pts[doc.game], newBest: betterScore || morePts, game: doc.game };
+    return { step, best: best[doc.game] || 0, pts: pts[doc.game], newBest: betterScore || morePts, game: doc.game, tenPaid };
   });
   const { run } = result.step;
   return {
@@ -264,6 +280,8 @@ async function runAnswer(db, uid, body, now) {
     best: result.best,
     pts: result.pts,
     newBest: result.newBest,
+    lives: run.lives || 0,
+    ...(result.tenPaid ? { tenPaid: result.tenPaid } : {}),
     deadline: run.deadline,
     now,
     view: run.over ? null : await publicView(run),
@@ -292,7 +310,12 @@ async function finalizeWeek(db, week, now) {
     const user = await db.collection("users").doc(p.uid).get();
     if (!(user.exists && isBannedNow(user.data()))) eligible.push(p);
   }
-  const winners = eligible.map((p, i) => ({ uid: p.uid, name: p.name, total: p.total, rank: i + 1, prize: WEEKLY_PRIZES[i] }));
+  // Victor's Trophy and the like: a bigger prize (rounded up).
+  const invs = await Promise.all(eligible.map(p => db.collection("inventories").doc(p.uid).get()));
+  const winners = eligible.map((p, i) => {
+    const mult = invs[i].exists ? Math.max(0, Number((invs[i].data().perks || {}).prizeMult) || 0) : 0;
+    return { uid: p.uid, name: p.name, total: p.total, rank: i + 1, prize: Math.ceil(WEEKLY_PRIZES[i] * (1 + mult / 100)) };
+  });
   const paid = await db.runTransaction(async (tx) => {
     const walletRefs = winners.map(w => db.collection("tokenWallets").doc(w.uid));
     const [again, ...wallets] = await tx.getAll(metaRef, ...walletRefs);
@@ -344,6 +367,24 @@ async function rescoreWeek(db, week) {
   rescored.add(week);
 }
 
+// Players' name effects for the board ({ uid: class }), cached a minute.
+const fxCache = new Map();
+async function nameEffects(db, uids, now) {
+  const out = {};
+  await Promise.all(uids.map(async (u) => {
+    const hit = fxCache.get(u);
+    if (hit && now - hit.at < 60000) { out[u] = hit.fx; return; }
+    let fx = "";
+    try {
+      const card = await db.collection("playerCards").doc(u).get();
+      fx = card.exists ? P.styleClass(card.data().style, "name") : "";
+    } catch (e) { /* no effect shown */ }
+    fxCache.set(u, { at: now, fx });
+    out[u] = fx;
+  }));
+  return out;
+}
+
 async function leaderboard(db, uid, now) {
   await finalizePastWeeks(db, now);
   const week = weekOf(now);
@@ -358,10 +399,11 @@ async function leaderboard(db, uid, now) {
     uid ? players.doc(uid).get() : Promise.resolve(null),
     db.collection("gameLeaderboards").doc(weeksBefore(week, 1)).get()
   ]);
-  const rows = topSnap.docs.map(d => d.data()).filter(p => p.total > 0)
+  const top = topSnap.docs.map(d => d.data()).filter(p => p.total > 0)
     .sort((a, b) => b.total - a.total || a.updatedAt - b.updatedAt)
-    .slice(0, LEADERBOARD_SIZE)
-    .map((p, i) => ({ rank: i + 1, name: p.name, total: p.total, best: { ...blankBest(), ...p.best }, pts: G.lbPts(p), dbl: p.dbl || {}, perk: p.perk || 0, me: p.uid === uid }));
+    .slice(0, LEADERBOARD_SIZE);
+  const fx = await nameEffects(db, top.map(p => p.uid), now);
+  const rows = top.map((p, i) => ({ rank: i + 1, name: p.name, total: p.total, best: { ...blankBest(), ...p.best }, pts: G.lbPts(p), dbl: p.dbl || {}, perk: p.perk || 0, nameFx: fx[p.uid] || "", me: p.uid === uid }));
   let me = null;
   if (meSnap && meSnap.exists && meSnap.data().total > 0) {
     const mine = meSnap.data();

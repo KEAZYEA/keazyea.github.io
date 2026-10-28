@@ -1,0 +1,63 @@
+/* fx-styles.css — the looks from the chest (progress-core.js STYLES):
+   avatar borders, name effects and chat bubbles. Class names come from
+   ProgressCore.styleClass(style, type):
+     border:  <span class="fx-av fx-border-<css>"> around an avatar
+     name:    <span class="fx-name-<css>"> around a name
+     bubble:  on a chat message bubble (.dm-msg) */
+
+/* ---- avatar borders: a ring drawn just outside the avatar, so nothing moves ---- */
+.fx-av { position: relative; display: inline-flex; border-radius: 50%; isolation: isolate; vertical-align: middle; flex-shrink: 0; }
+.fx-av::before { content: ""; position: absolute; inset: -3px; z-index: -1; border-radius: 50%; background: var(--fxb, transparent); }
+.fx-av.fx-spin::before { animation: fxSpin 3.2s linear infinite; }
+.fx-av.fx-pulse::before { animation: fxPulse 1.8s ease-in-out infinite; }
+@keyframes fxSpin { to { transform: rotate(360deg); } }
+@keyframes fxPulse { 50% { filter: brightness(1.5); box-shadow: 0 0 12px 3px var(--fxg, transparent); } }
+
+.fx-border-bronze { --fxb: conic-gradient(#e8a65a, #8a5420, #cd7f32, #e8a65a); }
+.fx-border-silver { --fxb: conic-gradient(#f4f7fb, #8d97a8, #dfe5ee, #f4f7fb); }
+.fx-border-emerald { --fxb: conic-gradient(#8ff0b4, #1b7a43, #5fd38a, #0e5a30, #8ff0b4); }
+.fx-border-sapphire { --fxb: conic-gradient(#9fd0ff, #1c4fa8, #5aa8ff, #9fd0ff); }
+.fx-border-sapphire::before { box-shadow: 0 0 10px rgba(90, 168, 255, 0.7); }
+.fx-border-amethyst { --fxb: conic-gradient(#e2b6ff, #6a2bb8, #b46bff, #e2b6ff); --fxg: rgba(180, 107, 255, 0.8); }
+.fx-border-inferno { --fxb: conic-gradient(#ff2d2d, #ff9f1a, #ffe14d, #ff5a1a, #ff2d2d); }
+.fx-border-inferno::before { box-shadow: 0 0 12px rgba(255, 90, 30, 0.8); }
+.fx-border-rainbow { --fxb: conic-gradient(#ff4d4d, #ffb84d, #fff24d, #4dff88, #4dc3ff, #9b6bff, #ff4dd8, #ff4d4d); }
+.fx-border-supporter { --fxb: conic-gradient(#fff3b0, #d4a017, #ffe066, #a67c00, #fff3b0); }
+.fx-border-supporter::before { box-shadow: 0 0 12px rgba(255, 210, 74, 0.8); }
+.fx-border-scribe { --fxb: conic-gradient(#2b3a8f, #ffd24a, #2b3a8f, #6c7cff, #2b3a8f); }
+.fx-border-wanderer { --fxb: conic-gradient(#1fb5a5, #f5e6c8, #0e6f66, #f5e6c8, #1fb5a5); }
+.fx-border-arcade { --fxb: conic-gradient(#ff2fd6, #2ff5ff, #ff2fd6, #2ff5ff, #ff2fd6); }
+.fx-border-arcade::before { box-shadow: 0 0 12px rgba(47, 245, 255, 0.7); }
+.fx-border-laurel { --fxb: conic-gradient(#3fa34d, #ffd24a, #2b7a35, #ffd24a, #3fa34d); }
+.fx-border-flame { --fxb: conic-gradient(#ff7a1a, #ffd04d, #ff3d1a, #ffd04d, #ff7a1a); }
+.fx-border-flame::before { box-shadow: 0 0 14px rgba(255, 120, 30, 0.85); }
+.fx-border-patron { --fxb: conic-gradient(#e6fbff, #48c6ef, #ffffff, #6f86d6, #e6fbff); }
+.fx-border-patron::before { box-shadow: 0 0 12px rgba(120, 220, 255, 0.8); }
+.fx-border-aura { --fxb: conic-gradient(#b46bff, #ffd24a, #ff6bd6, #ffd24a, #b46bff); --fxg: rgba(255, 210, 74, 0.7); }
+
+/* ---- name effects ---- */
+.fx-name-gold { color: #ffd24a !important; text-shadow: 0 0 8px rgba(255, 196, 0, 0.55); }
+.fx-name-ice { color: #b8f3ff !important; text-shadow: 0 0 8px rgba(120, 220, 255, 0.8); }
+.fx-name-toxic { color: #a6ff4f !important; text-shadow: 0 0 8px rgba(140, 255, 60, 0.75); }
+.fx-name-helper { color: #5ff0d6 !important; text-shadow: 0 0 8px rgba(60, 230, 200, 0.7); }
+.fx-name-fire, .fx-name-rainbow, .fx-name-star, .fx-name-puzzle {
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent !important;
+    background-size: 200% 100%; animation: fxSlide 2.6s linear infinite;
+}
+.fx-name-fire { background-image: linear-gradient(90deg, #ff3d1a, #ffb21a, #ffe14d, #ff3d1a); filter: drop-shadow(0 0 4px rgba(255, 90, 30, 0.6)); }
+.fx-name-rainbow { background-image: linear-gradient(90deg, #ff4d4d, #ffb84d, #fff24d, #4dff88, #4dc3ff, #9b6bff, #ff4dd8, #ff4d4d); }
+.fx-name-star { background-image: linear-gradient(90deg, #ffd24a, #fff7cc, #ffd24a, #ffb000, #ffd24a); filter: drop-shadow(0 0 4px rgba(255, 210, 74, 0.6)); }
+.fx-name-puzzle { background-image: linear-gradient(90deg, #b46bff, #5fd38a, #5aa8ff, #b46bff); }
+@keyframes fxSlide { to { background-position: -200% 0; } }
+
+/* ---- chat bubbles ---- */
+.fx-bubble-ocean { background: linear-gradient(160deg, #1e6fa8, #124a73) !important; color: #eaf6ff !important; }
+.fx-bubble-rose { background: linear-gradient(160deg, #b8457a, #7d2a53) !important; color: #fff0f6 !important; }
+.fx-bubble-forest { background: linear-gradient(160deg, #2f7a45, #1d4f2c) !important; color: #effff3 !important; }
+.fx-bubble-midnight { background: linear-gradient(160deg, #23285e, #11143a) !important; color: #e3e6ff !important; box-shadow: inset 0 0 0 1px #4c56c9; }
+.fx-bubble-gold { background: linear-gradient(160deg, #ffe27a, #e0a800) !important; color: #2a1d00 !important; }
+.fx-bubble-gold .dm-msg-time, .fx-bubble-gold .dm-msg-action-link { color: #4a3600 !important; }
+
+@media (prefers-reduced-motion: reduce) {
+    .fx-av.fx-spin::before, .fx-av.fx-pulse::before, .fx-name-fire, .fx-name-rainbow, .fx-name-star, .fx-name-puzzle { animation: none; }
+}

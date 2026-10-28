@@ -6,6 +6,7 @@
     <meta name="description" content="Kingdom Clash community: clan recruitment, friends, tier lists and formations.">
     <link rel="icon" href="images/KIH.jpg">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="fx-styles.css">
     <script type="text/javascript">     (function(c,l,a,r,i,t,y){         c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};         t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;         y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);     })(window, document, "clarity", "script", "xupis8786d"); </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
@@ -1536,12 +1537,13 @@
         .rx-chip.mine { border-color: #4169e1; background: rgba(65, 105, 225, 0.28); }
         .dm-msg.mine .rx-chip { background: rgba(0, 0, 0, 0.22); border-color: rgba(255, 255, 255, 0.3); color: #fff; }
         .dm-msg.mine .rx-chip.mine { background: rgba(255, 255, 255, 0.25); }
-        .rx-picker { position: fixed; z-index: 400; display: flex; gap: 2px; padding: 6px 8px; border-radius: 999px; background: #23234a; border: 1px solid #3a3a66; box-shadow: 0 8px 26px rgba(0, 0, 0, 0.55); animation: rxIn 0.18s ease; }
+        .rx-picker { position: fixed; z-index: 400; display: flex; flex-wrap: wrap; justify-content: center; max-width: min(330px, calc(100vw - 24px)); gap: 2px; padding: 6px 8px; border-radius: 999px; background: #23234a; border: 1px solid #3a3a66; box-shadow: 0 8px 26px rgba(0, 0, 0, 0.55); animation: rxIn 0.18s ease; }
         @keyframes rxIn { from { transform: scale(0.85); opacity: 0; } }
         .rx-picker button { font-size: 1.5rem; line-height: 1; background: none; border: none; cursor: pointer; padding: 4px; border-radius: 10px; transition: transform 0.1s; }
         .rx-picker button:hover, .rx-picker button.mine { transform: scale(1.18); background: rgba(65, 105, 225, 0.3); }
         /* typing emojis (phones have them on the keyboard; computers don't) */
         .emoji-btn { flex-shrink: 0; width: 40px; height: 40px; align-self: flex-end; border-radius: 8px; border: 1px solid #2a2a4a; background: #1a1a2e; font-size: 1.2rem; cursor: pointer; }
+        .emoji-panel .ep-head { grid-column: 1 / -1; font-size: 0.7rem; font-weight: 800; color: #9a9ab0; padding: 4px 2px 0; text-align: left; }
         .emoji-panel { position: fixed; z-index: 400; width: min(320px, calc(100vw - 24px)); max-height: 230px; overflow-y: auto; display: grid; grid-template-columns: repeat(8, 1fr); gap: 2px; padding: 8px; box-sizing: border-box; border-radius: 14px; background: #23234a; border: 1px solid #3a3a66; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55); }
         .emoji-panel button { font-size: 1.35rem; line-height: 1; background: none; border: none; cursor: pointer; padding: 6px 0; border-radius: 8px; }
         .emoji-panel button:hover { background: rgba(255, 255, 255, 0.08); }
@@ -2105,6 +2107,9 @@
         }
 
         /* A player's shown badges and the 👍 like button (profile popup) */
+        /* a border wrapper fills the avatar box it's drawn in */
+        #dmHeaderAvatar > .fx-av, #friendProfileAvatar > .fx-av { width: 100%; height: 100%; }
+        .fx-av > .avatar-wrap { width: 100%; height: 100%; }
         .pf-badges { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin: 0 0 12px; }
         .pf-badges:empty { display: none; }
         .pf-badge { display: inline-flex; align-items: center; gap: 5px; max-width: 100%; padding: 3px 9px 3px 3px; border-radius: 999px;
@@ -4659,6 +4664,32 @@ window.removeClanIconPreview = function () {
         function reactionSet() {
             return Array.isArray(AppState.REACTIONS) ? AppState.REACTIONS : ["❤️", "😂", "😮", "😢", "👍", "🔥"];
         }
+        // What you can react with: the six everyone has, plus your emote packs'.
+        let myItemIds = [];
+        function loadMyItems() { if (AppState.getMyItemIds) AppState.getMyItemIds().then(ids => { myItemIds = ids; }).catch(() => { }); }
+        AppState.waitForAuthReady().then(loadMyItems);
+        AppState.onAuthChange(loadMyItems);
+        function myReactions() {
+            return window.ProgressCore ? ProgressCore.emotesOf(myItemIds).reactions : reactionSet().slice(0, 6);
+        }
+
+        /* ---- players' looks: border, name effect, chat bubble ----
+           From their public card; read once a minute at most (AppState).
+           Lists draw straight away and redraw once the cards arrive. */
+        const cardsByUid = {};
+        function ensureCards(uids, redraw) {
+            const missing = [...new Set(uids.filter(u => u && !(u in cardsByUid)))];
+            if (!missing.length || !AppState.getPlayerCards) return;
+            missing.forEach(u => { cardsByUid[u] = {}; });
+            AppState.getPlayerCards(missing).then(found => {
+                let changed = false;
+                for (const [u, card] of Object.entries(found)) { cardsByUid[u] = card || {}; if (card && card.style) changed = true; }
+                if (changed && redraw) redraw();
+            }).catch(() => { });
+        }
+        const styleOf = (uid) => (cardsByUid[uid] || {}).style || null;
+        const nameFx = (uid) => window.ProgressCore ? ProgressCore.styleClass(styleOf(uid), "name") : "";
+        const bordered = (uid, html) => window.ProgressCore ? ProgressCore.withBorder(html, styleOf(uid)) : html;
         function reactionsHtml(kind, item) {
             const r = item.reactions || {}, myUid = AppState.getCurrentUser()?.uid;
             const counts = {};
@@ -4676,11 +4707,11 @@ window.removeClanIconPreview = function () {
             const at = parent ? `<span class="cmt-at">@${escapeHtml(parent.name)}</span> ` : "";
             return `
                 <div class="formation-comment-item${isReply ? " reply" : ""}" id="cmt_${kind}_${c.id}">
-                    <img class="clan-post-avatar" src="${escapeHtml(c.avatar)}" onerror="this.style.visibility='hidden'"
-                        style="cursor:pointer;" onclick="${cfg.close}(); onPosterClick('${c.uid}', '${nameEscaped}');">
+                    ${bordered(c.uid, `<img class="clan-post-avatar" src="${escapeHtml(c.avatar)}" onerror="this.style.visibility='hidden'"
+                        style="cursor:pointer;" onclick="${cfg.close}(); onPosterClick('${c.uid}', '${nameEscaped}');">`)}
                     <div style="flex:1; min-width:0;">
                         <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-                            <span class="clan-post-name" style="cursor:pointer;" onclick="${cfg.close}(); onPosterClick('${c.uid}', '${nameEscaped}');">${escapeHtml(c.name)}</span>
+                            <span class="clan-post-name" style="cursor:pointer;" onclick="${cfg.close}(); onPosterClick('${c.uid}', '${nameEscaped}');"><span class="${nameFx(c.uid)}">${escapeHtml(c.name)}</span></span>
                             <span class="clan-post-time" style="margin-left:0;">${timeAgo(c.createdAt)}</span>
                         </div>
                         ${c.text || at ? `<div style="margin-top:4px; white-space:pre-wrap;">${at}${escapeHtml(c.text || "")}</div>` : ""}
@@ -4708,6 +4739,7 @@ window.removeClanIconPreview = function () {
                 list.innerHTML = `<div class="compose-hint" style="padding:10px 0;">${cfg.empty}</div>`;
                 return;
             }
+            ensureCards(comments.map(c => c.uid), () => { if (commentState[kind].comments === comments) renderCommentList(kind, comments); });
             const byTime = (a, b) => (a.createdAt || 0) - (b.createdAt || 0);
             const roots = comments.filter(c => !c.parentId || !byId[c.parentId]).sort(byTime);
             const replies = {};
@@ -4785,7 +4817,7 @@ window.removeClanIconPreview = function () {
             const mine = item && item.reactions ? item.reactions[myUid] : null;
             const bar = document.createElement("div");
             bar.className = "rx-picker";
-            const set = reactionSet();
+            const set = myReactions();
             bar.innerHTML = set.map(e => `<button type="button" class="${mine === e ? "mine" : ""}" aria-label="React ${e}">${e}</button>`).join("");
             bar.querySelectorAll("button").forEach((b, i) => b.addEventListener("click", (e) => { e.stopPropagation(); closeFloatingPickers(); reactTo(kind, id, set[i]); }));
             placeFloating(bar, ev.currentTarget);
@@ -4802,10 +4834,13 @@ window.removeClanIconPreview = function () {
             const panel = document.createElement("div");
             panel.className = "emoji-panel";
             panel.dataset.for = targetId;
-            panel.innerHTML = TYPING_EMOJIS.map(e => `<button type="button">${e}</button>`).join("");
+            const packs = window.ProgressCore ? ProgressCore.emotesOf(myItemIds).emojis : [];
+            panel.innerHTML = TYPING_EMOJIS.map(e => `<button type="button">${e}</button>`).join("")
+                + (packs.length ? `<div class="ep-head">🎒 Your emote packs</div>` + packs.map(e => `<button type="button">${e}</button>`).join("") : "");
             panel.addEventListener("click", (e) => {
                 e.stopPropagation();
                 const b = e.target.closest("button");
+                if (b && b.classList.contains("ep-head")) return;
                 if (!b) return;
                 const input = document.getElementById(targetId);
                 const start = input.selectionStart ?? input.value.length, end = input.selectionEnd ?? input.value.length;
@@ -5957,6 +5992,7 @@ window.removeClanIconPreview = function () {
     document.documentElement.style.overflow = "hidden";
             document.getElementById("friendProfileAvatar").innerHTML = avatarHtml(profile.avatar, profile.name, "");
             document.getElementById("friendProfileName").textContent = profile.name;
+            document.getElementById("friendProfileName").className = "";
 
             const bioEl = document.getElementById("friendProfileBio");
             if (profile.bio) { bioEl.textContent = profile.bio; bioEl.style.display = "block"; }
@@ -6010,6 +6046,10 @@ window.removeClanIconPreview = function () {
             const [card, liked] = await Promise.all([AppState.getPlayerCard(uid), me && me.uid !== uid ? AppState.haveILikedProfile(uid) : false]);
             if (profileExtrasFor !== uid) return;
             badgesEl.innerHTML = (card.badges || []).map(b => ProgressCore.badgeHtml(b)).join("");
+            cardsByUid[uid] = card;
+            const av = document.getElementById("friendProfileAvatar");
+            if (card.style && card.style.border) av.innerHTML = ProgressCore.withBorder(av.innerHTML, card.style);
+            document.getElementById("friendProfileName").className = ProgressCore.styleClass(card.style, "name");
             let count = Math.max(0, card.likeCount || 0), on = liked;
             const draw = () => { likeBtn.textContent = `👍 ${count} like${count === 1 ? "" : "s"}`; likeBtn.classList.toggle("on", on); };
             draw();
@@ -6412,6 +6452,15 @@ window.removeClanIconPreview = function () {
                 currentDmOtherName = name;
                 document.getElementById("dmHeaderName").textContent = name;
                 document.getElementById("dmHeaderAvatar").innerHTML = avatarHtml(avatar, name, "");
+                // Their border and name effect up top; both of your bubble colours below.
+                const drawHeader = () => {
+                    if (currentDmOtherUid !== uid) return;
+                    document.getElementById("dmHeaderName").className = nameFx(uid);
+                    document.getElementById("dmHeaderAvatar").innerHTML = bordered(uid, avatarHtml(avatar, name, ""));
+                    if (window._lastDmMessages) renderDmMessages(window._lastDmMessages);
+                };
+                drawHeader(); // with what's already known…
+                ensureCards([uid, user.uid], drawHeader); // …and again once their cards arrive
                 document.getElementById("dmMessages").innerHTML = "";
 document.getElementById("dmScrollBottomBtn").classList.remove("visible");
 document.getElementById("dmActionsMenu").classList.remove("open");
@@ -6501,7 +6550,8 @@ document.getElementById("dmActionsMenu").classList.remove("open");
             `<button class="dm-msg-action-link" onclick='openReportModal("message", "${m.senderUid}", "${currentDmOtherName.replace(/"/g, '')}", "${m.id}", ${JSON.stringify(m.text)})'>🚩 Report</button>`;
 
         const reactBtn = `<button class="dm-msg-action-link" onclick="openReactionPicker(event, 'dm', '${m.id}')">😊 React</button>`;
-        html += `<div class="dm-msg ${mine ? "mine" : "theirs"}${parseDmChallenge(m.text) ? " has-challenge" : ""}" id="dmMsgRow_${m.id}">
+        const bubble = window.ProgressCore ? ProgressCore.styleClass(styleOf(m.senderUid), "bubble") : "";
+        html += `<div class="dm-msg ${mine ? "mine" : "theirs"}${parseDmChallenge(m.text) ? " has-challenge" : ""}${bubble ? " " + bubble : ""}" id="dmMsgRow_${m.id}">
             ${quoteHtml}
             ${dmBodyHtml(m.text, mine)}${editedTag}
             ${timeHtml}

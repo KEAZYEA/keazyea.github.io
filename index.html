@@ -7,6 +7,7 @@
     <link rel="icon" href="images/KIH.jpg">
     <link rel="preload" as="image" href="images/KIH_HP.jpg" fetchpriority="high">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="fx-styles.css">
     <link rel="canonical" href="https://keazyea.github.io/" />
     <!-- Google AdSense: lets Google verify the site and review it. Keep "Auto ads"
          OFF in AdSense — ad-free (No Ads / Supporter) players mustn't get ads. -->
@@ -628,6 +629,7 @@ body {
             box-shadow: inset 0 0 0 2px var(--tc); font-size: 0.8rem; }
         .pf-badge-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .pf-badge-tier { color: var(--tc); }
+        .pf-badge-empty { padding: 4px 10px; border-radius: 999px; border: 1px dashed rgba(255, 107, 214, 0.6); background: none; color: #ff9be4; font: inherit; font-size: 0.76rem; font-weight: 800; cursor: pointer; }
         .pf-like-btn { display: inline-flex; align-items: center; gap: 6px; margin: 0 auto 14px; padding: 8px 16px; border-radius: 999px;
             border: 1px solid var(--kih-border); background: rgba(255, 255, 255, 0.05); color: var(--kih-text); font: inherit; font-weight: 800; cursor: pointer; }
         .pf-like-btn.on { border-color: #4c6ef5; background: rgba(76, 110, 245, 0.22); }
@@ -642,6 +644,19 @@ body {
             background: linear-gradient(90deg, #ffd75e, #ff9f5a); box-shadow: 0 4px 14px rgba(255, 170, 60, 0.3); }
         .ach-claim-all:disabled { background: rgba(255, 255, 255, 0.08); color: var(--kih-text-dim); box-shadow: none; cursor: default; }
         .ach-hint { margin: 0 0 12px; font-size: 0.8rem; color: var(--kih-text-dim); }
+        .bs-box { margin: 10px 0 14px; padding: 12px; border-radius: 14px; background: rgba(255, 107, 214, 0.07); border: 1px solid rgba(255, 107, 214, 0.35); }
+        .bs-title { font-weight: 900; margin-bottom: 8px; }
+        .bs-title small { margin-left: 6px; color: var(--kih-text-dim); font-weight: 700; }
+        .bs-slots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 10px; }
+        .bs-slot { position: relative; display: flex; align-items: center; justify-content: center; min-height: 40px; padding: 4px; border-radius: 12px;
+            border: 1px dashed var(--kih-border); color: var(--kih-text-dim); font-size: 0.78rem; font-weight: 700; background: transparent; font-family: inherit; min-width: 0; }
+        .bs-slot.filled { border-style: solid; border-color: rgba(255, 107, 214, 0.5); cursor: pointer; }
+        .bs-slot .pf-badge { max-width: 100%; }
+        .bs-slot .pf-badge-name { display: none; }
+        .bs-x { position: absolute; top: -6px; right: -6px; width: 18px; height: 18px; border-radius: 50%; background: #ff4d6d; color: #fff; font-size: 0.6rem; line-height: 18px; }
+        .bs-earned { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
+        .bs-pick { padding: 0; border: none; background: none; cursor: pointer; border-radius: 999px; opacity: 0.55; font-family: inherit; }
+        .bs-pick.on { opacity: 1; box-shadow: 0 0 0 2px #ff6bd6; }
         .ach-card { display: flex; gap: 12px; align-items: flex-start; padding: 12px; margin-bottom: 8px; border-radius: 14px; background: var(--kih-panel); border: 1px solid var(--kih-border); }
         .ach-card.ready { border-color: #ffb84d; box-shadow: 0 0 0 1px rgba(255, 184, 77, 0.35), 0 4px 16px rgba(255, 170, 60, 0.12); }
         .ach-card.flash { animation: achFlash 0.9s ease; }
@@ -672,16 +687,42 @@ body {
         .it-perks-title small { margin-left: 6px; color: var(--kih-text-dim); font-weight: 700; }
         .it-perk { display: flex; justify-content: space-between; gap: 10px; padding: 5px 0; font-size: 0.88rem; }
         .it-perk b { color: #7ddc92; }
+        .it-note { margin-top: 6px; font-size: 0.74rem; color: var(--kih-text-dim); }
         .it-head { display: flex; justify-content: space-between; align-items: baseline; margin: 0 0 8px; font-weight: 900; }
         .it-head small { color: var(--kih-text-dim); font-weight: 700; }
-        .it-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; margin-bottom: 14px; }
-        .it-card { padding: 12px 10px; border-radius: 14px; text-align: center; background: var(--kih-panel); border: 1px solid var(--rc); box-shadow: inset 0 -30px 40px -30px var(--rc); }
+        .it-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 6px; margin-bottom: 14px; }
+        .it-card { padding: 9px 6px; border-radius: 14px; text-align: center; background: var(--kih-panel); border: 1px solid var(--rc); box-shadow: inset 0 -30px 40px -30px var(--rc); }
         .it-card.locked { border-style: dashed; box-shadow: none; opacity: 0.75; }
-        .it-icon { font-size: 2rem; line-height: 1.2; }
+        .it-icon { font-size: 1.7rem; line-height: 1.2; }
         .it-card.locked .it-icon { filter: grayscale(1) brightness(0.6); }
-        .it-name { font-weight: 900; font-size: 0.86rem; margin-top: 4px; }
-        .it-rarity { color: var(--rc); font-size: 0.72rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; }
-        .it-perk-text { margin-top: 4px; font-size: 0.74rem; color: var(--kih-text-dim); }
+        .it-name { font-weight: 900; font-size: 0.78rem; margin-top: 3px; line-height: 1.2; }
+        .it-odds { margin-top: 3px; font-size: 0.66rem; font-weight: 800; color: var(--rc); }
+        .it-rarity { color: var(--rc); font-size: 0.66rem; font-weight: 900; text-transform: uppercase; letter-spacing: 0.04em; }
+        .it-perk-text { margin-top: 3px; font-size: 0.68rem; line-height: 1.25; color: var(--kih-text-dim); }
+        .it-rar { margin: 4px 0 6px; font-size: 0.76rem; font-weight: 900; color: var(--rc); text-transform: uppercase; letter-spacing: 0.05em; }
+        .it-free { display: block; width: 100%; margin: 0 0 14px; }
+        .ach-rewards { display: flex; flex-wrap: wrap; gap: 4px 10px; margin: -3px 0 7px; font-size: 0.72rem; color: var(--kih-text-dim); }
+        .ach-rewards .got { color: #7ddc92; }
+        .ach-rewards .got::before { content: "✓ "; }
+        .st-section { margin-bottom: 16px; }
+        .st-title { font-weight: 900; margin-bottom: 8px; }
+        .st-title small { margin-left: 6px; color: var(--kih-text-dim); font-weight: 700; }
+        .st-options { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
+        .st-opt { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px 6px; border-radius: 14px; border: 1px solid var(--kih-border);
+            background: var(--kih-panel); color: var(--kih-text); font: inherit; cursor: pointer; min-width: 0; }
+        .st-opt small { font-size: 0.7rem; font-weight: 800; color: var(--kih-text-dim); text-align: center; }
+        .st-opt.on { border-color: #ff6bd6; box-shadow: 0 0 0 2px rgba(255, 107, 214, 0.45); }
+        .st-prev { min-height: 46px; display: flex; align-items: center; justify-content: center; max-width: 100%; }
+        .st-none { color: var(--kih-text-dim); font-size: 0.8rem; }
+        .st-av { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; display: block; }
+        .st-name { font-weight: 900; font-size: 0.9rem; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .st-bubble { padding: 6px 10px; border-radius: 12px; background: #2a2a4a; font-size: 0.8rem; font-weight: 700; }
+        .st-locked { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+        .st-locked span { padding: 2px 8px; border-radius: 999px; border: 1px dashed var(--kih-border); color: var(--kih-text-dim); font-size: 0.72rem; opacity: 0.7; }
+        .st-pack { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; padding: 8px 10px; margin-bottom: 6px; border-radius: 12px; background: var(--kih-panel); border: 1px solid var(--kih-border); }
+        .st-pack span { font-size: 1.05rem; letter-spacing: 2px; }
+        .st-pack small { width: 100%; color: var(--kih-text-dim); font-size: 0.72rem; }
+        .st-pack.locked { opacity: 0.5; }
         .it-chest { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px; border-radius: 14px; border: 1px dashed #ffb84d; text-align: center; }
         .it-chest small { color: var(--kih-text-dim); }
 
@@ -1920,6 +1961,7 @@ body {
                                     <li>📅 Log in every day for <strong>1 🪙</strong>. Every day Monday–Saturday unlocks Sunday's chest: <strong>3–5 🪙</strong> (1 if you missed a day).</li>
                                     <li>⚔️ Daily quests are worth <strong>4 🪙</strong>: "check out" quests pay 1, "do something" quests pay 2. Finish one, then tap <strong>Claim</strong> — unclaimed rewards don't expire.</li>
                                     <li>🎲 Finishing today's puzzle in <strong>Games</strong> pays <strong>1 🪙</strong> straight away.</li>
+                                    <li>🎒 Items from the chest can add more: on your login, the Sunday chest, the puzzle — and quest-token items add their % to a day's quest tokens (rounded up) once you've claimed all of that day's quests.</li>
                                     <li>🛒 The <strong>Store</strong> has token packs, and Supporter plans that add 80 or 180 🪙 a month.</li>
                                     <li>🎁 Spend them in a <strong>Secret Giveaway</strong>: every token you drop in is one more chance on top of your free one. They're used up when the winners are drawn, win or lose, and come back if you take them out before.</li>
                                 </ul>
@@ -2039,7 +2081,7 @@ body {
                         <!-- Your card as others see it: avatar, name, the badges you
                              show, likes and items. -->
                         <div class="pf-hero">
-                            <img id="pfHeroAvatar" class="pf-hero-avatar" src="" alt="" onerror="this.src='images/KIH.jpg'">
+                            <span id="pfHeroAvatarWrap"><img id="pfHeroAvatar" class="pf-hero-avatar" src="" alt="" onerror="this.src='images/KIH.jpg'"></span>
                             <div class="pf-hero-main">
                                 <div class="pf-hero-name" id="pfHeroName">Commander</div>
                                 <div class="pf-badges" id="pfHeroBadges"></div>
@@ -2050,6 +2092,7 @@ body {
                             <button type="button" class="kih-chip active" data-tab="edit" onclick="switchProfileTab('edit')">✏️ Profile</button>
                             <button type="button" class="kih-chip" data-tab="ach" onclick="switchProfileTab('ach')">🏅 Achievements<span class="pf-tab-dot" id="pfAchDot"></span></button>
                             <button type="button" class="kih-chip" data-tab="items" onclick="switchProfileTab('items')">🎒 Items</button>
+                            <button type="button" class="kih-chip" data-tab="style" onclick="switchProfileTab('style')">🎨 Style</button>
                         </div>
 
                         <div id="pfTabAch" class="pf-tab" style="display:none;">
@@ -2057,6 +2100,9 @@ body {
                         </div>
                         <div id="pfTabItems" class="pf-tab" style="display:none;">
                             <div id="pfItemsBody"><p class="settings-sub">Loading…</p></div>
+                        </div>
+                        <div id="pfTabStyle" class="pf-tab" style="display:none;">
+                            <div id="pfStyleBody"><p class="settings-sub">Loading…</p></div>
                         </div>
 
                         <div id="pfTabEdit" class="pf-tab">
@@ -2172,9 +2218,9 @@ body {
         <div class="mini-modal-overlay" id="viewProfileModalOverlayHome">
             <div class="mini-modal-box" style="max-width:360px; text-align:left;">
                 <div style="text-align:center;">
-                    <img id="viewProfileAvatarHome"
+                    <span id="viewProfileAvatarWrapHome"><img id="viewProfileAvatarHome"
                         style="width:84px; height:84px; border-radius:50%; object-fit:cover; background:var(--kih-border); margin-bottom:10px;"
-                        onerror="this.src='images/KIH.jpg'">
+                        onerror="this.src='images/KIH.jpg'"></span>
                     <div id="viewProfileNameHome" style="font-weight:800; font-size:1.2rem; margin-bottom:4px;"></div>
                     <div id="viewProfileBioHome"
                         style="color:var(--kih-text-dim); font-size:0.85rem; margin-bottom:10px;"></div>
@@ -2975,6 +3021,13 @@ window.closeLegalModal = closeLegalModal;
             const me = AppState.getCurrentUser();
             const [card, liked] = await Promise.all([AppState.getPlayerCard(uid), me && me.uid !== uid ? AppState.haveILikedProfile(uid) : false]);
             badgesEl.innerHTML = (card.badges || []).map(badgeHtml).join("");
+            // Their border and name effect, on the home mini profile.
+            const wrap = document.getElementById("viewProfileAvatarWrapHome"), nameEl = document.getElementById("viewProfileNameHome");
+            if (wrap && badgesEl.id === "viewProfileBadgesHome") {
+                const bd = card.style && PC.STYLE_BY_ID[card.style.border];
+                wrap.className = bd ? `fx-av fx-border-${bd.css}${bd.anim ? " fx-" + bd.anim : ""}` : "";
+                nameEl.className = PC.styleClass(card.style, "name");
+            }
             let count = Math.max(0, card.likeCount || 0);
             let on = liked;
             const draw = () => { likeBtn.textContent = `👍 ${count} like${count === 1 ? "" : "s"}`; likeBtn.classList.toggle("on", on); };
@@ -3003,10 +3056,16 @@ window.closeLegalModal = closeLegalModal;
                 document.getElementById("pfHeroName").textContent = profile.name || "Commander";
             }
             const st = progressStatus;
-            document.getElementById("pfHeroBadges").innerHTML = st ? (st.badges || []).map(badgeHtml).join("") : "";
+            const shownBadges = st ? (st.badges || []).map(badgeHtml).join("") : "";
+            document.getElementById("pfHeroBadges").innerHTML = shownBadges
+                || (st ? `<button type="button" class="pf-badge-empty" onclick="switchProfileTab('ach')">🏅 Pick badges to show</button>` : "");
             document.getElementById("pfHeroStats").textContent = st
-                ? `👍 ${st.likeCount} like${st.likeCount === 1 ? "" : "s"} · 🎒 ${st.items.length}/${PC.ITEMS.length} items`
+                ? `👍 ${st.likeCount} like${st.likeCount === 1 ? "" : "s"} · 🎒 ${st.items.length} item${st.items.length === 1 ? "" : "s"} & styles`
                 : (AppState.getCurrentUser() ? "" : "Sign in to earn badges and items");
+            const style = st ? st.style : null;
+            const b = style && PC.STYLE_BY_ID[style.border];
+            document.getElementById("pfHeroAvatarWrap").className = b ? `fx-av fx-border-${b.css}${b.anim ? " fx-" + b.anim : ""}` : "";
+            document.getElementById("pfHeroName").className = "pf-hero-name " + PC.styleClass(style, "name");
         }
 
         function showProfileTab(tab) {
@@ -3015,6 +3074,7 @@ window.closeLegalModal = closeLegalModal;
             document.getElementById("pfTabEdit").style.display = tab === "edit" ? "" : "none";
             document.getElementById("pfTabAch").style.display = tab === "ach" ? "" : "none";
             document.getElementById("pfTabItems").style.display = tab === "items" ? "" : "none";
+            document.getElementById("pfTabStyle").style.display = tab === "style" ? "" : "none";
         }
         window.switchProfileTab = function (tab) {
             showProfileTab(tab);
@@ -3028,17 +3088,19 @@ window.closeLegalModal = closeLegalModal;
             if (!AppState.getCurrentUser()) {
                 document.getElementById("pfAchBody").innerHTML = signedOut;
                 document.getElementById("pfItemsBody").innerHTML = signedOut;
+                document.getElementById("pfStyleBody").innerHTML = signedOut;
                 return;
             }
             try {
                 progressStatus = await AppState.getProgressStatus();
             } catch (e) {
                 const err = `<p class="settings-sub">Couldn't load this — ${escText(e.message)}</p><button class="btn-settings-action" onclick="loadProgress()">Try again</button>`;
-                if (!progressStatus) { document.getElementById("pfAchBody").innerHTML = err; document.getElementById("pfItemsBody").innerHTML = err; }
+                if (!progressStatus) { ["pfAchBody", "pfItemsBody", "pfStyleBody"].forEach(id => { document.getElementById(id).innerHTML = err; }); }
                 return;
             }
             renderAchievements();
             renderItems();
+            renderStyle();
             renderProfileHero(null);
             updateAchievementDots();
         }
@@ -3079,6 +3141,7 @@ window.closeLegalModal = closeLegalModal;
                     <div class="ach-body">
                         <div class="ach-name">${escText(a.name)}${tier ? `<small>${tier.name}</small>` : ""}</div>
                         <div class="ach-desc">${escText(a.desc)}</div>
+                        <div class="ach-rewards"><span class="${x.claimed >= PC.FREE_DRAW_TIER ? "got" : ""}">🥇 Gold: a free chest draw</span><span class="${x.claimed >= PC.TIERS.length ? "got" : ""}">💜 Mythic: ${(PC.ACHIEVEMENT_REWARDS[a.id] || []).map(id => PC.BY_ID[id].icon + " " + escText(PC.BY_ID[id].name)).join(" + ")}</span></div>
                         <div class="ach-bar"><i style="width:${pct}%"></i></div>
                         <div class="ach-meta"><span>${meta}</span><span class="ach-pips">${pips}</span></div>
                         <div class="ach-actions">${x.claimed ? `<button type="button" class="ach-pin${shown.includes(a.id) ? " on" : ""}" onclick="toggleShownBadge('${a.id}')" title="${shown.includes(a.id) ? "Shown on your profile — tap to hide" : "Show this badge on your profile"}" aria-label="Show badge">📌</button>` : ""}${x.ready ? `<button type="button" class="ach-claim" onclick="claimAchievements('${a.id}')">Claim +${x.readyTokens} 🪙</button>` : ""}</div>
@@ -3087,11 +3150,29 @@ window.closeLegalModal = closeLegalModal;
             }).join("");
             document.getElementById("pfAchBody").innerHTML = `
                 <div class="ach-head">
-                    <div class="ach-head-sum"><b>${tiersDone}</b> of ${PC.ACHIEVEMENTS.length * PC.TIERS.length} tiers · <b>${shown.length}</b>/${PC.MAX_BADGES} badges shown</div>
+                    <div class="ach-head-sum"><b>${tiersDone}</b> of ${PC.ACHIEVEMENTS.length * PC.TIERS.length} tiers · <b>${shown.length}</b>/${st.badgeLimit || PC.MAX_BADGES} badges shown</div>
                     <button type="button" class="ach-claim-all" id="achClaimAllBtn" onclick="claimAchievements(null)" ${readyTokens ? "" : "disabled"}>🎁 Claim all${readyTokens ? ` · +${readyTokens} 🪙` : ""}</button>
                 </div>
-                <p class="ach-hint">Tap 📌 on a claimed achievement to show its badge on your profile (up to ${PC.MAX_BADGES}).</p>
+                ${badgeSlotsHtml(states, shown)}
                 ${cards}`;
+        }
+
+        // "Your badges": the 3 slots shown on your profile, and every badge
+        // you've earned underneath — tap one to show or hide it.
+        function badgeSlotsHtml(states, shown) {
+            const earned = states.filter(x => x.claimed > 0);
+            const limit = progressStatus.badgeLimit || PC.MAX_BADGES;
+            const slots = Array.from({ length: limit }, (_, i) => {
+                const id = shown[i];
+                return id
+                    ? `<button type="button" class="bs-slot filled" onclick="toggleShownBadge('${id}')" title="Tap to take it off your profile">${badgeHtml({ a: id, t: progressStatus.claimed[id] || 1 })}<span class="bs-x">✕</span></button>`
+                    : `<div class="bs-slot">Empty</div>`;
+            }).join("");
+            const list = earned.length
+                ? `<div class="bs-earned">${earned.map(x => `<button type="button" class="bs-pick${shown.includes(x.id) ? " on" : ""}" onclick="toggleShownBadge('${x.id}')">${badgeHtml({ a: x.id, t: x.claimed })}</button>`).join("")}</div>
+                   <p class="ach-hint">Tap a badge to show it on your profile (up to ${limit}) — tap again to hide it.</p>`
+                : `<p class="ach-hint">No badges yet — claim an achievement below to earn your first one.</p>`;
+            return `<div class="bs-box"><div class="bs-title">Your badges <small>${earned.length} earned</small></div><div class="bs-slots">${slots}</div>${list}</div>`;
         }
 
         window.claimAchievements = async function (id) {
@@ -3103,11 +3184,14 @@ window.closeLegalModal = closeLegalModal;
                 progressStatus.claimed = r.claimedTiers || progressStatus.claimed;
                 if (r.badges) progressStatus.badges = r.badges;
                 if (typeof r.balance === "number") progressStatus.balance = r.balance;
+                if (typeof r.freeDraws === "number") progressStatus.freeDraws = r.freeDraws;
+                if (r.gifts && r.gifts.length) { progressStatus.items = [...new Set([...(progressStatus.items || []), ...r.gifts])]; renderItems(); renderStyle(); }
                 renderAchievements();
                 renderProfileHero(null);
                 updateAchievementDots();
                 (r.claimed || []).forEach(c => { const el = document.getElementById("ach_" + c.id); if (el) el.classList.add("flash"); });
-                showQuestToast(r.paid ? `🎉 +${r.paid} 🪙 claimed!` : "Nothing new to claim yet.");
+                const extras = [r.newFreeDraws ? `🎁 ${r.newFreeDraws} free chest draw${r.newFreeDraws === 1 ? "" : "s"}` : "", ...(r.gifts || []).map(id => `${PC.BY_ID[id].icon} ${PC.BY_ID[id].name}`)].filter(Boolean);
+                showQuestToast(r.paid ? `🎉 +${r.paid} 🪙 claimed!${extras.length ? " Plus " + extras.join(", ") + "!" : ""}` : "Nothing new to claim yet.");
             } catch (e) {
                 showGenericErrorModal(e.message, "Couldn't claim");
                 renderAchievements();
@@ -3122,7 +3206,7 @@ window.closeLegalModal = closeLegalModal;
             const ids = before.map(b => b.a);
             let next;
             if (ids.includes(id)) next = ids.filter(x => x !== id);
-            else if (ids.length >= PC.MAX_BADGES) { showQuestToast(`You can show ${PC.MAX_BADGES} badges — unpin one first.`); return; }
+            else if (ids.length >= (progressStatus.badgeLimit || PC.MAX_BADGES)) { showQuestToast(`You can show ${progressStatus.badgeLimit || PC.MAX_BADGES} badges — unpin one first.`); return; }
             else next = [...ids, id];
             progressBusy = true;
             progressStatus.badges = next.map(a => ({ a, t: progressStatus.claimed[a] || 1 }));
@@ -3138,40 +3222,102 @@ window.closeLegalModal = closeLegalModal;
             renderAchievements(); renderProfileHero(null);
         };
 
+        const sgtDay = () => new Date(Date.now() + 8 * 3600e3).toISOString().slice(0, 10);
+        // Where an achievement-only thing comes from ("Mythic Loyal Commander").
+        function rewardSource(id) {
+            const a = Object.keys(PC.ACHIEVEMENT_REWARDS).find(k => PC.ACHIEVEMENT_REWARDS[k].includes(id));
+            return a ? `Mythic ${PC.ACHIEVEMENT_BY_ID[a].name}` : "";
+        }
+        function itemCardHtml(it, has, note) {
+            const r = PC.RARITIES[it.rarity];
+            return `<div class="it-card${has ? "" : " locked"}" style="--rc:${r.color}">
+                <div class="it-icon">${it.icon}</div>
+                <div class="it-name">${escText(it.name)}</div>
+                <div class="it-perk-text">${it.perks.map(PC.perkText).join(" · ")}</div>
+                ${has ? "" : `<div class="it-odds">${escText(note)}</div>`}
+            </div>`;
+        }
+
         function renderItems() {
             const st = progressStatus;
             const owned = new Set(st.items || []);
-            const p = st.perks || {};
-            const rates = PC.dropRates();
-            const perkRows = [
-                p.gameFlat ? `<div class="it-perk"><span>🎮 Weekly Games score</span><b>+${p.gameFlat}</b></div>` : "",
-                p.gameBest ? `<div class="it-perk"><span>🏅 Your strongest game's points</span><b>+${p.gameBest}%</b></div>` : "",
-                p.secretChance ? `<div class="it-perk"><span>🎁 Chances in every Secret Giveaway</span><b>+${p.secretChance}</b></div>` : ""
-            ].join("");
-            const cards = PC.ITEMS.map(it => {
-                const r = PC.RARITIES[it.rarity];
-                const has = owned.has(it.id);
-                return `<div class="it-card${has ? "" : " locked"}" style="--rc:${r.color}">
-                    <div class="it-icon">${has ? it.icon : "❔"}</div>
-                    <div class="it-name">${has ? escText(it.name) : "???"}</div>
-                    <div class="it-rarity">${r.label}</div>
-                    <div class="it-perk-text">${has ? PC.perkText(it.perk) : `${rates[it.id].toFixed(rates[it.id] < 10 ? 1 : 0)}% per chest`}</div>
-                </div>`;
+            const day = sgtDay();
+            const rates = PC.dropRates(day);
+            const lines = PC.perkLines(st.perks || {});
+            const chestItems = PC.ITEMS.filter(i => i.chest);
+            const achItems = PC.ITEMS.filter(i => !i.chest);
+            const pct = (id) => `🔒 ${rates[id].toFixed(rates[id] < 1 ? 2 : 1)}% per draw`;
+            const byRarity = PC.RARITY_ORDER.slice().reverse().map(k => {
+                const list = chestItems.filter(i => i.rarity === k);
+                return list.length ? `<div class="it-rar" style="--rc:${PC.RARITIES[k].color}">${PC.RARITIES[k].label}</div><div class="it-grid">${list.map(it => itemCardHtml(it, owned.has(it.id), pct(it.id))).join("")}</div>` : "";
             }).join("");
             document.getElementById("pfItemsBody").innerHTML = `
                 <div class="it-perks">
                     <div class="it-perks-title">Your bonuses<small>always on — every item counts, and they add up</small></div>
-                    ${perkRows || `<div class="it-perk"><span>No items yet — open a chest for your first bonus.</span></div>`}
+                    ${lines.length ? lines.map(l => `<div class="it-perk"><span>${escText(l.text)}</span></div>`).join("") : `<div class="it-perk"><span>No items yet — open a chest for your first bonus.</span></div>`}
+                    ${(st.perks || {}).questMult ? `<div class="it-note">Daily quest tokens: the bonus is worked out on the whole day, rounded up, and paid once you've claimed all of that day's quests.</div>` : ""}
                 </div>
-                <div class="it-head"><span>Collection</span><small>${owned.size} / ${PC.ITEMS.length}</small></div>
-                <div class="it-grid">${cards}</div>
+                ${st.freeDraws ? `<button type="button" class="ach-claim-all it-free" onclick="openChestInStore()">🎁 You have ${st.freeDraws} free chest draw${st.freeDraws === 1 ? "" : "s"} — open now</button>` : ""}
+                <div class="it-head"><span>Perk items</span><small>${chestItems.filter(i => owned.has(i.id)).length} / ${chestItems.length}</small></div>
+                ${byRarity}
+                <div class="it-head"><span>Achievement rewards</span><small>${achItems.filter(i => owned.has(i.id)).length} / ${achItems.length}</small></div>
+                <div class="it-grid">${achItems.map(it => itemCardHtml(it, owned.has(it.id), rewardSource(it.id))).join("")}</div>
                 <div class="it-chest">
                     <div style="font-size:2rem;">${PC.CHEST.icon}</div>
-                    <b>${PC.CHEST.name} · ${PC.CHEST.price} 🪙</b>
-                    <small>One random item. Already have it? You get ${PC.CHEST.duplicateRefund} 🪙 back.</small>
-                    <button type="button" class="ach-claim-all" onclick="openChestInStore()">Open chests in the Store</button>
+                    <b>${PC.CHEST.name} · ${PC.CHEST.price} 🪙 · ×10 ${PC.CHEST.price10} 🪙</b>
+                    <small>Perk items and styles. Duplicates turn into tokens. An Epic or better at least every ${PC.PITY.epic} draws, a Legendary every ${PC.PITY.legendary}.</small>
+                    <button type="button" class="ach-claim-all" onclick="openChestInStore()">Open the chest in the Store</button>
                 </div>`;
         }
+
+        /* ---- 🎨 Style: which border, name effect and chat bubble you show ---- */
+        const STYLE_SLOTS = [["border", "Avatar border"], ["name", "Name effect"], ["bubble", "Chat bubble"]];
+        function stylePreview(s) {
+            const st = progressStatus;
+            const avatar = document.getElementById("pfHeroAvatar").getAttribute("src") || "images/KIH.jpg";
+            const name = document.getElementById("pfHeroName").textContent || "You";
+            if (s.type === "border") return PC.withBorder(`<img class="st-av" src="${escText(avatar)}" alt="">`, { border: s.id });
+            if (s.type === "name") return `<span class="st-name ${PC.styleClass({ name: s.id }, "name")}">${escText(name)}</span>`;
+            return `<span class="st-bubble ${PC.styleClass({ bubble: s.id }, "bubble")}">gg wp!</span>`;
+        }
+        function renderStyle() {
+            const st = progressStatus;
+            const owned = new Set(st.items || []);
+            const shown = st.style || {};
+            const day = sgtDay();
+            const sections = STYLE_SLOTS.map(([type, label]) => {
+                const all = PC.STYLES.filter(s => s.type === type && (owned.has(s.id) || (s.vip && st.vip)));
+                const locked = PC.STYLES.filter(s => s.type === type && !owned.has(s.id) && !(s.vip && st.vip));
+                const none = `<button type="button" class="st-opt${!shown[type] ? " on" : ""}" onclick="pickStyle('${type}', null)"><span class="st-prev st-none">None</span><small>None</small></button>`;
+                const mine = all.map(s => `<button type="button" class="st-opt${shown[type] === s.id ? " on" : ""}" style="--rc:${PC.RARITIES[s.rarity].color}" onclick="pickStyle('${type}', '${s.id}')">
+                    <span class="st-prev">${stylePreview(s)}</span><small>${escText(s.name)}</small></button>`).join("");
+                const lockedHtml = locked.length ? `<div class="st-locked">${locked.map(s => `<span title="${escText(s.vip ? "Comes with Super Supporter" : s.chest ? `From the chest (${PC.RARITIES[s.rarity].label})` : rewardSource(s.id))}">${s.icon} ${escText(s.name)}</span>`).join("")}</div>` : "";
+                return `<div class="st-section"><div class="st-title">${label}<small>${all.length} yours</small></div><div class="st-options">${none}${mine}</div>${lockedHtml}</div>`;
+            }).join("");
+            const packs = PC.STYLES.filter(s => s.type === "emotes");
+            const packsHtml = `<div class="st-section"><div class="st-title">Emote packs<small>all yours are on — in reactions and the 😊 panel</small></div>
+                ${packs.map(s => {
+                    const has = owned.has(s.id);
+                    const where = s.chest ? (s.season && !PC.inSeason(s, day) ? "seasonal — not in the chest right now" : `from the chest (${PC.RARITIES[s.rarity].label})`) : rewardSource(s.id);
+                    return `<div class="st-pack${has ? "" : " locked"}"><b>${s.icon} ${escText(s.name)}</b><span>${PC.EMOTE_PACKS[s.pack].join(" ")}</span>${has ? "" : `<small>${escText(where)}</small>`}</div>`;
+                }).join("")}</div>`;
+            document.getElementById("pfStyleBody").innerHTML = `<p class="ach-hint">What you pick shows to everyone — on your profile, in comments, chat and the Games leaderboard. Faded ones aren't yours yet.</p>${sections}${packsHtml}`;
+        }
+        window.pickStyle = async function (type, id) {
+            if (progressBusy) return;
+            const before = { ...(progressStatus.style || {}) };
+            progressBusy = true;
+            progressStatus.style = { ...before, [type]: id };
+            renderStyle(); renderProfileHero(null);
+            try {
+                await AppState.equipStyle(type, id);
+            } catch (e) {
+                progressStatus.style = before;
+                showGenericErrorModal(e.message, "Couldn't change that");
+            }
+            progressBusy = false;
+            renderStyle(); renderProfileHero(null);
+        };
 
         // From the Store's "My items" button: Profile, on that tab.
         window.openProfileTab = function (tab) {
@@ -3705,6 +3851,8 @@ function getNewsTypeInfo(type) {
             document.getElementById("viewProfilePowerHome").textContent = "—";
             document.getElementById("viewProfileClanHome").textContent = "—";
             document.getElementById("viewProfileBadgesHome").innerHTML = "";
+            document.getElementById("viewProfileAvatarWrapHome").className = "";
+            document.getElementById("viewProfileNameHome").className = "";
             document.getElementById("viewProfileLikeHome").style.display = "none";
             overlay.classList.add("open");
 
@@ -4642,7 +4790,7 @@ window.closeInboxItemModal = closeInboxItemModal;
                 if (chestPop && result.claimed > 0) {
                     // The chest's own share: everything claimed, less the other rewards opened with it.
                     const others = claimedItems.filter(r => !r.chest).reduce((a, r) => a + (r.reward || 1), 0);
-                    const chestAmount = Math.max(1, result.claimed - others);
+                    const chestAmount = Math.max(1, result.claimed - others - (result.itemBonus || 0));
                     questReady = questReady.filter(r => !ids.includes(r.id));
                     ids.forEach(id => {
                         const [day, questId] = id.split("_");
@@ -4655,7 +4803,7 @@ window.closeInboxItemModal = closeInboxItemModal;
                     const rect = await openChest(chestPop, chestAmount);
                     if (typeof result.balance === "number") questBalance = result.balance;
                     flyQuestCoins(rect, result.claimed);
-                    showQuestToast(ids.length === 1 ? `🎁 Chest opened: +${result.claimed} 🪙!` : `🎁 +${chestAmount} from the chest — +${result.claimed} 🪙 in all!`);
+                    showQuestToast((ids.length === 1 && !result.itemBonus ? `🎁 Chest opened: +${result.claimed} 🪙!` : `🎁 +${chestAmount} from the chest — +${result.claimed} 🪙 in all!`) + itemBonusNote(result));
                     return;
                 }
                 if (chestPop) chestPop.remove();
@@ -4668,9 +4816,9 @@ window.closeInboxItemModal = closeInboxItemModal;
                 });
                 if (typeof result.balance === "number") questBalance = result.balance;
                 if (result.claimed > 0) flyQuestCoins(fromRect, result.claimed);
-                if (result.claimed > 0) showQuestToast(openingChest && ids.length === 1
+                if (result.claimed > 0) showQuestToast((openingChest && ids.length === 1
                     ? `🎁 Chest opened: +${result.claimed} 🪙!`
-                    : `+${result.claimed} 🪙 claimed!`);
+                    : `+${result.claimed} 🪙 claimed!`) + itemBonusNote(result));
             } catch (e) {
                 if (chestPop) chestPop.remove();
                 showQuestToast(e.message || "Couldn't claim — check your connection and try again.");
@@ -4679,6 +4827,9 @@ window.closeInboxItemModal = closeInboxItemModal;
                 renderQuests();
             }
         }
+
+        // Quest-token items pay their round-up once every quest of a day is claimed.
+        const itemBonusNote = (result) => result && result.itemBonus ? ` (incl. 🎒 +${result.itemBonus} item bonus for finishing the day)` : "";
 
         /* ---- little animations: coins flying into the wallet, the balance
            counting up to its new value ---- */
