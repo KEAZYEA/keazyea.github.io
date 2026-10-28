@@ -3251,6 +3251,23 @@ async function getClanPostCooldownRemaining() {
         return entry;
     }
 
+    // Leave this week's giveaway: only while entries are open (never on draw
+    // day), and the rules refuse it once that week has been drawn.
+    async function leaveGiveaway() {
+        await waitForAuthReady();
+        if (!currentUser) throw new Error("Sign in with Google first.");
+        if (!isGiveawayOpen()) throw new Error("It's draw day — entries can't change now.");
+        const weekId = getWeekId();
+        const id = entryDocId(currentUser.uid, weekId);
+        await deleteDoc(doc(db, "giveawayEntries", id));
+        try {
+            await deleteDoc(doc(db, "giveawayEntriesPublic", id));
+        } catch (e) {
+            console.warn("Couldn't remove the public entry:", e.message);
+        }
+        return weekId;
+    }
+
     async function getGiveawayEntries(weekId) {
         const q = query(collection(db, "giveawayEntries"), where("weekId", "==", weekId));
         const snap = await getDocs(q);
@@ -5010,7 +5027,7 @@ async function maybeRefreshAd(containerId) {
         // inbox
         getInbox, addInboxMessage, markAllRead, unreadCount,
         // giveaway
-        getWeekId, hasJoinedGiveaway, getMyGiveawayEntry, joinGiveaway, getGiveawayEntries,
+        getWeekId, hasJoinedGiveaway, getMyGiveawayEntry, joinGiveaway, leaveGiveaway, getGiveawayEntries,
         getPublicGiveawayEntries, getWeekWinner, getGiveawayHistory, getSimulatedNow, isGiveawayOpen,
         // admin
         isAdmin, pickWeeklyWinner, getDrawWeek, undoWeeklyDraw, finalizeGiveawayPrize, getMyPrize,

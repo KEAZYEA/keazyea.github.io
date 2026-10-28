@@ -3604,6 +3604,11 @@ async function refreshTopbar(retriesLeft = 3) {
         function escapeHomeHtml(str) {
     return String(str || "").replace(/[&<>"']/g, s => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[s]));
 }
+        // Text passed to an onclick="…" handler: a quoted JS string, HTML-escaped,
+        // so names with ' or " (O'Neil) don't break the button.
+        function jsArgHome(value) {
+            return escapeHomeHtml(JSON.stringify(String(value == null ? "" : value)));
+        }
 
 // Keeps the currently-rendered (filtered) notifications around so a click
 // on an item can look itself up by index and show the full text.
@@ -3628,7 +3633,7 @@ let currentInboxItems = [];
             }
             list.innerHTML = requests.map(r => `
                 <div class="friend-req-item">
-                    <div class="friend-req-person" onclick="openViewProfileModalHome('${r.fromUid}', '${escapeHomeHtml(r.fromName).replace(/'/g, "\\'")}', '${escapeHomeHtml(r.fromAvatar || "")}')">
+                    <div class="friend-req-person" onclick="openViewProfileModalHome(${jsArgHome(r.fromUid)}, ${jsArgHome(r.fromName)}, ${jsArgHome(r.fromAvatar || "")})">
                         <img class="friend-req-avatar" src="${escapeHomeHtml(r.fromAvatar || 'images/KIH.jpg')}" onerror="this.src='images/KIH.jpg'">
                         <span class="friend-req-name">${escapeHomeHtml(r.fromName)}</span>
                     </div>
@@ -4039,7 +4044,7 @@ function getNewsTypeInfo(type) {
         function inboxActionHtml(n, style) {
             if (n.type === "promo") return `<button class="btn-primary" style="${style}" onclick="openPromoTab('codes')">View Promo Codes</button>`;
             if (n.type === "tip") return `<button class="btn-primary" style="${style}" onclick="openInboxTip('${n.sourceId}')">View Tip</button>`;
-            if (n.type === "friendAccepted") return `<button class="btn-primary" style="${style}" onclick="openInboxFriendChat('${n.fromUid}', '${escapeHomeHtml(n.fromName).replace(/'/g, "\\'")}', '${escapeHomeHtml(n.fromAvatar || "")}')">💬 Message</button>`;
+            if (n.type === "friendAccepted") return `<button class="btn-primary" style="${style}" onclick="openInboxFriendChat(${jsArgHome(n.fromUid)}, ${jsArgHome(n.fromName)}, ${jsArgHome(n.fromAvatar || "")})">💬 Message</button>`;
             if (n.type === "giveawayWin" || n.type === "promoCodes") return prizeButtonHtml(n, style);
             if (COMMENT_NOTIF_TYPES.includes(n.type)) return `<button class="btn-primary" style="${style}" onclick="openInboxComment('${n.postId ? "formation" : "tierList"}', '${n.postId || n.tierListId || ""}', '${n.commentId || ""}')">💬 View &amp; reply</button>`;
             if (n.type === "secretGiveawayWin") {
@@ -4066,16 +4071,23 @@ function getNewsTypeInfo(type) {
         }
 
         // The Claim button on an admin token gift — or what happened to it.
+        // What's in a gift, short: "50 🪙 + 2 🧰 + 👑" (tokens, chest draws, items).
+        function giftShortText(n) {
+            const PCx = window.ProgressCore;
+            const items = Array.isArray(n.itemIds) ? n.itemIds : [];
+            return [Number(n.amount) ? `${Number(n.amount)} 🪙` : "", Number(n.draws) ? `${Number(n.draws)} 🧰` : "",
+                ...items.map(id => (PCx && PCx.BY_ID[id] ? PCx.BY_ID[id].icon : "🎒"))].filter(Boolean).join(" + ") || "gift";
+        }
         function giftButtonHtml(n, big) {
             const style = big ? "margin-top:14px; padding:10px 20px; font-size:0.9rem;" : "padding:6px 16px; font-size:0.85rem;";
-            const amount = Number(n.amount) || 0;
-            if (myGiftClaims.has(n.giftId)) return `<span class="inbox-gift-state">✅ Claimed +${amount} 🪙</span>`;
+            const what = giftShortText(n);
+            if (myGiftClaims.has(n.giftId)) return `<span class="inbox-gift-state">✅ Claimed ${what}</span>`;
             if ((n.expiresAt || 0) <= Date.now()) return `<span class="inbox-gift-state expired">⌛ Expired</span>`;
             // Gift ids are plain base-36 from the server. Anything else is not
             // a real gift, and must never reach the onclick string below.
             if (!/^[A-Za-z0-9]{1,64}$/.test(String(n.giftId || ""))) return "";
             const id = n.giftId;
-            return `<button class="btn-primary inbox-gift-btn" style="${style}" onclick="claimInboxGift('${id}')"${giftClaiming === n.giftId ? " disabled" : ""}>🎁 Claim ${amount} 🪙</button>` +
+            return `<button class="btn-primary inbox-gift-btn" style="${style}" onclick="claimInboxGift('${id}')"${giftClaiming === n.giftId ? " disabled" : ""}>🎁 Claim ${what}</button>` +
                 `<span class="inbox-gift-expiry">Expires ${new Date(n.expiresAt).toLocaleString()}</span>`;
         }
 
@@ -4093,7 +4105,14 @@ function getNewsTypeInfo(type) {
             try {
                 const result = await AppState.claimTokenGift(giftId);
                 myGiftClaims = new Set([...myGiftClaims, giftId]);
-                showQuestToast(result.claimed > 0 ? `+${result.claimed} 🪙 added to your wallet!` : "You've already claimed this one.");
+                const PCx = window.ProgressCore;
+                const got = [result.claimed > 0 ? `+${result.claimed} 🪙` : "", result.draws ? `🧰 ${result.draws} free chest draw${result.draws === 1 ? "" : "s"}` : "",
+                    ...(result.items || []).map(id => PCx && PCx.BY_ID[id] ? `${PCx.BY_ID[id].icon} ${PCx.BY_ID[id].name}` : id),
+                    result.dupTokens ? `+${result.dupTokens} 🪙 for what you already had` : ""].filter(Boolean);
+                const tokensOnly = got.length === 1 && result.claimed > 0;
+                showQuestToast(result.alreadyClaimed ? "You've already claimed this one."
+                    : tokensOnly ? `+${result.claimed} 🪙 added to your wallet!`
+                    : got.length ? `🎁 Got it: ${got.join(", ")}!` : "Claimed!");
             } catch (e) {
                 showQuestToast(e.message || "Couldn't claim — check your connection and try again.");
             } finally {

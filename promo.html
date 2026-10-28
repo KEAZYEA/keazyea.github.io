@@ -577,6 +577,7 @@
         .switch-link { display: block; margin: 14px auto 0; padding: 9px 16px; border-radius: 999px; border: 1px solid rgba(140, 160, 255, 0.45); background: rgba(65, 105, 225, 0.16); color: #c8d4ff; font: inherit; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
         .switch-link:active { transform: scale(0.97); }
 
+        .switch-link.leave, .switch-device-btn.leave { color: #ff9b9b; }
         .enter-free-note { margin: 0 0 10px; text-align: center; color: #c8c8e0; font-size: 0.85rem; }
         /* not entered yet: a mystery box */
         .mystery { display: flex; align-items: center; gap: 20px; margin: 0 0 12px; padding: 12px; border-radius: 14px; background: rgba(138, 77, 255, 0.12); border: 1px dashed rgba(180, 150, 255, 0.5); }
@@ -1123,6 +1124,7 @@
 
                         <div class="wk-actions">
                             <button class="switch-device-btn" id="switchDeviceBtn" onclick="backToDeviceSelect()">🔄 Switch Device</button>
+                            <button class="switch-device-btn leave" id="leaveWeeklyBtn" onclick="handleLeaveWeekly()">🚪 Leave giveaway</button>
                             <button class="switch-device-btn" id="historyBtn" onclick="openGiveawayHistory()">🕘 Past Winners</button>
                         </div>
                     </div>
@@ -2264,10 +2266,30 @@ function showDrawDayModal() {
             }
 
             function updateSwitchDeviceLock() {
-                const btn = document.getElementById("switchDeviceBtn");
-                if (!btn) return;
-                btn.style.display = isDrawDay() ? "none" : "";
+                // Draw day: no changing device, and no leaving.
+                ["switchDeviceBtn", "leaveWeeklyBtn"].forEach(id => {
+                    const btn = document.getElementById(id);
+                    if (btn) btn.style.display = isDrawDay() ? "none" : "";
+                });
             }
+
+            // Leave this week's giveaway (you can enter again any time before Sunday).
+            window.handleLeaveWeekly = async function () {
+                if (!await showConfirmModal("Leave this week's giveaway?", "You won't be in Sunday's draw. You can enter again any time before then.", "Leave")) return;
+                const btn = document.getElementById("leaveWeeklyBtn");
+                btn.disabled = true;
+                try {
+                    await AppState.leaveGiveaway();
+                    if (countdownInterval) clearInterval(countdownInterval);
+                    showState("device");
+                    try { if (window.top !== window && window.top.refreshWeeklyJoined) window.top.refreshWeeklyJoined(); } catch (e) { }
+                    await showInfoModal("You've left", "You're out of this week's draw. Pick your device again if you change your mind.");
+                } catch (e) {
+                    await showInfoModal("Couldn't leave", e.message);
+                } finally {
+                    btn.disabled = false;
+                }
+            };
             function isWheelRevealed(weekId) {
                 return localStorage.getItem("kih_wheel_revealed_" + weekId) === "1";
             }
@@ -2512,6 +2534,25 @@ if (user && user.uid === winnerData.winnerUid) {
                     }
                 });
             }
+
+            // Leave a secret giveaway: any tokens on the entry come back first.
+            window.handleLeaveSecret = async function (giveawayId) {
+                const g = latestSecretGiveaways.find(x => x.id === giveawayId);
+                let staked = 0;
+                try { const d = await getSecretDetail(giveawayId); staked = (d.entry && d.entry.tokens) || 0; } catch (e) { }
+                const body = staked
+                    ? `Your ${staked} token${staked === 1 ? "" : "s"} on it come back to your wallet. You can enter again while it's open.`
+                    : "You can enter again while it's open.";
+                if (!await showConfirmModal(`Leave "${(g && g.title) || "this giveaway"}"?`, body, "Leave")) return;
+                try {
+                    await AppState.leaveSecretGiveaway(giveawayId);
+                    forgetSecretDetails(giveawayId);
+                    renderSecretGiveawayList(latestSecretGiveaways);
+                    await showInfoModal("You've left", staked ? `🪙 ${staked} token${staked === 1 ? "" : "s"} are back in your wallet.` : "You're out of that giveaway.");
+                } catch (e) {
+                    await showInfoModal("Couldn't leave", e.message);
+                }
+            };
 
             window.retrySecretGiveaways = function () {
                 startSecretGiveawaysBadgeFeed();
@@ -3468,9 +3509,12 @@ if (user && user.uid === winnerData.winnerUid) {
                     // For correcting just this one entry — separate from the
                     // page-wide device choice above, which only decides what
                     // NEW entries default to.
-                    const switchBtn = (!isExpired && otherHasSlots)
+                    const switchBtn = ((!isExpired && otherHasSlots)
                         ? `<button type="button" class="switch-link" onclick="handleSwitchSecretPlatform('${g.id}', '${otherPlatform}')">🔄 Wrong device? Switch to ${otherLabel}</button>`
-                        : "";
+                        : "")
+                        + (!isExpired && !sideDrawn
+                            ? `<button type="button" class="switch-link leave" onclick="handleLeaveSecret('${g.id}')">🚪 Leave this giveaway</button>`
+                            : "");
                     const warn = myPlatformHasSlots ? ""
                         : `<p class="sc-warn">⚠️ This giveaway has no ${platformLabel} slots — you can't win as entered.${otherHasSlots ? " Switch below to fix it." : ""}</p>`;
                     bodyHtml = `

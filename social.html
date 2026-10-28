@@ -3319,6 +3319,12 @@ function buildCountrySelectOptions(selectId, includeAny) {
         function escapeHtml(str) {
             return String(str || "").replace(/[&<>"']/g, s => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[s]));
         }
+        // Text passed to an onclick="…" (or onclick='…') handler: a quoted JS
+        // string, HTML-escaped. Names and messages with ' or " (O'Neil,
+        // "don't") used to break the button they were in.
+        function jsStr(value) {
+            return escapeHtml(JSON.stringify(String(value == null ? "" : value)));
+        }
 
         function timeAgo(ts) {
             return new Date(ts).toLocaleString();
@@ -3870,7 +3876,7 @@ window.removeClanIconPreview = function () {
                 const footer = isMine
                     ? `<button class="edit-post-link" onclick="event.stopPropagation(); openEditClanModal('${p.id}')">✏️ Edit</button>
                        <button class="delete-post-link" onclick="event.stopPropagation(); deleteClanPostConfirm('${p.id}')">🗑️ Delete</button>`
-                    : `<button class="report-link" onclick="event.stopPropagation(); openReportModal('post', '${p.uid}', '${escapeHtml(p.name).replace(/'/g, "\\'")}', '${p.id}', ${escapeHtml(JSON.stringify(p.description || ""))})">🚩 Report</button>`;
+                    : `<button class="report-link" onclick="event.stopPropagation(); openReportModal('post', '${p.uid}', ${jsStr(p.name)}, '${p.id}', ${escapeHtml(JSON.stringify(p.description || ""))})">🚩 Report</button>`;
                 return `
                 <div class="clan-post${isMine ? " my-post" : ""}" data-uid="${p.uid}" data-name="${escapeHtml(p.name)}" data-id="${p.id}" onclick="openClanDetailModal('${p.id}')">
                     <div style="display:flex; align-items:center; gap:12px;">
@@ -3890,7 +3896,7 @@ window.removeClanIconPreview = function () {
                         </div>
                     </div>
                     
-<div class="clan-post-head" style="margin-top:16px; padding-top:10px; border-top:1px solid #2a2a4a; cursor:pointer;" onclick="event.stopPropagation(); onPosterClick('${p.uid}', '${escapeHtml(p.name).replace(/'/g, "\\'")}')">
+<div class="clan-post-head" style="margin-top:16px; padding-top:10px; border-top:1px solid #2a2a4a; cursor:pointer;" onclick="event.stopPropagation(); onPosterClick('${p.uid}', ${jsStr(p.name)})">
                         ${bordered(p.uid, `<img class="clan-post-avatar" src="${escapeHtml(p.avatar)}" onerror="this.style.visibility='hidden'">`)}
                         <span class="clan-post-name"><span class="${nameFx(p.uid)}">${escapeHtml(p.name)}</span></span>
                         <span class="clan-post-time">${timeAgo(p.createdAt)}</span>
@@ -4330,7 +4336,7 @@ window.removeClanIconPreview = function () {
                 const footer = isMine
                     ? `<button class="edit-post-link" onclick="event.stopPropagation(); openEditFormationModal('${p.id}')">✏️ Edit</button>
                        <button class="delete-post-link" onclick="event.stopPropagation(); deleteFormationPostConfirm('${p.id}')">🗑️ Delete</button>`
-                    : `<button class="report-link" onclick="event.stopPropagation(); openReportModal('post', '${p.uid}', '${escapeHtml(p.name).replace(/'/g, "\\'")}', '${p.id}', ${escapeHtml(JSON.stringify(p.description || ""))})">🚩 Report</button>`;
+                    : `<button class="report-link" onclick="event.stopPropagation(); openReportModal('post', '${p.uid}', ${jsStr(p.name)}, '${p.id}', ${escapeHtml(JSON.stringify(p.description || ""))})">🚩 Report</button>`;
                 return `
                 <div class="clan-post${isMine ? " my-post" : ""}" onclick="openFormationDetailModal('${p.id}')">
                     <div class="formation-card-images${(p.imageUrls || []).length === 1 ? " single" : ""}">
@@ -4342,7 +4348,7 @@ window.removeClanIconPreview = function () {
                     </div>
                     ${p.description ? `<div class="clan-post-body" style="margin-top:8px; max-height:4.2em; overflow:hidden;">${escapeHtml(p.description)}</div>` : ""}
 
-                    <div class="clan-post-head" style="margin-top:12px; padding-top:10px; border-top:1px solid #2a2a4a; cursor:pointer;" onclick="event.stopPropagation(); onPosterClick('${p.uid}', '${escapeHtml(p.name).replace(/'/g, "\\'")}')">
+                    <div class="clan-post-head" style="margin-top:12px; padding-top:10px; border-top:1px solid #2a2a4a; cursor:pointer;" onclick="event.stopPropagation(); onPosterClick('${p.uid}', ${jsStr(p.name)})">
                         ${bordered(p.uid, `<img class="clan-post-avatar" src="${escapeHtml(p.avatar)}" onerror="this.style.visibility='hidden'">`)}
                         <span class="clan-post-name"><span class="${nameFx(p.uid)}">${escapeHtml(p.name)}</span>${isMine ? '<span class="my-post-badge">Your Post</span>' : ""}</span>
                         <span class="clan-post-time">${timeAgo(p.createdAt)}</span>
@@ -4722,28 +4728,28 @@ window.removeClanIconPreview = function () {
         function commentRowHtml(kind, c, isReply, rootId) {
             const cfg = COMMENT_KINDS[kind], byId = commentState[kind].byId;
             const myUid = AppState.getCurrentUser()?.uid;
-            const nameEscaped = escapeHtml(c.name).replace(/'/g, "\\'");
+            const nameArg = jsStr(c.name);
             const parent = isReply && c.parentId !== rootId ? byId[c.parentId] : null;
             const at = parent ? `<span class="cmt-at">@${escapeHtml(parent.name)}</span> ` : "";
             return `
                 <div class="formation-comment-item${isReply ? " reply" : ""}" id="cmt_${kind}_${c.id}">
                     ${bordered(c.uid, `<img class="clan-post-avatar" src="${escapeHtml(c.avatar)}" onerror="this.style.visibility='hidden'"
-                        style="cursor:pointer;" onclick="${cfg.close}(); onPosterClick('${c.uid}', '${nameEscaped}');">`)}
+                        style="cursor:pointer;" onclick="${cfg.close}(); onPosterClick('${c.uid}', ${nameArg});">`)}
                     <div style="flex:1; min-width:0;">
                         <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-                            <span class="clan-post-name" style="cursor:pointer;" onclick="${cfg.close}(); onPosterClick('${c.uid}', '${nameEscaped}');"><span class="${nameFx(c.uid)}">${escapeHtml(c.name)}</span></span>
+                            <span class="clan-post-name" style="cursor:pointer;" onclick="${cfg.close}(); onPosterClick('${c.uid}', ${nameArg});"><span class="${nameFx(c.uid)}">${escapeHtml(c.name)}</span></span>
                             <span class="clan-post-time" style="margin-left:0;">${timeAgo(c.createdAt)}</span>
                         </div>
                         ${c.text || at ? `<div style="margin-top:4px; white-space:pre-wrap;">${at}${escapeHtml(c.text || "")}</div>` : ""}
                         ${(c.imageUrls && c.imageUrls.length) ? `<div class="formation-comment-images">${c.imageUrls.map((u, i) => `<img src="${escapeHtml(u)}" onerror="this.remove();" onclick="${cfg.viewImg}('${c.id}', ${i})">`).join("")}</div>` : ""}
                         ${reactionsHtml(kind, c)}
                         <div style="margin-top:4px;">
-                            <button class="edit-post-link" onclick="${cfg.reply}('${c.id}', '${nameEscaped}')">↩ Reply</button>
+                            <button class="edit-post-link" onclick="${cfg.reply}('${c.id}', ${nameArg})">↩ Reply</button>
                             <button class="edit-post-link" onclick="openReactionPicker(event, '${kind}', '${c.id}')">😊 React</button>
                             ${c.uid === myUid
                                 ? `<button class="edit-post-link" onclick="${cfg.edit}('${c.id}')">✏️ Edit</button>
                                    <button class="delete-post-link" onclick="${cfg.del}('${c.id}')">🗑️ Delete</button>`
-                                : `<button class="report-link" onclick="openReportModal('post', '${c.uid}', '${nameEscaped}', '${c.id}', ${escapeHtml(JSON.stringify(c.text || ""))})">🚩 Report</button>`}
+                                : `<button class="report-link" onclick="openReportModal('post', '${c.uid}', ${nameArg}, '${c.id}', ${escapeHtml(JSON.stringify(c.text || ""))})">🚩 Report</button>`}
                         </div>
                     </div>
                 </div>`;
@@ -5536,11 +5542,11 @@ window.removeClanIconPreview = function () {
             list.innerHTML = filtered.map(t => {
                 const isMine = t.uid === myUid;
                 const score = (t.upvotes || 0) - (t.downvotes || 0);
-                const nameEscaped = escapeHtml(t.name).replace(/'/g, "\\'");
+                const nameArg = jsStr(t.name);
                 const footer = isMine
                     ? `<button class="edit-post-link" onclick="event.stopPropagation(); openEditTierListModal('${t.id}')">✏️ Edit</button>
                        <button class="delete-post-link" onclick="event.stopPropagation(); deleteTierListConfirm('${t.id}')">🗑️ Delete</button>`
-                    : `<button class="report-link" onclick="event.stopPropagation(); openReportModal('post', '${t.uid}', '${nameEscaped}', '${t.id}', ${escapeHtml(JSON.stringify(t.description || t.title || ""))})">🚩 Report</button>`;
+                    : `<button class="report-link" onclick="event.stopPropagation(); openReportModal('post', '${t.uid}', ${nameArg}, '${t.id}', ${escapeHtml(JSON.stringify(t.description || t.title || ""))})">🚩 Report</button>`;
                 return `
                 <div class="clan-post${isMine ? " my-post" : ""}" onclick="openTierListDetailModal('${t.id}')">
                     <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap;">
@@ -5553,7 +5559,7 @@ window.removeClanIconPreview = function () {
                     <div class="compose-hint" style="margin-top:8px;">
                         ${score >= 0 ? "▲" : "▼"} ${score} net votes${(t.commentCount || 0) > 0 ? ` &middot; 💬 ${t.commentCount} comment${t.commentCount === 1 ? "" : "s"}` : ""}
                     </div>
-                    <div class="clan-post-head" style="margin-top:12px; padding-top:10px; border-top:1px solid #2a2a4a; cursor:pointer;" onclick="event.stopPropagation(); onPosterClick('${t.uid}', '${nameEscaped}')">
+                    <div class="clan-post-head" style="margin-top:12px; padding-top:10px; border-top:1px solid #2a2a4a; cursor:pointer;" onclick="event.stopPropagation(); onPosterClick('${t.uid}', ${nameArg})">
                         ${bordered(t.uid, `<img class="clan-post-avatar" src="${escapeHtml(t.avatar)}" onerror="this.style.visibility='hidden'">`)}
                         <span class="clan-post-name"><span class="${nameFx(t.uid)}">${escapeHtml(t.name)}</span>${isMine ? '<span class="my-post-badge">Your Post</span>' : ""}</span>
                         <span class="clan-post-time">${timeAgo(t.createdAt)}</span>
@@ -5977,7 +5983,7 @@ window.removeClanIconPreview = function () {
             }
             list.innerHTML = requests.map(r => `
                 <div class="friend-req-item">
-                    <div class="friend-req-person" style="display:flex; align-items:center; gap:8px; cursor:pointer;" onclick="openViewProfileModal('${escapeHtml(r.fromName).replace(/'/g, "\\'")}', '${escapeHtml(r.fromAvatar || "")}')">
+                    <div class="friend-req-person" style="display:flex; align-items:center; gap:8px; cursor:pointer;" onclick="openViewProfileModal(${jsStr(r.fromName)}, '${escapeHtml(r.fromAvatar || "")}')">
                         ${avatarHtml(r.fromAvatar, r.fromName, "friend-req-avatar")}
                         <span class="friend-req-name">${escapeHtml(r.fromName)}</span>
                     </div>
@@ -6164,7 +6170,7 @@ window.removeClanIconPreview = function () {
                     : "";
                 const isOnline = isFriendOnline(f);
                 return `
-        <div class="friend-row" onclick="openDmWith('${f.uid}', '${escapeHtml(f.name).replace(/'/g, "\\'")}', '${escapeHtml(f.avatar || "")}')">
+        <div class="friend-row" onclick="openDmWith('${f.uid}', ${jsStr(f.name)}, '${escapeHtml(f.avatar || "")}')">
             <div class="friend-avatar-status-wrap">
                 ${avatarHtml(f.avatar, f.name, "friend-row-avatar")}
                 ${isOnline ? '<span class="online-dot" title="Online"></span>' : ""}
@@ -6209,8 +6215,8 @@ window.removeClanIconPreview = function () {
                             <div class="friend-row-status">${formatLastActive(r.lastActiveAt)}</div>
                         </div>
                         ${isFriendUid(r.uid)
-                        ? `<button class="mini-btn accept" onclick="event.stopPropagation(); openDmWith('${r.uid}', '${escapeHtml(r.name).replace(/'/g, "\\'")}')">Message</button>`
-                        : `<button class="mini-btn accept" onclick="event.stopPropagation(); sendFriendReqTo('${r.uid}', '${escapeHtml(r.name).replace(/'/g, "\\'")}')">Add</button>`}
+                        ? `<button class="mini-btn accept" onclick="event.stopPropagation(); openDmWith('${r.uid}', ${jsStr(r.name)})">Message</button>`
+                        : `<button class="mini-btn accept" onclick="event.stopPropagation(); sendFriendReqTo('${r.uid}', ${jsStr(r.name)})">Add</button>`}
                     </div>
                 `).join("");
             } catch (e) {
@@ -6227,7 +6233,7 @@ window.removeClanIconPreview = function () {
                 section.style.display = "flex";
                 window._lastSuggestions = suggestions;
                 container.innerHTML = suggestions.map((s, i) => `
-    <div class="friend-row" onclick="openPersonActionSheet('${s.uid}', '${escapeHtml(s.name).replace(/'/g, "\\'")}', window._lastSuggestions[${i}], false)">
+    <div class="friend-row" onclick="openPersonActionSheet('${s.uid}', ${jsStr(s.name)}, window._lastSuggestions[${i}], false)">
         ${avatarHtml(s.avatar, s.name, "friend-row-avatar")}
         <div class="friend-row-info">
             <div class="friend-row-name">${escapeHtml(s.name)}</div>
@@ -6254,8 +6260,8 @@ window.removeClanIconPreview = function () {
     document.getElementById("actionModalActions").innerHTML = `
         <button class="btn-primary" onclick="closeActionModal(); showProfileModal(window._lastActionSheetProfile, ${isFriend})">👤 View Profile</button>
         ${isFriend
-            ? `<button class="btn-primary" onclick="closeActionModal(); openDmWith('${uid}', '${escapeHtml(name).replace(/'/g, "\\'")}', '${escapeHtml(profile.avatar || "")}')">💬 Message</button>`
-            : `<button class="btn-primary" onclick="closeActionModal(); sendFriendReqTo('${uid}', '${escapeHtml(name).replace(/'/g, "\\'")}')">➕ Add Friend</button>`}
+            ? `<button class="btn-primary" onclick="closeActionModal(); openDmWith('${uid}', ${jsStr(name)}, '${escapeHtml(profile.avatar || "")}')">💬 Message</button>`
+            : `<button class="btn-primary" onclick="closeActionModal(); sendFriendReqTo('${uid}', ${jsStr(name)})">➕ Add Friend</button>`}
     `;
     document.getElementById("actionModalOverlay").classList.add("open");
     document.body.style.overflow = "hidden";
@@ -6567,12 +6573,12 @@ document.getElementById("dmActionsMenu").classList.remove("open");
             return;
         }
 
-        const replyBtn = `<button class="dm-msg-action-link" onclick='startReplyToMessage("${m.id}", "${m.senderUid}", ${JSON.stringify((m.text || "").slice(0, 200))})'>↩ Reply</button>`;
+        const replyBtn = `<button class="dm-msg-action-link" onclick="startReplyToMessage(${jsStr(m.id)}, ${jsStr(m.senderUid)}, ${jsStr((m.text || "").slice(0, 200))})">↩ Reply</button>`;
         const editBtn = mine
-            ? `<button class="dm-msg-action-link" onclick='startEditMessage("${m.id}", ${JSON.stringify(m.text)})'>✏️ Edit</button>`
+            ? `<button class="dm-msg-action-link" onclick="startEditMessage(${jsStr(m.id)}, ${jsStr(m.text)})">✏️ Edit</button>`
             : "";
         const reportBtn = mine ? "" :
-            `<button class="dm-msg-action-link" onclick='openReportModal("message", "${m.senderUid}", "${currentDmOtherName.replace(/"/g, '')}", "${m.id}", ${JSON.stringify(m.text)})'>🚩 Report</button>`;
+            `<button class="dm-msg-action-link" onclick="openReportModal('message', ${jsStr(m.senderUid)}, ${jsStr(currentDmOtherName)}, ${jsStr(m.id)}, ${jsStr(m.text)})">🚩 Report</button>`;
 
         const reactBtn = `<button class="dm-msg-action-link" onclick="openReactionPicker(event, 'dm', '${m.id}')">😊 React</button>`;
         const bubble = window.ProgressCore ? ProgressCore.styleClass(styleOf(m.senderUid), "bubble") : "";

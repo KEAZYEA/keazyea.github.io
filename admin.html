@@ -541,12 +541,14 @@
                 </div>
                 <div id="tokenAccountResult" style="margin-top:12px;"></div>
 
-                <h3 style="margin:28px 0 4px;">🎁 Free tokens for everyone</h3>
+                <h3 style="margin:28px 0 4px;">🎁 A gift for everyone <span class="promo-sub">(tokens, chest draws, an item)</span></h3>
                 <p class="promo-sub" style="margin-top:0;">Lands in everyone's inbox with a Claim button, once per
                     person, until it expires. Only accounts that already exist when you send it can claim, so nobody
-                    can farm it with new accounts.</p>
+                    can farm it with new accounts. Put any mix in it; an item someone already owns turns into its duplicate tokens.</p>
                 <div class="token-form">
-                    <label>Tokens each <input type="number" id="giftAllAmount" min="1" step="1" value="5" class="token-input"></label>
+                    <label>Tokens each <input type="number" id="giftAllAmount" min="0" step="1" value="5" class="token-input"></label>
+                    <label>🧰 Chest draws each <input type="number" id="giftAllDraws" min="0" max="100" step="1" value="0" class="token-input"></label>
+                    <label class="token-form-wide">🎒 Item / style (optional) <select id="giftAllItem" class="token-input"><option value="">— no item —</option></select></label>
                     <label>Lasts for
                         <span style="display:flex; gap:6px;">
                             <input type="number" id="giftAllDuration" min="1" step="1" value="3" class="token-input">
@@ -3220,19 +3222,25 @@ async function handleLookupUserByUid() {
 
             // --- gifts for everyone ---
             async function handleSendGiftAll() {
-                const amount = Number(document.getElementById("giftAllAmount").value);
+                const amount = Number(document.getElementById("giftAllAmount").value) || 0;
+                const draws = Number(document.getElementById("giftAllDraws").value) || 0;
+                const itemId = document.getElementById("giftAllItem").value;
                 const duration = Number(document.getElementById("giftAllDuration").value);
                 const unitHours = Number(document.getElementById("giftAllUnit").value);
                 const title = document.getElementById("giftAllTitle").value.trim();
                 const message = document.getElementById("giftAllMessage").value.trim();
-                if (!Number.isInteger(amount) || amount < 1) { showInfoModal("Tokens each", "Enter a whole number, 1 or more."); return; }
+                if (!Number.isInteger(amount) || amount < 0) { showInfoModal("Tokens each", "Enter a whole number, 0 or more."); return; }
+                if (!Number.isInteger(draws) || draws < 0 || draws > 100) { showInfoModal("Chest draws each", "Enter a whole number from 0 to 100."); return; }
+                if (!amount && !draws && !itemId) { showInfoModal("Empty gift", "Put tokens, chest draws or an item in it."); return; }
+                const x = itemId && window.ProgressCore.BY_ID[itemId];
+                const what = [amount ? `${amount} tokens` : "", draws ? `${draws} free chest draw${draws === 1 ? "" : "s"}` : "", x ? `${x.icon} ${x.name}` : ""].filter(Boolean).join(" + ");
                 if (!(duration > 0)) { showInfoModal("Lasts for", "Enter how long it lasts."); return; }
                 const unitWord = unitHours === 24 ? "day" : "hour";
                 const lasts = `${duration} ${unitWord}${duration === 1 ? "" : "s"}`;
                 if (!await showConfirmModal("Send to everyone",
-                    `Give EVERY existing account ${amount} tokens to claim within ${lasts}?\n\n"${title || `🎁 ${amount} free tokens!`}"`)) return;
+                    `Give EVERY existing account ${what} to claim within ${lasts}?\n\n"${title || `🎁 A gift: ${what}!`}"`)) return;
                 try {
-                    await AppState.adminTokens("adminSendGift", { target: "all", amount, expiresInHours: duration * unitHours, title, message });
+                    await AppState.adminTokens("adminSendGift", { target: "all", amount, draws, itemIds: itemId ? [itemId] : [], expiresInHours: duration * unitHours, title, message });
                     showInfoModal("Sent", "It's in everyone's inbox now.");
                     document.getElementById("giftAllTitle").value = "";
                     document.getElementById("giftAllMessage").value = "";
@@ -3243,6 +3251,14 @@ async function handleLookupUserByUid() {
             }
             window.handleSendGiftAll = handleSendGiftAll;
 
+            // "5 🪙 + 2 🧰 + 👑 Royal Crown"
+            function giftContents(g) {
+                const PC = window.ProgressCore;
+                return [g.amount ? `${g.amount} 🪙` : "", g.draws ? `${g.draws} 🧰 draws` : "",
+                    ...(g.itemIds || []).map(id => PC && PC.BY_ID[id] ? `${PC.BY_ID[id].icon} ${PC.BY_ID[id].name}` : id)].filter(Boolean).join(" + ") || "—";
+            }
+            // fill the gift form's item list once the item list is known
+            setTimeout(() => { const sel = document.getElementById("giftAllItem"); if (sel && sel.options.length <= 1) sel.insertAdjacentHTML("beforeend", itemOptionsHtml("")); }, 0);
             async function loadTokenGifts() {
                 const list = document.getElementById("tokenGiftsList");
                 list.innerHTML = "<p class='promo-sub'>Loading...</p>";
@@ -3256,7 +3272,7 @@ async function handleLookupUserByUid() {
                         const status = live ? `🟢 until ${escapeHtml(fmtDate(g.expiresAt))}` : (g.endedEarly ? "⏹ ended early" : "⌛ expired");
                         return `<div class="token-card">
                             <div><strong>${escapeHtml(g.title)}</strong></div>
-                            <p class="promo-sub" style="margin:4px 0 0;">${g.amount} 🪙 each · to ${to} · sent ${escapeHtml(fmtDate(g.createdAt))} · ${status}</p>
+                            <p class="promo-sub" style="margin:4px 0 0;">${escapeHtml(giftContents(g))} each · to ${to} · sent ${escapeHtml(fmtDate(g.createdAt))} · ${status}</p>
                             <p class="promo-sub" style="margin:2px 0 0;">Claimed by ${g.claimCount || 0} (${g.claimedTokens || 0} 🪙 total)</p>
                             ${live ? `<div class="token-actions"><button class="remove" data-gift="${escapeHtml(g.id)}">⏹ End now</button></div>` : ""}
                         </div>`;
