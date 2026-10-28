@@ -622,22 +622,31 @@ async function claimGift(admin, db, uid, body, now) {
   }
 
   const walletRef = db.collection("tokenWallets").doc(uid);
+  const invRef = db.collection("inventories").doc(uid);
   const claimRef = walletRef.collection("claims").doc(`gift_${giftId}`);
   return db.runTransaction(async (tx) => {
-    const [giftSnap, claimSnap, walletSnap] = await tx.getAll(giftRef, claimRef, walletRef);
+    const [giftSnap, claimSnap, walletSnap, invSnap] = await tx.getAll(giftRef, claimRef, walletRef, invRef);
     const balance = walletSnap.exists ? (walletSnap.data().balance || 0) : 0;
     if (claimSnap.exists) return { ok: true, claimed: 0, alreadyClaimed: true, balance };
     // Re-checked inside: the admin may have ended it a moment ago.
     if (!giftSnap.exists || (giftSnap.data().expiresAt || 0) <= now) throw new HttpError(400, "This gift has expired.");
-    const amount = giftSnap.data().amount;
-    tx.set(claimRef, { kind: "gift", giftId, amount, claimedAt: now });
-    tx.set(walletRef, {
-      balance: balance + amount,
-      lifetimeGifted: FieldValue.increment(amount),
-      updatedAt: now
-    }, { merge: true });
+    const gd = giftSnap.data();
+    const amount = gd.amount || 0;
+    const draws = gd.draws || 0;
+    const itemIds = Array.isArray(gd.itemIds) ? gd.itemIds : [];
+    // chest draws and items go to the inventory (something already owned → its duplicate tokens)
+    const got = draws || itemIds.length ? grantToInventory(tx, db, uid, invSnap, { draws, itemIds }, now) : { added: [], dups: [], dupTokens: 0 };
+    const total = amount + got.dupTokens;
+    tx.set(claimRef, { kind: "gift", giftId, amount, draws, items: got.added, claimedAt: now });
+    if (total) {
+      tx.set(walletRef, {
+        balance: balance + total,
+        lifetimeGifted: FieldValue.increment(total),
+        updatedAt: now
+      }, { merge: true });
+    }
     tx.update(giftRef, { claimCount: FieldValue.increment(1), claimedTokens: FieldValue.increment(amount) });
-    return { ok: true, claimed: amount, balance: balance + amount };
+    return { ok: true, claimed: amount, draws, items: got.added, duplicates: got.dups, dupTokens: got.dupTokens, balance: balance + total };
   });
 }
 
@@ -745,10 +754,21 @@ async function adminAdjust(db, adminUid, body, now) {
   return { ok: true, ...result, change };
 }
 
+// "50 tokens + 2 chest draws + 👑 Royal Crown"
+function giftWhat(amount, draws, itemIds) {
+  return [amount ? `${amount} token${amount === 1 ? "" : "s"}` : "", draws ? `${draws} free chest draw${draws === 1 ? "" : "s"}` : "",
+    ...(itemIds || []).map(id => P.BY_ID[id] ? `${P.BY_ID[id].icon} ${P.BY_ID[id].name}` : "")].filter(Boolean).join(" + ");
+}
+
 async function adminSendGift(db, adminUid, body, now) {
-  const amount = Number(body.amount);
+  const amount = body.amount == null || body.amount === "" ? 0 : Number(body.amount);
+  const draws = body.draws == null || body.draws === "" ? 0 : Number(body.draws);
+  const itemIds = Array.isArray(body.itemIds) ? [...new Set(body.itemIds)] : [];
   const hours = Number(body.expiresInHours);
-  if (!Number.isInteger(amount) || amount < 1 || amount > MAX_GIFT_TOKENS) throw new HttpError(400, "Enter a whole number of tokens, 1 or more.");
+  if (!Number.isInteger(amount) || amount < 0 || amount > MAX_GIFT_TOKENS) throw new HttpError(400, "Tokens: a whole number, 0 or more.");
+  if (!Number.isInteger(draws) || draws < 0 || draws > 100) throw new HttpError(400, "Chest draws: a whole number from 0 to 100.");
+  if (itemIds.length > 4 || !itemIds.every(id => P.BY_ID[id])) throw new HttpError(400, "Pick up to 4 items or styles from the list.");
+  if (!amount && !draws && !itemIds.length) throw new HttpError(400, "Put something in the gift: tokens, chest draws or an item.");
   if (!(hours > 0) || hours > 24 * 366) throw new HttpError(400, "Set how long it lasts (up to a year).");
   const target = body.target === "all" ? "all" : body.target;
   let targetName = "";
@@ -756,20 +776,21 @@ async function adminSendGift(db, adminUid, body, now) {
 
   const giftId = newId(now);
   const expiresAt = now + Math.round(hours * 3600 * 1000);
-  const title = cleanText(body.title, 100) || `🎁 ${amount} free tokens!`;
+  const what = giftWhat(amount, draws, itemIds);
+  const title = cleanText(body.title, 100) || `🎁 A gift: ${what}!`;
   const message = cleanText(body.message, 500) ||
-    `Here are ${amount} free tokens — tap Claim to add them to your wallet before this expires.`;
+    `Here's ${what} — tap Claim to get it before this expires.`;
   const notifId = `gift-${giftId}`;
   const notifRef = target === "all"
     ? db.collection("notifications").doc(notifId)
     : db.collection("users").doc(target).collection("personalNotifications").doc(notifId);
 
   await db.collection("tokenGifts").doc(giftId).set({
-    target, targetName, amount, title, message, createdAt: now, expiresAt,
+    target, targetName, amount, draws, itemIds, title, message, createdAt: now, expiresAt,
     createdBy: adminUid, claimCount: 0, claimedTokens: 0, notificationPath: notifRef.path
   });
   await notifRef.set({
-    type: "tokenGift", giftId, amount, expiresAt, title, body: message, createdAt: now,
+    type: "tokenGift", giftId, amount, draws, itemIds, expiresAt, title, body: message, createdAt: now,
     ...(target === "all" ? {} : { read: false })
   });
   return { ok: true, giftId, expiresAt };
