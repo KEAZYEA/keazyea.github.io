@@ -50,7 +50,7 @@
         { id: "weekly", stat: "weekly", icon: "🎡", name: "Weekly Regular", desc: "Enter the weekly giveaway", targets: [1, 2, 4, 8, 12, 25] },
         { id: "secret", stat: "secret", icon: "🎁", name: "Treasure Hunter", desc: "Enter Secret Giveaways", targets: [1, 5, 10, 25, 50, 100] },
         { id: "supporter", stat: "purchases", icon: "🛒", name: "Supporter", desc: "Buy a token pack or a monthly plan payment", targets: [1, 2, 3, 5, 10, 25] },
-        { id: "collector", stat: "items", icon: "🎒", name: "Collector", desc: "Collect different items and styles from chests", targets: [1, 5, 10, 20, 30, 45] }
+        { id: "collector", stat: "items", icon: "🎒", name: "Collector", desc: "Collect different items and styles from chests", targets: [1, 5, 10, 25, 40, 60] }
     ];
     const ACHIEVEMENT_BY_ID = Object.fromEntries(ACHIEVEMENTS.map(a => [a.id, a]));
 
@@ -105,9 +105,13 @@
        weeklyTickets   +N tickets in the weekly giveaway                appState draw
        chestDiscount   chests cost N 🪙 less per draw                    api/progress.js
        dupBonus        +N 🪙 back on a duplicate                         api/progress.js
-       badgeSlots      +N badges shown on your profile                  api/progress.js */
+       badgeSlots      +N badges shown on your profile                  api/progress.js
+       questFlat       +N 🪙 once all of a day's quests are claimed      api/tokens.js
+       tierBonus       +N 🪙 for every achievement tier you claim         api/progress.js
+       weeklyFreeDraw  +N free chest draws every week (Mon, SGT)         api/progress.js */
     const PERK_KINDS = ["gameFlat", "gameBest", "gameMult", "doubleBoost", "gameTime", "lives", "blurHints", "gameTen", "prizeMult",
-        "loginBonus", "sundayBonus", "puzzleBonus", "questMult", "secretChance", "stakeMult", "weeklyTickets", "chestDiscount", "dupBonus", "badgeSlots"];
+        "loginBonus", "sundayBonus", "puzzleBonus", "questMult", "secretChance", "stakeMult", "weeklyTickets", "chestDiscount", "dupBonus", "badgeSlots",
+        "questFlat", "tierBonus", "weeklyFreeDraw"];
     const x = (v) => `×${(1 + v / 100).toFixed(2).replace(/0$/, "")}`;
     const PERK_TEXT = {
         gameFlat: (v) => `+${v} weekly Games score`,
@@ -128,7 +132,10 @@
         weeklyTickets: (v) => `+${v} weekly giveaway ticket${v === 1 ? "" : "s"}`,
         chestDiscount: (v) => `chests ${v} 🪙 cheaper`,
         dupBonus: (v) => `+${v} 🪙 on duplicates`,
-        badgeSlots: (v) => `+${v} badge slot${v === 1 ? "" : "s"}`
+        badgeSlots: (v) => `+${v} badge slot${v === 1 ? "" : "s"}`,
+        questFlat: (v) => `+${v} 🪙 for finishing all of a day's quests`,
+        tierBonus: (v) => `+${v} 🪙 per achievement tier you claim`,
+        weeklyFreeDraw: (v) => `${v} free chest draw${v === 1 ? "" : "s"} every week`
     };
     const perkText = (perk) => (PERK_TEXT[perk.kind] ? PERK_TEXT[perk.kind](perk.value) : "");
 
@@ -147,9 +154,11 @@
         { id: "crate", icon: "📦", name: "Spare Crate", rarity: "common", chest: true, perks: [{ kind: "dupBonus", value: 5 }] },
         { id: "muddy", icon: "🥾", name: "Muddy Boots", rarity: "common", chest: true, perks: [{ kind: "gameTen", value: 1 }] },
         { id: "juice", icon: "🧃", name: "Juice Box", rarity: "common", chest: true, perks: [{ kind: "sundayBonus", value: 1 }] },
+        { id: "raffle", icon: "🎫", name: "Raffle Stub", rarity: "rare", chest: true, perks: [{ kind: "weeklyTickets", value: 1 }] },
         // uncommon
         { id: "boots", icon: "👢", name: "Swift Boots", rarity: "uncommon", chest: true, perks: [{ kind: "gameFlat", value: 3 }] },
-        { id: "ticket", icon: "🎟️", name: "Golden Ticket", rarity: "uncommon", chest: true, perks: [{ kind: "weeklyTickets", value: 1 }] },
+        { id: "ticket", icon: "🎟️", name: "Golden Ticket", rarity: "epic", chest: true, perks: [{ kind: "weeklyTickets", value: 2 }] },
+        { id: "ledger", icon: "🧾", name: "Quest Ledger", rarity: "uncommon", chest: true, perks: [{ kind: "questFlat", value: 2 }] },
         { id: "beads", icon: "📿", name: "Lucky Beads", rarity: "uncommon", chest: true, perks: [{ kind: "stakeMult", value: 10 }] },
         { id: "torch", icon: "🔥", name: "Torch", rarity: "uncommon", chest: true, perks: [{ kind: "sundayBonus", value: 2 }] },
         { id: "hourglass", icon: "⏱️", name: "Hourglass", rarity: "uncommon", chest: true, perks: [{ kind: "gameTime", value: 2 }] },
@@ -162,26 +171,30 @@
         { id: "key", icon: "🗝️", name: "Chest Key", rarity: "rare", chest: true, perks: [{ kind: "chestDiscount", value: 5 }] },
         { id: "pin", icon: "📌", name: "Badge Pin", rarity: "rare", chest: true, perks: [{ kind: "badgeSlots", value: 1 }] },
         { id: "dice", icon: "🎲", name: "Loaded Dice", rarity: "rare", chest: true, perks: [{ kind: "doubleBoost", value: 10 }] },
+        { id: "medal", icon: "🏅", name: "Medal Polish", rarity: "rare", chest: true, perks: [{ kind: "tierBonus", value: 1 }] },
         // epic
         { id: "crown", icon: "👑", name: "Royal Crown", rarity: "epic", chest: true, perks: [{ kind: "gameMult", value: 10 }] },
         { id: "amulet", icon: "💎", name: "Gem Amulet", rarity: "epic", chest: true, perks: [{ kind: "questMult", value: 20 }] },
         { id: "trophy", icon: "🏆", name: "Victor's Trophy", rarity: "epic", chest: true, perks: [{ kind: "prizeMult", value: 25 }] },
-        { id: "feather", icon: "🪶", name: "Phoenix Feather", rarity: "epic", chest: true, perks: [{ kind: "lives", value: 1 }] },
+        { id: "feather", icon: "🪶", name: "Phoenix Feather", rarity: "epic", chest: true, perks: [{ kind: "lives", value: 1 }, { kind: "gameTime", value: 2 }] },
+        { id: "scroll", icon: "📜", name: "Weekly Scroll", rarity: "epic", chest: true, perks: [{ kind: "weeklyFreeDraw", value: 1 }] },
         // legendary
         { id: "dragon", icon: "🐉", name: "Dragon Heart", rarity: "legendary", chest: true, perks: [{ kind: "questMult", value: 30 }] },
         { id: "blade", icon: "⚡", name: "Storm Blade", rarity: "legendary", chest: true, perks: [{ kind: "gameMult", value: 20 }, { kind: "gameFlat", value: 5 }] },
         { id: "star", icon: "🌟", name: "Star of Fortune", rarity: "legendary", chest: true, perks: [{ kind: "secretChance", value: 3 }, { kind: "stakeMult", value: 20 }] },
+        { id: "jackpot", icon: "🎰", name: "Jackpot Charm", rarity: "legendary", chest: true, perks: [{ kind: "weeklyTickets", value: 3 }, { kind: "secretChance", value: 2 }] },
         // achievement rewards (Mythic only)
-        { id: "a_joystick", icon: "🕹️", name: "Gamer's Joystick", rarity: "epic", perks: [{ kind: "gameTime", value: 1 }] },
+        { id: "a_joystick", icon: "🕹️", name: "Gamer's Joystick", rarity: "epic", perks: [{ kind: "gameTime", value: 1 }, { kind: "blurHints", value: 1 }] },
         { id: "a_laurel", icon: "🌿", name: "Champion's Laurel", rarity: "legendary", perks: [{ kind: "gameMult", value: 5 }] },
-        { id: "a_pass", icon: "🎡", name: "Regular's Pass", rarity: "epic", perks: [{ kind: "weeklyTickets", value: 1 }] },
-        { id: "a_charm", icon: "🧿", name: "Hunter's Charm", rarity: "epic", perks: [{ kind: "secretChance", value: 1 }] }
+        { id: "a_pass", icon: "🎡", name: "Regular's Pass", rarity: "epic", perks: [{ kind: "weeklyTickets", value: 1 }, { kind: "loginBonus", value: 1 }] },
+        { id: "a_charm", icon: "🧿", name: "Hunter's Charm", rarity: "epic", perks: [{ kind: "secretChance", value: 1 }, { kind: "stakeMult", value: 5 }] }
     ];
 
     /* ---------------- styles (looks only) ----------------
-       type: border | name | bubble | emotes. css: the class suffix the pages
-       style (fx-border-<css>, fx-name-<css>, fx-bubble-<css>). season: only in
-       the Style Chest between those dates (month-day, Singapore time). */
+       type: border | name | bubble | background | emotes. css: the class
+       suffix the pages style (fx-border-<css>, fx-name-<css>, fx-bubble-<css>,
+       fx-bg-<css>). season (optional, none right now): only in the chest
+       between those dates (month-day, Singapore time). */
     const EMOTE_PACKS = {
         party: ["🎉", "🥳", "🍾", "🎊", "🎈", "🪅", "🎂", "🍰"],
         food: ["🍕", "🍔", "🍟", "🍩", "🍣", "🍜", "🧋", "🍓"],
@@ -224,17 +237,24 @@
         { id: "c_forest", type: "bubble", css: "forest", icon: "🌲", name: "Forest Bubble", rarity: "common", chest: true },
         { id: "c_midnight", type: "bubble", css: "midnight", icon: "🌙", name: "Midnight Bubble", rarity: "uncommon", chest: true },
         { id: "c_gold", type: "bubble", css: "gold", icon: "✨", name: "Gold Bubble", rarity: "rare", chest: true },
+        { id: "c_cloud", type: "bubble", css: "cloud", icon: "☁️", name: "Cloud Bubble", rarity: "common", chest: true },
+        { id: "c_capy", type: "bubble", css: "capy", icon: "🦫", name: "Capybara Bubble", rarity: "uncommon", chest: true },
+        // profile backgrounds (your card, and your profile as others see it)
+        { id: "g_stars", type: "background", css: "stars", icon: "🌌", name: "Starry Night", rarity: "common", chest: true },
+        { id: "g_sakura", type: "background", css: "sakura", icon: "🌸", name: "Sakura", rarity: "uncommon", chest: true },
+        { id: "g_capy", type: "background", css: "capy", icon: "♨️", name: "Capybara Spa", rarity: "rare", chest: true },
+        { id: "g_galaxy", type: "background", css: "galaxy", icon: "🪐", name: "Galaxy", rarity: "epic", chest: true },
         // emote packs
         { id: "e_party", type: "emotes", pack: "party", icon: "🎉", name: "Party Pack", rarity: "common", chest: true },
         { id: "e_food", type: "emotes", pack: "food", icon: "🍕", name: "Food Pack", rarity: "common", chest: true },
         { id: "e_animals", type: "emotes", pack: "animals", icon: "🐶", name: "Animal Pack", rarity: "common", chest: true },
         { id: "e_cats", type: "emotes", pack: "cats", icon: "😺", name: "Cat Pack", rarity: "uncommon", chest: true },
         { id: "e_battle", type: "emotes", pack: "battle", icon: "⚔️", name: "Battle Pack", rarity: "uncommon", chest: true },
-        { id: "e_spooky", type: "emotes", pack: "spooky", icon: "🎃", name: "Spooky Pack", rarity: "rare", chest: true, season: ["10-15", "11-07"] },
-        { id: "e_winter", type: "emotes", pack: "winter", icon: "❄️", name: "Winter Pack", rarity: "rare", chest: true, season: ["12-01", "01-07"] },
+        { id: "e_spooky", type: "emotes", pack: "spooky", icon: "🎃", name: "Spooky Pack", rarity: "rare", chest: true },
+        { id: "e_winter", type: "emotes", pack: "winter", icon: "❄️", name: "Winter Pack", rarity: "rare", chest: true },
         { id: "e_hearts", type: "emotes", pack: "hearts", icon: "💞", name: "Hearts Pack", rarity: "legendary" }
     ];
-    const STYLE_TYPES = { border: "Avatar border", name: "Name effect", bubble: "Chat bubble", emotes: "Emote pack" };
+    const STYLE_TYPES = { border: "Avatar border", name: "Name effect", bubble: "Chat bubble", background: "Profile background", emotes: "Emote pack" };
 
     const ALL = [...ITEMS.map(i => ({ ...i, kind: "item" })), ...STYLES.map(s => ({ ...s, kind: "style" }))];
     const BY_ID = Object.fromEntries(ALL.map(x => [x.id, x]));

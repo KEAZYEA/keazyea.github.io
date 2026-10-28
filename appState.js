@@ -3284,13 +3284,25 @@ async function getGiveawayHistory(maxCount = 20) {
         return !!currentUser && currentUser.uid === ADMIN_UID;
     }
 
-    async function pickWeeklyWinner() {
+    // Which week the draw is for: on Sunday, that Sunday's (entries are
+    // closed); Monday to Saturday, LAST Sunday's — the week that's open for
+    // entries is never drawn. openWeekId is the week taking entries now.
+    function getDrawWeek() {
+        const sunday = !isGiveawayOpen();
+        return { weekId: sunday ? getWeekId() : getPastWeekIds(1)[0], openWeekId: sunday ? null : getWeekId(), isSunday: sunday };
+    }
+
+    async function pickWeeklyWinner(weekIdToDraw) {
         await waitForAuthReady();
         if (!currentUser || currentUser.uid !== ADMIN_UID) {
             throw new Error("Not authorized.");
         }
 
-        const weekId = getWeekId();
+        const weekId = weekIdToDraw || getDrawWeek().weekId;
+        const draw = getDrawWeek();
+        if (draw.openWeekId && weekId === draw.openWeekId) {
+            throw new Error("The week ending " + weekId + " is still open for entries — draw it on Sunday.");
+        }
 
         const already = await getWeekWinner(weekId);
         if (already) {
@@ -3404,6 +3416,25 @@ async function getGiveawayHistory(maxCount = 20) {
     }
 
     return true;
+}
+
+// A week drawn by mistake before its entries closed: the draw (and the
+// prize record, if it's for that week) is removed so the week can be drawn
+// properly on its Sunday. The winner's inbox message can't be taken back.
+async function undoWeeklyDraw(weekId) {
+    await waitForAuthReady();
+    if (!currentUser || currentUser.uid !== ADMIN_UID) throw new Error("Not authorized.");
+    const draw = getDrawWeek();
+    if (weekId !== draw.openWeekId) throw new Error("Only a week that's still open for entries can be un-drawn.");
+    const winner = await getWeekWinner(weekId);
+    if (!winner) return { undone: false };
+    if (winner.winnerUid) {
+        const prizeRef = doc(db, "giveawayPrizes", winner.winnerUid);
+        const prize = await getDoc(prizeRef);
+        if (prize.exists() && prize.data().weekId === weekId) await deleteDoc(prizeRef);
+    }
+    await deleteDoc(doc(db, "giveawayWeeks", weekId));
+    return { undone: true, winnerName: winner.winnerName || "" };
 }
 
 // Scans the past few weeks for ones that had entries but were never drawn —
@@ -3946,7 +3977,7 @@ async function sendAdminMessage(uid, title, body) {
     // A prize built in admin from parts (prize.js: { items, note } — gold,
     // diamonds, tokens, a unit, anything custom). Kept small and plain: only
     // known kinds, at most 8 items, no more than a few KB.
-    const PRIZE_KINDS = ["tokens", "gold", "diamonds", "unit", "custom"];
+    const PRIZE_KINDS = ["tokens", "gold", "diamonds", "unit", "custom", "draws", "item"];
     function checkPrizeParts(prize) {
         if (!prize) return null;
         const items = Array.isArray(prize.items) ? prize.items : [];
@@ -3957,8 +3988,18 @@ async function sendAdminMessage(uid, title, body) {
     }
     const prizeTokens = (prize) => (prize && Array.isArray(prize.items) ? prize.items : [])
         .filter(i => i && i.kind === "tokens" && Number.isInteger(i.amount) && i.amount > 0).reduce((sum, i) => sum + i.amount, 0);
-    // Tokens are paid by the server; everything else is delivered with a code.
-    const prizeNeedsCode = (prize) => !prize || !Array.isArray(prize.items) || prize.items.some(i => i && i.kind !== "tokens");
+    // Tokens, chest draws and items are delivered by the server; everything
+    // else needs a code from the admin.
+    const AUTO_PRIZE_KINDS = ["tokens", "draws", "item"];
+    const prizeNeedsCode = (prize) => !prize || !Array.isArray(prize.items) || prize.items.some(i => i && !AUTO_PRIZE_KINDS.includes(i.kind));
+    const prizeHasAuto = (prize) => !!prize && Array.isArray(prize.items) && prize.items.some(i => i && AUTO_PRIZE_KINDS.includes(i.kind) && (i.kind === "item" || i.amount > 0));
+    // "🧰 2 free chest draws and 👑 Royal Crown" — the draws and items part.
+    function prizeExtrasText(prize) {
+        const items = prize && Array.isArray(prize.items) ? prize.items : [];
+        const draws = items.filter(i => i && i.kind === "draws").reduce((n, i) => n + (i.amount || 0), 0);
+        const parts = [draws ? `🧰 ${draws} free chest draw${draws === 1 ? "" : "s"}` : "", ...items.filter(i => i && i.kind === "item").map(i => `${i.icon || "🎒"} ${i.name}`)].filter(Boolean);
+        return parts.length > 1 ? parts.slice(0, -1).join(", ") + " and " + parts[parts.length - 1] : (parts[0] || "");
+    }
 
     // The weekly giveaway's prize, as shown on the promo page — public (the
     // config collection is readable by anyone), set by admin. Until it's set
@@ -4502,14 +4543,16 @@ async function sendAdminMessage(uid, title, body) {
         }
         // The prize's tokens go straight into their wallet (the server checks
         // they're a recorded winner, and never pays the same win twice).
-        if (tokens > 0) await callTokensApi("adminPaySecretPrize", { giveawayId, winnerUid });
+        if (prizeHasAuto(prize)) await callTokensApi("adminPaySecretPrize", { giveawayId, winnerUid });
         // The code is stored ON the notification, not just in prizeCodes.
         // deleteSecretGiveaway() wipes the prizeCodes subcollection, and
         // giveaways also auto-delete after their deleteAfterDays window — so a
         // winner whose only copy lived there lost it the moment the giveaway
         // went away. This subcollection is readable solely by that winner (or
         // admin), so it's no less private than prizeCodes was.
-        const tokenLine = tokens > 0 ? `🪙 ${tokens} tokens have been added to your wallet.` : "";
+        const extras = prizeExtrasText(prize);
+        const tokenLine = [tokens > 0 ? `🪙 ${tokens} tokens have been added to your wallet.` : "",
+            extras ? `${extras} ${/ and /.test(extras) ? "have" : "has"} been added to your account (Profile → 🎒 Items, and the Store's chest for draws).` : ""].filter(Boolean).join("\n");
         const codeLine = !codes.length ? ""
             : codes.length === 1 ? `Here's your prize code: "${code}". Tap to view and copy it.`
             : `Here are your ${codes.length} prize codes:\n${promoCodesText(codes)}\nTap to view and copy them.`;
@@ -4970,7 +5013,7 @@ async function maybeRefreshAd(containerId) {
         getWeekId, hasJoinedGiveaway, getMyGiveawayEntry, joinGiveaway, getGiveawayEntries,
         getPublicGiveawayEntries, getWeekWinner, getGiveawayHistory, getSimulatedNow, isGiveawayOpen,
         // admin
-        isAdmin, pickWeeklyWinner, finalizeGiveawayPrize, getMyPrize,
+        isAdmin, pickWeeklyWinner, getDrawWeek, undoWeeklyDraw, finalizeGiveawayPrize, getMyPrize,
         getMissedGiveawayWeeks, autoPickMissedWinners, getPendingPrizes, sendPendingPrize,
         getAllGiveawayPrizes, getSecretGiveawayPrizeCodes,
         // secret giveaways (admin-created, optionally password-gated, multi-winner)

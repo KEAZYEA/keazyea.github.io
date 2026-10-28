@@ -340,7 +340,7 @@ async function claimRewards(db, uid, body, now) {
   // Quest-token items (Quill, Coin Pouch…): once every quest of a day is
   // claimed, that day's quest tokens × the items' bonus, rounded up, once.
   const perks = await perksFor(db, uid);
-  const days = perks.questMult > 0 ? [...new Set(unique.map(id => id.slice(0, 10)))] : [];
+  const days = perks.questMult > 0 || perks.questFlat > 0 ? [...new Set(unique.map(id => id.slice(0, 10)))] : [];
   const dayInfo = days.map(d => ({ d, ids: questsForDay(d).map(q => `${d}_${q}`), bonusRef: claimsColl.doc(`${d}_itemBonus`) }));
   // Each document read once, even when it's both being claimed and checked.
   const extraIds = [...new Set(dayInfo.flatMap(x => [...x.ids, `${x.d}_itemBonus`]))].filter(id => !unique.includes(id));
@@ -368,7 +368,7 @@ async function claimRewards(db, uid, body, now) {
       const done = ids.every(id => { const sn = byId.get(id); return claimedNow.has(id) || (sn && sn.exists && sn.data().status !== "ready"); });
       if (!done) continue;
       const earned = ids.reduce((sum, id) => sum + rewardOf(byId.get(id).data()), 0);
-      const bonus = P.questBonus(perks, earned);
+      const bonus = P.questBonus(perks, earned) + Math.max(0, Math.floor(perks.questFlat || 0)); // + Quest Ledger
       if (!bonus) continue;
       tx.set(bonusRef, { questId: "itemBonus", dayKey: d, status: "claimed", reward: bonus, earned, questMult: perks.questMult, completedAt: now, claimedAt: now });
       itemBonus += bonus;
@@ -658,12 +658,28 @@ async function requireUser(db, uid) {
 
 async function adminUserTokens(db, body) {
   const profile = await requireUser(db, body.uid);
-  const [walletSnap, adjSnap] = await Promise.all([
+  const [walletSnap, adjSnap, invSnap, cardSnap, statsSnap, opensSnap, packsSnap, salesSnap] = await Promise.all([
     db.collection("tokenWallets").doc(body.uid).get(),
-    db.collection("tokenAdjustments").where("uid", "==", body.uid).get()
+    db.collection("tokenAdjustments").where("uid", "==", body.uid).get(),
+    db.collection("inventories").doc(body.uid).get(),
+    db.collection("playerCards").doc(body.uid).get(),
+    db.collection("achievementStats").doc(body.uid).get(),
+    db.collection("chestOpens").where("uid", "==", body.uid).get(),
+    db.collection("processedPaypalCaptures").where("uid", "==", body.uid).get(),
+    db.collection("processedPaypalSales").where("uid", "==", body.uid).get()
   ]);
   const w = walletSnap.exists ? walletSnap.data() : {};
   const adjustments = adjSnap.docs.map(d => d.data()).sort((a, b) => b.at - a.at).slice(0, 15);
+  // What they own and have bought (items, styles, chest draws, payments).
+  const inv = invSnap.exists ? invSnap.data() : {};
+  const card = cardSnap.exists ? cardSnap.data() : {};
+  const chestOpens = opensSnap.docs.map(d => d.data()).sort((a, b) => b.at - a.at).slice(0, 30)
+    .map(o => ({ at: o.at, count: o.count || 1, free: !!o.free, price: o.price || 0, refund: o.refund || 0,
+      results: o.results || (o.item ? [{ id: o.item, duplicate: !!o.duplicate, refund: o.refund || 0 }] : []) }));
+  const purchases = [
+    ...packsSnap.docs.map(d => ({ kind: "pack", at: d.data().processedAt || 0, pack: d.data().packId || "", tokens: d.data().tokensGranted || 0, amount: d.data().amount || "", currency: d.data().currency || "" })),
+    ...salesSnap.docs.map(d => ({ kind: "plan", at: d.data().processedAt || 0, plan: d.data().planKey || "", tokens: d.data().tokensGranted || 0 }))
+  ].sort((a, b) => b.at - a.at).slice(0, 40);
   return {
     ok: true,
     uid: body.uid,
@@ -672,7 +688,16 @@ async function adminUserTokens(db, body) {
     lifetimeEarned: w.lifetimeEarned || 0,
     lifetimePurchased: w.lifetimePurchased || 0,
     lifetimeGifted: w.lifetimeGifted || 0,
-    adjustments
+    adjustments,
+    items: Object.keys(inv.items || {}),
+    freeDraws: Math.max(0, inv.freeDraws || 0),
+    pity: inv.pity || { epic: 0, legendary: 0 },
+    style: card.style || {},
+    badges: card.badges || [],
+    likeCount: card.likeCount || 0,
+    claimed: (statsSnap.exists && statsSnap.data().claimed) || {},
+    chestOpens,
+    purchases
   };
 }
 
@@ -770,22 +795,82 @@ async function adminPaySecretPrize(db, adminUid, body, now) {
   const prize = tiers ? ((tiers[(record.place || 0) - 1] || {}).prize || null) : (cfg.prize || null);
   const items = prize && Array.isArray(prize.items) ? prize.items : [];
   const amount = items.filter(i => i && i.kind === "tokens" && Number.isInteger(i.amount) && i.amount > 0).reduce((s, i) => s + i.amount, 0);
-  if (!(amount > 0)) throw new HttpError(400, "This giveaway's prize has no tokens.");
+  // Chest draws and items/styles are delivered the same way.
+  const draws = Math.min(100, items.filter(i => i && i.kind === "draws" && Number.isInteger(i.amount) && i.amount > 0).reduce((s, i) => s + i.amount, 0));
+  const itemIds = items.filter(i => i && i.kind === "item" && P.BY_ID[i.itemId]).map(i => i.itemId);
+  if (!(amount > 0) && !draws && !itemIds.length) throw new HttpError(400, "This giveaway's prize has nothing that's sent automatically (tokens, chest draws or items).");
   if (amount > MAX_GIFT_TOKENS) throw new HttpError(400, "That prize is more tokens than one payment allows.");
 
   const walletRef = db.collection("tokenWallets").doc(winnerUid);
+  const invRef = db.collection("inventories").doc(winnerUid);
   const logRef = db.collection("tokenAdjustments").doc(`secretPrize_${giveawayId}_${winnerUid}`);
   return db.runTransaction(async (tx) => {
-    const [logSnap, walletSnap] = await tx.getAll(logRef, walletRef);
+    const [logSnap, walletSnap, invSnap] = await tx.getAll(logRef, walletRef, invRef);
     const before = walletSnap.exists ? (walletSnap.data().balance || 0) : 0;
     if (logSnap.exists) return { ok: true, paid: 0, alreadyPaid: true, amount, balance: before };
-    tx.set(walletRef, { balance: before + amount, lifetimeGifted: FieldValue.increment(amount), updatedAt: now }, { merge: true });
+    const got = draws || itemIds.length ? grantToInventory(tx, db, winnerUid, invSnap, { draws, itemIds }, now) : { added: [], dups: [], dupTokens: 0 };
+    const total = amount + got.dupTokens;
+    if (total) tx.set(walletRef, { balance: before + total, lifetimeGifted: FieldValue.increment(total), updatedAt: now }, { merge: true });
     tx.set(logRef, {
-      uid: winnerUid, mode: "add", amount, before, after: before + amount,
+      uid: winnerUid, mode: "add", amount: total, before, after: before + total, draws, items: got.added, duplicates: got.dups,
       reason: cleanText(`Secret giveaway prize: ${g.title || giveawayId}`, 200), by: adminUid, at: now, giveawayId
     });
-    return { ok: true, paid: amount, amount, balance: before + amount };
+    return { ok: true, paid: amount, amount, draws, items: got.added, duplicates: got.dups, dupTokens: got.dupTokens, balance: before + total };
   });
+}
+
+// Free chest draws and items/styles into someone's inventory, inside a
+// transaction after its reads (pass the inventory snapshot). Something they
+// already own is paid out as its duplicate tokens instead, like the chest.
+function grantToInventory(tx, db, uid, invSnap, { draws = 0, itemIds = [] }, now) {
+  const inv = invSnap.exists ? invSnap.data() : {};
+  const items = { ...(inv.items || {}) };
+  const added = [], dups = [];
+  let dupTokens = 0;
+  for (const id of itemIds) {
+    if (!P.BY_ID[id]) continue;
+    if (id in items) { dupTokens += P.refundFor(id, P.perksOf(Object.keys(items))); dups.push(id); }
+    else { items[id] = { at: now, from: "admin" }; added.push(id); }
+  }
+  const ids = Object.keys(items);
+  const update = { items, perks: P.perksOf(ids), count: ids.length, updatedAt: now };
+  if (draws > 0) update.freeDraws = Math.max(0, inv.freeDraws || 0) + draws;
+  tx.set(db.collection("inventories").doc(uid), update, { merge: true });
+  tx.set(db.collection("playerCards").doc(uid), { itemCount: ids.length, updatedAt: now }, { merge: true });
+  return { added, dups, dupTokens };
+}
+
+// Admin: give someone free chest draws and/or items (logged like any change).
+async function adminGrantItems(db, adminUid, body, now) {
+  const draws = body.draws == null ? 0 : body.draws;
+  const itemIds = Array.isArray(body.itemIds) ? [...new Set(body.itemIds)] : [];
+  if (!Number.isInteger(draws) || draws < 0 || draws > 100) throw new HttpError(400, "Free draws: a whole number from 0 to 100.");
+  if (itemIds.length > 8 || !itemIds.every(id => P.BY_ID[id])) throw new HttpError(400, "Pick up to 8 items or styles from the list.");
+  if (!draws && !itemIds.length) throw new HttpError(400, "Pick some free draws or an item to give.");
+  const profile = await requireUser(db, body.uid);
+  const reason = cleanText(body.reason, 200);
+  const walletRef = db.collection("tokenWallets").doc(body.uid);
+  const invRef = db.collection("inventories").doc(body.uid);
+  const logRef = db.collection("tokenAdjustments").doc(newId(now));
+  const r = await db.runTransaction(async (tx) => {
+    const [walletSnap, invSnap] = await tx.getAll(walletRef, invRef);
+    const before = walletSnap.exists ? (walletSnap.data().balance || 0) : 0;
+    const got = grantToInventory(tx, db, body.uid, invSnap, { draws, itemIds }, now);
+    if (got.dupTokens) tx.set(walletRef, { balance: before + got.dupTokens, lifetimeGifted: FieldValue.increment(got.dupTokens), updatedAt: now }, { merge: true });
+    tx.set(logRef, { uid: body.uid, mode: "grant", amount: got.dupTokens, before, after: before + got.dupTokens, draws, items: got.added, duplicates: got.dups, reason, by: adminUid, at: now });
+    return { ...got, balance: before + got.dupTokens };
+  });
+  const names = r.added.map(id => `${P.BY_ID[id].icon} ${P.BY_ID[id].name}`);
+  const what = [draws ? `🧰 ${draws} free chest draw${draws === 1 ? "" : "s"}` : "", ...names, r.dupTokens ? `🪙 ${r.dupTokens} tokens (for what you already had)` : ""].filter(Boolean).join(", ");
+  if (body.notify === true && what) {
+    try {
+      await db.collection("users").doc(body.uid).collection("personalNotifications").add({
+        type: "itemsGranted", title: "🎁 You got a gift!", body: `An admin sent you: ${what}.${reason ? " " + reason : ""} Open Profile → 🎒 Items to see them${draws ? ", and the Store's chest for your free draws" : ""}.`,
+        createdAt: now, read: false
+      });
+    } catch (e) { console.warn(`Couldn't notify ${body.uid} about a grant:`, e.message); }
+  }
+  return { ok: true, name: profile.name || "", draws, ...r };
 }
 
 async function adminListGifts(db, now) {
@@ -938,6 +1023,7 @@ module.exports = async (req, res) => {
       case "adminAdjust": assertAdmin(uid); result = await adminAdjust(db, uid, body, now); break;
       case "adminSendGift": assertAdmin(uid); result = await adminSendGift(db, uid, body, now); break;
       case "adminPaySecretPrize": assertAdmin(uid); result = await adminPaySecretPrize(db, uid, body, now); break;
+      case "adminGrantItems": assertAdmin(uid); result = await adminGrantItems(db, uid, body, now); break;
       case "adminListGifts": assertAdmin(uid); result = await adminListGifts(db, now); break;
       case "adminEndGift": assertAdmin(uid); result = await adminEndGift(db, body, now); break;
       case "adminListAlerts": assertAdmin(uid); result = await adminListAlerts(db); break;

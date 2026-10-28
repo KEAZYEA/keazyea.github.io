@@ -61,3 +61,22 @@
 @media (prefers-reduced-motion: reduce) {
     .fx-av.fx-spin::before, .fx-av.fx-pulse::before, .fx-name-fire, .fx-name-rainbow, .fx-name-star, .fx-name-puzzle { animation: none; }
 }
+
+/* ---- more chat bubbles ---- */
+.fx-bubble-cloud { background: linear-gradient(160deg, #f3f7ff, #cfdcf5) !important; color: #1d2a44 !important; }
+.fx-bubble-cloud .dm-msg-time, .fx-bubble-cloud .dm-msg-action-link { color: #3a4a6b !important; }
+.fx-bubble-capy { position: relative; background: linear-gradient(160deg, #a9744f, #6e4529) !important; color: #fff6ec !important; padding-right: 30px !important; }
+.fx-bubble-capy::after { content: "🦫"; position: absolute; right: 6px; bottom: 4px; font-size: 1rem; }
+
+/* ---- profile backgrounds: on a profile card (yours, and popups of others) ---- */
+.fx-bg-stars, .fx-bg-sakura, .fx-bg-capy, .fx-bg-galaxy { position: relative; overflow: hidden; }
+.fx-bg-stars { background: radial-gradient(1px 1px at 20% 30%, #fff 50%, transparent 51%), radial-gradient(1px 1px at 70% 20%, #fff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 40% 75%, #fff 50%, transparent 51%), radial-gradient(1px 1px at 85% 65%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 10% 85%, #fff 50%, transparent 51%), linear-gradient(170deg, #0b1a3d, #1d1147 60%, #2b0f3a) !important; }
+.fx-bg-sakura { background: radial-gradient(circle at 15% 20%, rgba(255, 183, 213, 0.5) 0 6px, transparent 7px), radial-gradient(circle at 80% 30%, rgba(255, 183, 213, 0.45) 0 5px, transparent 6px),
+    radial-gradient(circle at 60% 80%, rgba(255, 183, 213, 0.4) 0 7px, transparent 8px), linear-gradient(165deg, #5a2342, #2a1430 70%) !important; }
+.fx-bg-capy { background: linear-gradient(165deg, #2f6f6a, #8a5a3b 120%) !important; }
+.fx-bg-capy::after { content: "♨️ 🦫 🍊"; position: absolute; right: 10px; bottom: 6px; font-size: 1.3rem; opacity: 0.85; pointer-events: none; }
+.fx-bg-galaxy { background: radial-gradient(circle at 25% 35%, rgba(180, 107, 255, 0.55), transparent 45%), radial-gradient(circle at 75% 65%, rgba(90, 168, 255, 0.5), transparent 45%),
+    conic-gradient(from 200deg at 60% 40%, #120a2e, #2a0f4d, #0a1f4d, #120a2e) !important; }
+.fx-bg-galaxy::after { content: "🪐"; position: absolute; right: 10px; top: 8px; font-size: 1.4rem; opacity: 0.8; pointer-events: none; }

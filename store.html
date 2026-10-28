@@ -6,6 +6,7 @@
     <meta name="description" content="Tokens and supporter plans for Keazyea's Intelligence Hub.">
     <link rel="icon" href="images/KIH.jpg">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="fx-styles.css">
     <script type="text/javascript">     (function(c,l,a,r,i,t,y){         c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};         t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;         y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);     })(window, document, "clarity", "script", "xupis8786d"); </script>
     <meta charset="UTF-8" />
     <style>
@@ -387,7 +388,15 @@
         .chest-contents .cc-grid .own { opacity: 0.45; }
 
         /* the draw */
-        .cr-overlay { position: fixed; inset: 0; z-index: 300; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 16px; background: rgba(5, 5, 20, 0.96); }
+        /* Scrolls when it's taller than the screen (a 10-draw on a small phone), so
+           the buttons can always be reached; centred when it fits. */
+        .cr-overlay { position: fixed; inset: 0; z-index: 300; display: none; flex-direction: column; align-items: center; padding: 58px 12px 28px; overflow-y: auto; overscroll-behavior: contain; background: rgba(5, 5, 20, 0.96); }
+        .cr-overlay .cr-box { margin: auto 0; }
+        .cr-close { position: fixed; top: 12px; left: 12px; z-index: 2; width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.3); background: rgba(0, 0, 0, 0.5); color: #fff; font-size: 1.1rem; cursor: pointer; }
+        .cr-ten .cr-item { padding: 10px; }
+        .cr-ten .cr-item-icon { font-size: 2.2rem; }
+        .cr-ten .cr-name { font-size: 1.05rem; }
+        .cr-ten .cr-result { min-height: 0; margin-top: 10px; }
         .cr-overlay.open { display: flex; animation: fadeIn 0.25s ease; }
         .cr-box { width: 100%; max-width: 420px; text-align: center; }
         .cr-title { font-weight: 900; font-size: 1.1rem; margin-bottom: 12px; }
@@ -581,7 +590,7 @@
         <div class="chest-card">
             <div class="chest-art">🧰</div>
             <div class="chest-title">Adventurer's Chest</div>
-            <p class="chest-desc">Perk items — bonuses that are always on and add up — and styles: avatar borders, name effects, chat bubbles and emote packs.</p>
+            <p class="chest-desc">Perk items — bonuses that are always on and add up — and styles: avatar borders, name effects, chat bubbles, profile backgrounds and emote packs.</p>
             <div class="chest-odds" id="chestOdds"></div>
             <div class="chest-pity" id="chestPity"></div>
             <div class="chest-actions">
@@ -630,7 +639,8 @@
     </div>
 
     <!-- 🧰 A draw: a reel spins onto one item, or 10 cards flip. -->
-    <div class="cr-overlay" id="chestOverlay">
+    <div class="cr-overlay" id="chestOverlay" onclick="if (event.target === this) closeChestOverlay()">
+        <button type="button" class="cr-close" id="crClose" onclick="closeChestOverlay()" aria-label="Close" style="display:none;">✕</button>
         <button type="button" class="cr-skip" id="crSkip" onclick="skipChestReveal()">Skip ⏭</button>
         <div class="cr-box" role="dialog" aria-label="Chest">
             <div class="cr-title" id="crTitle"></div>
@@ -1184,8 +1194,7 @@
                 <li><b>×10</b> costs ${PC.CHEST.price10} 🪙 (one draw free) and always has at least one Rare or better.</li>
                 <li><b>Guarantees:</b> an Epic or better at least every ${PC.PITY.epic} draws, and a Legendary at least every ${PC.PITY.legendary}. Your count carries over between visits.</li>
                 <li><b>Free draws:</b> every achievement's Gold tier gives you one (Profile → Achievements).</li>
-                <li><b>Seasonal:</b> the Spooky pack is only in the chest 15 Oct – 7 Nov, the Winter pack 1 Dec – 7 Jan.</li>
-                <li>Perk items' bonuses are always on and add up. Styles are looks only — pick which to show in Profile → 🎨 Style.</li>
+                <li>Perk items' bonuses are always on and add up. Styles (borders, name effects, chat bubbles, profile backgrounds, emote packs) are looks only — pick which to show in Profile → 🎨 Style.</li>
                 <li>Nothing here has any cash value or can be traded.</li>`;
             const owned = new Set(chestState.items);
             document.getElementById("chestContents").innerHTML = PC.RARITY_ORDER.slice().reverse().map(k => {
@@ -1242,6 +1251,9 @@
             document.getElementById("crSum").textContent = "";
             document.getElementById("crActions").style.visibility = "hidden";
             document.getElementById("crSkip").style.display = "";
+            document.getElementById("crClose").style.display = "none";
+            overlay.classList.toggle("cr-ten", count === 10);
+            overlay.scrollTop = 0;
             stage.innerHTML = count === 10 ? "" : `<div class="reel"><div class="reel-marker"></div><div class="reel-strip" id="reelStrip"></div></div><div class="cr-result" id="crResult"></div>`;
             overlay.classList.add("open");
             let r;
@@ -1268,7 +1280,14 @@
             chestBusy = false;
             renderChestCard();
             document.getElementById("crActions").style.visibility = "visible";
+            document.getElementById("crClose").style.display = "";
+            // On a short screen the buttons are below: bring them into view.
+            setTimeout(() => document.getElementById("crActions").scrollIntoView({ block: "nearest", behavior: "smooth" }), 150);
         };
+        document.addEventListener("keydown", (e) => {
+            if (e.key !== "Escape" || !document.getElementById("chestOverlay").classList.contains("open")) return;
+            if (chestBusy) skipChestReveal(); else closeChestOverlay();
+        });
         window.skipChestReveal = function () { if (revealDone) revealDone(); };
         window.closeChestOverlay = function () {
             if (chestBusy) return;

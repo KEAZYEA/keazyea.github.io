@@ -11,6 +11,9 @@
      unit     { unitKey, name, level?, count?, form? }   a hero or troop, shown with
                                     its picture; form "shards" = that many of its shards
      custom   { label, amount?, image? }
+     draws    { amount }            free Adventurer's Chest draws — added automatically
+     item     { itemId, name, icon, rarity }   one item or style from the chest
+                                    (progress-core.js) — added automatically
    Older giveaways only have a text description; render() takes that too. */
 (function () {
     "use strict";
@@ -54,8 +57,13 @@
         gold: { label: "Gold", sub: "", tint: "255, 198, 46" },
         diamonds: { label: "Diamonds", sub: "", tint: "63, 200, 255" },
         unit: { label: "", sub: "", tint: "179, 136, 255" },
-        custom: { label: "", sub: "", tint: "255, 107, 157" }
+        custom: { label: "", sub: "", tint: "255, 107, 157" },
+        draws: { label: "Chest draws", sub: "Free Adventurer's Chest draws", tint: "180, 107, 255" },
+        item: { label: "", sub: "", tint: "95, 211, 138" }
     };
+    // an item's card takes its rarity's colour
+    const RARITY_TINT = { common: "184, 192, 208", uncommon: "95, 211, 138", rare: "90, 168, 255", epic: "180, 107, 255", legendary: "255, 176, 46" };
+    const RARITY_LABEL = { common: "Common", uncommon: "Uncommon", rare: "Rare", epic: "Epic", legendary: "Legendary" };
 
     // Only the fields each kind can have, in range — anything else is dropped.
     function cleanItem(it) {
@@ -63,6 +71,12 @@
         const amount = Math.floor(Number(it.amount));
         const hasAmount = Number.isFinite(amount) && amount > 0 && amount <= 1e12;
         if (it.kind === "tokens" || it.kind === "gold" || it.kind === "diamonds") return hasAmount ? { kind: it.kind, amount } : null;
+        if (it.kind === "draws") return hasAmount && amount <= 100 ? { kind: "draws", amount } : null;
+        if (it.kind === "item") {
+            const itemId = String(it.itemId || "").trim();
+            if (!/^[a-z0-9_]{1,30}$/.test(itemId) || !RARITY_TINT[it.rarity]) return null;
+            return { kind: "item", itemId, name: String(it.name || itemId).slice(0, 60), icon: String(it.icon || "🎒").slice(0, 8), rarity: it.rarity };
+        }
         if (it.kind === "unit") {
             const key = String(it.unitKey || "").trim();
             if (!/^[A-Za-z0-9_]{1,40}$/.test(key)) return null;
@@ -90,6 +104,8 @@
         if (it.kind === "tokens") return `${fmt(it.amount)} Tokens`;
         if (it.kind === "gold") return `${short(it.amount)} Gold`;
         if (it.kind === "diamonds") return `${fmt(it.amount)} Diamonds`;
+        if (it.kind === "draws") return `${fmt(it.amount)} free chest draw${it.amount === 1 ? "" : "s"}`;
+        if (it.kind === "item") return `${it.icon} ${it.name}`;
         if (it.kind === "unit") {
             const lv = it.level ? ` (Lv ${it.level})` : "";
             if (it.form === "shards") return `${fmt(it.count || 1)} ${it.name} shards${lv}`;
@@ -103,8 +119,25 @@
         return p.items.map(itemText).join(" + ") + (p.note ? (p.items.length ? " — " : "") + p.note : "");
     }
     const tokensOf = (prize) => clean(prize).items.filter(i => i.kind === "tokens").reduce((s, i) => s + i.amount, 0);
-    // Does anything need a code from the admin (everything but tokens does)?
-    const needsCode = (prize) => clean(prize).items.some(i => i.kind !== "tokens");
+    // What the site delivers by itself: tokens, chest draws, items.
+    const AUTO = ["tokens", "draws", "item"];
+    function autoOf(prize) {
+        const items = clean(prize).items;
+        return {
+            tokens: items.filter(i => i.kind === "tokens").reduce((s, i) => s + i.amount, 0),
+            draws: items.filter(i => i.kind === "draws").reduce((s, i) => s + i.amount, 0),
+            items: items.filter(i => i.kind === "item")
+        };
+    }
+    // "50 tokens, 2 free chest draws and 👑 Royal Crown" — what was sent automatically.
+    function autoText(prize) {
+        const a = autoOf(prize);
+        const parts = [a.tokens ? `🪙 ${fmt(a.tokens)} tokens` : "", a.draws ? `🧰 ${a.draws} free chest draw${a.draws === 1 ? "" : "s"}` : "", ...a.items.map(i => `${i.icon} ${i.name}`)].filter(Boolean);
+        return parts.length > 1 ? parts.slice(0, -1).join(", ") + " and " + parts[parts.length - 1] : (parts[0] || "");
+    }
+    const hasAuto = (prize) => { const a = autoOf(prize); return a.tokens > 0 || a.draws > 0 || a.items.length > 0; };
+    // Does anything need a code from the admin (everything not delivered automatically)?
+    const needsCode = (prize) => clean(prize).items.some(i => !AUTO.includes(i.kind));
 
     function tile(it) {
         const k = KINDS[it.kind];
@@ -112,6 +145,8 @@
         if (it.kind === "gold") icon = goldIcon();
         else if (it.kind === "diamonds") icon = gemIcon();
         else if (it.kind === "tokens") icon = tokenIcon();
+        else if (it.kind === "draws") icon = `<span class="pz-emoji">🧰</span>`;
+        else if (it.kind === "item") { icon = `<span class="pz-emoji">${esc(it.icon)}</span>`; label = it.name; sub = (RARITY_LABEL[it.rarity] || "") + " · added automatically"; }
         else if (it.kind === "unit") {
             // the level as a badge on the picture, so it can't be missed
             icon = `<span class="pz-portrait-wrap"><img class="pz-portrait" src="images/thumbs/${esc(it.unitKey.toUpperCase())}.jpg" alt="" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=this.src.replace('/thumbs/','/')">${it.level ? `<span class="pz-lv">Lv ${it.level}</span>` : ""}${it.form === "shards" ? `<span class="pz-shard">💠</span>` : ""}</span>`;
@@ -119,13 +154,13 @@
             sub = it.form === "shards" ? (it.level ? `Lv ${it.level} shards` : "Shards") : (it.level ? `Level ${it.level}` : "");
             const n = it.form === "shards" ? (it.count || 1) : it.count;
             if (n > 1 || it.form === "shards") big = `<b class="pz-num" data-pre="×" data-to="${n}">×${short(n)}</b>`;
-        } else {
+        } else if (it.kind !== "draws" && it.kind !== "item") {
             icon = it.image ? `<img class="pz-portrait" src="${esc(it.image)}" alt="" loading="lazy" decoding="async">` : `<span class="pz-emoji">🎁</span>`;
             label = it.label;
         }
         if (it.amount) big = `<b class="pz-num" data-to="${it.amount}">${short(it.amount)}</b>`;
         const subCls = it.kind === "unit" ? " class=\"pz-sub-strong\"" : "";
-        return `<div class="pz-tile pz-${it.kind}" style="--pz:${k.tint}">
+        return `<div class="pz-tile pz-${it.kind}" style="--pz:${it.kind === "item" ? RARITY_TINT[it.rarity] : k.tint}">
             <div class="pz-icon">${icon}</div>
             ${big}<span class="pz-label">${esc(label)}</span>${sub ? `<small${subCls}>${esc(sub)}</small>` : ""}
         </div>`;
@@ -247,5 +282,5 @@
         document.head.appendChild(st);
     }
 
-    window.KIHPrize = { render, play, summary, clean, tokensOf, needsCode, short, KINDS, ordinal, placeMedal, placeLabel, renderTiers, tiersSummary };
+    window.KIHPrize = { render, play, summary, clean, tokensOf, autoOf, autoText, hasAuto, needsCode, short, KINDS, ordinal, placeMedal, placeLabel, renderTiers, tiersSummary };
 })();
