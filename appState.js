@@ -256,6 +256,20 @@ async function signOutUser() {
     }
     // 🎃 Knock at an event's door (1 or 10). eventId only matters for the
     // admin trying it out before the day.
+    // 🎃 An event's login gift (a random profile picture, once) and its shop.
+    async function claimEventGift(eventId = null) {
+        return callProgressApi("eventGift", { eventId });
+    }
+    // 🎃 Spooky Gifts: send your one to another player; open one you got.
+    async function sendSpookyGift(toUid, eventId = null) {
+        return callProgressApi("sendSpookyGift", { toUid, eventId });
+    }
+    async function openSpookyGift(giftId) {
+        return callProgressApi("openSpookyGift", { giftId });
+    }
+    async function buyEventItem(id, eventId = null) {
+        return callProgressApi("buyEventItem", { id, eventId });
+    }
     async function trickOrTreat(count = 1, eventId = null) {
         return callProgressApi("trickOrTreat", { count, eventId });
     }
@@ -286,6 +300,17 @@ async function signOutUser() {
         return out;
     }
     // Your own items and styles (ids), e.g. to know which emote packs you have.
+    // Your counts in an event (Trick or Treat): { freeUsed, bonusKnocks, giftId, spookyTo, … }.
+    async function getMyEventState(eventId) {
+        await waitForAuthReady();
+        if (!currentUser) return {};
+        try {
+            const snap = await getDoc(doc(db, "inventories", currentUser.uid));
+            return snap.exists() ? ((snap.data().events || {})[eventId] || {}) : {};
+        } catch (e) {
+            return {};
+        }
+    }
     async function getMyItemIds() {
         await waitForAuthReady();
         if (!currentUser) return [];
@@ -616,6 +641,13 @@ async function signOutUser() {
 
     // Giveaways staked on before the highest-stake figures were tracked don't
     // have them yet; this asks the server to work them out once.
+    // A Secret Giveaway's extra balls from items (sums per draw) and your
+    // own item balls in it — so the odds shown match the draw (api/tokens.js).
+    async function getSecretOdds(giveawayId) {
+        await waitForAuthReady();
+        if (!currentUser) return null;
+        return callTokensApi("secretOdds", { giveawayId });
+    }
     async function refreshSecretGiveawayMaxStake(giveawayId) {
         await waitForAuthReady();
         if (!currentUser) return null;
@@ -5024,10 +5056,10 @@ async function maybeRefreshAd(containerId) {
         signIn, signOut: signOutUser, getCurrentUser, onAuthChange, waitForAuthReady, getIdToken,
         getTodaysQuests, listenToMyWallet, listenToMyQuestProgress, claimQuestRewards, submitDailyPuzzle, gamesRunStart, gamesRunAnswer, gamesLeaderboard, gamesPing, getMyTokenBalance,
         listenToMyGiftClaims, claimTokenGift, adminTokens,
-        reportQuestProgress, startDailyQuestTracking, stakeTokensOnSecretGiveaway, setSecretGiveawayStake, refreshSecretGiveawayMaxStake,
+        reportQuestProgress, startDailyQuestTracking, stakeTokensOnSecretGiveaway, setSecretGiveawayStake, refreshSecretGiveawayMaxStake, getSecretOdds,
         // achievements, badges, profile likes, items
-        trackProgress, getProgressStatus, claimAchievement, setShownBadges, setProfileLike, openItemChest, trickOrTreat,
-        getPlayerCard, getPlayerCards, haveILikedProfile, getMyPerks, getMyItemIds, equipStyle,
+        trackProgress, getProgressStatus, claimAchievement, setShownBadges, setProfileLike, openItemChest, trickOrTreat, claimEventGift, buyEventItem, sendSpookyGift, openSpookyGift,
+        getPlayerCard, getPlayerCards, haveILikedProfile, getMyPerks, getMyItemIds, getMyEventState, equipStyle,
         // profile
         getProfile, setProfile, isVipActive, isNoAdsActive, isBannedNow, shouldShowAds, listenToMyProfile,
         // unique names

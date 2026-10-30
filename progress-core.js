@@ -267,9 +267,15 @@
         { id: "hc_web", type: "bubble", css: "web", icon: "🕸️", name: "Cobweb Bubble", rarity: "common", event: "halloween2026" },
         { id: "hc_pumpkin", type: "bubble", css: "pumpkin", icon: "🎃", name: "Pumpkin Bubble", rarity: "uncommon", event: "halloween2026" },
         { id: "hg_haunted", type: "background", css: "haunted", icon: "🌕", name: "Haunted Night", rarity: "rare", event: "halloween2026" },
-        { id: "he_treats", type: "emotes", pack: "treats", icon: "🍭", name: "Trick-or-Treat Pack", rarity: "uncommon", event: "halloween2026" }
+        { id: "he_treats", type: "emotes", pack: "treats", icon: "🍭", name: "Trick-or-Treat Pack", rarity: "uncommon", event: "halloween2026" },
+        // Halloween profile pictures: everyone who logs in on the day gets one
+        // of the three free (at random); the others cost `price` 🪙 each.
+        // Not treats at the door. img: the picture (pick it in Profile → Edit).
+        { id: "ha_warlock", type: "avatar", img: "images/halloween/ha_warlock.jpg", icon: "🧙‍♂️", name: "Void Warlock", rarity: "epic", event: "halloween2026", price: 15 },
+        { id: "ha_knight", type: "avatar", img: "images/halloween/ha_knight.jpg", icon: "💀", name: "Grave Knight", rarity: "epic", event: "halloween2026", price: 15 },
+        { id: "ha_witch", type: "avatar", img: "images/halloween/ha_witch.jpg", icon: "🧙‍♀️", name: "Bone Witch", rarity: "epic", event: "halloween2026", price: 15 }
     ];
-    const STYLE_TYPES = { border: "Avatar border", name: "Name effect", bubble: "Chat bubble", background: "Profile background", emotes: "Emote pack" };
+    const STYLE_TYPES = { border: "Avatar border", name: "Name effect", bubble: "Chat bubble", background: "Profile background", emotes: "Emote pack", avatar: "Profile picture" };
 
     const ALL = [...ITEMS.map(i => ({ ...i, kind: "item" })), ...STYLES.map(s => ({ ...s, kind: "style" }))];
     const BY_ID = Object.fromEntries(ALL.map(x => [x.id, x]));
@@ -379,11 +385,44 @@
        Adventurer's Chest; whoever gets one keeps it. */
     const EVENTS = {
         halloween2026: { id: "halloween2026", name: "Trick or Treat", icon: "🎃", label: "Halloween 2026", from: "2026-10-31", to: "2026-10-31",
-            price: 10, price10: 90, treatChance: 30, pity: 10, candy: 5 }
+            price: 10, price10: 90, treatChance: 30, pity: 10, candy: 5,
+            // the profile pictures (login gift + shop); false switches them off
+            picturesOn: true,
+            // 🎃 Spooky Gifts: everyone has one to send to another player
+            spookyGifts: true }
     };
+    /* A Spooky Gift's reward, rolled when it's opened (weights out of 100).
+       knock: a free knock at Trick or Treat — +10 🪙 instead once the event is
+       over; treat: one of the event's treats you don't have — +10 🪙 if you
+       have them all. */
+    const SPOOKY_REWARDS = [
+        { kind: "tokens", amount: 5, weight: 40 },
+        { kind: "tokens", amount: 10, weight: 25 },
+        { kind: "draw", weight: 15 },
+        { kind: "knock", weight: 15 },
+        { kind: "treat", weight: 5 }
+    ];
+    function rollSpooky(r) {
+        const total = SPOOKY_REWARDS.reduce((t, x) => t + x.weight, 0);
+        let t = r * total;
+        for (const x of SPOOKY_REWARDS) { t -= x.weight; if (t < 0) return x; }
+        return SPOOKY_REWARDS[SPOOKY_REWARDS.length - 1];
+    }
+    // One of the event's treats you don't have, picked by rarity weight (null: you have them all).
+    function pickMissingTreat(evId, owned, r) {
+        const have = new Set(owned || []);
+        const missing = ALL.filter(x => x.event === evId && x.type !== "avatar" && !have.has(x.id));
+        if (!missing.length) return null;
+        const total = missing.reduce((t, x) => t + RARITIES[x.rarity].weight, 0);
+        let t = r * total;
+        for (const x of missing) { t -= RARITIES[x.rarity].weight; if (t < 0) return x.id; }
+        return missing[missing.length - 1].id;
+    }
     const TRICKS = ["👻 Boo! Nothing this time.", "🕸️ Just cobwebs…", "🦇 A bat flew out — and that's all.", "🧟 The door slammed shut!",
         "💀 The skeleton kept the candy.", "🧙 The witch cackled. Trick!"];
-    const eventThings = (evId) => ALL.filter(x => x.event === evId);
+    // the treats at the door (profile pictures are given / bought instead)
+    const eventThings = (evId) => ALL.filter(x => x.event === evId && x.type !== "avatar");
+    const eventAvatars = (evId) => (EVENTS[evId] && EVENTS[evId].picturesOn === false) ? [] : STYLES.filter(s => s.event === evId && s.type === "avatar");
     const activeEvent = (dayKey) => Object.values(EVENTS).find(e => dayKey >= e.from && dayKey <= e.to) || null;
     const eventPrice = (ev, count) => (count === 10 ? ev.price10 : ev.price);
     // count knocks. rolls[i] = [r1, r2], numbers in [0, 1): r1 decides treat
@@ -483,7 +522,7 @@
         RARITIES, RARITY_ORDER, PERK_KINDS, perkText, perkLines, ITEMS, ITEM_BY_ID, STYLES, STYLE_BY_ID, STYLE_TYPES, BY_ID,
         EMOTE_PACKS, BASE_REACTIONS, ALL_REACTIONS, emotesOf, ACHIEVEMENT_REWARDS,
         CHEST, PITY, inSeason, chestPool, dropRates, rollChest, drawChest, pityLeft, chestPrice, refundFor,
-        EVENTS, TRICKS, eventThings, activeEvent, eventPrice, knock,
+        EVENTS, TRICKS, eventThings, eventAvatars, activeEvent, eventPrice, knock, SPOOKY_REWARDS, rollSpooky, pickMissingTreat,
         perksOf, gamePerkBonus, runPerks, questBonus, secretWeight, badgeLimit, badgeHtml, styleClass, withBorder
     };
 });

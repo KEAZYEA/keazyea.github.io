@@ -312,6 +312,12 @@
         .lb-row { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 10px; margin-bottom: 4px; background: rgba(255, 255, 255, 0.03); }
         .lb-row.me { background: rgba(65, 105, 225, 0.25); border: 1px solid #4169e1; }
         .lb-rank { width: 30px; text-align: center; font-weight: 900; flex-shrink: 0; }
+        .lb-av { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; display: block; flex-shrink: 0; }
+        .pod-av { display: flex; justify-content: center; margin-top: 4px; }
+        .pod-av .lb-av { width: 44px; height: 44px; }
+        .lb-last .lb-av { width: 18px; height: 18px; display: inline-block; vertical-align: middle; }
+        .lb-last-p { white-space: nowrap; }
+        .lb-rank small { font-size: 0.7em; margin-left: 1px; opacity: 0.8; }
         .lb-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700; }
         .lb-total { font-weight: 900; color: #ffd75e; font-variant-numeric: tabular-nums; }
         .lb-row.top1 { background: linear-gradient(90deg, rgba(255, 215, 94, 0.22), rgba(255, 215, 94, 0.04)); }
@@ -379,6 +385,9 @@
         .pod.p1 .pod-block { height: 92px; background: linear-gradient(180deg, #ffd75e, #c99a1e); }
         .pod.p2 .pod-block { height: 70px; background: linear-gradient(180deg, #cfd8e6, #8d97a8); }
         .pod.p3 .pod-block { height: 56px; background: linear-gradient(180deg, #e0a16a, #a8622c); }
+        /* a tie: the block's colour follows the place, its height the spot */
+        .pod.rk1 .pod-block { background: linear-gradient(180deg, #ffd75e, #c99a1e); }
+        .pod.rk2 .pod-block { background: linear-gradient(180deg, #cfd8e6, #8d97a8); }
         .pod.empty .pod-block { opacity: 0.45; }
         .pod.me .pod-name { color: #9db8ff; }
         .lb-signin { text-align: center; padding: 10px 6px 4px; }
@@ -429,6 +438,7 @@
         </div>
     </div>
 
+    <script src="progress-core.js"></script>
     <script src="games-core.js"></script>
     <script type="module" src="appState.js"></script>
     <script>
@@ -1942,16 +1952,23 @@
                 return;
             }
             const medals = ["🥇", "🥈", "🥉"];
+            // Their picture in their border (so two players with the same name can be told apart).
+            const lbAvatar = (r) => {
+                const img = `<img class="lb-av" src="${esc(r.avatar || "images/KIH.jpg")}" alt="" loading="lazy" onerror="this.onerror=null; this.src='images/KIH.jpg'">`;
+                return window.ProgressCore ? ProgressCore.withBorder(img, { border: r.border }) : img;
+            };
+            // Ties share a place (r.rank): two on the same points are both 🥈, both get 2nd's prize.
             const spot = (r, place) => r
-                ? `<div class="pod p${place}${r.me ? " me" : ""}"><div class="pod-medal">${medals[place - 1]}</div><div class="pod-name"><span class="${esc(r.nameFx || "")}">${esc(r.name)}</span>${r.me ? " (you)" : ""}</div><div class="pod-score">${r.total}</div>
-                    <div class="pod-block"><b>${place}</b><small>+${d.prizes[place - 1]} 🪙</small></div></div>`
+                ? `<div class="pod p${place} rk${r.rank}${r.me ? " me" : ""}"><div class="pod-medal">${medals[Math.min(2, r.rank - 1)]}</div><div class="pod-av">${lbAvatar(r)}</div><div class="pod-name"><span class="${esc(r.nameFx || "")}">${esc(r.name)}</span>${r.me ? " (you)" : ""}</div><div class="pod-score">${r.total}</div>
+                    <div class="pod-block"><b>${r.rank}</b><small>+${d.prizes[r.rank - 1]} 🪙</small></div></div>`
                 : `<div class="pod p${place} empty"><div class="pod-medal">${medals[place - 1]}</div><div class="pod-name">—</div><div class="pod-score">&nbsp;</div>
                     <div class="pod-block"><b>${place}</b><small>+${d.prizes[place - 1]} 🪙</small></div></div>`;
             const podium = `<div class="podium">${spot(d.top[1], 2)}${spot(d.top[0], 1)}${spot(d.top[2], 3)}</div>`;
             const rest = d.top.slice(3);
             const list = lbShowAll ? rest : rest.slice(0, 7);
             // 4th and 5th win too: their prize sits on their row.
-            const rows = list.map(r => `<div class="lb-row${r.me ? " me" : ""}"><span class="lb-rank">#${r.rank}</span><span class="lb-name"><span class="${esc(r.nameFx || "")}">${esc(r.name)}</span>${r.me ? " (you)" : ""}</span>${r.perk ? `<span class="lb-perk" title="Bonus points from items">🎒+${r.perk}</span>` : ""}${d.prizes[r.rank - 1] ? `<span class="lb-prize-tag">+${d.prizes[r.rank - 1]} 🪙</span>` : ""}<span class="lb-total">${r.total}</span></div>`).join("");
+            const tied = (r) => d.top.filter(o => o.rank === r.rank).length > 1;
+            const rows = list.map(r => `<div class="lb-row${r.me ? " me" : ""}"><span class="lb-rank" title="${tied(r) ? "Tied — same points, same place" : ""}">#${r.rank}${tied(r) ? "<small>=</small>" : ""}</span>${lbAvatar(r)}<span class="lb-name"><span class="${esc(r.nameFx || "")}">${esc(r.name)}</span>${r.me ? " (you)" : ""}</span>${r.perk ? `<span class="lb-perk" title="Bonus points from items">🎒+${r.perk}</span>` : ""}${d.prizes[r.rank - 1] ? `<span class="lb-prize-tag">+${d.prizes[r.rank - 1]} 🪙</span>` : ""}<span class="lb-total">${r.total}</span></div>`).join("");
             const more = rest.length > 7 ? `<button class="lb-more" onclick="lbShowAll = !lbShowAll; renderLeaderboard();">${lbShowAll ? "Show fewer" : `Show all ${d.top.length}`}</button>` : "";
             // Each game's points on the board this week — "×2" when they came from a
             // doubled run — and today's double game starred.
@@ -1975,7 +1992,7 @@
                 ? `<div class="lb-me"><div>You're <b>#${d.me.rank}</b> · <b>${d.me.total}</b> points <span class="dim">(most a week can score: ${d.max || C.LB_MAX}${d.me.perk ? `, plus your items' ${d.me.perk}` : ""})</span></div>${chips(d.me)}${bonusHint(d.me)}</div>`
                 : `<div class="lb-me">You're not on the board yet — finish a run in any game to get on it. 🚀</div>`;
             const last = d.lastWeek && d.lastWeek.length
-                ? `<div class="lb-last">Last week: ${d.lastWeek.map(w => `${placeIcon(w.rank - 1)} ${esc(w.name)}`).join(" · ")}</div>` : "";
+                ? `<div class="lb-last">Last week: ${d.lastWeek.map(w => `<span class="lb-last-p">${placeIcon(w.rank - 1)} ${lbAvatar(w)} ${esc(w.name)}</span>`).join(" · ")}</div>` : "";
             box.innerHTML = `${head}${lbBonusHtml(d)}${d.top.length ? podium : `<div class="lb-empty">No scores yet this week — be the first! 🚀</div>`}
                 ${me}${rows ? `<div class="lb-list">${rows}</div>` : ""}${more}${last}${lbRulesHtml(d.prizes, d.bonus)}`;
         }

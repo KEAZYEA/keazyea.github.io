@@ -31,6 +31,7 @@
         .td-prev { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 12px; min-height: 60px; }
         .td-prev img { width: 52px; height: 52px; border-radius: 50%; display: block; object-fit: cover; }
         .td-prev .td-pname { font-weight: 900; font-size: 1.15rem; }
+        .td-prev img.td-avatar { width: 140px; height: 140px; border-radius: 18px; object-fit: cover; object-position: top; box-shadow: 0 0 18px color-mix(in srgb, var(--rc) 50%, transparent); }
         .td-prev .td-bubble { padding: 9px 13px; border-radius: 14px; background: #2a2a4a; color: #fff; font-size: 0.9rem; }
         .td-prev .td-bg { width: 100%; height: 86px; border-radius: 12px; display: flex; align-items: flex-start; padding: 10px; box-sizing: border-box; font-weight: 800; font-size: 0.8rem; background: #22223a; }
         .td-prev .td-emojis { font-size: 1.5rem; letter-spacing: 3px; line-height: 1.5; }
@@ -41,6 +42,7 @@
     // Where it comes from.
     function source(x) {
         const ev = x.event && PC.EVENTS[x.event];
+        if (ev && x.type === "avatar") return `${ev.icon} ${esc(ev.label)} — limited: everyone who logs in on the day gets one of these free, or ${x.price} 🪙 each in the Store`;
         if (ev) return `${ev.icon} ${esc(ev.name)} (${esc(ev.label)}) — limited, a treat at the door`;
         if (x.vip) return "👑 Comes with Super Supporter";
         if (x.chest) {
@@ -62,7 +64,10 @@
             what = `<div>What it does — <b>always on</b> once it's yours, and it adds up with your other items:</div><ul>${x.perks.map(p => `<li>${esc(PC.perkText(p))}</li>`).join("")}</ul>`;
         } else {
             kind = PC.STYLE_TYPES[st.type];
-            if (st.type === "emotes") {
+            if (st.type === "avatar") {
+                what = `<div>A profile picture — <b>looks only</b>. Pick it in Profile → ✏️ Edit Profile → Choose Avatar; it shows on your profile, posts and comments.</div>`;
+                prev = `<img class="td-avatar" src="${esc(st.img)}" alt="" onerror="this.src='images/KIH.jpg'">`;
+            } else if (st.type === "emotes") {
                 what = `<div>Adds these to your 😊 emoji panel, and the first four as <b>reactions</b> on comments and chat.</div>`;
                 prev = `<div class="td-emojis">${PC.EMOTE_PACKS[st.pack].join(" ")}</div>`;
             } else {
@@ -76,9 +81,11 @@
         }
         const items = (ctx && ctx.items) || [];
         const owned = items.includes(id) || (x.vip && ctx && ctx.vip);
+        // a profile picture's icon is its picture
+        const icon = st && st.type === "avatar" ? "🖼️" : x.icon;
         const dup = x.chest ? `<br>Already yours when you draw it? You get <b style="color:#ffd75e">${PC.refundFor(id, (ctx && ctx.perks) || {})} 🪙</b> back instead.` : "";
         return `<button type="button" class="td-x" onclick="closeThing()" aria-label="Close">✕</button>
-            <div class="td-icon">${x.icon}</div>
+            <div class="td-icon">${icon}</div>
             <div class="td-kind">${esc(rr.label)} · ${esc(kind)}${x.event ? " · limited" : ""}</div>
             <div class="td-name">${esc(x.name)}</div>
             ${prev ? `<div class="td-prev">${prev}</div>` : ""}

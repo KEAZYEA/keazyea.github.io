@@ -415,6 +415,19 @@
         .ev-thing.own { box-shadow: 0 0 10px var(--rc); }
         .ev-thing.own::after { content: "✓"; position: absolute; top: 2px; right: 5px; font-size: 0.7rem; font-weight: 900; color: #22c55e; }
         .ev-thing:not(.own) { opacity: 0.55; }
+        .ev-pics-title { margin: 18px 0 8px; font-weight: 900; font-size: 1rem; }
+        .ev-pics-title small { display: block; margin-top: 2px; font-size: 0.76rem; font-weight: 700; color: #e0c8f8; }
+        .ev-pics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-width: 380px; margin: 0 auto; }
+        .ev-pic { display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 6px 6px 8px; border-radius: 14px; border: 1px solid rgba(180, 107, 255, 0.6); background: rgba(0, 0, 0, 0.3); min-width: 0; }
+        .ev-pic img { width: 100%; aspect-ratio: 1; object-fit: cover; object-position: top; border-radius: 10px; display: block; }
+        .ev-pic b { font-size: 0.72rem; line-height: 1.2; }
+        .ev-pic.own { border-color: #22c55e; box-shadow: 0 0 12px rgba(34, 197, 94, 0.45); }
+        .ev-pic-own { font-size: 0.72rem; font-weight: 900; color: #22c55e; }
+        .ev-buy { width: 100%; padding: 6px 4px; border-radius: 999px; border: none; font: inherit; font-size: 0.74rem; font-weight: 900; cursor: pointer; background: linear-gradient(180deg, #ffc27a, #ff7a00); color: #2a1200; }
+        .ev-buy:disabled { opacity: 0.6; cursor: default; }
+        .ev-spooky { margin: 16px auto 0; max-width: 380px; padding: 12px; border-radius: 14px; border: 1px dashed rgba(255, 140, 26, 0.7); background: rgba(255, 122, 0, 0.08); font-size: 0.84rem; line-height: 1.45; color: #f3e6ff; }
+        .ev-spooky > b { display: block; font-size: 0.95rem; margin-bottom: 4px; color: #ffb347; }
+        .ev-spooky-go { display: block; margin: 10px auto 0; padding: 8px 16px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.25); background: rgba(0, 0, 0, 0.3); color: #fff; font: inherit; font-weight: 800; cursor: pointer; }
         .ev-rules { margin-top: 12px; text-align: left; border-radius: 14px; background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 255, 255, 0.08); }
         .ev-rules summary { padding: 12px 14px; cursor: pointer; font-weight: 800; }
         .ev-rules ul { margin: 0; padding: 0 16px 10px 32px; font-size: 0.84rem; color: #e8d8f8; }
@@ -1289,6 +1302,7 @@
                 const st = await AppState.getProgressStatus();
                 chestState = { items: st.items || [], perks: st.perks || {}, pity: st.pity || { epic: 0, legendary: 0 }, freeDraws: st.freeDraws || 0, events: st.events || {} };
                 renderChestCard();
+                claimLoginGift();
             } catch (e) { console.warn("Couldn't load your items:", e.message); }
         }
 
@@ -1343,6 +1357,8 @@
                     </div>`}
                     <div class="ev-grid">${things.map(x => `<div class="ev-thing${owned.has(x.id) ? " own" : ""}" data-thing="${x.id}" style="--rc:${PC.RARITIES[x.rarity].color}" title="${escS(PC.RARITIES[x.rarity].label + " · " + chestWhat(x))}"><div class="ic">${x.icon}</div><div class="nm">${escS(x.name)}</div></div>`).join("")}</div>
                     <div class="cr-hint">Tap one to see what it does</div>
+                    ${eventPicsHtml(ev, owned)}
+                    ${spookyHtml(ev, mine)}
                     <details class="ev-rules">
                         <summary>📜 How it works</summary>
                         <ul>
@@ -1357,18 +1373,88 @@
                 </div>`;
             updateEventButtons();
         }
+        // The event's profile pictures: one free for logging in (claimed when
+        // you open the Store or the app), the others to buy.
+        function eventPicsHtml(ev, owned) {
+            const pics = PC.eventAvatars(ev.id);
+            if (!pics.length) return "";
+            return `<div class="ev-pics-title">🖼️ ${escS(ev.label)} profile pictures<small>One is yours free for logging in today · the others ${pics[0].price} 🪙 each</small></div>
+                <div class="ev-pics">${pics.map(p => `<div class="ev-pic${owned.has(p.id) ? " own" : ""}">
+                    <img src="${escS(p.img)}" alt="" data-thing="${p.id}" onerror="this.src='images/KIH.jpg'">
+                    <b data-thing="${p.id}">${escS(p.name)}</b>
+                    ${owned.has(p.id) ? `<span class="ev-pic-own">✓ Yours</span>` : `<button type="button" class="ev-buy" id="evBuy_${p.id}" onclick="buyEventPic('${p.id}')">Buy · ${p.price} 🪙</button>`}
+                </div>`).join("")}</div>`;
+        }
+        // 🎃 Your Spooky Gift: to send from a player's profile in Social.
+        function spookyHtml(ev, mine) {
+            if (!ev.spookyGifts) return "";
+            return `<div class="ev-spooky"><b>🎃 Spooky Gift</b> ${mine.spookyTo
+                ? `<span>You sent yours to <b>${escS(mine.spookyToName || "someone")}</b> — they'll open it from their inbox.</span>`
+                : `<span>You have <b>1</b> to send! They open it for a random treat. In Social, tap a player's name → <b>👤 View Profile</b> → <b>“🎃 Send your Spooky Gift”</b>.</span><button type="button" class="ev-spooky-go" onclick="goSocialForGift()">👥 Go to Social</button>`}</div>`;
+        }
+        window.goSocialForGift = function () {
+            try { if (window.top !== window && window.top.goToPage) { window.top.goToPage("social"); return; } } catch (e) { }
+            location.href = "social.html";
+        };
+        // Two taps to buy: the first asks, the second buys.
+        window.buyEventPic = async function (id) {
+            const shown = shownEvent(), b = document.getElementById("evBuy_" + id), p = PC.BY_ID[id];
+            if (!shown || !b || !p || b.disabled) return;
+            if (storeBalance < p.price) { b.textContent = `Need ${p.price} 🪙 (you have ${storeBalance})`; return; }
+            if (b.dataset.armed !== "1") {
+                b.dataset.armed = "1";
+                b.textContent = `Tap again to buy · ${p.price} 🪙`;
+                setTimeout(() => { if (b.isConnected && b.dataset.armed === "1") { b.dataset.armed = ""; b.textContent = `Buy · ${p.price} 🪙`; } }, 4000);
+                return;
+            }
+            b.disabled = true;
+            b.textContent = "Buying…";
+            try {
+                const r = await AppState.buyEventItem(id, shown.ev.id);
+                storeBalance = r.balance;
+                countUp(document.getElementById("storeTokenBalance"), r.balance);
+                chestState.items = r.items;
+                renderChestCard();
+                showResultModal(`🖼️ ${p.name} is yours!`, "Pick it in Profile → ✏️ Edit Profile → Choose Avatar.");
+            } catch (e) {
+                b.disabled = false;
+                b.dataset.armed = "";
+                b.textContent = `Buy · ${p.price} 🪙`;
+                showResultModal("Couldn't buy it", e.message);
+            }
+        };
+        // The login gift: claimed once per event (the server says if it already was).
+        let giftAsked = false;
+        async function claimLoginGift() {
+            const shown = shownEvent();
+            if (giftAsked || !shown || !AppState.getCurrentUser() || !AppState.claimEventGift || !PC.eventAvatars(shown.ev.id).length) return;
+            if (((chestState.events || {})[shown.ev.id] || {}).giftId) return;
+            giftAsked = true;
+            try {
+                const r = await AppState.claimEventGift(shown.ev.id);
+                chestState.events = { ...(chestState.events || {}), [shown.ev.id]: { ...((chestState.events || {})[shown.ev.id] || {}), giftId: r.id || "none" } };
+                if (r.items) chestState.items = r.items;
+                renderChestCard();
+                if (!r.already && r.id) {
+                    const p = PC.BY_ID[r.id];
+                    showResultModal(`🎃 Happy Halloween!`, `You got a free profile picture: ${p.name}! Pick it in Profile → ✏️ Edit Profile → Choose Avatar. Your first knock at Trick or Treat (below) is free too.`);
+                }
+            } catch (e) { console.warn("Couldn't claim the Halloween gift:", e.message); giftAsked = false; }
+        }
+
         function updateEventButtons() {
             const shown = shownEvent();
             if (!shown) return;
             const ev = shown.ev, mine = (chestState.events || {})[ev.id] || {};
-            const free = !mine.freeUsed;
+            // your first knock, or one a Spooky Gift gave you
+            const free = !mine.freeUsed || (mine.bonusKnocks || 0) > 0;
             const set = (id, count) => {
                 const b = document.getElementById(id);
                 if (!b) return;
                 const price = count === 1 && free ? 0 : PC.eventPrice(ev, count);
                 const short = storeBalance < price;
                 b.classList.toggle("free", count === 1 && free);
-                b.innerHTML = count === 1 && free ? `🎃 Knock — free! <small>your first knock is on us</small>`
+                b.innerHTML = count === 1 && free ? `🎃 Knock — free! <small>${mine.freeUsed ? "from a Spooky Gift" : "your first knock is on us"}</small>`
                     : short ? `Need ${price} 🪙 <small>you have ${storeBalance}</small>`
                     : count === 10 ? `🎃 Knock ×10 · ${price} 🪙<small>one knock free</small>` : `🎃 Knock · ${price} 🪙`;
                 b.disabled = chestBusy || short || !AppState.getCurrentUser();
@@ -1399,7 +1485,7 @@
             const shown = shownEvent();
             if (chestBusy || !shown) return;
             const ev = shown.ev, mine = (chestState.events || {})[ev.id] || {};
-            const price = count === 1 && !mine.freeUsed ? 0 : PC.eventPrice(ev, count);
+            const price = count === 1 && (!mine.freeUsed || (mine.bonusKnocks || 0) > 0) ? 0 : PC.eventPrice(ev, count);
             if (storeBalance < price) return;
             chestBusy = true;
             updateChestButtons();
@@ -1427,7 +1513,7 @@
             storeBalance = r.balance;
             countUp(document.getElementById("storeTokenBalance"), r.balance);
             chestState.items = r.items; chestState.perks = r.perks;
-            chestState.events = { ...(chestState.events || {}), [ev.id]: r.state };
+            chestState.events = { ...(chestState.events || {}), [ev.id]: { ...((chestState.events || {})[ev.id] || {}), ...r.state } };
             await (count === 10 ? revealKnocks(r.results) : revealKnock(r.results[0]));
             document.getElementById("crSkip").style.display = "none";
             const treats = r.results.filter(x => x.id).length, candy = r.candy || 0;

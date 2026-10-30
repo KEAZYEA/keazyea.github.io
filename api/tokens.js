@@ -1029,6 +1029,55 @@ async function maxStake(db, body) {
   return { ok: true, ...max };
 }
 
+/* ---------------- Secret Giveaway odds with items ----------------
+   In a draw each entry has P.secretWeight(tokens, its owner's perks) balls:
+   1 + tokens, plus what items add (Four-Leaf Clover's extra chances, Lucky
+   Beads making each token count more…). Everyone can see the 1 + tokens
+   part (entryCount and the token totals); this adds up the item part per
+   draw — ios / android, or "all" for an everyone giveaway — and keeps only
+   those sums on the giveaway doc (itemExtra), never whose items they are.
+   The cards add them in, so the balls and the % match the real draw.
+   Worked out again once entries or stakes have changed (itemExtraKey), at
+   most every few seconds, and every 10 minutes anyway (items change). Also
+   returns your own item part (mine), so the page can swap in its live figure. */
+const oddsKey = (gd) => `${gd.entryCount || 0}|${gd.iosTokensStaked || 0}|${gd.androidTokensStaked || 0}`;
+const round2 = (n) => Math.round(n * 100) / 100;
+async function secretOdds(db, uid, body, now) {
+  if (!isDocId(body.giveawayId)) throw new HttpError(400, "Missing giveaway.");
+  const gRef = db.collection("secretGiveaways").doc(body.giveawayId);
+  const g = await gRef.get();
+  if (!g.exists) throw new HttpError(404, "This giveaway no longer exists.");
+  const gd = g.data();
+  const key = oddsKey(gd);
+  const none = { ios: 0, android: 0, all: 0 };
+  if (gd.tokensAllowed === false) return { ok: true, itemExtra: none, key, mine: 0 }; // one equal chance each
+  const extraOf = (e, perks) => {
+    const t = Math.max(0, Math.floor(Number(e.tokens) || 0));
+    return P.secretWeight(t, perks) - 1 - t;
+  };
+  const at = gd.itemExtraAt || 0;
+  const stale = !gd.itemExtra || (gd.itemExtraKey !== key && now - at > 4000) || now - at > 600000;
+  if (!stale) {
+    const [e, inv] = await Promise.all([gRef.collection("entries").doc(uid).get(), db.collection("inventories").doc(uid).get()]);
+    const mine = e.exists ? round2(extraOf(e.data(), inv.exists ? inv.data().perks || {} : {})) : 0;
+    return { ok: true, itemExtra: gd.itemExtra, key: gd.itemExtraKey, mine };
+  }
+  const entries = await gRef.collection("entries").get();
+  const invs = await Promise.all(entries.docs.map(d => db.collection("inventories").doc(d.id).get()));
+  const sum = { ...none };
+  let mine = 0;
+  entries.docs.forEach((d, i) => {
+    const e = d.data();
+    const extra = extraOf(e, invs[i].exists ? invs[i].data().perks || {} : {});
+    const group = isEveryone(gd) ? "all" : e.platform === "android" ? "android" : "ios";
+    sum[group] += extra;
+    if (d.id === uid) mine = extra;
+  });
+  const itemExtra = { ios: round2(sum.ios), android: round2(sum.android), all: round2(sum.all) };
+  await gRef.update({ itemExtra, itemExtraKey: key, itemExtraAt: now });
+  return { ok: true, itemExtra, key, mine: round2(mine) };
+}
+
 /* ---------------- Today's puzzle (Games) ----------------
    Finishing the day's puzzle pays 1 token, once per account per day, whatever
    the score. The play is replayed against the very puzzle the page built
@@ -1121,6 +1170,7 @@ module.exports = async (req, res) => {
       case "adminListAlerts": assertAdmin(uid); result = await adminListAlerts(db); break;
       case "adminResolveAlert": assertAdmin(uid); result = await adminResolveAlert(db, uid, body, now); break;
       case "maxStake": result = await maxStake(db, body); break;
+      case "secretOdds": result = await secretOdds(db, uid, body, now); break;
       case "dailyPuzzle": result = await dailyPuzzle(db, uid, body, now, dayKey); break;
       default: throw new HttpError(400, "Unknown action.");
     }
