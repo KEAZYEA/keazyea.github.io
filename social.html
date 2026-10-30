@@ -1531,20 +1531,24 @@
         .cmt-at { color: #8fa8ff; font-weight: 700; }
         .cmt-thread-toggle { display: flex; align-items: center; gap: 10px; margin: 0 0 6px 46px; padding: 4px 0; background: none; border: none; color: #9a9ab0; font-weight: 700; font-size: 0.82rem; cursor: pointer; }
         .cmt-thread-toggle::before { content: ""; width: 26px; height: 1px; background: #4a4a6a; }
-        /* reactions: one per person, shown as chips; tap yours to take it off */
+        /* reactions: several per person, shown as chips; tap yours to take it off */
         .rx-row { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
         .rx-chip { border: 1px solid #34345e; background: #20203a; color: #eaeaf0; border-radius: 999px; padding: 2px 8px; font-size: 0.8rem; cursor: pointer; line-height: 1.5; }
         .rx-chip.mine { border-color: #4169e1; background: rgba(65, 105, 225, 0.28); }
         .dm-msg.mine .rx-chip { background: rgba(0, 0, 0, 0.22); border-color: rgba(255, 255, 255, 0.3); color: #fff; }
         .dm-msg.mine .rx-chip.mine { background: rgba(255, 255, 255, 0.25); }
-        .rx-picker { position: fixed; z-index: 400; display: flex; flex-wrap: wrap; justify-content: center; max-width: min(330px, calc(100vw - 24px)); gap: 2px; padding: 6px 8px; border-radius: 999px; background: #23234a; border: 1px solid #3a3a66; box-shadow: 0 8px 26px rgba(0, 0, 0, 0.55); animation: rxIn 0.18s ease; }
+        .rx-picker { position: fixed; z-index: 400; width: min(320px, calc(100vw - 24px)); box-sizing: border-box; padding: 6px 8px 8px; border-radius: 14px; background: #23234a; border: 1px solid #3a3a66; box-shadow: 0 8px 26px rgba(0, 0, 0, 0.55); animation: rxIn 0.18s ease; }
         @keyframes rxIn { from { transform: scale(0.85); opacity: 0; } }
-        .rx-picker button { font-size: 1.5rem; line-height: 1; background: none; border: none; cursor: pointer; padding: 4px; border-radius: 10px; transition: transform 0.1s; }
-        .rx-picker button:hover, .rx-picker button.mine { transform: scale(1.18); background: rgba(65, 105, 225, 0.3); }
+        .rx-picker-head { display: flex; align-items: center; justify-content: space-between; font-size: 0.72rem; font-weight: 700; color: #9a9ab0; padding: 0 2px 4px; }
+        .rx-picker .rx-close { font-size: 0.95rem; line-height: 1; background: none; border: none; color: #c8c8d8; cursor: pointer; padding: 4px 6px; border-radius: 8px; }
+        .rx-picker-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; max-height: 200px; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+        .rx-picker-grid button { font-size: 1.5rem; line-height: 1; background: none; border: none; cursor: pointer; padding: 6px 0; border-radius: 10px; transition: transform 0.1s; }
+        .rx-picker-grid button:hover { background: rgba(255, 255, 255, 0.08); }
+        .rx-picker-grid button.mine { background: rgba(65, 105, 225, 0.38); box-shadow: inset 0 0 0 1px #6f8fff; }
         /* typing emojis (phones have them on the keyboard; computers don't) */
         .emoji-btn { flex-shrink: 0; width: 40px; height: 40px; align-self: flex-end; border-radius: 8px; border: 1px solid #2a2a4a; background: #1a1a2e; font-size: 1.2rem; cursor: pointer; }
         .emoji-panel .ep-head { grid-column: 1 / -1; font-size: 0.7rem; font-weight: 800; color: #9a9ab0; padding: 4px 2px 0; text-align: left; }
-        .emoji-panel { position: fixed; z-index: 400; width: min(320px, calc(100vw - 24px)); max-height: 230px; overflow-y: auto; display: grid; grid-template-columns: repeat(8, 1fr); gap: 2px; padding: 8px; box-sizing: border-box; border-radius: 14px; background: #23234a; border: 1px solid #3a3a66; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55); }
+        .emoji-panel { position: fixed; z-index: 400; width: min(320px, calc(100vw - 24px)); max-height: 230px; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; display: grid; grid-template-columns: repeat(8, 1fr); gap: 2px; padding: 8px; box-sizing: border-box; border-radius: 14px; background: #23234a; border: 1px solid #3a3a66; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55); }
         .emoji-panel button { font-size: 1.35rem; line-height: 1; background: none; border: none; cursor: pointer; padding: 6px 0; border-radius: 8px; }
         .emoji-panel button:hover { background: rgba(255, 255, 255, 0.08); }
 
@@ -4716,13 +4720,16 @@ window.removeClanIconPreview = function () {
             ensureCards([uid], paint);
         }
         const bordered = (uid, html) => window.ProgressCore ? ProgressCore.withBorder(html, styleOf(uid)) : html;
+        // One person's reactions as a list (older messages stored just one).
+        const reactList = (v) => Array.isArray(v) ? v : (typeof v === "string" && v ? [v] : []);
         function reactionsHtml(kind, item) {
             const r = item.reactions || {}, myUid = AppState.getCurrentUser()?.uid;
             const counts = {};
-            Object.values(r).forEach(e => { counts[e] = (counts[e] || 0) + 1; });
+            Object.values(r).forEach(v => reactList(v).forEach(e => { counts[e] = (counts[e] || 0) + 1; }));
+            const mine = reactList(r[myUid]);
             const list = reactionSet().filter(e => counts[e]);
             if (!list.length) return "";
-            return `<div class="rx-row">${list.map(e => `<button type="button" class="rx-chip${r[myUid] === e ? " mine" : ""}" onclick="reactTo('${kind}', '${item.id}', '${e}')" title="${r[myUid] === e ? "Take your reaction off" : "React " + e}">${e} ${counts[e]}</button>`).join("")}</div>`;
+            return `<div class="rx-row">${list.map(e => `<button type="button" class="rx-chip${mine.includes(e) ? " mine" : ""}" onclick="reactTo('${kind}', '${item.id}', '${e}')" title="${mine.includes(e) ? "Take this reaction off" : "React " + e}">${e} ${counts[e]}</button>`).join("")}</div>`;
         }
 
         function commentRowHtml(kind, c, isReply, rootId) {
@@ -4802,17 +4809,20 @@ window.removeClanIconPreview = function () {
             renderCommentList(kind, commentState[kind].comments);
         };
 
-        // Your reaction: set it, change it, or (same emoji again) take it off.
+        // Your reactions: tap an emoji to add it, tap it again to take it off.
+        // You can have several different ones on the same message.
         // Shown straight away; the live listener confirms it.
         window.reactTo = async function (kind, id, emoji) {
             const myUid = AppState.getCurrentUser()?.uid;
             if (!myUid) { showInfoModal("Sign in required", "Sign in with Google first to react."); return; }
             const item = kind === "dm" ? (window._lastDmMessages || []).find(m => m.id === id) : commentState[kind].byId[id];
             if (!item) return;
-            const next = (item.reactions || {})[myUid] === emoji ? null : emoji;
+            pickerScrollGraceUntil = performance.now() + 400; // the redraw below may nudge the scroll
+            const had = reactList((item.reactions || {})[myUid]);
+            const next = had.includes(emoji) ? had.filter(e => e !== emoji) : [...had, emoji];
             const before = item.reactions;
             const reactions = { ...(item.reactions || {}) };
-            if (next) reactions[myUid] = next; else delete reactions[myUid];
+            if (next.length) reactions[myUid] = next; else delete reactions[myUid];
             item.reactions = reactions;
             if (kind === "dm") renderDmMessages(window._lastDmMessages); else renderCommentList(kind, commentState[kind].comments);
             try {
@@ -4826,13 +4836,17 @@ window.removeClanIconPreview = function () {
             }
         };
 
-        // The little bar of reactions, by the button that opened it.
+        // The reactions box, by the button that opened it. It stays open so
+        // you can pick several; tap outside (or ✕) to close it.
         function closeFloatingPickers() { document.querySelectorAll(".rx-picker, .emoji-panel").forEach(el => el.remove()); }
+        let pickerScrollGraceUntil = 0;
         function placeFloating(el, anchor) {
             document.body.appendChild(el);
             const a = anchor.getBoundingClientRect(), w = el.offsetWidth, h = el.offsetHeight;
             const left = Math.max(8, Math.min(window.innerWidth - w - 8, a.left + a.width / 2 - w / 2));
-            const top = a.top - h - 8 > 8 ? a.top - h - 8 : Math.min(window.innerHeight - h - 8, a.bottom + 8);
+            const want = a.top - h - 8 > 8 ? a.top - h - 8 : a.bottom + 8;
+            // always fully on screen, even when the button is near an edge
+            const top = Math.max(8, Math.min(window.innerHeight - h - 8, want));
             el.style.left = left + "px"; el.style.top = top + "px";
         }
         window.openReactionPicker = function (ev, kind, id) {
@@ -4840,12 +4854,18 @@ window.removeClanIconPreview = function () {
             closeFloatingPickers();
             const myUid = AppState.getCurrentUser()?.uid;
             const item = kind === "dm" ? (window._lastDmMessages || []).find(m => m.id === id) : commentState[kind].byId[id];
-            const mine = item && item.reactions ? item.reactions[myUid] : null;
+            const mine = reactList(item && item.reactions ? item.reactions[myUid] : null);
             const bar = document.createElement("div");
             bar.className = "rx-picker";
             const set = myReactions();
-            bar.innerHTML = set.map(e => `<button type="button" class="${mine === e ? "mine" : ""}" aria-label="React ${e}">${e}</button>`).join("");
-            bar.querySelectorAll("button").forEach((b, i) => b.addEventListener("click", (e) => { e.stopPropagation(); closeFloatingPickers(); reactTo(kind, id, set[i]); }));
+            bar.innerHTML = `<div class="rx-picker-head"><span>Tap to add or take off</span><button type="button" class="rx-close" aria-label="Close">✕</button></div>`
+                + `<div class="rx-picker-grid">${set.map(e => `<button type="button" class="${mine.includes(e) ? "mine" : ""}" aria-label="React ${e}">${e}</button>`).join("")}</div>`;
+            bar.querySelector(".rx-close").addEventListener("click", (e) => { e.stopPropagation(); closeFloatingPickers(); });
+            bar.querySelectorAll(".rx-picker-grid button").forEach((b, i) => b.addEventListener("click", (e) => {
+                e.stopPropagation();
+                b.classList.toggle("mine");
+                reactTo(kind, id, set[i]);
+            }));
             placeFloating(bar, ev.currentTarget);
         };
 
@@ -4879,7 +4899,13 @@ window.removeClanIconPreview = function () {
             placeFloating(panel, btn);
         };
         document.addEventListener("click", (e) => { if (!e.target.closest(".rx-picker, .emoji-panel, .emoji-btn")) closeFloatingPickers(); });
-        window.addEventListener("scroll", closeFloatingPickers, true);
+        // Scrolling the page closes them, but scrolling inside one doesn't
+        // (nor does the list redrawing just after you tap a reaction).
+        window.addEventListener("scroll", (e) => {
+            if (e.target instanceof Element && e.target.closest(".rx-picker, .emoji-panel")) return;
+            if (performance.now() < pickerScrollGraceUntil) return;
+            closeFloatingPickers();
+        }, true);
 
         function renderFormationComments(comments) {
             formationCommentsById = {};
@@ -6593,8 +6619,20 @@ document.getElementById("dmActionsMenu").classList.remove("open");
         </div>`;
     });
 
+    // Stay where you are (e.g. reacting to or editing an older message);
+    // go to the bottom for a newly opened chat, your own new message, or a
+    // new one from them while you're already at the bottom.
+    const last = messages[messages.length - 1];
+    const lastId = last ? last.id : "";
+    const sameThread = box.dataset.thread === String(currentDmThreadId);
+    const wasAtBottom = box.scrollTop + box.clientHeight >= box.scrollHeight - 40;
+    const prevTop = box.scrollTop;
+    const newMine = lastId !== box.dataset.lastId && last && user && last.senderUid === user.uid;
     box.innerHTML = html;
-    box.scrollTop = box.scrollHeight;
+    box.dataset.thread = String(currentDmThreadId);
+    box.dataset.lastId = lastId;
+    if (!sameThread || wasAtBottom || newMine) box.scrollTop = box.scrollHeight;
+    else box.scrollTop = prevTop;
     updateDmScrollBottomBtn();
 }
 
