@@ -187,7 +187,12 @@
         { id: "a_joystick", icon: "🕹️", name: "Gamer's Joystick", rarity: "epic", perks: [{ kind: "gameTime", value: 1 }, { kind: "blurHints", value: 1 }] },
         { id: "a_laurel", icon: "🌿", name: "Champion's Laurel", rarity: "legendary", perks: [{ kind: "gameMult", value: 5 }] },
         { id: "a_pass", icon: "🎡", name: "Regular's Pass", rarity: "epic", perks: [{ kind: "weeklyTickets", value: 1 }, { kind: "loginBonus", value: 1 }] },
-        { id: "a_charm", icon: "🧿", name: "Hunter's Charm", rarity: "epic", perks: [{ kind: "secretChance", value: 1 }, { kind: "stakeMult", value: 5 }] }
+        { id: "a_charm", icon: "🧿", name: "Hunter's Charm", rarity: "epic", perks: [{ kind: "secretChance", value: 1 }, { kind: "stakeMult", value: 5 }] },
+        // 🎃 Halloween 2026 (Trick or Treat, 31 Oct only) — limited
+        { id: "h_candy", icon: "🍬", name: "Candy Bag", rarity: "common", event: "halloween2026", perks: [{ kind: "loginBonus", value: 1 }] },
+        { id: "h_broom", icon: "🧹", name: "Witch's Broom", rarity: "uncommon", event: "halloween2026", perks: [{ kind: "gameTime", value: 2 }] },
+        { id: "h_cat", icon: "🐈‍⬛", name: "Black Cat", rarity: "rare", event: "halloween2026", perks: [{ kind: "secretChance", value: 1 }, { kind: "puzzleBonus", value: 1 }] },
+        { id: "h_king", icon: "🎃", name: "Pumpkin King", rarity: "legendary", event: "halloween2026", perks: [{ kind: "weeklyTickets", value: 1 }, { kind: "secretChance", value: 1 }] }
     ];
 
     /* ---------------- styles (looks only) ----------------
@@ -203,7 +208,8 @@
         battle: ["⚔️", "🛡️", "🏹", "💥", "🗡️", "🏰", "🐉", "🪓"],
         spooky: ["🎃", "👻", "💀", "🦇", "🕷️", "🧛", "🕸️", "🧟"],
         winter: ["❄️", "⛄", "🎄", "🦌", "🧣", "☃️", "🌨️", "🎁"],
-        hearts: ["💞", "💖", "💘", "💝", "💗", "💓", "💕", "💟"]
+        hearts: ["💞", "💖", "💘", "💝", "💗", "💓", "💕", "💟"],
+        treats: ["🍬", "🍭", "🧙", "🔮", "🍫", "🧹", "🪦", "🌕"]
     };
     const STYLES = [
         // borders
@@ -252,7 +258,16 @@
         { id: "e_battle", type: "emotes", pack: "battle", icon: "⚔️", name: "Battle Pack", rarity: "uncommon", chest: true },
         { id: "e_spooky", type: "emotes", pack: "spooky", icon: "🎃", name: "Spooky Pack", rarity: "rare", chest: true },
         { id: "e_winter", type: "emotes", pack: "winter", icon: "❄️", name: "Winter Pack", rarity: "rare", chest: true },
-        { id: "e_hearts", type: "emotes", pack: "hearts", icon: "💞", name: "Hearts Pack", rarity: "legendary" }
+        { id: "e_hearts", type: "emotes", pack: "hearts", icon: "💞", name: "Hearts Pack", rarity: "legendary" },
+        // 🎃 Halloween 2026 (Trick or Treat, 31 Oct only) — limited
+        { id: "hb_pumpkin", type: "border", css: "pumpkin", anim: "spin", icon: "🎃", name: "Jack-o'-Lantern", rarity: "epic", event: "halloween2026" },
+        { id: "hb_ghost", type: "border", css: "ghost", anim: "pulse", icon: "👻", name: "Ghost Glow", rarity: "rare", event: "halloween2026" },
+        { id: "hn_ghost", type: "name", css: "ghost", icon: "👻", name: "Ghostly", rarity: "rare", event: "halloween2026" },
+        { id: "hn_pumpkin", type: "name", css: "pumpkin", icon: "🧡", name: "Pumpkin Spice", rarity: "epic", event: "halloween2026" },
+        { id: "hc_web", type: "bubble", css: "web", icon: "🕸️", name: "Cobweb Bubble", rarity: "common", event: "halloween2026" },
+        { id: "hc_pumpkin", type: "bubble", css: "pumpkin", icon: "🎃", name: "Pumpkin Bubble", rarity: "uncommon", event: "halloween2026" },
+        { id: "hg_haunted", type: "background", css: "haunted", icon: "🌕", name: "Haunted Night", rarity: "rare", event: "halloween2026" },
+        { id: "he_treats", type: "emotes", pack: "treats", icon: "🍭", name: "Trick-or-Treat Pack", rarity: "uncommon", event: "halloween2026" }
     ];
     const STYLE_TYPES = { border: "Avatar border", name: "Name effect", bubble: "Chat bubble", background: "Profile background", emotes: "Emote pack" };
 
@@ -352,6 +367,51 @@
     }
     const refundFor = (id, perks) => RARITIES[BY_ID[id].rarity].refund + Math.max(0, Math.floor(Number((perks || {}).dupBonus) || 0));
 
+    /* ---------------- events ----------------
+       A limited chest that's only open for a while (Singapore days, both
+       ends included). Trick or Treat: each knock is a treat (treatChance %)
+       or a trick (nothing). A treat is always one of the event's things you
+       don't have yet — picked by rarity weight among the ones you're
+       missing, so rarer ones tend to come later — and at least every `pity`
+       knocks is a treat. Once you have them all you can't knock any more
+       (in a ×10 that finishes the set, the treats after it are `candy`
+       tokens). Your first knock of the event is free. Event things are never in the
+       Adventurer's Chest; whoever gets one keeps it. */
+    const EVENTS = {
+        halloween2026: { id: "halloween2026", name: "Trick or Treat", icon: "🎃", label: "Halloween 2026", from: "2026-10-31", to: "2026-10-31",
+            price: 10, price10: 90, treatChance: 30, pity: 10, candy: 5 }
+    };
+    const TRICKS = ["👻 Boo! Nothing this time.", "🕸️ Just cobwebs…", "🦇 A bat flew out — and that's all.", "🧟 The door slammed shut!",
+        "💀 The skeleton kept the candy.", "🧙 The witch cackled. Trick!"];
+    const eventThings = (evId) => ALL.filter(x => x.event === evId);
+    const activeEvent = (dayKey) => Object.values(EVENTS).find(e => dayKey >= e.from && dayKey <= e.to) || null;
+    const eventPrice = (ev, count) => (count === 10 ? ev.price10 : ev.price);
+    // count knocks. rolls[i] = [r1, r2], numbers in [0, 1): r1 decides treat
+    // or trick, r2 which treat (or which trick message). owned: the ids you
+    // have; pity: tricks in a row so far. Returns the results and the count after.
+    function knock(ev, count, rolls, owned, pity) {
+        const have = new Set(owned || []);
+        let streak = Math.max(0, Math.floor(Number(pity) || 0));
+        const results = [];
+        for (let i = 0; i < count; i++) {
+            const [r1, r2] = rolls[i];
+            if (streak + 1 < ev.pity && r1 * 100 >= ev.treatChance) {
+                streak++;
+                results.push({ trick: true, msg: Math.min(TRICKS.length - 1, Math.floor(r2 * TRICKS.length)) });
+                continue;
+            }
+            streak = 0;
+            const missing = eventThings(ev.id).filter(x => !have.has(x.id));
+            if (!missing.length) { results.push({ candy: ev.candy }); continue; }
+            const total = missing.reduce((t, x) => t + RARITIES[x.rarity].weight, 0);
+            let t = r2 * total, pick = missing[missing.length - 1];
+            for (const x of missing) { t -= RARITIES[x.rarity].weight; if (t < 0) { pick = x; break; } }
+            have.add(pick.id);
+            results.push({ id: pick.id });
+        }
+        return { results, pity: streak };
+    }
+
     /* ---------------- perk maths ---------------- */
     function perksOf(ids) {
         const out = Object.fromEntries(PERK_KINDS.map(k => [k, 0]));
@@ -421,6 +481,7 @@
         RARITIES, RARITY_ORDER, PERK_KINDS, perkText, perkLines, ITEMS, ITEM_BY_ID, STYLES, STYLE_BY_ID, STYLE_TYPES, BY_ID,
         EMOTE_PACKS, BASE_REACTIONS, ALL_REACTIONS, emotesOf, ACHIEVEMENT_REWARDS,
         CHEST, PITY, inSeason, chestPool, dropRates, rollChest, drawChest, pityLeft, chestPrice, refundFor,
+        EVENTS, TRICKS, eventThings, activeEvent, eventPrice, knock,
         perksOf, gamePerkBonus, runPerks, questBonus, secretWeight, badgeLimit, badgeHtml, styleClass, withBorder
     };
 });

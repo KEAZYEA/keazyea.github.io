@@ -80,3 +80,24 @@
 .fx-bg-galaxy { background: radial-gradient(circle at 25% 35%, rgba(180, 107, 255, 0.55), transparent 45%), radial-gradient(circle at 75% 65%, rgba(90, 168, 255, 0.5), transparent 45%),
     conic-gradient(from 200deg at 60% 40%, #120a2e, #2a0f4d, #0a1f4d, #120a2e) !important; }
 .fx-bg-galaxy::after { content: "🪐"; position: absolute; right: 10px; top: 8px; font-size: 1.4rem; opacity: 0.8; pointer-events: none; }
+
+/* ---- 🎃 Halloween 2026 (Trick or Treat) — limited ---- */
+.fx-border-pumpkin { --fxb: conic-gradient(#ff7a00, #1a0d00, #ffb347, #1a0d00, #ff7a00); }
+.fx-border-pumpkin::before { box-shadow: 0 0 12px rgba(255, 122, 0, 0.85); }
+.fx-border-ghost { --fxb: conic-gradient(#f2fff9, #9ef5d0, #e8fff6, #7fe0c0, #f2fff9); --fxg: rgba(190, 255, 230, 0.85); }
+.fx-name-ghost { color: #e9fff6 !important; text-shadow: 0 0 6px rgba(170, 255, 220, 0.9), 0 0 14px rgba(120, 230, 190, 0.6); animation: fxFlicker 3.4s ease-in-out infinite; }
+@keyframes fxFlicker { 0%, 100% { opacity: 1; } 46% { opacity: 1; } 48% { opacity: 0.45; } 50% { opacity: 1; } 72% { opacity: 0.75; } }
+.fx-name-pumpkin {
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent !important;
+    background-size: 200% 100%; animation: fxSlide 2.6s linear infinite;
+    background-image: linear-gradient(90deg, #ff7a00, #ffb347, #b46bff, #ff7a00); filter: drop-shadow(0 0 4px rgba(255, 122, 0, 0.55));
+}
+.fx-bubble-web { position: relative; background: radial-gradient(circle at 100% 0%, rgba(255, 255, 255, 0.16) 0 1px, transparent 2px),
+    repeating-radial-gradient(circle at 100% 0%, transparent 0 9px, rgba(255, 255, 255, 0.12) 9px 10px), linear-gradient(160deg, #2b2b33, #141418) !important; color: #ececf2 !important; }
+.fx-bubble-pumpkin { position: relative; background: linear-gradient(160deg, #ff8c1a, #c4530a) !important; color: #2a1200 !important; padding-right: 30px !important; }
+.fx-bubble-pumpkin::after { content: "🎃"; position: absolute; right: 6px; bottom: 4px; font-size: 1rem; }
+.fx-bubble-pumpkin .dm-msg-time, .fx-bubble-pumpkin .dm-msg-action-link { color: #3a1a00 !important; }
+.fx-bg-haunted { position: relative; overflow: hidden; background: radial-gradient(circle at 82% 22%, #fff6c8 0 16px, rgba(255, 240, 180, 0.35) 17px, transparent 34px),
+    linear-gradient(175deg, #1b0f33, #3b1452 55%, #120a1f) !important; }
+.fx-bg-haunted::after { content: "🦇 🦇  🎃"; position: absolute; left: 10px; bottom: 6px; font-size: 1.15rem; opacity: 0.85; pointer-events: none; letter-spacing: 2px; }
+@media (prefers-reduced-motion: reduce) { .fx-name-ghost, .fx-name-pumpkin { animation: none; } }

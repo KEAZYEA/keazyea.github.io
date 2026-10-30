@@ -697,7 +697,7 @@ async function adminUserTokens(db, body) {
   const inv = invSnap.exists ? invSnap.data() : {};
   const card = cardSnap.exists ? cardSnap.data() : {};
   const chestOpens = opensSnap.docs.map(d => d.data()).sort((a, b) => b.at - a.at).slice(0, 30)
-    .map(o => ({ at: o.at, count: o.count || 1, free: !!o.free, price: o.price || 0, refund: o.refund || 0,
+    .map(o => ({ at: o.at, count: o.count || 1, free: !!o.free, price: o.price || 0, refund: o.refund || 0, event: o.event || null,
       results: o.results || (o.item ? [{ id: o.item, duplicate: !!o.duplicate, refund: o.refund || 0 }] : []) }));
   const purchases = [
     ...packsSnap.docs.map(d => ({ kind: "pack", at: d.data().processedAt || 0, pack: d.data().packId || "", tokens: d.data().tokensGranted || 0, amount: d.data().amount || "", currency: d.data().currency || "" })),

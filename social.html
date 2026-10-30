@@ -4817,7 +4817,6 @@ window.removeClanIconPreview = function () {
             if (!myUid) { showInfoModal("Sign in required", "Sign in with Google first to react."); return; }
             const item = kind === "dm" ? (window._lastDmMessages || []).find(m => m.id === id) : commentState[kind].byId[id];
             if (!item) return;
-            pickerScrollGraceUntil = performance.now() + 400; // the redraw below may nudge the scroll
             const had = reactList((item.reactions || {})[myUid]);
             const next = had.includes(emoji) ? had.filter(e => e !== emoji) : [...had, emoji];
             const before = item.reactions;
@@ -4836,18 +4835,37 @@ window.removeClanIconPreview = function () {
             }
         };
 
-        // The reactions box, by the button that opened it. It stays open so
-        // you can pick several; tap outside (or ✕) to close it.
+        // The reactions box and the 😊 panel float by the button that opened
+        // them. They stay open until you touch somewhere else, tap ✕ or press
+        // Esc. Scrolling doesn't close them: on phones the keyboard sliding
+        // away (or opening) scrolls the page by itself, which used to close
+        // them the moment you tried to use them. They follow their button.
         function closeFloatingPickers() { document.querySelectorAll(".rx-picker, .emoji-panel").forEach(el => el.remove()); }
-        let pickerScrollGraceUntil = 0;
-        function placeFloating(el, anchor) {
-            document.body.appendChild(el);
+        function positionFloating(el) {
+            const anchor = typeof el._anchor === "function" ? el._anchor() : el._anchor;
+            if (!anchor || !anchor.isConnected) return; // redrawn: stay where it is
+            // the part of the screen you can see (above the keyboard, on phones)
+            const vv = window.visualViewport;
+            const vTop = vv ? vv.offsetTop : 0, vH = vv ? vv.height : window.innerHeight;
             const a = anchor.getBoundingClientRect(), w = el.offsetWidth, h = el.offsetHeight;
             const left = Math.max(8, Math.min(window.innerWidth - w - 8, a.left + a.width / 2 - w / 2));
-            const want = a.top - h - 8 > 8 ? a.top - h - 8 : a.bottom + 8;
-            // always fully on screen, even when the button is near an edge
-            const top = Math.max(8, Math.min(window.innerHeight - h - 8, want));
+            const want = a.top - h - 8 > vTop + 8 ? a.top - h - 8 : a.bottom + 8;
+            // always fully in view, even when the button is near an edge
+            const top = Math.max(vTop + 8, Math.min(vTop + vH - h - 8, want));
             el.style.left = left + "px"; el.style.top = top + "px";
+        }
+        function placeFloating(el, anchor) {
+            document.body.appendChild(el);
+            el._anchor = anchor;
+            positionFloating(el);
+        }
+        let floatingFrame = 0;
+        function followAnchors() {
+            if (floatingFrame) return;
+            floatingFrame = requestAnimationFrame(() => {
+                floatingFrame = 0;
+                document.querySelectorAll(".rx-picker, .emoji-panel").forEach(positionFloating);
+            });
         }
         window.openReactionPicker = function (ev, kind, id) {
             ev.stopPropagation();
@@ -4866,7 +4884,12 @@ window.removeClanIconPreview = function () {
                 b.classList.toggle("mine");
                 reactTo(kind, id, set[i]);
             }));
-            placeFloating(bar, ev.currentTarget);
+            // its React button (found again after each redraw of the list)
+            const rowId = kind === "dm" ? "dmMsgRow_" + id : `cmt_${kind}_${id}`;
+            placeFloating(bar, () => {
+                const row = document.getElementById(rowId);
+                return row ? [...row.querySelectorAll("button")].find(b => /React/.test(b.textContent)) || null : null;
+            });
         };
 
         // Emojis for typing: tap one and it goes in where you're typing.
@@ -4898,14 +4921,19 @@ window.removeClanIconPreview = function () {
             });
             placeFloating(panel, btn);
         };
-        document.addEventListener("click", (e) => { if (!e.target.closest(".rx-picker, .emoji-panel, .emoji-btn")) closeFloatingPickers(); });
-        // Scrolling the page closes them, but scrolling inside one doesn't
-        // (nor does the list redrawing just after you tap a reaction).
-        window.addEventListener("scroll", (e) => {
-            if (e.target instanceof Element && e.target.closest(".rx-picker, .emoji-panel")) return;
-            if (performance.now() < pickerScrollGraceUntil) return;
-            closeFloatingPickers();
+        // Touching anywhere outside closes them (a tap, or starting to scroll
+        // something else); the 😊 button toggles its own panel.
+        document.addEventListener("pointerdown", (e) => {
+            if (!(e.target instanceof Element) || !e.target.closest(".rx-picker, .emoji-panel, .emoji-btn")) closeFloatingPickers();
         }, true);
+        document.addEventListener("click", (e) => { if (!e.target.closest(".rx-picker, .emoji-panel, .emoji-btn")) closeFloatingPickers(); });
+        document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeFloatingPickers(); });
+        window.addEventListener("scroll", followAnchors, true);
+        window.addEventListener("resize", followAnchors);
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener("resize", followAnchors);
+            window.visualViewport.addEventListener("scroll", followAnchors);
+        }
 
         function renderFormationComments(comments) {
             formationCommentsById = {};

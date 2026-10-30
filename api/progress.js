@@ -19,6 +19,8 @@
  *                                 (from a Gold achievement tier) instead of tokens
  *   equipStyle { type, id }    -> shows one of your borders / name effects / chat
  *                                 bubbles (id null takes it off)
+ *   trickOrTreat { count }     -> 1 or 10 knocks at an event's door (P.EVENTS),
+ *                                 only while it's on; each a treat or a trick
  *
  * Claiming an achievement's Gold tier also adds a free chest draw, and
  * its Mythic tier the exclusive items in P.ACHIEVEMENT_REWARDS.
@@ -46,7 +48,7 @@
  */
 
 const crypto = require("crypto");
-const { getFirebaseAdmin, dayKeyFor, weekDayKeys, isBannedNow, toMillis } = require("./_lib");
+const { getFirebaseAdmin, dayKeyFor, weekDayKeys, isBannedNow, toMillis, ADMIN_UID } = require("./_lib");
 const { FieldValue } = require("firebase-admin/firestore");
 const P = require("../progress-core.js");
 const G = require("../games-core.js");
@@ -212,6 +214,7 @@ async function status(db, uid, now) {
     items, perks, style, vip,
     freeDraws,
     pity: inv.pity || { epic: 0, legendary: 0 },
+    events: inv.events || {}, // your Trick or Treat counts: { [eventId]: { pity, freeUsed, knocks } }
     balance: wallet.exists ? (wallet.data().balance || 0) : 0
   };
 }
@@ -426,6 +429,49 @@ async function openChest(db, uid, body, now) {
   });
 }
 
+/* ---------------- events: Trick or Treat ----------------
+   1 or 10 knocks at the event's door, each a treat (something of the
+   event's you don't have yet) or a trick (nothing) — see P.knock. Only while
+   the event is on; the admin can knock any time, to try it out. Your first
+   knock of an event is free. Once you own all of the event's things you
+   can't knock any more (a ×10 that finishes the set pays candy for the
+   treats after the last one). Your count of tricks in a row (for the
+   guarantee) is kept on your inventory: events.{id}.pity. */
+async function trickOrTreat(db, uid, body, now) {
+  await assertNotBanned(db, uid);
+  const ev = P.activeEvent(dayKeyFor(now)) || (uid === ADMIN_UID && P.EVENTS[body.eventId]) || null;
+  if (!ev) throw new HttpError(400, "Trick or Treat isn't on right now.");
+  const count = body.count === 10 ? 10 : 1;
+  const walletRef = db.collection("tokenWallets").doc(uid);
+  const lbRef = db.collection("gameLeaderboards").doc(weekOf(now)).collection("players").doc(uid);
+  const logRef = db.collection("chestOpens").doc(now.toString(36) + crypto.randomBytes(6).toString("hex"));
+  const rolls = Array.from({ length: count }, () => [crypto.randomInt(1000000000) / 1000000000, crypto.randomInt(1000000000) / 1000000000]);
+  return db.runTransaction(async (tx) => {
+    const [w, inv, row] = await tx.getAll(walletRef, invRef(db, uid), lbRef);
+    const balance = w.exists ? (w.data().balance || 0) : 0;
+    const data = inv.exists ? inv.data() : {};
+    const items = { ...(data.items || {}) };
+    const mine = (data.events || {})[ev.id] || {};
+    // Got everything: no more knocking (a treat would only be candy now).
+    if (P.eventThings(ev.id).every(x => x.id in items)) throw new HttpError(400, "You've collected every treat — nothing left to knock for!");
+    const free = count === 1 && !mine.freeUsed;
+    const price = free ? 0 : P.eventPrice(ev, count);
+    if (balance < price) throw new HttpError(400, `That costs ${price} 🪙 — you have ${balance}.`);
+    const out = P.knock(ev, count, rolls, Object.keys(items), mine.pity);
+    let candy = 0;
+    out.results.forEach(r => {
+      if (r.id) items[r.id] = { at: now, from: ev.id };
+      if (r.candy) candy += r.candy;
+    });
+    const after = balance - price + candy;
+    tx.set(walletRef, { balance: after, updatedAt: now }, { merge: true });
+    const state = { pity: out.pity, freeUsed: true, knocks: (mine.knocks || 0) + count };
+    const perks = writeInventory(tx, db, uid, items, { events: { [ev.id]: state } }, lbRef, row, now);
+    tx.set(logRef, { uid, kind: "event", event: ev.id, count, free, price, refund: candy, results: out.results, at: now });
+    return { ok: true, event: ev.id, count, free, price, candy, results: out.results, balance: after, items: Object.keys(items), perks, state };
+  });
+}
+
 /* ---------------- styles ----------------
    One border, one name effect and one chat bubble show at a time, on your
    public card. The Supporter Gold border needs Super Supporter (VIP). */
@@ -471,6 +517,7 @@ module.exports = async (req, res) => {
       case "unlike": result = await setLike(db, uid, body, now, false); break;
       case "openChest": result = await openChest(db, uid, body, now); break;
       case "equipStyle": result = await equipStyle(db, uid, body, now); break;
+      case "trickOrTreat": result = await trickOrTreat(db, uid, body, now); break;
       default: throw new HttpError(400, "Unknown action.");
     }
     res.status(200).json(result);

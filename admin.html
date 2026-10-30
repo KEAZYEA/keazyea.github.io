@@ -3197,7 +3197,13 @@ async function handleLookupUserByUid() {
                 const left = PC.pityLeft(a.pity);
                 const shown = ["border", "name", "bubble", "background"].filter(t => a.style[t]).map(t => `${PC.STYLE_TYPES[t]}: ${label(a.style[t])}`).join(" · ") || "nothing";
                 const lines = PC.perkLines(PC.perksOf(a.items)).map(l => escapeHtml(l.text)).join(" · ") || "none";
-                const opens = a.chestOpens.length ? a.chestOpens.map(o => `<div class="token-history-row">${escapeHtml(fmtDate(o.at))} · ${o.free ? "🎁 free draw" : `×${o.count} · ${o.price} 🪙`}${o.refund ? ` · +${o.refund} 🪙 back` : ""}<br>${o.results.map(r => `${label(r.id)}${r.duplicate ? " (dup)" : ""}`).join(", ")}</div>`).join("") : "<p class='promo-sub'>No chest draws yet.</p>";
+                // an event knock (Trick or Treat) is a treat (id), a trick, or candy
+                const resultText = (r) => r.id ? `${label(r.id)}${r.duplicate ? " (dup)" : ""}` : r.candy ? `🍬 +${r.candy} 🪙` : "👻 trick";
+                const opens = a.chestOpens.length ? a.chestOpens.map(o => {
+                    const ev = o.event && PC.EVENTS && PC.EVENTS[o.event];
+                    const what = ev ? `${ev.icon} ${escapeHtml(ev.name)} ×${o.count} · ${o.free ? "free" : `${o.price} 🪙`}` : o.free ? "🎁 free draw" : `×${o.count} · ${o.price} 🪙`;
+                    return `<div class="token-history-row">${escapeHtml(fmtDate(o.at))} · ${what}${o.refund ? ` · +${o.refund} 🪙 back` : ""}<br>${o.results.map(resultText).join(", ")}</div>`;
+                }).join("") : "<p class='promo-sub'>No chest draws yet.</p>";
                 const pay = a.purchases.length ? a.purchases.map(p => `<div class="token-history-row">${escapeHtml(fmtDate(p.at))} · ${p.kind === "pack" ? `Token pack (${escapeHtml(p.pack)})${p.amount ? ` · ${escapeHtml(p.currency)} ${escapeHtml(p.amount)}` : ""}` : `${p.plan === "vip" ? "Super Supporter" : p.plan === "noAds" ? "Supporter" : escapeHtml(p.plan)} payment`} · +${p.tokens} 🪙</div>`).join("") : "<p class='promo-sub'>No payments.</p>";
                 return `
                     <h4 style="margin:18px 0 6px;">🎒 Items & styles <span class="promo-sub">(${items.length} items · ${styles.length} styles)</span></h4>
