@@ -588,6 +588,11 @@ body {
             cursor: pointer;
         }
 
+        .avatar-grid-head { grid-column: 1 / -1; margin-top: 6px; font-size: 0.8rem; font-weight: 800; color: #ffb347; }
+        .avatar-lock { position: relative; display: block; border-radius: 10px; overflow: hidden; }
+        .avatar-lock img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; filter: grayscale(0.5) brightness(0.55); }
+        .avatar-lock::after { content: "🔒"; position: absolute; inset: 0; display: grid; place-items: center; font-size: 1.3rem; }
+
         .avatar-option.selected {
             border-color: var(--kih-accent);
         }
@@ -2795,6 +2800,52 @@ body {
                 });
                 grid.appendChild(img);
             });
+            addEventAvatars(grid, selected);
+        }
+
+        // Limited profile pictures (e.g. Halloween): the ones you have, to pick;
+        // while the event is on, the rest too, locked (tap one: what it is).
+        let avatarGridBuild = 0;
+        function addEventAvatars(grid, selected) {
+            const PCa = window.ProgressCore;
+            const pics = PCa ? PCa.STYLES.filter(s => s.type === "avatar") : [];
+            if (!pics.length || !AppState.getMyItemIds) return;
+            const build = ++avatarGridBuild;
+            AppState.getMyItemIds().then(ids => {
+                if (build !== avatarGridBuild) return; // rebuilt meanwhile
+                const own = new Set(ids);
+                const live = PCa.activeEvent(new Date(Date.now() + 8 * 3600e3).toISOString().slice(0, 10));
+                const shown = pics.filter(p => own.has(p.id) || (live && live.id === p.event && PCa.eventAvatars(p.event).some(a => a.id === p.id)));
+                if (!shown.length) return;
+                const ev = PCa.EVENTS[shown[0].event] || {};
+                const head = document.createElement("div");
+                head.className = "avatar-grid-head";
+                head.textContent = `${ev.icon || "✨"} ${ev.label || "Limited"} — limited`;
+                grid.appendChild(head);
+                shown.forEach(p => {
+                    if (own.has(p.id)) {
+                        const img = document.createElement("img");
+                        img.src = p.img;
+                        img.className = "avatar-option" + (p.img === selected ? " selected" : "");
+                        img.onerror = function () { this.style.display = "none"; };
+                        img.addEventListener("click", () => {
+                            document.querySelectorAll(".avatar-option").forEach(a => a.classList.remove("selected"));
+                            img.classList.add("selected");
+                            img.dataset.chosen = "true";
+                            updateAvatarPreview(p.img);
+                            closeAvatarModal();
+                        });
+                        grid.appendChild(img);
+                    } else {
+                        const lock = document.createElement("span");
+                        lock.className = "avatar-lock";
+                        lock.dataset.thing = p.id;
+                        lock.title = `${p.name} — in the Store today`;
+                        lock.innerHTML = `<img src="${p.img}" alt="" onerror="this.style.visibility='hidden'">`;
+                        grid.appendChild(lock);
+                    }
+                });
+            }).catch(() => { });
         }
 
         function updateAvatarPreview(src) {
@@ -4050,7 +4101,7 @@ function getNewsTypeInfo(type) {
             if (n.type === "promo" || n.type === "giveawayWin" || n.type === "secretGiveawayWin" || n.type === "promoCodes"
                 || n.type === "weeklyGiveawayNew" || n.type === "secretGiveawayNew") return "promo";
             if (n.type === "tip") return "tip";
-            if (n.type === "friendAccepted" || COMMENT_NOTIF_TYPES.includes(n.type)) return "social";
+            if (n.type === "friendAccepted" || n.type === "spookyGift" || COMMENT_NOTIF_TYPES.includes(n.type)) return "social";
             return "general";
         }
 
@@ -4059,7 +4110,7 @@ function getNewsTypeInfo(type) {
         const INBOX_FILTERS = [["all", "All"], ["promo", "🎁 Promo"], ["tip", "💡 Tips"], ["social", "👥 Social"], ["general", "📢 General"]];
         function inboxIconFor(n) {
             return ({
-                tokenGift: "🪙", tokensGranted: "🪙", tokenAdjust: "🪙", secretGiveawayWin: "🏆", giveawayWin: "🏆", promoCodes: "🎟️", promo: "🎁",
+                spookyGift: "🎃", tokenGift: "🪙", tokensGranted: "🪙", tokenAdjust: "🪙", secretGiveawayWin: "🏆", giveawayWin: "🏆", promoCodes: "🎟️", promo: "🎁",
                 weeklyGiveawayNew: "🎡", secretGiveawayNew: "🎁", tip: "💡", friendAccepted: "🤝", formationComment: "💬", formationReply: "💬", tierListComment: "💬", tierListReply: "💬"
             })[n.type] || "📢";
         }
@@ -4085,6 +4136,7 @@ function getNewsTypeInfo(type) {
             if (n.type === "secretGiveawayNew") return `<button class="btn-primary" style="${style}" onclick="openPromoTab('secret')">🎁 Enter Giveaway</button>`;
             if (n.type === "tokensGranted") return `<button class="btn-primary" style="${style}" onclick="openPromoTab('secret')">🪙 Use Tokens</button>`;
             if (n.type === "tokenGift") return giftButtonHtml(n, !!style);
+            if (n.type === "spookyGift") return spookyButtonHtml(n, style);
             return ""; // adminMessage and announcement need no button — title + body already contain everything
         }
         function inboxGroupOf(ms) {
@@ -4102,6 +4154,30 @@ function getNewsTypeInfo(type) {
             return [Number(n.amount) ? `${Number(n.amount)} 🪙` : "", Number(n.draws) ? `${Number(n.draws)} 🧰` : "",
                 ...items.map(id => (PCx && PCx.BY_ID[id] ? PCx.BY_ID[id].icon : "🎒"))].filter(Boolean).join(" + ") || "gift";
         }
+        // 🎃 A Spooky Gift from another player: Open it (the server rolls the treat).
+        const spookyOpened = {}; // giftId -> what it gave, as soon as you open it
+        let spookyOpening = null;
+        function spookyButtonHtml(n, style) {
+            const done = spookyOpened[n.giftId] || (n.opened ? n.rewardText || "opened" : "");
+            if (done) return `<span class="inbox-gift-state">✅ Opened: ${escText(done)}</span>`;
+            if (!/^[a-z0-9]{1,64}$/.test(String(n.giftId || ""))) return "";
+            return `<button class="btn-primary inbox-gift-btn" style="${style || "padding:6px 16px; font-size:0.85rem;"}" onclick="openSpookyInbox('${n.giftId}')"${spookyOpening === n.giftId ? " disabled" : ""}>🎃 Open it</button>`;
+        }
+        window.openSpookyInbox = async function (giftId) {
+            if (spookyOpening) return;
+            spookyOpening = giftId;
+            rerenderInboxIfOpen();
+            try {
+                const r = await AppState.openSpookyGift(giftId);
+                spookyOpened[giftId] = r.text || "opened";
+                showQuestToast(r.already ? "You've already opened this one." : `🎃 You got ${r.text}!`);
+            } catch (e) {
+                showQuestToast(e.message || "Couldn't open it — try again.");
+            } finally {
+                spookyOpening = null;
+                rerenderInboxIfOpen();
+            }
+        };
         function giftButtonHtml(n, big) {
             const style = big ? "margin-top:14px; padding:10px 20px; font-size:0.9rem;" : "padding:6px 16px; font-size:0.85rem;";
             const what = giftShortText(n);
@@ -5143,6 +5219,24 @@ window.closeInboxItemModal = closeInboxItemModal;
             AppState.onAuthChange(() => startQuestListeners());
             AppState.onAuthChange(() => { progressStatus = null; progressDotChecked = false; updateAchievementDots(); checkAchievementsSoon(); });
             AppState.waitForAuthReady().then(checkAchievementsSoon);
+            // 🎃 An event's login gift (a free profile picture), once per event.
+            async function claimEventGiftSoon() {
+                const PCa = window.ProgressCore, user = AppState.getCurrentUser();
+                if (!PCa || !user || !AppState.claimEventGift) return;
+                const ev = PCa.activeEvent(new Date(Date.now() + 8 * 3600e3).toISOString().slice(0, 10));
+                if (!ev || !PCa.eventAvatars(ev.id).length) return;
+                const key = `kih_gift_${ev.id}_${user.uid}`;
+                try { if (localStorage.getItem(key)) return; } catch (e) { }
+                try {
+                    const r = await AppState.claimEventGift();
+                    try { localStorage.setItem(key, "1"); } catch (e) { }
+                    if (!r.already && r.id && PCa.BY_ID[r.id]) {
+                        showQuestToast(`${ev.icon} Happy Halloween! A free profile picture is yours: ${PCa.BY_ID[r.id].name} — tap to see it`, () => window.showThing && showThing(r.id));
+                    }
+                } catch (e) { console.warn("Couldn't claim the event gift:", e.message); }
+            }
+            AppState.waitForAuthReady().then(claimEventGiftSoon);
+            AppState.onAuthChange(() => claimEventGiftSoon());
             setInterval(updateQuestCountdown, 1000);
             renderHomeToday(); // before the quests have loaded too
             AppState.waitForAuthReady().then(refreshWeeklyJoined);

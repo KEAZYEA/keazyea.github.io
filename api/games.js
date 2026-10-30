@@ -299,22 +299,26 @@ async function finalizeWeek(db, week, now) {
   const metaRef = db.collection("gameLeaderboards").doc(week);
   const meta = await metaRef.get();
   if (meta.exists && meta.data().finalizedAt) { finalizedWeeks.add(week); return; }
-  // The top players, ties going to whoever got there first.
-  const top = (await metaRef.collection("players").orderBy("total", "desc").limit(10).get()).docs
+  // The top players. Ties share a place (two on the same points are both
+  // 3rd, and the next is 5th) and each gets that place's prize, so more than
+  // five can be paid in a week with a tie.
+  const top = (await metaRef.collection("players").orderBy("total", "desc").limit(25).get()).docs
     .map(d => d.data())
     .filter(p => p.total > 0)
     .sort((a, b) => b.total - a.total || a.updatedAt - b.updatedAt);
   const eligible = [];
   for (const p of top) {
-    if (eligible.length === WEEKLY_PRIZES.length) break;
     const user = await db.collection("users").doc(p.uid).get();
-    if (!(user.exists && isBannedNow(user.data()))) eligible.push(p);
+    if (user.exists && isBannedNow(user.data())) continue;
+    const rank = 1 + eligible.filter(e => e.total > p.total).length;
+    if (rank > WEEKLY_PRIZES.length) break;
+    eligible.push({ ...p, rank });
   }
   // Victor's Trophy and the like: a bigger prize (rounded up).
   const invs = await Promise.all(eligible.map(p => db.collection("inventories").doc(p.uid).get()));
   const winners = eligible.map((p, i) => {
     const mult = invs[i].exists ? Math.max(0, Number((invs[i].data().perks || {}).prizeMult) || 0) : 0;
-    return { uid: p.uid, name: p.name, total: p.total, rank: i + 1, prize: Math.ceil(WEEKLY_PRIZES[i] * (1 + mult / 100)) };
+    return { uid: p.uid, name: p.name, total: p.total, rank: p.rank, prize: Math.ceil(WEEKLY_PRIZES[p.rank - 1] * (1 + mult / 100)) };
   });
   const paid = await db.runTransaction(async (tx) => {
     const walletRefs = winners.map(w => db.collection("tokenWallets").doc(w.uid));
@@ -367,20 +371,25 @@ async function rescoreWeek(db, week) {
   rescored.add(week);
 }
 
-// Players' name effects for the board ({ uid: class }), cached a minute.
-const fxCache = new Map();
-async function nameEffects(db, uids, now) {
+// How players look on the board ({ uid: { fx, avatar, border } }): their name
+// effect, profile picture and border — so two players with the same name
+// can be told apart. Cached a minute.
+const looksCache = new Map();
+async function playerLooks(db, uids, now) {
   const out = {};
-  await Promise.all(uids.map(async (u) => {
-    const hit = fxCache.get(u);
-    if (hit && now - hit.at < 60000) { out[u] = hit.fx; return; }
-    let fx = "";
+  await Promise.all([...new Set(uids)].map(async (u) => {
+    const hit = looksCache.get(u);
+    if (hit && now - hit.at < 60000) { out[u] = hit.looks; return; }
+    const looks = { fx: "", avatar: "", border: null };
     try {
-      const card = await db.collection("playerCards").doc(u).get();
-      fx = card.exists ? P.styleClass(card.data().style, "name") : "";
-    } catch (e) { /* no effect shown */ }
-    fxCache.set(u, { at: now, fx });
-    out[u] = fx;
+      const [card, prof] = await Promise.all([db.collection("playerCards").doc(u).get(), db.collection("publicProfiles").doc(u).get()]);
+      const style = card.exists ? card.data().style || {} : {};
+      looks.fx = P.styleClass(style, "name");
+      looks.border = style.border || null;
+      looks.avatar = prof.exists && typeof prof.data().avatar === "string" ? prof.data().avatar.slice(0, 500) : "";
+    } catch (e) { /* shown plain */ }
+    looksCache.set(u, { at: now, looks });
+    out[u] = looks;
   }));
   return out;
 }
@@ -402,8 +411,11 @@ async function leaderboard(db, uid, now) {
   const top = topSnap.docs.map(d => d.data()).filter(p => p.total > 0)
     .sort((a, b) => b.total - a.total || a.updatedAt - b.updatedAt)
     .slice(0, LEADERBOARD_SIZE);
-  const fx = await nameEffects(db, top.map(p => p.uid), now);
-  const rows = top.map((p, i) => ({ rank: i + 1, name: p.name, total: p.total, best: { ...blankBest(), ...p.best }, pts: G.lbPts(p), dbl: p.dbl || {}, perk: p.perk || 0, nameFx: fx[p.uid] || "", me: p.uid === uid }));
+  const lastWinners = lastMeta.exists && lastMeta.data().winners ? lastMeta.data().winners : [];
+  const looks = await playerLooks(db, [...top.map(p => p.uid), ...lastWinners.map(w => w.uid)], now);
+  // ties share a place: 1 + how many have more points
+  const rows = top.map(p => ({ rank: 1 + top.filter(o => o.total > p.total).length, name: p.name, total: p.total, best: { ...blankBest(), ...p.best }, pts: G.lbPts(p), dbl: p.dbl || {}, perk: p.perk || 0,
+    nameFx: (looks[p.uid] || {}).fx || "", avatar: (looks[p.uid] || {}).avatar || "", border: (looks[p.uid] || {}).border || null, me: p.uid === uid }));
   let me = null;
   if (meSnap && meSnap.exists && meSnap.data().total > 0) {
     const mine = meSnap.data();
@@ -413,9 +425,7 @@ async function leaderboard(db, uid, now) {
   } else if (uid) {
     me = { rank: null, total: 0, best: blankBest(), pts: blankPts(), dbl: {}, perk: 0 };
   }
-  const lastWeek = lastMeta.exists && lastMeta.data().winners
-    ? lastMeta.data().winners.map(w => ({ rank: w.rank, name: w.name, total: w.total, prize: w.prize }))
-    : [];
+  const lastWeek = lastWinners.map(w => ({ rank: w.rank, name: w.name, total: w.total, prize: w.prize, avatar: (looks[w.uid] || {}).avatar || "", border: (looks[w.uid] || {}).border || null }));
   return { ...base, top: rows, me, lastWeek };
 }
 

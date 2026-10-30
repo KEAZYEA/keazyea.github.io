@@ -2126,6 +2126,9 @@
             border: 1px solid #2a2a4a; background: rgba(255, 255, 255, 0.05); color: #f0f0f5; font: inherit; font-weight: 800; cursor: pointer; }
         .pf-like-btn.on { border-color: #4c6ef5; background: rgba(76, 110, 245, 0.22); }
         .pf-like-btn:disabled { opacity: 0.6; cursor: default; }
+        .spooky-send-btn { display: inline-flex; align-items: center; gap: 6px; margin: 0 0 14px 8px; padding: 8px 16px; border-radius: 999px; border: none;
+            background: linear-gradient(180deg, #ffc27a, #ff7a00); color: #2a1200; font: inherit; font-weight: 900; cursor: pointer; box-shadow: 0 0 14px rgba(255, 122, 0, 0.45); }
+        .spooky-send-btn:disabled { background: rgba(255, 140, 26, 0.18); color: #ffb347; box-shadow: none; cursor: default; }
 
         .profile-stat-row {
             display: flex;
@@ -6129,6 +6132,7 @@ window.removeClanIconPreview = function () {
             const me = AppState.getCurrentUser();
             const [card, liked] = await Promise.all([AppState.getPlayerCard(uid), me && me.uid !== uid ? AppState.haveILikedProfile(uid) : false]);
             if (profileExtrasFor !== uid) return;
+            showSpookyButton(uid, likeBtn);
             badgesEl.innerHTML = (card.badges || []).map(b => ProgressCore.badgeHtml(b)).join("");
             cardsByUid[uid] = card;
             const av = document.getElementById("friendProfileAvatar");
@@ -6155,6 +6159,48 @@ window.removeClanIconPreview = function () {
                 likeBtn.disabled = false;
             };
         }
+        // 🎃 Spooky Gifts: while the event is on, a button on other players'
+        // profiles to send them your one gift (they open it from their inbox).
+        let spookySent = null; // { name } once you've sent yours (read once)
+        async function showSpookyButton(uid, likeBtn) {
+            let btn = document.getElementById("friendProfileSpookyBtn");
+            const me = AppState.getCurrentUser();
+            const ev = window.ProgressCore && ProgressCore.activeEvent(new Date(Date.now() + 8 * 3600e3).toISOString().slice(0, 10));
+            if (!ev || !ev.spookyGifts || !me || me.uid === uid || !AppState.sendSpookyGift) { if (btn) btn.style.display = "none"; return; }
+            if (!btn) {
+                btn = document.createElement("button");
+                btn.type = "button";
+                btn.id = "friendProfileSpookyBtn";
+                btn.className = "spooky-send-btn";
+                likeBtn.insertAdjacentElement("afterend", btn);
+            }
+            if (spookySent === null && AppState.getMyEventState) {
+                const st = await AppState.getMyEventState(ev.id);
+                spookySent = st.spookyTo ? { name: st.spookyToName || "someone" } : false;
+                if (profileExtrasFor !== uid) return;
+            }
+            const name = document.getElementById("friendProfileName").textContent;
+            btn.style.display = "inline-flex";
+            btn.disabled = !!spookySent;
+            btn.textContent = spookySent ? `🎃 Spooky Gift sent to ${spookySent.name}` : "🎃 Send your Spooky Gift";
+            btn.onclick = async () => {
+                if (spookySent) return;
+                if (!await showConfirmModal("🎃 Send your Spooky Gift?", `Send it to ${name}? You only have one — they open it from their inbox for a random treat.`, "Send it")) return;
+                btn.disabled = true;
+                try {
+                    const r = await AppState.sendSpookyGift(uid, ev.id);
+                    spookySent = { name: r.toName || name };
+                    btn.textContent = `🎃 Spooky Gift sent to ${spookySent.name}`;
+                    showInfoModal("🎃 Sent!", `${spookySent.name} will find your Spooky Gift in their inbox. Boo!`);
+                } catch (e) {
+                    btn.disabled = false;
+                    if (/already sent/.test(e.message)) { spookySent = { name: (e.message.match(/\(to (.*)\)/) || [])[1] || "someone" }; btn.disabled = true; btn.textContent = `🎃 Spooky Gift sent to ${spookySent.name}`; }
+                    showInfoModal("Couldn't send it", e.message);
+                }
+            };
+        }
+        AppState.onAuthChange && AppState.onAuthChange(() => { spookySent = null; });
+
         window.closeFriendProfileModal = function () {
     document.getElementById("friendProfileModalOverlay").classList.remove("open");
     document.body.style.overflow = "";

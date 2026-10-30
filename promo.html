@@ -509,6 +509,7 @@
         .share-meter { margin: 0 0 14px; }
         .share-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
         .share-text { font-size: 0.84rem; color: #e4e0f7; }
+        .share-items { display: block; margin-top: 2px; font-size: 0.74rem; font-weight: 800; color: #ffd75e; }
         .share-text b { color: #fff; }
         .share-pct { flex-shrink: 0; font-style: normal; font-size: 0.8rem; font-weight: 900; padding: 3px 10px; border-radius: 999px; background: #ffd75e; color: #1a1a2e; white-space: nowrap; }
         .share-bar { height: 10px; border-radius: 999px; overflow: hidden; background: #241f3e; border: 1px solid rgba(255, 215, 94, 0.35); }
@@ -1202,6 +1203,7 @@
         </div>
     </div>
 
+        <script src="progress-core.js"></script>
         <script src="prize.js"></script>
         <script type="module" src="appState.js"></script>
         <script type="module">
@@ -2587,12 +2589,46 @@ if (user && user.uid === winnerData.winnerUid) {
             // Extra chances your items give in every giveaway that allows
             // tokens (counted at the draw). Read once per visit to the tab.
             let myItemChances = 0;
+            let mySecretPerks = { secretChance: 0, stakeMult: 0 };
             let myItemChancesPromise = null;
             function getMyItemChances() {
                 if (!myItemChancesPromise) {
-                    myItemChancesPromise = AppState.getMyPerks().then(p => Math.max(0, Math.floor(p.secretChance || 0))).catch(() => { myItemChancesPromise = null; return 0; });
+                    myItemChancesPromise = AppState.getMyPerks().then(p => {
+                        mySecretPerks = { secretChance: Math.max(0, Math.floor(p.secretChance || 0)), stakeMult: Math.max(0, Number(p.stakeMult) || 0) };
+                        return mySecretPerks.secretChance;
+                    }).catch(() => { myItemChancesPromise = null; return 0; });
                 }
                 return myItemChancesPromise;
+            }
+            // Your balls in a draw with `staked` tokens: exactly how the draw
+            // counts them — 1 + tokens (×Lucky Beads…) + your items' chances.
+            const myWeight = (staked) => window.ProgressCore ? ProgressCore.secretWeight(staked, mySecretPerks) : staked + 1;
+            const balls = (n) => Math.round(n); // Lucky Beads can make a token worth 1.1
+
+            /* Everyone else's item balls: the server adds them up per draw and
+               keeps the sums on the giveaway (g.itemExtra). We also learn our own
+               share of that sum (mine), so it can be swapped for the live figure.
+               Asked again whenever entries or stakes have changed. */
+            const secretOdds = {};
+            const oddsKeyOf = (g) => `${g.entryCount || 0}|${g.iosTokensStaked || 0}|${g.androidTokensStaked || 0}`;
+            function othersItemBalls(g, platform) {
+                const group = AppState.isEveryoneSecretGiveaway(g) ? "all" : platform;
+                const o = secretOdds[g.id] || {};
+                const sum = Number(((g.itemExtra || o.extra || {})[group])) || 0;
+                return Math.max(0, sum - (o.mine || 0));
+            }
+            function askSecretOdds(g) {
+                if (g.tokensAllowed === false || !AppState.getSecretOdds || !AppState.getCurrentUser()) return;
+                const o = secretOdds[g.id] || (secretOdds[g.id] = {});
+                const key = oddsKeyOf(g);
+                if (o.asking || (o.key === key && g.itemExtraKey === key) || Date.now() - (o.at || 0) < 5000) return;
+                o.asking = true;
+                AppState.getSecretOdds(g.id).then(r => {
+                    if (!r) return;
+                    const changed = o.mine !== r.mine || JSON.stringify(o.extra) !== JSON.stringify(r.itemExtra);
+                    Object.assign(o, { mine: r.mine || 0, extra: r.itemExtra, key });
+                    if (changed && !stakeSaving.has(g.id)) renderSecretGiveawayList(latestSecretGiveaways);
+                }).catch(e => console.warn("Couldn't load the odds:", e.message)).finally(() => { o.asking = false; o.at = Date.now(); });
             }
             function getSecretBalance() {
                 if (!secretBalancePromise) {
@@ -2944,7 +2980,7 @@ if (user && user.uid === winnerData.winnerUid) {
                 return Math.min(1, 1 - miss);
             }
             const fmtChance = (p) => (p >= 1 ? "100%" : p < 0.01 ? "<1%" : Math.round(p * 100) + "%");
-            const chanceText = (lead, mine, total) => `${lead}: <b>${mine}</b> of ${total} balls`;
+            const chanceText = (lead, mine, total, fromItems) => `${lead}: <b>${balls(mine)}</b> of ${balls(total)} balls${fromItems >= 0.5 ? ` <small class="share-items">🎒 +${balls(fromItems)} from your items</small>` : ""}`;
             const chancePct = (p) => `≈${fmtChance(p)} to win`;
 
             // Where balls sit in the globe: a honeycomb inside the circle, bottom
@@ -2965,10 +3001,12 @@ if (user && user.uid === winnerData.winnerUid) {
 
             // The lucky globe: every chance in your draw is a ball, yours gold.
             // Coins you throw in arc over and drop through the gold mouth on top.
-            function renderMachine(g, platform, mine, still) {
+            function renderMachine(g, platform, staked, still) {
                 const st = drawGroupStats(g, platform);
                 const players = Math.max(st.players, 1);
-                const total = Math.max(st.players + st.pot, mine, 1);
+                // you: 1 + tokens + items; everyone: 1 each + the tokens in + all items
+                const mine = myWeight(staked);
+                const total = Math.max(st.players + st.pot + othersItemBalls(g, platform) + (mine - 1 - staked), mine, 1);
                 // One ball per chance; a very full globe shows the same mix of
                 // gold and purple in MAX_BALLS balls (the meter has the numbers).
                 const scale = Math.min(1, MAX_BALLS / total);
@@ -2977,6 +3015,7 @@ if (user && user.uid === winnerData.winnerUid) {
                 const prev = machineShown[g.id];
                 const p = winChance(mine, total, players, st.slots);
                 machineShown[g.id] = { mine: myBalls, others: otherBalls, share: p, scale, total, chances: mine, players, slots: st.slots };
+                const fromItems = mine - 1 - staked;
                 const n = myBalls + otherBalls;
                 const size = n <= 20 ? 18 : n <= 45 ? 14 : 11;
                 const slots = globeSlots(size);
@@ -3009,7 +3048,7 @@ if (user && user.uid === winnerData.winnerUid) {
                         <div class="globe-hand"></div>
                     </div>
                     <div class="share-meter">
-                        <div class="share-top"><span class="share-text">${chanceText("Your chances", mine, total)}</span><em class="share-pct">${chancePct(p)}</em></div>
+                        <div class="share-top"><span class="share-text">${chanceText("Your chances", mine, total, fromItems)}</span><em class="share-pct">${chancePct(p)}</em></div>
                         <div class="share-bar"><div class="share-fill" data-to="${pct(p)}" style="width:${prev ? pct(prev.share) : 0}%"></div></div>
                     </div>`;
             }
@@ -3045,10 +3084,10 @@ if (user && user.uid === winnerData.winnerUid) {
                 const staked = info.staked;
                 if (total === null) return { cls: "idle", label: "Type a whole number", disabled: true, hint: "" };
                 const change = total - staked;
-                if (change === 0) return { cls: "idle", label: staked ? `✅ ${staked} 🪙 in · ${plural(staked + 1, "chance")}` : "Tap + to pick up coins", disabled: true, hint: topHint(staked, info.top) };
+                if (change === 0) return { cls: "idle", label: staked ? `✅ ${staked} 🪙 in · ${plural(balls(myWeight(staked)), "chance")}` : "Tap + to pick up coins", disabled: true, hint: topHint(staked, info.top) };
                 if (change > balance) return { cls: "short", label: `Need ${change - balance} more 🪙`, disabled: true, hint: `You have ${balance} 🪙 — <a href="#" onclick="openTokenWays(); return false;">get more</a>` };
-                if (change > 0) return { cls: "go", label: `🎯 Throw ${change} in → ${plural(total + 1, "chance")}`, disabled: false, hint: topHint(total, info.top) };
-                return { cls: "back", label: `↩ Take ${-change} back → ${plural(total + 1, "chance")}`, disabled: false, hint: total ? topHint(total, info.top) : "You keep your 1 free chance" };
+                if (change > 0) return { cls: "go", label: `🎯 Throw ${change} in → ${plural(balls(myWeight(total)), "chance")}`, disabled: false, hint: topHint(total, info.top) };
+                return { cls: "back", label: `↩ Take ${-change} back → ${plural(balls(myWeight(total)), "chance")}`, disabled: false, hint: total ? topHint(total, info.top) : "You keep your 1 free chance" };
             }
             function readDraft(input) {
                 const raw = input ? input.value : "";
@@ -3068,9 +3107,10 @@ if (user && user.uid === winnerData.winnerUid) {
                 if (g.tokensAllowed === false) return noTokensNotice(isExpired || sideDrawn ? "The claw picks the winners soon…" : "");
                 const machine = stakeSaving.has(g.id) && machineHtml[g.id]
                     ? machineHtml[g.id].replace(/ drop"/g, '"') // frozen mid-save, without replaying the drops
-                    : renderMachine(g, entry.platform, staked + 1, isExpired || sideDrawn);
+                    : renderMachine(g, entry.platform, staked, isExpired || sideDrawn);
+                askSecretOdds(g);
                 if (isExpired || sideDrawn) {
-                    return `${machine}<p class="stake-summary">${staked ? `🪙 You threw in <strong>${staked}</strong> — ${plural(staked + 1, "chance")}.` : "🟡 Your free chance is in the globe."}${sideDrawn ? "" : " The claw picks the winners soon…"}</p>`;
+                    return `${machine}<p class="stake-summary">${staked ? `🪙 You threw in <strong>${staked}</strong> — ${plural(balls(myWeight(staked)), "chance")}.` : myWeight(0) > 1 ? `🟡 Your free chance${mySecretPerks.secretChance ? ` and ${plural(mySecretPerks.secretChance, "item chance")}` : ""} are in the globe.` : "🟡 Your free chance is in the globe."}${sideDrawn ? "" : " The claw picks the winners soon…"}</p>`;
                 }
                 const top = secretTopStake(g, entry.platform);
                 const info = secretStakeInfo[g.id] = { staked, top, platform: entry.platform };
@@ -3140,12 +3180,13 @@ if (user && user.uid === winnerData.winnerUid) {
                 mineBalls.forEach((b, i) => b.classList.toggle("leaving", i >= mineBalls.length - lose));
                 const meter = m.nextElementSibling;
                 if (!meter || !meter.classList.contains("share-meter")) return;
-                const chances = (draft === null ? info.staked : draft) + 1;
+                const draftTokens = draft === null ? info.staked : draft;
+                const chances = myWeight(draftTokens);
                 const total = Math.max(1, shown.total - shown.chances + chances);
                 const p = winChance(chances, total, shown.players, shown.slots);
                 meter.classList.toggle("preview", delta !== 0);
                 meter.querySelector(".share-fill").style.width = Math.round(p * 1000) / 10 + "%";
-                meter.querySelector(".share-text").innerHTML = chanceText(delta !== 0 ? "Would be" : "Your chances", chances, total);
+                meter.querySelector(".share-text").innerHTML = chanceText(delta !== 0 ? "Would be" : "Your chances", chances, total, chances - 1 - draftTokens);
                 meter.querySelector(".share-pct").textContent = chancePct(p);
             }
             // "+1" / "−1" floating up off an element.
