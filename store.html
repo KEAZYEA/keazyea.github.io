@@ -430,6 +430,10 @@
         .cr-front.trick .ic { opacity: 0.85; }
         .cr-back.ev { background: linear-gradient(160deg, #6a2b00, #2a1040); border-color: rgba(255, 140, 26, 0.7); }
 
+        /* tap any item or style (a ×10 card, the contents list, the event grid): what it is */
+        .cr-card.flip[data-thing]:active, .ev-thing:active, .chest-contents [data-thing]:active { transform: scale(0.96); }
+        .cr-hint { margin-top: 8px; font-size: 0.78rem; color: #b8b0d8; }
+
         /* the draw */
         /* Scrolls when it's taller than the screen (a 10-draw on a small phone), so
            the buttons can always be reached; centred when it fits. */
@@ -711,6 +715,7 @@
     </div>
 
     <script src="progress-core.js"></script>
+    <script src="thing-details.js"></script>
     <script type="module" src="appState.js"></script>
     <script>
         if (window.self === window.top) {
@@ -1248,8 +1253,8 @@
                 const list = pool.filter(x => x.rarity === k);
                 if (!list.length) return "";
                 return `<h4 style="--rc:${r[k].color}">${r[k].label} · ${r[k].weight}%</h4><div class="cc-grid">${list.map(x =>
-                    `<div class="${owned.has(x.id) ? "own" : ""}" title="${escS(chestWhat(x))}">${x.icon} ${escS(x.name)}<small>${rates[x.id].toFixed(rates[x.id] < 1 ? 2 : 1)}%</small></div>`).join("")}</div>`;
-            }).join("") + `<p style="font-size:0.75rem; color:#9a92c0; margin:8px 0 0;">Faded: already yours.</p>`;
+                    `<div class="${owned.has(x.id) ? "own" : ""}" data-thing="${x.id}" title="${escS(chestWhat(x))}">${x.icon} ${escS(x.name)}<small>${rates[x.id].toFixed(rates[x.id] < 1 ? 2 : 1)}%</small></div>`).join("")}</div>`;
+            }).join("") + `<p style="font-size:0.75rem; color:#9a92c0; margin:8px 0 0;">Faded: already yours. Tap any to see what it does.</p>`;
             updateChestButtons();
             renderEventCard();
         }
@@ -1336,7 +1341,8 @@
                         <button type="button" class="cel-primary ripple-host" id="ev1Btn" onclick="knockEvent(1)"></button>
                         <button type="button" class="cel-primary ten ripple-host" id="ev10Btn" onclick="knockEvent(10)"></button>
                     </div>`}
-                    <div class="ev-grid">${things.map(x => `<div class="ev-thing${owned.has(x.id) ? " own" : ""}" style="--rc:${PC.RARITIES[x.rarity].color}" title="${escS(PC.RARITIES[x.rarity].label + " · " + chestWhat(x))}"><div class="ic">${x.icon}</div><div class="nm">${escS(x.name)}</div></div>`).join("")}</div>
+                    <div class="ev-grid">${things.map(x => `<div class="ev-thing${owned.has(x.id) ? " own" : ""}" data-thing="${x.id}" style="--rc:${PC.RARITIES[x.rarity].color}" title="${escS(PC.RARITIES[x.rarity].label + " · " + chestWhat(x))}"><div class="ic">${x.icon}</div><div class="nm">${escS(x.name)}</div></div>`).join("")}</div>
+                    <div class="cr-hint">Tap one to see what it does</div>
                     <details class="ev-rules">
                         <summary>📜 How it works</summary>
                         <ul>
@@ -1440,7 +1446,7 @@
         function knockCardHtml(x) {
             if (x.id) {
                 const e = PC.BY_ID[x.id], rr = PC.RARITIES[e.rarity];
-                return `<div class="cr-item" style="--rc:${rr.color}"><div class="cr-item-icon">${e.icon}</div><span class="cr-rarity">${rr.label} · limited</span>
+                return `<div class="cr-item" data-thing="${x.id}" style="--rc:${rr.color}"><div class="cr-item-icon">${e.icon}</div><span class="cr-rarity">${rr.label} · limited</span>
                     <div class="cr-name">${escS(e.name)}</div><div class="cr-what">${escS(chestWhat(e))}</div>
                     <div class="cr-dup" style="color:#7ddc92;">${PC.ITEM_BY_ID[x.id] ? "Treat! Its bonus is on now." : "Treat! Show it in Profile → 🎨 Style."}</div></div>`;
             }
@@ -1480,9 +1486,9 @@
                         ? `<div class="cr-face cr-front" style="--rc:${PC.RARITIES[e.rarity].color}"><span class="tg">NEW</span><div class="ic">${e.icon}</div><div class="nm">${escS(e.name)}</div></div>`
                         : x.candy ? `<div class="cr-face cr-front" style="--rc:#ffb347"><div class="ic">🍬</div><div class="nm">+${x.candy} 🪙</div></div>`
                         : `<div class="cr-face cr-front trick"><div class="ic">${(PC.TRICKS[x.msg] || PC.TRICKS[0]).split(" ")[0]}</div><div class="nm">Trick</div></div>`;
-                    return `<div class="cr-card${e ? " big" : ""}" id="crCard${i}" style="--rc:${e ? PC.RARITIES[e.rarity].color : "#55556e"}"><div class="cr-card-in">
+                    return `<div class="cr-card${e ? " big" : ""}" id="crCard${i}"${e ? ` data-thing="${x.id}"` : ""} style="--rc:${e ? PC.RARITIES[e.rarity].color : "#55556e"}"><div class="cr-card-in">
                         <div class="cr-face cr-back ev">🚪</div>${front}</div></div>`;
-                }).join("")}</div><div class="cr-result" id="crResult" style="min-height:0;"></div>`;
+                }).join("")}</div><div class="cr-hint">Tap a treat to see what it is</div><div class="cr-result" id="crResult" style="min-height:0;"></div>`;
                 let i = 0, timer = null, finished = false;
                 const flip = (k) => {
                     const card = document.getElementById("crCard" + k);
@@ -1565,7 +1571,7 @@
         };
         function itemCardHtml(x) {
             const e = PC.BY_ID[x.id], rr = PC.RARITIES[e.rarity];
-            return `<div class="cr-item" style="--rc:${rr.color}"><div class="cr-item-icon">${e.icon}</div><span class="cr-rarity">${rr.label}</span>
+            return `<div class="cr-item" data-thing="${x.id}" style="--rc:${rr.color}"><div class="cr-item-icon">${e.icon}</div><span class="cr-rarity">${rr.label}</span>
                 <div class="cr-name">${escS(e.name)}</div><div class="cr-what">${escS(chestWhat(e))}</div>
                 <div class="cr-dup">${x.duplicate ? `Already yours — ${x.refund} 🪙 back` : PC.ITEM_BY_ID[x.id] ? "New! Its bonus is on now." : "New! Show it in Profile → 🎨 Style."}</div></div>`;
         }
@@ -1605,11 +1611,11 @@
                 stage.innerHTML = `<div class="cr-grid">${results.map((x, i) => {
                     const e = PC.BY_ID[x.id], rr = PC.RARITIES[e.rarity];
                     const big = PC.RARITY_ORDER.indexOf(e.rarity) >= 2;
-                    return `<div class="cr-card${big ? " big" : ""}" id="crCard${i}" style="--rc:${rr.color}"><div class="cr-card-in">
+                    return `<div class="cr-card${big ? " big" : ""}" id="crCard${i}" data-thing="${x.id}" style="--rc:${rr.color}"><div class="cr-card-in">
                         <div class="cr-face cr-back">🧰</div>
                         <div class="cr-face cr-front"><span class="tg${x.duplicate ? " dup" : ""}">${x.duplicate ? "+" + x.refund + "🪙" : "NEW"}</span><div class="ic">${e.icon}</div><div class="nm">${escS(e.name)}</div></div>
                     </div></div>`;
-                }).join("")}</div><div class="cr-result" id="crResult" style="min-height:0;"></div>`;
+                }).join("")}</div><div class="cr-hint">Tap a card to see what it is</div><div class="cr-result" id="crResult" style="min-height:0;"></div>`;
                 let i = 0, timer = null, finished = false;
                 const flip = (k) => {
                     const card = document.getElementById("crCard" + k);
@@ -1631,6 +1637,10 @@
                 timer = setInterval(() => { flip(i++); if (i >= results.length) { clearInterval(timer); setTimeout(finish, 600); } }, 320);
             });
         }
+        // Tap any item or style (a ×10 card, the result, the chest's contents,
+        // the event grid) for what it is: thing-details.js, told what you own.
+        ThingDetails.context = () => ({ items: chestState.items, perks: chestState.perks });
+
         window.goMyItems = function () {
             try {
                 if (window.top !== window && window.top.openProfileTab) { window.top.openProfileTab("items"); return; }

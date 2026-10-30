@@ -712,6 +712,12 @@ body {
             background: var(--kih-panel); color: var(--kih-text); font: inherit; cursor: pointer; min-width: 0; }
         .st-opt small { font-size: 0.7rem; font-weight: 800; color: var(--kih-text-dim); text-align: center; }
         .st-opt.on { border-color: #ff6bd6; box-shadow: 0 0 0 2px rgba(255, 107, 214, 0.45); }
+        /* ⓘ on a look you own: what it is (tapping the rest of it picks it) */
+        .st-opt { position: relative; }
+        .st-info { position: absolute; top: 4px; right: 4px; width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center;
+            font: italic 800 0.72rem/1 Georgia, serif; color: #fff; background: rgba(255, 255, 255, 0.16); border: 1px solid rgba(255, 255, 255, 0.3); }
+        .st-info::after { content: ""; position: absolute; inset: -8px; } /* a bigger tap area */
+        .ach-rewards u[data-thing] { text-decoration: underline dotted; text-underline-offset: 2px; }
         .st-prev { min-height: 46px; display: flex; align-items: center; justify-content: center; max-width: 100%; }
         .st-none { color: var(--kih-text-dim); font-size: 0.8rem; }
         .st-av { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; display: block; }
@@ -2314,6 +2320,7 @@ body {
 
     <script src="prize.js"></script>
     <script src="progress-core.js"></script>
+    <script src="thing-details.js"></script>
     <script type="module" src="appState.js"></script>
     <script>
         /* ---------------- KEYBOARD-SAFE INPUT SCROLLING ----------------
@@ -3012,6 +3019,9 @@ window.closeLegalModal = closeLegalModal;
         const PC = window.ProgressCore;
         let profileTab = "edit";
         let progressStatus = null;
+        // Tap an item or style (Items, Style, an achievement's reward) for
+        // what it is: thing-details.js, told what you own.
+        if (window.ThingDetails) ThingDetails.context = () => progressStatus ? { items: progressStatus.items || [], perks: progressStatus.perks || {}, vip: !!progressStatus.vip } : null;
         let progressBusy = false;
 
         function escText(s) {
@@ -3145,7 +3155,7 @@ window.closeLegalModal = closeLegalModal;
                     <div class="ach-body">
                         <div class="ach-name">${escText(a.name)}${tier ? `<small>${tier.name}</small>` : ""}</div>
                         <div class="ach-desc">${escText(a.desc)}</div>
-                        <div class="ach-rewards"><span class="${x.claimed >= PC.FREE_DRAW_TIER ? "got" : ""}">🥇 Gold: a free chest draw</span><span class="${x.claimed >= PC.TIERS.length ? "got" : ""}">💜 Mythic: ${(PC.ACHIEVEMENT_REWARDS[a.id] || []).map(id => PC.BY_ID[id].icon + " " + escText(PC.BY_ID[id].name)).join(" + ")}</span></div>
+                        <div class="ach-rewards"><span class="${x.claimed >= PC.FREE_DRAW_TIER ? "got" : ""}">🥇 Gold: a free chest draw</span><span class="${x.claimed >= PC.TIERS.length ? "got" : ""}">💜 Mythic: ${(PC.ACHIEVEMENT_REWARDS[a.id] || []).map(id => `<u data-thing="${id}">${PC.BY_ID[id].icon} ${escText(PC.BY_ID[id].name)}</u>`).join(" + ")}</span></div>
                         <div class="ach-bar"><i style="width:${pct}%"></i></div>
                         <div class="ach-meta"><span>${meta}</span><span class="ach-pips">${pips}</span></div>
                         <div class="ach-actions">${x.claimed ? `<button type="button" class="ach-pin${shown.includes(a.id) ? " on" : ""}" onclick="toggleShownBadge('${a.id}')" title="${shown.includes(a.id) ? "Shown on your profile — tap to hide" : "Show this badge on your profile"}" aria-label="Show badge">📌</button>` : ""}${x.ready ? `<button type="button" class="ach-claim" onclick="claimAchievements('${a.id}')">Claim +${x.readyTokens} 🪙</button>` : ""}</div>
@@ -3236,7 +3246,7 @@ window.closeLegalModal = closeLegalModal;
         }
         function itemCardHtml(it, has, note) {
             const r = PC.RARITIES[it.rarity];
-            return `<div class="it-card${has ? "" : " locked"}" style="--rc:${r.color}">
+            return `<div class="it-card${has ? "" : " locked"}" data-thing="${it.id}" style="--rc:${r.color}">
                 <div class="it-icon">${it.icon}</div>
                 <div class="it-name">${escText(it.name)}</div>
                 <div class="it-perk-text">${it.perks.map(PC.perkText).join(" · ")}</div>
@@ -3309,8 +3319,8 @@ window.closeLegalModal = closeLegalModal;
                 const locked = PC.STYLES.filter(s => s.type === type && !owned.has(s.id) && !(s.vip && st.vip) && offered(s));
                 const none = `<button type="button" class="st-opt${!shown[type] ? " on" : ""}" onclick="pickStyle('${type}', null)"><span class="st-prev st-none">None</span><small>None</small></button>`;
                 const mine = all.map(s => `<button type="button" class="st-opt${shown[type] === s.id ? " on" : ""}" style="--rc:${PC.RARITIES[s.rarity].color}" onclick="pickStyle('${type}', '${s.id}')">
-                    <span class="st-prev">${stylePreview(s)}</span><small>${escText(s.name)}</small></button>`).join("");
-                const lockedHtml = locked.length ? `<div class="st-locked">${locked.map(s => `<span title="${escText(s.vip ? "Comes with Super Supporter" : s.chest ? `From the chest (${PC.RARITIES[s.rarity].label})` : rewardSource(s.id))}">${s.icon} ${escText(s.name)}</span>`).join("")}</div>` : "";
+                    <span class="st-prev">${stylePreview(s)}</span><small>${escText(s.name)}</small><span class="st-info" data-thing="${s.id}" aria-label="What is this?">i</span></button>`).join("");
+                const lockedHtml = locked.length ? `<div class="st-locked">${locked.map(s => `<span data-thing="${s.id}" title="${escText(s.vip ? "Comes with Super Supporter" : s.chest ? `From the chest (${PC.RARITIES[s.rarity].label})` : rewardSource(s.id))}">${s.icon} ${escText(s.name)}</span>`).join("")}</div>` : "";
                 return `<div class="st-section"><div class="st-title">${label}<small>${all.length} yours</small></div><div class="st-options">${none}${mine}</div>${lockedHtml}</div>`;
             }).join("");
             const packs = PC.STYLES.filter(s => s.type === "emotes" && (owned.has(s.id) || offered(s)));
@@ -3318,9 +3328,9 @@ window.closeLegalModal = closeLegalModal;
                 ${packs.map(s => {
                     const has = owned.has(s.id);
                     const where = s.chest ? (s.season && !PC.inSeason(s, day) ? "seasonal — not in the chest right now" : `from the chest (${PC.RARITIES[s.rarity].label})`) : rewardSource(s.id);
-                    return `<div class="st-pack${has ? "" : " locked"}"><b>${s.icon} ${escText(s.name)}</b><span>${PC.EMOTE_PACKS[s.pack].join(" ")}</span>${has ? "" : `<small>${escText(where)}</small>`}</div>`;
+                    return `<div class="st-pack${has ? "" : " locked"}" data-thing="${s.id}"><b>${s.icon} ${escText(s.name)}</b><span>${PC.EMOTE_PACKS[s.pack].join(" ")}</span>${has ? "" : `<small>${escText(where)}</small>`}</div>`;
                 }).join("")}</div>`;
-            document.getElementById("pfStyleBody").innerHTML = `<p class="ach-hint">What you pick shows to everyone — on your profile, your posts and comments, in chat and on the Games leaderboard. Faded ones aren't yours yet.</p>${sections}${packsHtml}`;
+            document.getElementById("pfStyleBody").innerHTML = `<p class="ach-hint">What you pick shows to everyone — on your profile, your posts and comments, in chat and on the Games leaderboard. Faded ones aren't yours yet. Tap ⓘ (or a faded one) to see what it is.</p>${sections}${packsHtml}`;
         }
         window.pickStyle = async function (type, id) {
             if (progressBusy) return;

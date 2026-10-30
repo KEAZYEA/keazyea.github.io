@@ -471,9 +471,11 @@
         return `<span class="fx-av fx-border-${s.css}${s.anim ? " fx-" + s.anim : ""}">${avatarHtml}</span>`;
     }
     // The CSS class for someone's shown style of a type ("" if none).
+    // (fx-styles.css names backgrounds fx-bg-<css>, not fx-background-<css>)
+    const CLASS_PREFIX = { background: "bg" };
     function styleClass(style, type) {
         const s = style && STYLE_BY_ID[style[type]];
-        return s && s.type === type && s.css ? `fx-${type}-${s.css}` : "";
+        return s && s.type === type && s.css ? `fx-${CLASS_PREFIX[type] || type}-${s.css}` : "";
     }
 
     return {
