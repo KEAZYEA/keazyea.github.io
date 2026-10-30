@@ -387,6 +387,49 @@
         .chest-contents .cc-grid div small { color: #9a92c0; margin-left: auto; white-space: nowrap; }
         .chest-contents .cc-grid .own { opacity: 0.45; }
 
+        /* 🎃 an event: Trick or Treat */
+        .ev-card { position: relative; margin: 0 0 18px; padding: 18px 16px; border-radius: 20px; text-align: center; overflow: hidden;
+            border: 1px solid rgba(255, 140, 26, 0.7);
+            background: radial-gradient(circle at 85% 12%, rgba(255, 236, 170, 0.35) 0 22px, transparent 48px), radial-gradient(circle at 50% 0%, rgba(255, 122, 0, 0.32), transparent 65%), linear-gradient(170deg, #2d1240, #170b22); }
+        .ev-tag { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 900; letter-spacing: 0.05em; text-transform: uppercase; background: #ff8c1a; color: #2a1200; }
+        .ev-tag.preview { background: #ffd75e; }
+        .ev-art { font-size: 3.2rem; line-height: 1.1; margin-top: 8px; filter: drop-shadow(0 0 16px rgba(255, 122, 0, 0.75)); animation: floaty 2.6s ease-in-out infinite; }
+        .ev-title { font-weight: 900; font-size: 1.25rem; margin-top: 4px; }
+        .ev-timer { font-weight: 800; color: #ffb347; font-size: 0.86rem; margin-top: 2px; font-variant-numeric: tabular-nums; }
+        .ev-desc { color: #ecdcff; font-size: 0.86rem; margin: 8px 0 12px; line-height: 1.5; }
+        .ev-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 0 auto 14px; max-width: 360px; }
+        .ev-stats div { padding: 8px; border-radius: 12px; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 140, 26, 0.5); font-size: 0.76rem; color: #e8d8f8; }
+        .ev-stats b { display: block; font-size: 1.15rem; color: #ffb347; }
+        .ev-actions { display: flex; flex-direction: column; gap: 8px; max-width: 340px; margin: 0 auto; }
+        .ev-actions .cel-primary { background: linear-gradient(180deg, #ffc27a, #ff7a00); box-shadow: 0 5px 0 #a64b00; color: #2a1200; }
+        .ev-actions .cel-primary.ten { background: linear-gradient(180deg, #e9b6ff, #a855f7); box-shadow: 0 5px 0 #6b21a8; color: #fff; }
+        .ev-actions .cel-primary.free { background: linear-gradient(180deg, #a7f3c4, #22c55e); box-shadow: 0 5px 0 #15803d; color: #052e14; }
+        .ev-actions .cel-primary small { display: block; font-size: 0.72rem; font-weight: 700; opacity: 0.85; }
+        .ev-actions .cel-primary:disabled { filter: grayscale(1); opacity: 0.55; cursor: default; transform: none; }
+        .ev-done { max-width: 340px; margin: 0 auto; padding: 14px; border-radius: 14px; font-weight: 900; font-size: 1.05rem; color: #2a1200; background: linear-gradient(180deg, #ffe08a, #ffb347); box-shadow: 0 0 20px rgba(255, 179, 71, 0.5); }
+        .ev-done small { display: block; margin-top: 4px; font-size: 0.78rem; font-weight: 700; color: #4a2a00; }
+        .ev-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 14px auto 0; max-width: 380px; }
+        .ev-thing { position: relative; padding: 8px 2px 6px; border-radius: 12px; border: 1px solid var(--rc); background: rgba(0, 0, 0, 0.3); }
+        .ev-thing .ic { font-size: 1.6rem; line-height: 1.1; }
+        .ev-thing .nm { font-size: 0.6rem; font-weight: 800; line-height: 1.15; margin-top: 3px; color: #f0eaff; }
+        .ev-thing.own { box-shadow: 0 0 10px var(--rc); }
+        .ev-thing.own::after { content: "✓"; position: absolute; top: 2px; right: 5px; font-size: 0.7rem; font-weight: 900; color: #22c55e; }
+        .ev-thing:not(.own) { opacity: 0.55; }
+        .ev-rules { margin-top: 12px; text-align: left; border-radius: 14px; background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .ev-rules summary { padding: 12px 14px; cursor: pointer; font-weight: 800; }
+        .ev-rules ul { margin: 0; padding: 0 16px 10px 32px; font-size: 0.84rem; color: #e8d8f8; }
+        .ev-rules li { margin-bottom: 6px; }
+        /* the knock */
+        .ev-door { font-size: 5rem; line-height: 1.1; margin: 10px 0; display: inline-block; }
+        .ev-door.knocking { animation: doorKnock 0.42s ease-in-out infinite; }
+        @keyframes doorKnock { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-5deg) translateX(-3px); } 75% { transform: rotate(5deg) translateX(3px); } }
+        .ev-trick { padding: 16px; border-radius: 18px; border: 2px dashed #6b6b8a; background: #17172e; animation: boxPop 0.45s cubic-bezier(.2, 1.5, .4, 1); }
+        .ev-trick .cr-item-icon { filter: grayscale(0.2); }
+        .ev-trick .cr-name { color: #c8c8e0; }
+        .cr-front.trick { --rc: #55556e; background: #1d1d33; }
+        .cr-front.trick .ic { opacity: 0.85; }
+        .cr-back.ev { background: linear-gradient(160deg, #6a2b00, #2a1040); border-color: rgba(255, 140, 26, 0.7); }
+
         /* the draw */
         /* Scrolls when it's taller than the screen (a 10-draw on a small phone), so
            the buttons can always be reached; centred when it fits. */
@@ -583,6 +626,10 @@
             <p class="pack-summary" id="packSummary">150 tokens for USD $2</p>
             <div id="packButtonBox"></div>
         </div>
+
+        <!-- 🎃 AN EVENT (e.g. Trick or Treat): only while it's on (progress-core.js
+             EVENTS); the admin sees a preview any day. Filled in by renderEventCard(). -->
+        <div id="eventBox" style="display:none;"></div>
 
         <!-- THE CHEST. Contents, odds, prices and guarantees come from
              progress-core.js; api/progress.js does the actual draws. -->
@@ -1204,6 +1251,7 @@
                     `<div class="${owned.has(x.id) ? "own" : ""}" title="${escS(chestWhat(x))}">${x.icon} ${escS(x.name)}<small>${rates[x.id].toFixed(rates[x.id] < 1 ? 2 : 1)}%</small></div>`).join("")}</div>`;
             }).join("") + `<p style="font-size:0.75rem; color:#9a92c0; margin:8px 0 0;">Faded: already yours.</p>`;
             updateChestButtons();
+            renderEventCard();
         }
         function updateChestButtons() {
             const p1 = PC.chestPrice(1, chestState.perks), p10 = PC.chestPrice(10, chestState.perks);
@@ -1228,14 +1276,233 @@
                 again.disabled = chestBusy || (!useFree && storeBalance < price);
                 again.onclick = () => openStoreChest(c, useFree);
             }
+            updateEventButtons();
         }
         async function loadChestState() {
             if (!AppState.getCurrentUser()) return;
             try {
                 const st = await AppState.getProgressStatus();
-                chestState = { items: st.items || [], perks: st.perks || {}, pity: st.pity || { epic: 0, legendary: 0 }, freeDraws: st.freeDraws || 0 };
+                chestState = { items: st.items || [], perks: st.perks || {}, pity: st.pity || { epic: 0, legendary: 0 }, freeDraws: st.freeDraws || 0, events: st.events || {} };
                 renderChestCard();
             } catch (e) { console.warn("Couldn't load your items:", e.message); }
+        }
+
+        /* ---- 🎃 An event (Trick or Treat): its own card, only while it's on.
+           The admin sees it any day, marked as a preview, to try it out. ---- */
+        function shownEvent() {
+            const day = sgtDay();
+            const live = PC.activeEvent(day);
+            if (live) return { ev: live, preview: false };
+            if (!(AppState.isAdmin && AppState.isAdmin())) return null;
+            // the next one coming up (or the latest one), to test
+            const all = Object.values(PC.EVENTS).sort((a, b) => a.from.localeCompare(b.from));
+            const next = all.find(e => e.to >= day) || all[all.length - 1];
+            return next ? { ev: next, preview: true } : null;
+        }
+        const eventEndsAt = (ev) => Date.parse(ev.to + "T00:00:00+08:00") + 864e5;
+        function countdownText(ms) {
+            const s = Math.max(0, Math.floor(ms / 1000));
+            const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), sec = s % 60;
+            return `${h}:${String(m).padStart(2, "0")}:${String(sec).padStart(2, "0")}`;
+        }
+        function renderEventCard() {
+            const box = document.getElementById("eventBox");
+            const shown = shownEvent();
+            if (!shown) { box.style.display = "none"; box.innerHTML = ""; return; }
+            const { ev, preview } = shown;
+            const things = PC.eventThings(ev.id);
+            const owned = new Set(chestState.items);
+            const mine = (chestState.events || {})[ev.id] || {};
+            const got = things.filter(x => owned.has(x.id)).length;
+            const left = ev.pity - Math.max(0, mine.pity || 0);
+            box.style.display = "";
+            box.innerHTML = `
+                <h2 class="store-section" id="event"><span>${ev.icon}</span> ${escS(ev.name)}</h2>
+                <div class="ev-card">
+                    <span class="ev-tag${preview ? " preview" : ""}">${preview ? `Admin preview — players see this on ${escS(ev.from)} (SGT)` : `${escS(ev.label)} · today only`}</span>
+                    <div class="ev-art">🚪${ev.icon}</div>
+                    <div class="ev-title">${escS(ev.name)}!</div>
+                    <div class="ev-timer" id="evTimer">${preview ? "" : `Ends in ${countdownText(eventEndsAt(ev) - Date.now())}`}</div>
+                    <p class="ev-desc">Knock on the door for <b>${ev.price} 🪙</b>. About <b>${ev.treatChance}%</b> of knocks are a <b>treat</b> — something new from the ${things.length} limited ${escS(ev.label)} things below, yours to keep. The rest are <b>tricks</b>: nothing at all. 👻</p>
+                    <div class="ev-stats">
+                        <div>Your treats<b>${got} / ${things.length}</b></div>
+                        ${got === things.length
+                            ? `<div>It took you<b>${mine.knocks || 0} knock${mine.knocks === 1 ? "" : "s"}</b></div>`
+                            : `<div>A treat guaranteed<b>within ${left} knock${left === 1 ? "" : "s"}</b></div>`}
+                    </div>
+                    ${got === things.length
+                        ? `<div class="ev-done" id="evDone">🎉 You've collected every treat!<small>All ${things.length} are yours — show them off in Profile → 🎨 Style.</small></div>`
+                        : `<div class="ev-actions">
+                        <button type="button" class="cel-primary ripple-host" id="ev1Btn" onclick="knockEvent(1)"></button>
+                        <button type="button" class="cel-primary ten ripple-host" id="ev10Btn" onclick="knockEvent(10)"></button>
+                    </div>`}
+                    <div class="ev-grid">${things.map(x => `<div class="ev-thing${owned.has(x.id) ? " own" : ""}" style="--rc:${PC.RARITIES[x.rarity].color}" title="${escS(PC.RARITIES[x.rarity].label + " · " + chestWhat(x))}"><div class="ic">${x.icon}</div><div class="nm">${escS(x.name)}</div></div>`).join("")}</div>
+                    <details class="ev-rules">
+                        <summary>📜 How it works</summary>
+                        <ul>
+                            <li>Each knock: about ${ev.treatChance}% a treat, otherwise a trick (nothing). At least every ${ev.pity} knocks is a treat — your count carries over.</li>
+                            <li>A treat is always something you <b>don't have yet</b> — no duplicates. Rarer ones tend to turn up later.</li>
+                            <li>Your <b>first knock is free</b>. ×10 costs ${ev.price10} 🪙 (one knock free).</li>
+                            <li>Got all ${things.length}? Then you're done — no more knocking. (If a ×10 finishes your set, any treats after the last one are a handful of candy: +${ev.candy} 🪙 each.)</li>
+                            <li>Only on ${escS(ev.from)}${ev.to !== ev.from ? ` to ${escS(ev.to)}` : ""} (Singapore time). These things never come back in the normal chest — what you get stays yours.</li>
+                            <li>Nothing here has any cash value or can be traded.</li>
+                        </ul>
+                    </details>
+                </div>`;
+            updateEventButtons();
+        }
+        function updateEventButtons() {
+            const shown = shownEvent();
+            if (!shown) return;
+            const ev = shown.ev, mine = (chestState.events || {})[ev.id] || {};
+            const free = !mine.freeUsed;
+            const set = (id, count) => {
+                const b = document.getElementById(id);
+                if (!b) return;
+                const price = count === 1 && free ? 0 : PC.eventPrice(ev, count);
+                const short = storeBalance < price;
+                b.classList.toggle("free", count === 1 && free);
+                b.innerHTML = count === 1 && free ? `🎃 Knock — free! <small>your first knock is on us</small>`
+                    : short ? `Need ${price} 🪙 <small>you have ${storeBalance}</small>`
+                    : count === 10 ? `🎃 Knock ×10 · ${price} 🪙<small>one knock free</small>` : `🎃 Knock · ${price} 🪙`;
+                b.disabled = chestBusy || short || !AppState.getCurrentUser();
+            };
+            set("ev1Btn", 1);
+            set("ev10Btn", 10);
+            const again = document.getElementById("crAgain");
+            const complete = PC.eventThings(ev.id).every(x => chestState.items.includes(x.id));
+            if (again && again.dataset.event && complete) {
+                again.textContent = "🎉 You've collected every treat!";
+                again.disabled = true;
+            } else if (again && again.dataset.event) {
+                const c = Number(again.dataset.event), price = c === 1 && free ? 0 : PC.eventPrice(ev, c);
+                again.textContent = storeBalance < price ? `Need ${price} 🪙 to knock again` : `🎃 Knock ${c === 10 ? "×10" : "again"} · ${price} 🪙`;
+                again.disabled = chestBusy || storeBalance < price;
+                again.onclick = () => knockEvent(c);
+            }
+        }
+        setInterval(() => {
+            const t = document.getElementById("evTimer"), shown = shownEvent();
+            if (!t || !shown || shown.preview) return;
+            const ms = eventEndsAt(shown.ev) - Date.now();
+            if (ms <= 0) { renderEventCard(); return; }
+            t.textContent = `Ends in ${countdownText(ms)}`;
+        }, 1000);
+
+        window.knockEvent = async function (count) {
+            const shown = shownEvent();
+            if (chestBusy || !shown) return;
+            const ev = shown.ev, mine = (chestState.events || {})[ev.id] || {};
+            const price = count === 1 && !mine.freeUsed ? 0 : PC.eventPrice(ev, count);
+            if (storeBalance < price) return;
+            chestBusy = true;
+            updateChestButtons();
+            const overlay = document.getElementById("chestOverlay");
+            const stage = document.getElementById("crStage");
+            document.getElementById("crTitle").textContent = count === 10 ? `${ev.icon} Knock ×10…` : `${ev.icon} Knock knock…`;
+            document.getElementById("crSum").textContent = "";
+            document.getElementById("crActions").style.visibility = "hidden";
+            document.getElementById("crSkip").style.display = "";
+            document.getElementById("crClose").style.display = "none";
+            overlay.classList.toggle("cr-ten", count === 10);
+            overlay.scrollTop = 0;
+            stage.innerHTML = count === 10 ? "" : `<div class="ev-door knocking" id="evDoor">🚪</div><div class="cr-result" id="crResult"></div>`;
+            overlay.classList.add("open");
+            let r;
+            try {
+                r = await AppState.trickOrTreat(count, ev.id);
+            } catch (e) {
+                overlay.classList.remove("open");
+                chestBusy = false;
+                updateChestButtons();
+                showResultModal("Couldn't knock", e.message);
+                return;
+            }
+            storeBalance = r.balance;
+            countUp(document.getElementById("storeTokenBalance"), r.balance);
+            chestState.items = r.items; chestState.perks = r.perks;
+            chestState.events = { ...(chestState.events || {}), [ev.id]: r.state };
+            await (count === 10 ? revealKnocks(r.results) : revealKnock(r.results[0]));
+            document.getElementById("crSkip").style.display = "none";
+            const treats = r.results.filter(x => x.id).length, candy = r.candy || 0;
+            document.getElementById("crSum").textContent = count === 10
+                ? `${treats} treat${treats === 1 ? "" : "s"} · ${r.results.filter(x => x.trick).length} trick${r.results.filter(x => x.trick).length === 1 ? "" : "s"}${candy ? ` · +${candy} 🪙 candy` : ""}`
+                : "";
+            const again = document.getElementById("crAgain");
+            again.dataset.count = "";
+            again.dataset.event = String(count);
+            chestBusy = false;
+            renderChestCard();
+            document.getElementById("crActions").style.visibility = "visible";
+            document.getElementById("crClose").style.display = "";
+            setTimeout(() => document.getElementById("crActions").scrollIntoView({ block: "nearest", behavior: "smooth" }), 150);
+        };
+        function knockCardHtml(x) {
+            if (x.id) {
+                const e = PC.BY_ID[x.id], rr = PC.RARITIES[e.rarity];
+                return `<div class="cr-item" style="--rc:${rr.color}"><div class="cr-item-icon">${e.icon}</div><span class="cr-rarity">${rr.label} · limited</span>
+                    <div class="cr-name">${escS(e.name)}</div><div class="cr-what">${escS(chestWhat(e))}</div>
+                    <div class="cr-dup" style="color:#7ddc92;">${PC.ITEM_BY_ID[x.id] ? "Treat! Its bonus is on now." : "Treat! Show it in Profile → 🎨 Style."}</div></div>`;
+            }
+            if (x.candy) return `<div class="cr-item" style="--rc:#ffb347"><div class="cr-item-icon">🍬</div><div class="cr-name">A handful of candy</div><div class="cr-dup">You have every treat — +${x.candy} 🪙</div></div>`;
+            const msg = PC.TRICKS[x.msg] || PC.TRICKS[0];
+            return `<div class="ev-trick"><div class="cr-item-icon">${msg.split(" ")[0]}</div><div class="cr-name">Trick!</div><div class="cr-what" style="color:#c8c8e0;">${escS(msg.split(" ").slice(1).join(" "))}</div></div>`;
+        }
+        // One knock: the door rattles, then a treat or a trick.
+        function revealKnock(x) {
+            return new Promise(resolve => {
+                let finished = false;
+                const finish = () => {
+                    if (finished) return;
+                    finished = true; revealDone = null; clearTimeout(timer);
+                    const door = document.getElementById("evDoor");
+                    door.classList.remove("knocking");
+                    door.textContent = x.id || x.candy ? "🚪✨" : "🚪";
+                    document.getElementById("crResult").innerHTML = knockCardHtml(x);
+                    document.getElementById("crTitle").textContent = x.id ? "🍬 Treat!" : x.candy ? "🍬 Candy!" : "👻 Trick!";
+                    const icon = document.querySelector("#crResult .cr-item-icon");
+                    if (x.id) burstFrom(icon, ["🍬", "🍭", "✨", PC.BY_ID[x.id].icon], PC.RARITY_ORDER.indexOf(PC.BY_ID[x.id].rarity) >= 3 ? 34 : 20);
+                    else if (x.candy) burstFrom(icon, ["🍬", "🪙"], 12);
+                    else burstFrom(icon, ["🦇", "🕸️", "👻"], 8);
+                    setTimeout(resolve, 350);
+                };
+                revealDone = finish;
+                const timer = setTimeout(finish, matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 1500);
+            });
+        }
+        // Ten knocks: ten cards turn over one by one (treats glow).
+        function revealKnocks(results) {
+            return new Promise(resolve => {
+                const stage = document.getElementById("crStage");
+                stage.innerHTML = `<div class="cr-grid">${results.map((x, i) => {
+                    const e = x.id ? PC.BY_ID[x.id] : null;
+                    const front = e
+                        ? `<div class="cr-face cr-front" style="--rc:${PC.RARITIES[e.rarity].color}"><span class="tg">NEW</span><div class="ic">${e.icon}</div><div class="nm">${escS(e.name)}</div></div>`
+                        : x.candy ? `<div class="cr-face cr-front" style="--rc:#ffb347"><div class="ic">🍬</div><div class="nm">+${x.candy} 🪙</div></div>`
+                        : `<div class="cr-face cr-front trick"><div class="ic">${(PC.TRICKS[x.msg] || PC.TRICKS[0]).split(" ")[0]}</div><div class="nm">Trick</div></div>`;
+                    return `<div class="cr-card${e ? " big" : ""}" id="crCard${i}" style="--rc:${e ? PC.RARITIES[e.rarity].color : "#55556e"}"><div class="cr-card-in">
+                        <div class="cr-face cr-back ev">🚪</div>${front}</div></div>`;
+                }).join("")}</div><div class="cr-result" id="crResult" style="min-height:0;"></div>`;
+                let i = 0, timer = null, finished = false;
+                const flip = (k) => {
+                    const card = document.getElementById("crCard" + k);
+                    if (!card || card.classList.contains("flip")) return;
+                    card.classList.add("flip");
+                    if (results[k].id && !finished) burstFrom(card, ["🍬", "✨", PC.BY_ID[results[k].id].icon], 14);
+                };
+                const finish = () => {
+                    if (finished) return;
+                    finished = true; revealDone = null; clearInterval(timer);
+                    results.forEach((_, k) => flip(k));
+                    const treats = results.filter(x => x.id);
+                    document.getElementById("crTitle").textContent = treats.length ? `🍬 ${treats.length} treat${treats.length === 1 ? "" : "s"}!` : "👻 All tricks!";
+                    const best = treats.slice().sort((a, b) => PC.RARITY_ORDER.indexOf(PC.BY_ID[b.id].rarity) - PC.RARITY_ORDER.indexOf(PC.BY_ID[a.id].rarity))[0];
+                    document.getElementById("crResult").innerHTML = best ? `<div style="margin-top:12px;">${knockCardHtml(best)}</div>` : "";
+                    setTimeout(resolve, 300);
+                };
+                revealDone = finish;
+                timer = setInterval(() => { flip(i++); if (i >= results.length) { clearInterval(timer); setTimeout(finish, 600); } }, 320);
+            });
         }
 
         let revealDone = null;   // finishes the running animation at once (Skip)
@@ -1277,6 +1544,7 @@
                 : "";
             const again = document.getElementById("crAgain");
             again.dataset.count = String(count);
+            again.dataset.event = "";
             chestBusy = false;
             renderChestCard();
             document.getElementById("crActions").style.visibility = "visible";
@@ -1293,6 +1561,7 @@
             if (chestBusy) return;
             document.getElementById("chestOverlay").classList.remove("open");
             document.getElementById("crAgain").dataset.count = "";
+            document.getElementById("crAgain").dataset.event = "";
         };
         function itemCardHtml(x) {
             const e = PC.BY_ID[x.id], rr = PC.RARITIES[e.rarity];

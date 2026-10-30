@@ -254,6 +254,11 @@ async function signOutUser() {
     async function openItemChest(count = 1, free = false) {
         return callProgressApi("openChest", { count, free });
     }
+    // 🎃 Knock at an event's door (1 or 10). eventId only matters for the
+    // admin trying it out before the day.
+    async function trickOrTreat(count = 1, eventId = null) {
+        return callProgressApi("trickOrTreat", { count, eventId });
+    }
     // type "border" | "name" | "bubble"; id null takes it off.
     async function equipStyle(type, id) {
         return callProgressApi("equipStyle", { type, id });
@@ -2498,7 +2503,8 @@ async function getClanPostCooldownRemaining() {
     // Everyone has the first six; the rest come with emote packs (the same
     // list as ProgressCore.ALL_REACTIONS and the Firestore rules).
     const REACTIONS = ["❤️", "😂", "😮", "😢", "👍", "🔥", "🎉", "🥳", "🍾", "🎊", "🍕", "🍔", "🍟", "🍩", "🐶", "🦊", "🐼", "🐸",
-        "😺", "😹", "😻", "🙀", "⚔️", "🛡️", "🏹", "💥", "🎃", "👻", "💀", "🦇", "❄️", "⛄", "🎄", "🦌", "💞", "💖", "💘", "💝"];
+        "😺", "😹", "😻", "🙀", "⚔️", "🛡️", "🏹", "💥", "🎃", "👻", "💀", "🦇", "❄️", "⛄", "🎄", "🦌", "💞", "💖", "💘", "💝",
+        "🍬", "🍭", "🧙", "🔮"];
     async function setReaction(target, emojis) {
         await waitForAuthReady();
         if (!currentUser) throw new Error("Sign in with Google first to react.");
@@ -5020,7 +5026,7 @@ async function maybeRefreshAd(containerId) {
         listenToMyGiftClaims, claimTokenGift, adminTokens,
         reportQuestProgress, startDailyQuestTracking, stakeTokensOnSecretGiveaway, setSecretGiveawayStake, refreshSecretGiveawayMaxStake,
         // achievements, badges, profile likes, items
-        trackProgress, getProgressStatus, claimAchievement, setShownBadges, setProfileLike, openItemChest,
+        trackProgress, getProgressStatus, claimAchievement, setShownBadges, setProfileLike, openItemChest, trickOrTreat,
         getPlayerCard, getPlayerCards, haveILikedProfile, getMyPerks, getMyItemIds, equipStyle,
         // profile
         getProfile, setProfile, isVipActive, isNoAdsActive, isBannedNow, shouldShowAds, listenToMyProfile,

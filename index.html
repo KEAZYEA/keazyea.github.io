@@ -3229,6 +3229,8 @@ window.closeLegalModal = closeLegalModal;
         const sgtDay = () => new Date(Date.now() + 8 * 3600e3).toISOString().slice(0, 10);
         // Where an achievement-only thing comes from ("Mythic Loyal Commander").
         function rewardSource(id) {
+            const x = PC.BY_ID[id], ev = x && x.event && PC.EVENTS[x.event];
+            if (ev) return `${ev.icon} ${ev.name} (${ev.label}) — limited`;
             const a = Object.keys(PC.ACHIEVEMENT_REWARDS).find(k => PC.ACHIEVEMENT_REWARDS[k].includes(id));
             return a ? `Mythic ${PC.ACHIEVEMENT_BY_ID[a].name}` : "";
         }
@@ -3249,7 +3251,15 @@ window.closeLegalModal = closeLegalModal;
             const rates = PC.dropRates(day);
             const lines = PC.perkLines(st.perks || {});
             const chestItems = PC.ITEMS.filter(i => i.chest);
-            const achItems = PC.ITEMS.filter(i => !i.chest);
+            const achItems = PC.ITEMS.filter(i => !i.chest && !i.event);
+            // event items: shown while the event is on, or once you own one
+            const liveEv = PC.activeEvent(day);
+            const evSections = Object.values(PC.EVENTS).map(ev => {
+                const list = PC.ITEMS.filter(i => i.event === ev.id);
+                if (!list.length || !(liveEv === ev || list.some(i => owned.has(i.id)))) return "";
+                return `<div class="it-head"><span>${ev.icon} ${escText(ev.label)} · limited</span><small>${list.filter(i => owned.has(i.id)).length} / ${list.length}</small></div>
+                    <div class="it-grid">${list.map(it => itemCardHtml(it, owned.has(it.id), liveEv === ev ? `🔒 a treat from ${ev.name} — in the Store today` : day < ev.from ? `🔒 ${ev.name} — on ${ev.from}` : "🔒 event over")).join("")}</div>`;
+            }).join("");
             const pct = (id) => `🔒 ${rates[id].toFixed(rates[id] < 1 ? 2 : 1)}% per draw`;
             const byRarity = PC.RARITY_ORDER.slice().reverse().map(k => {
                 const list = chestItems.filter(i => i.rarity === k);
@@ -3266,6 +3276,7 @@ window.closeLegalModal = closeLegalModal;
                 ${byRarity}
                 <div class="it-head"><span>Achievement rewards</span><small>${achItems.filter(i => owned.has(i.id)).length} / ${achItems.length}</small></div>
                 <div class="it-grid">${achItems.map(it => itemCardHtml(it, owned.has(it.id), rewardSource(it.id))).join("")}</div>
+                ${evSections}
                 <div class="it-chest">
                     <div style="font-size:2rem;">${PC.CHEST.icon}</div>
                     <b>${PC.CHEST.name} · ${PC.CHEST.price} 🪙 · ×10 ${PC.CHEST.price10} 🪙</b>
@@ -3290,16 +3301,19 @@ window.closeLegalModal = closeLegalModal;
             const owned = new Set(st.items || []);
             const shown = st.style || {};
             const day = sgtDay();
+            // a limited event's styles show as locked only while it's on
+            const liveEv = PC.activeEvent(day);
+            const offered = (s) => !s.event || (liveEv && liveEv.id === s.event);
             const sections = STYLE_SLOTS.map(([type, label]) => {
                 const all = PC.STYLES.filter(s => s.type === type && (owned.has(s.id) || (s.vip && st.vip)));
-                const locked = PC.STYLES.filter(s => s.type === type && !owned.has(s.id) && !(s.vip && st.vip));
+                const locked = PC.STYLES.filter(s => s.type === type && !owned.has(s.id) && !(s.vip && st.vip) && offered(s));
                 const none = `<button type="button" class="st-opt${!shown[type] ? " on" : ""}" onclick="pickStyle('${type}', null)"><span class="st-prev st-none">None</span><small>None</small></button>`;
                 const mine = all.map(s => `<button type="button" class="st-opt${shown[type] === s.id ? " on" : ""}" style="--rc:${PC.RARITIES[s.rarity].color}" onclick="pickStyle('${type}', '${s.id}')">
                     <span class="st-prev">${stylePreview(s)}</span><small>${escText(s.name)}</small></button>`).join("");
                 const lockedHtml = locked.length ? `<div class="st-locked">${locked.map(s => `<span title="${escText(s.vip ? "Comes with Super Supporter" : s.chest ? `From the chest (${PC.RARITIES[s.rarity].label})` : rewardSource(s.id))}">${s.icon} ${escText(s.name)}</span>`).join("")}</div>` : "";
                 return `<div class="st-section"><div class="st-title">${label}<small>${all.length} yours</small></div><div class="st-options">${none}${mine}</div>${lockedHtml}</div>`;
             }).join("");
-            const packs = PC.STYLES.filter(s => s.type === "emotes");
+            const packs = PC.STYLES.filter(s => s.type === "emotes" && (owned.has(s.id) || offered(s)));
             const packsHtml = `<div class="st-section"><div class="st-title">Emote packs<small>all yours are on — in reactions and the 😊 panel</small></div>
                 ${packs.map(s => {
                     const has = owned.has(s.id);
