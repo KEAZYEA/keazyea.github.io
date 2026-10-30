@@ -2487,9 +2487,11 @@ async function getClanPostCooldownRemaining() {
 // Lets a user edit the text of their own already-sent message. Also
     // keeps the thread's lastMessageText preview in sync if the edited
     // message happens to be the most recent one in the thread.
-    /* Reactions on a comment or a chat message: one per person, from this
-       set (the Firestore rules only accept these), stored on the comment /
-       message as reactions: { uid: emoji }. emoji null takes yours off.
+    /* Reactions on a comment or a chat message: as many different ones per
+       person as they like, from this set (the Firestore rules only accept
+       these), stored on the comment / message as reactions: { uid: [emoji…] }
+       (older ones are a single emoji string). `emojis` is your whole new
+       list; an empty list (or null) takes all of yours off.
        target: { kind: "formation", postId, commentId }
              | { kind: "tierList", tierListId, commentId }
              | { kind: "dm", threadId, msgId } */
@@ -2497,14 +2499,15 @@ async function getClanPostCooldownRemaining() {
     // list as ProgressCore.ALL_REACTIONS and the Firestore rules).
     const REACTIONS = ["❤️", "😂", "😮", "😢", "👍", "🔥", "🎉", "🥳", "🍾", "🎊", "🍕", "🍔", "🍟", "🍩", "🐶", "🦊", "🐼", "🐸",
         "😺", "😹", "😻", "🙀", "⚔️", "🛡️", "🏹", "💥", "🎃", "👻", "💀", "🦇", "❄️", "⛄", "🎄", "🦌", "💞", "💖", "💘", "💝"];
-    async function setReaction(target, emoji) {
+    async function setReaction(target, emojis) {
         await waitForAuthReady();
         if (!currentUser) throw new Error("Sign in with Google first to react.");
-        if (emoji !== null && !REACTIONS.includes(emoji)) throw new Error("That reaction isn't available.");
+        const list = [...new Set(emojis == null ? [] : Array.isArray(emojis) ? emojis : [emojis])];
+        if (!list.every(e => REACTIONS.includes(e))) throw new Error("That reaction isn't available.");
         const ref = target.kind === "formation" ? doc(db, "formationPosts", target.postId, "comments", target.commentId)
             : target.kind === "tierList" ? doc(db, "tierLists", target.tierListId, "comments", target.commentId)
             : doc(db, "dmThreads", target.threadId, "messages", target.msgId);
-        await updateDoc(ref, { ["reactions." + currentUser.uid]: emoji === null ? deleteField() : emoji });
+        await updateDoc(ref, { ["reactions." + currentUser.uid]: list.length ? list : deleteField() });
     }
 
     async function editDmMessage(threadId, messageId, newText) {
