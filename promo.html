@@ -2604,6 +2604,15 @@ if (user && user.uid === winnerData.winnerUid) {
             // counts them — 1 + tokens (×Lucky Beads…) + your items' chances.
             const myWeight = (staked) => window.ProgressCore ? ProgressCore.secretWeight(staked, mySecretPerks) : staked + 1;
             const balls = (n) => Math.round(n); // Lucky Beads can make a token worth 1.1
+            // Your bid with `staked` tokens, counted the way the top bid is:
+            // everything you add on top of your free ball, items included.
+            const myBid = (staked) => Math.round((myWeight(staked) - 1) * 100) / 100;
+            // The fewest tokens that make your bid beat `top` (your items count).
+            function tokensToBeat(top) {
+                let t = Math.max(0, Math.floor((top - myBid(0)) / Math.max(0.01, myBid(1) - myBid(0))) - 1);
+                while (myBid(t) <= top) t++;
+                return t;
+            }
 
             /* Everyone else's item balls: the server adds them up per draw and
                keeps the sums on the giveaway (g.itemExtra). We also learn our own
@@ -2643,16 +2652,17 @@ if (user && user.uid === winnerData.winnerUid) {
                 secretBalancePromise = null;
             }
 
-            // Giveaways staked on before the highest stake was tracked: ask the
-            // server to work it out once; the result arrives through the
-            // listener like any other change.
+            // The top bid in your draw, counting items (the server keeps it on
+            // the giveaway as maxScore*). Giveaways staked on before it was
+            // tracked: ask the server to work it out once; the result arrives
+            // through the listener like any other change.
             const maxStakeRequested = new Set();
             const maxStakeFailed = new Set();
             function secretTopStake(g, platform) {
-                const ios = g.maxStakeIos;
-                const android = g.maxStakeAndroid;
+                const ios = g.maxScoreIos;
+                const android = g.maxScoreAndroid;
                 if (typeof ios !== "number" || typeof android !== "number") {
-                    if (!((g.iosTokensStaked || 0) + (g.androidTokensStaked || 0))) return 0; // nothing staked yet
+                    if (!((g.iosTokensStaked || 0) + (g.androidTokensStaked || 0)) && !(g.itemExtra && (g.itemExtra.ios || g.itemExtra.android || g.itemExtra.all))) return 0; // nothing staked yet
                     if (!maxStakeRequested.has(g.id) && AppState.getCurrentUser()) {
                         maxStakeRequested.add(g.id);
                         AppState.refreshSecretGiveawayMaxStake(g.id).catch(e => {
@@ -3053,29 +3063,35 @@ if (user && user.uid === winnerData.winnerUid) {
                     </div>`;
             }
 
-            // What "Beat the top" would set your stake to: one more than the
-            // highest if you can afford it, otherwise everything you have
-            // (which matches the top exactly if that's as far as you can go).
-            // null when there's nothing useful to offer.
+            // Bids are compared with items counted: tokens (×Lucky Beads) plus
+            // item chances. So with +5 from items against a top bid of 10,
+            // 6 tokens beat it.
+            // What "Beat the top" would set your stake to: the fewest tokens
+            // that beat the top if you can afford them, otherwise everything
+            // you have. null when there's nothing useful to offer.
             function beatTopTarget(staked, top, balance) {
-                if (typeof top !== "number" || staked > top || (staked === top && top > 0)) return null;
-                const affordable = staked + balance;
-                const target = Math.min(top + 1, affordable);
+                const bid = myBid(staked);
+                if (typeof top !== "number" || bid > top || (bid === top && top > 0)) return null;
+                const target = Math.min(tokensToBeat(top), staked + balance);
                 return target > staked ? target : null;
             }
             function beatTopLabel(target, top) {
+                const bid = myBid(target);
                 if (top === 0) return `🔝 Be the top bid · ${target}`;
-                if (target > top) return `🔝 Beat the top · ${target}`;
-                if (target === top) return `🔝 Match the top · ${target}`;
+                if (bid > top) return `🔝 Beat the top · ${target}`;
+                if (bid === top) return `🔝 Match the top · ${target}`;
                 return `🔝 All you have · ${target}`;
             }
+            // Your items' part of a bid, for the hints ("+5 from your items").
+            const itemsNote = (n) => { const x = balls(myBid(n) - n); return x > 0 ? ` · your items add +${x}` : ""; };
             // Where a number of coins would put you against the top bid.
             function topHint(n, top) {
                 if (typeof top !== "number") return "";
-                if (top === 0) return n > 0 ? "🔝 That's the top bid" : "Nobody's thrown coins in yet — 1 🪙 makes you the top bid";
-                if (n > top) return `🔝 That's the top bid (beats ${top})`;
-                if (n === top) return "🔝 Level with the top bid";
-                return `${top + 1 - n} more would make you the top bid (top: ${top})`;
+                const bid = myBid(n);
+                if (top === 0) return bid > 0 ? `🔝 That's the top bid${itemsNote(n)}` : "Nobody's thrown coins in yet — 1 🪙 makes you the top bid";
+                if (bid > top) return `🔝 That's the top bid (${balls(bid)} beats ${balls(top)}${itemsNote(n)})`;
+                if (bid === top) return `🔝 Level with the top bid (${balls(top)}${itemsNote(n)})`;
+                return `${tokensToBeat(top) - n} more would make you the top bid (top: ${balls(top)}${itemsNote(n)})`;
             }
 
             // The big button under − / +, for a number `total` (null: not a
@@ -3271,6 +3287,10 @@ if (user && user.uid === winnerData.winnerUid) {
                 if (g && typeof result.maxStakeIos === "number") {
                     g.maxStakeIos = result.maxStakeIos;
                     g.maxStakeAndroid = result.maxStakeAndroid;
+                }
+                if (g && typeof result.maxScoreIos === "number") {
+                    g.maxScoreIos = result.maxScoreIos;
+                    g.maxScoreAndroid = result.maxScoreAndroid;
                 }
             }
 
@@ -3532,7 +3552,7 @@ if (user && user.uid === winnerData.winnerUid) {
                     </div>` : `<div class="sc-stats">
                         <div><b>${st.players}</b><span>👥 entries</span></div>
                         <div><b class="gold">${st.pot}</b><span>🪙 in the pot</span></div>
-                        <div><b>${typeof top === "number" ? top : top === null ? "…" : "–"}</b><span>🔝 top bid</span></div>
+                        <div><b>${typeof top === "number" ? balls(top) : top === null ? "…" : "–"}</b><span>🔝 top bid</span></div>
                     </div>`;
 
                 let bodyHtml;

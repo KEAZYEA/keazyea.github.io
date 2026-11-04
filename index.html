@@ -3404,6 +3404,12 @@ window.closeLegalModal = closeLegalModal;
             showProfileTab(tab);
             goToPage("profile"); // loads the tab
         };
+        // Straight to a part of the Store ("event": the Trick or Treat card, "chest") — for news posts' buttons.
+        window.openStoreAt = function (at) {
+            const frame = document.querySelector("#page-store iframe");
+            setSectionFrameUrl(frame, /^(event|chest)$/.test(at) ? "store.html#" + at : "store.html");
+            goToPage("store");
+        };
         window.openChestInStore = function () {
             const frame = document.querySelector("#page-store iframe");
             setSectionFrameUrl(frame, "store.html#chest");
@@ -5313,6 +5319,9 @@ if (challengeCode) {
         setSectionFrameUrl(document.querySelector("#page-troops iframe"),
             "troopsandheroes.html?unit=" + encodeURIComponent(linkUnit) + (urlParams.get("compare") ? "&compare=1" : ""));
     }
+    // ?goto=store&at=event|chest: straight to that part of the Store
+    const storeAt = urlParams.get("at");
+    if (gotoPage === "store" && /^(event|chest)$/.test(storeAt || "")) setSectionFrameUrl(document.querySelector("#page-store iframe"), "store.html#" + storeAt);
     goToPage(gotoPage);
     history.replaceState(history.state, "", window.location.pathname); // consume it — refresh won't re-trigger this
 } else if (pageBeforeRefresh && pageBeforeRefresh !== "home") {
