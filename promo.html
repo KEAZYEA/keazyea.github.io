@@ -507,15 +507,18 @@
 
         /* your odds: the words above a thin bar (never on top of the gold), the % in its own pill */
         .share-meter { margin: 0 0 14px; }
-        .share-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
-        .share-text { font-size: 0.84rem; color: #e4e0f7; }
+        .share-top { display: flex; align-items: baseline; justify-content: center; gap: 8px; margin-bottom: 8px; }
+        .share-label { font-size: 0.95rem; font-weight: 800; color: #e4e0f7; }
+        .share-label .if, .share-meter.preview .share-label .now { display: none; }
+        .share-meter.preview .share-label .if { display: inline; }
+        .share-text { display: block; margin-top: 8px; text-align: center; font-size: 0.84rem; color: #e4e0f7; }
         .share-items { display: block; margin-top: 2px; font-size: 0.74rem; font-weight: 800; color: #ffd75e; }
         .share-text b { color: #fff; }
-        .share-pct { flex-shrink: 0; font-style: normal; font-size: 0.8rem; font-weight: 900; padding: 3px 10px; border-radius: 999px; background: #ffd75e; color: #1a1a2e; white-space: nowrap; }
+        .share-pct { flex-shrink: 0; font-style: normal; font-size: 2.3rem; line-height: 1; font-weight: 900; color: #ffd75e; text-shadow: 0 2px 12px rgba(255, 196, 0, 0.35); white-space: nowrap; }
         .share-bar { height: 10px; border-radius: 999px; overflow: hidden; background: #241f3e; border: 1px solid rgba(255, 215, 94, 0.35); }
         .share-fill { height: 100%; width: 0; border-radius: 999px; background: linear-gradient(90deg, #b8860b, #ffc400, #fff1a8); transition: width 1s cubic-bezier(.2, .9, .3, 1); }
         @keyframes sweep { from { background-position: 150% 0; } to { background-position: -50% 0; } }
-        .share-meter.preview .share-pct { background: #fff; }
+        .share-meter.preview .share-pct { color: #fff; }
         .share-meter.preview .share-fill { transition: width 0.3s ease; background: repeating-linear-gradient(45deg, #ffc400 0 8px, #ffe27a 8px 16px); }
 
         /* − [ 3 ] + */
@@ -2604,6 +2607,9 @@ if (user && user.uid === winnerData.winnerUid) {
             // counts them — 1 + tokens (×Lucky Beads…) + your items' chances.
             const myWeight = (staked) => window.ProgressCore ? ProgressCore.secretWeight(staked, mySecretPerks) : staked + 1;
             const balls = (n) => Math.round(n); // Lucky Beads can make a token worth 1.1
+            // A bid as shown: one decimal when it has one (Lucky Beads), so
+            // 69.1 against 69 doesn't read "69 beats 69".
+            const fmtBid = (n) => String(Math.round(n * 10) / 10);
             // Your bid with `staked` tokens, counted the way the top bid is:
             // everything you add on top of your free ball, items included.
             const myBid = (staked) => Math.round((myWeight(staked) - 1) * 100) / 100;
@@ -2988,6 +2994,18 @@ if (user && user.uid === winnerData.winnerUid) {
             // plus everyone's item bonuses — all the balls but the free ones.
             // Yours goes by your live items when you're in (`staked` = your
             // tokens; null when you're not in this draw).
+            // What one of your tokens is worth in balls (Lucky Beads: 1.3).
+            const tokenWorth = () => Math.round((1 + mySecretPerks.stakeMult / 100) * 100) / 100;
+            // "🎒 Your items add +22 chances…": everything your items add with
+            // `staked` tokens in — the same figure as the meter's "from your
+            // items", so the two never disagree — and where it comes from.
+            function myItemsLine(staked) {
+                const add = balls(myWeight(staked) - 1 - staked), flat = mySecretPerks.secretChance, m = mySecretPerks.stakeMult > 0;
+                if (!flat && !m) return "";
+                if (!add) return `<p class="enter-free-note">🎒 Your items make each token you add count ×${tokenWorth()}.</p>`;
+                const from = m ? ` (${flat ? `+${flat} extra, and ` : ""}each token counts ×${tokenWorth()})` : "";
+                return `<p class="enter-free-note">🎒 Your items add <b>+${add}</b> chance${add === 1 ? "" : "s"} to this entry${from}.</p>`;
+            }
             function potWithItems(g, platform, staked) {
                 const mineItems = staked == null || g.tokensAllowed === false ? 0 : myWeight(staked) - 1 - staked;
                 return drawGroupStats(g, platform).pot + othersItemBalls(g, platform) + mineItems;
@@ -3011,7 +3029,7 @@ if (user && user.uid === winnerData.winnerUid) {
             }
             const fmtChance = (p) => (p >= 1 ? "100%" : p < 0.01 ? "<1%" : Math.round(p * 100) + "%");
             const chanceText = (lead, mine, total, fromItems) => `${lead}: <b>${balls(mine)}</b> of ${balls(total)} balls${fromItems >= 0.5 ? ` <small class="share-items">🎒 +${balls(fromItems)} from your items</small>` : ""}`;
-            const chancePct = (p) => `≈${fmtChance(p)} to win`;
+            const chancePct = (p) => `≈${fmtChance(p)}`;
 
             // Where balls sit in the globe: a honeycomb inside the circle, bottom
             // rows first (middle outwards), so they pile up from the bottom.
@@ -3078,8 +3096,9 @@ if (user && user.uid === winnerData.winnerUid) {
                         <div class="globe-hand"></div>
                     </div>
                     <div class="share-meter">
-                        <div class="share-top"><span class="share-text">${chanceText("Your chances", mine, total, fromItems)}</span><em class="share-pct">${chancePct(p)}</em></div>
+                        <div class="share-top"><em class="share-pct">${chancePct(p)}</em><span class="share-label"><span class="now">chance to win</span><span class="if">would be your chance</span></span></div>
                         <div class="share-bar"><div class="share-fill" data-to="${pct(p)}" style="width:${prev ? pct(prev.share) : 0}%"></div></div>
+                        <span class="share-text">${chanceText("Your chances", mine, total, fromItems)}</span>
                     </div>`;
             }
 
@@ -3107,14 +3126,14 @@ if (user && user.uid === winnerData.winnerUid) {
             // Your items' part of a bid, for the hints ("+5 from your items").
             const itemsNote = (n) => { const x = balls(myBid(n) - n); return x > 0 ? ` · your items add +${x}` : ""; };
             // Where a number of coins would put you against everyone else's
-            // best bid (`top`).
-            function topHint(n, top) {
+            // best bid (`top`). `now`: it's what you have in (not a preview).
+            function topHint(n, top, now) {
                 if (typeof top !== "number") return "";
                 const bid = myBid(n);
-                if (top === 0) return bid > 0 ? `🔝 That's the top bid${itemsNote(n)}` : "Nobody's thrown coins in yet — 1 🪙 makes you the top bid";
-                if (bid > top) return `🔝 That's the top bid (${balls(bid)} beats ${balls(top)}${itemsNote(n)})`;
-                if (bid === top) return `🔝 Level with the top bid (${balls(top)}${itemsNote(n)})`;
-                return `${tokensToBeat(top) - n} more would make you the top bid (top: ${balls(top)}${itemsNote(n)})`;
+                if (top === 0) return bid > 0 ? (now ? "🔝 You're the top bid" : `🔝 That's the top bid${itemsNote(n)}`) : "Nobody's thrown coins in yet — 1 🪙 makes you the top bid";
+                if (bid > top) return now ? `🔝 You're the top bid (${fmtBid(bid)} · next best ${fmtBid(top)})` : `🔝 That's the top bid (${fmtBid(bid)} beats ${fmtBid(top)}${itemsNote(n)})`;
+                if (bid === top) return `🔝 Level with the top bid (${fmtBid(top)}${itemsNote(n)})`;
+                return `${tokensToBeat(top) - n} more would make you the top bid (top: ${fmtBid(top)}${itemsNote(n)})`;
             }
 
             // The big button under − / +, for a number `total` (null: not a
@@ -3123,10 +3142,10 @@ if (user && user.uid === winnerData.winnerUid) {
                 const staked = info.staked;
                 if (total === null) return { cls: "idle", label: "Type a whole number", disabled: true, hint: "" };
                 const change = total - staked;
-                if (change === 0) return { cls: "idle", label: staked ? `✅ ${staked} 🪙 in · ${plural(balls(myWeight(staked)), "chance")}` : "Tap + to pick up coins", disabled: true, hint: topHint(staked, info.top) };
+                if (change === 0) return { cls: "idle", label: staked ? "Use − / + to change your coins" : "Tap + to pick up coins", disabled: true, hint: topHint(staked, info.top, true) };
                 if (change > balance) return { cls: "short", label: `Need ${change - balance} more 🪙`, disabled: true, hint: `You have ${balance} 🪙 — <a href="#" onclick="openTokenWays(); return false;">get more</a>` };
-                if (change > 0) return { cls: "go", label: `🎯 Throw ${change} in → ${plural(balls(myWeight(total)), "chance")}`, disabled: false, hint: topHint(total, info.top) };
-                return { cls: "back", label: `↩ Take ${-change} back → ${plural(balls(myWeight(total)), "chance")}`, disabled: false, hint: total ? topHint(total, info.top) : "You keep your 1 free chance" };
+                if (change > 0) return { cls: "go", label: `🎯 Throw ${change} in`, disabled: false, hint: topHint(total, info.top) };
+                return { cls: "back", label: `↩ Take ${-change} back`, disabled: false, hint: total ? topHint(total, info.top) : "You keep your 1 free chance" };
             }
             function readDraft(input) {
                 const raw = input ? input.value : "";
@@ -3566,7 +3585,7 @@ if (user && user.uid === winnerData.winnerUid) {
                 const everyone = AppState.isEveryoneSecretGiveaway(g);
                 const platform = detail.entry ? detail.entry.platform : device;
 
-                // Players / coins in the pot / top bid, for the draw you're in.
+                // Players / every ball in the globe / top bid, for the draw you're in.
                 const st = drawGroupStats(g, platform);
                 const top = secretTopStake(g, platform);
                 const noTokens = g.tokensAllowed === false;
@@ -3577,8 +3596,8 @@ if (user && user.uid === winnerData.winnerUid) {
                         <div><b>${st.players ? Math.min(100, Math.round(slots / st.players * 100)) + "%" : "–"}</b><span>🎯 your chance</span></div>
                     </div>` : `<div class="sc-stats">
                         <div><b>${st.players}</b><span>👥 entries</span></div>
-                        <div><b class="gold">${balls(potWithItems(g, platform, detail.entry ? detail.entry.tokens || 0 : null))}</b><span>🪙 in the pot</span></div>
-                        <div><b>${typeof top === "number" ? balls(top) : top === null ? "…" : "–"}</b><span>🔝 top bid</span></div>
+                        <div><b class="gold">${balls(st.players + potWithItems(g, platform, detail.entry ? detail.entry.tokens || 0 : null))}</b><span>🔮 balls in all</span></div>
+                        <div><b>${typeof top === "number" ? fmtBid(top) : top === null ? "…" : "–"}</b><span>🔝 top bid</span></div>
                     </div>`;
 
                 let bodyHtml;
@@ -3610,7 +3629,7 @@ if (user && user.uid === winnerData.winnerUid) {
                             ${detail.tiers ? window.KIHPrize.renderTiers(detail.tiers) : window.KIHPrize.render(detail.prize || detail.reward || "…")}</div>
                         ${warn}
                         ${statsHtml}
-                        ${!noTokens && myItemChances ? `<p class="enter-free-note">🎒 Your items add <b>+${myItemChances}</b> chance${myItemChances === 1 ? "" : "s"} to this entry.</p>` : ""}
+                        ${!noTokens ? myItemsLine(detail.entry.tokens || 0) : ""}
                         ${myPlatformHasSlots ? renderStakeHtml(g, detail.entry, isExpired, sideDrawn) : ""}
                         ${switchBtn}`;
                 } else if (isExpired) {
@@ -3626,7 +3645,7 @@ if (user && user.uid === winnerData.winnerUid) {
                         <div class="sc-prize" data-id="${g.id}">
                             <div class="sc-prize-head"><span class="sc-prize-icon">🎁</span><small>Up for grabs${detail.tiers ? " (one of these)" : ""}:</small></div>
                             ${detail.tiers ? window.KIHPrize.renderTiers(detail.tiers) : window.KIHPrize.render(detail.prize || detail.reward)}</div>` : ""}
-                        <p class="enter-free-note">${g.tokensAllowed === false ? "Entering is free." : "Entering is free. Tokens are optional: each one you add is an extra chance."}${g.tokensAllowed !== false && myItemChances ? ` Your items add +${myItemChances}.` : ""}</p>
+                        <p class="enter-free-note">${g.tokensAllowed === false ? "Entering is free." : "Entering is free. Tokens are optional: each one you add is an extra chance."}${g.tokensAllowed !== false && myItemChances ? ` Your items add +${myItemChances}.` : ""}${g.tokensAllowed !== false && mySecretPerks.stakeMult > 0 ? ` Each token you add counts ×${tokenWorth()}.` : ""}</p>
                         ${passwordInput}
                         <button class="enter-btn" id="secretEnterBtn_${g.id}" onclick="handleEnterSecretGiveaway('${g.id}')">🎟️ Enter free</button>
                         <p class="enter-as">Entering as ${device === "ios" ? "🍎 iOS" : "🤖 Android"}</p>`;
