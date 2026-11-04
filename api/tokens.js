@@ -89,10 +89,23 @@ function poolDrawn(gd, platform) {
 // figures: maxStake* is the most tokens anyone put in; maxScore* is the
 // highest bid counting items — what an entry adds to the draw on top of its
 // free ball, P.secretWeight(tokens, perks) - 1 (tokens, worth more with Lucky
-// Beads, plus Four-Leaf Clover chances). The page compares bids by maxScore.
+// Beads, plus Four-Leaf Clover chances). The page compares bids by maxScore,
+// and nextScore* is the second-highest (the same as the highest on a tie):
+// the top bidder beats everyone else by beating that, so "Beat the top" can
+// tell them how few tokens keep them on top. Only the numbers, never whose.
 // Worked out from the entries rather than adjusted step by step, because
 // lowering the top bid means finding the next-highest.
 const bidOf = (tokens, perks) => Math.round((P.secretWeight(tokens, perks) - 1) * 100) / 100;
+// [{ platform, bid }] -> the highest and second-highest bid per platform.
+function scoreFigures(rows) {
+  const top = { ios: [0, 0], android: [0, 0] };
+  rows.forEach(({ platform, bid }) => {
+    const t = top[platform];
+    if (!t) return;
+    if (bid > t[0]) { t[1] = t[0]; t[0] = bid; } else if (bid > t[1]) t[1] = bid;
+  });
+  return { maxScoreIos: top.ios[0], nextScoreIos: top.ios[1], maxScoreAndroid: top.android[0], nextScoreAndroid: top.android[1] };
+}
 
 // The figures for these entries, with `uid`'s tokens on `platform` swapped
 // for `tokens` when given (a stake change that's about to be saved). Items
@@ -101,7 +114,7 @@ const bidOf = (tokens, perks) => Math.round((P.secretWeight(tokens, perks) - 1) 
 async function topBids(db, entryDocs, change) {
   const invs = entryDocs.length ? await db.getAll(...entryDocs.map(d => db.collection("inventories").doc(d.id))) : [];
   const stake = { ios: 0, android: 0 };
-  const score = { ios: 0, android: 0 };
+  const rows = [];
   entryDocs.forEach((d, i) => {
     const e = d.data();
     const mine = change && d.id === change.uid;
@@ -110,9 +123,9 @@ async function topBids(db, entryDocs, change) {
     const t = Math.max(0, Math.floor(Number(mine ? change.tokens : e.tokens) || 0));
     const perks = invs[i] && invs[i].exists ? invs[i].data().perks || {} : {};
     stake[platform] = Math.max(stake[platform], t);
-    score[platform] = Math.max(score[platform], bidOf(t, perks));
+    rows.push({ platform, bid: bidOf(t, perks) });
   });
-  return { maxStakeIos: stake.ios, maxStakeAndroid: stake.android, maxScoreIos: score.ios, maxScoreAndroid: score.android };
+  return { maxStakeIos: stake.ios, maxStakeAndroid: stake.android, ...scoreFigures(rows) };
 }
 
 // Runs in a transaction that also reads the giveaway: every stake change
@@ -1035,8 +1048,9 @@ async function maxStake(db, body) {
   const g = await gRef.get();
   if (!g.exists) throw new HttpError(404, "This giveaway no longer exists.");
   const gd = g.data();
-  if (typeof gd.maxScoreIos === "number" && typeof gd.maxScoreAndroid === "number") {
-    return { ok: true, maxStakeIos: gd.maxStakeIos, maxStakeAndroid: gd.maxStakeAndroid, maxScoreIos: gd.maxScoreIos, maxScoreAndroid: gd.maxScoreAndroid };
+  if (["maxScoreIos", "maxScoreAndroid", "nextScoreIos", "nextScoreAndroid"].every(k => typeof gd[k] === "number")) {
+    const { maxStakeIos, maxStakeAndroid, maxScoreIos, maxScoreAndroid, nextScoreIos, nextScoreAndroid } = gd;
+    return { ok: true, maxStakeIos, maxStakeAndroid, maxScoreIos, maxScoreAndroid, nextScoreIos, nextScoreAndroid };
   }
   const max = await refreshMaxStakes(db, gRef);
   if (!max) throw new HttpError(503, "Couldn't work out the highest stake — try again.");
@@ -1079,7 +1093,7 @@ async function secretOdds(db, uid, body, now) {
   const entries = await gRef.collection("entries").get();
   const invs = await Promise.all(entries.docs.map(d => db.collection("inventories").doc(d.id).get()));
   const sum = { ...none };
-  const top = { ios: 0, android: 0 };
+  const rows = [];
   let mine = 0;
   entries.docs.forEach((d, i) => {
     const e = d.data();
@@ -1087,14 +1101,15 @@ async function secretOdds(db, uid, body, now) {
     const extra = extraOf(e, perks);
     const group = isEveryone(gd) ? "all" : e.platform === "android" ? "android" : "ios";
     sum[group] += extra;
-    if (e.platform === "ios" || e.platform === "android") top[e.platform] = Math.max(top[e.platform], bidOf(e.tokens, perks));
+    rows.push({ platform: e.platform, bid: bidOf(e.tokens, perks) });
     if (d.id === uid) mine = extra;
   });
   const itemExtra = { ios: round2(sum.ios), android: round2(sum.android), all: round2(sum.all) };
   // Items change without any stake changing, so the top bid (which counts
   // them) is brought up to date here too.
-  await gRef.update({ itemExtra, itemExtraKey: key, itemExtraAt: now, maxScoreIos: top.ios, maxScoreAndroid: top.android });
-  return { ok: true, itemExtra, key, mine: round2(mine), maxScoreIos: top.ios, maxScoreAndroid: top.android };
+  const scores = scoreFigures(rows);
+  await gRef.update({ itemExtra, itemExtraKey: key, itemExtraAt: now, ...scores });
+  return { ok: true, itemExtra, key, mine: round2(mine), ...scores };
 }
 
 /* ---------------- Today's puzzle (Games) ----------------
