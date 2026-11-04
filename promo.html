@@ -2984,6 +2984,14 @@ if (user && user.uid === winnerData.winnerUid) {
                 return { players: (ios ? g.iosEntryCount : g.androidEntryCount) || 0, pot: (ios ? g.iosTokensStaked : g.androidTokensStaked) || 0, slots };
             }
             const plural = (n, word) => `${n} ${word}${n === 1 ? "" : "s"}`;
+            // The pot counted like the top bid: every token in (×Lucky Beads)
+            // plus everyone's item bonuses — all the balls but the free ones.
+            // Yours goes by your live items when you're in (`staked` = your
+            // tokens; null when you're not in this draw).
+            function potWithItems(g, platform, staked) {
+                const mineItems = staked == null || g.tokensAllowed === false ? 0 : myWeight(staked) - 1 - staked;
+                return drawGroupStats(g, platform).pot + othersItemBalls(g, platform) + mineItems;
+            }
 
             // Draw weight is 1 + tokens per entry, and winners are drawn one at a
             // time without repeats — so with several winners your odds are better
@@ -3028,7 +3036,7 @@ if (user && user.uid === winnerData.winnerUid) {
                 const players = Math.max(st.players, 1);
                 // you: 1 + tokens + items; everyone: 1 each + the tokens in + all items
                 const mine = myWeight(staked);
-                const total = Math.max(st.players + st.pot + othersItemBalls(g, platform) + (mine - 1 - staked), mine, 1);
+                const total = Math.max(st.players + potWithItems(g, platform, staked), mine, 1);
                 // One ball per chance; a very full globe shows the same mix of
                 // gold and purple in MAX_BALLS balls (the meter has the numbers).
                 const scale = Math.min(1, MAX_BALLS / total);
@@ -3569,7 +3577,7 @@ if (user && user.uid === winnerData.winnerUid) {
                         <div><b>${st.players ? Math.min(100, Math.round(slots / st.players * 100)) + "%" : "–"}</b><span>🎯 your chance</span></div>
                     </div>` : `<div class="sc-stats">
                         <div><b>${st.players}</b><span>👥 entries</span></div>
-                        <div><b class="gold">${st.pot}</b><span>🪙 in the pot</span></div>
+                        <div><b class="gold">${balls(potWithItems(g, platform, detail.entry ? detail.entry.tokens || 0 : null))}</b><span>🪙 in the pot</span></div>
                         <div><b>${typeof top === "number" ? balls(top) : top === null ? "…" : "–"}</b><span>🔝 top bid</span></div>
                     </div>`;
 
