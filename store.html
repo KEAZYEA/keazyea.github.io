@@ -1738,9 +1738,13 @@
         AppState.onAuthChange(loadChestState);
         // Sent here from the profile's Items tab (store.html#chest): once the
         // store is showing, and again if only the #chest part changes.
+        // #chest or #event (the Trick or Treat card, once it's drawn)
         function scrollToChestIfAsked() {
-            if (location.hash !== "#chest") return;
-            setTimeout(() => { const el = document.getElementById("chest"); if (el && el.offsetParent) el.scrollIntoView({ block: "start" }); }, 300);
+            const id = location.hash === "#chest" ? "chest" : location.hash === "#event" ? "event" : null;
+            if (!id) return;
+            let tries = 0;
+            const go = () => { const el = document.getElementById(id); if (el && el.offsetParent) el.scrollIntoView({ block: "start" }); else if (++tries < 10) setTimeout(go, 300); };
+            setTimeout(go, 300);
         }
         window.addEventListener("hashchange", () => { scrollToChestIfAsked(); loadChestState(); });
         AppState.waitForAuthReady().then(scrollToChestIfAsked);
