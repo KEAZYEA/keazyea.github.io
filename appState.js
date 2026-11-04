@@ -299,6 +299,42 @@ async function signOutUser() {
         }));
         return out;
     }
+    // Several players' current profile pictures ({ uid: url }), each read at
+    // most once a minute. Posts and comments keep the picture they were
+    // written with, so lists show this one instead.
+    const avatarCache = new Map();
+    async function getPublicAvatars(uids) {
+        await waitForAuthReady();
+        const out = {};
+        if (!currentUser) return out;
+        const now = Date.now();
+        await Promise.all([...new Set((uids || []).filter(Boolean))].map(async (uid) => {
+            const hit = avatarCache.get(uid);
+            if (hit && now - hit.at < 60000) { out[uid] = hit.avatar; return; }
+            try {
+                const snap = await getDoc(doc(db, "publicProfiles", uid));
+                const avatar = (snap.exists() && snap.data().avatar) || "";
+                avatarCache.set(uid, { at: now, avatar });
+                out[uid] = avatar;
+            } catch (e) {
+                out[uid] = "";
+            }
+        }));
+        return out;
+    }
+    // Your own public card, live: a border you pick shows straight away.
+    function listenToMyCard(callback) {
+        if (!currentUser) { callback(null); return () => {}; }
+        return onSnapshot(
+            doc(db, "playerCards", currentUser.uid),
+            (snap) => {
+                const card = snap.exists() ? snap.data() : {};
+                cardCache.set(currentUser.uid, { at: Date.now(), card });
+                callback(card);
+            },
+            (err) => console.warn("Card listener error:", err.message)
+        );
+    }
     // Your own items and styles (ids), e.g. to know which emote packs you have.
     // Your counts in an event (Trick or Treat): { freeUsed, bonusKnocks, giftId, spookyTo, … }.
     async function getMyEventState(eventId) {
@@ -5059,7 +5095,7 @@ async function maybeRefreshAd(containerId) {
         reportQuestProgress, startDailyQuestTracking, stakeTokensOnSecretGiveaway, setSecretGiveawayStake, refreshSecretGiveawayMaxStake, getSecretOdds,
         // achievements, badges, profile likes, items
         trackProgress, getProgressStatus, claimAchievement, setShownBadges, setProfileLike, openItemChest, trickOrTreat, claimEventGift, buyEventItem, sendSpookyGift, openSpookyGift,
-        getPlayerCard, getPlayerCards, haveILikedProfile, getMyPerks, getMyItemIds, getMyEventState, equipStyle,
+        getPlayerCard, getPlayerCards, getPublicAvatars, listenToMyCard, haveILikedProfile, getMyPerks, getMyItemIds, getMyEventState, equipStyle,
         // profile
         getProfile, setProfile, isVipActive, isNoAdsActive, isBannedNow, shouldShowAds, listenToMyProfile,
         // unique names

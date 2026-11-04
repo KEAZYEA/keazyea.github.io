@@ -73,6 +73,8 @@ body {
             gap: 6px;
         }
 
+        #topbarAvatarWrap { display: inline-flex; border-radius: 50%; }
+
         .topbar-avatar-icon {
             width: 28px;
             height: 28px;
@@ -1782,8 +1784,7 @@ body {
         <!-- Topbar shown ONLY on the home landing page -->
         <div class="home-topbar" id="homeTopbar">
             <button class="icon-btn" title="Profile" onclick="goToPage('profile')">
-                <img id="topbarAvatarIcon" src="" alt="Profile" class="topbar-avatar-icon">
-                <span id="topbarAvatarFallback" class="topbar-avatar-fallback">👤</span>
+                <span id="topbarAvatarWrap"><img id="topbarAvatarIcon" src="" alt="Profile" class="topbar-avatar-icon"><span id="topbarAvatarFallback" class="topbar-avatar-fallback">👤</span></span>
                 <span class="badge-dot" id="profileBadgeHome" style="display:none;" title="Achievements ready to claim"></span>
             </button>
             <div class="topbar-right">
@@ -3129,6 +3130,7 @@ window.closeLegalModal = closeLegalModal;
             const style = st ? st.style : null;
             const b = style && PC.STYLE_BY_ID[style.border];
             document.getElementById("pfHeroAvatarWrap").className = b ? `fx-av fx-border-${b.css}${b.anim ? " fx-" + b.anim : ""}` : "";
+            if (st && window.applyTopbarBorder) window.applyTopbarBorder(style);
             document.getElementById("pfHeroName").className = "pf-hero-name " + PC.styleClass(style, "name");
             document.querySelector("#page-profile .pf-hero").className = "pf-hero " + PC.styleClass(style, "background");
         }
@@ -5267,13 +5269,22 @@ window.closeInboxItemModal = closeInboxItemModal;
                 checkTermsGate();
             });
             let unsubTopbarProfile = null;
+// Your border around the top-left picture, live (a new one shows at once).
+let unsubTopbarCard = null;
+// (global: Profile's border picker calls it too)
+window.applyTopbarBorder = function (style) {
+    const b = style && window.ProgressCore && ProgressCore.STYLE_BY_ID[style.border];
+    document.getElementById("topbarAvatarWrap").className = b && b.type === "border" ? `fx-av fx-border-${b.css}${b.anim ? " fx-" + b.anim : ""}` : "";
+};
 function startTopbarProfileListener() {
     if (unsubTopbarProfile) { unsubTopbarProfile(); unsubTopbarProfile = null; }
-    if (!AppState.getCurrentUser()) { refreshTopbar(0); return; } // 0 retries — signed out, nothing to wait on
+    if (unsubTopbarCard) { unsubTopbarCard(); unsubTopbarCard = null; }
+    if (!AppState.getCurrentUser()) { applyTopbarBorder(null); refreshTopbar(0); return; } // 0 retries — signed out, nothing to wait on
     unsubTopbarProfile = AppState.listenToMyProfile((profile) => {
         if (profile) applyTopbarProfile(profile);
         applySeenMarkers(profile); // read the inbox / news on another device: clear the badges here
     });
+    unsubTopbarCard = AppState.listenToMyCard((card) => applyTopbarBorder(card && card.style));
 }
 
 refreshTopbar();

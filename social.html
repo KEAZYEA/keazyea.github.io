@@ -851,6 +851,10 @@
                                just growing and pushing the footer off screen */
             overflow-y: auto;
             overscroll-behavior: contain;
+            /* room for a border ring (drawn 3px outside the picture), which the
+               scrolling would cut off at the left; the content stays put */
+            padding: 0 4px;
+            margin: 0 -4px;
         }
 
         .comment-compose-footer {
@@ -3850,7 +3854,7 @@ window.removeClanIconPreview = function () {
         }
 
         function renderClanPosts(posts) {
-            ensureCards((posts || []).map(p => p.uid), () => renderClanPosts(posts));
+            ensureCards((posts || []).map(p => p.uid), () => renderClanPosts(posts), "clanPosts");
             allClanPosts = posts;
             applyClanFiltersAndRender();
         }
@@ -3904,7 +3908,7 @@ window.removeClanIconPreview = function () {
                     </div>
                     
 <div class="clan-post-head" style="margin-top:16px; padding-top:10px; border-top:1px solid #2a2a4a; cursor:pointer;" onclick="event.stopPropagation(); onPosterClick('${p.uid}', ${jsStr(p.name)})">
-                        ${bordered(p.uid, `<img class="clan-post-avatar" src="${escapeHtml(p.avatar)}" onerror="this.style.visibility='hidden'">`)}
+                        ${bordered(p.uid, `<img class="clan-post-avatar" src="${escapeHtml(avatarOf(p.uid, p.avatar))}" onerror="this.style.visibility='hidden'">`)}
                         <span class="clan-post-name"><span class="${nameFx(p.uid)}">${escapeHtml(p.name)}</span></span>
                         <span class="clan-post-time">${timeAgo(p.createdAt)}</span>
                     </div>
@@ -3931,7 +3935,7 @@ window.removeClanIconPreview = function () {
                 + (p.country ? ` · 🌍 ${p.country}` : "");
             document.getElementById("clanDetailTags").innerHTML = tagPillsHtml(p.tags);
             document.getElementById("clanDetailDescription").textContent = p.description || "No additional description.";
-            document.getElementById("clanDetailAvatar").src = p.avatar;
+            document.getElementById("clanDetailAvatar").src = avatarOf(p.uid, p.avatar);
             document.getElementById("clanDetailPosterName").textContent = p.name;
             styleDetailPoster("clanDetail", p.uid);
             document.getElementById("clanDetailTime").textContent = timeAgo(p.createdAt);
@@ -4294,7 +4298,7 @@ window.removeClanIconPreview = function () {
         };
 
         function renderFormationPosts(posts) {
-            ensureCards((posts || []).map(p => p.uid), () => renderFormationPosts(posts));
+            ensureCards((posts || []).map(p => p.uid), () => renderFormationPosts(posts), "formationPosts");
             allFormationPosts = posts;
             applyFormationFiltersAndRender();
             // Keep the open detail modal (if any) in sync with live updates
@@ -4356,7 +4360,7 @@ window.removeClanIconPreview = function () {
                     ${p.description ? `<div class="clan-post-body" style="margin-top:8px; max-height:4.2em; overflow:hidden;">${escapeHtml(p.description)}</div>` : ""}
 
                     <div class="clan-post-head" style="margin-top:12px; padding-top:10px; border-top:1px solid #2a2a4a; cursor:pointer;" onclick="event.stopPropagation(); onPosterClick('${p.uid}', ${jsStr(p.name)})">
-                        ${bordered(p.uid, `<img class="clan-post-avatar" src="${escapeHtml(p.avatar)}" onerror="this.style.visibility='hidden'">`)}
+                        ${bordered(p.uid, `<img class="clan-post-avatar" src="${escapeHtml(avatarOf(p.uid, p.avatar))}" onerror="this.style.visibility='hidden'">`)}
                         <span class="clan-post-name"><span class="${nameFx(p.uid)}">${escapeHtml(p.name)}</span>${isMine ? '<span class="my-post-badge">Your Post</span>' : ""}</span>
                         <span class="clan-post-time">${timeAgo(p.createdAt)}</span>
                     </div>
@@ -4384,7 +4388,7 @@ window.removeClanIconPreview = function () {
             document.getElementById("formationDetailCategory").textContent = formationCategoryLabel(p.category);
             document.getElementById("formationDetailLikeCount").textContent = Math.max(0, p.likeCount || 0);
             document.getElementById("formationDetailDescription").textContent = p.description || "No description.";
-            document.getElementById("formationDetailAvatar").src = p.avatar;
+            document.getElementById("formationDetailAvatar").src = avatarOf(p.uid, p.avatar);
             document.getElementById("formationDetailPosterName").textContent = p.name;
             styleDetailPoster("formationDetail", p.uid);
             document.getElementById("formationDetailTime").textContent = timeAgo(p.createdAt);
@@ -4695,21 +4699,52 @@ window.removeClanIconPreview = function () {
            Lists draw straight away and redraw once the cards arrive. */
         const cardsByUid = {};
         const cardsAt = {}; // when each was read: a minute later it's read again (a changed style shows up)
-        function ensureCards(uids, redraw) {
+        // Their picture now: posts and comments keep the one they were written with.
+        const avatarByUid = {};
+        // The latest redraw of each list on screen, so your own new look shows at once.
+        const liveRedraws = new Map();
+        let myLiveUid = null; // your card and picture come live (listenToMyLooks)
+        function ensureCards(uids, redraw, key) {
+            if (key && redraw) liveRedraws.set(key, redraw);
             const now = Date.now();
-            const missing = [...new Set(uids.filter(u => u && !(u in cardsByUid && now - (cardsAt[u] || 0) < 60000)))];
+            const missing = [...new Set(uids.filter(u => u && u !== myLiveUid && !(u in cardsByUid && now - (cardsAt[u] || 0) < 60000)))];
             if (!missing.length || !AppState.getPlayerCards) return;
             missing.forEach(u => { cardsAt[u] = now; if (!(u in cardsByUid)) cardsByUid[u] = {}; });
-            AppState.getPlayerCards(missing).then(found => {
+            Promise.all([AppState.getPlayerCards(missing), AppState.getPublicAvatars ? AppState.getPublicAvatars(missing) : {}]).then(([found, pics]) => {
                 let changed = false;
                 for (const [u, card] of Object.entries(found)) {
                     const next = card || {};
                     if (JSON.stringify(next.style || null) !== JSON.stringify((cardsByUid[u] || {}).style || null)) changed = true;
                     cardsByUid[u] = next;
                 }
+                for (const [u, pic] of Object.entries(pics || {})) {
+                    if (pic && pic !== avatarByUid[u]) { avatarByUid[u] = pic; changed = true; }
+                }
                 if (changed && redraw) redraw();
             }).catch(() => { });
         }
+        const redrawAllLooks = () => liveRedraws.forEach(fn => { try { fn(); } catch (e) { } });
+        let stopMyLooks = [];
+        function listenToMyLooks() {
+            stopMyLooks.forEach(f => f());
+            stopMyLooks = [];
+            const me = AppState.getCurrentUser();
+            myLiveUid = me ? me.uid : null;
+            if (!me || !AppState.listenToMyCard) return;
+            stopMyLooks.push(AppState.listenToMyCard(card => {
+                const before = JSON.stringify((cardsByUid[me.uid] || {}).style || null);
+                cardsByUid[me.uid] = card || {};
+                cardsAt[me.uid] = Date.now();
+                if (JSON.stringify((card || {}).style || null) !== before) redrawAllLooks();
+            }));
+            stopMyLooks.push(AppState.listenToMyProfile(profile => {
+                const pic = (profile && profile.avatar) || "";
+                if (pic && pic !== avatarByUid[me.uid]) { avatarByUid[me.uid] = pic; redrawAllLooks(); }
+            }));
+        }
+        AppState.waitForAuthReady().then(listenToMyLooks);
+        AppState.onAuthChange(listenToMyLooks);
+        const avatarOf = (uid, stored) => avatarByUid[uid] || stored || "";
         const styleOf = (uid) => (cardsByUid[uid] || {}).style || null;
         const nameFx = (uid) => window.ProgressCore ? ProgressCore.styleClass(styleOf(uid), "name") : "";
         // An opened post's poster row: their border and name effect.
@@ -4718,9 +4753,10 @@ window.removeClanIconPreview = function () {
                 const s = styleOf(uid), b = s && window.ProgressCore && ProgressCore.STYLE_BY_ID[s.border];
                 document.getElementById(prefix + "AvatarWrap").className = b ? `fx-av fx-border-${b.css}${b.anim ? " fx-" + b.anim : ""}` : "";
                 document.getElementById(prefix + "PosterName").className = "clan-post-name " + nameFx(uid);
+                if (avatarByUid[uid]) document.getElementById(prefix + "Avatar").src = avatarByUid[uid];
             };
             paint();
-            ensureCards([uid], paint);
+            ensureCards([uid], paint, "detail:" + prefix);
         }
         const bordered = (uid, html) => window.ProgressCore ? ProgressCore.withBorder(html, styleOf(uid)) : html;
         // One person's reactions as a list (older messages stored just one).
@@ -4743,7 +4779,7 @@ window.removeClanIconPreview = function () {
             const at = parent ? `<span class="cmt-at">@${escapeHtml(parent.name)}</span> ` : "";
             return `
                 <div class="formation-comment-item${isReply ? " reply" : ""}" id="cmt_${kind}_${c.id}">
-                    ${bordered(c.uid, `<img class="clan-post-avatar" src="${escapeHtml(c.avatar)}" onerror="this.style.visibility='hidden'"
+                    ${bordered(c.uid, `<img class="clan-post-avatar" src="${escapeHtml(avatarOf(c.uid, c.avatar))}" onerror="this.style.visibility='hidden'"
                         style="cursor:pointer;" onclick="${cfg.close}(); onPosterClick('${c.uid}', ${nameArg});">`)}
                     <div style="flex:1; min-width:0;">
                         <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
@@ -4775,7 +4811,7 @@ window.removeClanIconPreview = function () {
                 list.innerHTML = `<div class="compose-hint" style="padding:10px 0;">${cfg.empty}</div>`;
                 return;
             }
-            ensureCards(comments.map(c => c.uid), () => { if (commentState[kind].comments === comments) renderCommentList(kind, comments); });
+            ensureCards(comments.map(c => c.uid), () => { if (commentState[kind].comments === comments) renderCommentList(kind, comments); }, "comments:" + kind);
             const byTime = (a, b) => (a.createdAt || 0) - (b.createdAt || 0);
             const roots = comments.filter(c => !c.parentId || !byId[c.parentId]).sort(byTime);
             const replies = {};
@@ -5538,7 +5574,7 @@ window.removeClanIconPreview = function () {
 
         let pendingTierListIdFromUrl = null; // from ?tierListId=… until that list shows up
         function renderTierListPosts(posts) {
-            ensureCards((posts || []).map(p => p.uid), () => renderTierListPosts(posts));
+            ensureCards((posts || []).map(p => p.uid), () => renderTierListPosts(posts), "tierListPosts");
             allTierListPosts = posts;
             applyTierListFiltersAndRender();
             if (pendingTierListIdFromUrl && allTierListPosts.some(x => x.id === pendingTierListIdFromUrl)) {
@@ -5617,7 +5653,7 @@ window.removeClanIconPreview = function () {
                         ${score >= 0 ? "▲" : "▼"} ${score} net votes${(t.commentCount || 0) > 0 ? ` &middot; 💬 ${t.commentCount} comment${t.commentCount === 1 ? "" : "s"}` : ""}
                     </div>
                     <div class="clan-post-head" style="margin-top:12px; padding-top:10px; border-top:1px solid #2a2a4a; cursor:pointer;" onclick="event.stopPropagation(); onPosterClick('${t.uid}', ${nameArg})">
-                        ${bordered(t.uid, `<img class="clan-post-avatar" src="${escapeHtml(t.avatar)}" onerror="this.style.visibility='hidden'">`)}
+                        ${bordered(t.uid, `<img class="clan-post-avatar" src="${escapeHtml(avatarOf(t.uid, t.avatar))}" onerror="this.style.visibility='hidden'">`)}
                         <span class="clan-post-name"><span class="${nameFx(t.uid)}">${escapeHtml(t.name)}</span>${isMine ? '<span class="my-post-badge">Your Post</span>' : ""}</span>
                         <span class="clan-post-time">${timeAgo(t.createdAt)}</span>
                     </div>
@@ -5662,7 +5698,7 @@ window.removeClanIconPreview = function () {
             document.getElementById("tierListDownvoteCount").textContent = t.downvotes || 0;
             document.getElementById("tierListNetScore").textContent = (t.upvotes || 0) - (t.downvotes || 0);
 
-            document.getElementById("tierListDetailAvatar").src = t.avatar;
+            document.getElementById("tierListDetailAvatar").src = avatarOf(t.uid, t.avatar);
             document.getElementById("tierListDetailPosterName").textContent = t.name;
             styleDetailPoster("tierListDetail", t.uid);
             document.getElementById("tierListDetailTime").textContent = timeAgo(t.createdAt);
@@ -6587,11 +6623,11 @@ window.removeClanIconPreview = function () {
                 const drawHeader = () => {
                     if (currentDmOtherUid !== uid) return;
                     document.getElementById("dmHeaderName").className = nameFx(uid);
-                    document.getElementById("dmHeaderAvatar").innerHTML = bordered(uid, avatarHtml(avatar, name, ""));
+                    document.getElementById("dmHeaderAvatar").innerHTML = bordered(uid, avatarHtml(avatarOf(uid, avatar), name, ""));
                     if (window._lastDmMessages) renderDmMessages(window._lastDmMessages);
                 };
                 drawHeader(); // with what's already known…
-                ensureCards([uid, user.uid], drawHeader); // …and again once their cards arrive
+                ensureCards([uid, user.uid], drawHeader, "dmHeader"); // …and again once their cards arrive
                 document.getElementById("dmMessages").innerHTML = "";
 document.getElementById("dmScrollBottomBtn").classList.remove("visible");
 document.getElementById("dmActionsMenu").classList.remove("open");
