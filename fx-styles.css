@@ -7,6 +7,9 @@
 
 /* ---- avatar borders: a ring drawn just outside the avatar, so nothing moves ---- */
 .fx-av { position: relative; display: inline-flex; border-radius: 50%; isolation: isolate; vertical-align: middle; flex-shrink: 0; }
+/* the avatar's own size, even in a flex row that stretches (a comment with
+   reactions or replies is taller than its avatar, and the ring went oval) */
+.fx-av { width: -webkit-fit-content; width: fit-content; height: -webkit-fit-content; height: fit-content; }
 .fx-av::before { content: ""; position: absolute; inset: -3px; z-index: -1; border-radius: 50%; background: var(--fxb, transparent); }
 .fx-av.fx-spin::before { animation: fxSpin 3.2s linear infinite; }
 .fx-av.fx-pulse::before { animation: fxPulse 1.8s ease-in-out infinite; }
