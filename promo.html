@@ -2653,15 +2653,16 @@ if (user && user.uid === winnerData.winnerUid) {
             }
 
             // The top bid in your draw, counting items (the server keeps it on
-            // the giveaway as maxScore*). Giveaways staked on before it was
-            // tracked: ask the server to work it out once; the result arrives
-            // through the listener like any other change.
+            // the giveaway as maxScore*, and the second-highest as nextScore*).
+            // Giveaways staked on before these were tracked: ask the server to
+            // work them out once; the result arrives through the listener like
+            // any other change.
             const maxStakeRequested = new Set();
             const maxStakeFailed = new Set();
             function secretTopStake(g, platform) {
                 const ios = g.maxScoreIos;
                 const android = g.maxScoreAndroid;
-                if (typeof ios !== "number" || typeof android !== "number") {
+                if (typeof ios !== "number" || typeof android !== "number" || typeof g.nextScoreIos !== "number" || typeof g.nextScoreAndroid !== "number") {
                     if (!((g.iosTokensStaked || 0) + (g.androidTokensStaked || 0)) && !(g.itemExtra && (g.itemExtra.ios || g.itemExtra.android || g.itemExtra.all))) return 0; // nothing staked yet
                     if (!maxStakeRequested.has(g.id) && AppState.getCurrentUser()) {
                         maxStakeRequested.add(g.id);
@@ -2677,6 +2678,17 @@ if (user && user.uid === winnerData.winnerUid) {
                 }
                 if (AppState.isEveryoneSecretGiveaway(g)) return Math.max(ios, android);
                 return platform === "ios" ? ios : android;
+            }
+            // The highest bid that isn't yours — what you have to beat. If yours
+            // is the top bid, that's the second-highest (equal to yours on a
+            // tie), so the top bidder can see how few tokens keep them on top.
+            function othersTopBid(g, platform, staked) {
+                if (typeof secretTopStake(g, platform) !== "number") return secretTopStake(g, platform);
+                const pairs = AppState.isEveryoneSecretGiveaway(g)
+                    ? [g.maxScoreIos, g.nextScoreIos, g.maxScoreAndroid, g.nextScoreAndroid]
+                    : platform === "ios" ? [g.maxScoreIos, g.nextScoreIos] : [g.maxScoreAndroid, g.nextScoreAndroid];
+                const [first, second] = pairs.sort((a, b) => b - a);
+                return myBid(staked) >= first - 0.005 ? second : first;
             }
 
             function refreshSecretTabBadge() {
@@ -3067,24 +3079,27 @@ if (user && user.uid === winnerData.winnerUid) {
             // item chances. So with +5 from items against a top bid of 10,
             // 6 tokens beat it.
             // What "Beat the top" would set your stake to: the fewest tokens
-            // that beat the top if you can afford them, otherwise everything
-            // you have. null when there's nothing useful to offer.
-            function beatTopTarget(staked, top, balance) {
-                const bid = myBid(staked);
-                if (typeof top !== "number" || bid > top || (bid === top && top > 0)) return null;
-                const target = Math.min(tokensToBeat(top), staked + balance);
-                return target > staked ? target : null;
+            // that beat everyone else's best bid (`others`) — fewer than you
+            // have in if you're above it by more than you need (70 + 10 from
+            // items against 75: 66) — or everything you have if you can't
+            // afford it. null when there's nothing useful to offer.
+            function beatTopTarget(staked, others, balance) {
+                if (typeof others !== "number") return null;
+                if (others === 0 && myBid(staked) > 0) return null; // nobody else has bid: you're on top
+                const target = Math.min(tokensToBeat(others), staked + balance);
+                return target !== staked ? target : null;
             }
-            function beatTopLabel(target, top) {
+            function beatTopLabel(target, others) {
                 const bid = myBid(target);
-                if (top === 0) return `🔝 Be the top bid · ${target}`;
-                if (bid > top) return `🔝 Beat the top · ${target}`;
-                if (bid === top) return `🔝 Match the top · ${target}`;
+                if (others === 0) return `🔝 Be the top bid · ${target}`;
+                if (bid > others) return `🔝 Beat the top · ${target}`;
+                if (bid === others) return `🔝 Match the top · ${target}`;
                 return `🔝 All you have · ${target}`;
             }
             // Your items' part of a bid, for the hints ("+5 from your items").
             const itemsNote = (n) => { const x = balls(myBid(n) - n); return x > 0 ? ` · your items add +${x}` : ""; };
-            // Where a number of coins would put you against the top bid.
+            // Where a number of coins would put you against everyone else's
+            // best bid (`top`).
             function topHint(n, top) {
                 if (typeof top !== "number") return "";
                 const bid = myBid(n);
@@ -3128,7 +3143,8 @@ if (user && user.uid === winnerData.winnerUid) {
                 if (isExpired || sideDrawn) {
                     return `${machine}<p class="stake-summary">${staked ? `🪙 You threw in <strong>${staked}</strong> — ${plural(balls(myWeight(staked)), "chance")}.` : myWeight(0) > 1 ? `🟡 Your free chance${mySecretPerks.secretChance ? ` and ${plural(mySecretPerks.secretChance, "item chance")}` : ""} are in the globe.` : "🟡 Your free chance is in the globe."}${sideDrawn ? "" : " The claw picks the winners soon…"}</p>`;
                 }
-                const top = secretTopStake(g, entry.platform);
+                // The hints and "Beat the top" go by the best bid that isn't yours.
+                const top = othersTopBid(g, entry.platform, staked);
                 const info = secretStakeInfo[g.id] = { staked, top, platform: entry.platform };
                 const target = beatTopTarget(staked, top, secretTokenBalance);
                 // Mid-save: everything locked, the big button says so.
@@ -3291,6 +3307,8 @@ if (user && user.uid === winnerData.winnerUid) {
                 if (g && typeof result.maxScoreIos === "number") {
                     g.maxScoreIos = result.maxScoreIos;
                     g.maxScoreAndroid = result.maxScoreAndroid;
+                    g.nextScoreIos = result.nextScoreIos;
+                    g.nextScoreAndroid = result.nextScoreAndroid;
                 }
             }
 
