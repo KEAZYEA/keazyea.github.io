@@ -816,6 +816,7 @@ body.kih-glow .sticky-controls {
     max-width: 480px;
     max-height: 80vh;
     overflow-y: auto;
+    overflow-wrap: anywhere;
     color: white;
     touch-action: pan-y;
 }

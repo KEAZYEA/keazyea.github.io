@@ -1032,6 +1032,10 @@ body {
         .poll-chip.gift { background: rgba(255, 215, 94, 0.16); color: #ffd75e; }
         .poll-chip.got { background: rgba(126, 224, 161, 0.14); color: #7ee0a1; }
         .poll-q { font-weight: 800; font-size: 1.02rem; line-height: 1.35; margin-bottom: 10px; overflow-wrap: anywhere; }
+        /* a poll with several questions: each one numbered, with its kind */
+        .poll-question + .poll-question { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--kih-border); }
+        .poll-qn { font-weight: 800; font-size: 0.95rem; margin-bottom: 8px; overflow-wrap: anywhere; }
+        .poll-qn small { font-weight: 700; color: var(--kih-text-dim); font-size: 0.72rem; margin-left: 4px; }
         .poll-opts { display: flex; flex-direction: column; gap: 6px; }
         .poll-opt { position: relative; display: flex; align-items: center; gap: 8px; width: 100%; min-height: 44px; padding: 10px 12px; border-radius: 10px; overflow: hidden;
             border: 1px solid var(--kih-border); background: rgba(255, 255, 255, 0.04); color: var(--kih-text); font-family: inherit; font-size: 0.95rem; text-align: left; cursor: pointer; }
@@ -1149,6 +1153,10 @@ body {
             max-width: 360px;
             color: var(--kih-text);
         }
+
+        /* Popups never run off the screen: anything long scrolls inside them, and a
+           long word (a link in a bio) wraps instead of being cut off at the side. */
+        .mini-modal-box, .unsaved-modal { max-height: calc(100vh - 32px); max-height: calc(100dvh - 32px); overflow-y: auto; overscroll-behavior: contain; overflow-wrap: anywhere; box-sizing: border-box; }
 
         .unsaved-modal-title {
             font-size: 1.15rem;
@@ -3999,7 +4007,7 @@ function getNewsTypeInfo(type) {
         const POLL_KIND_LABEL = { single: "Pick one", multi: "Pick any", open: "Your answer" };
         const pollNow = () => Date.now() + ((pollsData && pollsData.skew) || 0);
         const pollOpenNow = (p) => !p.ended && p.expiresAt > pollNow();
-        const pollAnswered = (p) => p.myPicks != null || p.myText != null;
+        const pollAnswered = (p) => !!p.answered;
         const pollsToAnswer = () => (pollsData ? pollsData.polls.filter(p => pollOpenNow(p) && !pollAnswered(p)) : []);
         const pollGiftText = (r) => {
             if (!r) return "";
@@ -4038,10 +4046,10 @@ function getNewsTypeInfo(type) {
         // A redraw (a new news post, a refresh) keeps what you're typing in an open poll.
         function keepPollTyping(body, draw) {
             const a = document.activeElement;
-            const typing = a && a.classList && a.classList.contains("poll-text") && body.contains(a) ? { id: a.dataset.poll, s: a.selectionStart, e: a.selectionEnd } : null;
+            const typing = a && a.classList && a.classList.contains("poll-text") && body.contains(a) ? { id: a.dataset.poll, q: a.dataset.q || "0", s: a.selectionStart, e: a.selectionEnd } : null;
             draw();
             if (!typing) return;
-            const t = body.querySelector(`.poll-text[data-poll="${CSS.escape(typing.id)}"]`);
+            const t = body.querySelector(`.poll-text[data-poll="${CSS.escape(typing.id)}"][data-q="${typing.q}"]`);
             if (t) { t.focus(); try { t.setSelectionRange(typing.s, typing.e); } catch (e) { } }
         }
         // from the inbox: that poll, on screen and highlighted
@@ -4065,106 +4073,132 @@ function getNewsTypeInfo(type) {
             if (!list.length) return filter === "polls" ? `<div class="news-empty">📊 No polls yet — check back soon!</div>` : "";
             return list.map(pollCardHtml).join("");
         }
-        // Everyone's written answers (an open poll's, or what people put under ✏️ Other):
-        // name and picture open their profile; the first 5, then Show all.
-        function pollAnswersHtml(p, id) {
-            const all = pollShowAll.has(p.id) ? p.answers : p.answers.slice(0, 5);
+        // Everyone's written answers to one question (an open question's, or what people
+        // put under ✏️ Other): name and picture open their profile; the first 5, then Show all.
+        function pollAnswersHtml(p, qi, list) {
+            const key = p.id + ":" + qi, id = escapeHomeHtml(key);
+            const all = pollShowAll.has(key) ? list : list.slice(0, 5);
             return `<div class="poll-answers">${all.map(a => `<div class="poll-answer${a.me ? " me" : ""}">
                 <img src="${escapeHomeHtml(a.avatar || "images/KIH.jpg")}" alt="" loading="lazy" onerror="this.onerror=null; this.src='images/KIH.jpg'" data-uid="${escapeHomeHtml(a.uid)}" data-name="${escapeHomeHtml(a.name)}" data-av="${escapeHomeHtml(a.avatar || "")}" title="See ${escapeHomeHtml(a.name)}'s profile">
                 <div style="min-width:0;"><div class="poll-answer-name" data-uid="${escapeHomeHtml(a.uid)}" data-name="${escapeHomeHtml(a.name)}" data-av="${escapeHomeHtml(a.avatar || "")}">${escapeHomeHtml(a.name)}${a.me ? " (you)" : ""}</div><div class="poll-answer-text">${escapeHomeHtml(a.text)}</div></div></div>`).join("")}</div>
-                ${p.answers.length > 5 ? `<button type="button" class="poll-more" data-poll-more="${id}">${pollShowAll.has(p.id) ? "Show fewer" : `Show all ${p.answers.length} answers`}</button>` : ""}`;
+                ${list.length > 5 ? `<button type="button" class="poll-more" data-poll-more="${id}">${pollShowAll.has(key) ? "Show fewer" : `Show all ${list.length} answers`}</button>` : ""}`;
         }
-        // A choice poll's picks and Other text not sent yet, and whether they can be.
-        function pollDraftState(p) {
-            const n = p.options.length; // ✏️ Other's index
-            const mine = p.myPicks || [];
-            const ticked = pollPicks[p.id] || new Set(mine);
-            const otherOn = !!p.allowOther && ticked.has(n);
-            const text = (p.id in pollDrafts ? pollDrafts[p.id] : (p.myText || ""));
-            const picksChanged = JSON.stringify([...ticked].sort((a, b) => a - b)) !== JSON.stringify(mine);
-            const changed = picksChanged || (otherOn && text.trim() !== (p.myText || ""));
-            const canSend = ticked.size > 0 && changed && (!otherOn || !!text.trim());
-            return { n, mine, ticked, otherOn, text, changed, canSend };
+        // One question's answer not sent yet: what's ticked, what's typed, and whether it's complete.
+        function pollQDraft(p, qi) {
+            const q = p.questions[qi], key = p.id + ":" + qi;
+            const text = key in pollDrafts ? pollDrafts[key] : (q.myText || "");
+            if (q.kind === "open") return { text, ok: !!text.trim(), changed: text.trim() !== (q.myText || ""), answer: { text: text.trim() } };
+            const n = q.options.length; // ✏️ Other's index
+            const mine = q.myPicks || [];
+            const ticked = pollPicks[key] || new Set(mine);
+            const otherOn = !!q.allowOther && ticked.has(n);
+            const changed = JSON.stringify([...ticked].sort((a, b) => a - b)) !== JSON.stringify(mine) || (otherOn && text.trim() !== (q.myText || ""));
+            const ok = ticked.size > 0 && (!otherOn || !!text.trim());
+            return { n, mine, ticked, otherOn, text, ok, changed, answer: { options: [...ticked].sort((a, b) => a - b), ...(otherOn ? { text: text.trim() } : {}) } };
         }
+        // The whole poll: complete (every question), and different from what you sent before?
+        function pollDraft(p) {
+            const qs = p.questions.map((_, i) => pollQDraft(p, i));
+            return { qs, ok: qs.every(d => d.ok), changed: qs.some(d => d.changed), answers: qs.map(d => d.answer) };
+        }
+        // One tap votes: a single question, pick one, not writing an Other.
+        const pollTapToVote = (p) => p.questions.length === 1 && p.questions[0].kind === "single";
+
+        function pollQuestionHtml(p, qi, open, busy) {
+            const q = p.questions[qi], id = escapeHomeHtml(p.id), many = p.questions.length > 1;
+            const d = pollQDraft(p, qi);
+            const head = many ? `<div class="poll-qn">${qi + 1}. ${escapeHomeHtml(q.question)} <small>${POLL_KIND_LABEL[q.kind]}</small></div>` : "";
+            const total = p.total || 0;
+            let body = "";
+            if (q.kind === "open") {
+                body = open ? `<textarea class="poll-text" data-poll="${id}" data-q="${qi}" maxlength="200" placeholder="Type your answer…"${busy ? " disabled" : ""}>${escapeHomeHtml(d.text)}</textarea>
+                    <div class="poll-count">${d.text.length}/200</div>` : "";
+                if (Array.isArray(q.answers)) body += q.answers.length ? pollAnswersHtml(p, qi, q.answers) : `<div class="poll-foot">Nobody's answered this one yet.</div>`;
+                return `<div class="poll-question">${head}${body}</div>`;
+            }
+            const show = Array.isArray(q.counts);
+            const most = show ? Math.max(...q.counts) : 0;
+            const multi = q.kind === "multi";
+            const labels = [...q.options, ...(q.allowOther ? ["✏️ Other"] : [])];
+            const drafting = !!pollPicks[p.id + ":" + qi];
+            body = `<div class="poll-opts">${labels.map((text, i) => {
+                const c = show ? q.counts[i] || 0 : 0;
+                const pct = show && total ? Math.round(c * 100 / total) : 0;
+                const isOther = q.allowOther && i === d.n;
+                // ticked: multi always shows its boxes; a single question while it's being changed
+                const tick = open && d.ticked.has(i) && (multi || drafting || !pollTapToVote(p));
+                const cls = ["poll-opt", d.mine.includes(i) ? "mine" : "", tick ? "picked" : "", show && !open && c === most && c > 0 ? "top" : "",
+                    busy && pollTapToVote(p) && (pollBusy.picks || []).includes(i) && !isOther ? "pending" : ""].filter(Boolean).join(" ");
+                return `<button type="button" class="${cls}" data-poll="${id}" data-q="${qi}" data-opt="${i}"${!open || busy ? " disabled" : ""}>
+                    ${show ? `<span class="poll-fill" style="width:${pct}%"></span>` : ""}
+                    ${multi && open ? `<span class="poll-tick">${d.ticked.has(i) ? "✓" : ""}</span>` : ""}
+                    <span class="poll-opt-text">${!multi && d.mine.includes(i) ? "✓ " : ""}${isOther ? `${text} <small style="opacity:0.7;">(write your own)</small>` : escapeHomeHtml(text)}${show && !open && c === most && c > 0 ? " 🏆" : ""}</span>
+                    ${show ? `<span class="poll-opt-pct" title="${c} vote${c === 1 ? "" : "s"}">${pct}%</span>` : ""}
+                </button>`;
+            }).join("")}</div>`;
+            // ✏️ Other picked: what you'd write
+            if (open && d.otherOn) body += `<textarea class="poll-text" data-poll="${id}" data-q="${qi}" maxlength="200" placeholder="Write your own answer…" style="margin-top:8px;"${busy ? " disabled" : ""}>${escapeHomeHtml(d.text)}</textarea>
+                <div class="poll-count">${d.text.length}/200</div>`;
+            // what people wrote under ✏️ Other
+            if (q.allowOther && Array.isArray(q.answers)) body += q.answers.length
+                ? `<div class="poll-foot" style="margin-top:12px; font-weight:800;">✏️ What people wrote (${q.answers.length})</div>${pollAnswersHtml(p, qi, q.answers)}`
+                : `<div class="poll-foot" style="margin-top:10px;">✏️ Nobody's written their own answer yet.</div>`;
+            return `<div class="poll-question">${head}${body}</div>`;
+        }
+
         function pollCardHtml(p) {
             const id = escapeHomeHtml(p.id);
             const open = pollOpenNow(p), answered = pollAnswered(p);
             const busy = pollBusy && pollBusy.id === p.id;
+            const many = p.questions.length > 1;
+            const q0 = p.questions[0];
+            const word = many ? "Answer" : q0.kind === "open" ? "Answer" : "Vote";
             const status = open ? `<span class="poll-chip open">⏳ Ends in ${pollTimeLeft(p.expiresAt - pollNow())}</span>` : `<span class="poll-chip">✅ Ended</span>`;
             const gift = p.reward ? (p.rewarded ? `<span class="poll-chip got">🎁 Got ${pollGiftText(p.reward)} ✓</span>`
-                : open ? `<span class="poll-chip gift">🎁 ${p.kind === "open" ? "Answer" : "Vote"} for ${pollGiftText(p.reward)}</span>` : "") : "";
-            const head = `<div class="poll-head"><span class="poll-chip kind">📊 ${POLL_KIND_LABEL[p.kind] || "Poll"}</span>${status}${gift}</div><div class="poll-q">${escapeHomeHtml(p.question)}</div>`;
+                : open ? `<span class="poll-chip gift">🎁 ${word} for ${pollGiftText(p.reward)}</span>` : "") : "";
+            const kind = many ? `📝 ${p.questions.length} questions` : `📊 ${POLL_KIND_LABEL[q0.kind] || "Poll"}`;
+            const head = `<div class="poll-head"><span class="poll-chip kind">${kind}</span>${status}${gift}</div><div class="poll-q">${escapeHomeHtml(p.title)}</div>`;
+            const body = p.questions.map((_, i) => pollQuestionHtml(p, i, open, busy)).join("");
             const total = p.total || 0;
-            let body = "", foot = "";
-            if (p.kind === "open") {
-                const draft = p.id in pollDrafts ? pollDrafts[p.id] : (p.myText || "");
-                const box = open ? `<textarea class="poll-text" data-poll="${id}" maxlength="200" placeholder="Type your answer…"${busy ? " disabled" : ""}>${escapeHomeHtml(draft)}</textarea>
-                    <div class="poll-count">${draft.length}/200</div>
-                    <button type="button" class="poll-submit" data-poll-send="${id}"${busy || !draft.trim() || draft.trim() === (p.myText || "") ? " disabled" : ""}>${busy ? "Sending…" : answered ? "Update my answer" : "Post my answer"}</button>` : "";
-                if (Array.isArray(p.answers)) {
-                    body = box + pollAnswersHtml(p, id);
-                    foot = `${total} answer${total === 1 ? "" : "s"}${open ? " · you can edit yours until it ends" : " · final"}`;
-                } else {
-                    body = box;
-                    foot = "Answer to see what everyone else said";
-                }
-            } else {
-                const show = Array.isArray(p.counts);
-                const most = show ? Math.max(...p.counts) : 0;
-                const multi = p.kind === "multi";
-                const d = pollDraftState(p);
-                const labels = [...p.options, ...(p.allowOther ? ["✏️ Other"] : [])];
-                body = `<div class="poll-opts">${labels.map((text, i) => {
-                    const c = show ? p.counts[i] || 0 : 0;
-                    const pct = show && total ? Math.round(c * 100 / total) : 0;
-                    const isOther = p.allowOther && i === d.n;
-                    // ticked: multi always shows its boxes; single only while you're writing an Other
-                    const tick = open && (multi || (isOther && d.otherOn && d.changed) || (pollPicks[p.id] && d.ticked.has(i)));
-                    const cls = ["poll-opt", d.mine.includes(i) ? "mine" : "", tick && d.ticked.has(i) ? "picked" : "", show && !open && c === most && c > 0 ? "top" : "", busy && !multi && pollBusy.picks.includes(i) && !isOther ? "pending" : ""].filter(Boolean).join(" ");
-                    return `<button type="button" class="${cls}" data-poll="${id}" data-opt="${i}"${!open || busy ? " disabled" : ""}>
-                        ${show ? `<span class="poll-fill" style="width:${pct}%"></span>` : ""}
-                        ${multi && open ? `<span class="poll-tick">${d.ticked.has(i) ? "✓" : ""}</span>` : ""}
-                        <span class="poll-opt-text">${!multi && d.mine.includes(i) ? "✓ " : ""}${isOther ? `${text} <small style="opacity:0.7;">(write your own)</small>` : escapeHomeHtml(text)}${show && !open && c === most && c > 0 ? " 🏆" : ""}</span>
-                        ${show ? `<span class="poll-opt-pct" title="${c} vote${c === 1 ? "" : "s"}">${pct}%</span>` : ""}
-                    </button>`;
-                }).join("")}</div>`;
-                // ✏️ Other picked: what you'd write
-                if (open && d.otherOn) body += `<textarea class="poll-text" data-poll="${id}" maxlength="200" placeholder="Write your own answer…" style="margin-top:8px;"${busy ? " disabled" : ""}>${escapeHomeHtml(d.text)}</textarea>
-                    <div class="poll-count">${d.text.length}/200</div>`;
-                if (open && (multi ? (d.changed || !answered) : d.otherOn && d.changed))
-                    body += `<button type="button" class="poll-submit" data-poll-send="${id}"${busy || !d.canSend ? " disabled" : ""}>${busy ? "Sending…" : answered ? "Save my changes" : multi ? `Vote${d.ticked.size ? ` (${d.ticked.size})` : ""}` : "Vote"}</button>`;
-                // what people wrote under ✏️ Other
-                if (p.allowOther && Array.isArray(p.answers)) body += p.answers.length
-                    ? `<div class="poll-foot" style="margin-top:12px; font-weight:800;">✏️ What people wrote (${p.answers.length})</div>${pollAnswersHtml(p, id)}`
-                    : `<div class="poll-foot" style="margin-top:10px;">✏️ Nobody's written their own answer yet.</div>`;
-                foot = !open ? `${total} vote${total === 1 ? "" : "s"} · final results`
-                    : answered ? `${total} vote${total === 1 ? "" : "s"}${multi ? " (each could pick several)" : ""} · ${multi ? "change your picks and save" : "tap another option to change your vote"}`
-                    : multi ? "Tick as many as you like, then Vote — results show after" : "Vote to see the results";
+            // the one button that sends (not needed when one tap votes)
+            const d = pollDraft(p);
+            let send = "";
+            if (open) {
+                const tapOnly = pollTapToVote(p) && !pollQDraft(p, 0).otherOn;
+                const show = !tapOnly && (d.changed || !answered);
+                const label = busy ? "Sending…" : answered ? "Save my changes" : many ? "Send my answers" : q0.kind === "open" ? "Post my answer" : q0.kind === "multi" ? `Vote${d.qs[0].ticked.size ? ` (${d.qs[0].ticked.size})` : ""}` : "Vote";
+                if (show) send = `<button type="button" class="poll-submit" data-poll-send="${id}"${busy || !d.ok || !d.changed ? " disabled" : ""}>${label}</button>`;
+                else if (answered && !tapOnly && (many || q0.kind === "open")) send = `<button type="button" class="poll-submit" data-poll-send="${id}" disabled>${many ? "Save my changes" : "Update my answer"}</button>`;
             }
+            const people = `${total} ${many || q0.kind === "open" ? (total === 1 ? "person" : "people") + " answered" : "vote" + (total === 1 ? "" : "s")}`;
+            const foot = !open ? `${people} · final results`
+                : answered ? `${people}${!many && q0.kind === "multi" ? " (each could pick several)" : ""} · ${pollTapToVote(p) ? "tap another option to change your vote" : "you can change your answers until it ends"}`
+                : many ? `Answer all ${p.questions.length} questions — the results show after`
+                : q0.kind === "open" ? "Answer to see what everyone else said"
+                : q0.kind === "multi" ? "Tick as many as you like, then Vote — results show after" : "Vote to see the results";
             const flash = pollFlash && pollFlash.id === p.id && Date.now() < pollFlash.until ? " flash" : "";
-            return `<div class="poll-card${flash}" id="poll_${id}">${head}${body}<div class="poll-foot">${foot}</div></div>`;
+            return `<div class="poll-card${flash}" id="poll_${id}">${head}${body}${send}<div class="poll-foot">${foot}</div></div>`;
         }
 
-        async function sendPollAnswer(p, answer, fromEl) {
+        async function sendPollAnswer(p, answers, fromEl, picks) {
             if (pollBusy) return;
-            pollBusy = { id: p.id, picks: answer.options || [] };
+            pollBusy = { id: p.id, picks: picks || [] };
             paintNews();
+            const writes = p.questions.length > 1 || p.questions[0].kind === "open";
             try {
-                const r = await AppState.votePoll(p.id, answer);
+                const r = await AppState.votePoll(p.id, { answers });
                 const i = pollsData.polls.findIndex(x => x.id === p.id);
                 if (i >= 0 && r.poll) pollsData.polls[i] = r.poll;
-                delete pollPicks[p.id];
-                delete pollDrafts[p.id];
-                const word = p.kind === "open" ? "answering" : "voting";
+                p.questions.forEach((_, qi) => { delete pollPicks[p.id + ":" + qi]; delete pollDrafts[p.id + ":" + qi]; });
                 if (r.gift) {
-                    showQuestToast(`🎁 Thanks for ${word}! You got ${pollGiftText({ amount: r.gift.amount, draws: r.gift.draws, items: r.gift.items }) || "your gift"}${r.gift.dupTokens ? ` (+${r.gift.dupTokens} 🪙 for an item you already had)` : ""}.`);
+                    showQuestToast(`🎁 Thanks for ${writes ? "answering" : "voting"}! You got ${pollGiftText({ amount: r.gift.amount, draws: r.gift.draws, items: r.gift.items }) || "your gift"}${r.gift.dupTokens ? ` (+${r.gift.dupTokens} 🪙 for an item you already had)` : ""}.`);
                     const tokens = (r.gift.amount || 0) + (r.gift.dupTokens || 0);
                     if (tokens && fromEl && window.kihFlyToHud) window.kihFlyToHud(fromEl.getBoundingClientRect(), tokens);
                 } else if (r.giftTooNew) showQuestToast("✅ Thanks! (This poll's gift is for accounts made before it was posted.)");
-                else if (r.changed) showQuestToast(p.kind === "open" ? "✅ Answer updated." : "✅ Vote changed.");
-                else if (!r.unchanged) showQuestToast(p.kind === "open" ? "✅ Answer posted!" : "✅ Voted!");
+                else if (r.changed) showQuestToast(writes ? "✅ Answers updated." : "✅ Vote changed.");
+                else if (!r.unchanged) showQuestToast(writes ? "✅ Answers sent!" : "✅ Voted!");
             } catch (e) {
-                showGenericErrorModal(e.message, p.kind === "open" ? "Couldn't post your answer" : "Couldn't vote");
+                showGenericErrorModal(e.message, writes ? "Couldn't send your answers" : "Couldn't vote");
                 if (/ended/i.test(e.message)) { pollBusy = null; loadPolls(); }
             }
             pollBusy = null;
@@ -4175,56 +4209,51 @@ function getNewsTypeInfo(type) {
             const who = e.target.closest(".poll-answer [data-uid]");
             if (who) { openViewProfileModalHome(who.dataset.uid, who.dataset.name, who.dataset.av); return; }
             const more = e.target.closest("[data-poll-more]");
-            if (more) { const id = more.dataset.pollMore; pollShowAll.has(id) ? pollShowAll.delete(id) : pollShowAll.add(id); paintNews(); return; }
+            if (more) { const k = more.dataset.pollMore; pollShowAll.has(k) ? pollShowAll.delete(k) : pollShowAll.add(k); paintNews(); return; }
             const opt = e.target.closest(".poll-opt[data-opt]");
             const send = e.target.closest("[data-poll-send]");
             const pid = opt ? opt.dataset.poll : send ? send.dataset.pollSend : null;
             const p = pid && pollsData && pollsData.polls.find(x => x.id === pid);
             if (!p || !pollOpenNow(p) || pollBusy) return;
-            const otherIdx = p.allowOther ? p.options.length : -1;
-            if (opt && p.kind === "single") {
-                const i = Number(opt.dataset.opt);
-                if (i === otherIdx) {
-                    // ✏️ Other: open the box to write in (sent with Vote)
-                    pollPicks[p.id] = new Set([i]);
-                    paintNews();
-                    const t = document.querySelector(`#poll_${CSS.escape(p.id)} .poll-text`);
-                    if (t) t.focus();
-                    return;
+            if (opt) {
+                const qi = Number(opt.dataset.q) || 0, i = Number(opt.dataset.opt), q = p.questions[qi], key = p.id + ":" + qi;
+                const otherIdx = q.allowOther ? q.options.length : -1;
+                if (q.kind === "single") {
+                    if (pollTapToVote(p) && i !== otherIdx) {
+                        // one question, pick one: the tap is the vote
+                        delete pollPicks[key];
+                        if ((q.myPicks || []).includes(i)) { paintNews(); return; } // already your vote
+                        sendPollAnswer(p, [{ options: [i] }], opt, [i]);
+                        return;
+                    }
+                    pollPicks[key] = new Set([i]);
+                } else {
+                    const set = new Set(pollPicks[key] || q.myPicks || []);
+                    set.has(i) ? set.delete(i) : set.add(i);
+                    pollPicks[key] = set;
                 }
-                delete pollPicks[p.id];
-                if ((p.myPicks || []).includes(i)) { paintNews(); return; } // already your vote
-                sendPollAnswer(p, { options: [i] }, opt);
-            } else if (opt && p.kind === "multi") {
-                const i = Number(opt.dataset.opt);
-                const set = new Set(pollPicks[p.id] || p.myPicks || []);
-                set.has(i) ? set.delete(i) : set.add(i);
-                pollPicks[p.id] = set;
                 paintNews();
-                if (i === otherIdx && set.has(i)) { const t = document.querySelector(`#poll_${CSS.escape(p.id)} .poll-text`); if (t) t.focus(); }
-            } else if (send && p.kind !== "open") {
-                const d = pollDraftState(p);
-                if (d.canSend) sendPollAnswer(p, { options: [...d.ticked].sort((a, b) => a - b), ...(d.otherOn ? { text: d.text.trim() } : {}) }, send);
-            } else if (send && p.kind === "open") {
-                const text = (pollDrafts[p.id] != null ? pollDrafts[p.id] : p.myText || "").trim();
-                if (text) sendPollAnswer(p, { text }, send);
+                // ✏️ Other: straight into its box
+                if (i === otherIdx && pollPicks[key].has(i)) { const t = document.querySelector(`#poll_${CSS.escape(p.id)} .poll-text[data-q="${qi}"]`); if (t) t.focus(); }
+            } else if (send) {
+                const d = pollDraft(p);
+                if (d.ok && d.changed) sendPollAnswer(p, d.answers, send);
             }
         });
-        // typing an open answer: kept (a redraw doesn't lose it), its count and button follow
+        // typing an answer: kept (a redraw doesn't lose it), its count and the button follow
         document.getElementById("newsSheetBody").addEventListener("input", (e) => {
             const t = e.target.closest(".poll-text");
             if (!t) return;
             const p = pollsData && pollsData.polls.find(x => x.id === t.dataset.poll);
             if (!p) return;
-            pollDrafts[p.id] = t.value;
+            pollDrafts[p.id + ":" + (Number(t.dataset.q) || 0)] = t.value;
             const card = t.closest(".poll-card");
-            card.querySelector(".poll-count").textContent = `${t.value.length}/200`;
+            const count = t.nextElementSibling;
+            if (count && count.classList.contains("poll-count")) count.textContent = `${t.value.length}/200`;
             const b = card.querySelector("[data-poll-send]");
-            if (p.kind !== "open") {
-                // (an edit to an Other text makes Save appear)
-                if (!b) { paintNews(); return; }
-                b.disabled = !pollDraftState(p).canSend;
-            } else if (b) b.disabled = !t.value.trim() || t.value.trim() === (p.myText || "");
+            if (!b) { paintNews(); return; } // (editing what you'd sent: Save appears)
+            const d = pollDraft(p);
+            b.disabled = !d.ok || !d.changed;
         });
 
         window.openViewProfileModalHome = async function (uid, fallbackName, fallbackAvatar) {

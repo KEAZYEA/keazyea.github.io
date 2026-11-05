@@ -60,6 +60,7 @@
             max-width: 420px;
             max-height: 80vh;
             overflow-y: auto;
+            overflow-wrap: anywhere; /* a long word (a code, a link) wraps */
             color: white;
             text-align: left;
         }
@@ -580,25 +581,16 @@
                 <details class="admin-section" id="pollsSection">
                 <summary>📊 Polls</summary>
                 <p class="promo-sub" style="margin-top:0;">Shows in 📰 News (at the top while it's open, and under 📊 Polls).
+                    A poll can have one question or several (each its own kind); players answer them all at once.
                     Players see the results once they've answered — for an open-ended poll, everyone's answers with their
                     names — and can change their answer until it ends. The gift is paid on each player's first answer, once
                     (only to accounts that existed when you post it, so it can't be farmed). "Notify everyone" puts it in
                     everyone's inbox with a 📊 Have your say button.</p>
                 <div class="token-form">
-                    <label class="token-form-wide">Kind
-                        <select id="pollKind" class="token-input" onchange="onPollKindChange()">
-                            <option value="single">🔘 Single choice — pick one</option>
-                            <option value="multi">☑️ Multi-select — pick any</option>
-                            <option value="open">✍️ Open-ended — write an answer (everyone sees the answers)</option>
-                        </select>
-                    </label>
-                    <label class="token-form-wide">Question <input type="text" id="pollQuestion" maxlength="200" placeholder="e.g. Which hero should get a buff next?" class="token-input"></label>
-                    <div class="token-form-wide" id="pollOptionsWrap">
-                        <div id="pollOptionInputs"></div>
-                        <button type="button" class="token-small-btn" id="pollAddOptionBtn" onclick="addPollOption()">+ Add an option</button>
-                        <label style="display:flex; flex-direction:row; align-items:center; gap:8px; margin-top:8px;"><input type="checkbox" id="pollAllowOther">
-                            ✏️ Add "Other" — players can write their own answer (everyone sees what they wrote)</label>
-                    </div>
+                    <label class="token-form-wide">Title <span class="promo-sub">(needed when it has more than one question)</span>
+                        <input type="text" id="pollTitle" maxlength="200" placeholder="e.g. Help us plan the next update" class="token-input"></label>
+                    <div class="token-form-wide" id="pollQuestionsWrap"></div>
+                    <div class="token-form-wide"><button type="button" class="token-small-btn" id="pollAddQuestionBtn" onclick="addPollQuestion()">+ Add another question</button></div>
                     <label>Runs for
                         <span style="display:flex; gap:6px;">
                             <input type="number" id="pollDuration" min="1" step="1" value="3" class="token-input">
@@ -608,9 +600,9 @@
                             </select>
                         </span>
                     </label>
-                    <label>🎁 Tokens for voting <input type="number" id="pollGiftAmount" min="0" max="1000" step="1" value="0" class="token-input"></label>
-                    <label>🧰 Chest draws for voting <input type="number" id="pollGiftDraws" min="0" max="20" step="1" value="0" class="token-input"></label>
-                    <label class="token-form-wide">🎒 Item / style for voting (optional) <select id="pollGiftItem" class="token-input"><option value="">— no item —</option></select></label>
+                    <label>🎁 Tokens for answering <input type="number" id="pollGiftAmount" min="0" max="1000" step="1" value="0" class="token-input"></label>
+                    <label>🧰 Chest draws for answering <input type="number" id="pollGiftDraws" min="0" max="20" step="1" value="0" class="token-input"></label>
+                    <label class="token-form-wide">🎒 Item / style for answering (optional) <select id="pollGiftItem" class="token-input"><option value="">— no item —</option></select></label>
                     <label class="token-form-wide" style="flex-direction:row; align-items:center; gap:8px;"><input type="checkbox" id="pollNotify" checked> 📬 Notify everyone (inbox)</label>
                 </div>
                 <button class="btn-primary" id="pollPostBtn" onclick="handlePostPoll()" style="padding:10px 20px;">Post poll</button>
@@ -3352,49 +3344,83 @@ async function handleLookupUserByUid() {
             window.handleSendGiftAll = handleSendGiftAll;
 
             /* ---------------- 📊 Polls (api/polls.js) ---------------- */
-            const POLL_MAX_OPTIONS = 8;
+            const POLL_MAX_OPTIONS = 8, POLL_MAX_QUESTIONS = 10;
             const POLL_KIND_NAME = { single: "🔘 Single choice", multi: "☑️ Multi-select", open: "✍️ Open-ended" };
-            window.onPollKindChange = () => { document.getElementById("pollOptionsWrap").style.display = document.getElementById("pollKind").value === "open" ? "none" : ""; };
-            function renderPollOptionInputs(values) {
-                const box = document.getElementById("pollOptionInputs");
-                box.innerHTML = values.map((v, i) => `<div style="display:flex; gap:6px; margin-bottom:6px;">
-                    <input type="text" class="token-input poll-option-input" maxlength="80" placeholder="Option ${i + 1}" value="${escapeHtml(v)}">
-                    ${values.length > 2 ? `<button type="button" class="token-small-btn" title="Remove this option" onclick="removePollOption(${i})">✕</button>` : ""}</div>`).join("");
-                document.getElementById("pollAddOptionBtn").style.display = values.length >= POLL_MAX_OPTIONS ? "none" : "";
+            // The questions being written: [{ kind, question, options, allowOther }]
+            let pollQs = [];
+            const newPollQ = () => ({ kind: "single", question: "", options: ["", ""], allowOther: false });
+            function renderPollQuestions() {
+                const many = pollQs.length > 1;
+                document.getElementById("pollQuestionsWrap").innerHTML = pollQs.map((q, qi) => `
+                    <div class="poll-q-block" style="${many ? "border:1px solid #2a2a4a; border-radius:10px; padding:10px; margin-bottom:10px;" : ""}">
+                        ${many ? `<div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;"><b>Question ${qi + 1}</b>
+                            <button type="button" class="token-small-btn" onclick="removePollQuestion(${qi})" title="Remove this question">✕ Remove</button></div>` : ""}
+                        <label style="display:block; margin-bottom:6px;">Kind
+                            <select class="token-input" data-pq="${qi}" data-f="kind">
+                                ${Object.entries({ single: "🔘 Single choice — pick one", multi: "☑️ Multi-select — pick any", open: "✍️ Open-ended — write an answer (everyone sees the answers)" })
+                                    .map(([k, label]) => `<option value="${k}"${q.kind === k ? " selected" : ""}>${label}</option>`).join("")}
+                            </select></label>
+                        <label style="display:block; margin-bottom:6px;">Question <input type="text" class="token-input poll-question-input" maxlength="200" data-pq="${qi}" data-f="question" placeholder="e.g. Which hero should get a buff next?" value="${escapeHtml(q.question)}"></label>
+                        ${q.kind === "open" ? "" : `
+                        ${q.options.map((o, i) => `<div style="display:flex; gap:6px; margin-bottom:6px;">
+                            <input type="text" class="token-input poll-option-input" maxlength="80" data-pq="${qi}" data-opt="${i}" placeholder="Option ${i + 1}" value="${escapeHtml(o)}">
+                            ${q.options.length > 1 ? `<button type="button" class="token-small-btn" title="Remove this option" onclick="removePollOption(${qi}, ${i})">✕</button>` : ""}</div>`).join("")}
+                        ${q.options.length < POLL_MAX_OPTIONS ? `<button type="button" class="token-small-btn" onclick="addPollOption(${qi})">+ Add an option</button>` : ""}
+                        <label style="display:flex; flex-direction:row; align-items:center; gap:8px; margin-top:8px;"><input type="checkbox" data-pq="${qi}" data-f="allowOther"${q.allowOther ? " checked" : ""}>
+                            ✏️ Add "Other" — players can write their own answer (everyone sees what they wrote)</label>`}
+                    </div>`).join("");
+                document.getElementById("pollAddQuestionBtn").style.display = pollQs.length >= POLL_MAX_QUESTIONS ? "none" : "";
             }
-            const pollOptionValues = () => [...document.querySelectorAll(".poll-option-input")].map(x => x.value);
-            window.addPollOption = () => { const v = pollOptionValues(); if (v.length < POLL_MAX_OPTIONS) renderPollOptionInputs([...v, ""]); };
-            window.removePollOption = (i) => { const v = pollOptionValues(); v.splice(i, 1); renderPollOptionInputs(v); };
-            renderPollOptionInputs(["", ""]);
+            // typing and ticking keep the questions up to date (no redraw, so nothing loses focus)
+            document.getElementById("pollQuestionsWrap").addEventListener("input", (e) => {
+                const el = e.target, qi = Number(el.dataset.pq);
+                if (!pollQs[qi]) return;
+                if (el.dataset.opt != null) pollQs[qi].options[Number(el.dataset.opt)] = el.value;
+                else if (el.dataset.f === "question") pollQs[qi].question = el.value;
+            });
+            document.getElementById("pollQuestionsWrap").addEventListener("change", (e) => {
+                const el = e.target, qi = Number(el.dataset.pq);
+                if (!pollQs[qi]) return;
+                if (el.dataset.f === "kind") { pollQs[qi].kind = el.value; renderPollQuestions(); }
+                else if (el.dataset.f === "allowOther") pollQs[qi].allowOther = el.checked;
+            });
+            window.addPollQuestion = () => { if (pollQs.length < POLL_MAX_QUESTIONS) { pollQs.push(newPollQ()); renderPollQuestions(); } };
+            window.removePollQuestion = (qi) => { pollQs.splice(qi, 1); if (!pollQs.length) pollQs.push(newPollQ()); renderPollQuestions(); };
+            window.addPollOption = (qi) => { if (pollQs[qi].options.length < POLL_MAX_OPTIONS) { pollQs[qi].options.push(""); renderPollQuestions(); } };
+            window.removePollOption = (qi, i) => { pollQs[qi].options.splice(i, 1); renderPollQuestions(); };
+            function resetPollForm() { pollQs = [newPollQ()]; document.getElementById("pollTitle").value = ""; renderPollQuestions(); }
+            resetPollForm();
             setTimeout(() => { const sel = document.getElementById("pollGiftItem"); if (sel && sel.options.length <= 1) sel.insertAdjacentHTML("beforeend", itemOptionsHtml("")); }, 0);
             const pollGift = (r) => r ? giftContents({ amount: r.amount, draws: r.draws, itemIds: r.itemIds }) : "—";
 
             async function handlePostPoll() {
-                const kind = document.getElementById("pollKind").value;
-                const question = document.getElementById("pollQuestion").value.trim();
-                const options = kind === "open" ? [] : pollOptionValues().map(o => o.trim()).filter(Boolean);
-                const allowOther = kind !== "open" && document.getElementById("pollAllowOther").checked;
+                const questions = pollQs.map(q => ({ kind: q.kind, question: q.question.trim(), options: q.kind === "open" ? [] : q.options.map(o => o.trim()).filter(Boolean), allowOther: q.kind !== "open" && q.allowOther }));
+                const many = questions.length > 1;
+                const title = document.getElementById("pollTitle").value.trim();
                 const duration = Number(document.getElementById("pollDuration").value);
                 const unitHours = Number(document.getElementById("pollUnit").value);
                 const amount = Number(document.getElementById("pollGiftAmount").value) || 0;
                 const draws = Number(document.getElementById("pollGiftDraws").value) || 0;
                 const itemId = document.getElementById("pollGiftItem").value;
                 const notify = document.getElementById("pollNotify").checked;
-                if (!question) { showInfoModal("Question", "Write the question."); return; }
-                if (kind !== "open" && options.length < (allowOther ? 1 : 2)) { showInfoModal("Options", allowOther ? "Give it at least 1 option (plus ✏️ Other)." : "Give it at least 2 options."); return; }
+                if (many && !title) { showInfoModal("Title", "Give a poll with several questions a title."); return; }
+                for (const [i, q] of questions.entries()) {
+                    const where = many ? `Question ${i + 1}: ` : "";
+                    if (!q.question) { showInfoModal("Question", where + "write the question."); return; }
+                    if (q.kind !== "open" && q.options.length < (q.allowOther ? 1 : 2)) { showInfoModal("Options", where + (q.allowOther ? "give it at least 1 option (plus ✏️ Other)." : "give it at least 2 options.")); return; }
+                }
                 if (!(duration > 0)) { showInfoModal("Runs for", "Enter how long it runs."); return; }
                 const gift = pollGift({ amount, draws, itemIds: itemId ? [itemId] : [] });
                 const lasts = `${duration} ${unitHours === 24 ? "day" : "hour"}${duration === 1 ? "" : "s"}`;
+                const qText = (q, n) => `${many ? `Q${n + 1}. ` : ""}${POLL_KIND_NAME[q.kind]}\n"${q.question}"\n${q.kind === "open" ? "Players write their own answers." : q.options.map((o, i) => `${i + 1}. ${o}`).join("\n") + (q.allowOther ? `\n${q.options.length + 1}. ✏️ Other (write your own)` : "")}`;
                 if (!await showConfirmModal("Post this poll?",
-                    `${POLL_KIND_NAME[kind]}\n"${question}"\n\n${kind === "open" ? "Players write their own answers." : options.map((o, i) => `${i + 1}. ${o}`).join("\n") + (allowOther ? `\n${options.length + 1}. ✏️ Other (write your own)` : "")}\n\nRuns for ${lasts}. Gift for voting: ${gift === "—" ? "none" : gift}.${notify ? "\nEveryone gets an inbox message." : ""}`)) return;
+                    `${many ? `"${title}" — ${questions.length} questions\n\n` : ""}${questions.map(qText).join("\n\n")}\n\nRuns for ${lasts}. Gift for answering: ${gift === "—" ? "none" : gift}.${notify ? "\nEveryone gets an inbox message." : ""}`)) return;
                 const btn = document.getElementById("pollPostBtn");
                 btn.disabled = true;
                 try {
-                    await AppState.adminPolls("adminCreate", { kind, question, options, allowOther, expiresInHours: duration * unitHours, amount, draws, itemIds: itemId ? [itemId] : [], notify });
+                    await AppState.adminPolls("adminCreate", { title, questions, expiresInHours: duration * unitHours, amount, draws, itemIds: itemId ? [itemId] : [], notify });
                     showInfoModal("Posted", notify ? "It's in 📰 News → 📊 Polls and everyone's inbox." : "It's in 📰 News → 📊 Polls.");
-                    document.getElementById("pollQuestion").value = "";
-                    renderPollOptionInputs(["", ""]);
-                    document.getElementById("pollAllowOther").checked = false;
+                    resetPollForm();
                     await loadAdminPolls();
                 } catch (e) {
                     showInfoModal("Couldn't post the poll", e.message);
@@ -3409,24 +3435,27 @@ async function handleLookupUserByUid() {
                 try {
                     const r = await AppState.adminPolls("adminList");
                     if (!r.polls.length) { list.innerHTML = "<p class='promo-sub'>No polls yet.</p>"; return; }
+                    const writtenRows = (p, qi, list) => (list || []).map(a => `<div style="display:flex; gap:8px; align-items:flex-start; font-size:0.88rem; padding:4px 0; border-top:1px solid #23233d;">
+                        <span style="flex:1; min-width:0; overflow-wrap:anywhere;"><b>${escapeHtml(a.name)}</b>: ${escapeHtml(a.text)}</span>
+                        <button class="token-small-btn" onclick="removePollAnswer('${p.id}', '${escapeHtml(a.uid)}', ${qi})" title="Take this answer down">✕</button></div>`).join("");
                     list.innerHTML = r.polls.map(p => {
-                        const most = Math.max(...p.counts, 0);
-                        const written = (p.answers || []).map(a => `<div style="display:flex; gap:8px; align-items:flex-start; font-size:0.88rem; padding:4px 0; border-top:1px solid #23233d;">
-                                <span style="flex:1; min-width:0; overflow-wrap:anywhere;"><b>${escapeHtml(a.name)}</b>: ${escapeHtml(a.text)}</span>
-                                <button class="token-small-btn" onclick="removePollAnswer('${p.id}', '${escapeHtml(a.uid)}')" title="Take this answer down">✕</button></div>`).join("");
-                        const rows = p.kind === "open"
-                            ? (p.answers || []).map(a => `<div style="display:flex; gap:8px; align-items:flex-start; font-size:0.88rem; padding:4px 0; border-top:1px solid #23233d;">
-                                <span style="flex:1; min-width:0; overflow-wrap:anywhere;"><b>${escapeHtml(a.name)}</b>: ${escapeHtml(a.text)}</span>
-                                <button class="token-small-btn" onclick="removePollAnswer('${p.id}', '${escapeHtml(a.uid)}')" title="Take this answer down">✕</button></div>`).join("") || "<span class='promo-sub'>No answers yet.</span>"
-                            : [...p.options, ...(p.allowOther ? ["✏️ Other"] : [])].map((o, i) => {
-                            const c = p.counts[i] || 0, pct = p.total ? Math.round(c * 100 / p.total) : 0;
-                            return `<div style="display:flex; gap:8px; font-size:0.88rem; padding:2px 0;"><span style="flex:1;">${escapeHtml(o)}${c === most && c > 0 ? " 🏆" : ""}</span><b>${pct}%</b><span class="promo-sub">(${c})</span></div>`;
-                        }).join("") + (p.allowOther ? `<div class="promo-sub" style="margin-top:6px; font-size:0.8rem;">✏️ What they wrote:</div>${written || "<span class='promo-sub'>Nothing yet.</span>"}` : "");
+                        const many = p.questions.length > 1;
+                        const qHtml = p.questions.map((q, qi) => {
+                            const most = Math.max(...(q.counts || []), 0);
+                            const rows = q.kind === "open"
+                                ? writtenRows(p, qi, q.answers) || "<span class='promo-sub'>No answers yet.</span>"
+                                : [...q.options, ...(q.allowOther ? ["✏️ Other"] : [])].map((o, i) => {
+                                    const c = q.counts[i] || 0, pct = p.total ? Math.round(c * 100 / p.total) : 0;
+                                    return `<div style="display:flex; gap:8px; font-size:0.88rem; padding:2px 0;"><span style="flex:1;">${escapeHtml(o)}${c === most && c > 0 ? " 🏆" : ""}</span><b>${pct}%</b><span class="promo-sub">(${c})</span></div>`;
+                                }).join("") + (q.allowOther ? `<div class="promo-sub" style="margin-top:6px; font-size:0.8rem;">✏️ What they wrote:</div>${writtenRows(p, qi, q.answers) || "<span class='promo-sub'>Nothing yet.</span>"}` : "");
+                            return `<div style="margin:8px 0;">${many ? `<div style="font-weight:700; font-size:0.9rem;">${qi + 1}. ${escapeHtml(q.question)} <span class="promo-sub">${POLL_KIND_NAME[q.kind]}</span></div>` : ""}${rows}</div>`;
+                        }).join("");
                         const status = p.ended ? "✅ Ended" : `⏳ Ends ${new Date(p.expiresAt).toLocaleString()}`;
+                        const kind = many ? `📝 ${p.questions.length} questions` : POLL_KIND_NAME[p.questions[0].kind] || "";
                         return `<div style="padding:10px 0; border-bottom:1px solid #2a2a4a;">
-                            <strong>${escapeHtml(p.question)}</strong>
-                            <div class="promo-sub" style="font-size:0.8rem;">${POLL_KIND_NAME[p.kind] || ""} · ${status} · ${p.total} ${p.kind === "open" ? "answer" : "vote"}${p.total === 1 ? "" : "s"} · 🎁 ${escapeHtml(pollGift(p.reward))}${p.reward && (p.reward.amount || p.reward.draws || (p.reward.itemIds || []).length) ? ` — given to ${p.rewardCount}` : ""}${p.notified ? " · 📬 notified" : ""}</div>
-                            <div style="margin:6px 0;">${rows}</div>
+                            <strong>${escapeHtml(p.title)}</strong>
+                            <div class="promo-sub" style="font-size:0.8rem;">${kind} · ${status} · ${p.total} ${p.total === 1 ? "person" : "people"} answered · 🎁 ${escapeHtml(pollGift(p.reward))}${p.reward && (p.reward.amount || p.reward.draws || (p.reward.itemIds || []).length) ? ` — given to ${p.rewardCount}` : ""}${p.notified ? " · 📬 notified" : ""}</div>
+                            ${qHtml}
                             ${p.ended ? "" : `<button class="token-small-btn" onclick="endAdminPoll('${p.id}')">⏹ End now</button>`}
                             <button class="token-small-btn" onclick="deleteAdminPoll('${p.id}')">🗑️ Delete</button>
                         </div>`;
@@ -3440,12 +3469,12 @@ async function handleLookupUserByUid() {
                 if (!await showConfirmModal("End this poll now?", "Voting locks and the final results stay up.")) return;
                 try { await AppState.adminPolls("adminEnd", { pollId }); await loadAdminPolls(); } catch (e) { showInfoModal("Couldn't end it", e.message); }
             };
-            window.removePollAnswer = async (pollId, uid) => {
+            window.removePollAnswer = async (pollId, uid, q) => {
                 if (!await showConfirmModal("Take this answer down?", "It's removed from the poll (their gift stays). For an ✏️ Other, just what they wrote goes — any other options they picked stay. They could answer again while it's open.")) return;
-                try { await AppState.adminPolls("adminRemoveAnswer", { pollId, uid }); await loadAdminPolls(); } catch (e) { showInfoModal("Couldn't remove it", e.message); }
+                try { await AppState.adminPolls("adminRemoveAnswer", { pollId, uid, q: q || 0 }); await loadAdminPolls(); } catch (e) { showInfoModal("Couldn't remove it", e.message); }
             };
             window.deleteAdminPoll = async (pollId) => {
-                if (!await showConfirmModal("Delete this poll?", "It disappears from Social and the inbox, with all its votes. Gifts already given stay with the players.")) return;
+                if (!await showConfirmModal("Delete this poll?", "It disappears from News and the inbox, with all its answers. Gifts already given stay with the players.")) return;
                 try { await AppState.adminPolls("adminDelete", { pollId }); await loadAdminPolls(); } catch (e) { showInfoModal("Couldn't delete it", e.message); }
             };
             document.getElementById("pollsSection").addEventListener("toggle", (e) => { if (e.target.open) loadAdminPolls(); });
