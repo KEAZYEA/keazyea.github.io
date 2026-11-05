@@ -577,6 +577,51 @@
 
                 <hr style="border-color:#2a2a4a; margin:40px 0;">
 
+                <details class="admin-section" id="pollsSection">
+                <summary>📊 Polls</summary>
+                <p class="promo-sub" style="margin-top:0;">Shows in 📰 News (at the top while it's open, and under 📊 Polls).
+                    Players see the results once they've answered — for an open-ended poll, everyone's answers with their
+                    names — and can change their answer until it ends. The gift is paid on each player's first answer, once
+                    (only to accounts that existed when you post it, so it can't be farmed). "Notify everyone" puts it in
+                    everyone's inbox with a 📊 Have your say button.</p>
+                <div class="token-form">
+                    <label class="token-form-wide">Kind
+                        <select id="pollKind" class="token-input" onchange="onPollKindChange()">
+                            <option value="single">🔘 Single choice — pick one</option>
+                            <option value="multi">☑️ Multi-select — pick any</option>
+                            <option value="open">✍️ Open-ended — write an answer (everyone sees the answers)</option>
+                        </select>
+                    </label>
+                    <label class="token-form-wide">Question <input type="text" id="pollQuestion" maxlength="200" placeholder="e.g. Which hero should get a buff next?" class="token-input"></label>
+                    <div class="token-form-wide" id="pollOptionsWrap">
+                        <div id="pollOptionInputs"></div>
+                        <button type="button" class="token-small-btn" id="pollAddOptionBtn" onclick="addPollOption()">+ Add an option</button>
+                        <label style="display:flex; flex-direction:row; align-items:center; gap:8px; margin-top:8px;"><input type="checkbox" id="pollAllowOther">
+                            ✏️ Add "Other" — players can write their own answer (everyone sees what they wrote)</label>
+                    </div>
+                    <label>Runs for
+                        <span style="display:flex; gap:6px;">
+                            <input type="number" id="pollDuration" min="1" step="1" value="3" class="token-input">
+                            <select id="pollUnit" class="token-input" style="width:auto;">
+                                <option value="24" selected>days</option>
+                                <option value="1">hours</option>
+                            </select>
+                        </span>
+                    </label>
+                    <label>🎁 Tokens for voting <input type="number" id="pollGiftAmount" min="0" max="1000" step="1" value="0" class="token-input"></label>
+                    <label>🧰 Chest draws for voting <input type="number" id="pollGiftDraws" min="0" max="20" step="1" value="0" class="token-input"></label>
+                    <label class="token-form-wide">🎒 Item / style for voting (optional) <select id="pollGiftItem" class="token-input"><option value="">— no item —</option></select></label>
+                    <label class="token-form-wide" style="flex-direction:row; align-items:center; gap:8px;"><input type="checkbox" id="pollNotify" checked> 📬 Notify everyone (inbox)</label>
+                </div>
+                <button class="btn-primary" id="pollPostBtn" onclick="handlePostPoll()" style="padding:10px 20px;">Post poll</button>
+
+                <h3 style="margin:28px 0 4px;">📋 Polls</h3>
+                <div id="adminPollsList" class="token-scroll"></div>
+                <button class="token-small-btn" onclick="loadAdminPolls()">↻ Refresh</button>
+                </details>
+
+                <hr style="border-color:#2a2a4a; margin:40px 0;">
+
                 <details class="admin-section">
                 <summary>🛠️ Server Maintenance</summary>
                 <p class="promo-sub" id="maintenanceStatusText">Loading status...</p>
@@ -3305,6 +3350,105 @@ async function handleLookupUserByUid() {
                 }
             }
             window.handleSendGiftAll = handleSendGiftAll;
+
+            /* ---------------- 📊 Polls (api/polls.js) ---------------- */
+            const POLL_MAX_OPTIONS = 8;
+            const POLL_KIND_NAME = { single: "🔘 Single choice", multi: "☑️ Multi-select", open: "✍️ Open-ended" };
+            window.onPollKindChange = () => { document.getElementById("pollOptionsWrap").style.display = document.getElementById("pollKind").value === "open" ? "none" : ""; };
+            function renderPollOptionInputs(values) {
+                const box = document.getElementById("pollOptionInputs");
+                box.innerHTML = values.map((v, i) => `<div style="display:flex; gap:6px; margin-bottom:6px;">
+                    <input type="text" class="token-input poll-option-input" maxlength="80" placeholder="Option ${i + 1}" value="${escapeHtml(v)}">
+                    ${values.length > 2 ? `<button type="button" class="token-small-btn" title="Remove this option" onclick="removePollOption(${i})">✕</button>` : ""}</div>`).join("");
+                document.getElementById("pollAddOptionBtn").style.display = values.length >= POLL_MAX_OPTIONS ? "none" : "";
+            }
+            const pollOptionValues = () => [...document.querySelectorAll(".poll-option-input")].map(x => x.value);
+            window.addPollOption = () => { const v = pollOptionValues(); if (v.length < POLL_MAX_OPTIONS) renderPollOptionInputs([...v, ""]); };
+            window.removePollOption = (i) => { const v = pollOptionValues(); v.splice(i, 1); renderPollOptionInputs(v); };
+            renderPollOptionInputs(["", ""]);
+            setTimeout(() => { const sel = document.getElementById("pollGiftItem"); if (sel && sel.options.length <= 1) sel.insertAdjacentHTML("beforeend", itemOptionsHtml("")); }, 0);
+            const pollGift = (r) => r ? giftContents({ amount: r.amount, draws: r.draws, itemIds: r.itemIds }) : "—";
+
+            async function handlePostPoll() {
+                const kind = document.getElementById("pollKind").value;
+                const question = document.getElementById("pollQuestion").value.trim();
+                const options = kind === "open" ? [] : pollOptionValues().map(o => o.trim()).filter(Boolean);
+                const allowOther = kind !== "open" && document.getElementById("pollAllowOther").checked;
+                const duration = Number(document.getElementById("pollDuration").value);
+                const unitHours = Number(document.getElementById("pollUnit").value);
+                const amount = Number(document.getElementById("pollGiftAmount").value) || 0;
+                const draws = Number(document.getElementById("pollGiftDraws").value) || 0;
+                const itemId = document.getElementById("pollGiftItem").value;
+                const notify = document.getElementById("pollNotify").checked;
+                if (!question) { showInfoModal("Question", "Write the question."); return; }
+                if (kind !== "open" && options.length < (allowOther ? 1 : 2)) { showInfoModal("Options", allowOther ? "Give it at least 1 option (plus ✏️ Other)." : "Give it at least 2 options."); return; }
+                if (!(duration > 0)) { showInfoModal("Runs for", "Enter how long it runs."); return; }
+                const gift = pollGift({ amount, draws, itemIds: itemId ? [itemId] : [] });
+                const lasts = `${duration} ${unitHours === 24 ? "day" : "hour"}${duration === 1 ? "" : "s"}`;
+                if (!await showConfirmModal("Post this poll?",
+                    `${POLL_KIND_NAME[kind]}\n"${question}"\n\n${kind === "open" ? "Players write their own answers." : options.map((o, i) => `${i + 1}. ${o}`).join("\n") + (allowOther ? `\n${options.length + 1}. ✏️ Other (write your own)` : "")}\n\nRuns for ${lasts}. Gift for voting: ${gift === "—" ? "none" : gift}.${notify ? "\nEveryone gets an inbox message." : ""}`)) return;
+                const btn = document.getElementById("pollPostBtn");
+                btn.disabled = true;
+                try {
+                    await AppState.adminPolls("adminCreate", { kind, question, options, allowOther, expiresInHours: duration * unitHours, amount, draws, itemIds: itemId ? [itemId] : [], notify });
+                    showInfoModal("Posted", notify ? "It's in 📰 News → 📊 Polls and everyone's inbox." : "It's in 📰 News → 📊 Polls.");
+                    document.getElementById("pollQuestion").value = "";
+                    renderPollOptionInputs(["", ""]);
+                    document.getElementById("pollAllowOther").checked = false;
+                    await loadAdminPolls();
+                } catch (e) {
+                    showInfoModal("Couldn't post the poll", e.message);
+                }
+                btn.disabled = false;
+            }
+            window.handlePostPoll = handlePostPoll;
+
+            async function loadAdminPolls() {
+                const list = document.getElementById("adminPollsList");
+                list.innerHTML = "<p class='promo-sub'>Loading...</p>";
+                try {
+                    const r = await AppState.adminPolls("adminList");
+                    if (!r.polls.length) { list.innerHTML = "<p class='promo-sub'>No polls yet.</p>"; return; }
+                    list.innerHTML = r.polls.map(p => {
+                        const most = Math.max(...p.counts, 0);
+                        const written = (p.answers || []).map(a => `<div style="display:flex; gap:8px; align-items:flex-start; font-size:0.88rem; padding:4px 0; border-top:1px solid #23233d;">
+                                <span style="flex:1; min-width:0; overflow-wrap:anywhere;"><b>${escapeHtml(a.name)}</b>: ${escapeHtml(a.text)}</span>
+                                <button class="token-small-btn" onclick="removePollAnswer('${p.id}', '${escapeHtml(a.uid)}')" title="Take this answer down">✕</button></div>`).join("");
+                        const rows = p.kind === "open"
+                            ? (p.answers || []).map(a => `<div style="display:flex; gap:8px; align-items:flex-start; font-size:0.88rem; padding:4px 0; border-top:1px solid #23233d;">
+                                <span style="flex:1; min-width:0; overflow-wrap:anywhere;"><b>${escapeHtml(a.name)}</b>: ${escapeHtml(a.text)}</span>
+                                <button class="token-small-btn" onclick="removePollAnswer('${p.id}', '${escapeHtml(a.uid)}')" title="Take this answer down">✕</button></div>`).join("") || "<span class='promo-sub'>No answers yet.</span>"
+                            : [...p.options, ...(p.allowOther ? ["✏️ Other"] : [])].map((o, i) => {
+                            const c = p.counts[i] || 0, pct = p.total ? Math.round(c * 100 / p.total) : 0;
+                            return `<div style="display:flex; gap:8px; font-size:0.88rem; padding:2px 0;"><span style="flex:1;">${escapeHtml(o)}${c === most && c > 0 ? " 🏆" : ""}</span><b>${pct}%</b><span class="promo-sub">(${c})</span></div>`;
+                        }).join("") + (p.allowOther ? `<div class="promo-sub" style="margin-top:6px; font-size:0.8rem;">✏️ What they wrote:</div>${written || "<span class='promo-sub'>Nothing yet.</span>"}` : "");
+                        const status = p.ended ? "✅ Ended" : `⏳ Ends ${new Date(p.expiresAt).toLocaleString()}`;
+                        return `<div style="padding:10px 0; border-bottom:1px solid #2a2a4a;">
+                            <strong>${escapeHtml(p.question)}</strong>
+                            <div class="promo-sub" style="font-size:0.8rem;">${POLL_KIND_NAME[p.kind] || ""} · ${status} · ${p.total} ${p.kind === "open" ? "answer" : "vote"}${p.total === 1 ? "" : "s"} · 🎁 ${escapeHtml(pollGift(p.reward))}${p.reward && (p.reward.amount || p.reward.draws || (p.reward.itemIds || []).length) ? ` — given to ${p.rewardCount}` : ""}${p.notified ? " · 📬 notified" : ""}</div>
+                            <div style="margin:6px 0;">${rows}</div>
+                            ${p.ended ? "" : `<button class="token-small-btn" onclick="endAdminPoll('${p.id}')">⏹ End now</button>`}
+                            <button class="token-small-btn" onclick="deleteAdminPoll('${p.id}')">🗑️ Delete</button>
+                        </div>`;
+                    }).join("");
+                } catch (e) {
+                    list.innerHTML = `<p class='promo-sub'>Couldn't load polls: ${escapeHtml(e.message)}</p>`;
+                }
+            }
+            window.loadAdminPolls = loadAdminPolls;
+            window.endAdminPoll = async (pollId) => {
+                if (!await showConfirmModal("End this poll now?", "Voting locks and the final results stay up.")) return;
+                try { await AppState.adminPolls("adminEnd", { pollId }); await loadAdminPolls(); } catch (e) { showInfoModal("Couldn't end it", e.message); }
+            };
+            window.removePollAnswer = async (pollId, uid) => {
+                if (!await showConfirmModal("Take this answer down?", "It's removed from the poll (their gift stays). For an ✏️ Other, just what they wrote goes — any other options they picked stay. They could answer again while it's open.")) return;
+                try { await AppState.adminPolls("adminRemoveAnswer", { pollId, uid }); await loadAdminPolls(); } catch (e) { showInfoModal("Couldn't remove it", e.message); }
+            };
+            window.deleteAdminPoll = async (pollId) => {
+                if (!await showConfirmModal("Delete this poll?", "It disappears from Social and the inbox, with all its votes. Gifts already given stay with the players.")) return;
+                try { await AppState.adminPolls("adminDelete", { pollId }); await loadAdminPolls(); } catch (e) { showInfoModal("Couldn't delete it", e.message); }
+            };
+            document.getElementById("pollsSection").addEventListener("toggle", (e) => { if (e.target.open) loadAdminPolls(); });
 
             // "5 🪙 + 2 🧰 + 👑 Royal Crown"
             function giftContents(g) {

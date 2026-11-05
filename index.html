@@ -993,6 +993,8 @@ body {
 
         /* News: one sheet — the feed (chips + cards), and a post opened in place. */
         #newsModalOverlay.mini-modal-overlay { align-items: flex-end; padding: 0; }
+        /* a player's profile, opened from a poll answer, sits above the News sheet */
+        #viewProfileModalOverlayHome.mini-modal-overlay { z-index: 110; }
         @media (min-width: 640px) { #newsModalOverlay.mini-modal-overlay { align-items: center; padding: 16px; } }
         .mini-modal-box.news-sheet { max-width: 600px; width: 100%; height: min(88vh, 860px); display: flex; flex-direction: column; text-align: left; padding: 0; overflow: hidden; border-radius: 18px 18px 0 0; }
         @media (min-width: 640px) { .mini-modal-box.news-sheet { border-radius: 18px; } }
@@ -1018,6 +1020,51 @@ body {
         .news-card-snip { margin-top: 4px; font-size: 0.88rem; line-height: 1.45; color: var(--kih-text-dim);
             display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .news-empty { text-align: center; color: var(--kih-text-dim); padding: 40px 10px; }
+        /* ---- 📊 Polls, in the News sheet ---- */
+        .poll-card { padding: 13px 14px; margin-bottom: 10px; border-radius: 14px; border: 1px solid var(--kih-border); border-left: 4px solid #8a4dff;
+            background: linear-gradient(100deg, rgba(138, 77, 255, 0.14), rgba(255, 255, 255, 0.02) 65%), rgba(255, 255, 255, 0.02); }
+        .poll-card.flash { animation: pollFlash 2.6s ease; }
+        @keyframes pollFlash { 0%, 45% { box-shadow: 0 0 0 3px rgba(255, 215, 94, 0.8); } }
+        .poll-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 8px; }
+        .poll-chip { font-size: 0.68rem; font-weight: 900; letter-spacing: 0.03em; padding: 3px 8px; border-radius: 999px; background: rgba(255, 255, 255, 0.08); color: var(--kih-text-dim); }
+        .poll-chip.kind { background: rgba(138, 77, 255, 0.25); color: #d9c8ff; }
+        .poll-chip.open { background: rgba(126, 224, 161, 0.14); color: #7ee0a1; }
+        .poll-chip.gift { background: rgba(255, 215, 94, 0.16); color: #ffd75e; }
+        .poll-chip.got { background: rgba(126, 224, 161, 0.14); color: #7ee0a1; }
+        .poll-q { font-weight: 800; font-size: 1.02rem; line-height: 1.35; margin-bottom: 10px; overflow-wrap: anywhere; }
+        .poll-opts { display: flex; flex-direction: column; gap: 6px; }
+        .poll-opt { position: relative; display: flex; align-items: center; gap: 8px; width: 100%; min-height: 44px; padding: 10px 12px; border-radius: 10px; overflow: hidden;
+            border: 1px solid var(--kih-border); background: rgba(255, 255, 255, 0.04); color: var(--kih-text); font-family: inherit; font-size: 0.95rem; text-align: left; cursor: pointer; }
+        .poll-opt:disabled { cursor: default; }
+        .poll-opt:not(:disabled):hover { border-color: #8a4dff; }
+        .poll-opt .poll-fill { position: absolute; inset: 0 auto 0 0; background: rgba(138, 77, 255, 0.26); transition: width 0.5s ease; }
+        .poll-opt.mine { border-color: #b48cff; box-shadow: inset 0 0 0 1px #b48cff; }
+        .poll-opt.mine .poll-fill { background: linear-gradient(90deg, rgba(224, 64, 122, 0.42), rgba(138, 77, 255, 0.42)); }
+        .poll-opt.top .poll-fill { background: rgba(255, 215, 94, 0.24); }
+        .poll-opt.picked { border-color: #ffd75e; box-shadow: inset 0 0 0 1px #ffd75e; }
+        .poll-opt.pending { opacity: 0.6; }
+        .poll-opt > span { position: relative; }
+        .poll-tick { width: 20px; height: 20px; flex-shrink: 0; border-radius: 6px; border: 2px solid var(--kih-text-dim); display: grid; place-items: center; font-size: 0.8rem; font-weight: 900; }
+        .poll-opt.picked .poll-tick { border-color: #ffd75e; background: #ffd75e; color: #1a1a2e; }
+        .poll-opt-text { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+        .poll-opt-pct { font-weight: 900; font-variant-numeric: tabular-nums; }
+        .poll-submit { margin-top: 8px; width: 100%; padding: 11px; border-radius: 10px; border: none; font-family: inherit; font-weight: 800; font-size: 0.95rem; cursor: pointer;
+            background: linear-gradient(135deg, #e0407a, #8a4dff); color: #fff; }
+        .poll-submit:disabled { opacity: 0.45; cursor: default; }
+        .poll-text { width: 100%; box-sizing: border-box; min-height: 64px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--kih-border); background: rgba(0, 0, 0, 0.2);
+            color: var(--kih-text); font-family: inherit; font-size: 0.95rem; resize: vertical; }
+        .poll-count { font-size: 0.75rem; color: var(--kih-text-dim); text-align: right; margin-top: 2px; }
+        .poll-answers { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+        .poll-answer { display: flex; gap: 9px; align-items: flex-start; padding: 8px 10px; border-radius: 10px; background: rgba(255, 255, 255, 0.04); }
+        .poll-answer.me { background: rgba(138, 77, 255, 0.16); }
+        .poll-answer img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; flex-shrink: 0; cursor: pointer; background: var(--kih-border); }
+        .poll-answer-name { font-weight: 800; font-size: 0.85rem; cursor: pointer; }
+        .poll-answer-name:hover { text-decoration: underline; }
+        .poll-answer-text { font-size: 0.92rem; line-height: 1.4; overflow-wrap: anywhere; white-space: pre-wrap; }
+        .poll-more { border: none; background: none; color: #b48cff; font-family: inherit; font-weight: 800; padding: 6px 0 0; cursor: pointer; }
+        .poll-foot { margin-top: 8px; font-size: 0.78rem; color: var(--kih-text-dim); }
+        .poll-signin { text-align: center; color: var(--kih-text-dim); padding: 16px 10px; }
+
         .news-article h2 { margin: 4px 0 4px; font-size: 1.35rem; line-height: 1.25; }
         .news-article-body { margin-top: 14px; line-height: 1.6; overflow-wrap: anywhere; }
         .news-article-body img { max-width: 100%; height: auto; border-radius: 10px; }
@@ -3809,7 +3856,7 @@ function getNewsTypeInfo(type) {
     return { cls: "type-news", label: "📰 NEWS" };
 }
         const newsKind = (n) => (["leak", "confirmed", "rumour"].includes(n.type) ? n.type : "news");
-        const NEWS_CHIPS = [["all", "All"], ["leak", "🔥 Leaks"], ["confirmed", "✅ Confirmed"], ["rumour", "👀 Rumours"], ["news", "📰 News"]];
+        const NEWS_CHIPS = [["all", "All"], ["polls", "📊 Polls"], ["leak", "🔥 Leaks"], ["confirmed", "✅ Confirmed"], ["rumour", "👀 Rumours"], ["news", "📰 News"]];
         // "just now", "5m ago", "3h ago", "2d ago", then the date.
         function timeAgo(ms) {
             const sec = Math.max(0, (Date.now() - ms) / 1000);
@@ -3822,7 +3869,7 @@ function getNewsTypeInfo(type) {
         }
         function updateNewsBadgeHome(items) {
             const lastSeenAt = parseInt(localStorage.getItem(NEWS_LAST_SEEN_KEY) || "0", 10);
-            const unread = items.filter(n => n.createdAt > lastSeenAt).length;
+            const unread = items.filter(n => n.createdAt > lastSeenAt).length + pollsToAnswer().length;
             const badge = document.getElementById("newsBadgeHome");
             badge.textContent = unread > 9 ? "9+" : String(unread);
             badge.style.display = unread > 0 ? "flex" : "none";
@@ -3839,7 +3886,7 @@ function getNewsTypeInfo(type) {
             });
         }
 
-        const newsInView = () => (newsFilter === "all" ? latestNewsItems : latestNewsItems.filter(n => newsKind(n) === newsFilter));
+        const newsInView = () => (newsFilter === "all" ? latestNewsItems : newsFilter === "polls" ? [] : latestNewsItems.filter(n => newsKind(n) === newsFilter));
         function paintNews() {
             const body = document.getElementById("newsSheetBody");
             const chips = document.getElementById("newsChips");
@@ -3852,18 +3899,22 @@ function getNewsTypeInfo(type) {
                 body.scrollTop = 0;
                 return;
             }
-            const count = (k) => (k === "all" ? latestNewsItems.length : latestNewsItems.filter(n => newsKind(n) === k).length);
-            chips.innerHTML = NEWS_CHIPS.filter(([k]) => k === "all" || count(k) > 0)
+            const count = (k) => (k === "all" ? latestNewsItems.length + (pollsData ? pollsData.polls.filter(pollOpenNow).length : 0)
+                : k === "polls" ? (pollsData ? pollsData.polls.length : 0) : latestNewsItems.filter(n => newsKind(n) === k).length);
+            chips.innerHTML = NEWS_CHIPS.filter(([k]) => k === "all" || k === "polls" || count(k) > 0)
                 .map(([k, label]) => `<button type="button" class="kih-chip${newsFilter === k ? " active" : ""}" onclick="setNewsFilter('${k}')">${label}<small>${count(k)}</small></button>`).join("");
             const list = newsInView();
-            body.innerHTML = list.length ? list.map(n => {
+            const pollsHtml = newsPollsHtml(newsFilter);
+            if (newsFilter === "polls") { keepPollTyping(body, () => { body.innerHTML = pollsHtml; }); focusPendingPoll(); return; }
+            keepPollTyping(body, () => { body.innerHTML = pollsHtml + (list.length ? list.map(n => {
                 const t = getNewsTypeInfo(n.type);
                 return `<button type="button" class="news-card ${t.cls}" data-id="${escapeHomeHtml(n.id)}">
                     <div class="news-card-top"><span class="news-tag ${t.cls}">${t.label}</span><span class="news-when">${timeAgo(n.createdAt)}</span>${n.createdAt > newsSeenBefore ? `<span class="news-new">NEW</span>` : ""}</div>
                     <div class="news-card-title">${escapeHomeHtml(n.title)}</div>
                     <div class="news-card-snip">${escapeHomeHtml(stripHtmlForPreview(n.bodyHtml, 180))}</div>
                 </button>`;
-            }).join("") : `<div class="news-empty">📭 No news yet — check back soon.</div>`;
+            }).join("") : `<div class="news-empty">📭 No news yet — check back soon.</div>`); });
+            focusPendingPoll();
         }
         // bodyHtml is rendered as-is (not escaped) — it's admin-authored
         // (Firestore rules restrict writes to the admin uid), the same trust
@@ -3899,6 +3950,7 @@ function getNewsTypeInfo(type) {
             openNewsSheet();
             newsOpenId = null;
             paintNews();
+            loadPolls();
             if (latestNewsItems.length) AppState.reportQuestProgress("readNews", latestNewsItems[0].id);
         }
         window.openNewsModal = openNewsModal;
@@ -3920,6 +3972,7 @@ function getNewsTypeInfo(type) {
 
         function closeNewsModal() {
             document.getElementById("newsModalOverlay").classList.remove("open");
+            pollFocusId = null;
             newsOpenId = null;
             newsFilter = "all";
         }
@@ -3929,6 +3982,249 @@ function getNewsTypeInfo(type) {
             e.stopPropagation();
             document.getElementById("friendReqPanelHome").classList.remove("open");
             openNewsModal();
+        });
+
+        /* ---------------- 📊 POLLS (in the News sheet) ----------------
+           Made in admin.html, answered through api/polls.js. Three kinds:
+           single (one option), multi (any number, then Vote) and open (a
+           written answer; everyone's answers show, with names). Results show
+           once you've answered (or the poll's over); you can change your
+           answer until it ends; the first answer can pay a 🎁 gift. Open
+           polls sit at the top of All; 📊 Polls has every one. */
+        let pollsData = null, pollsLoading = false, pollBusy = null, pollFocusId = null;
+        let pollFlash = null; // { id, until }: a poll opened from the inbox stays highlighted through redraws
+        const pollPicks = {};      // multi-select: what you've ticked but not sent yet
+        const pollDrafts = {};     // open: what you've typed but not sent yet
+        const pollShowAll = new Set(); // open polls showing every answer
+        const POLL_KIND_LABEL = { single: "Pick one", multi: "Pick any", open: "Your answer" };
+        const pollNow = () => Date.now() + ((pollsData && pollsData.skew) || 0);
+        const pollOpenNow = (p) => !p.ended && p.expiresAt > pollNow();
+        const pollAnswered = (p) => p.myPicks != null || p.myText != null;
+        const pollsToAnswer = () => (pollsData ? pollsData.polls.filter(p => pollOpenNow(p) && !pollAnswered(p)) : []);
+        const pollGiftText = (r) => {
+            if (!r) return "";
+            const PCx = window.ProgressCore;
+            return [r.amount ? `${r.amount} 🪙` : "", r.draws ? `${r.draws} 🧰` : "",
+                ...(r.itemIds || r.items || []).map(id => PCx && PCx.BY_ID[id] ? `${PCx.BY_ID[id].icon} ${PCx.BY_ID[id].name}` : "")].filter(Boolean).join(" + ");
+        };
+        function pollTimeLeft(ms) {
+            const m = Math.max(1, Math.ceil(ms / 60000)), d = Math.floor(m / 1440), h = Math.floor((m % 1440) / 60);
+            return d ? `${d}d ${h}h` : h ? `${h}h ${m % 60}m` : `${m}m`;
+        }
+        const newsSheetOpen = () => document.getElementById("newsModalOverlay").classList.contains("open");
+        async function loadPolls() {
+            if (pollsLoading) return;
+            if (!AppState.getCurrentUser() || typeof AppState.listPolls !== "function") { pollsData = null; updateNewsBadgeHome(latestNewsItems); if (newsSheetOpen() && !newsOpenId) paintNews(); return; }
+            pollsLoading = true;
+            try {
+                const r = await AppState.listPolls();
+                pollsData = { polls: r.polls || [], skew: (r.now || Date.now()) - Date.now(), error: null };
+            } catch (e) {
+                if (!pollsData) pollsData = { polls: [], skew: 0, error: e.message };
+            }
+            pollsLoading = false;
+            updateNewsBadgeHome(latestNewsItems);
+            if (newsSheetOpen() && !newsOpenId) paintNews();
+        }
+        window.loadPolls = loadPolls;
+        // (started with the rest once AppState is ready — see DOMContentLoaded)
+        function startPollsHome() {
+            AppState.waitForAuthReady().then(loadPolls);
+            AppState.onAuthChange(() => { pollsData = null; loadPolls(); });
+        }
+        // the "Ends in" times and the results stay fresh while the sheet is open
+        setInterval(() => { if (newsSheetOpen() && !document.hidden) loadPolls(); }, 60000);
+
+        // A redraw (a new news post, a refresh) keeps what you're typing in an open poll.
+        function keepPollTyping(body, draw) {
+            const a = document.activeElement;
+            const typing = a && a.classList && a.classList.contains("poll-text") && body.contains(a) ? { id: a.dataset.poll, s: a.selectionStart, e: a.selectionEnd } : null;
+            draw();
+            if (!typing) return;
+            const t = body.querySelector(`.poll-text[data-poll="${CSS.escape(typing.id)}"]`);
+            if (t) { t.focus(); try { t.setSelectionRange(typing.s, typing.e); } catch (e) { } }
+        }
+        // from the inbox: that poll, on screen and highlighted
+        function focusPendingPoll() {
+            if (!pollFocusId || !pollsData) return;
+            const card = document.getElementById("poll_" + pollFocusId);
+            if (!card) return;
+            pollFocusId = null;
+            card.scrollIntoView({ block: "center" });
+            pollFlash = { id: card.id.slice(5), until: Date.now() + 2600 };
+            card.classList.add("flash");
+        }
+
+        function newsPollsHtml(filter) {
+            if (filter !== "all" && filter !== "polls") return "";
+            if (!AppState.getCurrentUser()) return filter === "polls" ? `<div class="poll-signin">📊 Sign in (⚙️ Settings) to vote in polls and see what everyone thinks.</div>` : "";
+            if (!pollsData) return filter === "polls" ? `<div class="news-empty">Loading polls…</div>` : "";
+            if (pollsData.error && !pollsData.polls.length) return filter === "polls" ? `<div class="news-empty">Couldn't load the polls — ${escapeHomeHtml(pollsData.error)}</div>` : "";
+            const list = filter === "all" ? pollsData.polls.filter(pollOpenNow)
+                : [...pollsData.polls.filter(pollOpenNow), ...pollsData.polls.filter(p => !pollOpenNow(p))];
+            if (!list.length) return filter === "polls" ? `<div class="news-empty">📊 No polls yet — check back soon!</div>` : "";
+            return list.map(pollCardHtml).join("");
+        }
+        // Everyone's written answers (an open poll's, or what people put under ✏️ Other):
+        // name and picture open their profile; the first 5, then Show all.
+        function pollAnswersHtml(p, id) {
+            const all = pollShowAll.has(p.id) ? p.answers : p.answers.slice(0, 5);
+            return `<div class="poll-answers">${all.map(a => `<div class="poll-answer${a.me ? " me" : ""}">
+                <img src="${escapeHomeHtml(a.avatar || "images/KIH.jpg")}" alt="" loading="lazy" onerror="this.onerror=null; this.src='images/KIH.jpg'" data-uid="${escapeHomeHtml(a.uid)}" data-name="${escapeHomeHtml(a.name)}" data-av="${escapeHomeHtml(a.avatar || "")}" title="See ${escapeHomeHtml(a.name)}'s profile">
+                <div style="min-width:0;"><div class="poll-answer-name" data-uid="${escapeHomeHtml(a.uid)}" data-name="${escapeHomeHtml(a.name)}" data-av="${escapeHomeHtml(a.avatar || "")}">${escapeHomeHtml(a.name)}${a.me ? " (you)" : ""}</div><div class="poll-answer-text">${escapeHomeHtml(a.text)}</div></div></div>`).join("")}</div>
+                ${p.answers.length > 5 ? `<button type="button" class="poll-more" data-poll-more="${id}">${pollShowAll.has(p.id) ? "Show fewer" : `Show all ${p.answers.length} answers`}</button>` : ""}`;
+        }
+        // A choice poll's picks and Other text not sent yet, and whether they can be.
+        function pollDraftState(p) {
+            const n = p.options.length; // ✏️ Other's index
+            const mine = p.myPicks || [];
+            const ticked = pollPicks[p.id] || new Set(mine);
+            const otherOn = !!p.allowOther && ticked.has(n);
+            const text = (p.id in pollDrafts ? pollDrafts[p.id] : (p.myText || ""));
+            const picksChanged = JSON.stringify([...ticked].sort((a, b) => a - b)) !== JSON.stringify(mine);
+            const changed = picksChanged || (otherOn && text.trim() !== (p.myText || ""));
+            const canSend = ticked.size > 0 && changed && (!otherOn || !!text.trim());
+            return { n, mine, ticked, otherOn, text, changed, canSend };
+        }
+        function pollCardHtml(p) {
+            const id = escapeHomeHtml(p.id);
+            const open = pollOpenNow(p), answered = pollAnswered(p);
+            const busy = pollBusy && pollBusy.id === p.id;
+            const status = open ? `<span class="poll-chip open">⏳ Ends in ${pollTimeLeft(p.expiresAt - pollNow())}</span>` : `<span class="poll-chip">✅ Ended</span>`;
+            const gift = p.reward ? (p.rewarded ? `<span class="poll-chip got">🎁 Got ${pollGiftText(p.reward)} ✓</span>`
+                : open ? `<span class="poll-chip gift">🎁 ${p.kind === "open" ? "Answer" : "Vote"} for ${pollGiftText(p.reward)}</span>` : "") : "";
+            const head = `<div class="poll-head"><span class="poll-chip kind">📊 ${POLL_KIND_LABEL[p.kind] || "Poll"}</span>${status}${gift}</div><div class="poll-q">${escapeHomeHtml(p.question)}</div>`;
+            const total = p.total || 0;
+            let body = "", foot = "";
+            if (p.kind === "open") {
+                const draft = p.id in pollDrafts ? pollDrafts[p.id] : (p.myText || "");
+                const box = open ? `<textarea class="poll-text" data-poll="${id}" maxlength="200" placeholder="Type your answer…"${busy ? " disabled" : ""}>${escapeHomeHtml(draft)}</textarea>
+                    <div class="poll-count">${draft.length}/200</div>
+                    <button type="button" class="poll-submit" data-poll-send="${id}"${busy || !draft.trim() || draft.trim() === (p.myText || "") ? " disabled" : ""}>${busy ? "Sending…" : answered ? "Update my answer" : "Post my answer"}</button>` : "";
+                if (Array.isArray(p.answers)) {
+                    body = box + pollAnswersHtml(p, id);
+                    foot = `${total} answer${total === 1 ? "" : "s"}${open ? " · you can edit yours until it ends" : " · final"}`;
+                } else {
+                    body = box;
+                    foot = "Answer to see what everyone else said";
+                }
+            } else {
+                const show = Array.isArray(p.counts);
+                const most = show ? Math.max(...p.counts) : 0;
+                const multi = p.kind === "multi";
+                const d = pollDraftState(p);
+                const labels = [...p.options, ...(p.allowOther ? ["✏️ Other"] : [])];
+                body = `<div class="poll-opts">${labels.map((text, i) => {
+                    const c = show ? p.counts[i] || 0 : 0;
+                    const pct = show && total ? Math.round(c * 100 / total) : 0;
+                    const isOther = p.allowOther && i === d.n;
+                    // ticked: multi always shows its boxes; single only while you're writing an Other
+                    const tick = open && (multi || (isOther && d.otherOn && d.changed) || (pollPicks[p.id] && d.ticked.has(i)));
+                    const cls = ["poll-opt", d.mine.includes(i) ? "mine" : "", tick && d.ticked.has(i) ? "picked" : "", show && !open && c === most && c > 0 ? "top" : "", busy && !multi && pollBusy.picks.includes(i) && !isOther ? "pending" : ""].filter(Boolean).join(" ");
+                    return `<button type="button" class="${cls}" data-poll="${id}" data-opt="${i}"${!open || busy ? " disabled" : ""}>
+                        ${show ? `<span class="poll-fill" style="width:${pct}%"></span>` : ""}
+                        ${multi && open ? `<span class="poll-tick">${d.ticked.has(i) ? "✓" : ""}</span>` : ""}
+                        <span class="poll-opt-text">${!multi && d.mine.includes(i) ? "✓ " : ""}${isOther ? `${text} <small style="opacity:0.7;">(write your own)</small>` : escapeHomeHtml(text)}${show && !open && c === most && c > 0 ? " 🏆" : ""}</span>
+                        ${show ? `<span class="poll-opt-pct" title="${c} vote${c === 1 ? "" : "s"}">${pct}%</span>` : ""}
+                    </button>`;
+                }).join("")}</div>`;
+                // ✏️ Other picked: what you'd write
+                if (open && d.otherOn) body += `<textarea class="poll-text" data-poll="${id}" maxlength="200" placeholder="Write your own answer…" style="margin-top:8px;"${busy ? " disabled" : ""}>${escapeHomeHtml(d.text)}</textarea>
+                    <div class="poll-count">${d.text.length}/200</div>`;
+                if (open && (multi ? (d.changed || !answered) : d.otherOn && d.changed))
+                    body += `<button type="button" class="poll-submit" data-poll-send="${id}"${busy || !d.canSend ? " disabled" : ""}>${busy ? "Sending…" : answered ? "Save my changes" : multi ? `Vote${d.ticked.size ? ` (${d.ticked.size})` : ""}` : "Vote"}</button>`;
+                // what people wrote under ✏️ Other
+                if (p.allowOther && Array.isArray(p.answers)) body += p.answers.length
+                    ? `<div class="poll-foot" style="margin-top:12px; font-weight:800;">✏️ What people wrote (${p.answers.length})</div>${pollAnswersHtml(p, id)}`
+                    : `<div class="poll-foot" style="margin-top:10px;">✏️ Nobody's written their own answer yet.</div>`;
+                foot = !open ? `${total} vote${total === 1 ? "" : "s"} · final results`
+                    : answered ? `${total} vote${total === 1 ? "" : "s"}${multi ? " (each could pick several)" : ""} · ${multi ? "change your picks and save" : "tap another option to change your vote"}`
+                    : multi ? "Tick as many as you like, then Vote — results show after" : "Vote to see the results";
+            }
+            const flash = pollFlash && pollFlash.id === p.id && Date.now() < pollFlash.until ? " flash" : "";
+            return `<div class="poll-card${flash}" id="poll_${id}">${head}${body}<div class="poll-foot">${foot}</div></div>`;
+        }
+
+        async function sendPollAnswer(p, answer, fromEl) {
+            if (pollBusy) return;
+            pollBusy = { id: p.id, picks: answer.options || [] };
+            paintNews();
+            try {
+                const r = await AppState.votePoll(p.id, answer);
+                const i = pollsData.polls.findIndex(x => x.id === p.id);
+                if (i >= 0 && r.poll) pollsData.polls[i] = r.poll;
+                delete pollPicks[p.id];
+                delete pollDrafts[p.id];
+                const word = p.kind === "open" ? "answering" : "voting";
+                if (r.gift) {
+                    showQuestToast(`🎁 Thanks for ${word}! You got ${pollGiftText({ amount: r.gift.amount, draws: r.gift.draws, items: r.gift.items }) || "your gift"}${r.gift.dupTokens ? ` (+${r.gift.dupTokens} 🪙 for an item you already had)` : ""}.`);
+                    const tokens = (r.gift.amount || 0) + (r.gift.dupTokens || 0);
+                    if (tokens && fromEl && window.kihFlyToHud) window.kihFlyToHud(fromEl.getBoundingClientRect(), tokens);
+                } else if (r.giftTooNew) showQuestToast("✅ Thanks! (This poll's gift is for accounts made before it was posted.)");
+                else if (r.changed) showQuestToast(p.kind === "open" ? "✅ Answer updated." : "✅ Vote changed.");
+                else if (!r.unchanged) showQuestToast(p.kind === "open" ? "✅ Answer posted!" : "✅ Voted!");
+            } catch (e) {
+                showGenericErrorModal(e.message, p.kind === "open" ? "Couldn't post your answer" : "Couldn't vote");
+                if (/ended/i.test(e.message)) { pollBusy = null; loadPolls(); }
+            }
+            pollBusy = null;
+            updateNewsBadgeHome(latestNewsItems);
+            paintNews();
+        }
+        document.getElementById("newsSheetBody").addEventListener("click", (e) => {
+            const who = e.target.closest(".poll-answer [data-uid]");
+            if (who) { openViewProfileModalHome(who.dataset.uid, who.dataset.name, who.dataset.av); return; }
+            const more = e.target.closest("[data-poll-more]");
+            if (more) { const id = more.dataset.pollMore; pollShowAll.has(id) ? pollShowAll.delete(id) : pollShowAll.add(id); paintNews(); return; }
+            const opt = e.target.closest(".poll-opt[data-opt]");
+            const send = e.target.closest("[data-poll-send]");
+            const pid = opt ? opt.dataset.poll : send ? send.dataset.pollSend : null;
+            const p = pid && pollsData && pollsData.polls.find(x => x.id === pid);
+            if (!p || !pollOpenNow(p) || pollBusy) return;
+            const otherIdx = p.allowOther ? p.options.length : -1;
+            if (opt && p.kind === "single") {
+                const i = Number(opt.dataset.opt);
+                if (i === otherIdx) {
+                    // ✏️ Other: open the box to write in (sent with Vote)
+                    pollPicks[p.id] = new Set([i]);
+                    paintNews();
+                    const t = document.querySelector(`#poll_${CSS.escape(p.id)} .poll-text`);
+                    if (t) t.focus();
+                    return;
+                }
+                delete pollPicks[p.id];
+                if ((p.myPicks || []).includes(i)) { paintNews(); return; } // already your vote
+                sendPollAnswer(p, { options: [i] }, opt);
+            } else if (opt && p.kind === "multi") {
+                const i = Number(opt.dataset.opt);
+                const set = new Set(pollPicks[p.id] || p.myPicks || []);
+                set.has(i) ? set.delete(i) : set.add(i);
+                pollPicks[p.id] = set;
+                paintNews();
+                if (i === otherIdx && set.has(i)) { const t = document.querySelector(`#poll_${CSS.escape(p.id)} .poll-text`); if (t) t.focus(); }
+            } else if (send && p.kind !== "open") {
+                const d = pollDraftState(p);
+                if (d.canSend) sendPollAnswer(p, { options: [...d.ticked].sort((a, b) => a - b), ...(d.otherOn ? { text: d.text.trim() } : {}) }, send);
+            } else if (send && p.kind === "open") {
+                const text = (pollDrafts[p.id] != null ? pollDrafts[p.id] : p.myText || "").trim();
+                if (text) sendPollAnswer(p, { text }, send);
+            }
+        });
+        // typing an open answer: kept (a redraw doesn't lose it), its count and button follow
+        document.getElementById("newsSheetBody").addEventListener("input", (e) => {
+            const t = e.target.closest(".poll-text");
+            if (!t) return;
+            const p = pollsData && pollsData.polls.find(x => x.id === t.dataset.poll);
+            if (!p) return;
+            pollDrafts[p.id] = t.value;
+            const card = t.closest(".poll-card");
+            card.querySelector(".poll-count").textContent = `${t.value.length}/200`;
+            const b = card.querySelector("[data-poll-send]");
+            if (p.kind !== "open") {
+                // (an edit to an Other text makes Save appear)
+                if (!b) { paintNews(); return; }
+                b.disabled = !pollDraftState(p).canSend;
+            } else if (b) b.disabled = !t.value.trim() || t.value.trim() === (p.myText || "");
         });
 
         window.openViewProfileModalHome = async function (uid, fallbackName, fallbackAvatar) {
@@ -4109,7 +4405,7 @@ function getNewsTypeInfo(type) {
             if (n.type === "promo" || n.type === "giveawayWin" || n.type === "secretGiveawayWin" || n.type === "promoCodes"
                 || n.type === "weeklyGiveawayNew" || n.type === "secretGiveawayNew") return "promo";
             if (n.type === "tip") return "tip";
-            if (n.type === "friendAccepted" || n.type === "spookyGift" || COMMENT_NOTIF_TYPES.includes(n.type)) return "social";
+            if (n.type === "friendAccepted" || n.type === "spookyGift" || n.type === "poll" || COMMENT_NOTIF_TYPES.includes(n.type)) return "social";
             return "general";
         }
 
@@ -4119,7 +4415,7 @@ function getNewsTypeInfo(type) {
         function inboxIconFor(n) {
             return ({
                 spookyGift: "🎃", tokenGift: "🪙", tokensGranted: "🪙", tokenAdjust: "🪙", secretGiveawayWin: "🏆", giveawayWin: "🏆", promoCodes: "🎟️", promo: "🎁",
-                weeklyGiveawayNew: "🎡", secretGiveawayNew: "🎁", tip: "💡", friendAccepted: "🤝", formationComment: "💬", formationReply: "💬", tierListComment: "💬", tierListReply: "💬"
+                weeklyGiveawayNew: "🎡", secretGiveawayNew: "🎁", tip: "💡", poll: "📊", friendAccepted: "🤝", formationComment: "💬", formationReply: "💬", tierListComment: "💬", tierListReply: "💬"
             })[n.type] || "📢";
         }
         // A message's one action (View Code, Message, Enter Giveaway…) — the
@@ -4145,6 +4441,8 @@ function getNewsTypeInfo(type) {
             if (n.type === "tokensGranted") return `<button class="btn-primary" style="${style}" onclick="openPromoTab('secret')">🪙 Use Tokens</button>`;
             if (n.type === "tokenGift") return giftButtonHtml(n, !!style);
             if (n.type === "spookyGift") return spookyButtonHtml(n, style);
+            // a poll: Vote until it ends, then its results
+            if (n.type === "poll" && n.pollId) return `<button class="btn-primary" style="${style}" onclick="openInboxPoll(${jsArgHome(n.pollId)})">${n.expiresAt && n.expiresAt <= Date.now() ? "📊 See results" : "📊 Have your say"}</button>`;
             return ""; // adminMessage and announcement need no button — title + body already contain everything
         }
         function inboxGroupOf(ms) {
@@ -4520,6 +4818,16 @@ window.closeInboxItemModal = closeInboxItemModal;
             setSectionFrameUrl(frame, url.toString());
             goToPage("social");
         }
+        // A new poll: 📰 News → 📊 Polls, at that poll.
+        function openInboxPoll(pollId) {
+            pollFocusId = pollId;
+            openNewsSheet();
+            newsOpenId = null;
+            newsFilter = "polls";
+            paintNews();
+            loadPolls();
+        }
+        window.openInboxPoll = openInboxPoll;
         function openInboxFormationPost(postId) {
             let frame = document.querySelector("#page-social iframe");
             let url = new URL(currentSectionFrameUrl(frame, "social.html"), window.location.href);
@@ -5252,6 +5560,7 @@ window.closeInboxItemModal = closeInboxItemModal;
             renderHomeGreet();
 
             startNewsListenerHome();
+            startPollsHome();
             AppState.listenToNotifications((notifications) => {
                 latestNotifications = notifications;
                 renderInboxBadgeFrom(mergedNotifications());

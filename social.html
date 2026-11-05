@@ -319,10 +319,11 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            cursor: pointer;
         }
 
-        .clan-post-head:hover .clan-post-name {
+        /* only the poster's picture and name open their profile */
+        .clan-post-head .clan-post-avatar, .clan-post-head .poster-name, .clan-post-head [id$="PosterName"] { cursor: pointer; }
+        .clan-post-head .poster-name:hover, .clan-post-head [id$="PosterName"]:hover {
             text-decoration: underline;
         }
 
@@ -2586,7 +2587,7 @@
                 </div>
                 <div class="clan-post-body" id="formationDetailDescription"></div>
 
-                <div class="clan-post-head" id="formationDetailPosterRow" style="margin-top:16px; cursor:pointer;">
+                <div class="clan-post-head" id="formationDetailPosterRow" style="margin-top:16px;">
                     <span id="formationDetailAvatarWrap"><img class="clan-post-avatar" id="formationDetailAvatar" onerror="this.style.visibility='hidden'"></span>
                     <span class="clan-post-name" id="formationDetailPosterName"></span>
                     <span class="clan-post-time" id="formationDetailTime"></span>
@@ -2723,7 +2724,7 @@
                         onclick="downloadCurrentTierListImage()" title="Download as image">⬇</button>
                 </div>
 
-                <div class="clan-post-head" id="tierListDetailPosterRow" style="margin-top:12px; cursor:pointer;">
+                <div class="clan-post-head" id="tierListDetailPosterRow" style="margin-top:12px;">
                     <span id="tierListDetailAvatarWrap"><img class="clan-post-avatar" id="tierListDetailAvatar" onerror="this.style.visibility='hidden'"></span>
                     <span class="clan-post-name" id="tierListDetailPosterName"></span>
                     <span class="clan-post-time" id="tierListDetailTime"></span>
@@ -2867,7 +2868,7 @@
             <div id="clanDetailTags" style="margin-bottom:6px;"></div>
             <div class="clan-post-body" id="clanDetailDescription"></div>
 
-            <div class="clan-post-head" id="clanDetailPosterRow" style="margin-top:16px; cursor:pointer;">
+            <div class="clan-post-head" id="clanDetailPosterRow" style="margin-top:16px;">
                 <span id="clanDetailAvatarWrap"><img class="clan-post-avatar" id="clanDetailAvatar" onerror="this.style.visibility='hidden'"></span>
                 <span class="clan-post-name" id="clanDetailPosterName"></span>
                 <span class="clan-post-time" id="clanDetailTime"></span>
@@ -3907,9 +3908,9 @@ window.removeClanIconPreview = function () {
                         </div>
                     </div>
                     
-<div class="clan-post-head" style="margin-top:16px; padding-top:10px; border-top:1px solid #2a2a4a; cursor:pointer;" onclick="event.stopPropagation(); onPosterClick('${p.uid}', ${jsStr(p.name)})">
+<div class="clan-post-head" style="margin-top:16px; padding-top:10px; border-top:1px solid #2a2a4a;" onclick="posterTap(event, '${p.uid}', ${jsStr(p.name)})">
                         ${bordered(p.uid, `<img class="clan-post-avatar" src="${escapeHtml(avatarOf(p.uid, p.avatar))}" onerror="this.style.visibility='hidden'">`)}
-                        <span class="clan-post-name"><span class="${nameFx(p.uid)}">${escapeHtml(p.name)}</span></span>
+                        <span class="clan-post-name"><span class="poster-name ${nameFx(p.uid)}">${escapeHtml(p.name)}</span></span>
                         <span class="clan-post-time">${timeAgo(p.createdAt)}</span>
                     </div>
                     <div class="clan-post-footer">
@@ -3940,10 +3941,7 @@ window.removeClanIconPreview = function () {
             styleDetailPoster("clanDetail", p.uid);
             document.getElementById("clanDetailTime").textContent = timeAgo(p.createdAt);
 
-            document.getElementById("clanDetailPosterRow").onclick = () => {
-                closeClanDetailModal();
-                onPosterClick(p.uid, p.name);
-            };
+            document.getElementById("clanDetailPosterRow").onclick = (e) => posterTap(e, p.uid, p.name, closeClanDetailModal);
 
             const myUid = AppState.getCurrentUser()?.uid;
             const reportBtn = document.getElementById("clanDetailReportBtn");
@@ -4359,9 +4357,9 @@ window.removeClanIconPreview = function () {
                     </div>
                     ${p.description ? `<div class="clan-post-body" style="margin-top:8px; max-height:4.2em; overflow:hidden;">${escapeHtml(p.description)}</div>` : ""}
 
-                    <div class="clan-post-head" style="margin-top:12px; padding-top:10px; border-top:1px solid #2a2a4a; cursor:pointer;" onclick="event.stopPropagation(); onPosterClick('${p.uid}', ${jsStr(p.name)})">
+                    <div class="clan-post-head" style="margin-top:12px; padding-top:10px; border-top:1px solid #2a2a4a;" onclick="posterTap(event, '${p.uid}', ${jsStr(p.name)})">
                         ${bordered(p.uid, `<img class="clan-post-avatar" src="${escapeHtml(avatarOf(p.uid, p.avatar))}" onerror="this.style.visibility='hidden'">`)}
-                        <span class="clan-post-name"><span class="${nameFx(p.uid)}">${escapeHtml(p.name)}</span>${isMine ? '<span class="my-post-badge">Your Post</span>' : ""}</span>
+                        <span class="clan-post-name"><span class="poster-name ${nameFx(p.uid)}">${escapeHtml(p.name)}</span>${isMine ? '<span class="my-post-badge">Your Post</span>' : ""}</span>
                         <span class="clan-post-time">${timeAgo(p.createdAt)}</span>
                     </div>
                     <div class="clan-post-footer">
@@ -4393,10 +4391,7 @@ window.removeClanIconPreview = function () {
             styleDetailPoster("formationDetail", p.uid);
             document.getElementById("formationDetailTime").textContent = timeAgo(p.createdAt);
 
-            document.getElementById("formationDetailPosterRow").onclick = () => {
-                closeFormationDetailModal();
-                onPosterClick(p.uid, p.name);
-            };
+            document.getElementById("formationDetailPosterRow").onclick = (e) => posterTap(e, p.uid, p.name, closeFormationDetailModal);
 
             const myUid = AppState.getCurrentUser()?.uid;
             const editBtn = document.getElementById("formationDetailEditBtn");
@@ -5652,9 +5647,9 @@ window.removeClanIconPreview = function () {
                     <div class="compose-hint" style="margin-top:8px;">
                         ${score >= 0 ? "▲" : "▼"} ${score} net votes${(t.commentCount || 0) > 0 ? ` &middot; 💬 ${t.commentCount} comment${t.commentCount === 1 ? "" : "s"}` : ""}
                     </div>
-                    <div class="clan-post-head" style="margin-top:12px; padding-top:10px; border-top:1px solid #2a2a4a; cursor:pointer;" onclick="event.stopPropagation(); onPosterClick('${t.uid}', ${nameArg})">
+                    <div class="clan-post-head" style="margin-top:12px; padding-top:10px; border-top:1px solid #2a2a4a;" onclick="posterTap(event, '${t.uid}', ${nameArg})">
                         ${bordered(t.uid, `<img class="clan-post-avatar" src="${escapeHtml(avatarOf(t.uid, t.avatar))}" onerror="this.style.visibility='hidden'">`)}
-                        <span class="clan-post-name"><span class="${nameFx(t.uid)}">${escapeHtml(t.name)}</span>${isMine ? '<span class="my-post-badge">Your Post</span>' : ""}</span>
+                        <span class="clan-post-name"><span class="poster-name ${nameFx(t.uid)}">${escapeHtml(t.name)}</span>${isMine ? '<span class="my-post-badge">Your Post</span>' : ""}</span>
                         <span class="clan-post-time">${timeAgo(t.createdAt)}</span>
                     </div>
                     <div class="clan-post-footer">${footer}</div>
@@ -5702,10 +5697,7 @@ window.removeClanIconPreview = function () {
             document.getElementById("tierListDetailPosterName").textContent = t.name;
             styleDetailPoster("tierListDetail", t.uid);
             document.getElementById("tierListDetailTime").textContent = timeAgo(t.createdAt);
-            document.getElementById("tierListDetailPosterRow").onclick = () => {
-                closeTierListDetailModal();
-                onPosterClick(t.uid, t.name);
-            };
+            document.getElementById("tierListDetailPosterRow").onclick = (e) => posterTap(e, t.uid, t.name, closeTierListDetailModal);
 
             const myUid = AppState.getCurrentUser()?.uid;
             const editBtn = document.getElementById("tierListDetailEditBtn");
@@ -6404,6 +6396,15 @@ window.removeClanIconPreview = function () {
     document.documentElement.style.overflow = "hidden";
 };
 
+        // A poster's row: only their picture (and its border) or their name opens
+        // their profile. Anywhere else in the row is just part of the post (in a
+        // list, that opens the post).
+        window.posterTap = function (e, uid, name, before) {
+            if (!e.target.closest(".clan-post-avatar, .fx-av, .poster-name, [id$='PosterName']")) return;
+            e.stopPropagation();
+            if (before) before();
+            onPosterClick(uid, name);
+        };
         window.onPosterClick = async function (uid, name) {
             const user = AppState.getCurrentUser();
             if (!user) { showInfoModal("Sign in required", "Sign in with Google first."); return; }

@@ -21,12 +21,15 @@
  *   runAnswer   { runId, input }  -> one move: what happened, then the next
  *                                    question or the end of the run
  *   leaderboard                   -> this week's top players, your place, the
- *                                    prizes and last week's winners — names only for
- *                                    a signed-in caller; anyone else gets just the
- *                                    week's end and the prizes
+ *                                    prizes, last week's winners and each game's
+ *                                    all-time high score — names (and uids, to
+ *                                    open profiles) only for a
+ *                                    signed-in caller; anyone else gets just the
+ *                                    week's end, the prizes and the record scores
  *
  * Weekly score = your best run this week in each of the five games — a
- * run's score is its points, at most G.LB_CAP; a run started on the day its
+ * run's score is its points, of which the board counts at most G.LB_CAP (a
+ * run goes on past it, for the all-time high score); a run started on the day its
  * game is Today's Puzzle (G.bonusGameFor) counts double — added up, so at
  * most G.LB_MAX. Weeks run Monday–Sunday,
  * Singapore time. The first leaderboard or run request after a week ends
@@ -38,6 +41,8 @@
  *   gameLeaderboards/{week}                   { finalizedAt, winners } once paid
  *   gameLeaderboards/{week}/players/{uid}     { name, best: {game: score}, pts: {game: board points},
  *                                             dbl: {game: true if those points were a doubled run}, total, updatedAt }
+ *   gameRecords/{game}                        the all-time high score: { game, score, uid, name, runId, at }
+ *                                             (the first to reach a score keeps it)
  */
 
 const crypto = require("crypto");
@@ -180,12 +185,13 @@ async function runStart(db, uid, body, now) {
   const week = weekOf(now);
   // All at once rather than one after another: each is a trip to the database.
   // (Rescoring only changes totals, never the per-game bests read here.)
-  const [, , name, lb, inv] = await Promise.all([
+  const [, , name, lb, inv, records] = await Promise.all([
     assertNotBanned(db, uid),
     rescoreWeek(db, week),
     playerName(db, uid),
     db.collection("gameLeaderboards").doc(week).collection("players").doc(uid).get(),
-    db.collection("inventories").doc(uid).get()
+    db.collection("inventories").doc(uid).get(),
+    allRecords(db, now).catch(() => ({}))
   ]);
   // Items: more time per question, extra lives, more Blur hints.
   const rp = P.runPerks(inv.exists ? inv.data().perks : null);
@@ -198,7 +204,9 @@ async function runStart(db, uid, body, now) {
   await db.collection("gameRuns").doc(runId).set({ uid, name, game, week, bonus, run, createdAt: now, updatedAt: now });
   const best = lb.exists ? (lb.data().best || {})[game] || 0 : 0;
   const pts = lb.exists ? G.lbPts(lb.data())[game] : 0;
-  return { ok: true, runId, game, week, bonus, bonusGame, score: 0, over: false, best, pts, deadline: run.deadline, now, extraMs: run.extraMs || 0, lives: run.lives || 0, view: await publicView(run) };
+  const rec = records[game];
+  const record = rec ? { score: rec.score, name: rec.name, me: rec.uid === uid } : null;
+  return { ok: true, runId, game, week, bonus, bonusGame, score: 0, over: false, best, pts, record, deadline: run.deadline, now, extraMs: run.extraMs || 0, lives: run.lives || 0, view: await publicView(run) };
 }
 
 // Only the fields a move can have, with the right types.
@@ -269,12 +277,22 @@ async function runAnswer(db, uid, body, now) {
     // scored, so a run left unfinished still counts what it got).
     const gained = runPts - G.lbRunPoints(doc.game, doc.run.score, doc.bonus);
     if (gained > 0) tx.set(db.collection("achievementStats").doc(uid), { gamePoints: FieldValue.increment(gained) }, { merge: true });
-    return { step, best: best[doc.game] || 0, pts: pts[doc.game], newBest: betterScore || morePts, game: doc.game, tenPaid };
+    return { step, best: best[doc.game] || 0, pts: pts[doc.game], newBest: betterScore || morePts, game: doc.game, name: doc.name, scoreBefore: doc.run.score, tenPaid };
   });
   const { run } = result.step;
+  // A new all-time high score? (Its own small transaction, and only when the
+  // score beats the last record this server saw — most moves skip it.)
+  let newRecord = false;
+  if (run.score > result.scoreBefore) {
+    try {
+      newRecord = await saveRecord(db, result.game, run.score, uid, result.name, runId, now);
+      if (newRecord && recordsCache) recordsCache.records[result.game] = { score: run.score, uid, name: result.name, at: now };
+    } catch (e) { console.warn("record", e.message); }
+  }
   return {
     ok: true,
     score: run.score,
+    ...(newRecord ? { newRecord: true } : {}),
     over: run.over,
     feedback: result.step.feedback,
     best: result.best,
@@ -289,6 +307,39 @@ async function runAnswer(db, uid, body, now) {
     // the same run as a challenge.
     seed: run.over ? run.seed : undefined
   };
+}
+
+/* ---------------- all-time high scores ----------------
+   Each game's best run ever, and who played it. Saved as a run scores (a
+   run left unfinished keeps what it got). Records only go up, so a score
+   at or under the last one this server saw can't be one — no read needed. */
+const recordSeen = {}; // game -> the highest record score this instance has read
+const recordRef = (db, game) => db.collection("gameRecords").doc(game);
+async function saveRecord(db, game, score, uid, name, runId, now) {
+  if (!(score > 0) || score <= (recordSeen[game] || 0)) return false;
+  const ref = recordRef(db, game);
+  return db.runTransaction(async (tx) => {
+    const snap = await tx.get(ref);
+    const cur = snap.exists ? snap.data().score || 0 : 0;
+    recordSeen[game] = Math.max(recordSeen[game] || 0, cur);
+    if (score <= cur) return false;
+    tx.set(ref, { game, score, uid, name, runId, at: now });
+    recordSeen[game] = score;
+    return true;
+  });
+}
+// { game: { score, uid, name, at } | null }, read at most every 30 s.
+let recordsCache = null;
+async function allRecords(db, now) {
+  if (recordsCache && now - recordsCache.at < 30000) return recordsCache.records;
+  const snaps = await db.getAll(...G.GAMES.map(g => recordRef(db, g)));
+  const records = Object.fromEntries(G.GAMES.map((g, i) => {
+    const d = snaps[i].exists ? snaps[i].data() : null;
+    if (d) recordSeen[g] = Math.max(recordSeen[g] || 0, d.score || 0);
+    return [g, d && d.score > 0 ? { score: d.score, uid: d.uid, name: d.name, at: d.at } : null];
+  }));
+  recordsCache = { at: now, records };
+  return records;
 }
 
 /* ---------------- weekly prizes ---------------- */
@@ -352,7 +403,7 @@ async function finalizePastWeeks(db, now) {
 }
 
 /* ---------------- leaderboard ---------------- */
-const SCORING = 3; // 3: a run's score is its points (at most G.LB_CAP), Today's Puzzle game ×2, kept as pts
+const SCORING = 3; // 3: a run's score is its points (the board counts at most G.LB_CAP), Today's Puzzle game ×2, kept as pts
 const rescored = new Set();
 async function rescoreWeek(db, week) {
   if (rescored.has(week)) return;
@@ -400,7 +451,12 @@ async function leaderboard(db, uid, now) {
   // Names are only for signed-in players.
   const bonus = G.bonusGameFor(dayKeyFor(now)); // today's ⭐ double-points game
   const base = { ok: true, week, bonus, endsAt: weekEndsAt(now), now, prizes: WEEKLY_PRIZES, cap: G.LB_CAP, gameMax: G.LB_GAME_MAX, max: G.LB_MAX };
-  if (!uid) return { ...base, top: [], me: null, lastWeek: [], signedOut: true };
+  const recs = await allRecords(db, now).catch(() => ({}));
+  if (!uid) {
+    // the scores only — names are for signed-in players
+    const records = Object.fromEntries(G.GAMES.map(g => [g, recs[g] ? { score: recs[g].score } : null]));
+    return { ...base, top: [], me: null, lastWeek: [], records, signedOut: true };
+  }
   await rescoreWeek(db, week);
   const players = db.collection("gameLeaderboards").doc(week).collection("players");
   const [topSnap, meSnap, lastMeta] = await Promise.all([
@@ -412,9 +468,11 @@ async function leaderboard(db, uid, now) {
     .sort((a, b) => b.total - a.total || a.updatedAt - b.updatedAt)
     .slice(0, LEADERBOARD_SIZE);
   const lastWinners = lastMeta.exists && lastMeta.data().winners ? lastMeta.data().winners : [];
-  const looks = await playerLooks(db, [...top.map(p => p.uid), ...lastWinners.map(w => w.uid)], now);
+  const recUids = G.GAMES.map(g => recs[g] && recs[g].uid).filter(Boolean);
+  const looks = await playerLooks(db, [...top.map(p => p.uid), ...lastWinners.map(w => w.uid), ...recUids], now);
   // ties share a place: 1 + how many have more points
-  const rows = top.map(p => ({ rank: 1 + top.filter(o => o.total > p.total).length, name: p.name, total: p.total, best: { ...blankBest(), ...p.best }, pts: G.lbPts(p), dbl: p.dbl || {}, perk: p.perk || 0,
+  // (uid: so a tap on a player opens their profile — signed-in callers only, like the names)
+  const rows = top.map(p => ({ rank: 1 + top.filter(o => o.total > p.total).length, uid: p.uid, name: p.name, total: p.total, best: { ...blankBest(), ...p.best }, pts: G.lbPts(p), dbl: p.dbl || {}, perk: p.perk || 0,
     nameFx: (looks[p.uid] || {}).fx || "", avatar: (looks[p.uid] || {}).avatar || "", border: (looks[p.uid] || {}).border || null, me: p.uid === uid }));
   let me = null;
   if (meSnap && meSnap.exists && meSnap.data().total > 0) {
@@ -425,8 +483,15 @@ async function leaderboard(db, uid, now) {
   } else if (uid) {
     me = { rank: null, total: 0, best: blankBest(), pts: blankPts(), dbl: {}, perk: 0 };
   }
-  const lastWeek = lastWinners.map(w => ({ rank: w.rank, name: w.name, total: w.total, prize: w.prize, avatar: (looks[w.uid] || {}).avatar || "", border: (looks[w.uid] || {}).border || null }));
-  return { ...base, top: rows, me, lastWeek };
+  const lastWeek = lastWinners.map(w => ({ rank: w.rank, uid: w.uid, name: w.name, total: w.total, prize: w.prize, avatar: (looks[w.uid] || {}).avatar || "", border: (looks[w.uid] || {}).border || null }));
+  // Each game's all-time high score: its holder's picture, border and name effect as they are now.
+  const records = Object.fromEntries(G.GAMES.map(g => {
+    const r = recs[g];
+    if (!r) return [g, null];
+    const lk = looks[r.uid] || {};
+    return [g, { score: r.score, uid: r.uid, name: r.name, at: r.at, avatar: lk.avatar || "", border: lk.border || null, nameFx: lk.fx || "", me: r.uid === uid }];
+  }));
+  return { ...base, top: rows, me, lastWeek, records };
 }
 
 module.exports = async (req, res) => {
@@ -462,4 +527,5 @@ module.exports = async (req, res) => {
 };
 
 // For tests.
-module.exports._internals = { weekOf, weekEndsAt, weeksBefore, finalizeWeek, rescoreWeek, WEEKLY_PRIZES };
+module.exports._internals = { weekOf, weekEndsAt, weeksBefore, finalizeWeek, rescoreWeek, WEEKLY_PRIZES, saveRecord, allRecords,
+  resetRecordCache: () => { recordsCache = null; for (const k in recordSeen) delete recordSeen[k]; } };
