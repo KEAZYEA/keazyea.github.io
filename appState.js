@@ -527,6 +527,370 @@ async function signOutUser() {
         return callPollsApi(action, payload);
     }
 
+    /* ---------------- 🌍 World Chat (api/chat.js) ----------------
+       Sending and deleting go through the server (slow mode, pauses, bans);
+       the chat itself is read live from Firestore. */
+    async function callChatApi(action, payload = {}) {
+        await waitForAuthReady();
+        if (!currentUser) throw new Error("Sign in with Google first.");
+        const res = await fetch(BACKEND_BASE + "/api/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Authorization: "Bearer " + await getIdToken() },
+            body: JSON.stringify({ action, ...payload })
+        });
+        let data = null;
+        try { data = await res.json(); } catch (e) { /* non-JSON error page */ }
+        if (!res.ok) {
+            const err = new Error((data && data.error) || `Request failed (${res.status})`);
+            err.status = res.status;
+            if (data && data.retryIn) err.retryIn = data.retryIn;
+            throw err;
+        }
+        return data;
+    }
+    // { text, tag, replyToId } → { id, slowSeconds }
+    const sendWorldChat = async (msg) => {
+        const r = await callChatApi("send", msg);
+        if (r && r.id) reportQuestProgress("worldChat", r.id); // today's 🌍 quest, if it's on (the server checks the message)
+        return r;
+    };
+    const deleteWorldChat = (msgId) => callChatApi("delete", { msgId });
+    // videosOff: no video uploads anywhere (World Chat and DMs) until switched back on
+    async function adminWorldChatSettings(slowSeconds, paused, videosOff) {
+        await waitForAuthReady();
+        if (!currentUser || currentUser.uid !== ADMIN_UID) throw new Error("Not authorized.");
+        return callChatApi("adminSettings", { slowSeconds, paused, videosOff: videosOff === true });
+    }
+    // 🌐 a chat message in another language: kind "world" (msgId) or "dm" (msgId, threadId)
+    // → { text, from, same, cached }. Saved on the server, so asking again is free.
+    const translateChat = (kind, msgId, threadId, target) => callChatApi("translate", { kind, msgId, ...(threadId ? { threadId } : {}), target });
+    // What you can post today: { vip, videosLeft, videosPerDay, videoSeconds, vipVideoSeconds,
+    // vipVideosPerDay, maxAttach, mediaOk, videosOff } (World Chat's daily video count)
+    const chatLimits = () => callChatApi("limits");
+    async function adminChatStatus() {
+        await waitForAuthReady();
+        if (!currentUser || currentUser.uid !== ADMIN_UID) throw new Error("Not authorized.");
+        return callChatApi("adminStatus");
+    }
+    const worldChatDoc = (d) => ({ id: d.id, ...d.data() });
+    // The latest `count` messages, oldest first, live — of one channel (tag:
+    // "general", "tips", …) or of all of them. Returns the unsubscribe.
+    // (One channel's needs the Firestore index worldChat: tag ↑, createdAt ↓.)
+    function listenToWorldChat(count, callback, onError, tag) {
+        const parts = [collection(db, "worldChat"), ...(tag ? [where("tag", "==", tag)] : []), orderBy("createdAt", "desc"), limit(count)];
+        return onSnapshot(query(...parts),
+            snap => callback(snap.docs.map(worldChatDoc).reverse()),
+            err => { console.warn("World Chat:", err.message); if (onError) onError(err); });
+    }
+    // Older messages (of a channel, or all), before the oldest one shown (oldest first).
+    async function loadOlderWorldChat(beforeCreatedAt, count, tag) {
+        const parts = [collection(db, "worldChat"), ...(tag ? [where("tag", "==", tag)] : []), orderBy("createdAt", "desc"), where("createdAt", "<", beforeCreatedAt), limit(count)];
+        const snap = await getDocs(query(...parts));
+        return snap.docs.map(worldChatDoc).reverse();
+    }
+    // { slowSeconds, paused } live (defaults until the admin changes them).
+    function listenToWorldChatConfig(callback) {
+        return onSnapshot(doc(db, "chatConfig", "world"),
+            snap => { const c = snap.exists() ? snap.data() : {}; callback({ slowSeconds: Number.isFinite(c.slowSeconds) ? c.slowSeconds : 5, paused: c.paused === true, videosOff: c.videosOff === true }); },
+            () => callback({ slowSeconds: 5, paused: false, videosOff: false }));
+    }
+    /* ---------------- 📷 chat photos (World Chat and DMs) ----------------
+       Shrunk on the phone before uploading (longest side 1600px, JPEG, under
+       1.5 MB — a phone photo is usually a few hundred KB after), then stored
+       under chatImages/<world|dm>/<uid>/. Cloud Storage deletes them after
+       CHAT_PHOTO_DAYS (a lifecycle rule on the bucket), and the pages then
+       show "Photo expired". */
+    const CHAT_PHOTO_DAYS = 90;
+    const CHAT_PHOTO_MIN_AGE_DAYS = 1; // World Chat photos and videos: accounts this old (api/chat.js checks too)
+    const CHAT_PHOTO_MAX_BYTES = 1.5 * 1024 * 1024;
+    // file → { blob (JPEG), w, h }
+    async function shrinkChatPhoto(file) {
+        if (!file || !/^image\//.test(file.type || "")) throw new Error("That isn't a picture — choose a photo (JPG, PNG, WebP…).");
+        if (file.size > 30 * 1024 * 1024) throw new Error("That photo is too big (over 30 MB) — choose a smaller one.");
+        let pic;
+        try {
+            pic = await createImageBitmap(file, { imageOrientation: "from-image" });
+        } catch (e) {
+            pic = await new Promise((resolve, reject) => {
+                const img = new Image();
+                img.onload = () => resolve(img);
+                img.onerror = () => reject(new Error("Couldn't open that photo — try another one."));
+                img.src = URL.createObjectURL(file);
+            });
+        }
+        const W = pic.width || pic.naturalWidth, H = pic.height || pic.naturalHeight;
+        if (!W || !H) throw new Error("Couldn't open that photo — try another one.");
+        // smaller and smaller until it's under the limit
+        for (const [side, quality] of [[1600, 0.82], [1280, 0.75], [1024, 0.7], [800, 0.65]]) {
+            const k = Math.min(1, side / Math.max(W, H));
+            const w = Math.max(1, Math.round(W * k)), h = Math.max(1, Math.round(H * k));
+            const canvas = document.createElement("canvas");
+            canvas.width = w; canvas.height = h;
+            const ctx = canvas.getContext("2d");
+            ctx.fillStyle = "#fff"; // see-through PNGs get a white background, not black
+            ctx.fillRect(0, 0, w, h);
+            ctx.drawImage(pic, 0, 0, w, h);
+            const blob = await new Promise(r => canvas.toBlob(r, "image/jpeg", quality));
+            if (blob && blob.size <= CHAT_PHOTO_MAX_BYTES) return { blob, w, h };
+        }
+        throw new Error("Couldn't make that photo small enough — try another one.");
+    }
+    // scope "world" or "dm" → { url, path, w, h }
+    async function uploadChatPhoto(scope, file) {
+        await waitForAuthReady();
+        if (!currentUser) throw new Error("Sign in with Google first.");
+        const { blob, w, h } = await shrinkChatPhoto(file);
+        const path = `chatImages/${scope === "dm" ? "dm" : "world"}/${currentUser.uid}/${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}.jpg`;
+        const fileRef = ref(storage, path);
+        await uploadBytes(fileRef, blob, { contentType: "image/jpeg", cacheControl: CHAT_CACHE }); // watched again: from the browser's cache
+        return { url: await getDownloadURL(fileRef), path, w, h };
+    }
+
+    /* ---------------- 🎬 chat videos (World Chat and DMs) ----------------
+       Kept as cheap as possible: every video is re-recorded on the phone
+       before it's uploaded (at most 960×540, about 1 Mbit/s, MP4 where the
+       browser can), so a minute is ~8 MB instead of 40–130 MB. Free players
+       can send up to VIDEO_LIMITS.free.seconds, VIP up to .vip.seconds; the
+       Storage rules cap the file size the same way. Nothing downloads until
+       someone taps play, and the browser keeps what it has watched (cache).
+       Deleted after 90 days like photos (a lifecycle rule on chatVideos/). */
+    const VIDEO_LIMITS = {
+        free: { seconds: 20, bytes: 4 * 1024 * 1024 },   // same as storage.rules / api/chat.js
+        vip: { seconds: 60, bytes: 10 * 1024 * 1024 }
+    };
+    const VIDEO_MAX_SIDE = 960, VIDEO_BITS = 1000000, VIDEO_AUDIO_BITS = 64000;
+    const CHAT_CACHE = "public, max-age=31536000, immutable"; // a file never changes once posted
+    // { seconds, bytes, vip } for you (VIP gets longer videos)
+    async function myVideoLimit() {
+        let vip = false;
+        try { vip = !!currentUser && isVipActive(await getProfile()); } catch (e) { }
+        return vip ? { ...VIDEO_LIMITS.vip, vip: true } : { ...VIDEO_LIMITS.free, vip: false };
+    }
+    // The 📷 button calls this straight away (a tap), so the sound can be
+    // re-recorded later: phones only let a page play sound after a tap, so
+    // the tap "unlocks" the audio and the one video player used to record.
+    // The sound is taken from that player as it plays (not played out loud),
+    // so picture and sound share one clock and stay together.
+    let videoAudioCtx = null, videoEl = null, videoElSource = null;
+    function unlockChatVideoAudio() {
+        try {
+            if (!videoEl) {
+                videoEl = document.createElement("video");
+                videoEl.playsInline = true;
+                videoEl.setAttribute("playsinline", "");
+            }
+            const p = videoEl.play(); // no video yet: fails, but counts as a tap-started play
+            if (p && p.catch) p.catch(() => { });
+        } catch (e) { }
+        try {
+            const AC = window.AudioContext || window.webkitAudioContext;
+            if (!AC) return;
+            if (!videoAudioCtx) videoAudioCtx = new AC();
+            if (videoAudioCtx.state === "suspended") videoAudioCtx.resume().catch(() => { });
+        } catch (e) { /* no sound then */ }
+    }
+    function pickRecorderType() {
+        if (typeof MediaRecorder === "undefined") return null;
+        for (const t of ["video/mp4;codecs=avc1.42E01F,mp4a.40.2", "video/mp4;codecs=avc1,mp4a.40.2", "video/mp4",
+            "video/webm;codecs=vp9,opus", "video/webm;codecs=vp8,opus", "video/webm"]) {
+            try { if (MediaRecorder.isTypeSupported(t)) return t; } catch (e) { }
+        }
+        return null;
+    }
+    // file → { blob, type, w, h, duration, poster (JPEG blob), shrunk }
+    // onProgress(0..1) while it re-records. Throws a readable reason.
+    async function prepareChatVideo(file, onProgress) {
+        if (!file || !/^video\//.test(file.type || "")) throw new Error("That isn't a video — choose an MP4 or MOV.");
+        const limit = await myVideoLimit();
+        const url = URL.createObjectURL(file);
+        const video = videoEl || document.createElement("video");
+        video.muted = true; video.playsInline = true; video.preload = "auto"; video.src = url;
+        video.setAttribute("playsinline", ""); video.setAttribute("muted", "");
+        try {
+            await new Promise((resolve, reject) => {
+                video.onloadedmetadata = resolve;
+                video.onerror = () => reject(new Error("unreadable"));
+                setTimeout(() => reject(new Error("unreadable")), 15000);
+            });
+        } catch (e) {
+            URL.revokeObjectURL(url);
+            // this browser can't open it (e.g. an iPhone HEVC video on a PC): send it as it is if it's small enough
+            if (file.size <= limit.bytes) return { blob: file, type: file.type, w: 0, h: 0, duration: 0, poster: null, shrunk: false };
+            throw new Error("This browser can't open that video to shrink it, and it's too big to send as it is — try it from your phone.");
+        }
+        const duration = video.duration;
+        if (!isFinite(duration) || duration <= 0) { URL.revokeObjectURL(url); throw new Error("Couldn't read that video — try another one."); }
+        if (duration > limit.seconds + 0.5) {
+            URL.revokeObjectURL(url);
+            const err = new Error(limit.vip
+                ? `Videos can be up to ${limit.seconds} seconds (yours is ${Math.round(duration)}s) — trim it first.`
+                : `Free accounts can send videos up to ${VIDEO_LIMITS.free.seconds} seconds (yours is ${Math.round(duration)}s). Trim it, or get VIP for up to ${VIDEO_LIMITS.vip.seconds} seconds.`);
+            err.tooLong = true; err.vipCould = !limit.vip && duration <= VIDEO_LIMITS.vip.seconds + 0.5;
+            throw err;
+        }
+        const W = video.videoWidth, H = video.videoHeight;
+        const fit = (side) => { const k = W && H ? Math.min(1, side / Math.max(W, H)) : 1; return [Math.max(2, Math.round(W * k / 2) * 2), Math.max(2, Math.round(H * k / 2) * 2)]; };
+        // the preview frame (what shows before anyone taps play)
+        let poster = null;
+        try {
+            video.currentTime = Math.min(0.1, duration / 2);
+            await new Promise(r => { video.onseeked = r; setTimeout(r, 3000); });
+            const [pw, ph] = fit(480);
+            const pc = document.createElement("canvas");
+            pc.width = pw; pc.height = ph;
+            pc.getContext("2d").drawImage(video, 0, 0, pw, ph);
+            poster = await new Promise(r => pc.toBlob(r, "image/jpeg", 0.7));
+        } catch (e) { poster = null; }
+        const type = pickRecorderType();
+        const canvasOk = !!document.createElement("canvas").captureStream;
+        if (!type || !canvasOk) {
+            URL.revokeObjectURL(url);
+            if (file.size <= limit.bytes) return { blob: file, type: file.type, w: W, h: H, duration, poster, shrunk: false };
+            throw new Error("This browser can't shrink videos — update it, or send a shorter clip.");
+        }
+        // the sound: from the player itself, into the recording (not out loud)
+        let soundOk = false;
+        try {
+            if (videoAudioCtx && video === videoEl) {
+                if (!videoElSource) videoElSource = videoAudioCtx.createMediaElementSource(video);
+                soundOk = true;
+            }
+        } catch (e) { soundOk = false; }
+        let lostSound = false;
+        // One pass: plays the video through (as long as it lasts) and records it smaller.
+        const record = async (side, bits, pass) => {
+            const [w, h] = fit(side);
+            const canvas = document.createElement("canvas");
+            canvas.width = w; canvas.height = h;
+            const ctx = canvas.getContext("2d");
+            const stream = canvas.captureStream(30);
+            let audioDest = null;
+            if (soundOk) {
+                audioDest = videoAudioCtx.createMediaStreamDestination();
+                videoElSource.connect(audioDest);
+                audioDest.stream.getAudioTracks().forEach(t => stream.addTrack(t));
+            }
+            const rec = new MediaRecorder(stream, { mimeType: type, videoBitsPerSecond: bits, audioBitsPerSecond: VIDEO_AUDIO_BITS });
+            const chunks = [];
+            rec.ondataavailable = (e) => { if (e.data && e.data.size) chunks.push(e.data); };
+            let finish = null;
+            const done = new Promise(r => { finish = r; rec.onstop = r; });
+            video.currentTime = 0;
+            await new Promise(r => { video.onseeked = r; setTimeout(r, 2000); });
+            ctx.drawImage(video, 0, 0, w, h);
+            let stopped = false, hiddenFail = false;
+            const stop = () => {
+                if (stopped) return;
+                stopped = true;
+                if (rec.state === "inactive") finish(); else try { rec.stop(); } catch (e) { finish(); }
+                video.pause();
+            };
+            const onHide = () => { if (document.hidden) { hiddenFail = true; stop(); } };
+            document.addEventListener("visibilitychange", onHide);
+            // Recording starts on the first frame that really moves, so the clip
+            // doesn't open on a frozen frame.
+            let started = false, held = false;
+            const begin = () => {
+                if (started || stopped) return;
+                started = true;
+                rec.start(1000);
+            };
+            // the video stalls (loading): pause the recording too, so there's no frozen bit
+            video.onwaiting = () => {
+                if (!started || stopped || held || rec.state !== "recording") return;
+                held = true;
+                try { rec.pause(); } catch (e) { }
+            };
+            video.onplaying = () => {
+                if (!held || stopped) return;
+                held = false;
+                try { rec.resume(); } catch (e) { }
+            };
+            const draw = (now, meta) => {
+                if (stopped) return;
+                const t = meta && typeof meta.mediaTime === "number" ? meta.mediaTime : video.currentTime;
+                if (!started && t > 0) begin();
+                ctx.drawImage(video, 0, 0, w, h);
+                if (onProgress) onProgress(Math.min(1, video.currentTime / duration), pass);
+                if (video.requestVideoFrameCallback) video.requestVideoFrameCallback(draw); else requestAnimationFrame(draw);
+            };
+            video.onended = () => setTimeout(stop, 150);
+            const safety = setTimeout(stop, (duration + 8) * 1000);
+            if (video.requestVideoFrameCallback) video.requestVideoFrameCallback(draw); else requestAnimationFrame(draw);
+            video.muted = !soundOk;
+            try {
+                await video.play();
+            } catch (e) {
+                // the phone won't play it with sound here: record it silent rather than not at all
+                lostSound = soundOk;
+                video.muted = true;
+                try { await video.play(); } catch (e2) { stop(); }
+            }
+            await done;
+            clearTimeout(safety);
+            document.removeEventListener("visibilitychange", onHide);
+            video.muted = true;
+            if (audioDest) try { videoElSource.disconnect(audioDest); } catch (e) { }
+            if (hiddenFail) throw new Error("Keep this page open while your video is prepared — try again.");
+            return { blob: new Blob(chunks, { type: type.split(";")[0] }), w, h };
+        };
+        let out;
+        try {
+            out = await record(VIDEO_MAX_SIDE, VIDEO_BITS, 1);
+            // a very busy video can come out bigger than asked: once more, smaller
+            if (out.blob.size > limit.bytes) out = await record(640, Math.round(VIDEO_BITS * 0.3), 2);
+        } finally {
+            URL.revokeObjectURL(url);
+        }
+        if (!out.blob.size) throw new Error("Couldn't prepare that video — try another one.");
+        if (out.blob.size > limit.bytes) throw new Error("That video is too busy to make small enough — try a shorter clip.");
+        try { video.removeAttribute("src"); video.load(); } catch (e) { }
+        return { blob: out.blob, type: out.blob.type, w: out.w, h: out.h, duration: Math.round(duration * 10) / 10, poster, shrunk: true, lostSound };
+    }
+    // scope "world" or "dm", prepared (from prepareChatVideo) →
+    // { url, path, posterUrl, posterPath, w, h, duration }
+    async function uploadChatVideo(scope, prepared) {
+        await waitForAuthReady();
+        if (!currentUser) throw new Error("Sign in with Google first.");
+        const where = scope === "dm" ? "dm" : "world";
+        const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+        const ext = /webm/.test(prepared.type) ? "webm" : /quicktime/.test(prepared.type) ? "mov" : "mp4";
+        const path = `chatVideos/${where}/${currentUser.uid}/${id}.${ext}`;
+        const vRef = ref(storage, path);
+        await uploadBytes(vRef, prepared.blob, { contentType: prepared.type || "video/mp4", cacheControl: CHAT_CACHE });
+        let posterUrl = "", posterPath = "";
+        if (prepared.poster) {
+            posterPath = `chatImages/${where}/${currentUser.uid}/${id}-poster.jpg`;
+            const pRef = ref(storage, posterPath);
+            await uploadBytes(pRef, prepared.poster, { contentType: "image/jpeg", cacheControl: CHAT_CACHE });
+            posterUrl = await getDownloadURL(pRef);
+        }
+        return { url: await getDownloadURL(vRef), path, posterUrl, posterPath, w: prepared.w || 0, h: prepared.h || 0, duration: prepared.duration || 0 };
+    }
+    function deleteChatVideo(path, posterPath) {
+        const del = (p, prefix) => (typeof p === "string" && p.startsWith(prefix) ? deleteObject(ref(storage, p)).catch(() => { }) : Promise.resolve());
+        return Promise.all([del(path, "chatVideos/"), del(posterPath, "chatImages/")]);
+    }
+    // Best effort: a photo left behind is deleted after 90 days anyway.
+    function deleteChatPhoto(path) {
+        if (typeof path !== "string" || !path.startsWith("chatImages/")) return Promise.resolve();
+        return deleteObject(ref(storage, path)).catch(() => { });
+    }
+    function canPostWorldPhotos() {
+        if (!currentUser) return false;
+        if (currentUser.uid === ADMIN_UID) return true;
+        const made = Date.parse((currentUser.metadata || {}).creationTime) || 0;
+        return Date.now() - made >= CHAT_PHOTO_MIN_AGE_DAYS * 86400000;
+    }
+
+    // The people you've blocked (their World Chat messages are hidden from you).
+    async function getMyBlockedUids() {
+        await waitForAuthReady();
+        if (!currentUser) return [];
+        const snap = await getDocs(query(collection(db, "blocks"), where("blockerUid", "==", currentUser.uid)));
+        return snap.docs.map(d => d.data().blockedUid).filter(Boolean);
+    }
+
     // Collects ready rewards (ids from listenToMyQuestProgress). Returns
     // { claimed, balance }; ids already claimed elsewhere are just skipped.
     async function claimQuestRewards(claimIds) {
@@ -2533,11 +2897,13 @@ async function getClanPostCooldownRemaining() {
         return threadId;
     }
 
-    async function sendDmMessage(threadId, text, replyTo) {
+    // image (optional): { url, path, w, h } from uploadChatPhoto("dm", file)
+    // video (optional): { url, path, posterUrl, posterPath, w, h, duration } from uploadChatVideo("dm", …)
+    async function sendDmMessage(threadId, text, replyTo, image, video) {
         await waitForAuthReady();
         if (!currentUser) throw new Error("Not signed in.");
         const trimmed = (text || "").trim();
-        if (!trimmed) throw new Error("Message cannot be empty.");
+        if (!trimmed && !image && !video) throw new Error("Message cannot be empty.");
         if (trimmed.length > 2000) throw new Error("Message is too long.");
 
         const profile = await getProfile();
@@ -2562,6 +2928,9 @@ async function getClanPostCooldownRemaining() {
             senderUid: currentUser.uid,
             text: trimmed,
             createdAt: Date.now(),
+            ...(image ? { imageUrl: image.url, imagePath: image.path, imageW: image.w, imageH: image.h } : {}),
+            ...(video ? { videoUrl: video.url, videoPath: video.path, posterUrl: video.posterUrl || "", posterPath: video.posterPath || "",
+                videoW: Math.round(video.w || 0), videoH: Math.round(video.h || 0), videoDur: Math.round((video.duration || 0) * 10) / 10 } : {}),
             // Optional reply reference — { id, senderUid, text } of the
             // message being replied to. Stored as a short snapshot rather
             // than a live pointer, so it still renders correctly even if
@@ -2576,7 +2945,7 @@ async function getClanPostCooldownRemaining() {
         const patch = {
             lastMessageAt: Date.now(),
             lastMessageSenderUid: currentUser.uid,
-            lastMessageText: trimmed,
+            lastMessageText: trimmed || (video ? "🎬 Video" : "📷 Photo"),
             [`lastRead.${currentUser.uid}`]: Date.now(), // sending counts as having read up to now
             [`unreadCount.${currentUser.uid}`]: 0
         };
@@ -2598,7 +2967,8 @@ async function getClanPostCooldownRemaining() {
        list; an empty list (or null) takes all of yours off.
        target: { kind: "formation", postId, commentId }
              | { kind: "tierList", tierListId, commentId }
-             | { kind: "dm", threadId, msgId } */
+             | { kind: "dm", threadId, msgId }
+             | { kind: "world", msgId } */
     // Everyone has the first six; the rest come with emote packs (the same
     // list as ProgressCore.ALL_REACTIONS and the Firestore rules).
     const REACTIONS = ["❤️", "😂", "😮", "😢", "👍", "🔥", "🎉", "🥳", "🍾", "🎊", "🍕", "🍔", "🍟", "🍩", "🐶", "🦊", "🐼", "🐸",
@@ -2611,6 +2981,7 @@ async function getClanPostCooldownRemaining() {
         if (!list.every(e => REACTIONS.includes(e))) throw new Error("That reaction isn't available.");
         const ref = target.kind === "formation" ? doc(db, "formationPosts", target.postId, "comments", target.commentId)
             : target.kind === "tierList" ? doc(db, "tierLists", target.tierListId, "comments", target.commentId)
+            : target.kind === "world" ? doc(db, "worldChat", target.msgId)
             : doc(db, "dmThreads", target.threadId, "messages", target.msgId);
         await updateDoc(ref, { ["reactions." + currentUser.uid]: list.length ? list : deleteField() });
     }
@@ -2773,6 +3144,38 @@ async function getClanPostCooldownRemaining() {
     // Keeps the thread doc alive so the DM modal's
     // live listener just picks up the now-empty messages collection instead
     // of kicking the user out of the chat.
+    // Your own DM message, gone for both of you (with its photo / video). The
+    // chat list's preview then shows the message before it, and if the other
+    // person hadn't read it yet their unread count goes down by one.
+    async function deleteDmMessage(threadId, msgId) {
+        await waitForAuthReady();
+        if (!currentUser) throw new Error("Not signed in.");
+        const ref = doc(db, "dmThreads", threadId, "messages", msgId);
+        const snap = await getDoc(ref);
+        if (!snap.exists()) return;
+        const m = snap.data();
+        if (m.senderUid !== currentUser.uid) throw new Error("You can only delete your own messages.");
+        await deleteDoc(ref);
+        if (m.imagePath) deleteChatPhoto(m.imagePath);
+        if (m.videoPath) deleteChatVideo(m.videoPath, m.posterPath);
+        try {
+            const tRef = doc(db, "dmThreads", threadId);
+            const t = await getDoc(tRef);
+            if (!t.exists()) return;
+            const td = t.data(), other = (td.members || []).find(u => u !== currentUser.uid);
+            const latest = await getDocs(query(collection(db, "dmThreads", threadId, "messages"), orderBy("createdAt", "desc"), limit(1)));
+            const lm = latest.empty ? null : latest.docs[0].data();
+            const patch = {
+                lastMessageText: lm ? (lm.text || (lm.imageUrl ? "📷 Photo" : lm.videoUrl ? "🎬 Video" : "")) : "",
+                lastMessageSenderUid: lm ? lm.senderUid : null
+            };
+            if (other && ((td.lastRead || {})[other] || 0) < m.createdAt && ((td.unreadCount || {})[other] || 0) > 0) {
+                patch[`unreadCount.${other}`] = increment(-1);
+            }
+            await updateDoc(tRef, patch);
+        } catch (e) { /* the preview is only cosmetic */ }
+    }
+
     async function deleteDmMessagesOnly(threadId) {
     await waitForAuthReady();
     if (!currentUser) throw new Error("Not signed in.");
@@ -2820,7 +3223,8 @@ async function getClanPostCooldownRemaining() {
         return { evidenceUrl, evidencePath: path };
     }
 
-    async function submitReport(type, targetUid, targetName, contentId, contentText, evidenceUrls, evidencePaths) {
+    // where: "worldChat" for a World Chat message (the admin's queue can delete it).
+    async function submitReport(type, targetUid, targetName, contentId, contentText, evidenceUrls, evidencePaths, where) {
         await waitForAuthReady();
         if (!currentUser) throw new Error("You must sign in with Google first to report something.");
         const profile = await getProfile();
@@ -2836,6 +3240,7 @@ async function getClanPostCooldownRemaining() {
             // Storage paths (not just download URLs) so closeReport() can
             // actually delete the underlying files once acted on.
             evidencePaths: Array.isArray(evidencePaths) ? evidencePaths.slice(0, 5) : [],
+            ...(where ? { where } : {}),
             createdAt: Date.now(),
             status: "open"
         });
@@ -5122,6 +5527,9 @@ async function maybeRefreshAd(containerId) {
         // auth
         signIn, signOut: signOutUser, getCurrentUser, onAuthChange, waitForAuthReady, getIdToken,
         listPolls, votePoll, adminPolls,
+        uploadChatPhoto, deleteChatPhoto, prepareChatVideo, uploadChatVideo, deleteChatVideo, unlockChatVideoAudio, myVideoLimit, VIDEO_LIMITS, shrinkChatPhoto, canPostWorldPhotos, CHAT_PHOTO_DAYS, CHAT_PHOTO_MIN_AGE_DAYS,
+        translateChat, adminChatStatus, chatLimits, deleteDmMessage,
+        sendWorldChat, deleteWorldChat, adminWorldChatSettings, listenToWorldChat, loadOlderWorldChat, listenToWorldChatConfig, getMyBlockedUids,
         getTodaysQuests, listenToMyWallet, listenToMyQuestProgress, claimQuestRewards, submitDailyPuzzle, gamesRunStart, gamesRunAnswer, gamesLeaderboard, gamesPing, getMyTokenBalance,
         listenToMyGiftClaims, claimTokenGift, adminTokens,
         reportQuestProgress, startDailyQuestTracking, stakeTokensOnSecretGiveaway, setSecretGiveawayStake, refreshSecretGiveawayMaxStake, getSecretOdds,

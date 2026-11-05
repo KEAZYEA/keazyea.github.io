@@ -189,6 +189,8 @@ async function assertNotBanned(db, uid) {
    Firestore indexes; the page already knows the id of what it just made. */
 // A comment quest needs real text, not "a".
 const MIN_COMMENT_CHARS = 8;
+// …and a World Chat message needs a few real characters (or a photo / video).
+const MIN_CHAT_CHARS = 5;
 
 async function verifyQuestProof(db, uid, questId, proofId, now, dayKey) {
   const dayStart = dayStartMs(now);
@@ -220,6 +222,16 @@ async function verifyQuestProof(db, uid, questId, proofId, now, dayKey) {
       if (!isDocId(threadId) || !isDocId(msgId) || extra !== undefined) return false;
       const snap = await db.collection("dmThreads").doc(threadId).collection("messages").doc(msgId).get();
       return snap.exists && snap.data().senderUid === uid && madeToday(snap.data().createdAt);
+    }
+
+    case "worldChat": {
+      // your own World Chat message, sent today: a few real characters, or a photo / video
+      if (!isDocId(proofId)) return false;
+      const snap = await db.collection("worldChat").doc(proofId).get();
+      if (!snap.exists) return false;
+      const m = snap.data();
+      return m.uid === uid && madeToday(m.createdAt)
+        && ((typeof m.text === "string" && m.text.trim().length >= MIN_CHAT_CHARS) || !!m.image || !!m.video);
     }
 
     case "enterWeekly": {

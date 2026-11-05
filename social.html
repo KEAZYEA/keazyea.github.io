@@ -1524,6 +1524,9 @@
             max-width: 560px;
             width: 100%;
         }
+        /* the photo itself always fits the screen (a phone on its side too) */
+        .image-viewer-box .fc-stage { min-height: 0; }
+        .image-viewer-box .fc-stage img { max-height: min(380px, calc(100dvh - 150px)); }
 
         .formation-comment-item {
             display: flex;
@@ -2218,6 +2221,197 @@
                 max-height: 90vh !important;
             }
         }
+
+        /* ---------------- 🌍 World Chat ---------------- */
+        .wc-box { display: flex; flex-direction: column; height: calc(100dvh - 210px); min-height: 380px; max-height: 820px;
+            border: 1px solid #2a2a4a; border-radius: 14px; background: #17172c; overflow: hidden; position: relative; }
+        .wc-chips { display: flex; gap: 6px; padding: 10px 10px 8px; overflow-x: auto; scrollbar-width: none; border-bottom: 1px solid #23233f; flex-shrink: 0; }
+        .wc-chips::-webkit-scrollbar { display: none; }
+        .wc-chip { flex-shrink: 0; border: 1px solid #34345e; background: #20203a; color: #d6d6ea; border-radius: 999px; padding: 5px 11px;
+            font-size: 0.82rem; font-weight: 700; cursor: pointer; font-family: inherit; white-space: nowrap; }
+        .wc-chip.active { background: linear-gradient(135deg, #e0407a, #8a4dff 60%, #4169e1); border-color: rgba(255, 170, 220, 0.5); color: #fff; }
+        .wc-chip-icon { margin-right: 5px; }
+        .wc-chip-n { display: inline-block; min-width: 18px; margin-left: 6px; padding: 0 5px; border-radius: 999px; background: #e0407a; color: #fff;
+            font-size: 0.7rem; line-height: 18px; text-align: center; box-sizing: border-box; }
+        /* phones: the five channels side by side as tabs (icon over name), all in view */
+        @media (max-width: 560px) {
+            .wc-chips { gap: 5px; overflow: visible; padding: 10px 8px 8px; }
+            .wc-chip { position: relative; flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 2px;
+                padding: 6px 2px 5px; border-radius: 10px; font-size: 0.68rem; line-height: 1.15; }
+            .wc-chip-icon { margin: 0; font-size: 1.05rem; line-height: 1.2; }
+            .wc-chip-label { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+            .wc-chip-n { position: absolute; top: -6px; right: -3px; margin: 0; min-width: 17px; line-height: 17px; padding: 0 4px; font-size: 0.64rem; }
+        }
+        @media (max-width: 380px) {
+            .wc-chips { gap: 4px; padding: 10px 6px 8px; }
+            .wc-chip { font-size: 0.6rem; padding: 6px 1px 5px; }
+        }
+        .wc-notice { display: none; padding: 7px 12px; font-size: 0.8rem; color: #c8c8e0; background: #1f1f3a; border-bottom: 1px solid #23233f; flex-shrink: 0; }
+        .wc-notice.show { display: block; }
+        .wc-notice.paused { color: #ffd27a; }
+        .wc-list { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 6px 10px 10px; }
+        .wc-empty { text-align: center; color: #9a9ab0; padding: 40px 16px; font-size: 0.92rem; line-height: 1.5; }
+        .wc-older { display: block; margin: 6px auto 4px; background: none; border: 1px solid #34345e; color: #b9b9d6; border-radius: 999px;
+            padding: 5px 14px; font-size: 0.8rem; cursor: pointer; font-family: inherit; }
+        .wc-msg { display: flex; gap: 9px; padding: 6px 4px 2px; border-radius: 10px; }
+        .wc-msg.cont { padding-top: 1px; }
+        .wc-msg.flash { animation: wcFlash 2.2s ease; }
+        @keyframes wcFlash { 0%, 45% { background: rgba(65, 105, 225, 0.28); } }
+        .wc-av { width: 34px; flex-shrink: 0; }
+        .wc-av-tap { display: inline-block; cursor: pointer; line-height: 0; }
+        .wc-av .clan-post-avatar.wc-avatar { width: 34px; height: 34px; }
+        .wc-main { flex: 1; min-width: 0; }
+        .wc-meta { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 8px; margin-bottom: 3px; }
+        .wc-name { font-weight: 700; font-size: 0.88rem; cursor: pointer; color: #eaeaf0; overflow-wrap: anywhere; }
+        .wc-msg.mine .wc-name { color: #9fb6ff; }
+        .wc-tag { font-size: 0.68rem; font-weight: 700; padding: 1px 7px; border-radius: 999px; background: #26264a; color: #b9b9d6; white-space: nowrap; }
+        .wc-tag-tips { background: rgba(255, 196, 0, 0.16); color: #ffd760; }
+        .wc-tag-noobies { background: rgba(120, 220, 120, 0.15); color: #8ee08e; }
+        .wc-tag-formation { background: rgba(80, 160, 255, 0.16); color: #8cc4ff; }
+        .wc-tag-games { background: rgba(224, 64, 122, 0.16); color: #ff8fb8; }
+        .wc-time { font-size: 0.68rem; color: #8a8aa6; white-space: nowrap; }
+        .wc-bubble { display: inline-block; max-width: 100%; box-sizing: border-box; padding: 7px 11px; border-radius: 4px 12px 12px 12px;
+            background: #24244a; color: #eaeaf0; font-size: 0.92rem; line-height: 1.38; overflow-wrap: anywhere; word-break: break-word; cursor: pointer; }
+        .wc-msg.mine .wc-bubble { background: #2c3f86; }
+        .wc-msg.cont .wc-bubble { border-radius: 12px; }
+        .wc-quote { cursor: pointer; }
+        .wc-quote b { margin-right: 4px; }
+        .wc-actions { display: none; flex-wrap: wrap; gap: 4px 12px; margin: 4px 0 2px; }
+        .wc-msg.acts .wc-actions { display: flex; }
+        /* a photo fills its bubble (tapping it opens the photo), so its Reply / React / … always show */
+        .wc-msg.has-photo .wc-actions { display: flex; }
+        @media (hover: hover) { .wc-msg:hover .wc-actions { display: flex; } }
+        .wc-actions .dm-msg-action-link { color: #b9b9d6; font-size: 0.74rem; }
+        .wc-new-btn { display: none; position: absolute; left: 50%; transform: translateX(-50%); bottom: 112px; z-index: 2; border: none; border-radius: 999px;
+            padding: 6px 14px; font-weight: 700; font-size: 0.8rem; color: #fff; background: #4169e1; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4); cursor: pointer; font-family: inherit; }
+        .wc-new-btn.show { display: block; }
+        .wc-reply-bar { display: none; align-items: center; gap: 10px; padding: 7px 12px; background: #20203a; border-top: 1px solid #2a2a4a; font-size: 0.8rem; color: #c8c8e0; flex-shrink: 0; }
+        .wc-reply-bar.show { display: flex; }
+        .wc-reply-bar span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .wc-reply-bar button { background: none; border: none; color: #c8c8e0; font-size: 1rem; cursor: pointer; padding: 0 2px; }
+        .wc-compose { border-top: 1px solid #2a2a4a; padding: 8px 10px 10px; background: #1b1b33; flex-shrink: 0; }
+        .wc-compose-row { display: flex; align-items: flex-end; gap: 6px; }
+        .wc-compose { position: relative; }
+        .wc-tag-btn { width: 50px; display: flex; align-items: center; justify-content: center; gap: 1px; color: #b9b9d6; }
+        .wc-tag-btn small { font-size: 0.6rem; }
+        .wc-tag-menu { display: none; position: absolute; left: 10px; bottom: calc(100% - 4px); z-index: 3; min-width: 190px; padding: 6px; border-radius: 12px;
+            background: #1f1f3a; border: 1px solid #3a3a66; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5); }
+        .wc-tag-menu.open { display: block; }
+        .wc-tag-menu .wc-tag-head { font-size: 0.72rem; color: #9a9ab0; padding: 4px 8px 6px; }
+        .wc-tag-menu button { display: flex; width: 100%; align-items: center; gap: 8px; padding: 8px 10px; border: none; border-radius: 8px; background: none;
+            color: #eaeaf0; font-size: 0.9rem; font-family: inherit; cursor: pointer; text-align: left; }
+        .wc-tag-menu button.on { background: rgba(138, 77, 255, 0.25); }
+        .wc-tag-menu button.on::after { content: "✓"; margin-left: auto; color: #b48cff; }
+        .wc-letter { width: 34px; height: 34px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 0.95rem; }
+        .wc-hint b { color: #c8c8e0; font-weight: 700; }
+        .wc-input { flex: 1; min-width: 0; min-height: 40px; max-height: 120px; resize: none; box-sizing: border-box; border-radius: 10px; border: 1px solid #34345e;
+            background: #20203a; color: #eaeaf0; padding: 9px 11px; font-size: 16px; line-height: 1.3; font-family: inherit; }
+        .wc-input:disabled { opacity: 0.55; }
+        .wc-icon-btn { flex-shrink: 0; width: 40px; height: 40px; border-radius: 10px; border: 1px solid #34345e; background: #20203a; font-size: 1.1rem; cursor: pointer; }
+        .wc-send { flex-shrink: 0; height: 40px; min-width: 62px; border: none; border-radius: 10px; font-weight: 800; color: #fff; cursor: pointer; font-family: inherit;
+            background: linear-gradient(135deg, #e0407a, #8a4dff 60%, #4169e1); }
+        .wc-send:disabled { opacity: 0.45; cursor: default; }
+        .wc-hint { display: flex; justify-content: space-between; gap: 10px; margin-top: 6px; font-size: 0.72rem; color: #8a8aa6; }
+        .wc-hint .over { color: #ff8080; font-weight: 700; }
+        @media (max-width: 480px) {
+            .wc-box { height: calc(100dvh - 190px); border-radius: 12px; }
+            /* five tabs across a phone */
+            .social-tabs { gap: 4px; }
+            .social-tab-btn { font-size: 12.5px; padding: 8px 3px; }
+        }
+        /* short screens (a phone on its side): the chat fits under the tabs */
+        @media (max-height: 500px) {
+            .wc-box { height: calc(100dvh - 80px); min-height: 230px; }
+        }
+
+        /* ---- 📷 chat photos (World Chat and DMs) ---- */
+        .chat-photo-wrap { display: block; margin: 2px 0 4px; }
+        .chat-photo { display: block; max-width: 100%; height: auto; border-radius: 10px; cursor: zoom-in; background: rgba(0, 0, 0, 0.2); object-fit: cover; }
+        .chat-photo-gone { display: inline-block; font-size: 0.8rem; opacity: 0.8; padding: 6px 10px; border-radius: 8px; background: rgba(0, 0, 0, 0.2); }
+        .wc-bubble > .chat-photo-gone, .dm-msg > .chat-photo-gone { display: block; width: fit-content; margin: 2px 0 4px; }
+        .chat-photo-wrap .chat-photo-gone { display: none; }
+        .chat-photo-wrap.broken .chat-photo { display: none; }
+        .chat-photo-wrap.broken .chat-photo-gone { display: inline-block; }
+        .chat-photo-bar { display: none; align-items: center; gap: 10px; padding: 8px 12px; font-size: 0.8rem; color: #c8c8e0; background: #20203a; border-top: 1px solid #2a2a4a; }
+        .chat-photo-bar.show { display: flex; }
+        .chat-photo-bar img { width: 48px; height: 48px; object-fit: cover; border-radius: 8px; flex-shrink: 0; }
+        .chat-photo-bar span { flex: 1; min-width: 0; }
+        .chat-photo-bar button { background: none; border: none; color: #c8c8e0; font-size: 1rem; cursor: pointer; padding: 4px; }
+        .wc-compose .chat-photo-bar { margin: -8px -10px 8px; }
+        .dm-photo-btn { flex-shrink: 0; }
+        @media (max-width: 400px) {
+            .wc-compose-row { gap: 5px; }
+            .wc-icon-btn { width: 36px; }
+            .wc-tag-btn { width: 40px; }
+            .wc-tag-btn small { display: none; }
+            .wc-send { min-width: 54px; }
+        }
+        /* the smallest phones: room to type (the phone's keyboard has emojis) */
+        @media (max-width: 340px) { #wcEmojiBtn { display: none; } }
+
+        /* ---- 🌐 translations (World Chat and DMs) ---- */
+        .tr-block { margin-top: 6px; padding-top: 6px; border-top: 1px dashed rgba(255, 255, 255, 0.22); }
+        .tr-text { white-space: pre-wrap; }
+        .tr-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; margin-top: 4px; font-size: 0.72rem; opacity: 0.8; }
+        /* a message's Reply / React / Translate / … wrap onto a second line rather than squashing */
+        .dm-msg-actions { flex-wrap: wrap; row-gap: 2px; }
+        .dm-msg-action-link { white-space: nowrap; }
+        .tr-meta button { background: none; border: none; color: inherit; font: inherit; text-decoration: underline; cursor: pointer; padding: 0; }
+        .tr-lang { font: inherit; font-size: 0.72rem; color: inherit; background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 255, 255, 0.25); border-radius: 6px; padding: 1px 4px; max-width: 150px; }
+        .tr-lang option { color: #111; }
+        .tr-note { display: block; margin-top: 6px; font-size: 0.75rem; opacity: 0.8; }
+
+        /* ---- 🎬 chat videos: a preview frame with ▶ until tapped ---- */
+        .chat-video { position: relative; display: block; max-width: 100%; margin: 2px 0 4px; border-radius: 10px; overflow: hidden; cursor: pointer;
+            background: #0d0d1a center / cover no-repeat; }
+        .chat-video img { display: block; width: 100%; height: 100%; object-fit: cover; }
+        .chat-video .cv-play { position: absolute; left: 50%; top: 50%; width: 54px; height: 54px; margin: -27px 0 0 -27px; border-radius: 50%;
+            background: rgba(0, 0, 0, 0.55); border: 2px solid rgba(255, 255, 255, 0.85); color: #fff; font-size: 1.3rem; display: flex; align-items: center; justify-content: center; padding-left: 4px; box-sizing: border-box; }
+        .chat-video .cv-len { position: absolute; right: 6px; bottom: 6px; padding: 1px 6px; border-radius: 6px; background: rgba(0, 0, 0, 0.65); color: #fff; font-size: 0.72rem; font-weight: 700; }
+        .chat-video video { display: block; width: 100%; height: 100%; background: #000; }
+        .chat-video.playing { cursor: default; }
+        .chat-video.broken { display: none; }
+        .chat-video.broken + .chat-photo-gone { display: block !important; width: fit-content; }
+        .chat-video + .chat-photo-gone { display: none; }
+        .chat-photo-bar { flex-direction: column; align-items: stretch; gap: 6px; }
+        /* the picked photos / videos: one row, swipe sideways for more (it never squeezes the chat) */
+        .cp-tiles { display: flex; gap: 8px; flex-wrap: nowrap; overflow-x: auto; overflow-y: hidden; padding: 7px 7px 2px 0; margin: -7px 0 0; scrollbar-width: thin; }
+        .chat-photo-bar .cp-add { flex: 0 0 56px; }
+        .chat-photo-bar .cp-tile { position: relative; width: 56px; height: 56px; border-radius: 8px; overflow: visible; background: #0d0d1a; flex: 0 0 56px; }
+        .cp-tile img { width: 56px; height: 56px; object-fit: cover; border-radius: 8px; display: block; }
+        .chat-photo-bar .cp-tile-ph { flex: none; display: flex; width: 100%; height: 100%; align-items: center; justify-content: center; font-size: 1.4rem; }
+        .cp-tile-pct, .cp-tile-len { position: absolute; left: 3px; bottom: 3px; padding: 0 4px; border-radius: 5px; background: rgba(0, 0, 0, 0.7); color: #fff; font-size: 0.66rem; font-weight: 700; }
+        .chat-photo-bar .cp-x { position: absolute; top: -7px; right: -7px; width: 22px; height: 22px; padding: 0; border-radius: 50%; border: 1px solid #555;
+            background: #1b1b33; color: #fff; font-size: 0.7rem; line-height: 20px; cursor: pointer; }
+        .chat-photo-bar .cp-add { width: 56px; height: 56px; border-radius: 8px; border: 1px dashed #55557f; background: none; color: #b9b9d6; font-size: 1.4rem; cursor: pointer; }
+        .cp-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+        .cp-limits { font-size: 0.7rem; color: #9a9ab0; }
+        /* short screens (a phone on its side): smaller tiles, one line each for the words */
+        @media (max-height: 500px) {
+            .chat-photo-bar { gap: 4px; padding-top: 6px; padding-bottom: 6px; }
+            .chat-photo-bar .cp-tile, .chat-photo-bar .cp-add { flex-basis: 40px; width: 40px; height: 40px; }
+            .chat-photo-bar .cp-tile img { width: 40px; height: 40px; }
+            .chat-photo-bar .cp-x { width: 18px; height: 18px; line-height: 16px; top: -6px; right: -6px; }
+            .cp-info > span, .cp-limits { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        }
+        .chat-photo-bar .cp-thumb-video { flex: 0 0 48px; width: 48px; height: 48px; border-radius: 8px; flex-shrink: 0; background: #0d0d1a; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
+
+        /* ---- ℹ️ chat rules and 🔍 find ---- */
+        .wc-link { background: none; border: none; padding: 0; font: inherit; color: #b48cff; text-decoration: underline; cursor: pointer; }
+        .chat-rules { margin: 0 0 16px; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 9px; font-size: 0.9rem; line-height: 1.45; color: #d6d6ea; text-align: left; }
+        .chat-rules li { display: flex; gap: 9px; }
+        .chat-rules li > span:first-child { flex-shrink: 0; width: 1.4em; text-align: center; }
+        .chat-rules b { color: #fff; }
+        .find-bar { display: none; align-items: center; gap: 6px; padding: 6px 10px; background: #1f1f3a; border-bottom: 1px solid #2a2a4a; flex-shrink: 0; }
+        .find-bar.show { display: flex; }
+        .wc-box.finding .wc-chips { display: none; }
+        .find-bar input { flex: 1; min-width: 0; height: 34px; box-sizing: border-box; border-radius: 8px; border: 1px solid #34345e; background: #17172c; color: #eaeaf0; padding: 0 10px; font-size: 16px; font-family: inherit; }
+        .find-bar .find-count { font-size: 0.75rem; color: #9a9ab0; white-space: nowrap; }
+        .find-bar button { flex-shrink: 0; height: 34px; min-width: 34px; border-radius: 8px; border: 1px solid #34345e; background: #20203a; color: #d6d6ea; cursor: pointer; font-family: inherit; font-size: 0.85rem; padding: 0 8px; }
+        .find-bar button:disabled { opacity: 0.4; cursor: default; }
+        .find-bar .find-older { font-size: 0.75rem; }
+        mark.find-hit { background: rgba(255, 215, 94, 0.4); color: inherit; border-radius: 3px; padding: 0 1px; }
+        mark.find-hit.cur { background: #ffd75e; color: #1a1a1a; box-shadow: 0 0 0 2px rgba(255, 215, 94, 0.5); }
     </style>
 </head>
 
@@ -2256,15 +2450,50 @@
 
                 <div id="socialSignedInWrap" style="display:none;">
             <div class="social-tabs">
+                <button class="social-tab-btn" id="tabBtnWorld" onclick="switchSocialTab('world')">🌍 World Chat<span
+                        class="clan-filter-count" id="worldUnreadBadge" style="display:none;"></span></button>
                 <button class="social-tab-btn active" id="tabBtnFriends"
                     onclick="switchSocialTab('friends')">Friends<span class="clan-filter-count" id="dmUnreadBadge"
                         style="display:none;"></span></button>
                 <button class="social-tab-btn" id="tabBtnClan" onclick="switchSocialTab('clan')">Clan
                     Recruit&shy;ment</button>
-                <button class="social-tab-btn" id="tabBtnFormation" onclick="switchSocialTab('formation')">Formation
+                <button class="social-tab-btn" id="tabBtnFormation" onclick="switchSocialTab('formation')">Forma&shy;tion
                     Help</button>
                 <button class="social-tab-btn" id="tabBtnTierList" onclick="switchSocialTab('tierlist')">Tier
                     List</button>
+            </div>
+
+            <!-- 🌍 WORLD CHAT TAB -->
+            <div class="social-tab-panel" id="tabPanelWorld">
+                <div class="social-content-inner">
+                    <div class="wc-box">
+                        <div class="wc-chips" id="wcChips"></div>
+                        <div class="wc-notice" id="wcNotice"></div>
+                        <div class="find-bar" id="wcFindBar" role="search">
+                            <input type="search" id="wcFindInput" placeholder="Find in this channel…" aria-label="Find" enterkeyhint="search">
+                            <span class="find-count" id="wcFindCount"></span>
+                            <button type="button" id="wcFindOlder" class="find-older" style="display:none;">Search older</button>
+                            <button type="button" id="wcFindUp" aria-label="Previous (older)">▲</button>
+                            <button type="button" id="wcFindDown" aria-label="Next (newer)">▼</button>
+                            <button type="button" id="wcFindClose" aria-label="Close find">✕</button>
+                        </div>
+                        <div class="wc-list" id="wcList"><div class="wc-empty">Loading the chat…</div></div>
+                        <button type="button" class="wc-new-btn" id="wcNewBtn">⬇ New messages</button>
+                        <div class="wc-reply-bar" id="wcReplyBar"><span id="wcReplyText"></span><button type="button" onclick="cancelWorldReply()" aria-label="Cancel reply">✕</button></div>
+                        <div class="wc-compose">
+                            <div class="chat-photo-bar" id="wcPhotoBar"><div class="cp-tiles" id="wcPhotoTiles"></div><div class="cp-info"><span id="wcPhotoText"></span><small class="cp-limits" id="wcPhotoLimits"></small></div></div>
+                            <div class="wc-compose-row">
+                                <input type="hidden" id="wcTag" value="general">
+                                <textarea id="wcInput" class="wc-input" rows="1" maxlength="2100" placeholder="Message General…"></textarea>
+                                <button type="button" class="wc-icon-btn" id="wcPhotoBtn" aria-label="Add a photo or video">📷</button>
+                                <input type="file" id="wcPhotoInput" accept="image/*,video/*" multiple hidden>
+                                <button type="button" class="wc-icon-btn" id="wcEmojiBtn" data-emoji-btn onclick="toggleEmojiPanel(this, 'wcInput')" aria-label="Emojis">😊</button>
+                                <button type="button" class="wc-send" id="wcSendBtn" onclick="sendWorldChat()">Send</button>
+                            </div>
+                            <div class="wc-hint"><span id="wcHintText"></span><span id="wcCount"></span></div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- CLAN RECRUITMENT TAB -->
@@ -2461,6 +2690,17 @@
     </div>
 </div>
 <!-- Info modal (replaces alert()) -->
+    <!-- ℹ️ how the chat works (World Chat / DMs) -->
+    <div class="modal-overlay" id="chatRulesOverlay" style="z-index:240;">
+        <div class="modal-box" style="max-width:440px;">
+            <div class="modal-title" id="chatRulesTitle">How World Chat works</div>
+            <ul class="chat-rules" id="chatRulesBody"></ul>
+            <div class="modal-actions">
+                <button class="btn-primary" onclick="closeChatRules()">Got it</button>
+            </div>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="infoModalOverlay" style="z-index:250;">
         <div class="modal-box" style="max-width:380px;">
             <div class="modal-title" id="infoModalTitle"></div>
@@ -2905,6 +3145,8 @@
                 <div style="display:flex; align-items:center; gap:6px; position:relative;">
                     <button class="dm-close-btn" id="dmActionsBtn" title="More">⋮</button>
                     <div class="dm-actions-menu" id="dmActionsMenu">
+                        <button onclick="openChatFind('dm')">🔍 Find in chat</button>
+                        <button onclick="openChatRules('dm')">ℹ️ Chat rules</button>
                         <button onclick="dmReportCurrentFriend()">🚩 Report</button>
                         <button id="dmBlockBtn" onclick="dmBlockCurrentFriend()">🚫 Block</button>
                         <button onclick="dmDeleteChatCurrent()">🗑️ Delete Chat</button>
@@ -2912,6 +3154,14 @@
                     </div>
                 </div>
             </div>
+            <div class="find-bar" id="dmFindBar" role="search">
+                            <input type="search" id="dmFindInput" placeholder="Find in this chat…" aria-label="Find" enterkeyhint="search">
+                            <span class="find-count" id="dmFindCount"></span>
+                            <button type="button" id="dmFindOlder" class="find-older" style="display:none;">Search older</button>
+                            <button type="button" id="dmFindUp" aria-label="Previous (older)">▲</button>
+                            <button type="button" id="dmFindDown" aria-label="Next (newer)">▼</button>
+                            <button type="button" id="dmFindClose" aria-label="Close find">✕</button>
+                        </div>
             <div class="dm-messages" id="dmMessages"></div>
 <button class="dm-scroll-bottom-btn" id="dmScrollBottomBtn" onclick="scrollDmToBottom()" title="Jump to latest">↓</button>
 <div id="dmBlockedNotice" class="compose-hint"
@@ -2922,9 +3172,12 @@
                 <span class="dm-reply-bar-text" id="dmReplyBarText"></span>
                 <button class="dm-reply-bar-cancel" onclick="cancelReplyToMessage()" title="Cancel reply">✕</button>
             </div>
+            <div class="chat-photo-bar" id="dmPhotoBar"><div class="cp-tiles" id="dmPhotoTiles"></div><div class="cp-info"><span id="dmPhotoText"></span><small class="cp-limits" id="dmPhotoLimits"></small></div></div>
             <div class="dm-input-row" id="dmInputRow">
                 <textarea id="dmInput" rows="1" placeholder="Type a message..." maxlength="2000"
                     enterkeyhint="enter" data-requires-not-banned></textarea>
+                <button type="button" class="emoji-btn dm-photo-btn" id="dmPhotoBtn" title="Photo or video" aria-label="Add a photo or video" data-requires-not-banned>📷</button>
+                <input type="file" id="dmPhotoInput" accept="image/*,video/*" multiple hidden>
                 <button type="button" class="emoji-btn" onclick="toggleEmojiPanel(this, 'dmInput')" title="Emoji" aria-label="Add an emoji" data-requires-not-banned>😊</button>
                 <button class="btn-primary" style="padding:10px 18px; border-radius:8px;"
                     id="dmSendBtn"
@@ -3015,6 +3268,49 @@
             modalScrollLockObserver.observe(el, { attributes: true, attributeFilter: ["class"] });
         });
         updateModalScrollLock();
+
+        /* ---------------- PHONE / BROWSER BACK ----------------
+           Each popup that opens (a DM, a photo, the rules, a post…) and each 🔍
+           Find bar adds a step to the history, so Back closes the top one — a
+           photo over a DM: the photo, then the DM — instead of leaving Social.
+           Closing one with its own button takes its step back out again, so
+           Back never has to be pressed twice. With nothing open, Back leaves
+           Social as before (Home handles that). */
+        const backStack = []; // what's open, in the order it opened
+        let backSkip = 0;     // our own history.back()s still to arrive as popstate
+        const openLayers = () => [...document.querySelectorAll(".modal-overlay.open, .find-bar.show")].map(el => el.id).filter(Boolean);
+        function syncBackStack() {
+            const open = openLayers();
+            for (let i = backStack.length - 1; i >= 0; i--) {
+                if (!open.includes(backStack[i])) { // closed with its own button
+                    backStack.splice(i, 1);
+                    backSkip++;
+                    history.back();
+                }
+            }
+            open.filter(id => !backStack.includes(id)).forEach(id => {
+                backStack.push(id);
+                history.pushState({ ...(history.state || {}), kihSocialLayer: backStack.length }, "");
+            });
+        }
+        function closeLayer(id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            if (id === "wcFindBar" || id === "dmFindBar") { document.getElementById(id.replace("Bar", "Close")).click(); return; }
+            if (id === "confirmModalOverlay") { document.getElementById("confirmModalCancelBtn").click(); return; }
+            const name = "close" + id.replace(/Overlay$/, "").replace(/^./, c => c.toUpperCase()); // dmModalOverlay → closeDmModal
+            if (typeof window[name] === "function") window[name]();
+            else el.classList.remove("open");
+        }
+        window.addEventListener("popstate", () => {
+            if (backSkip > 0) { backSkip--; return; }
+            const id = backStack.pop();
+            if (id) closeLayer(id); // (already off the list, so closing it doesn't step back again)
+        });
+        const backObserver = new MutationObserver(syncBackStack);
+        document.querySelectorAll(".modal-overlay, .find-bar").forEach((el) => {
+            backObserver.observe(el, { attributes: true, attributeFilter: ["class"] });
+        });
 
         /* ---------------- MODAL KEYBOARD-SAFE VIEWPORT SIZING ----------------
            `vh`-based max-height doesn't shrink to match the real visible
@@ -3301,6 +3597,8 @@ function buildCountrySelectOptions(selectId, includeAny) {
         let reportEvidenceFiles = []; // accumulates across multiple "Choose Files" picks, up to 5
 
         window.switchSocialTab = function (tab) {
+            document.getElementById("tabBtnWorld").classList.toggle("active", tab === "world");
+            document.getElementById("tabPanelWorld").classList.toggle("active", tab === "world");
             document.getElementById("tabBtnClan").classList.toggle("active", tab === "clan");
             document.getElementById("tabBtnFormation").classList.toggle("active", tab === "formation");
             document.getElementById("tabBtnTierList").classList.toggle("active", tab === "tierlist");
@@ -3311,12 +3609,14 @@ function buildCountrySelectOptions(selectId, includeAny) {
             document.getElementById("tabPanelFriends").classList.toggle("active", tab === "friends");
             if (tab === "friends") loadSuggestedFriends();
             if (tab === "tierlist") ensureUnitDataLoaded();
+            if (tab === "world") { document.getElementById("wcList").dataset.drawn = ""; renderWorldChat(); markWorldSeen(); maybeShowChatRules(); }
+            updateWorldBadge();
             // Remembered so returning from Home lands back on the tab you
             // were actually using instead of always resetting to Friends.
             try { localStorage.setItem(SOCIAL_TAB_KEY, tab); } catch (e) {}
         };
         const SOCIAL_TAB_KEY = "kih_social_tab";
-        const SOCIAL_TABS = ["friends", "clan", "formation", "tierlist"];
+        const SOCIAL_TABS = ["world", "friends", "clan", "formation", "tierlist"];
         function avatarColorFor(name) {
             const colors = ["#4169e1", "#aa7a1e", "#2e7d32", "#c62828", "#6c63ff", "#00897b", "#d81b60", "#ef6c00"];
             let hash = 0;
@@ -3369,7 +3669,7 @@ function formatDmDateSeparator(ts) {
         function showToast(message) {
             const toast = document.createElement("div");
             toast.textContent = message;
-            toast.style.cssText = "position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:#16162a; border:1px solid #4169e1; color:white; padding:12px 20px; border-radius:10px; z-index:200; font-size:0.9rem; box-shadow:0 4px 12px rgba(0,0,0,0.4); max-width:80%; text-align:center;";
+            toast.style.cssText = "position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:#16162a; border:1px solid #4169e1; color:white; padding:12px 20px; border-radius:10px; z-index:200; font-size:0.9rem; box-shadow:0 4px 12px rgba(0,0,0,0.4); max-width:80%; text-align:center; pointer-events:none;";
             document.body.appendChild(toast);
             setTimeout(() => {
                 toast.style.transition = "opacity 0.3s";
@@ -4579,13 +4879,28 @@ window.removeClanIconPreview = function () {
         // downloads them on a plain navigation regardless of cross-origin —
         // no fetch/blob/CORS involved. <img> tags still render them normally
         // since that header only applies to navigations, not resource loads.
-        function downloadImageUrl(url) {
+        // Saves the photo. (This used to follow a plain link to it, which took the
+        // whole page away to the photo.) If the photo's server won't hand it over
+        // for saving, it opens in a new tab instead — long-press there to save it.
+        async function downloadImageUrl(url) {
             if (!url) return;
-            const a = document.createElement("a");
-            a.href = url;
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
+            try {
+                const res = await fetch(url);
+                if (!res.ok) throw new Error("HTTP " + res.status);
+                const blob = await res.blob();
+                const ext = /png/.test(blob.type) ? "png" : /webp/.test(blob.type) ? "webp" : "jpg";
+                const href = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = href;
+                a.download = `kingdom-clash-photo-${Date.now()}.${ext}`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                setTimeout(() => URL.revokeObjectURL(href), 10000);
+                showToast("📥 Photo saved");
+            } catch (e) {
+                window.open(url, "_blank", "noopener");
+            }
         }
 
         /* ---- Image viewer lightbox (comment photos) ---- */
@@ -4855,7 +5170,7 @@ window.removeClanIconPreview = function () {
         window.reactTo = async function (kind, id, emoji) {
             const myUid = AppState.getCurrentUser()?.uid;
             if (!myUid) { showInfoModal("Sign in required", "Sign in with Google first to react."); return; }
-            const item = kind === "dm" ? (window._lastDmMessages || []).find(m => m.id === id) : commentState[kind].byId[id];
+            const item = kind === "dm" ? (window._lastDmMessages || []).find(m => m.id === id) : kind === "world" ? worldById(id) : commentState[kind].byId[id];
             if (!item) return;
             const had = reactList((item.reactions || {})[myUid]);
             const next = had.includes(emoji) ? had.filter(e => e !== emoji) : [...had, emoji];
@@ -4863,14 +5178,15 @@ window.removeClanIconPreview = function () {
             const reactions = { ...(item.reactions || {}) };
             if (next.length) reactions[myUid] = next; else delete reactions[myUid];
             item.reactions = reactions;
-            if (kind === "dm") renderDmMessages(window._lastDmMessages); else renderCommentList(kind, commentState[kind].comments);
+            const redraw = () => kind === "dm" ? renderDmMessages(window._lastDmMessages) : kind === "world" ? renderWorldChat() : renderCommentList(kind, commentState[kind].comments);
+            redraw();
             try {
-                const target = kind === "dm" ? { kind: "dm", threadId: currentDmThreadId, msgId: id } : COMMENT_KINDS[kind].target(id);
+                const target = kind === "dm" ? { kind: "dm", threadId: currentDmThreadId, msgId: id } : kind === "world" ? { kind: "world", msgId: id } : COMMENT_KINDS[kind].target(id);
                 if (typeof AppState.setReaction !== "function") throw new Error("The site just updated — refresh the page to use reactions.");
                 await AppState.setReaction(target, next);
             } catch (e) {
                 item.reactions = before;
-                if (kind === "dm") renderDmMessages(window._lastDmMessages); else renderCommentList(kind, commentState[kind].comments);
+                redraw();
                 if (e.message !== "__RESTRICTED__") showInfoModal("Couldn't react", e.message);
             }
         };
@@ -4911,7 +5227,7 @@ window.removeClanIconPreview = function () {
             ev.stopPropagation();
             closeFloatingPickers();
             const myUid = AppState.getCurrentUser()?.uid;
-            const item = kind === "dm" ? (window._lastDmMessages || []).find(m => m.id === id) : commentState[kind].byId[id];
+            const item = kind === "dm" ? (window._lastDmMessages || []).find(m => m.id === id) : kind === "world" ? worldById(id) : commentState[kind].byId[id];
             const mine = reactList(item && item.reactions ? item.reactions[myUid] : null);
             const bar = document.createElement("div");
             bar.className = "rx-picker";
@@ -4925,7 +5241,7 @@ window.removeClanIconPreview = function () {
                 reactTo(kind, id, set[i]);
             }));
             // its React button (found again after each redraw of the list)
-            const rowId = kind === "dm" ? "dmMsgRow_" + id : `cmt_${kind}_${id}`;
+            const rowId = kind === "dm" ? "dmMsgRow_" + id : kind === "world" ? "wcMsg_" + id : `cmt_${kind}_${id}`;
             placeFloating(bar, () => {
                 const row = document.getElementById(rowId);
                 return row ? [...row.querySelectorAll("button")].find(b => /React/.test(b.textContent)) || null : null;
@@ -4964,9 +5280,10 @@ window.removeClanIconPreview = function () {
         // Touching anywhere outside closes them (a tap, or starting to scroll
         // something else); the 😊 button toggles its own panel.
         document.addEventListener("pointerdown", (e) => {
-            if (!(e.target instanceof Element) || !e.target.closest(".rx-picker, .emoji-panel, .emoji-btn")) closeFloatingPickers();
+            if (!(e.target instanceof Element) || !e.target.closest(".rx-picker, .emoji-panel, .emoji-btn, [data-emoji-btn]")) closeFloatingPickers();
         }, true);
-        document.addEventListener("click", (e) => { if (!e.target.closest(".rx-picker, .emoji-panel, .emoji-btn")) closeFloatingPickers(); });
+        // (every 😊 button is .emoji-btn or data-emoji-btn — World Chat's wasn't, so its panel closed the moment it opened)
+        document.addEventListener("click", (e) => { if (!e.target.closest(".rx-picker, .emoji-panel, .emoji-btn, [data-emoji-btn]")) closeFloatingPickers(); });
         document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeFloatingPickers(); });
         window.addEventListener("scroll", followAnchors, true);
         window.addEventListener("resize", followAnchors);
@@ -6458,10 +6775,11 @@ window.removeClanIconPreview = function () {
 
         /* ---------------- REPORT MODAL ---------------- */
 
-        window.openReportModal = function (type, targetUid, targetName, contentId, contentText) {
+        // where: "worldChat" for a World Chat message; photos: a chat photo's link, shown to the admin with the report
+        window.openReportModal = function (type, targetUid, targetName, contentId, contentText, where, photos) {
             const user = AppState.getCurrentUser();
             if (!user) { showInfoModal("Sign in required", "Sign in with Google first to report something."); return; }
-            currentReportContext = { type, targetUid, targetName, contentId, contentText };
+            currentReportContext = { type, targetUid, targetName, contentId, contentText, where: where || "", photos: Array.isArray(photos) ? photos : [] };
             document.getElementById("reportReasonInput").value = "";
             document.getElementById("reportEvidenceInput").value = "";
             reportEvidenceFiles = [];
@@ -6535,7 +6853,7 @@ window.removeClanIconPreview = function () {
                 submitBtn.textContent = "Submitting...";
                 const ctx = currentReportContext;
                 const fullText = `[Reason: ${reason}]\n\nOriginal content: ${ctx.contentText || ""}`;
-                await AppState.submitReport(ctx.type, ctx.targetUid, ctx.targetName, ctx.contentId, fullText, evidenceUrls, evidencePaths);
+                await AppState.submitReport(ctx.type, ctx.targetUid, ctx.targetName, ctx.contentId, fullText, [...ctx.photos, ...evidenceUrls].slice(0, 5), evidencePaths, ctx.where);
                 closeReportModal();
                 showToast("Thanks — this has been reported.");
             } catch (e) {
@@ -6544,6 +6862,866 @@ window.removeClanIconPreview = function () {
             submitBtn.disabled = false;
             submitBtn.textContent = "Submit report";
         };
+        /* ---------------- 🌍 WORLD CHAT ----------------
+           One chat for everyone signed in. Each message has a tag, so the chat
+           can be filtered (All, General, Tips, …) without splitting people into
+           separate rooms. Sending and deleting go through api/chat.js (slow mode,
+           pauses, timeouts); the latest messages are read live. */
+        const WORLD_TAGS = [ // the same ids as api/chat.js TAGS
+            { id: "general", icon: "💬", label: "General" },
+            { id: "tips", icon: "💡", label: "Tips" },
+            { id: "noobies", icon: "🐣", label: "Noobies" },
+            { id: "formation", icon: "🛡️", label: "Formation" },
+            { id: "games", icon: "🎮", label: "Games" }
+        ];
+        const WORLD_TAG_BY_ID = Object.fromEntries(WORLD_TAGS.map(t => [t.id, t]));
+        const WORLD_PAGE = 60, WORLD_MAX_LEN = 2000, WORLD_SEEN_KEY = "kih_world_seen";
+        let worldLive = null;      // the latest messages (live), oldest first; null until loaded
+        let worldOlder = [];       // older ones: loaded with "Load older", or pushed out of the live window
+        // the open channel (General, Tips, …): each is its own chat
+        const WORLD_CHANNEL_KEY = "kih_world_channel";
+        let worldFilter = (() => { try { const c = localStorage.getItem(WORLD_CHANNEL_KEY); return WORLD_TAG_BY_ID[c] ? c : "general"; } catch (e) { return "general"; } })();
+        let worldUnsub = null, worldCfgUnsub = null, worldFailed = false;
+        let worldCfg = { slowSeconds: 5, paused: false };
+        let worldBlocked = new Set();
+        let worldReplyTo = null;   // { id, name, text }
+        let worldNextAt = 0;       // slow mode: when you can send again
+        let worldSending = false, worldNoOlder = false, worldLoadingOlder = false, worldKeepAnchor = false;
+        let worldActionsFor = null; // the message whose Reply / React / … row is showing
+        let worldTicker = 0;
+
+        function worldAll() {
+            const seen = new Set();
+            return [...worldOlder, ...(worldLive || [])].filter(m => !seen.has(m.id) && seen.add(m.id));
+        }
+        const worldById = (id) => worldAll().find(m => m.id === id);
+        const worldTabOpen = () => document.getElementById("tabPanelWorld").classList.contains("active");
+        // Each channel's "seen up to" time (unread counts on its button and on the 🌍 tab).
+        const seenKey = (ch) => WORLD_SEEN_KEY + "_" + ch;
+        function worldSeenAt(ch) {
+            try { return Number(localStorage.getItem(seenKey(ch))) || 0; } catch (e) { return 0; }
+        }
+        function markWorldSeen() {
+            const last = (worldLive || [])[(worldLive || []).length - 1];
+            if (last) try { if (last.createdAt > worldSeenAt(worldFilter)) localStorage.setItem(seenKey(worldFilter), String(last.createdAt)); } catch (e) { }
+            updateWorldBadge();
+        }
+        // New messages from others since you last looked in each channel (the last day's, the first time).
+        function worldUnread(ch) {
+            const myUid = AppState.getCurrentUser()?.uid;
+            const since = worldSeenAt(ch) || Date.now() - 86400000;
+            return (worldPeek || []).filter(m => (m.tag || "general") === ch && m.uid !== myUid && m.createdAt > since && !worldBlocked.has(m.uid)).length;
+        }
+        function updateWorldBadge() {
+            const badge = document.getElementById("worldUnreadBadge");
+            if (!badge) return;
+            const n = WORLD_TAGS.reduce((sum, t) => sum + (worldTabOpen() && t.id === worldFilter ? 0 : worldUnread(t.id)), 0);
+            badge.textContent = n > 9 ? "9+" : String(n);
+            badge.style.display = n > 0 && !worldTabOpen() ? "inline-block" : "none";
+            paintWorldChips();
+        }
+
+        // Two live reads: the open channel's latest messages, and the latest
+        // across every channel (just for the unread counts on the buttons).
+        let worldPeek = null, worldPeekUnsub = null, worldNoIndex = false;
+        function onChannelMessages(msgs) {
+            worldFailed = false;
+            // Messages that left the live window because newer ones came in
+            // stay on screen (they weren't deleted).
+            if (worldLive) {
+                const ids = new Set(msgs.map(m => m.id));
+                const oldest = msgs.length ? msgs[0].createdAt : Infinity;
+                const pushedOut = worldLive.filter(m => !ids.has(m.id) && m.createdAt < oldest);
+                if (pushedOut.length) worldOlder = [...worldOlder, ...pushedOut];
+            }
+            if (msgs.length < WORLD_PAGE && !worldOlder.length) worldNoOlder = true;
+            worldLive = msgs;
+            renderWorldChat();
+            if (worldTabOpen() && !document.hidden) markWorldSeen(); else updateWorldBadge();
+        }
+        function listenToChannel() {
+            if (worldUnsub) { worldUnsub(); worldUnsub = null; }
+            worldLive = null; worldOlder = []; worldNoOlder = false; worldFailed = false;
+            const ch = worldFilter;
+            const mine = (msgs) => msgs.filter(m => (m.tag || "general") === ch);
+            if (worldNoIndex) {
+                // the channel's own lookup isn't ready yet (the database index): pick it out of the latest 200
+                worldUnsub = AppState.listenToWorldChat(200, (msgs) => onChannelMessages(mine(msgs).slice(-WORLD_PAGE)), () => { worldFailed = true; renderWorldChat(); });
+                return;
+            }
+            worldUnsub = AppState.listenToWorldChat(WORLD_PAGE, (msgs) => onChannelMessages(mine(msgs)), (err) => {
+                if (err && err.code === "failed-precondition" && !worldNoIndex) { worldNoIndex = true; listenToChannel(); return; }
+                worldFailed = true; renderWorldChat();
+            }, ch);
+        }
+        function startWorldChat() {
+            stopWorldChat();
+            if (!AppState.getCurrentUser() || typeof AppState.listenToWorldChat !== "function") return;
+            listenToChannel();
+            worldPeekUnsub = AppState.listenToWorldChat(WORLD_PAGE, (msgs) => { worldPeek = msgs; updateWorldBadge(); }, () => { });
+            worldCfgUnsub = AppState.listenToWorldChatConfig(c => { worldCfg = c; paintWorldCompose(); });
+            AppState.getMyBlockedUids().then(list => { worldBlocked = new Set(list); renderWorldChat(); updateWorldBadge(); }).catch(() => { });
+        }
+        function stopWorldChat() {
+            if (worldUnsub) { worldUnsub(); worldUnsub = null; }
+            if (worldPeekUnsub) { worldPeekUnsub(); worldPeekUnsub = null; }
+            if (worldCfgUnsub) { worldCfgUnsub(); worldCfgUnsub = null; }
+            worldLive = null; worldOlder = []; worldNoOlder = false; worldPeek = null;
+        }
+
+        // their picture, or the first letter of their name on a colour
+        function worldAvatar(m) {
+            const url = avatarOf(m.uid, m.avatar);
+            if (url) return `<img class="clan-post-avatar wc-avatar" src="${escapeHtml(url)}" onerror="this.style.visibility='hidden'" alt="">`;
+            const name = m.name || "?";
+            return `<span class="wc-letter" style="background:${avatarColorFor(name)}">${escapeHtml(name.trim().charAt(0).toUpperCase() || "?")}</span>`;
+        }
+        // the channel buttons (each with how many are unread), and what the box says
+        function paintWorldChips() {
+            const chips = document.getElementById("wcChips");
+            const html = WORLD_TAGS.map(t => {
+                const n = t.id === worldFilter ? 0 : worldUnread(t.id);
+                return `<button type="button" class="wc-chip${worldFilter === t.id ? " active" : ""}" data-filter="${t.id}"><span class="wc-chip-icon">${t.icon}</span><span class="wc-chip-label">${t.label}</span>${n ? `<span class="wc-chip-n">${n > 9 ? "9+" : n}</span>` : ""}</button>`;
+            }).join("");
+            if (chips.innerHTML !== html) chips.innerHTML = html;
+            const ch = WORLD_TAG_BY_ID[worldFilter] || WORLD_TAG_BY_ID.general;
+            document.getElementById("wcTag").value = ch.id;
+            const hint = `You're in <b>${ch.icon} ${ch.label}</b> · <button type="button" class="wc-link" data-wc-rules="1">ℹ️ Rules</button> · <button type="button" class="wc-link" data-wc-find="1">🔍 Find</button>`;
+            const el = document.getElementById("wcHintText");
+            if (el.innerHTML !== hint) el.innerHTML = hint;
+        }
+        // tap a channel: you're in it (what you send goes there); remembered for next time
+        window.setWorldFilter = function (id) {
+            if (!WORLD_TAG_BY_ID[id] || id === worldFilter) return;
+            worldFilter = id;
+            try { localStorage.setItem(WORLD_CHANNEL_KEY, id); } catch (e) { }
+            cancelWorldReply();
+            worldActionsFor = null;
+            document.getElementById("wcList").dataset.drawn = "";
+            document.getElementById("wcNewBtn").classList.remove("show");
+            finding.world.i = -1;
+            if (AppState.getCurrentUser() && typeof AppState.listenToWorldChat === "function") listenToChannel();
+            renderWorldChat();
+            updateWorldBadge();
+        };
+
+        function renderWorldChat() {
+            paintWorldChips();
+            paintWorldCompose();
+            const box = document.getElementById("wcList");
+            const myUid = AppState.getCurrentUser()?.uid;
+            const admin = AppState.isAdmin && AppState.isAdmin();
+            const list = worldAll().filter(m => !worldBlocked.has(m.uid) && (m.tag || "general") === worldFilter);
+            ensureCards(list.map(m => m.uid), renderWorldChat, "world");
+            let html = "";
+            if (worldLive && !worldNoOlder && worldAll().length >= WORLD_PAGE) {
+                html += `<button type="button" class="wc-older" data-older="1">${worldLoadingOlder ? "Loading…" : "↑ Load older messages"}</button>`;
+            }
+            if (!list.length) {
+                const tag = WORLD_TAG_BY_ID[worldFilter];
+                html += `<div class="wc-empty">${worldFailed ? "Couldn't load the chat — refresh the page to try again."
+                    : !worldLive ? "Loading the chat…"
+                    : `👋 No messages in ${tag.icon} ${tag.label} yet.<br>Be the first!`}</div>`;
+            }
+            let lastDay = null, prev = null;
+            for (const m of list) {
+                const day = new Date(m.createdAt).toDateString();
+                if (day !== lastDay) { html += `<div class="dm-date-separator">${formatDmDateSeparator(m.createdAt)}</div>`; lastDay = day; prev = null; }
+                // the same person again within 5 minutes: no repeated name and picture
+                const cont = prev && prev.uid === m.uid && m.createdAt - prev.createdAt < 5 * 60000 && (prev.tag || "general") === (m.tag || "general") && !m.replyTo;
+                prev = m;
+                const mine = m.uid === myUid;
+                const tag = WORLD_TAG_BY_ID[m.tag] || WORLD_TAG_BY_ID.general;
+                const bubbleFx = window.ProgressCore ? ProgressCore.styleClass(styleOf(m.uid), "bubble") : "";
+                const quote = m.replyTo
+                    ? `<span class="dm-msg-quote wc-quote" data-jump="${escapeHtml(m.replyTo.id)}"><b>${escapeHtml(m.replyTo.name)}</b>${escapeHtml(m.replyTo.text)}</span>` : "";
+                const actions = `<button type="button" class="dm-msg-action-link" data-wc="reply">↩ Reply</button>`
+                    + `<button type="button" class="dm-msg-action-link" data-wc="react">😊 React</button>`
+                    + (!mine && canTranslate(m.text) ? `<button type="button" class="dm-msg-action-link" data-wc="translate">${trActionLabel("world", m.id)}</button>` : "")
+                    + (mine ? "" : `<button type="button" class="dm-msg-action-link" data-wc="report">🚩 Report</button>`)
+                    + (mine || admin ? `<button type="button" class="dm-msg-action-link" data-wc="delete">🗑 Delete</button>` : "")
+                    + (admin && !mine ? `<button type="button" class="dm-msg-action-link" data-wc="timeout">⏱ Timeout</button>` : "");
+                html += `<div class="wc-msg${mine ? " mine" : ""}${cont ? " cont" : ""}${m.image || m.video ? " has-photo" : ""}${worldActionsFor === m.id ? " acts" : ""}" id="wcMsg_${escapeHtml(m.id)}" data-id="${escapeHtml(m.id)}">
+                    <div class="wc-av">${cont ? "" : `<span class="wc-av-tap" data-profile="1">${bordered(m.uid, worldAvatar(m))}</span>`}</div>
+                    <div class="wc-main">
+                        ${cont ? "" : `<div class="wc-meta"><span class="poster-name wc-name ${nameFx(m.uid)}" data-profile="1">${escapeHtml(m.name || "Commander")}</span><span class="wc-time">${formatDmTime(m.createdAt)}</span></div>`}
+                        <div class="wc-bubble${bubbleFx ? " " + bubbleFx : ""}" title="${escapeHtml(new Date(m.createdAt).toLocaleString())}">${quote}${chatPhotoHtml(m.image, m.createdAt)}${chatVideoHtml(m.video, m.createdAt)}${m.text ? `<span class="dm-msg-text">${escapeHtml(m.text)}</span>` : ""}${trBlockHtml("world", m.id)}</div>
+                        ${reactionsHtml("world", m)}
+                        <div class="wc-actions">${actions}</div>
+                    </div>
+                </div>`;
+            }
+            const last = list[list.length - 1], lastId = last ? last.id : "";
+            const fresh = !box.dataset.drawn;
+            const atBottom = box.scrollTop + box.clientHeight >= box.scrollHeight - 80;
+            const newMine = last && last.uid === myUid && lastId !== box.dataset.lastId;
+            const grew = lastId && box.dataset.lastId && lastId !== box.dataset.lastId;
+            const prevTop = box.scrollTop, prevHeight = box.scrollHeight;
+            if (box.innerHTML !== html) keepPlayingVideos(box, () => { box.innerHTML = html; });
+            if (worldKeepAnchor) { box.scrollTop = box.scrollHeight - prevHeight + prevTop; worldKeepAnchor = false; }
+            else if (fresh || atBottom || newMine) box.scrollTop = box.scrollHeight;
+            else { box.scrollTop = prevTop; if (grew) document.getElementById("wcNewBtn").classList.add("show"); }
+            if (box.clientHeight) box.dataset.drawn = "1"; // drawn while visible (a hidden tab draws again when opened)
+            box.dataset.lastId = lastId;
+            if (finding.world.q.trim()) applyFind("world", false); // keep the 🔍 highlights
+        }
+        document.getElementById("wcList").addEventListener("scroll", (e) => {
+            const box = e.currentTarget;
+            if (box.scrollTop + box.clientHeight >= box.scrollHeight - 80) document.getElementById("wcNewBtn").classList.remove("show");
+        });
+        document.getElementById("wcNewBtn").addEventListener("click", () => {
+            const box = document.getElementById("wcList");
+            box.scrollTop = box.scrollHeight;
+            document.getElementById("wcNewBtn").classList.remove("show");
+        });
+        document.getElementById("wcChips").addEventListener("click", (e) => {
+            const b = e.target.closest("[data-filter]");
+            if (b) setWorldFilter(b.dataset.filter);
+        });
+        document.getElementById("wcList").addEventListener("click", (e) => {
+            if (e.target.closest("[data-older]")) { loadOlderWorldChat(); return; }
+            if (e.target.closest(".rx-chip")) return; // its own onclick
+            const row = e.target.closest(".wc-msg");
+            if (!row) return;
+            const m = worldById(row.dataset.id);
+            if (!m) return;
+            if (e.target.closest("[data-profile]")) { e.stopPropagation(); onPosterClick(m.uid, m.name); return; }
+            const jump = e.target.closest("[data-jump]");
+            if (jump) { jumpToWorldMessage(jump.dataset.jump); return; }
+            const photo = e.target.closest("[data-photo]");
+            if (photo) { openImageViewer([photo.dataset.photo], 0); return; }
+            const vid = e.target.closest(".chat-video");
+            if (vid) { playChatVideo(vid); return; }
+            const act = e.target.closest("[data-wc]");
+            if (act) { worldAction(act.dataset.wc, m, e); return; }
+            if (e.target.closest(".wc-bubble")) {
+                // tap a message: its Reply / React / Report row (tap again to hide)
+                worldActionsFor = worldActionsFor === m.id ? null : m.id;
+                document.querySelectorAll(".wc-msg.acts").forEach(r => r.classList.remove("acts"));
+                if (worldActionsFor) row.classList.add("acts");
+            }
+        });
+        function jumpToWorldMessage(id) {
+            const row = document.getElementById("wcMsg_" + id);
+            if (!row) { showToast("That message isn't loaded (or was deleted)."); return; }
+            row.scrollIntoView({ block: "center", behavior: "smooth" });
+            row.classList.remove("flash"); void row.offsetWidth; row.classList.add("flash");
+        }
+        async function worldAction(kind, m, e) {
+            if (kind === "reply") {
+                worldReplyTo = { id: m.id, name: m.name || "Commander", text: (m.text || (m.image ? "📷 Photo" : m.video ? "🎬 Video" : "")).slice(0, 140) };
+                document.getElementById("wcReplyText").textContent = `↩ Replying to ${worldReplyTo.name}: ${worldReplyTo.text}`;
+                document.getElementById("wcReplyBar").classList.add("show");
+                document.getElementById("wcInput").focus();
+            } else if (kind === "react") {
+                openReactionPicker(e, "world", m.id);
+            } else if (kind === "translate") {
+                toggleTranslate("world", m.id);
+            } else if (kind === "report") {
+                openReportModal("message", m.uid, m.name || "Commander", m.id,
+                    (m.text || "") + (m.image ? (m.text ? "\n" : "") + "📷 Photo: " + m.image.url : "") + (m.video ? (m.text ? "\n" : "") + "🎬 Video: " + m.video.url : ""),
+                    "worldChat", m.image ? [m.image.url] : m.video && m.video.posterUrl ? [m.video.posterUrl] : []);
+            } else if (kind === "delete") {
+                const mine = m.uid === AppState.getCurrentUser()?.uid;
+                if (!await showConfirmModal("Delete message", mine ? "Delete your message for everyone?" : `Delete ${m.name}'s message for everyone?`, "Delete")) return;
+                try {
+                    const r = await AppState.deleteWorldChat(m.id);
+                    if (r && r.imagePath) AppState.deleteChatPhoto(r.imagePath); // the photo too
+                    if (r && r.videoPath) AppState.deleteChatVideo(r.videoPath, r.posterPath); // the video (and its preview) too
+                    worldOlder = worldOlder.filter(x => x.id !== m.id); // the live ones go by themselves
+                    renderWorldChat();
+                } catch (err) { showInfoModal("Couldn't delete", err.message); }
+            } else if (kind === "timeout") {
+                if (!await showConfirmModal("Timeout", `Time out ${m.name} for 24 hours? They can't post, comment or message anywhere on the site until then. (Longer timeouts and bans: admin page.)`, "Time out 24h")) return;
+                try {
+                    await AppState.banUser(m.uid, 24 * 3600000, "World Chat");
+                    showToast(`${m.name} is timed out for 24 hours.`);
+                } catch (err) { showInfoModal("Couldn't time out", err.message); }
+            }
+        }
+        window.cancelWorldReply = function () {
+            worldReplyTo = null;
+            document.getElementById("wcReplyBar").classList.remove("show");
+        };
+        window.loadOlderWorldChat = async function () {
+            const first = worldAll()[0];
+            if (!first || worldLoadingOlder) return;
+            worldLoadingOlder = true;
+            renderWorldChat();
+            try {
+                let older;
+                if (worldNoIndex) { // (until the channel lookup's index is ready)
+                    const got = await AppState.loadOlderWorldChat(first.createdAt, 200);
+                    older = got.filter(m => (m.tag || "general") === worldFilter).slice(-WORLD_PAGE);
+                    if (got.length < 200) worldNoOlder = true;
+                } else {
+                    older = await AppState.loadOlderWorldChat(first.createdAt, WORLD_PAGE, worldFilter);
+                    if (older.length < WORLD_PAGE) worldNoOlder = true;
+                }
+                worldOlder = [...older, ...worldOlder];
+                worldKeepAnchor = true;
+            } catch (e) { showInfoModal("Couldn't load older messages", e.message); }
+            worldLoadingOlder = false;
+            renderWorldChat();
+        };
+
+        function paintWorldCompose() {
+            const input = document.getElementById("wcInput"), btn = document.getElementById("wcSendBtn");
+            const admin = AppState.isAdmin && AppState.isAdmin();
+            const paused = worldCfg.paused && !admin;
+            const wait = admin ? 0 : Math.ceil((worldNextAt - Date.now()) / 1000);
+            const len = input.value.trim().length;
+            input.disabled = paused;
+            // (a narrow box just says "Message…": the line below it names the channel)
+            input.placeholder = paused ? "Chat is paused" : input.clientWidth && input.clientWidth < 170 ? "Message…" : `Message ${(WORLD_TAG_BY_ID[worldFilter] || WORLD_TAG_BY_ID.general).label}…`;
+            document.getElementById("wcPhotoBtn").disabled = paused || worldSending;
+            document.getElementById("wcPhotoBtn").classList.toggle("full", chatMedia.world.length >= MAX_ATTACH.world);
+            btn.disabled = paused || worldSending || wait > 0 || (!len && !chatMedia.world.length) || len > WORLD_MAX_LEN || chatMediaBusy("world");
+            btn.textContent = worldSending ? "…" : wait > 0 ? `${wait}s` : "Send";
+            const note = document.getElementById("wcNotice");
+            const text = worldCfg.paused ? (admin ? "⏸️ World Chat is paused — only you can post. Turn it back on in admin." : "⏸️ World Chat is paused for now — check back soon.")
+                : worldCfg.slowSeconds >= 10 ? `🐢 Slow mode: one message every ${worldCfg.slowSeconds}s.` : "";
+            note.textContent = text;
+            note.className = "wc-notice" + (text ? " show" : "") + (worldCfg.paused ? " paused" : "");
+            const count = document.getElementById("wcCount");
+            count.innerHTML = len > WORLD_MAX_LEN - 200 ? `<span class="${len > WORLD_MAX_LEN ? "over" : ""}">${len}/${WORLD_MAX_LEN}</span>` : "";
+            if (wait > 0 && !worldTicker) worldTicker = setInterval(() => {
+                if (Date.now() >= worldNextAt) { clearInterval(worldTicker); worldTicker = 0; }
+                paintWorldCompose();
+            }, 1000);
+        }
+        function autosizeWorldInput() {
+            const input = document.getElementById("wcInput");
+            input.style.height = "auto";
+            input.style.height = Math.min(input.scrollHeight + 2, 120) + "px";
+        }
+        document.getElementById("wcInput").addEventListener("input", () => { autosizeWorldInput(); paintWorldCompose(); });
+        document.getElementById("wcInput").addEventListener("keydown", (e) => {
+            // Enter sends on a keyboard; on phones it's a new line (tap Send)
+            if (e.key === "Enter" && !e.shiftKey && !e.isComposing && !window.matchMedia("(pointer: coarse)").matches) {
+                e.preventDefault();
+                sendWorldChat();
+            }
+        });
+        window.sendWorldChat = async function () {
+            const input = document.getElementById("wcInput");
+            const text = input.value.trim();
+            const items = chatMedia.world;
+            if ((!text && !items.length) || worldSending) return;
+            if (chatMediaBusy("world")) { showToast("Your video is still being prepared…"); return; }
+            if (text.length > WORLD_MAX_LEN) { showInfoModal("Too long", `Messages can be up to ${WORLD_MAX_LEN} characters.`); return; }
+            worldSending = true;
+            paintWorldCompose();
+            let uploads = null;
+            try {
+                // a retry (e.g. after slow mode) doesn't upload them again
+                if (items.length) uploads = await uploadAllMedia("world");
+                const r = await AppState.sendWorldChat({ text, tag: document.getElementById("wcTag").value, ...(worldReplyTo ? { replyToId: worldReplyTo.id } : {}), ...(uploads ? { attachments: uploads } : {}) });
+                input.value = "";
+                autosizeWorldInput();
+                cancelWorldReply();
+                if (items.length) {
+                    items.forEach(p => { p.uploaded = null; });
+                    clearChatPhoto("world");
+                    if (chatLimits) { chatLimitsAt = 0; refreshChatLimits(); } // the counts went down
+                }
+                worldNextAt = Date.now() + (r.slowSeconds || 0) * 1000;
+            } catch (e) {
+                if (e.retryIn) worldNextAt = Date.now() + e.retryIn * 1000;
+                else showInfoModal("Couldn't send", e.message);
+                // refused for good (not just slow mode): don't keep the upload
+                if (uploads && !e.retryIn && e.status) items.forEach(p => { deleteUploadedMedia(p.uploaded); p.uploaded = null; });
+                paintChatPhotoBar("world");
+            }
+            worldSending = false;
+            paintWorldCompose();
+        };
+
+        /* ---- 📷 photos and 🎬 videos: picking one, its preview, showing them in messages ---- */
+        // what's picked, per box: [{ id, kind: "photo" | "video", file, preview (object URL),
+        //   progress, prepared (a shrunk video), uploaded, cancelled }] — up to MAX_ATTACH
+        const chatMedia = { world: [], dm: [] };
+        const fmtLen = (sec) => { const t = Math.max(0, Math.round(Number(sec) || 0)); return Math.floor(t / 60) + ":" + String(t % 60).padStart(2, "0"); };
+        // A video in a message: its preview frame with ▶ and the length; tap to play.
+        function chatVideoHtml(v, createdAt) {
+            if (!v || !v.url) return "";
+            if (createdAt && Date.now() - createdAt > chatPhotoDays() * 86400000) {
+                return `<span class="chat-photo-gone">🕓 Video expired (videos are kept ${chatPhotoDays()} days)</span>`;
+            }
+            const w = Number(v.w) || 16, h = Number(v.h) || 9;
+            const k = Math.min(1, 240 / w, 300 / h);
+            const size = `width:${Math.round(w * k)}px; aspect-ratio:${w} / ${h};`;
+            return `<span class="chat-video" data-video="${escapeHtml(v.url)}" style="${size}" role="button" aria-label="Play the video">${v.posterUrl ? `<img src="${escapeHtml(v.posterUrl)}" alt="" loading="lazy" onerror="this.remove()">` : ""}<span class="cv-play">▶</span>${v.duration ? `<span class="cv-len">${fmtLen(v.duration)}</span>` : ""}</span><span class="chat-photo-gone">🎬 Video unavailable</span>`;
+        }
+        // tap ▶: the video plays right there (only now is it downloaded)
+        function playChatVideo(el) {
+            if (el.classList.contains("playing")) return;
+            el.classList.add("playing");
+            el.innerHTML = `<video src="${escapeHtml(el.dataset.video)}" controls autoplay playsinline preload="auto"></video>`;
+            const v = el.querySelector("video");
+            v.onerror = () => el.classList.add("broken");
+            const p = v.play();
+            if (p && p.catch) p.catch(() => { });
+        }
+        // A list being redrawn (a new message came in) keeps any video that's playing, playing.
+        function keepPlayingVideos(box, redraw) {
+            const playing = [...box.querySelectorAll(".chat-video.playing")];
+            redraw();
+            playing.forEach(old => {
+                const spot = [...box.querySelectorAll(".chat-video:not(.playing)")].find(n => n.dataset.video === old.dataset.video);
+                if (spot) spot.replaceWith(old);
+            });
+        }
+        const chatPhotoDays = () => AppState.CHAT_PHOTO_DAYS || 90;
+        // A photo in a message (sized before it loads); gone after 90 days.
+        function chatPhotoHtml(img, createdAt) {
+            if (!img || !img.url) return "";
+            if (createdAt && Date.now() - createdAt > chatPhotoDays() * 86400000) {
+                return `<span class="chat-photo-gone">🕓 Photo expired (photos are kept ${chatPhotoDays()} days)</span>`;
+            }
+            const w = Number(img.w) || 0, h = Number(img.h) || 0;
+            const k = w && h ? Math.min(1, 240 / w, 300 / h) : 0;
+            const size = k ? `width:${Math.round(w * k)}px; aspect-ratio:${w} / ${h};` : "width:240px;";
+            return `<span class="chat-photo-wrap"><img class="chat-photo" src="${escapeHtml(img.url)}" style="${size}" loading="lazy" alt="Photo" data-photo="${escapeHtml(img.url)}"
+                onerror="this.parentNode.classList.add('broken')"><span class="chat-photo-gone">📷 Photo unavailable</span></span>`;
+        }
+        // how many in one send: World Chat — as many as today's limits allow (100 is just a
+        // ceiling, the same as api/chat.js); DMs have no daily count, so 30 at a time
+        const MAX_ATTACH = { world: 100, dm: 30 };
+        const barEl = (scope, what) => document.getElementById((scope === "dm" ? "dm" : "wc") + what);
+        let mediaSeq = 0;
+        // what you can post today (World Chat's daily video count), from the server; kept 30 s
+        let chatLimits = null, chatLimitsAt = 0;
+        async function refreshChatLimits() {
+            if (typeof AppState.chatLimits !== "function" || Date.now() - chatLimitsAt < 30000) return chatLimits;
+            chatLimitsAt = Date.now();
+            try { chatLimits = await AppState.chatLimits(); } catch (e) { /* the line just stays general */ }
+            paintChatPhotoBar("world"); paintChatPhotoBar("dm");
+            return chatLimits;
+        }
+        function limitsLine(scope) {
+            const V = AppState.VIDEO_LIMITS && AppState.VIDEO_LIMITS.free && AppState.VIDEO_LIMITS.vip ? AppState.VIDEO_LIMITS : { free: { seconds: 20 }, vip: { seconds: 60 } };
+            const L = chatLimits && typeof chatLimits.videosLeft === "number" ? chatLimits : null, vip = !!(L && L.vip);
+            const sec = L ? L.videoSeconds : V.free.seconds, vipSec = L ? L.vipVideoSeconds : V.vip.seconds;
+            if (scope === "world") {
+                if (!L) return `🎬 Videos up to ${sec}s each`;
+                const vipBit = vip ? "" : ` · ⭐ VIP: ${L.vipPhotosPerDay} photos and ${L.vipVideosPerDay} videos a day, up to ${vipSec}s`;
+                return `Left today: 📷 ${L.photosLeft} of ${L.photosPerDay} photos · 🎬 ${L.videosLeft} of ${L.videosPerDay} videos (up to ${sec}s each)${vipBit}`;
+            }
+            return `🎬 Videos up to ${sec}s each${vip ? "" : ` · ⭐ VIP: up to ${vipSec}s`} · up to ${MAX_ATTACH.dm} at a time`;
+        }
+        function chatMediaStatus(items) {
+            const vids = items.filter(p => p.kind === "video");
+            const waiting = vids.filter(p => !p.prepared);
+            if (waiting.length) {
+                const cur = waiting.find(p => p.started) || waiting[0];
+                const which = vids.length > 1 ? `video ${vids.indexOf(cur) + 1} of ${vids.length}` : "your video";
+                return `🎬 Preparing ${which}… ${Math.round((cur.progress || 0) * 100)}%${cur.pass > 1 ? " (making it smaller)" : ""} — keep this page open`;
+            }
+            const lost = vids.some(p => p.prepared && p.prepared.lostSound) ? " — sound couldn't be kept on this phone" : "";
+            if (items.length === 1) {
+                return items[0].kind === "video" ? `🎬 Video ready (${fmtLen(items[0].prepared.duration)})${lost} — add a message or tap Send` : "📷 Photo ready — add a message or tap Send";
+            }
+            const ph = items.length - vids.length;
+            const parts = [ph ? `${ph} photo${ph === 1 ? "" : "s"}` : "", vids.length ? `${vids.length} video${vids.length === 1 ? "" : "s"}` : ""].filter(Boolean);
+            return `${parts.join(" and ")} ready${lost} — each is sent as its own message`;
+        }
+        function paintChatPhotoBar(scope) {
+            const items = chatMedia[scope];
+            const bar = barEl(scope, "PhotoBar");
+            bar.classList.toggle("show", items.length > 0);
+            if (scope === "dm") requestAnimationFrame(updateDmScrollBottomBtn); // the ↓ button moves above the tiles
+            if (!items.length) return;
+            barEl(scope, "PhotoTiles").innerHTML = items.map(p => `<span class="cp-tile" data-id="${p.id}">`
+                + (p.preview ? `<img src="${p.preview}" alt="">` : `<span class="cp-tile-ph">🎬</span>`)
+                + (p.kind === "video" ? (p.prepared ? `<span class="cp-tile-len">${fmtLen(p.prepared.duration)}</span>` : `<span class="cp-tile-pct">${p.started ? Math.round((p.progress || 0) * 100) + "%" : "…"}</span>`) : "")
+                + `<button type="button" class="cp-x" data-remove="${p.id}" aria-label="Remove this one">✕</button></span>`).join("")
+                + (items.length < MAX_ATTACH[scope] ? `<button type="button" class="cp-add" data-add="1" aria-label="Add another photo or video">＋</button>` : "");
+            barEl(scope, "PhotoText").textContent = chatMediaStatus(items);
+            barEl(scope, "PhotoLimits").textContent = limitsLine(scope);
+        }
+        // a video being prepared: just its % and the status line (not the whole bar, many times a second)
+        function paintVideoProgress(scope, p) {
+            const pct = barEl(scope, "PhotoTiles").querySelector(`.cp-tile[data-id="${p.id}"] .cp-tile-pct`);
+            if (pct) pct.textContent = Math.round((p.progress || 0) * 100) + "%";
+            barEl(scope, "PhotoText").textContent = chatMediaStatus(chatMedia[scope]);
+        }
+        // 🎬 videos are shrunk one at a time (each takes as long as the video)
+        let videoPrepChain = Promise.resolve();
+        function prepareVideo(scope, p) {
+            videoPrepChain = videoPrepChain.then(async () => {
+                if (p.cancelled) return;
+                p.started = true;
+                paintChatPhotoBar(scope);
+                try {
+                    const out = await AppState.prepareChatVideo(p.file, (frac, pass) => {
+                        if (p.cancelled) return;
+                        p.progress = frac; p.pass = pass || 1;
+                        paintVideoProgress(scope, p);
+                    });
+                    if (p.cancelled) return;
+                    p.prepared = out;
+                    if (out.poster) p.preview = URL.createObjectURL(out.poster);
+                } catch (e) {
+                    if (p.cancelled) return;
+                    chatMedia[scope] = chatMedia[scope].filter(x => x !== p);
+                    if (e.vipCould) showActionToast(e.message, "⭐ See VIP", () => { window.location.href = "store.html"; });
+                    else showInfoModal(e.tooLong ? "Video too long" : "Couldn't use that video", e.message);
+                }
+                paintChatPhotoBar(scope);
+                if (scope === "world") paintWorldCompose();
+            }).catch(() => { });
+        }
+        // add what was picked (several at once is fine) — up to today's limits (World Chat) / 30 (DMs)
+        function setChatPhoto(scope, files) {
+            const list = Array.from(files && files.length !== undefined ? files : files ? [files] : []);
+            if (!list.length) return;
+            const admin = AppState.isAdmin && AppState.isAdmin();
+            let skipped = 0, notMedia = 0, videosBlocked = false, overDaily = false, overPhotos = false;
+            const L = chatLimits && typeof chatLimits.videosLeft === "number" ? chatLimits : null;
+            for (const file of list) {
+                const items = chatMedia[scope];
+                if (items.length >= MAX_ATTACH[scope]) { skipped++; continue; }
+                const isVideo = /^video\//.test(file.type || ""), isPhoto = /^image\//.test(file.type || "");
+                if (!isVideo && !isPhoto) { notMedia++; continue; }
+                if (isVideo && worldCfg.videosOff && !admin) { videosBlocked = true; continue; }
+                if (isVideo && scope === "world" && L && !admin && items.filter(x => x.kind === "video").length >= L.videosLeft) { overDaily = true; continue; }
+                if (isPhoto && scope === "world" && L && !admin && typeof L.photosLeft === "number" && items.filter(x => x.kind === "photo").length >= L.photosLeft) { overPhotos = true; continue; }
+                const p = { id: "m" + (++mediaSeq), kind: isVideo ? "video" : "photo", file, preview: isPhoto ? URL.createObjectURL(file) : "", progress: 0, pass: 1, prepared: null, uploaded: null, cancelled: false, started: false };
+                chatMedia[scope].push(p);
+                if (isVideo) prepareVideo(scope, p);
+            }
+            paintChatPhotoBar(scope);
+            if (scope === "world") paintWorldCompose();
+            if (videosBlocked) showInfoModal("Videos are off for now", "Videos are switched off for the moment — photos and messages still work.");
+            else if (overDaily) showInfoModal("No more videos today", chatLimits && chatLimits.videosLeft ? `You can post ${chatLimits.videosLeft} more video${chatLimits.videosLeft === 1 ? "" : "s"} in World Chat today.` : `That's all your World Chat videos for today — more tomorrow.${chatLimits && !chatLimits.vip ? ` (VIP can post ${chatLimits.vipVideosPerDay} a day.)` : ""}`);
+            else if (overPhotos) showInfoModal("No more photos today", L.photosLeft ? `You can post ${L.photosLeft} more photo${L.photosLeft === 1 ? "" : "s"} in World Chat today.` : `That's all your World Chat photos for today — more tomorrow.${!L.vip ? ` (VIP can post ${L.vipPhotosPerDay} a day.)` : ""}`);
+            else if (notMedia) showInfoModal("Not a photo or video", "Choose pictures (JPG, PNG, WebP…) or videos (MP4, MOV).");
+            else if (skipped) showToast(`Up to ${MAX_ATTACH[scope]} at a time — the rest weren't added.`);
+            refreshChatLimits();
+        }
+        const chatMediaBusy = (scope) => chatMedia[scope].some(p => p.kind === "video" && !p.prepared);
+        // upload everything picked (one after another) → [{ image } | { video }]
+        async function uploadAllMedia(scope) {
+            const items = chatMedia[scope], out = [];
+            for (let i = 0; i < items.length; i++) {
+                const p = items[i];
+                if (!p.uploaded) {
+                    barEl(scope, "PhotoText").textContent = items.length > 1 ? `Uploading ${i + 1} of ${items.length}…` : p.kind === "video" ? "🎬 Uploading your video…" : "📷 Uploading your photo…";
+                    p.uploaded = p.kind === "video" ? { video: await AppState.uploadChatVideo(scope, p.prepared) } : { image: await AppState.uploadChatPhoto(scope, p.file) };
+                }
+                out.push(p.uploaded);
+            }
+            return out;
+        }
+        function deleteUploadedMedia(u) {
+            if (!u) return;
+            if (u.image) AppState.deleteChatPhoto(u.image.path);
+            if (u.video) AppState.deleteChatVideo(u.video.path, u.video.posterPath);
+        }
+        function dropChatItem(scope, p) {
+            p.cancelled = true;
+            if (p.preview) URL.revokeObjectURL(p.preview);
+            if (p.uploaded) deleteUploadedMedia(p.uploaded); // uploaded but never sent
+        }
+        window.removeChatItem = function (scope, id) {
+            const p = chatMedia[scope].find(x => x.id === id);
+            if (!p) return;
+            dropChatItem(scope, p);
+            chatMedia[scope] = chatMedia[scope].filter(x => x !== p);
+            paintChatPhotoBar(scope);
+            if (scope === "world") paintWorldCompose();
+        };
+        // all of them (✕ on each, or after sending)
+        window.clearChatPhoto = function (scope) {
+            chatMedia[scope].forEach(p => dropChatItem(scope, p));
+            chatMedia[scope] = [];
+            paintChatPhotoBar(scope);
+            barEl(scope, "PhotoInput").value = "";
+            if (scope === "world") paintWorldCompose();
+        };
+        ["world", "dm"].forEach(scope => barEl(scope, "PhotoBar").addEventListener("click", (e) => {
+            const x = e.target.closest("[data-remove]");
+            if (x) { e.stopPropagation(); removeChatItem(scope, x.dataset.remove); return; }
+            if (e.target.closest("[data-add]")) { e.stopPropagation(); barEl(scope, "PhotoBtn").click(); }
+        }));
+        document.getElementById("wcPhotoBtn").addEventListener("click", () => {
+            if (AppState.canPostWorldPhotos && !AppState.canPostWorldPhotos()) {
+                const days = AppState.CHAT_PHOTO_MIN_AGE_DAYS || 1;
+                showInfoModal("Photos and videos unlock soon", `You can post photos and videos in World Chat once your account is ${days} day${days === 1 ? "" : "s"} old — you can still send messages. (In DMs with friends they work already.)`);
+                return;
+            }
+            if (chatMedia.world.length >= MAX_ATTACH.world) { showToast(`Up to ${MAX_ATTACH.world} at a time — send these first.`); return; }
+            if (AppState.unlockChatVideoAudio) AppState.unlockChatVideoAudio(); // a tap: lets a video keep its sound
+            refreshChatLimits();
+            document.getElementById("wcPhotoInput").click();
+        });
+        document.getElementById("wcPhotoInput").addEventListener("change", (e) => { setChatPhoto("world", e.target.files); e.target.value = ""; });
+        document.getElementById("dmPhotoBtn").addEventListener("click", () => {
+            if (chatMedia.dm.length >= MAX_ATTACH.dm) { showToast(`Up to ${MAX_ATTACH.dm} at a time — send these first.`); return; }
+            if (AppState.unlockChatVideoAudio) AppState.unlockChatVideoAudio();
+            refreshChatLimits();
+            document.getElementById("dmPhotoInput").click();
+        });
+        document.getElementById("dmPhotoInput").addEventListener("change", (e) => { setChatPhoto("dm", e.target.files); e.target.value = ""; });
+        document.getElementById("dmMessages").addEventListener("click", (e) => {
+            const photo = e.target.closest("[data-photo]");
+            if (photo) { e.stopPropagation(); openImageViewer([photo.dataset.photo], 0); return; }
+            const vid = e.target.closest(".chat-video");
+            if (vid) { e.stopPropagation(); playChatVideo(vid); }
+        });
+        // 🗑 your own DM message (and its photo / video), for both of you
+        window.deleteMyDmMessage = async function (msgId) {
+            if (!await showConfirmModal("Delete message", "Delete this message for both of you?", "Delete")) return;
+            try {
+                await AppState.deleteDmMessage(currentDmThreadId, msgId);
+            } catch (e) { showInfoModal("Couldn't delete", e.message); }
+        };
+        document.addEventListener("visibilitychange", () => { if (!document.hidden && worldTabOpen()) markWorldSeen(); });
+        window.addEventListener("resize", () => paintWorldCompose()); // the placeholder fits the box
+
+        /* ---- ℹ️ how the chat works ----
+           Every rule in one place (the numbers are the live ones). It opens by
+           itself the first time someone opens World Chat. */
+        const CHAT_DAILY = { free: { photos: 30, videos: 5 }, vip: { photos: 60, videos: 10 } }; // the same as api/chat.js
+        const CHAT_RULES_SEEN_KEY = "kih_wc_rules_seen";
+        function chatRulesItems(scope) {
+            const V = AppState.VIDEO_LIMITS && AppState.VIDEO_LIMITS.free && AppState.VIDEO_LIMITS.vip ? AppState.VIDEO_LIMITS : { free: { seconds: 20 }, vip: { seconds: 60 } };
+            const days = chatPhotoDays(), age = AppState.CHAT_PHOTO_MIN_AGE_DAYS || 1;
+            const vids = `Videos up to <b>${V.free.seconds} seconds</b> (⭐ VIP: ${V.vip.seconds}) — they're made smaller before sending, so keep the page open while one is prepared.`;
+            const gone = `<b>Photos and videos are deleted after ${days} days</b> (about 3 months). The messages stay, saying "expired".`;
+            if (scope === "dm") return [
+                ["🔒", "Only you and your friend can see this chat."],
+                ["📷", `Send photos and videos — up to ${MAX_ATTACH.dm} at a time. ${vids}`],
+                ["🕓", gone],
+                ["🗑", "Delete your own messages any time (🗑 Delete under the message). ⋮ → Delete Chat clears the whole chat."],
+                ["🌐", "<b>Translate</b> their messages into your language — up to 150 a day."],
+                ["🚩", "Anything wrong? ⋮ → 🚩 Report or 🚫 Block."],
+                ["🔍", "⋮ → 🔍 Find in chat searches this conversation."]
+            ];
+            const slow = worldCfg && worldCfg.slowSeconds ? `Slow mode: one message every <b>${worldCfg.slowSeconds}s</b>.` : "";
+            return [
+                ["💬", "<b>Five channels</b> (General, Tips, Noobies, Formation, Games) — what you send goes to the one you're in."],
+                ["🤝", "<b>Be kind.</b> No spam, scams or anything nasty. Tap a message → 🚩 Report. Moderators can delete messages and time people out (no posting anywhere on the site)."],
+                ["🐢", `${slow} Messages can be up to 2,000 characters; the same message twice in a minute isn't sent.`],
+                ["📷", `<b>Photos and videos</b> once your account is ${age} day${age === 1 ? "" : "s"} old. Each day: <b>${CHAT_DAILY.free.photos} photos and ${CHAT_DAILY.free.videos} videos</b> (⭐ VIP: ${CHAT_DAILY.vip.photos} and ${CHAT_DAILY.vip.videos}). What you have left shows when you add one.`],
+                ["🎬", vids],
+                ["🕓", gone],
+                ["🗑", "Delete your own messages any time — tap the message → 🗑 Delete."],
+                ["🌐", "<b>Translate</b> other people's messages into your language — up to 150 a day."],
+                ["🚫", "Players you've blocked are hidden here."],
+                ["🔍", "<b>Find</b> (under the box) searches the channel you're in — tap Search older to look further back."]
+            ];
+        }
+        window.openChatRules = function (scope) {
+            document.getElementById("dmActionsMenu")?.classList.remove("open");
+            document.getElementById("chatRulesTitle").textContent = scope === "dm" ? "How DMs work" : "How World Chat works";
+            document.getElementById("chatRulesBody").innerHTML = chatRulesItems(scope).map(([icon, html]) => `<li><span>${icon}</span><span>${html}</span></li>`).join("");
+            document.getElementById("chatRulesOverlay").classList.add("open");
+            if (scope !== "dm") try { localStorage.setItem(CHAT_RULES_SEEN_KEY, "1"); } catch (e) { }
+        };
+        window.closeChatRules = function () { document.getElementById("chatRulesOverlay").classList.remove("open"); };
+        // the first time World Chat is opened
+        function maybeShowChatRules() {
+            let seen = false;
+            try { seen = localStorage.getItem(CHAT_RULES_SEEN_KEY) === "1"; } catch (e) { seen = true; }
+            if (!seen && AppState.getCurrentUser()) openChatRules("world");
+        }
+        document.getElementById("wcHintText").addEventListener("click", (e) => {
+            if (e.target.closest("[data-wc-rules]")) openChatRules("world");
+            else if (e.target.closest("[data-wc-find]")) openChatFind("world");
+        });
+
+        /* ---- 🔍 find words in the chat ----
+           Highlights every match in what's loaded (▲ older, ▼ newer); World
+           Chat can load further back with "Search older". */
+        const finding = { world: { q: "", i: -1, hits: [] }, dm: { q: "", i: -1, hits: [] } };
+        const findBox = (scope) => document.getElementById(scope === "dm" ? "dmMessages" : "wcList");
+        const findEl = (scope, what) => document.getElementById((scope === "dm" ? "dm" : "wc") + what);
+        // lower case, no accents — one character for one, so positions still line up
+        function foldText(t) {
+            let out = "";
+            for (let i = 0; i < t.length; i++) {
+                const ch = t[i];
+                const f = ch.toLowerCase().normalize("NFKD").replace(/[̀-ͯ]/g, "");
+                out += f.length === 1 ? f : (ch.toLowerCase().length === 1 ? ch.toLowerCase() : ch);
+            }
+            return out;
+        }
+        function clearFindMarks(box) {
+            box.querySelectorAll("mark.find-hit").forEach(m => { const parent = m.parentNode; m.replaceWith(document.createTextNode(m.textContent)); parent.normalize(); });
+        }
+        // mark the matches; scroll = bring the current one into view
+        function applyFind(scope, scroll) {
+            const f = finding[scope], box = findBox(scope);
+            clearFindMarks(box);
+            f.hits = [];
+            const q = foldText(f.q.trim());
+            if (q) {
+                box.querySelectorAll(".dm-msg-text, .tr-text").forEach(el => {
+                    const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+                    const nodes = [];
+                    while (walker.nextNode()) nodes.push(walker.currentNode);
+                    nodes.forEach(node => {
+                        const text = node.nodeValue, low = foldText(text);
+                        let at = low.indexOf(q);
+                        if (at < 0) return;
+                        const frag = document.createDocumentFragment();
+                        let from = 0;
+                        while (at >= 0) {
+                            if (at > from) frag.appendChild(document.createTextNode(text.slice(from, at)));
+                            const mark = document.createElement("mark");
+                            mark.className = "find-hit";
+                            mark.textContent = text.slice(at, at + q.length);
+                            frag.appendChild(mark);
+                            from = at + q.length;
+                            at = low.indexOf(q, from);
+                        }
+                        if (from < text.length) frag.appendChild(document.createTextNode(text.slice(from)));
+                        node.replaceWith(frag);
+                    });
+                });
+                f.hits = [...box.querySelectorAll("mark.find-hit")];
+            }
+            if (f.i >= f.hits.length) f.i = f.hits.length - 1;
+            if (f.i < 0 && f.hits.length) f.i = f.hits.length - 1; // the newest first
+            f.hits.forEach((m, k) => m.classList.toggle("cur", k === f.i));
+            if (scroll && f.hits[f.i]) f.hits[f.i].scrollIntoView({ block: "center", behavior: "smooth" });
+            paintFindBar(scope);
+        }
+        function paintFindBar(scope) {
+            const f = finding[scope], n = f.hits.length;
+            findEl(scope, "FindCount").textContent = !f.q.trim() ? "" : n ? `${f.i + 1} of ${n}` : "No matches";
+            findEl(scope, "FindUp").disabled = !n || f.i <= 0;
+            findEl(scope, "FindDown").disabled = !n || f.i >= n - 1;
+            if (scope === "world") findEl(scope, "FindOlder").style.display = f.q.trim() && worldLive && !worldNoOlder && (!n || f.i <= 0) ? "" : "none";
+        }
+        window.openChatFind = function (scope) {
+            document.getElementById("dmActionsMenu")?.classList.remove("open");
+            findEl(scope, "FindBar").classList.add("show");
+            const input = findEl(scope, "FindInput");
+            if (scope === "world") {
+                // searching one channel: its buttons make way for the messages (the box says which)
+                const ch = WORLD_TAG_BY_ID[worldFilter] || WORLD_TAG_BY_ID.general;
+                document.querySelector(".wc-box").classList.add("finding");
+                input.placeholder = `Find in ${ch.icon} ${ch.label}…`;
+            }
+            input.focus();
+            if (input.value) { finding[scope].q = input.value; applyFind(scope, true); }
+        };
+        function closeChatFind(scope) {
+            findEl(scope, "FindBar").classList.remove("show");
+            if (scope === "world") document.querySelector(".wc-box").classList.remove("finding");
+            findEl(scope, "FindInput").value = "";
+            finding[scope] = { q: "", i: -1, hits: [] };
+            clearFindMarks(findBox(scope));
+            paintFindBar(scope);
+        }
+        ["world", "dm"].forEach(scope => {
+            const f = () => finding[scope];
+            findEl(scope, "FindInput").addEventListener("input", (e) => { f().q = e.target.value; f().i = -1; applyFind(scope, true); });
+            findEl(scope, "FindInput").addEventListener("keydown", (e) => {
+                if (e.key === "Enter") { e.preventDefault(); if (f().i > 0) { f().i--; applyFind(scope, true); } else if (scope === "world") findEl(scope, "FindOlder").click(); }
+                if (e.key === "Escape") closeChatFind(scope);
+            });
+            findEl(scope, "FindUp").addEventListener("click", () => { if (f().i > 0) { f().i--; applyFind(scope, true); } });
+            findEl(scope, "FindDown").addEventListener("click", () => { if (f().i < f().hits.length - 1) { f().i++; applyFind(scope, true); } });
+            findEl(scope, "FindClose").addEventListener("click", () => closeChatFind(scope));
+        });
+        findEl("world", "FindOlder").addEventListener("click", async () => {
+            const btn = findEl("world", "FindOlder");
+            btn.disabled = true; btn.textContent = "Searching…";
+            const before = finding.world.hits.length;
+            await loadOlderWorldChat();
+            btn.disabled = false; btn.textContent = "Search older";
+            // jump to the newest of the matches just found (the ones above the old first)
+            const added = finding.world.hits.length - before;
+            finding.world.i = added > 0 ? added - 1 : 0;
+            applyFind("world", true);
+        });
+
+        /* ---- 🌐 Translate (World Chat and DMs) ----
+           Into the language you pick (your phone's language at first). The
+           server saves each translation, so a message is only ever paid for
+           once per language; here they're kept for the visit too. */
+        const TRANSLATE_LANGS = ["en", "zh-CN", "zh-TW", "es", "pt", "fr", "de", "it", "ru", "ar", "hi", "id", "ms", "tl",
+            "th", "vi", "ja", "ko", "tr", "pl", "nl", "uk", "bn", "fa"]; // the same list as api/chat.js
+        const TRANSLATE_LANG_KEY = "kih_translate_lang";
+        const translations = new Map(); // "world:<id>" / "dm:<id>" → { state, text, from, same, target, error, hidden }
+        let langNames = null;
+        function langName(code) {
+            if (!code) return "";
+            try {
+                if (!langNames) langNames = new Intl.DisplayNames([navigator.language || "en", "en"], { type: "language" });
+                return langNames.of(code === "tl" ? "fil" : code) || code;
+            } catch (e) { return code; }
+        }
+        function myTranslateLang() {
+            try { const saved = localStorage.getItem(TRANSLATE_LANG_KEY); if (TRANSLATE_LANGS.includes(saved)) return saved; } catch (e) { }
+            const nav = (navigator.language || "en").toLowerCase();
+            if (/^zh-(tw|hk|mo|hant)/.test(nav)) return "zh-TW";
+            if (nav.startsWith("zh")) return "zh-CN";
+            if (nav.startsWith("fil")) return "tl";
+            const base = nav.split("-")[0];
+            return TRANSLATE_LANGS.includes(base) ? base : "en";
+        }
+        const canTranslate = (text) => !!(text && String(text).trim()) && !parseDmChallenge(text);
+        // what goes under a message: nothing, "Translating…", the translation, or why not
+        function trBlockHtml(kind, id) {
+            const t = translations.get(kind + ":" + id);
+            if (!t || t.hidden) return "";
+            if (t.state === "loading") return `<span class="tr-note">🌐 Translating into ${escapeHtml(langName(t.target))}…</span>`;
+            if (t.state === "error") return `<span class="tr-note">🌐 ${escapeHtml(t.error)} <span class="tr-meta" style="display:inline-flex"><button type="button" data-tr-retry="${escapeHtml(id)}">Try again</button></span></span>`;
+            const picker = `<select class="tr-lang" data-tr-lang="${escapeHtml(id)}" aria-label="Translate into">${TRANSLATE_LANGS.map(c => `<option value="${c}"${c === t.target ? " selected" : ""}>${escapeHtml(langName(c))}</option>`).join("")}</select>`;
+            if (t.same) return `<span class="tr-note tr-meta"><span>🌐 Already in ${escapeHtml(langName(t.target))} — another language?</span>${picker}<button type="button" data-tr-hide="${escapeHtml(id)}">Hide</button></span>`;
+            return `<div class="tr-block"><div class="tr-text">${escapeHtml(t.text)}</div>
+                <div class="tr-meta"><span>🌐 ${t.from ? `From ${escapeHtml(langName(t.from))} →` : "Into"}</span>${picker}<button type="button" data-tr-hide="${escapeHtml(id)}">Show original</button></div></div>`;
+        }
+        // the action's label: 🌐 Translate, or 🌐 Hide translation while one shows
+        function trActionLabel(kind, id) {
+            const t = translations.get(kind + ":" + id);
+            return t && !t.hidden && t.state === "done" ? "🌐 Original" : "🌐 Translate";
+        }
+        const redrawTranslated = (kind) => kind === "dm" ? renderDmMessages(window._lastDmMessages || []) : renderWorldChat();
+        async function runTranslate(kind, id, target) {
+            const key = kind + ":" + id;
+            const prev = translations.get(key);
+            // already have it in that language: just show it again
+            if (prev && prev.state === "done" && prev.target === target) { prev.hidden = false; redrawTranslated(kind); return; }
+            translations.set(key, { state: "loading", target });
+            redrawTranslated(kind);
+            try {
+                const r = await AppState.translateChat(kind, id, kind === "dm" ? currentDmThreadId : null, target);
+                translations.set(key, { state: "done", text: r.text, from: r.from, same: !!r.same, target });
+            } catch (e) {
+                translations.set(key, { state: "error", target, error: e.status === 503 ? "Translation isn't switched on yet." : e.message });
+            }
+            redrawTranslated(kind);
+        }
+        window.toggleTranslate = function (kind, id) {
+            const t = translations.get(kind + ":" + id);
+            if (t && !t.hidden && (t.state === "done" || t.state === "error")) { t.hidden = true; redrawTranslated(kind); return; }
+            runTranslate(kind, id, myTranslateLang());
+        };
+        function wireTranslateClicks(boxId, kind) {
+            const box = document.getElementById(boxId);
+            box.addEventListener("click", (e) => {
+                const hide = e.target.closest("[data-tr-hide]");
+                if (hide) { e.stopPropagation(); const t = translations.get(kind + ":" + hide.dataset.trHide); if (t) t.hidden = true; redrawTranslated(kind); return; }
+                const retry = e.target.closest("[data-tr-retry]");
+                if (retry) { e.stopPropagation(); runTranslate(kind, retry.dataset.trRetry, myTranslateLang()); return; }
+                if (e.target.closest(".tr-lang")) e.stopPropagation(); // choosing a language isn't a tap on the message
+            }, true);
+            box.addEventListener("change", (e) => {
+                const sel = e.target.closest(".tr-lang");
+                if (!sel) return;
+                try { localStorage.setItem(TRANSLATE_LANG_KEY, sel.value); } catch (err) { } // remembered for next time
+                runTranslate(kind, sel.dataset.trLang, sel.value);
+            });
+        }
+        wireTranslateClicks("wcList", "world");
+        wireTranslateClicks("dmMessages", "dm");
+
         /* ---------------- DMs ---------------- */
         document.getElementById("dmActionsBtn").addEventListener("click", (e) => {
             e.stopPropagation();
@@ -6716,22 +7894,24 @@ document.getElementById("dmActionsMenu").classList.remove("open");
             return;
         }
 
-        const replyBtn = `<button class="dm-msg-action-link" onclick="startReplyToMessage(${jsStr(m.id)}, ${jsStr(m.senderUid)}, ${jsStr((m.text || "").slice(0, 200))})">↩ Reply</button>`;
-        const editBtn = mine
+        const replyBtn = `<button class="dm-msg-action-link" onclick="startReplyToMessage(${jsStr(m.id)}, ${jsStr(m.senderUid)}, ${jsStr((m.text || (m.imageUrl ? "📷 Photo" : m.videoUrl ? "🎬 Video" : "")).slice(0, 200))})">↩ Reply</button>`;
+        const editBtn = mine && m.text
             ? `<button class="dm-msg-action-link" onclick="startEditMessage(${jsStr(m.id)}, ${jsStr(m.text)})">✏️ Edit</button>`
             : "";
         const reportBtn = mine ? "" :
-            `<button class="dm-msg-action-link" onclick="openReportModal('message', ${jsStr(m.senderUid)}, ${jsStr(currentDmOtherName)}, ${jsStr(m.id)}, ${jsStr(m.text)})">🚩 Report</button>`;
+            `<button class="dm-msg-action-link" onclick="openReportModal('message', ${jsStr(m.senderUid)}, ${jsStr(currentDmOtherName)}, ${jsStr(m.id)}, ${jsStr((m.text || "") + (m.imageUrl ? (m.text ? "\n" : "") + "📷 Photo: " + m.imageUrl : "") + (m.videoUrl ? (m.text ? "\n" : "") + "🎬 Video: " + m.videoUrl : ""))}, '', ${m.imageUrl ? escapeHtml(JSON.stringify([m.imageUrl])) : m.posterUrl ? escapeHtml(JSON.stringify([m.posterUrl])) : "[]"})">🚩 Report</button>`;
 
         const reactBtn = `<button class="dm-msg-action-link" onclick="openReactionPicker(event, 'dm', '${m.id}')">😊 React</button>`;
+        const translateBtn = !mine && canTranslate(m.text)
+            ? `<button class="dm-msg-action-link" onclick="toggleTranslate('dm', ${jsStr(m.id)})">${trActionLabel("dm", m.id)}</button>` : "";
         const bubble = window.ProgressCore ? ProgressCore.styleClass(styleOf(m.senderUid), "bubble") : "";
         html += `<div class="dm-msg ${mine ? "mine" : "theirs"}${parseDmChallenge(m.text) ? " has-challenge" : ""}${bubble ? " " + bubble : ""}" id="dmMsgRow_${m.id}">
             ${quoteHtml}
-            ${dmBodyHtml(m.text, mine)}${editedTag}
+            ${m.imageUrl ? chatPhotoHtml({ url: m.imageUrl, w: m.imageW, h: m.imageH }, m.createdAt) : ""}${m.videoUrl ? chatVideoHtml({ url: m.videoUrl, posterUrl: m.posterUrl, w: m.videoW, h: m.videoH, duration: m.videoDur }, m.createdAt) : ""}${m.text ? dmBodyHtml(m.text, mine) : ""}${trBlockHtml("dm", m.id)}${editedTag}
             ${timeHtml}
             ${reactionsHtml("dm", m)}
             <div class="dm-msg-actions">
-                ${replyBtn}${reactBtn}${editBtn}${reportBtn}
+                ${replyBtn}${reactBtn}${translateBtn}${editBtn}${mine ? `<button class="dm-msg-action-link" onclick="deleteMyDmMessage(${jsStr(m.id)})">🗑 Delete</button>` : ""}${reportBtn}
             </div>
         </div>`;
     });
@@ -6745,12 +7925,13 @@ document.getElementById("dmActionsMenu").classList.remove("open");
     const wasAtBottom = box.scrollTop + box.clientHeight >= box.scrollHeight - 40;
     const prevTop = box.scrollTop;
     const newMine = lastId !== box.dataset.lastId && last && user && last.senderUid === user.uid;
-    box.innerHTML = html;
+    keepPlayingVideos(box, () => { box.innerHTML = html; }); // a playing video keeps playing
     box.dataset.thread = String(currentDmThreadId);
     box.dataset.lastId = lastId;
     if (!sameThread || wasAtBottom || newMine) box.scrollTop = box.scrollHeight;
     else box.scrollTop = prevTop;
     updateDmScrollBottomBtn();
+    if (finding.dm.q.trim()) applyFind("dm", false); // keep the 🔍 highlights
 }
 
 // A game challenge sent from Games is a line of text plus a link,
@@ -6898,6 +8079,9 @@ function updateDmScrollBottomBtn() {
     if (!box || !btn) return;
     const nearBottom = box.scrollTop + box.clientHeight >= box.scrollHeight - 40;
     btn.classList.toggle("visible", !nearBottom);
+    // just above the bottom of the messages — so it never sits on the photo tiles or a reply bar
+    const holder = btn.offsetParent;
+    if (holder) btn.style.bottom = Math.max(12, Math.round(holder.getBoundingClientRect().bottom - box.getBoundingClientRect().bottom + 12)) + "px";
 }
 
 window.scrollDmToBottom = function () {
@@ -6986,11 +8170,25 @@ window.sendDmFromInput = async function () {
     if (isDmSending) return; // already sending — ignore extra taps/lag-mashing
     const input = document.getElementById("dmInput");
     const text = input.value;
-    if (!text.trim()) return;
+    const items = chatMedia.dm;
+    if (!text.trim() && !items.length) return;
+    if (chatMediaBusy("dm")) { showToast("Your video is still being prepared…"); return; }
 
     isDmSending = true;
     const sendBtn = document.getElementById("dmSendBtn");
     sendBtn.disabled = true;
+    let uploads = [];
+    if (items.length) {
+        try {
+            uploads = await uploadAllMedia("dm");
+        } catch (e) {
+            paintChatPhotoBar("dm");
+            showInfoModal("Couldn't send it", e.message);
+            isDmSending = false;
+            sendBtn.disabled = false;
+            return;
+        }
+    }
 
     // Clear immediately, before the network call resolves — this is what
     // stops mashing Send from firing the same message multiple times,
@@ -7001,10 +8199,18 @@ window.sendDmFromInput = async function () {
     cancelReplyToMessage();
 
     try {
-        await AppState.sendDmMessage(currentDmThreadId, text, replyContext);
+        if (!uploads.length) await AppState.sendDmMessage(currentDmThreadId, text, replyContext);
+        // one message each (the text and the reply go with the first)
+        for (let i = 0; i < uploads.length; i++) {
+            await AppState.sendDmMessage(currentDmThreadId, i ? "" : text, i ? null : replyContext, uploads[i].image, uploads[i].video);
+            items[i].uploaded = null; items[i].sent = true;
+        }
+        if (items.length) clearChatPhoto("dm");
         input.focus(); // keep the keyboard open for the next message
     } catch (e) {
-        // Send actually failed — put the text back so nothing is lost.
+        // Send actually failed — put the text back so nothing is lost (what wasn't sent stays picked).
+        if (items.length) { chatMedia.dm = items.filter(p => !p.sent); paintChatPhotoBar("dm"); }
+        if (items.some(p => p.sent)) { input.value = ""; } else
         input.value = text;
         input.dispatchEvent(new Event("input")); // the box grows back to fit it
         if (e.message === "__BLOCKED_BY_ME__") {
@@ -7081,7 +8287,10 @@ window.sendDmFromInput = async function () {
                 });
                 unsubFriends = AppState.listenToFriendsWithDmMeta(renderFriends);
                 unsubUnreadDm = AppState.listenToUnreadDmCount(updateDmUnreadBadge);
+                startWorldChat();
             } else {
+                stopWorldChat();
+                renderWorldChat();
                 renderFriendRequests([]);
                 renderFriends([]);
                 updateDmUnreadBadge(0);
@@ -7118,7 +8327,8 @@ window.sendDmFromInput = async function () {
             // handling below, so arriving from a notification still wins.
             let savedTab = null;
             try { savedTab = localStorage.getItem(SOCIAL_TAB_KEY); } catch (e) {}
-            if (savedTab && SOCIAL_TABS.includes(savedTab)) switchSocialTab(savedTab);
+            // (World Chat the first time: it's where everyone is)
+            switchSocialTab(savedTab && SOCIAL_TABS.includes(savedTab) ? savedTab : "world");
 
             // Arrived here from an inbox notification ("Message" button) — open
             // straight into the DM with that friend.
