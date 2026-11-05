@@ -496,6 +496,37 @@ async function signOutUser() {
         return callTokensApi(action, payload);
     }
 
+    /* ---------------- Polls (api/polls.js) ----------------
+       Votes are made on the server: the first one pays the poll's gift. */
+    async function callPollsApi(action, payload = {}) {
+        await waitForAuthReady();
+        if (!currentUser) throw new Error("Sign in with Google first.");
+        const res = await fetch(BACKEND_BASE + "/api/polls", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Authorization: "Bearer " + await getIdToken() },
+            body: JSON.stringify({ action, ...payload })
+        });
+        let data = null;
+        try { data = await res.json(); } catch (e) { /* non-JSON error page */ }
+        if (!res.ok) {
+            const err = new Error((data && data.error) || `Request failed (${res.status})`);
+            err.status = res.status;
+            throw err;
+        }
+        return data;
+    }
+    // { polls: [{ id, kind, question, options, ended, expiresAt, counts|null, answers|null, total|null,
+    //   myPicks|null, myText|null, reward, rewarded }], now }
+    const listPolls = () => callPollsApi("list");
+    // answer: { options: [i] } (single / multi) or { text } (open) →
+    // { poll, gift|null, giftTooNew?, changed?, unchanged? }
+    const votePoll = (pollId, answer) => callPollsApi("vote", { pollId, ...answer });
+    async function adminPolls(action, payload = {}) {
+        await waitForAuthReady();
+        if (!currentUser || currentUser.uid !== ADMIN_UID) throw new Error("Not authorized.");
+        return callPollsApi(action, payload);
+    }
+
     // Collects ready rewards (ids from listenToMyQuestProgress). Returns
     // { claimed, balance }; ids already claimed elsewhere are just skipped.
     async function claimQuestRewards(claimIds) {
@@ -5090,6 +5121,7 @@ async function maybeRefreshAd(containerId) {
     return {
         // auth
         signIn, signOut: signOutUser, getCurrentUser, onAuthChange, waitForAuthReady, getIdToken,
+        listPolls, votePoll, adminPolls,
         getTodaysQuests, listenToMyWallet, listenToMyQuestProgress, claimQuestRewards, submitDailyPuzzle, gamesRunStart, gamesRunAnswer, gamesLeaderboard, gamesPing, getMyTokenBalance,
         listenToMyGiftClaims, claimTokenGift, adminTokens,
         reportQuestProgress, startDailyQuestTracking, stakeTokensOnSecretGiveaway, setSecretGiveawayStake, refreshSecretGiveawayMaxStake, getSecretOdds,

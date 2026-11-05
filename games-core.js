@@ -690,8 +690,9 @@
     const hintsLeftOf = (run) => (Number.isInteger(run.hintsLeft) ? run.hintsLeft : RUN_BLUR_HINTS);
 
     /* Weekly leaderboard: every game is worth the same, so no one game is
-       the way to the top. A run's score IS its points: a run stops when it
-       reaches LB_CAP, and what it shows is what counts (no converting).
+       the way to the top. A run's score IS its points, up to LB_CAP: a run
+       goes on past it (for the all-time high score), but the board counts
+       at most LB_CAP of it.
        ⭐ Each day, the game that's Today's Puzzle counts double: a run
        started that day in that game is worth twice its score. A game's
        place on the board is its best run this week, doubled or not — so up
@@ -777,16 +778,16 @@
         const r = { ...run, guesses: run.guesses.slice(), letters: (run.letters || []).slice() };
         const late = now > run.deadline + grace;
         const unitInfo = (key) => { const u = unitByKey(units, key); return { key, name: u.name, img: u.img }; };
-        // A run tops out at LB_CAP: the unit that gets there scores only what's
-        // left, and the run ends there — a perfect run.
+        // A run never tops out: it goes on until a miss. (The board counts at
+        // most LB_CAP of it; `maxed` marks the move that reaches that.)
         const nextUnit = (points) => {
-            const got = Math.max(0, Math.min(points, LB_CAP - r.score)); // (a run from before the cap may already be past it)
+            const got = Math.max(0, points);
             r.score += got; r.step++; r.guesses = []; r.letters = [];
             if (r.game === "blur") r.hints = 0;
             r.deadline = now + RUN_PAUSE_MS + RUN_LIMIT_MS[r.game] + (r.extraMs || 0);
-            if (r.score >= LB_CAP) r.over = true;
             return got;
         };
+        const maxedNow = () => run.score < LB_CAP && r.score >= LB_CAP;
         // A miss ends the run — unless there's an extra life left: then this
         // one scores nothing and the run moves on to the next.
         const finish = (fb) => {
@@ -820,7 +821,7 @@
             }
             if (!right) return finish(fb);
             nextUnit(1);
-            return { run: r, feedback: { ...fb, points: 1, ...(r.over ? { maxed: true } : {}) } };
+            return { run: r, feedback: { ...fb, points: 1, ...(maxedNow() ? { maxed: true } : {}) } };
         }
 
         if (r.game === "guess") {
@@ -835,7 +836,7 @@
             if (st.solved) {
                 const misses = st.wrong.length;
                 const points = nextUnit(hangPoints(misses));
-                return { run: r, feedback: { solved: true, points, misses, letter, hit, answer: unitInfo(target), ...(r.over ? { maxed: true } : {}) } };
+                return { run: r, feedback: { solved: true, points, misses, letter, hit, answer: unitInfo(target), ...(maxedNow() ? { maxed: true } : {}) } };
             }
             if (st.lost) return finish({ failed: true, letter, hit, answer: unitInfo(target), mask: hangMask(name, nameLetters(name) ? [...nameLetters(name)] : []) });
             return { run: r, feedback: { letter, hit } };
@@ -852,7 +853,7 @@
             const tries = r.guesses.length + 1;
             const solvedIn = [...r.guesses, input.guess];
             const points = nextUnit(r.game === "blur" ? blurPoints(tries) : unitlePoints(tries));
-            return { run: r, feedback: { solved: true, points, tries, answer: unitInfo(target), guesses: solvedIn, ...(r.over ? { maxed: true } : {}) } };
+            return { run: r, feedback: { solved: true, points, tries, answer: unitInfo(target), guesses: solvedIn, ...(maxedNow() ? { maxed: true } : {}) } };
         }
         r.guesses.push(input.guess);
         if (r.guesses.length >= (r.game === "blur" ? BLUR_GUESSES : UNITLE_TRIES)) return finish({ failed: true, answer: unitInfo(target), lastGuess: input.guess });

@@ -1220,3 +1220,6 @@ module.exports = async (req, res) => {
     res.status(status).json({ ok: false, error: status >= 500 ? "Something went wrong — try again." : e.message });
   }
 };
+
+// For api/polls.js: a poll's gift goes into the inventory the same way.
+module.exports.grantToInventory = grantToInventory;

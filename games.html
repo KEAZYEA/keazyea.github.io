@@ -251,6 +251,22 @@
         .run-tag.bonus { margin-left: 0; background: linear-gradient(90deg, #f7c325, #ff8a50); color: #1a1a2e; }
         .run-points { margin-top: 6px; font-size: 0.92rem; color: #ffd75e; font-weight: 800; }
         .run-over.maxed { border-color: #ffd75e; box-shadow: 0 0 26px rgba(255, 215, 94, 0.35); }
+        /* 👑 the game's all-time high score, under the score bar and on the leaderboard */
+        .run-record { margin: -2px 0 8px; font-size: 0.8rem; color: #b8b8d8; }
+        .run-record b { color: #ffd75e; }
+        .run-record.mine b, .run-record.beating b { color: #7ee0a1; }
+        .run-newrecord { margin-top: 8px; font-weight: 900; font-size: 1.05rem; color: #ffd75e; text-shadow: 0 0 12px rgba(255, 215, 94, 0.5); }
+        .lb-records { margin-top: 12px; }
+        .lb-rec { display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: 10px; margin-bottom: 4px; background: rgba(255, 215, 94, 0.06); border: 1px solid rgba(255, 215, 94, 0.18); }
+        .lb-rec.me { border-color: #4169e1; background: rgba(65, 105, 225, 0.2); }
+        .lb-rec-game { width: 104px; flex-shrink: 0; font-weight: 800; font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .lb-rec-name { flex: 1; min-width: 0; font-weight: 700; font-size: 0.9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .lb-rec-name.none { color: #8a8aa8; font-weight: 600; }
+        .lb-rec-score { font-weight: 900; color: #ffd75e; font-size: 1.05rem; }
+        /* a player's picture or name: tap for their profile */
+        .lb-who { display: inline-flex; }
+        [data-uid] { cursor: pointer; }
+        .pod-name[data-uid]:hover, .lb-name[data-uid]:hover, .lb-rec-name[data-uid]:hover, .lb-last-p[data-uid]:hover { text-decoration: underline; }
         .lb-bonus { display: block; width: 100%; border: none; cursor: pointer; font-family: inherit; font-size: 0.95rem;
             margin: 0 0 12px; padding: 10px 12px; border-radius: 12px; text-align: center; font-weight: 800; color: #1a1a2e;
             background: linear-gradient(90deg, #f7c325, #ff8a50); box-shadow: 0 0 16px rgba(255, 170, 60, 0.35); }
@@ -1351,8 +1367,7 @@
         const runIsStreak = (g) => g === "trivia" || g === "hilo";
         const runScoreLabel = (g, n) => (runIsStreak(g) ? `a streak of ${n}` : `${n} point${n === 1 ? "" : "s"}`);
         const localBestKey = (g) => "kih_games_run_best_" + g;
-        // (a best from before runs stopped at C.LB_CAP can be higher)
-        function localBest(g) { try { return Math.min(C.LB_CAP, parseInt(localStorage.getItem(localBestKey(g)) || "0", 10) || 0); } catch (e) { return 0; } }
+        function localBest(g) { try { return parseInt(localStorage.getItem(localBestKey(g)) || "0", 10) || 0; } catch (e) { return 0; } }
         // ⭐ Today's double-points game: whichever game is Today's Puzzle
         // (Singapore day, like the server). Its tab wears a "×2".
         const bonusGame = () => C.bonusGameFor(dayKey());
@@ -1440,7 +1455,9 @@
                 ui.local = C.runNew(id, opts.seed != null ? opts.seed : newSeed(), Date.now());
                 resp = { score: 0, over: false, deadline: ui.local.deadline, now: Date.now(), view: C.runView(UNITS, ui.local), best: ui.challenge ? 0 : localBest(id) };
             }
-            ui.bestBefore = Math.min(C.LB_CAP, resp.best || 0);
+            ui.bestBefore = resp.best || 0;
+            // 👑 the game's all-time high score (ranked runs get it with the run)
+            ui.record = resp.record || (lbData && lbData.records && lbData.records[id]) || null;
             ui.pts = ui.ptsBefore = resp.pts || 0; // this game's points on the board this week
             ui.starting = false;
             applyRunResp(ui, resp, true);
@@ -1448,7 +1465,7 @@
         function runIntro(ui) {
             const note = ui.starting ? "" : ui.challenge ? "⚔️ A friend's challenge — the same run they played. Not ranked."
                 : ui.ranked && ui.bonus ? `⭐ Today's Puzzle game — runs you start today count <b>double</b> on the leaderboard (${C.LB_CAP} points = ${C.LB_GAME_MAX}).`
-                : ui.ranked ? `🏆 Ranked — your best run this week counts on the weekly leaderboard: your score is your points (up to ${C.LB_CAP}).`
+                : ui.ranked ? `🏆 Ranked — your best run this week counts on the weekly leaderboard: your score is your points (up to ${C.LB_CAP}). Keep going past it for the 👑 all-time record.`
                 : ui.note === "signin" ? "Sign in to put your runs on the weekly leaderboard." : esc(ui.note);
             const perks = ui.ranked && (ui.lives || ui.extraMs)
                 ? `<small>🎒 Your items: ${ui.lives ? `<span class="run-lives">❤️ × ${ui.lives}</span>` : ""}${ui.extraMs ? ` +${ui.extraMs / 1000}s per question` : ""}</small>` : "";
@@ -1579,7 +1596,14 @@
             ui.gained = resp.score > ui.score;
             ui.score = resp.score;
             ui.over = resp.over;
-            ui.best = Math.min(C.LB_CAP, Math.max(ui.best, resp.best || 0, ui.challenge ? 0 : ui.score));
+            ui.best = Math.max(ui.best, resp.best || 0, ui.challenge ? 0 : ui.score);
+            // 👑 a new all-time high score (the server says so as it happens)
+            if (resp.newRecord) {
+                if (!ui.newRecord) showRunToast("👑 New all-time record! Keep going!");
+                ui.newRecord = true;
+                ui.record = { score: resp.score, me: true, name: ui.record && ui.record.me ? ui.record.name : "" };
+            }
+            if (resp.feedback && resp.feedback.maxed && !resp.over) showRunToast(`🏆 ${C.LB_CAP}! That's all the leaderboard counts — keep going for the 👑 record.`);
             if (resp.seed != null) ui.seed = resp.seed;
             if (typeof resp.pts === "number") ui.pts = resp.pts;
             if (typeof resp.lives === "number") ui.lives = resp.lives;
@@ -1658,7 +1682,8 @@
             const tag = ui.challenge ? `<span class="run-tag challenge">⚔️ Challenge</span>`
                 : ui.ranked ? `<span class="run-tag ranked">🏆 Ranked</span>` : `<span class="run-tag">Unranked</span>`;
             const head = `${ui.challenge ? `<div class="challenge-bar">⚔️ Your friend's score: <b>${esc(challengeLabel(ui.challenge))}</b> — beat it!</div>` : ""}
-                <div class="run-bar"><span class="run-score${ui.gained ? " bump" : ""}">🔥 ${ui.score}<small>/${C.LB_CAP}</small></span><span class="run-best">${ui.challenge ? "" : ui.ranked ? `On the leaderboard: <b>${ui.pts || 0}</b>` : `Your best: <b>${ui.best}</b>`}</span>${ui.ranked && ui.bonus ? `<span class="run-tag bonus" title="Today's Puzzle game: double leaderboard points">⭐ ×2 = ${ui.score * 2}</span>` : ""}${tag}</div>
+                <div class="run-bar"><span class="run-score${ui.gained ? " bump" : ""}">🔥 ${ui.score}${ui.score < C.LB_CAP ? `<small>/${C.LB_CAP}</small>` : ""}</span><span class="run-best">${ui.challenge ? "" : ui.ranked ? `On the leaderboard: <b>${ui.pts || 0}</b>` : `Your best: <b>${ui.best}</b>`}</span>${ui.ranked && ui.bonus ? `<span class="run-tag bonus" title="Today's Puzzle game: double leaderboard points">⭐ ×2 = ${Math.min(ui.score, C.LB_CAP) * 2}</span>` : ""}${tag}</div>
+                ${ui.challenge ? "" : runRecordHtml(ui)}
                 ${ui.over ? "" : `<div class="run-timer"><div class="run-timer-fill" id="runTimerFill"></div></div><div class="run-timer-text" id="runTimerText"></div>`}`;
             const body = { trivia: runTriviaBody, hilo: runHiloBody, unitle: runUnitleBody, guess: runGuessBody, blur: runBlurBody }[ui.game]();
             const err = ui.error ? `<div class="reward-box">${esc(ui.error.message)}<br><button class="btn-primary" onclick="retryRunMove()">Try again</button></div>` : "";
@@ -1837,14 +1862,15 @@
         function runOverHtml() {
             const ui = runUi, fb = ui.feedback || {};
             const timedOut = fb.timedOut && (runIsStreak(ui.game) ? fb.picked == null : !fb.lastGuess);
-            // Reaching C.LB_CAP ends a run: the most a game can score.
-            const maxed = !!fb.maxed || ui.score >= C.LB_CAP;
-            const why = maxed ? `🏆 Perfect run — ${C.LB_CAP}/${C.LB_CAP}!` : timedOut ? "⏰ Time's up!" : runIsStreak(ui.game) ? "💥 Wrong answer — run over" : ui.game === "guess" ? "💀 Out of misses — run over" : "💥 Out of guesses — run over";
-            const unit = fb.answer && fb.answer.name ? `<div class="run-over-unit"><img src="${esc(thumb(fb.answer.img))}" alt="" ${THUMB_FALLBACK}><span>${maxed ? "Last one:" : "It was"} <b>${esc(fb.answer.name)}</b></span></div>` : "";
-            const what = `point${ui.score === 1 ? "" : "s"}${maxed ? " — the most a game can score" : ""}`;
-            // What it adds to the leaderboard: the same number (double on its puzzle day).
+            // A run goes on until a miss; reaching C.LB_CAP is all the board counts.
+            const maxed = ui.score >= C.LB_CAP;
+            const why = timedOut ? "⏰ Time's up!" : runIsStreak(ui.game) ? "💥 Wrong answer — run over" : ui.game === "guess" ? "💀 Out of misses — run over" : "💥 Out of guesses — run over";
+            const unit = fb.answer && fb.answer.name ? `<div class="run-over-unit"><img src="${esc(thumb(fb.answer.img))}" alt="" ${THUMB_FALLBACK}><span>It was <b>${esc(fb.answer.name)}</b></span></div>` : "";
+            const what = `point${ui.score === 1 ? "" : "s"}${ui.score > C.LB_CAP ? ` — ${C.LB_CAP} count on the leaderboard` : maxed ? " — all the leaderboard counts" : ""}`;
+            // What it adds to the leaderboard: the same number, at most C.LB_CAP (double on its puzzle day).
             const counts = ui.ranked && ui.bonus && ui.score > 0
-                ? `<div class="run-points">⭐ Double-points day: counts as <b>${ui.score * 2}</b> leaderboard points</div>` : "";
+                ? `<div class="run-points">⭐ Double-points day: counts as <b>${Math.min(ui.score, C.LB_CAP) * 2}</b> leaderboard points</div>` : "";
+            const record = ui.newRecord ? `<div class="run-newrecord">👑 New all-time record!</div>` : ui.challenge ? "" : runRecordHtml(ui, true);
             // Ranked: what this game now has on the board (doubled runs included).
             const board = ui.ranked ? ` · ${C.GAME_TITLES[ui.game]} on the leaderboard: <b>${ui.pts}</b>` : "";
             const best = ui.challenge ? "" : ui.newBest
@@ -1864,10 +1890,19 @@
                 ${unit}
                 <div class="run-over-score">${ui.score}</div>
                 <div class="dim">${what}</div>
-                ${counts}${best}${outcome}${note}
+                ${record}${counts}${best}${outcome}${note}
                 ${ui.ranked ? `<button class="lb-link" onclick="switchTab('ranks')">🏆 See where you rank</button>` : ""}
                 <div class="game-actions"><button class="${share ? "btn-ghost" : "btn-primary"}" onclick="startRun('${ui.game}', { fresh: true })">▶️ Play again</button>${share}</div>
             </div>`;
+        }
+        // 👑 The game's all-time high score, under the score bar (and after a run).
+        function runRecordHtml(ui, after) {
+            const r = ui.record;
+            if (!r || !(r.score > 0)) return ui.ranked ? `<div class="run-record">👑 No all-time record yet — ${after ? "play again to set one" : "this run can set it"}!</div>` : "";
+            const who = r.me ? "yours" : r.name ? esc(r.name) : "";
+            if (!after && !ui.over && ui.score > r.score && !r.me) return `<div class="run-record beating">👑 Record <b>${r.score}</b>${who ? ` · ${who}` : ""} — you're past it!</div>`;
+            const gap = !after && !r.me && ui.score <= r.score ? ` · ${r.score + 1 - ui.score} to beat it` : "";
+            return `<div class="run-record${r.me ? " mine" : ""}">👑 All-time record: <b>${r.score}</b>${who ? ` · ${who}` : ""}${gap}</div>`;
         }
         // The chat message for a finished run: the score, and a link that
         // replays the same run (its seed — safe to share once it's over).
@@ -1922,7 +1957,7 @@
         function lbRulesHtml(prizes, bonus) {
             const pay = prizes ? prizes.map((p, i) => `${placeIcon(i)} ${p}`).join(" · ") + " 🪙" : "tokens";
             return `<details class="lb-how"><summary>How points work</summary><ul>
-                    <li>Your score in a game <b>is</b> your points — what you see is what counts. A run stops at <b>${C.LB_CAP}</b>, the most a game can score.</li>
+                    <li>Your score in a game <b>is</b> your points, up to <b>${C.LB_CAP}</b> — the most a run counts. A run goes on until you miss, so keep going past it for the 👑 all-time record.</li>
                     <li>🧠 Trivia · ⬆️ Hi-Lo: 1 point per right answer. 🎯 Unitle · 🪢 Hangman · 🔍 Blur: more points for fewer guesses or misses on each unit.</li>
                     <li>⭐ Each day, the game that's <b>🎲 Today's Puzzle</b> counts <b>double</b>: a run you start that day is worth twice its score (${C.LB_CAP} = ${C.LB_GAME_MAX}).${bonus ? ` Today: ${C.GAME_ICONS[bonus]} <b>${C.GAME_TITLES[bonus]}</b>.` : ""}</li>
                     <li>Each game counts its best run of the week, doubled or not — so up to ${C.LB_GAME_MAX} each, and <b>${C.LB_MAX}</b> for the week if you hit ${C.LB_CAP} in every game on its double day (every game comes up at least once a week).</li>
@@ -1934,6 +1969,28 @@
             if (!d.bonus) return "";
             return `<button type="button" class="lb-bonus" onclick="switchTab('${d.bonus}')">⭐ Double points today: ${C.GAME_ICONS[d.bonus]} ${C.GAME_TITLES[d.bonus]}
                 <small>It's Today's Puzzle game — score ${C.LB_CAP} in it today for ${C.LB_GAME_MAX}. Tap to play ›</small></button>`;
+        }
+        // A player's profile: the site's profile popup (Games is a page inside
+        // the site). Each picture or name on the board carries who it is.
+        const canOpenProfiles = () => { try { return window.top !== window && typeof window.top.openViewProfileModalHome === "function"; } catch (e) { return false; } };
+        const whoAttrs = (r) => r && r.uid && canOpenProfiles() ? ` data-uid="${esc(r.uid)}" data-name="${esc(r.name || "")}" data-av="${esc(r.avatar || "")}" title="See ${esc(r.name || "their")}'s profile"` : "";
+        function openPlayerProfile(el) {
+            try { window.top.openViewProfileModalHome(el.dataset.uid, el.dataset.name, el.dataset.av); } catch (e) { }
+        }
+        // 👑 Each game's all-time high score and who holds it (forever — not just this week).
+        // Signed out: the scores only.
+        function lbRecordsHtml(d, avatar) {
+            if (!d.records) return "";
+            const rows = LB_ORDER.map(g => {
+                const r = d.records[g];
+                const game = `<span class="lb-rec-game">${C.GAME_ICONS[g]} ${g === "hilo" ? "Hi-Lo" : C.GAME_TITLES[g]}</span>`;
+                if (!r) return `<div class="lb-rec">${game}<span class="lb-rec-name none">No record yet — set it!</span></div>`;
+                const who = r.name
+                    ? `${avatar ? avatar(r) : ""}<span class="lb-rec-name"${whoAttrs(r)}><span class="${esc(r.nameFx || "")}">${esc(r.name)}</span>${r.me ? " (you)" : ""}</span>`
+                    : `<span class="lb-rec-name none">Sign in to see who</span>`;
+                return `<div class="lb-rec${r.me ? " me" : ""}" title="${r.at ? "Set " + new Date(r.at).toLocaleDateString() : ""}">${game}${who}<span class="lb-rec-score">${r.score}</span></div>`;
+            }).join("");
+            return `<div class="lb-section lb-records"><div class="lb-section-title">👑 All-time records</div>${rows}</div>`;
         }
         function renderLeaderboard() {
             const box = $("lbCard");
@@ -1948,18 +2005,20 @@
             const head = `<div class="lb-hero"><div class="lb-hero-title">🏆 Weekly leaderboard</div><div class="lb-ends">⏳ Ends in <b>${fmtLeft(left)}</b></div></div>`;
             if (!d.signedIn) {
                 box.innerHTML = `${head}${lbBonusHtml(d)}<div class="lb-signin"><p>Sign in to see who's on top this week and race for <b>${d.prizes.map(p => "+" + p).join(" / ")} 🪙</b>.</p>
-                    <button class="btn-primary" onclick="signInForBoard(this)">Sign in</button></div>${lbRulesHtml(d.prizes, d.bonus)}`;
+                    <button class="btn-primary" onclick="signInForBoard(this)">Sign in</button></div>${lbRecordsHtml(d, null)}${lbRulesHtml(d.prizes, d.bonus)}`;
                 return;
             }
             const medals = ["🥇", "🥈", "🥉"];
             // Their picture in their border (so two players with the same name can be told apart).
             const lbAvatar = (r) => {
                 const img = `<img class="lb-av" src="${esc(r.avatar || "images/KIH.jpg")}" alt="" loading="lazy" onerror="this.onerror=null; this.src='images/KIH.jpg'">`;
-                return window.ProgressCore ? ProgressCore.withBorder(img, { border: r.border }) : img;
+                const pic = window.ProgressCore ? ProgressCore.withBorder(img, { border: r.border }) : img;
+                const who = whoAttrs(r);
+                return who ? `<span class="lb-who"${who}>${pic}</span>` : pic;
             };
             // Ties share a place (r.rank): two on the same points are both 🥈, both get 2nd's prize.
             const spot = (r, place) => r
-                ? `<div class="pod p${place} rk${r.rank}${r.me ? " me" : ""}"><div class="pod-medal">${medals[Math.min(2, r.rank - 1)]}</div><div class="pod-av">${lbAvatar(r)}</div><div class="pod-name"><span class="${esc(r.nameFx || "")}">${esc(r.name)}</span>${r.me ? " (you)" : ""}</div><div class="pod-score">${r.total}</div>
+                ? `<div class="pod p${place} rk${r.rank}${r.me ? " me" : ""}"><div class="pod-medal">${medals[Math.min(2, r.rank - 1)]}</div><div class="pod-av">${lbAvatar(r)}</div><div class="pod-name"${whoAttrs(r)}><span class="${esc(r.nameFx || "")}">${esc(r.name)}</span>${r.me ? " (you)" : ""}</div><div class="pod-score">${r.total}</div>
                     <div class="pod-block"><b>${r.rank}</b><small>+${d.prizes[r.rank - 1]} 🪙</small></div></div>`
                 : `<div class="pod p${place} empty"><div class="pod-medal">${medals[place - 1]}</div><div class="pod-name">—</div><div class="pod-score">&nbsp;</div>
                     <div class="pod-block"><b>${place}</b><small>+${d.prizes[place - 1]} 🪙</small></div></div>`;
@@ -1968,7 +2027,7 @@
             const list = lbShowAll ? rest : rest.slice(0, 7);
             // 4th and 5th win too: their prize sits on their row.
             const tied = (r) => d.top.filter(o => o.rank === r.rank).length > 1;
-            const rows = list.map(r => `<div class="lb-row${r.me ? " me" : ""}"><span class="lb-rank" title="${tied(r) ? "Tied — same points, same place" : ""}">#${r.rank}${tied(r) ? "<small>=</small>" : ""}</span>${lbAvatar(r)}<span class="lb-name"><span class="${esc(r.nameFx || "")}">${esc(r.name)}</span>${r.me ? " (you)" : ""}</span>${r.perk ? `<span class="lb-perk" title="Bonus points from items">🎒+${r.perk}</span>` : ""}${d.prizes[r.rank - 1] ? `<span class="lb-prize-tag">+${d.prizes[r.rank - 1]} 🪙</span>` : ""}<span class="lb-total">${r.total}</span></div>`).join("");
+            const rows = list.map(r => `<div class="lb-row${r.me ? " me" : ""}"><span class="lb-rank" title="${tied(r) ? "Tied — same points, same place" : ""}">#${r.rank}${tied(r) ? "<small>=</small>" : ""}</span>${lbAvatar(r)}<span class="lb-name"${whoAttrs(r)}><span class="${esc(r.nameFx || "")}">${esc(r.name)}</span>${r.me ? " (you)" : ""}</span>${r.perk ? `<span class="lb-perk" title="Bonus points from items">🎒+${r.perk}</span>` : ""}${d.prizes[r.rank - 1] ? `<span class="lb-prize-tag">+${d.prizes[r.rank - 1]} 🪙</span>` : ""}<span class="lb-total">${r.total}</span></div>`).join("");
             const more = rest.length > 7 ? `<button class="lb-more" onclick="lbShowAll = !lbShowAll; renderLeaderboard();">${lbShowAll ? "Show fewer" : `Show all ${d.top.length}`}</button>` : "";
             // Each game's points on the board this week — "×2" when they came from a
             // doubled run — and today's double game starred.
@@ -1992,9 +2051,10 @@
                 ? `<div class="lb-me"><div>You're <b>#${d.me.rank}</b> · <b>${d.me.total}</b> points <span class="dim">(most a week can score: ${d.max || C.LB_MAX}${d.me.perk ? `, plus your items' ${d.me.perk}` : ""})</span></div>${chips(d.me)}${bonusHint(d.me)}</div>`
                 : `<div class="lb-me">You're not on the board yet — finish a run in any game to get on it. 🚀</div>`;
             const last = d.lastWeek && d.lastWeek.length
-                ? `<div class="lb-last">Last week: ${d.lastWeek.map(w => `<span class="lb-last-p">${placeIcon(w.rank - 1)} ${lbAvatar(w)} ${esc(w.name)}</span>`).join(" · ")}</div>` : "";
+                ? `<div class="lb-last">Last week: ${d.lastWeek.map(w => `<span class="lb-last-p">${placeIcon(w.rank - 1)} ${lbAvatar(w)} <span${whoAttrs(w)}>${esc(w.name)}</span></span>`).join(" · ")}</div>` : "";
             box.innerHTML = `${head}${lbBonusHtml(d)}${d.top.length ? podium : `<div class="lb-empty">No scores yet this week — be the first! 🚀</div>`}
-                ${me}${rows ? `<div class="lb-list">${rows}</div>` : ""}${more}${last}${lbRulesHtml(d.prizes, d.bonus)}`;
+                ${me}${rows ? `<div class="lb-list">${rows}</div>` : ""}${more}${last}${lbRecordsHtml(d, lbAvatar)}${lbRulesHtml(d.prizes, d.bonus)}`;
+            box.onclick = (e) => { const el = e.target.closest("[data-uid]"); if (el) openPlayerProfile(el); };
         }
         async function signInForBoard(btn) {
             try { btn.disabled = true; const AS = await appStateReady(); await AS.signIn(); } catch (e) { }

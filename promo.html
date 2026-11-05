@@ -816,6 +816,9 @@
         .wb-name { flex: 1; min-width: 0; overflow-wrap: anywhere; font-weight: 700; color: #6c6c90; }
         .wb-row.landed { border-color: rgba(var(--pl), 0.9); background: rgba(var(--pl), 0.16); animation: wbLand 0.6s cubic-bezier(.2, 1.5, .4, 1); }
         .wb-row.landed .wb-name { color: #fff; }
+        /* a winner's name: tap for their profile */
+        [data-profile-uid] { cursor: pointer; }
+        [data-profile-uid]:hover { text-decoration: underline; }
         .wb-row.now { box-shadow: 0 0 0 2px rgba(var(--pl), 0.9), 0 0 18px rgba(var(--pl), 0.45); }
         .wb-row.mine .wb-name::after { content: " — you! 🎉"; color: #7dffa8; }
         @keyframes wbLand { from { transform: scale(0.9); opacity: 0.4; } }
@@ -1537,7 +1540,7 @@
         } else {
             list.innerHTML = history.map(h => `
                 <div style="padding:10px 0; border-bottom:1px solid #2a2a4a;">
-                    <strong>${escapeHtml(h.winnerName)}</strong>
+                    <strong${profileAttrs(h.winnerUid, h.winnerName)}>${escapeHtml(h.winnerName)}</strong>
                     <span class="promo-sub"> — ${h.device === "ios" ? "iOS 🍎" : "Android 🤖"}</span>
                     <div class="promo-sub" style="font-size:0.8rem;">Week of ${escapeHtml(h.weekId)} · drawn ${new Date(h.drawnAt).toLocaleString()}</div>
                 </div>
@@ -1697,6 +1700,21 @@ function secretStepTitle(k) {
     const samePlace = t.steps.filter(x => x.place === s.place);
     return window.KIHPrize.placeLabel(s.place) + (samePlace.length > 1 ? ` (${samePlace.indexOf(s) + 1} of ${samePlace.length})` : "");
 }
+// A winner's name opens their profile (the site's profile popup — this page
+// sits inside the site). Only where we know who it is.
+const canOpenProfiles = () => { try { return window.top !== window && typeof window.top.openViewProfileModalHome === "function"; } catch (e) { return false; } };
+const profileAttrs = (uid, name) => uid && canOpenProfiles() ? ` data-profile-uid="${escapeHtml(uid)}" data-profile-name="${escapeHtml(name || "")}" title="See ${escapeHtml(name || "their")}'s profile"` : "";
+function markProfile(el, uid, name) {
+    if (!el) return;
+    if (uid && canOpenProfiles()) { el.dataset.profileUid = uid; el.dataset.profileName = name || ""; el.title = `See ${name || "their"}'s profile`; }
+    else { delete el.dataset.profileUid; delete el.dataset.profileName; el.removeAttribute("title"); }
+}
+document.addEventListener("click", (e) => {
+    const el = e.target.closest && e.target.closest("[data-profile-uid]");
+    if (!el) return;
+    e.stopPropagation();
+    try { window.top.openViewProfileModalHome(el.dataset.profileUid, el.dataset.profileName, ""); } catch (err) { }
+});
 // Every winner's row, blank until their turn: ranked ones as standings
 // (1st place at the top, so it fills from the bottom up), others in draw order.
 function renderWinBoard(filled) {
@@ -1706,7 +1724,7 @@ function renderWinBoard(filled) {
     return `<ol class="win-board" id="secretWinBoard">${rows.map(({ s, k }) => {
         const tag = t.ranked ? `${window.KIHPrize.placeMedal(s.place)} ${window.KIHPrize.ordinal(s.place)}` : `#${k + 1}`;
         const cls = ["wb-row", t.ranked ? "place-" + Math.min(s.place, 4) : "", filled ? "landed" : "", filled && s.uid === t.myUid ? "mine" : ""].filter(Boolean).join(" ");
-        return `<li class="${cls}" data-step="${k}"><span class="wb-tag">${tag}</span><span class="wb-name">${filled ? escapeHtml(s.name) : "?"}</span></li>`;
+        return `<li class="${cls}" data-step="${k}"><span class="wb-tag">${tag}</span><span class="wb-name"${filled ? profileAttrs(s.uid, s.name) : ""}>${filled ? escapeHtml(s.name) : "?"}</span></li>`;
     }).join("")}</ol>`;
 }
 
@@ -2006,6 +2024,7 @@ function revealSecretStep(k) {
         capsuleOpen(capsule);
         if (row) {
             row.querySelector(".wb-name").textContent = step.name;
+            markProfile(row.querySelector(".wb-name"), step.uid, step.name);
             row.classList.add("landed");
             if (step.uid === t.myUid) row.classList.add("mine");
         }
@@ -2373,6 +2392,7 @@ function showDrawDayModal() {
                     nameEl.classList.remove("cycling");
                     nameEl.classList.add("landed");
                     nameEl.textContent = winnerData.winnerName;
+                    markProfile(nameEl, winnerData.winnerUid, winnerData.winnerName);
 
                     spinBtn.disabled = true;
                     spinBtn.style.display = "none";
@@ -2381,6 +2401,7 @@ function showDrawDayModal() {
                 } else if (!capsuleBox.classList.contains("rolling") && !spinBtn.dataset.counting && spinBtn.style.display !== "none") {
                     nameEl.classList.remove("landed", "cycling");
                     nameEl.textContent = "?";
+                    markProfile(nameEl, null);
                     spinBtn.disabled = false;
                     spinBtn.classList.add("draw-start-btn");
                     startDrawCountdown(spinBtn, spinWheel);
@@ -2491,6 +2512,7 @@ if (user && user.uid === winnerData.winnerUid) {
                 nameEl.classList.remove("cycling");
                 nameEl.classList.add("landed");
                 nameEl.textContent = winnerData.winnerName;
+                markProfile(nameEl, winnerData.winnerUid, winnerData.winnerName);
                 capsuleOpen(capsule);
                 markWheelRevealed(currentWeekId);
                 showWinnerResult();
