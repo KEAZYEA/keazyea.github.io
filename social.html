@@ -2225,7 +2225,10 @@
         /* ---------------- 🌍 World Chat ---------------- */
         .wc-box { display: flex; flex-direction: column; height: calc(100dvh - 210px); min-height: 380px; max-height: 820px;
             border: 1px solid #2a2a4a; border-radius: 14px; background: #17172c; overflow: hidden; position: relative; }
-        .wc-chips { display: flex; gap: 6px; padding: 10px 10px 8px; overflow-x: auto; scrollbar-width: none; border-bottom: 1px solid #23233f; flex-shrink: 0; }
+        .wc-top { display: flex; align-items: center; border-bottom: 1px solid #23233f; flex-shrink: 0; }
+        .wc-chips { flex: 1; min-width: 0; display: flex; gap: 6px; padding: 10px 10px 8px; overflow-x: auto; scrollbar-width: none; }
+        /* 🔍 at the top right: tap it and type */
+        .wc-find-btn { flex-shrink: 0; width: 38px; height: 38px; margin: 0 8px 0 0; border-radius: 10px; border: 1px solid #34345e; background: #20203a; font-size: 1.05rem; cursor: pointer; }
         .wc-chips::-webkit-scrollbar { display: none; }
         .wc-chip { flex-shrink: 0; border: 1px solid #34345e; background: #20203a; color: #d6d6ea; border-radius: 999px; padding: 5px 11px;
             font-size: 0.82rem; font-weight: 700; cursor: pointer; font-family: inherit; white-space: nowrap; }
@@ -2241,10 +2244,17 @@
             .wc-chip-icon { margin: 0; font-size: 1.05rem; line-height: 1.2; }
             .wc-chip-label { max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
             .wc-chip-n { position: absolute; top: -6px; right: -3px; margin: 0; min-width: 17px; line-height: 17px; padding: 0 4px; font-size: 0.64rem; }
+            /* the 🔍 shares the row: a little tighter so every channel's name still fits */
+            .wc-chips { gap: 4px; padding: 10px 6px 8px; }
+            .wc-chip { font-size: 0.63rem; padding: 6px 1px 5px; }
+            .wc-find-btn { width: 34px; height: 34px; margin-right: 6px; font-size: 0.95rem; }
         }
         @media (max-width: 380px) {
-            .wc-chips { gap: 4px; padding: 10px 6px 8px; }
-            .wc-chip { font-size: 0.6rem; padding: 6px 1px 5px; }
+            .wc-chips { gap: 3px; padding: 10px 4px 8px; }
+            .wc-chip { font-size: 0.58rem; padding: 6px 0 5px; }
+            /* the narrowest phones: a long name may break onto a second line (Forma-tion) rather than be cut */
+            .wc-chip-label { white-space: normal; overflow: visible; text-overflow: clip; text-align: center; -webkit-hyphens: manual; hyphens: manual; }
+            .wc-find-btn { width: 30px; height: 30px; margin-right: 4px; }
         }
         .wc-notice { display: none; padding: 7px 12px; font-size: 0.8rem; color: #c8c8e0; background: #1f1f3a; border-bottom: 1px solid #23233f; flex-shrink: 0; }
         .wc-notice.show { display: block; }
@@ -2404,7 +2414,7 @@
         .chat-rules b { color: #fff; }
         .find-bar { display: none; align-items: center; gap: 6px; padding: 6px 10px; background: #1f1f3a; border-bottom: 1px solid #2a2a4a; flex-shrink: 0; }
         .find-bar.show { display: flex; }
-        .wc-box.finding .wc-chips { display: none; }
+        .wc-box.finding .wc-top { display: none; } /* the search box takes the top row (✕ brings it back) */
         .find-bar input { flex: 1; min-width: 0; height: 34px; box-sizing: border-box; border-radius: 8px; border: 1px solid #34345e; background: #17172c; color: #eaeaf0; padding: 0 10px; font-size: 16px; font-family: inherit; }
         .find-bar .find-count { font-size: 0.75rem; color: #9a9ab0; white-space: nowrap; }
         .find-bar button { flex-shrink: 0; height: 34px; min-width: 34px; border-radius: 8px; border: 1px solid #34345e; background: #20203a; color: #d6d6ea; cursor: pointer; font-family: inherit; font-size: 0.85rem; padding: 0 8px; }
@@ -2467,7 +2477,7 @@
             <div class="social-tab-panel" id="tabPanelWorld">
                 <div class="social-content-inner">
                     <div class="wc-box">
-                        <div class="wc-chips" id="wcChips"></div>
+                        <div class="wc-top"><div class="wc-chips" id="wcChips"></div><button type="button" class="wc-find-btn" id="wcFindBtn" onclick="openChatFind('world')" aria-label="Find in this channel" title="Find">🔍</button></div>
                         <div class="wc-notice" id="wcNotice"></div>
                         <div class="find-bar" id="wcFindBar" role="search">
                             <input type="search" id="wcFindInput" placeholder="Find in this channel…" aria-label="Find" enterkeyhint="search">
@@ -3143,9 +3153,9 @@
                     </div>
                 </div>
                 <div style="display:flex; align-items:center; gap:6px; position:relative;">
+                    <button class="dm-close-btn" id="dmFindBtn" onclick="openChatFind('dm')" title="Find in this chat" aria-label="Find in this chat">🔍</button>
                     <button class="dm-close-btn" id="dmActionsBtn" title="More">⋮</button>
                     <div class="dm-actions-menu" id="dmActionsMenu">
-                        <button onclick="openChatFind('dm')">🔍 Find in chat</button>
                         <button onclick="openChatRules('dm')">ℹ️ Chat rules</button>
                         <button onclick="dmReportCurrentFriend()">🚩 Report</button>
                         <button id="dmBlockBtn" onclick="dmBlockCurrentFriend()">🚫 Block</button>
@@ -6981,12 +6991,12 @@ window.removeClanIconPreview = function () {
             const chips = document.getElementById("wcChips");
             const html = WORLD_TAGS.map(t => {
                 const n = t.id === worldFilter ? 0 : worldUnread(t.id);
-                return `<button type="button" class="wc-chip${worldFilter === t.id ? " active" : ""}" data-filter="${t.id}"><span class="wc-chip-icon">${t.icon}</span><span class="wc-chip-label">${t.label}</span>${n ? `<span class="wc-chip-n">${n > 9 ? "9+" : n}</span>` : ""}</button>`;
+                return `<button type="button" class="wc-chip${worldFilter === t.id ? " active" : ""}" data-filter="${t.id}"><span class="wc-chip-icon">${t.icon}</span><span class="wc-chip-label">${t.label.replace("Formation", "Forma­tion")}</span>${n ? `<span class="wc-chip-n">${n > 9 ? "9+" : n}</span>` : ""}</button>`;
             }).join("");
             if (chips.innerHTML !== html) chips.innerHTML = html;
             const ch = WORLD_TAG_BY_ID[worldFilter] || WORLD_TAG_BY_ID.general;
             document.getElementById("wcTag").value = ch.id;
-            const hint = `You're in <b>${ch.icon} ${ch.label}</b> · <button type="button" class="wc-link" data-wc-rules="1">ℹ️ Rules</button> · <button type="button" class="wc-link" data-wc-find="1">🔍 Find</button>`;
+            const hint = `You're in <b>${ch.icon} ${ch.label}</b> · <button type="button" class="wc-link" data-wc-rules="1">ℹ️ Rules</button>`;
             const el = document.getElementById("wcHintText");
             if (el.innerHTML !== hint) el.innerHTML = hint;
         }
@@ -7497,7 +7507,7 @@ window.removeClanIconPreview = function () {
                 ["🗑", "Delete your own messages any time (🗑 Delete under the message). ⋮ → Delete Chat clears the whole chat."],
                 ["🌐", "<b>Translate</b> their messages into your language — up to 150 a day."],
                 ["🚩", "Anything wrong? ⋮ → 🚩 Report or 🚫 Block."],
-                ["🔍", "⋮ → 🔍 Find in chat searches this conversation."]
+                ["🔍", "<b>Find</b> (🔍 at the top right) searches this conversation."]
             ];
             const slow = worldCfg && worldCfg.slowSeconds ? `Slow mode: one message every <b>${worldCfg.slowSeconds}s</b>.` : "";
             return [
@@ -7510,7 +7520,7 @@ window.removeClanIconPreview = function () {
                 ["🗑", "Delete your own messages any time — tap the message → 🗑 Delete."],
                 ["🌐", "<b>Translate</b> other people's messages into your language — up to 150 a day."],
                 ["🚫", "Players you've blocked are hidden here."],
-                ["🔍", "<b>Find</b> (under the box) searches the channel you're in — tap Search older to look further back."]
+                ["🔍", "<b>Find</b> (🔍 at the top right) searches the channel you're in — tap Search older to look further back."]
             ];
         }
         window.openChatRules = function (scope) {
