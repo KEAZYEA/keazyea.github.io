@@ -1,41 +1,48 @@
 /**
  * api/polls.js
- * Polls (in 📰 News → 📊 Polls): admin asks a question, everyone signed in
- * answers, and the first answer on each poll pays its gift (tokens, chest
- * draws, items — like an admin gift). Answers are made here, never by the
- * browser, so they can't be faked or counted twice and the gift can't be
- * claimed twice. Three kinds:
+ * Polls (in 📰 News → 📊 Polls): admin asks one question or several, everyone
+ * signed in answers, and the first time someone answers a poll it pays its
+ * gift (tokens, chest draws, items — like an admin gift). Answers are made
+ * here, never by the browser, so they can't be faked or counted twice and the
+ * gift can't be claimed twice. Each question is one of:
  *   single  pick one option
  *   multi   pick as many options as you like
  *   open    write your own answer; everyone's answers are shown (with names)
- * A single or multi poll can also have ✏️ Other (allowOther): its index is
+ * A single or multi question can also have ✏️ Other (allowOther): its index is
  * options.length, it needs a written answer, it's counted like an option, and
- * the written answers are shown like an open poll's.
+ * the written answers are shown like an open question's.
+ * A poll with several questions is answered all at once (every question).
  *
  * POST JSON { action, ... } with "Authorization: Bearer <id token>":
- *   list                          -> the latest polls; their results (counts, or
- *                                    for an open poll everyone's answers) once
- *                                    you've answered or the poll's ended
- *   vote        { pollId, options: [i] } (single: one; multi: one or more;
- *                                   with Other picked, text too)
- *               { pollId, text }  (open)
- *                                 -> your answer, or a change to it, until the
- *                                    poll ends; the first one pays the gift
- *   adminCreate { kind, question, options, allowOther, expiresInHours, amount, draws, itemIds, notify }
+ *   list                          -> the latest polls; their results (counts, and
+ *                                    what people wrote) once you've answered or
+ *                                    the poll's ended
+ *   vote        { pollId, answers: [{ options: [i], text }] } — one per question
+ *               (a one-question poll can send { options } / { text } instead)
+ *                                 -> your answers, or a change to them, until the
+ *                                    poll ends; the first time pays the gift
+ *   adminCreate { title, questions: [{ kind, question, options, allowOther }],
+ *                 expiresInHours, amount, draws, itemIds, notify }
+ *               (or one question's kind / question / options / allowOther at the top)
  *   adminList                     -> every poll with its results and gifts paid
  *   adminEnd    { pollId }        -> ends it now (answers lock, results stay)
  *   adminDelete { pollId }        -> removes it, its answers and its notification
- *   adminRemoveAnswer { pollId, uid } -> takes one written answer down (open, or an Other)
+ *   adminRemoveAnswer { pollId, uid, q } -> takes one written answer down
+ *                                    (question q's: an open answer, or an Other)
  *
  * The gift only goes to accounts that already existed when the poll was
  * posted (like a gift for everyone), so it can't be farmed with new accounts;
  * newer accounts can still answer.
  *
  * Data (server-only; the Firestore rules give clients no access):
- *   polls/{pollId}              { kind, question, options: [text], allowOther, counts: [n] (+1 for Other), total, createdAt,
- *                                 expiresAt, reward: { amount, draws, itemIds }, rewardCount,
+ *   polls/{pollId}              { title, questions: [{ kind, question, options: [text], allowOther,
+ *                                 counts: [n] (+1 for Other) }], total (people who answered),
+ *                                 createdAt, expiresAt, reward: { amount, draws, itemIds }, rewardCount,
  *                                 notificationId, createdBy }
- *   polls/{pollId}/votes/{uid}  { picks: [i], text (open, or with Other), name, avatar, firstAt, at, rewarded }
+ *                               (polls from before several questions keep kind / question /
+ *                                options / allowOther / counts at the top: read as one question)
+ *   polls/{pollId}/votes/{uid}  { answers: [{ picks: [i], text }], name, avatar, firstAt, at, rewarded }
+ *                               (older: picks / text at the top)
  *   tokenWallets/{uid}/claims/poll_{pollId}   the gift, once
  *   notifications/poll-{pollId} the "new poll" message in everyone's inbox
  */
@@ -48,6 +55,7 @@ const { grantToInventory } = require("./tokens.js");
 const ADMIN_UID = "Ts92RY0ipMYDRJa2s5toQfDYxtp1"; // same as tokens.js and appState.js
 const KINDS = ["single", "multi", "open"];
 const MAX_OPTIONS = 8;
+const MAX_QUESTIONS = 10;
 const MAX_ANSWER = 200;
 const ANSWERS_SHOWN = 50;
 const MAX_GIFT_TOKENS = 1000;
@@ -60,12 +68,24 @@ const isDocId = (s) => typeof s === "string" && s.length > 0 && s.length <= 200 
 const cleanText = (v, max) => (typeof v === "string" ? v.replace(/[\u0000-\u0008\u000b-\u001f\u007f]/g, "").trim().slice(0, max) : "");
 const newId = (now) => now.toString(36) + Math.random().toString(36).slice(2, 10);
 const pollRef = (db, id) => db.collection("polls").doc(id);
-const kindOf = (p) => (KINDS.includes(p.kind) ? p.kind : "single");
-const hasOther = (p) => kindOf(p) !== "open" && !!p.allowOther;
-// counts: one per option, and one more for ✏️ Other
-const slotsOf = (p) => (p.options || []).length + (hasOther(p) ? 1 : 0);
-// shows written answers: an open poll, or one with Other
-const hasWritten = (p) => kindOf(p) === "open" || hasOther(p);
+
+// A poll's questions, each { kind, question, options, allowOther, counts } with its
+// counts the right length (one per option, +1 for Other). Older one-question polls too.
+function questionsOf(p) {
+  const raw = Array.isArray(p.questions) && p.questions.length ? p.questions
+    : [{ kind: p.kind, question: p.question, options: p.options, allowOther: p.allowOther, counts: p.counts }];
+  return raw.map(q => {
+    const kind = KINDS.includes(q.kind) ? q.kind : "single";
+    const options = kind === "open" ? [] : (q.options || []);
+    const allowOther = kind !== "open" && !!q.allowOther;
+    const slots = options.length + (allowOther ? 1 : 0);
+    return { kind, question: q.question || "", options, allowOther, counts: Array.from({ length: slots }, (_, i) => (q.counts || [])[i] || 0) };
+  });
+}
+// Someone's answers, one per question ({ picks, text }). Older votes too.
+const answersOf = (v) => (v ? (Array.isArray(v.answers) ? v.answers : [{ picks: v.picks || [], ...(v.text ? { text: v.text } : {}) }]) : null);
+const titleOf = (p, qs) => p.title || (qs.length === 1 ? qs[0].question : "");
+const hasWritten = (q) => q.kind === "open" || q.allowOther;
 
 async function verifyCaller(admin, req) {
   const header = req.headers.authorization || "";
@@ -88,30 +108,42 @@ function giftWhat(reward) {
     ...(r.itemIds || []).map(id => P.BY_ID[id] ? `${P.BY_ID[id].icon} ${P.BY_ID[id].name}` : "")].filter(Boolean).join(" + ");
 }
 const hasGift = (r) => !!(r && (r.amount || r.draws || (r.itemIds && r.itemIds.length)));
-const answerOf = (uid, v, me) => ({ uid, name: v.name || "Commander", avatar: v.avatar || "", text: v.text || "", at: v.at || 0, me: uid === me });
+
+// What people wrote, per question (an open question's answers, or its Others'), newest first.
+async function writtenAnswers(ref, qs, me) {
+  if (!qs.some(hasWritten)) return qs.map(() => null);
+  const snap = await ref.collection("votes").orderBy("at", "desc").limit(ANSWERS_SHOWN * 4).get();
+  const lists = qs.map(q => (hasWritten(q) ? [] : null));
+  for (const d of snap.docs) {
+    const v = d.data(), ans = answersOf(v) || [];
+    qs.forEach((q, i) => {
+      const t = ans[i] && ans[i].text;
+      if (lists[i] && t && lists[i].length < ANSWERS_SHOWN) lists[i].push({ uid: d.id, name: v.name || "Commander", avatar: v.avatar || "", text: t, at: v.at || 0, me: d.id === me });
+    });
+  }
+  return lists;
+}
 
 // What a player sees of a poll: the results only once they've answered, or it's over.
-function viewOf(id, p, mine, now, answers) {
-  const kind = kindOf(p);
+function viewOf(id, p, mine, now, written) {
+  const qs = questionsOf(p);
   const ended = (p.expiresAt || 0) <= now;
-  const answered = !!mine;
-  const see = ended || answered;
+  const myAns = answersOf(mine);
+  const see = ended || !!mine;
   return {
-    id, kind, question: p.question, options: kind === "open" ? [] : p.options, allowOther: hasOther(p), createdAt: p.createdAt, expiresAt: p.expiresAt, ended,
+    id, title: titleOf(p, qs), createdAt: p.createdAt, expiresAt: p.expiresAt, ended,
     total: see ? p.total || 0 : null,
-    counts: see && kind !== "open" ? Array.from({ length: slotsOf(p) }, (_, i) => (p.counts || [])[i] || 0) : null,
-    answers: see && hasWritten(p) ? answers || [] : null,
-    myPicks: mine && kind !== "open" ? mine.picks || [] : null,
-    myText: mine && (kind === "open" || mine.text) ? mine.text || "" : null,
+    answered: !!mine,
+    questions: qs.map((q, i) => ({
+      kind: q.kind, question: q.question, options: q.options, allowOther: q.allowOther,
+      counts: see && q.kind !== "open" ? q.counts : null,
+      answers: see && hasWritten(q) ? (written && written[i]) || [] : null,
+      myPicks: myAns && q.kind !== "open" ? (myAns[i] && myAns[i].picks) || [] : null,
+      myText: myAns && myAns[i] && (q.kind === "open" || myAns[i].text) ? myAns[i].text || "" : null
+    })),
     reward: hasGift(p.reward) ? { amount: p.reward.amount || 0, draws: p.reward.draws || 0, itemIds: p.reward.itemIds || [] } : null,
     rewarded: !!(mine && mine.rewarded)
   };
-}
-
-// The latest written answers (an open poll's, or an Other's), newest first.
-async function openAnswers(ref, me) {
-  const snap = await ref.collection("votes").orderBy("at", "desc").limit(ANSWERS_SHOWN * 4).get();
-  return snap.docs.filter(d => d.data().text).slice(0, ANSWERS_SHOWN).map(d => answerOf(d.id, d.data(), me));
 }
 
 async function listPolls(db, uid, now) {
@@ -122,8 +154,8 @@ async function listPolls(db, uid, now) {
     const p = d.data();
     const mine = votes[i] && votes[i].exists ? votes[i].data() : null;
     const see = (p.expiresAt || 0) <= now || !!mine;
-    const answers = hasWritten(p) && see ? await openAnswers(d.ref, uid) : null;
-    return viewOf(d.id, p, mine, now, answers);
+    const written = see ? await writtenAnswers(d.ref, questionsOf(p), uid) : null;
+    return viewOf(d.id, p, mine, now, written);
   }));
   return { ok: true, now, polls };
 }
@@ -136,6 +168,30 @@ async function existedBefore(admin, uid, at) {
   } catch (e) { return false; }
 }
 
+// One question's answer, checked: { picks: [i] } and/or { text }.
+function checkAnswer(q, a, n, many) {
+  const where = many ? `Question ${n + 1}: ` : "";
+  a = a && typeof a === "object" ? a : {};
+  if (q.kind === "open") {
+    const text = cleanText(a.text, MAX_ANSWER);
+    if (!text) throw new HttpError(400, where + "Write your answer first.");
+    return { picks: [], text };
+  }
+  const raw = Array.isArray(a.options) ? a.options : Number.isInteger(a.option) ? [a.option] : [];
+  const picks = [...new Set(raw)].sort((x, y) => x - y);
+  const slots = q.options.length + (q.allowOther ? 1 : 0);
+  if (!picks.length || !picks.every(i => Number.isInteger(i) && i >= 0 && i < slots)) throw new HttpError(400, where + (q.kind === "multi" ? "Pick at least one option." : "Pick an option."));
+  if (q.kind === "single" && picks.length !== 1) throw new HttpError(400, where + "This question takes one answer.");
+  // ✏️ Other: its index is just past the options, and it needs what you'd write
+  if (q.allowOther && picks.includes(q.options.length)) {
+    const text = cleanText(a.text, MAX_ANSWER);
+    if (!text) throw new HttpError(400, where + "Write your answer for ✏️ Other.");
+    return { picks, text };
+  }
+  return { picks };
+}
+const sameAnswers = (a, b) => JSON.stringify((a || []).map(x => [x.picks || [], x.text || null])) === JSON.stringify((b || []).map(x => [x.picks || [], x.text || null]));
+
 async function vote(admin, db, uid, body, now) {
   const { pollId } = body;
   if (!isDocId(pollId)) throw new HttpError(400, "Missing poll.");
@@ -144,24 +200,11 @@ async function vote(admin, db, uid, body, now) {
   ]);
   if (banSnap.exists && isBannedNow(banSnap.data())) throw new HttpError(403, "Your account is currently restricted.");
   if (!first.exists) throw new HttpError(404, "This poll no longer exists.");
-  const kind = kindOf(first.data());
-  // what was sent, checked against the poll's kind
-  let picks = null, text = null;
-  if (kind === "open") {
-    text = cleanText(body.text, MAX_ANSWER);
-    if (!text) throw new HttpError(400, "Write your answer first.");
-  } else {
-    const raw = Array.isArray(body.options) ? body.options : Number.isInteger(body.option) ? [body.option] : [];
-    picks = [...new Set(raw)].sort((a, b) => a - b);
-    const n = slotsOf(first.data());
-    if (!picks.length || !picks.every(i => Number.isInteger(i) && i >= 0 && i < n)) throw new HttpError(400, kind === "multi" ? "Pick at least one option." : "Pick an option.");
-    if (kind === "single" && picks.length !== 1) throw new HttpError(400, "This poll takes one answer.");
-    // ✏️ Other: its index is just past the options, and it needs what you'd write
-    if (hasOther(first.data()) && picks.includes(first.data().options.length)) {
-      text = cleanText(body.text, MAX_ANSWER);
-      if (!text) throw new HttpError(400, "Write your answer for ✏️ Other.");
-    }
-  }
+  const qs0 = questionsOf(first.data());
+  // every question answered, each checked against its kind
+  const sent = Array.isArray(body.answers) ? body.answers : qs0.length === 1 ? [{ options: body.options, option: body.option, text: body.text }] : [];
+  if (sent.length !== qs0.length) throw new HttpError(400, qs0.length > 1 ? "Answer every question." : "Pick an option.");
+  const answers = qs0.map((q, i) => checkAnswer(q, sent[i], i, qs0.length > 1));
   const pub = pubSnap.exists ? pubSnap.data() : {};
   const name = (typeof pub.name === "string" && pub.name.trim() ? pub.name.trim() : "Commander").slice(0, 40);
   const avatar = typeof pub.avatar === "string" ? pub.avatar.slice(0, 500) : "";
@@ -179,17 +222,18 @@ async function vote(admin, db, uid, body, now) {
     const p = pollSnap.data();
     if ((p.expiresAt || 0) <= now) throw new HttpError(400, "This poll has ended — the results are final.");
     const prev = voteSnap.exists ? voteSnap.data() : null;
-    const same = prev && (kind === "open" ? prev.text === text : JSON.stringify(prev.picks || []) === JSON.stringify(picks) && (prev.text || null) === (text || null));
-    if (same) return { p, mine: prev, unchanged: true };
-    const counts = Array.from({ length: slotsOf(p) }, (_, i) => (p.counts || [])[i] || 0);
-    if (kind !== "open") {
-      (prev ? prev.picks || [] : []).forEach(i => { if (counts[i] > 0) counts[i]--; });
-      picks.forEach(i => { counts[i]++; });
-    }
+    const prevAns = answersOf(prev);
+    if (prev && sameAnswers(prevAns, answers)) return { p, mine: prev, unchanged: true };
+    const qs = questionsOf(p);
+    qs.forEach((q, i) => {
+      if (q.kind === "open") return;
+      ((prevAns && prevAns[i] && prevAns[i].picks) || []).forEach(k => { if (q.counts[k] > 0) q.counts[k]--; });
+      answers[i].picks.forEach(k => { q.counts[k]++; });
+    });
     const total = (p.total || 0) + (prev ? 0 : 1);
     // The gift: the first answer, once ever (the claim's fixed id), if their account is old enough.
     let gift = null, rewarded = prev ? !!prev.rewarded : false;
-    const pollUpdate = { counts, total, updatedAt: now };
+    const pollUpdate = { questions: qs, total, updatedAt: now };
     if (!prev && giftable && !claimSnap.exists) {
       const r = p.reward || {};
       const balance = walletSnap.exists ? (walletSnap.data().balance || 0) : 0;
@@ -202,34 +246,45 @@ async function vote(admin, db, uid, body, now) {
       rewarded = true;
     }
     tx.update(ref, pollUpdate);
-    const mine = { ...(kind === "open" ? { text } : { picks, ...(text ? { text } : {}) }), name, avatar, at: now, firstAt: prev ? prev.firstAt || now : now, rewarded };
+    const mine = { answers, name, avatar, at: now, firstAt: prev ? prev.firstAt || now : now, rewarded };
     tx.set(voteRef, mine);
-    return { p: { ...p, counts, total }, mine, changed: !!prev, gift, giftTooNew: !prev && hasGift(p.reward) && !giftable };
+    return { p: { ...p, questions: qs, total }, mine, changed: !!prev, gift, giftTooNew: !prev && hasGift(p.reward) && !giftable };
   });
-  const answers = hasWritten(result.p) ? await openAnswers(ref, uid) : null;
+  const written = await writtenAnswers(ref, questionsOf(result.p), uid);
   return {
-    ok: true, poll: viewOf(pollId, result.p, result.mine, now, answers),
+    ok: true, poll: viewOf(pollId, result.p, result.mine, now, written),
     gift: result.gift || null,
     ...(result.unchanged ? { unchanged: true } : {}), ...(result.changed ? { changed: true } : {}), ...(result.giftTooNew ? { giftTooNew: true } : {})
   };
 }
 
 /* ---------------- admin ---------------- */
+function cleanQuestion(q, n, many) {
+  const where = many ? `Question ${n + 1}: ` : "";
+  const kind = KINDS.includes(q && q.kind) ? q.kind : "single";
+  const question = cleanText(q && q.question, 200);
+  const options = kind === "open" ? [] : (Array.isArray(q && q.options) ? q.options : []).map(o => cleanText(o, 80)).filter(Boolean);
+  const allowOther = kind !== "open" && !!(q && q.allowOther === true);
+  if (!question) throw new HttpError(400, where + "Write the question.");
+  if (kind !== "open") {
+    // (with ✏️ Other, one fixed option is enough: "Yes" + Other)
+    if (options.length < (allowOther ? 1 : 2) || options.length > MAX_OPTIONS) throw new HttpError(400, where + (allowOther ? `Give it 1 to ${MAX_OPTIONS} options (plus ✏️ Other).` : `Give it 2 to ${MAX_OPTIONS} options.`));
+    if (new Set(options.map(o => o.toLowerCase())).size !== options.length) throw new HttpError(400, where + "Two options are the same.");
+  }
+  return { kind, question, options, allowOther, counts: Array.from({ length: options.length + (allowOther ? 1 : 0) }, () => 0) };
+}
+
 async function adminCreate(db, adminUid, body, now) {
-  const kind = KINDS.includes(body.kind) ? body.kind : "single";
-  const question = cleanText(body.question, 200);
-  const options = kind === "open" ? [] : (Array.isArray(body.options) ? body.options : []).map(o => cleanText(o, 80)).filter(Boolean);
-  const allowOther = kind !== "open" && body.allowOther === true;
+  const rawQs = Array.isArray(body.questions) && body.questions.length ? body.questions
+    : [{ kind: body.kind, question: body.question, options: body.options, allowOther: body.allowOther }];
+  if (rawQs.length > MAX_QUESTIONS) throw new HttpError(400, `Up to ${MAX_QUESTIONS} questions.`);
+  const questions = rawQs.map((q, i) => cleanQuestion(q, i, rawQs.length > 1));
+  const title = cleanText(body.title, 200) || (questions.length === 1 ? questions[0].question : "");
+  if (!title) throw new HttpError(400, "Give a poll with several questions a title.");
   const amount = body.amount == null || body.amount === "" ? 0 : Number(body.amount);
   const draws = body.draws == null || body.draws === "" ? 0 : Number(body.draws);
   const itemIds = Array.isArray(body.itemIds) ? [...new Set(body.itemIds.filter(Boolean))] : [];
   const hours = Number(body.expiresInHours);
-  if (!question) throw new HttpError(400, "Write the question.");
-  if (kind !== "open") {
-    // (with ✏️ Other, one fixed option is enough: "Yes" + Other)
-    if (options.length < (allowOther ? 1 : 2) || options.length > MAX_OPTIONS) throw new HttpError(400, allowOther ? `Give it 1 to ${MAX_OPTIONS} options (plus ✏️ Other).` : `Give it 2 to ${MAX_OPTIONS} options.`);
-    if (new Set(options.map(o => o.toLowerCase())).size !== options.length) throw new HttpError(400, "Two options are the same.");
-  }
   if (!Number.isInteger(amount) || amount < 0 || amount > MAX_GIFT_TOKENS) throw new HttpError(400, `Tokens: a whole number from 0 to ${MAX_GIFT_TOKENS}.`);
   if (!Number.isInteger(draws) || draws < 0 || draws > 20) throw new HttpError(400, "Chest draws: a whole number from 0 to 20.");
   if (itemIds.length > 2 || !itemIds.every(id => P.BY_ID[id])) throw new HttpError(400, "Pick up to 2 items or styles from the list.");
@@ -239,16 +294,13 @@ async function adminCreate(db, adminUid, body, now) {
   const reward = { amount, draws, itemIds };
   const notify = body.notify !== false;
   const notificationId = notify ? `poll-${id}` : null;
-  await pollRef(db, id).set({
-    kind, question, options, allowOther, counts: Array.from({ length: options.length + (allowOther ? 1 : 0) }, () => 0), total: 0, createdAt: now, expiresAt, reward, rewardCount: 0,
-    notificationId, createdBy: adminUid
-  });
+  await pollRef(db, id).set({ title, questions, total: 0, createdAt: now, expiresAt, reward, rewardCount: 0, notificationId, createdBy: adminUid });
   if (notify) {
     const what = giftWhat(reward);
-    const how = kind === "open" ? "Answer it" : "Vote";
+    const how = questions.length > 1 ? `Answer its ${questions.length} questions` : questions[0].kind === "open" ? "Answer it" : "Vote";
     await db.collection("notifications").doc(notificationId).set({
-      type: "poll", pollId: id, sourceId: id, title: `📊 New poll: ${question}`.slice(0, 220),
-      body: what ? `${how} in 📰 News → 📊 Polls and get ${what}! You can change your answer until it ends.` : `Have your say in 📰 News → 📊 Polls. You can change your answer until it ends.`,
+      type: "poll", pollId: id, sourceId: id, title: `📊 New poll: ${title}`.slice(0, 220),
+      body: what ? `${how} in 📰 News → 📊 Polls and get ${what}! You can change your answers until it ends.` : `Have your say in 📰 News → 📊 Polls. You can change your answers until it ends.`,
       expiresAt, createdAt: now
     });
   }
@@ -259,10 +311,10 @@ async function adminList(db, now) {
   const snap = await db.collection("polls").orderBy("createdAt", "desc").limit(50).get();
   const polls = await Promise.all(snap.docs.map(async (d) => {
     const p = d.data();
-    const kind = kindOf(p);
-    return { id: d.id, kind, question: p.question, options: p.options || [], allowOther: hasOther(p), counts: Array.from({ length: slotsOf(p) }, (_, i) => (p.counts || [])[i] || 0), total: p.total || 0, createdAt: p.createdAt, expiresAt: p.expiresAt,
-      ended: (p.expiresAt || 0) <= now, reward: p.reward || null, rewardCount: p.rewardCount || 0, notified: !!p.notificationId,
-      ...(hasWritten(p) ? { answers: await openAnswers(d.ref, null) } : {}) };
+    const qs = questionsOf(p);
+    const written = await writtenAnswers(d.ref, qs, null);
+    return { id: d.id, title: titleOf(p, qs), questions: qs.map((q, i) => ({ ...q, answers: written[i] })), total: p.total || 0, createdAt: p.createdAt, expiresAt: p.expiresAt,
+      ended: (p.expiresAt || 0) <= now, reward: p.reward || null, rewardCount: p.rewardCount || 0, notified: !!p.notificationId };
   }));
   return { ok: true, now, polls };
 }
@@ -302,10 +354,13 @@ async function adminDelete(db, body) {
   return { ok: true };
 }
 
-// A written answer that shouldn't be up: gone from the list (their gift stays).
-// An open poll's: the whole answer. An Other's: just the Other (their other picks stay).
+// A written answer that shouldn't be up (question q's): gone from the list, their gift stays.
+// An open question's: that answer is taken back — and if it was their only answer, their whole
+// vote. An Other's: just the Other (their other picks stay; a single question with only Other
+// picked is taken back like an open one).
 async function adminRemoveAnswer(db, body) {
   if (!isDocId(body.pollId) || !isDocId(body.uid)) throw new HttpError(400, "Missing poll or player.");
+  const qi = Number.isInteger(body.q) ? body.q : 0;
   const ref = pollRef(db, body.pollId);
   const voteRef = ref.collection("votes").doc(body.uid);
   return db.runTransaction(async (tx) => {
@@ -313,17 +368,23 @@ async function adminRemoveAnswer(db, body) {
     if (!pollSnap.exists) throw new HttpError(404, "No such poll.");
     if (!voteSnap.exists) return { ok: true, alreadyGone: true };
     const p = pollSnap.data(), v = voteSnap.data();
-    const counts = Array.from({ length: slotsOf(p) }, (_, i) => (p.counts || [])[i] || 0);
-    const other = hasOther(p) ? p.options.length : -1;
-    const keep = kindOf(p) === "open" ? [] : (v.picks || []).filter(i => i !== other);
-    (v.picks || []).filter(i => !keep.includes(i)).forEach(i => { if (counts[i] > 0) counts[i]--; });
-    if (keep.length) {
-      tx.update(ref, { counts });
-      const { text: _removed, ...rest } = v;
-      tx.set(voteRef, { ...rest, picks: keep });
-    } else {
-      tx.update(ref, { counts, total: Math.max(0, (p.total || 0) - 1) });
+    const qs = questionsOf(p), ans = answersOf(v).map(a => ({ ...a }));
+    const q = qs[qi], a = ans[qi];
+    if (!q || !a || !a.text) return { ok: true, alreadyGone: true };
+    const other = q.allowOther ? q.options.length : -1;
+    const keep = q.kind === "open" ? [] : (a.picks || []).filter(k => k !== other);
+    (a.picks || []).filter(k => !keep.includes(k)).forEach(k => { if (q.counts[k] > 0) q.counts[k]--; });
+    ans[qi] = { picks: keep };
+    // nothing left of their answers at all: the whole vote goes (and the count with it)
+    const anyLeft = ans.some((x, i) => (x.picks && x.picks.length) || (x.text && i !== qi));
+    if (!anyLeft) {
+      qs.forEach((qq, i) => { if (i !== qi && qq.kind !== "open") (ans[i].picks || []).forEach(k => { if (qq.counts[k] > 0) qq.counts[k]--; }); });
+      tx.update(ref, { questions: qs, total: Math.max(0, (p.total || 0) - 1) });
       tx.delete(voteRef);
+    } else {
+      tx.update(ref, { questions: qs });
+      const { picks: _p, text: _t, ...rest } = v;
+      tx.set(voteRef, { ...rest, answers: ans });
     }
     return { ok: true };
   });

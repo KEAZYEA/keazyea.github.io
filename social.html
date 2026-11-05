@@ -720,6 +720,12 @@
             color: white;
         }
 
+        /* Popups never run off the screen: anything long scrolls inside them, and a
+           long word (a link in a bio) wraps instead of being cut off at the side.
+           (Chat, an opened post and the tier editor scroll inside already.) */
+        .modal-box { overflow-wrap: anywhere; box-sizing: border-box; }
+        .modal-box:not(.dm-modal-box):not(.postclan-box):not(.tier-editor-box) { max-height: calc(100vh - 32px); max-height: calc(100dvh - 32px); overflow-y: auto; overscroll-behavior: contain; }
+
         .modal-title {
             font-weight: 700;
             font-size: 1.1rem;
