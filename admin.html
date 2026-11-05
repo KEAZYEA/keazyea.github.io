@@ -614,6 +614,25 @@
 
                 <hr style="border-color:#2a2a4a; margin:40px 0;">
 
+                <details class="admin-section" id="worldChatSection">
+                <summary>🌍 World Chat</summary>
+                <p class="promo-sub" style="margin-top:0;">The chat in Social → 🌍 World Chat. To delete a message or time someone out,
+                    tap their message there (you get 🗑 Delete and ⏱ Timeout on everyone's), or use the Reports Queue. A timeout stops
+                    them posting anywhere on the site. Slow mode and pausing don't apply to you.</p>
+                <div class="token-form">
+                    <label>🐢 Slow mode (seconds between someone's messages, 0 = off)
+                        <input type="number" id="wcSlowSeconds" min="0" max="300" step="1" value="5" class="token-input"></label>
+                    <label style="flex-direction:row; align-items:center; gap:8px;"><input type="checkbox" id="wcPaused"> ⏸️ Pause the chat (nobody but you can post)</label>
+                    <label style="flex-direction:row; align-items:center; gap:8px;"><input type="checkbox" id="wcVideosOff"> 🎬 Switch videos off (World Chat and DMs — photos and messages still work; for if video costs ever surprise you)</label>
+                </div>
+                <p class="promo-sub" id="wcSettingsNow">Loading…</p>
+                <p class="promo-sub" id="wcTranslateNow">🌐 Translations: loading…</p>
+                <button class="btn-primary" id="wcSaveBtn" onclick="saveWorldChatSettings()" style="padding:10px 20px;">Save</button>
+                <a class="token-small-btn" href="social.html" target="_blank" rel="noopener" style="margin-left:8px; text-decoration:none;">Open World Chat ↗</a>
+                </details>
+
+                <hr style="border-color:#2a2a4a; margin:40px 0;">
+
                 <details class="admin-section">
                 <summary>🛠️ Server Maintenance</summary>
                 <p class="promo-sub" id="maintenanceStatusText">Loading status...</p>
@@ -2552,6 +2571,7 @@ const targetBtn = r.targetUid
             <button class="view-history-btn" data-uid="${escapeHtml(r.targetUid || "")}" style="background:#4169e1; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">View Name History</button>
             <button class="timeout-report-btn" data-report-id="${escapeHtml(r.id)}" data-uid="${escapeHtml(r.targetUid || "")}" style="background:#aa7a1e; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Timeout...</button>
             <button class="ban-report-btn" data-report-id="${escapeHtml(r.id)}" data-uid="${escapeHtml(r.targetUid || "")}" style="background:#aa3838; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Ban Permanently</button>
+            ${r.where === "worldChat" && r.contentId ? `<button class="delete-chat-msg-btn" data-report-id="${escapeHtml(r.id)}" data-msg-id="${escapeHtml(r.contentId)}" style="background:#6c3fb5; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">🗑 Delete the 🌍 chat message</button>` : ""}
             <button class="dismiss-report-btn" data-report-id="${escapeHtml(r.id)}" style="background:#555; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Dismiss</button>
         </div>
     </div>`;
@@ -2577,6 +2597,16 @@ const targetBtn = r.targetUid
                 });
                 list.querySelectorAll(".dismiss-report-btn").forEach(btn => {
                     btn.addEventListener("click", () => handleDismissReport(btn.dataset.reportId));
+                });
+                list.querySelectorAll(".delete-chat-msg-btn").forEach(btn => {
+                    btn.addEventListener("click", async () => {
+                        if (!await showConfirmModal("Delete chat message", "Delete this World Chat message for everyone? (The report stays open — Dismiss it, or time them out, after.)")) return;
+                        try {
+                            const r = await AppState.deleteWorldChat(btn.dataset.msgId);
+                            btn.disabled = true;
+                            btn.textContent = r.deleted ? "✓ Deleted" : "Already gone";
+                        } catch (e) { showInfoModal("Couldn't delete", e.message); }
+                    });
                 });
             }
 
@@ -3478,6 +3508,43 @@ async function handleLookupUserByUid() {
                 try { await AppState.adminPolls("adminDelete", { pollId }); await loadAdminPolls(); } catch (e) { showInfoModal("Couldn't delete it", e.message); }
             };
             document.getElementById("pollsSection").addEventListener("toggle", (e) => { if (e.target.open) loadAdminPolls(); });
+
+            // 🌍 World Chat: slow mode and pause (live, so it shows what players have now)
+            let wcCfgUnsub = null;
+            // 🌐 how much translating this month (Google's free amount is 500,000 characters a month)
+            async function loadTranslateUsage() {
+                const el = document.getElementById("wcTranslateNow");
+                if (typeof AppState.adminChatStatus !== "function") return;
+                try {
+                    const { translate: t } = await AppState.adminChatStatus();
+                    el.textContent = !t.configured
+                        ? "🌐 Translate isn't switched on yet — add GOOGLE_TRANSLATE_KEY in Vercel (see the setup steps)."
+                        : `🌐 Translations this month (${t.month}): ${t.chars.toLocaleString()} of ${t.limit.toLocaleString()} characters (${t.limit ? Math.round(t.chars / t.limit * 100) : 0}%). It pauses itself at the limit until next month.`;
+                } catch (err) { el.textContent = "🌐 Couldn't load translation use: " + err.message; }
+            }
+            document.getElementById("worldChatSection").addEventListener("toggle", (e) => {
+                if (e.target.open) loadTranslateUsage();
+                if (!e.target.open || wcCfgUnsub || typeof AppState.listenToWorldChatConfig !== "function") return;
+                wcCfgUnsub = AppState.listenToWorldChatConfig(c => {
+                    document.getElementById("wcSlowSeconds").value = c.slowSeconds;
+                    document.getElementById("wcPaused").checked = c.paused;
+                    document.getElementById("wcVideosOff").checked = c.videosOff;
+                    document.getElementById("wcSettingsNow").textContent = `Now: ${c.paused ? "⏸️ paused" : "🟢 open"} · slow mode ${c.slowSeconds ? c.slowSeconds + "s" : "off"} · videos ${c.videosOff ? "🚫 off" : "🎬 on"}`;
+                });
+            });
+            window.saveWorldChatSettings = async () => {
+                const slow = Number(document.getElementById("wcSlowSeconds").value);
+                const paused = document.getElementById("wcPaused").checked;
+                const videosOff = document.getElementById("wcVideosOff").checked;
+                if (!Number.isInteger(slow) || slow < 0 || slow > 300) { showInfoModal("Slow mode", "Enter 0–300 seconds."); return; }
+                const btn = document.getElementById("wcSaveBtn");
+                btn.disabled = true;
+                try {
+                    await AppState.adminWorldChatSettings(slow, paused, videosOff);
+                    showInfoModal("Saved", `World Chat is ${paused ? "paused" : "open"}, slow mode ${slow ? slow + "s" : "off"}, videos ${videosOff ? "off" : "on"}.`);
+                } catch (e) { showInfoModal("Couldn't save", e.message); }
+                btn.disabled = false;
+            };
 
             // "5 🪙 + 2 🧰 + 👑 Royal Crown"
             function giftContents(g) {

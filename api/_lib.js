@@ -203,7 +203,12 @@ function dayStartMs(ms) {
    agrees on it without anything needing to have run first. */
 const VIEW_QUESTS = ["readNews", "viewUnit", "compareUnits", "readTip", "checkPromo",
   "viewFormation", "viewTierList", "viewProfile", "likeOrVote", "enterWeekly"];
-const ACTION_QUESTS = ["postClan", "sendMessage", "shareFormation", "shareTierList", "comment"];
+const ACTION_QUESTS = ["postClan", "sendMessage", "shareFormation", "shareTierList", "comment", "worldChat"];
+// A quest added later joins the rotation only from its first day, so the days
+// before it (and a day already under way when it's deployed) keep the quests
+// they had. (Day keys are Singapore dates.)
+const QUEST_FROM = { worldChat: "2026-11-08" };
+const questActiveOn = (q, dayKey) => !QUEST_FROM[q] || dayKey >= QUEST_FROM[q];
 const QUEST_POINTS_PER_DAY = 4;
 const QUEST_MIXES = [[1, 1, 2], [2, 2], [1, 1, 1, 1]];
 
@@ -269,7 +274,7 @@ function questsForDay(dayKey) {
   const rand = seededRandom(hashString("kih-quests-v2:" + dayKey));
   const mix = QUEST_MIXES[Math.floor(rand() * QUEST_MIXES.length)];
   const viewPick = shuffled(views, rand);
-  const actionPick = shuffled(ACTION_QUESTS, rand);
+  const actionPick = shuffled(ACTION_QUESTS.filter(q => questActiveOn(q, dayKey)), rand);
   const picked = mix.map(points => (points === 2 ? actionPick : viewPick).shift());
   return ["login", ...picked];
 }
