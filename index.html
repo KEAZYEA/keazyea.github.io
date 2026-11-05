@@ -1023,8 +1023,18 @@ body {
         /* ---- 📊 Polls, in the News sheet ---- */
         .poll-card { padding: 13px 14px; margin-bottom: 10px; border-radius: 14px; border: 1px solid var(--kih-border); border-left: 4px solid #8a4dff;
             background: linear-gradient(100deg, rgba(138, 77, 255, 0.14), rgba(255, 255, 255, 0.02) 65%), rgba(255, 255, 255, 0.02); }
-        .poll-card.flash { animation: pollFlash 2.6s ease; }
-        @keyframes pollFlash { 0%, 45% { box-shadow: 0 0 0 3px rgba(255, 215, 94, 0.8); } }
+        /* in All: one banner for the polls; under 📊 Polls: one line each (tap to open) */
+        .poll-banner { display: flex; align-items: center; gap: 12px; width: 100%; padding: 12px 14px; margin-bottom: 10px; border-radius: 14px; cursor: pointer; text-align: left;
+            font-family: inherit; color: var(--kih-text); border: 1px solid rgba(180, 140, 255, 0.4); background: linear-gradient(100deg, rgba(138, 77, 255, 0.22), rgba(224, 64, 122, 0.12)); }
+        .poll-banner-icon { font-size: 1.6rem; line-height: 1; }
+        .poll-banner-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+        .poll-banner-text b { font-size: 0.98rem; }
+        .poll-banner-text small { color: var(--kih-text-dim); font-size: 0.8rem; }
+        .poll-banner-go { font-size: 1.4rem; color: #b48cff; }
+        .news-card.poll-row { --nc: 138, 77, 255; }
+        .news-card.poll-row .news-card-top { flex-wrap: wrap; gap: 6px; }
+        .news-card.poll-row .news-card-snip { color: #b48cff; font-weight: 700; }
+        .news-card.poll-row.todo { border-color: rgba(180, 140, 255, 0.5); }
         .poll-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 8px; }
         .poll-chip { font-size: 0.68rem; font-weight: 900; letter-spacing: 0.03em; padding: 3px 8px; border-radius: 999px; background: rgba(255, 255, 255, 0.08); color: var(--kih-text-dim); }
         .poll-chip.kind { background: rgba(138, 77, 255, 0.25); color: #d9c8ff; }
@@ -2665,6 +2675,8 @@ body {
            history.pushState({ kihPage: page }, "");
        }
        window.addEventListener("popstate", (e) => {
+           // A poll open in the News sheet: Back closes it (back to the list), and stays here.
+           if (window.closeOpenPollFromHistory && window.closeOpenPollFromHistory()) return;
            // Steps inside a section (e.g. a unit in Troops & Heroes) fire in
            // that section's frame, not here. The only step of this page with
            // no label is the very first one, which is Home.
@@ -3899,30 +3911,41 @@ function getNewsTypeInfo(type) {
             const body = document.getElementById("newsSheetBody");
             const chips = document.getElementById("newsChips");
             const post = newsOpenId ? latestNewsItems.find(n => n.id === newsOpenId) : null;
-            document.getElementById("newsBackBtn").style.display = post ? "" : "none";
-            document.getElementById("newsSheetTitle").textContent = post ? "" : "📰 News";
-            chips.style.display = post ? "none" : "";
+            const poll = !post && pollOpenId && pollsData ? pollsData.polls.find(x => x.id === pollOpenId) : null;
+            const back = document.getElementById("newsBackBtn");
+            back.style.display = post || poll ? "" : "none";
+            back.textContent = poll ? "‹ Back" : "‹ All news";
+            document.getElementById("newsSheetTitle").textContent = post ? "" : poll ? "📊 Poll" : "📰 News";
+            chips.style.display = post || poll ? "none" : "";
             if (post) {
                 body.innerHTML = newsArticleHtml(post);
                 body.scrollTop = 0;
                 return;
             }
-            const count = (k) => (k === "all" ? latestNewsItems.length + (pollsData ? pollsData.polls.filter(pollOpenNow).length : 0)
+            // one poll, on its own (‹ Back goes back to where you were)
+            if (poll) {
+                const fresh = body.dataset.showing !== "poll:" + poll.id;
+                keepPollTyping(body, () => { body.innerHTML = pollCardHtml(poll); });
+                body.dataset.showing = "poll:" + poll.id;
+                if (fresh) body.scrollTop = 0;
+                return;
+            }
+            body.dataset.showing = "";
+            const count = (k) => (k === "all" ? latestNewsItems.length
                 : k === "polls" ? (pollsData ? pollsData.polls.length : 0) : latestNewsItems.filter(n => newsKind(n) === k).length);
             chips.innerHTML = NEWS_CHIPS.filter(([k]) => k === "all" || k === "polls" || count(k) > 0)
                 .map(([k, label]) => `<button type="button" class="kih-chip${newsFilter === k ? " active" : ""}" onclick="setNewsFilter('${k}')">${label}<small>${count(k)}</small></button>`).join("");
             const list = newsInView();
             const pollsHtml = newsPollsHtml(newsFilter);
-            if (newsFilter === "polls") { keepPollTyping(body, () => { body.innerHTML = pollsHtml; }); focusPendingPoll(); return; }
-            keepPollTyping(body, () => { body.innerHTML = pollsHtml + (list.length ? list.map(n => {
+            if (newsFilter === "polls") { body.innerHTML = pollsHtml; return; }
+            body.innerHTML = pollsHtml + (list.length ? list.map(n => {
                 const t = getNewsTypeInfo(n.type);
                 return `<button type="button" class="news-card ${t.cls}" data-id="${escapeHomeHtml(n.id)}">
                     <div class="news-card-top"><span class="news-tag ${t.cls}">${t.label}</span><span class="news-when">${timeAgo(n.createdAt)}</span>${n.createdAt > newsSeenBefore ? `<span class="news-new">NEW</span>` : ""}</div>
                     <div class="news-card-title">${escapeHomeHtml(n.title)}</div>
                     <div class="news-card-snip">${escapeHomeHtml(stripHtmlForPreview(n.bodyHtml, 180))}</div>
                 </button>`;
-            }).join("") : `<div class="news-empty">📭 No news yet — check back soon.</div>`); });
-            focusPendingPoll();
+            }).join("") : `<div class="news-empty">📭 No news yet — check back soon.</div>`);
         }
         // bodyHtml is rendered as-is (not escaped) — it's admin-authored
         // (Firestore rules restrict writes to the admin uid), the same trust
@@ -3972,15 +3995,19 @@ function getNewsTypeInfo(type) {
             paintNews();
         }
         window.openSingleNewsModal = openSingleNewsModal;
-        function showNewsList() { newsOpenId = null; paintNews(); }
+        function showNewsList() {
+            newsOpenId = null;
+            if (pollOpenId) { leavePollStep(); if (!pollOpenId) paintNews(); return; }
+            paintNews();
+        }
         window.showNewsList = showNewsList;
         window.closeSingleNewsModal = showNewsList;
-        function setNewsFilter(k) { newsFilter = k; paintNews(); document.getElementById("newsSheetBody").scrollTop = 0; }
+        function setNewsFilter(k) { newsFilter = k; pollOpenId = null; paintNews(); document.getElementById("newsSheetBody").scrollTop = 0; }
         window.setNewsFilter = setNewsFilter;
 
         function closeNewsModal() {
             document.getElementById("newsModalOverlay").classList.remove("open");
-            pollFocusId = null;
+            if (pollOpenId) leavePollStep();
             newsOpenId = null;
             newsFilter = "all";
         }
@@ -3999,8 +4026,8 @@ function getNewsTypeInfo(type) {
            once you've answered (or the poll's over); you can change your
            answer until it ends; the first answer can pay a 🎁 gift. Open
            polls sit at the top of All; 📊 Polls has every one. */
-        let pollsData = null, pollsLoading = false, pollBusy = null, pollFocusId = null;
-        let pollFlash = null; // { id, until }: a poll opened from the inbox stays highlighted through redraws
+        let pollsData = null, pollsLoading = false, pollBusy = null;
+        let pollOpenId = null; // the poll open on its own page in the sheet (null = the list)
         const pollPicks = {};      // multi-select: what you've ticked but not sent yet
         const pollDrafts = {};     // open: what you've typed but not sent yet
         const pollShowAll = new Set(); // open polls showing every answer
@@ -4022,7 +4049,7 @@ function getNewsTypeInfo(type) {
         const newsSheetOpen = () => document.getElementById("newsModalOverlay").classList.contains("open");
         async function loadPolls() {
             if (pollsLoading) return;
-            if (!AppState.getCurrentUser() || typeof AppState.listPolls !== "function") { pollsData = null; updateNewsBadgeHome(latestNewsItems); if (newsSheetOpen() && !newsOpenId) paintNews(); return; }
+            if (!AppState.getCurrentUser() || typeof AppState.listPolls !== "function") { pollsData = null; pollOpenId = null; updateNewsBadgeHome(latestNewsItems); if (newsSheetOpen() && !newsOpenId) paintNews(); return; }
             pollsLoading = true;
             try {
                 const r = await AppState.listPolls();
@@ -4052,26 +4079,52 @@ function getNewsTypeInfo(type) {
             const t = body.querySelector(`.poll-text[data-poll="${CSS.escape(typing.id)}"][data-q="${typing.q}"]`);
             if (t) { t.focus(); try { t.setSelectionRange(typing.s, typing.e); } catch (e) { } }
         }
-        // from the inbox: that poll, on screen and highlighted
-        function focusPendingPoll() {
-            if (!pollFocusId || !pollsData) return;
-            const card = document.getElementById("poll_" + pollFocusId);
-            if (!card) return;
-            pollFocusId = null;
-            card.scrollIntoView({ block: "center" });
-            pollFlash = { id: card.id.slice(5), until: Date.now() + 2600 };
-            card.classList.add("flash");
-        }
-
         function newsPollsHtml(filter) {
             if (filter !== "all" && filter !== "polls") return "";
             if (!AppState.getCurrentUser()) return filter === "polls" ? `<div class="poll-signin">📊 Sign in (⚙️ Settings) to vote in polls and see what everyone thinks.</div>` : "";
             if (!pollsData) return filter === "polls" ? `<div class="news-empty">Loading polls…</div>` : "";
             if (pollsData.error && !pollsData.polls.length) return filter === "polls" ? `<div class="news-empty">Couldn't load the polls — ${escapeHomeHtml(pollsData.error)}</div>` : "";
-            const list = filter === "all" ? pollsData.polls.filter(pollOpenNow)
-                : [...pollsData.polls.filter(pollOpenNow), ...pollsData.polls.filter(p => !pollOpenNow(p))];
-            if (!list.length) return filter === "polls" ? `<div class="news-empty">📊 No polls yet — check back soon!</div>` : "";
-            return list.map(pollCardHtml).join("");
+            // All: one small banner (only while there's a poll open), not the polls themselves
+            if (filter === "all") {
+                const open = pollsData.polls.filter(pollOpenNow);
+                if (!open.length) return "";
+                const todo = open.filter(p => !pollAnswered(p)).length;
+                return `<button type="button" class="poll-banner" data-poll-filter="1"><span class="poll-banner-icon">📊</span>
+                    <span class="poll-banner-text"><b>${todo ? `${todo} poll${todo === 1 ? "" : "s"} to answer` : "Polls"}</b><small>${todo ? "Have your say — tap to see" : "You've answered them all — see the results"}</small></span><span class="poll-banner-go">›</span></button>`;
+            }
+            const list = [...pollsData.polls.filter(pollOpenNow), ...pollsData.polls.filter(p => !pollOpenNow(p))];
+            if (!list.length) return `<div class="news-empty">📊 No polls yet — check back soon!</div>`;
+            return list.map(pollRowHtml).join("");
+        }
+        // A poll in the list: its title and where you stand — tap to open it.
+        function pollRowHtml(p) {
+            const open = pollOpenNow(p), answered = pollAnswered(p), many = p.questions.length > 1;
+            const kind = many ? `📝 ${p.questions.length} questions` : `📊 ${POLL_KIND_LABEL[p.questions[0].kind] || "Poll"}`;
+            const state = !open ? `<span class="poll-chip">✅ Ended</span>` : answered ? `<span class="poll-chip got">✓ Answered</span>` : `<span class="poll-chip open">⏳ ${pollTimeLeft(p.expiresAt - pollNow())} left</span>`;
+            const gift = p.reward && open && !p.rewarded ? `<span class="poll-chip gift">🎁 ${pollGiftText(p.reward)}</span>` : "";
+            const go = !open ? "See the results" : answered ? "See the results · change your answers" : many ? "Answer it" : p.questions[0].kind === "open" ? "Answer it" : "Vote";
+            return `<button type="button" class="news-card poll-row${open && !answered ? " todo" : ""}" data-poll-open="${escapeHomeHtml(p.id)}">
+                <div class="news-card-top"><span class="poll-chip kind">${kind}</span>${state}${gift}</div>
+                <div class="news-card-title">${escapeHomeHtml(p.title)}</div>
+                <div class="news-card-snip">${go} ›</div></button>`;
+        }
+        // Opening a poll is a step the phone's Back button undoes (back to the list).
+        function openPoll(id) {
+            pollOpenId = id;
+            if (!(history.state && history.state.kihPoll)) history.pushState({ ...(history.state || {}), kihPoll: id }, "");
+            paintNews();
+        }
+        window.closeOpenPollFromHistory = function () {
+            if (!pollOpenId) return false;
+            pollOpenId = null;
+            if (newsSheetOpen()) paintNews();
+            return true;
+        };
+        // ‹ Back (or ✕) with a poll open: take its step off the history too, so the phone's
+        // Back doesn't need an extra press later.
+        function leavePollStep() {
+            if (history.state && history.state.kihPoll) history.back(); // → popstate closes the poll
+            else { pollOpenId = null; }
         }
         // Everyone's written answers to one question (an open question's, or what people
         // put under ✏️ Other): name and picture open their profile; the first 5, then Show all.
@@ -4176,8 +4229,7 @@ function getNewsTypeInfo(type) {
                 : many ? `Answer all ${p.questions.length} questions — the results show after`
                 : q0.kind === "open" ? "Answer to see what everyone else said"
                 : q0.kind === "multi" ? "Tick as many as you like, then Vote — results show after" : "Vote to see the results";
-            const flash = pollFlash && pollFlash.id === p.id && Date.now() < pollFlash.until ? " flash" : "";
-            return `<div class="poll-card${flash}" id="poll_${id}">${head}${body}${send}<div class="poll-foot">${foot}</div></div>`;
+            return `<div class="poll-card" id="poll_${id}">${head}${body}${send}<div class="poll-foot">${foot}</div></div>`;
         }
 
         async function sendPollAnswer(p, answers, fromEl, picks) {
@@ -4206,6 +4258,9 @@ function getNewsTypeInfo(type) {
             paintNews();
         }
         document.getElementById("newsSheetBody").addEventListener("click", (e) => {
+            const row = e.target.closest("[data-poll-open]");
+            if (row) { openPoll(row.dataset.pollOpen); return; }
+            if (e.target.closest("[data-poll-filter]")) { setNewsFilter("polls"); return; }
             const who = e.target.closest(".poll-answer [data-uid]");
             if (who) { openViewProfileModalHome(who.dataset.uid, who.dataset.name, who.dataset.av); return; }
             const more = e.target.closest("[data-poll-more]");
@@ -4849,11 +4904,10 @@ window.closeInboxItemModal = closeInboxItemModal;
         }
         // A new poll: 📰 News → 📊 Polls, at that poll.
         function openInboxPoll(pollId) {
-            pollFocusId = pollId;
             openNewsSheet();
             newsOpenId = null;
-            newsFilter = "polls";
-            paintNews();
+            newsFilter = "polls";   // ‹ Back goes to the polls
+            openPoll(pollId);
             loadPolls();
         }
         window.openInboxPoll = openInboxPoll;
@@ -5543,6 +5597,8 @@ window.closeInboxItemModal = closeInboxItemModal;
             if (onClick) {
                 toast.style.cursor = "pointer";
                 toast.addEventListener("click", () => { toast.remove(); onClick(); });
+            } else {
+                toast.style.pointerEvents = "none"; // nothing to tap: what's under it (a poll's Save) still works
             }
             document.body.appendChild(toast);
             setTimeout(() => toast.remove(), 3200);
