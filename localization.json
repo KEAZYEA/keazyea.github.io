@@ -10414,5 +10414,53 @@
     "troop_get_from_boss": {
         "key": "troop_get_from_boss",
         "value": "2603"
+    },
+    "description_clan_members_tab_clan_clash_hunt": {
+        "key": "description_clan_members_tab_clan_clash_hunt",
+        "value": "2604"
+    },
+    "description_clan_members_tab_activity_questPoints": {
+        "key": "description_clan_members_tab_activity_questPoints",
+        "value": "2605"
+    },
+    "caption_clan_contribution": {
+        "key": "caption_clan_contribution",
+        "value": "2606"
+    },
+    "caption_personal_contribution": {
+        "key": "caption_personal_contribution",
+        "value": "2607"
+    },
+    "caption_personal_contribution_dates": {
+        "key": "caption_personal_contribution_dates",
+        "value": "2608"
+    },
+    "caption_clan_members_quest_points": {
+        "key": "caption_clan_members_quest_points",
+        "value": "2609"
+    },
+    "caption_extended_info_quest_points": {
+        "key": "caption_extended_info_quest_points",
+        "value": "2610"
+    },
+    "caption_extended_info_last_online": {
+        "key": "caption_extended_info_last_online",
+        "value": "2611"
+    },
+    "clan_members_clan_clash_empty": {
+        "key": "clan_members_clan_clash_empty",
+        "value": "2612"
+    },
+    "clan_members_clan_clash_hunt_empty": {
+        "key": "clan_members_clan_clash_hunt_empty",
+        "value": "2613"
+    },
+    "description_arena_battlepass_get_rewards_format": {
+        "key": "description_arena_battlepass_get_rewards_format",
+        "value": "2614"
+    },
+    "description_arena_battlepass_get_rewards_levels_format": {
+        "key": "description_arena_battlepass_get_rewards_levels_format",
+        "value": "2615"
     }
 }
