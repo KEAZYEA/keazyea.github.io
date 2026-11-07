@@ -2422,6 +2422,18 @@
         .find-bar .find-older { font-size: 0.75rem; }
         mark.find-hit { background: rgba(255, 215, 94, 0.4); color: inherit; border-radius: 3px; padding: 0 1px; }
         mark.find-hit.cur { background: #ffd75e; color: #1a1a1a; box-shadow: 0 0 0 2px rgba(255, 215, 94, 0.5); }
+
+        /* ---- messages on their way ("Sending…") ---- */
+        .wc-msg.pending .wc-bubble, .dm-msg.pending { opacity: 0.72; }
+        .pend-status { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; margin-top: 3px; font-size: 0.72rem; color: #9a9ab0; }
+        .dm-msg .pend-status { color: inherit; opacity: 0.85; }
+        .pend-status.failed { color: #ff8f8f; opacity: 1; }
+        .pend-status button { background: none; border: none; padding: 0; font: inherit; color: #c9b0ff; text-decoration: underline; cursor: pointer; }
+        .pend-dots::after { content: "…"; display: inline-block; animation: pendDots 1.2s steps(4, end) infinite; overflow: hidden; vertical-align: bottom; width: 0; }
+        @keyframes pendDots { to { width: 1.1em; } }
+        .pend-thumbs { display: flex; flex-wrap: wrap; gap: 6px; margin: 2px 0 4px; }
+        .pend-thumbs img, .pend-thumbs span { width: 64px; height: 64px; border-radius: 8px; object-fit: cover; background: #0d0d1a; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
+        .dm-msg.pending.failed, .wc-msg.pending.failed .wc-bubble { opacity: 1; outline: 1px solid rgba(255, 120, 120, 0.55); }
     </style>
 </head>
 
@@ -6968,6 +6980,7 @@ window.removeClanIconPreview = function () {
             stopWorldChat();
             if (!AppState.getCurrentUser() || typeof AppState.listenToWorldChat !== "function") return;
             listenToChannel();
+            if (!document.getElementById("wcInput").value) restoreWorldDraft(); // what you'd started here last time
             worldPeekUnsub = AppState.listenToWorldChat(WORLD_PAGE, (msgs) => { worldPeek = msgs; updateWorldBadge(); }, () => { });
             worldCfgUnsub = AppState.listenToWorldChatConfig(c => { worldCfg = c; paintWorldCompose(); });
             AppState.getMyBlockedUids().then(list => { worldBlocked = new Set(list); renderWorldChat(); updateWorldBadge(); }).catch(() => { });
@@ -7003,6 +7016,7 @@ window.removeClanIconPreview = function () {
         // tap a channel: you're in it (what you send goes there); remembered for next time
         window.setWorldFilter = function (id) {
             if (!WORLD_TAG_BY_ID[id] || id === worldFilter) return;
+            stashWorldDraft(); // this channel keeps what you'd started
             worldFilter = id;
             try { localStorage.setItem(WORLD_CHANNEL_KEY, id); } catch (e) { }
             cancelWorldReply();
@@ -7013,6 +7027,7 @@ window.removeClanIconPreview = function () {
             if (AppState.getCurrentUser() && typeof AppState.listenToWorldChat === "function") listenToChannel();
             renderWorldChat();
             updateWorldBadge();
+            restoreWorldDraft(); // …and the one you're in gets its own back
         };
 
         function renderWorldChat() {
@@ -7027,7 +7042,10 @@ window.removeClanIconPreview = function () {
             if (worldLive && !worldNoOlder && worldAll().length >= WORLD_PAGE) {
                 html += `<button type="button" class="wc-older" data-older="1">${worldLoadingOlder ? "Loading…" : "↑ Load older messages"}</button>`;
             }
-            if (!list.length) {
+            // messages of yours on their way: gone once the real ones are here
+            worldPending = worldPending.filter(p => { const here = pendArrived(p, id => worldById(id)); if (here) dropPending(worldPending, p); return !here; });
+            const pendHere = worldPending.filter(p => p.channel === worldFilter);
+            if (!list.length && !pendHere.length) {
                 const tag = WORLD_TAG_BY_ID[worldFilter];
                 html += `<div class="wc-empty">${worldFailed ? "Couldn't load the chat — refresh the page to try again."
                     : !worldLive ? "Loading the chat…"
@@ -7061,6 +7079,21 @@ window.removeClanIconPreview = function () {
                     </div>
                 </div>`;
             }
+            // your own picture on them (as on your last message, else your profile's)
+            const meMsg = pendHere.length ? [...worldAll()].reverse().find(m => m.uid === myUid) : null;
+            const meLp = pendHere.length && AppState.getLocalProfile ? AppState.getLocalProfile() || {} : {};
+            const meLook = { uid: myUid, name: (meMsg && meMsg.name) || meLp.name || "You", avatar: (meMsg && meMsg.avatar) || meLp.avatar || "" };
+            pendHere.forEach(p => {
+                const quote = p.reply ? `<span class="dm-msg-quote wc-quote"><b>${escapeHtml(p.reply.name)}</b>${escapeHtml(p.reply.text)}</span>` : "";
+                html += `<div class="wc-msg mine pending${p.state === "failed" ? " failed" : ""}" id="wcPend_${p.tempId}">
+                    <div class="wc-av">${prev && prev.uid === myUid ? "" : `<span class="wc-av-tap">${bordered(myUid, worldAvatar(meLook))}</span>`}</div>
+                    <div class="wc-main">
+                        <div class="wc-bubble">${quote}${pendThumbs(p.items)}${p.text ? `<span class="dm-msg-text">${escapeHtml(p.text)}</span>` : ""}</div>
+                        ${pendStatus(p, "world")}
+                    </div>
+                </div>`;
+                prev = { uid: myUid, createdAt: Date.now(), tag: worldFilter };
+            });
             const last = list[list.length - 1], lastId = last ? last.id : "";
             const fresh = !box.dataset.drawn;
             const atBottom = box.scrollTop + box.clientHeight >= box.scrollHeight - 80;
@@ -7090,6 +7123,8 @@ window.removeClanIconPreview = function () {
         });
         document.getElementById("wcList").addEventListener("click", (e) => {
             if (e.target.closest("[data-older]")) { loadOlderWorldChat(); return; }
+            const pr = e.target.closest("[data-pend-retry], [data-pend-del]");
+            if (pr) { worldPendingAction(pr.dataset.pendRetry ? "retry" : "delete", pr.dataset.pendRetry || pr.dataset.pendDel); return; }
             if (e.target.closest(".rx-chip")) return; // its own onclick
             const row = e.target.closest(".wc-msg");
             if (!row) return;
@@ -7205,7 +7240,7 @@ window.removeClanIconPreview = function () {
             input.style.height = "auto";
             input.style.height = Math.min(input.scrollHeight + 2, 120) + "px";
         }
-        document.getElementById("wcInput").addEventListener("input", () => { autosizeWorldInput(); paintWorldCompose(); });
+        document.getElementById("wcInput").addEventListener("input", (e) => { autosizeWorldInput(); paintWorldCompose(); keepDraftText("world:" + worldFilter, e.target.value); });
         document.getElementById("wcInput").addEventListener("keydown", (e) => {
             // Enter sends on a keyboard; on phones it's a new line (tap Send)
             if (e.key === "Enter" && !e.shiftKey && !e.isComposing && !window.matchMedia("(pointer: coarse)").matches) {
@@ -7216,36 +7251,172 @@ window.removeClanIconPreview = function () {
         window.sendWorldChat = async function () {
             const input = document.getElementById("wcInput");
             const text = input.value.trim();
-            const items = chatMedia.world;
+            const items = chatMedia.world.slice();
             if ((!text && !items.length) || worldSending) return;
             if (chatMediaBusy("world")) { showToast("Your video is still being prepared…"); return; }
             if (text.length > WORLD_MAX_LEN) { showInfoModal("Too long", `Messages can be up to ${WORLD_MAX_LEN} characters.`); return; }
+            // on screen straight away; the box is ready for the next one
+            const p = { tempId: "wp" + (++pendSeq), channel: worldFilter, text, reply: worldReplyTo, items, state: "sending", status: "", error: "", ids: null };
+            worldPending.push(p);
+            input.value = "";
+            keepDraftText("world:" + worldFilter, "");
+            autosizeWorldInput();
+            cancelWorldReply();
+            chatMedia.world = []; // (the message on its way has them now)
+            paintChatPhotoBar("world");
+            renderWorldChat();
+            const box = document.getElementById("wcList");
+            box.scrollTop = box.scrollHeight;
+            await deliverWorld(p);
+        };
+        async function deliverWorld(p) {
             worldSending = true;
-            paintWorldCompose();
-            let uploads = null;
+            p.state = "sending"; p.error = ""; p.status = "";
+            paintWorldCompose(); renderWorldChat();
             try {
-                // a retry (e.g. after slow mode) doesn't upload them again
-                if (items.length) uploads = await uploadAllMedia("world");
-                const r = await AppState.sendWorldChat({ text, tag: document.getElementById("wcTag").value, ...(worldReplyTo ? { replyToId: worldReplyTo.id } : {}), ...(uploads ? { attachments: uploads } : {}) });
-                input.value = "";
-                autosizeWorldInput();
-                cancelWorldReply();
-                if (items.length) {
-                    items.forEach(p => { p.uploaded = null; });
-                    clearChatPhoto("world");
-                    if (chatLimits) { chatLimitsAt = 0; refreshChatLimits(); } // the counts went down
-                }
+                const uploads = p.items.length ? await uploadItems("world", p.items, (s) => { p.status = s; renderWorldChat(); }) : null;
+                p.status = "";
+                const r = await AppState.sendWorldChat({ text: p.text, tag: p.channel, ...(p.reply ? { replyToId: p.reply.id } : {}), ...(uploads ? { attachments: uploads } : {}) });
+                p.ids = r.ids || [r.id];
+                p.state = "sent"; p.sentAt = Date.now();
+                p.items.forEach(x => { x.uploaded = null; });
+                if (chatLimits) { chatLimitsAt = 0; refreshChatLimits(); } // the counts went down
                 worldNextAt = Date.now() + (r.slowSeconds || 0) * 1000;
             } catch (e) {
-                if (e.retryIn) worldNextAt = Date.now() + e.retryIn * 1000;
-                else showInfoModal("Couldn't send", e.message);
-                // refused for good (not just slow mode): don't keep the upload
-                if (uploads && !e.retryIn && e.status) items.forEach(p => { deleteUploadedMedia(p.uploaded); p.uploaded = null; });
-                paintChatPhotoBar("world");
+                p.state = "failed";
+                if (e.retryIn) {
+                    worldNextAt = Date.now() + e.retryIn * 1000;
+                    p.error = `slow mode — tap Retry in ${e.retryIn}s`;
+                } else {
+                    p.error = e.message;
+                    // refused for good (not just slow mode or the connection): don't keep the upload
+                    if (e.status && e.status < 500) p.items.forEach(x => { deleteUploadedMedia(x.uploaded); x.uploaded = null; });
+                }
             }
             worldSending = false;
             paintWorldCompose();
-        };
+            renderWorldChat();
+        }
+        function worldPendingAction(kind, id) {
+            const p = worldPending.find(x => x.tempId === id);
+            if (!p) return;
+            if (kind === "retry") {
+                if (worldSending) { showToast("One moment — another message is on its way."); return; }
+                const wait = Math.ceil((worldNextAt - Date.now()) / 1000);
+                if (wait > 0) { showToast(`Slow mode — ${wait}s to go.`); return; }
+                deliverWorld(p);
+            } else {
+                p.items.forEach(x => { deleteUploadedMedia(x.uploaded); });
+                dropPending(worldPending, p);
+                worldPending = worldPending.filter(x => x !== p);
+                renderWorldChat();
+            }
+        }
+
+        /* ---- ✍️ drafts: every chat keeps what you'd started ----
+           Each DM and each World Chat channel has its own: the text (kept in
+           this browser even after a refresh), the photos / videos you'd picked
+           and the message you were replying to. Moving to another chat never
+           carries them over (they could have gone to the wrong person). */
+        const chatDrafts = {}; // "dm:<threadId>" / "world:<channel>" → { text, media, reply }
+        const DRAFT_KEY = "kih_chat_draft_";
+        function keepDraftText(key, text) {
+            try { if (text && text.trim()) localStorage.setItem(DRAFT_KEY + key, text); else localStorage.removeItem(DRAFT_KEY + key); } catch (e) { }
+        }
+        function stashDraft(key, text, media, reply) {
+            chatDrafts[key] = { text, media, reply };
+            keepDraftText(key, text);
+        }
+        function takeDraft(key) {
+            const d = chatDrafts[key];
+            delete chatDrafts[key];
+            if (d) return d;
+            let text = "";
+            try { text = localStorage.getItem(DRAFT_KEY + key) || ""; } catch (e) { }
+            return { text, media: [], reply: null };
+        }
+        function stashWorldDraft() {
+            const input = document.getElementById("wcInput");
+            stashDraft("world:" + worldFilter, input.value, chatMedia.world, worldReplyTo);
+            input.value = "";
+            chatMedia.world = [];
+            paintChatPhotoBar("world");
+        }
+        function restoreWorldDraft() {
+            const input = document.getElementById("wcInput");
+            const d = takeDraft("world:" + worldFilter);
+            input.value = d.text || "";
+            chatMedia.world = d.media || [];
+            if (d.reply) {
+                worldReplyTo = d.reply;
+                document.getElementById("wcReplyText").textContent = `↩ Replying to ${d.reply.name}: ${d.reply.text}`;
+                document.getElementById("wcReplyBar").classList.add("show");
+            }
+            autosizeWorldInput();
+            paintChatPhotoBar("world");
+            paintWorldCompose();
+        }
+        function stashDmDraft() {
+            if (!currentDmThreadId) return;
+            const input = document.getElementById("dmInput");
+            stashDraft("dm:" + currentDmThreadId, input.value, chatMedia.dm, replyingToMsg);
+            input.value = "";
+            input.style.height = "";
+            chatMedia.dm = [];
+            paintChatPhotoBar("dm");
+        }
+        function restoreDmDraft() {
+            const input = document.getElementById("dmInput");
+            const d = takeDraft("dm:" + currentDmThreadId);
+            input.value = d.text || "";
+            input.dispatchEvent(new Event("input")); // the box fits it
+            chatMedia.dm = d.media || [];
+            paintChatPhotoBar("dm");
+            if (d.reply) {
+                replyingToMsg = d.reply;
+                const isMine = d.reply.senderUid === AppState.getCurrentUser()?.uid;
+                document.getElementById("dmReplyBarText").textContent = `Replying to ${isMine ? "You" : currentDmOtherName}: ${d.reply.text}`;
+                document.getElementById("dmReplyBar").classList.add("open");
+            }
+        }
+
+        /* ---- messages on their way ----
+           What you send shows straight away, marked "Sending…", while it's
+           uploaded and saved; then the real message takes its place. If it
+           fails it says so, with Retry (nothing is lost). */
+        let pendSeq = 0;
+        let worldPending = []; // { tempId, channel, text, reply, items, state: "sending"|"sent"|"failed", status, error, ids }
+        let dmPending = [];    // { tempId, thread, text, reply, items, state, status, error, ids, sentCount }
+        function pendThumbs(items) {
+            if (!items || !items.length) return "";
+            return `<div class="pend-thumbs">${items.map(p => p.preview ? `<img src="${p.preview}" alt="">` : `<span>🎬</span>`).join("")}</div>`;
+        }
+        function pendStatus(p, scope) {
+            if (p.state === "failed") return `<div class="pend-status failed">⚠️ Not sent${p.error ? ": " + escapeHtml(p.error) : ""} <button type="button" data-pend-retry="${p.tempId}">Retry</button><button type="button" data-pend-del="${p.tempId}">Delete</button></div>`;
+            return `<div class="pend-status"><span class="pend-dots">${escapeHtml(p.state === "sent" ? "Sent" : p.status || "Sending")}</span></div>`;
+        }
+        // upload what's picked, one after another → [{ image } | { video }]
+        async function uploadItems(scope, items, onStatus) {
+            const out = [];
+            for (let i = 0; i < items.length; i++) {
+                const p = items[i];
+                if (!p.uploaded) {
+                    if (onStatus) onStatus(items.length > 1 ? `Uploading ${i + 1} of ${items.length}` : p.kind === "video" ? "Uploading your video" : "Uploading your photo");
+                    p.uploaded = p.kind === "video" ? { video: await AppState.uploadChatVideo(scope, p.prepared) } : { image: await AppState.uploadChatPhoto(scope, p.file) };
+                }
+                out.push(p.uploaded);
+            }
+            return out;
+        }
+        // sent, and the real message(s) are in the chat now (or it's been a while: don't keep a stale copy)
+        function pendArrived(p, has) {
+            if (p.state !== "sent") return false;
+            if (!p.ids || !p.ids.length || p.ids.some(id => !id) || Date.now() - p.sentAt > 20000) return true;
+            return p.ids.every(has);
+        }
+        function dropPending(list, p) {
+            (p.items || []).forEach(x => { if (x.preview) URL.revokeObjectURL(x.preview); });
+        }
 
         /* ---- 📷 photos and 🎬 videos: picking one, its preview, showing them in messages ---- */
         // what's picked, per box: [{ id, kind: "photo" | "video", file, preview (object URL),
@@ -7341,7 +7512,7 @@ window.removeClanIconPreview = function () {
             const bar = barEl(scope, "PhotoBar");
             bar.classList.toggle("show", items.length > 0);
             if (scope === "dm") requestAnimationFrame(updateDmScrollBottomBtn); // the ↓ button moves above the tiles
-            if (!items.length) return;
+            if (!items.length) { barEl(scope, "PhotoTiles").innerHTML = ""; return; }
             barEl(scope, "PhotoTiles").innerHTML = items.map(p => `<span class="cp-tile" data-id="${p.id}">`
                 + (p.preview ? `<img src="${p.preview}" alt="">` : `<span class="cp-tile-ph">🎬</span>`)
                 + (p.kind === "video" ? (p.prepared ? `<span class="cp-tile-len">${fmtLen(p.prepared.duration)}</span>` : `<span class="cp-tile-pct">${p.started ? Math.round((p.progress || 0) * 100) + "%" : "…"}</span>`) : "")
@@ -7412,18 +7583,6 @@ window.removeClanIconPreview = function () {
         }
         const chatMediaBusy = (scope) => chatMedia[scope].some(p => p.kind === "video" && !p.prepared);
         // upload everything picked (one after another) → [{ image } | { video }]
-        async function uploadAllMedia(scope) {
-            const items = chatMedia[scope], out = [];
-            for (let i = 0; i < items.length; i++) {
-                const p = items[i];
-                if (!p.uploaded) {
-                    barEl(scope, "PhotoText").textContent = items.length > 1 ? `Uploading ${i + 1} of ${items.length}…` : p.kind === "video" ? "🎬 Uploading your video…" : "📷 Uploading your photo…";
-                    p.uploaded = p.kind === "video" ? { video: await AppState.uploadChatVideo(scope, p.prepared) } : { image: await AppState.uploadChatPhoto(scope, p.file) };
-                }
-                out.push(p.uploaded);
-            }
-            return out;
-        }
         function deleteUploadedMedia(u) {
             if (!u) return;
             if (u.image) AppState.deleteChatPhoto(u.image.path);
@@ -7478,7 +7637,9 @@ window.removeClanIconPreview = function () {
             const photo = e.target.closest("[data-photo]");
             if (photo) { e.stopPropagation(); openImageViewer([photo.dataset.photo], 0); return; }
             const vid = e.target.closest(".chat-video");
-            if (vid) { e.stopPropagation(); playChatVideo(vid); }
+            if (vid) { e.stopPropagation(); playChatVideo(vid); return; }
+            const pr = e.target.closest("[data-pend-retry], [data-pend-del]");
+            if (pr) { e.stopPropagation(); dmPendingAction(pr.dataset.pendRetry ? "retry" : "delete", pr.dataset.pendRetry || pr.dataset.pendDel); }
         });
         // 🗑 your own DM message (and its photo / video), for both of you
         window.deleteMyDmMessage = async function (msgId) {
@@ -7809,6 +7970,8 @@ window.removeClanIconPreview = function () {
             const user = AppState.getCurrentUser();
             if (!user) { showInfoModal("Sign in required", "Sign in with Google first."); return; }
             try {
+                // the chat you're leaving keeps what you'd started
+                if (document.getElementById("dmModalOverlay").classList.contains("open")) stashDmDraft();
                 currentDmThreadId = await AppState.getOrCreateDmThread(uid, name);
                 currentDmOtherUid = uid;
                 currentDmOtherName = name;
@@ -7830,6 +7993,8 @@ document.getElementById("dmActionsMenu").classList.remove("open");
                 replyingToMsg = null;
                 editingMsgId = null;
                 document.getElementById("dmReplyBar").classList.remove("open");
+                window._lastDmMessages = []; // (not the last chat's while this one loads)
+                restoreDmDraft(); // what you'd started in this chat
                 updateDmBlockButtonLabel();
                 updateDmInputBlockedState();
 
@@ -7924,6 +8089,13 @@ document.getElementById("dmActionsMenu").classList.remove("open");
                 ${replyBtn}${reactBtn}${translateBtn}${editBtn}${mine ? `<button class="dm-msg-action-link" onclick="deleteMyDmMessage(${jsStr(m.id)})">🗑 Delete</button>` : ""}${reportBtn}
             </div>
         </div>`;
+    });
+
+    // messages of yours on their way (this chat's): gone once the real ones are here
+    dmPending = dmPending.filter(p => { const here = pendArrived(p, id => messages.some(m => m.id === id)); if (here) dropPending(dmPending, p); return !here; });
+    dmPending.filter(p => p.thread === currentDmThreadId).forEach(p => {
+        const quote = p.reply ? `<span class="dm-msg-quote">${escapeHtml((p.reply.text || "").slice(0, 200))}</span>` : "";
+        html += `<div class="dm-msg mine pending${p.state === "failed" ? " failed" : ""}" id="dmPend_${p.tempId}">${quote}${pendThumbs(p.items.slice(p.sentCount))}${p.text && !(p.items.length && p.sentCount) ? `<span class="dm-msg-text">${escapeHtml(p.text)}</span>` : ""}${pendStatus(p, "dm")}</div>`;
     });
 
     // Stay where you are (e.g. reacting to or editing an older message);
@@ -8063,6 +8235,7 @@ window.scrollToDmMessage = function (msgId) {
         };
 
         window.closeDmModal = function () {
+            stashDmDraft(); // kept for next time you open this chat
             const overlay = document.getElementById("dmModalOverlay");
             overlay.classList.remove("open");
             overlay.style.height = "";
@@ -8174,64 +8347,67 @@ document.getElementById("dmMessages").addEventListener("scroll", rafThrottle(upd
             document.getElementById("clanFilterDropdown")?.classList.remove("open");
         };
 
-        let isDmSending = false; // blocks re-entrant sends while one is still in flight
-
 window.sendDmFromInput = async function () {
-    if (isDmSending) return; // already sending — ignore extra taps/lag-mashing
     const input = document.getElementById("dmInput");
     const text = input.value;
-    const items = chatMedia.dm;
+    const items = chatMedia.dm.slice();
     if (!text.trim() && !items.length) return;
     if (chatMediaBusy("dm")) { showToast("Your video is still being prepared…"); return; }
-
-    isDmSending = true;
-    const sendBtn = document.getElementById("dmSendBtn");
-    sendBtn.disabled = true;
-    let uploads = [];
-    if (items.length) {
-        try {
-            uploads = await uploadAllMedia("dm");
-        } catch (e) {
-            paintChatPhotoBar("dm");
-            showInfoModal("Couldn't send it", e.message);
-            isDmSending = false;
-            sendBtn.disabled = false;
-            return;
-        }
-    }
-
-    // Clear immediately, before the network call resolves — this is what
-    // stops mashing Send from firing the same message multiple times,
-    // since there's nothing left in the box to re-send after the first tap.
+    // on screen straight away; the box is ready for the next one
+    const p = { tempId: "dp" + (++pendSeq), thread: currentDmThreadId, text, reply: replyingToMsg, items, state: "sending", status: "", error: "", ids: [], sentCount: 0 };
+    dmPending.push(p);
     input.value = "";
     input.style.height = ""; // back to one line
-    const replyContext = replyingToMsg;
+    keepDraftText("dm:" + currentDmThreadId, "");
     cancelReplyToMessage();
-
-    try {
-        if (!uploads.length) await AppState.sendDmMessage(currentDmThreadId, text, replyContext);
-        // one message each (the text and the reply go with the first)
-        for (let i = 0; i < uploads.length; i++) {
-            await AppState.sendDmMessage(currentDmThreadId, i ? "" : text, i ? null : replyContext, uploads[i].image, uploads[i].video);
-            items[i].uploaded = null; items[i].sent = true;
-        }
-        if (items.length) clearChatPhoto("dm");
-        input.focus(); // keep the keyboard open for the next message
-    } catch (e) {
-        // Send actually failed — put the text back so nothing is lost (what wasn't sent stays picked).
-        if (items.length) { chatMedia.dm = items.filter(p => !p.sent); paintChatPhotoBar("dm"); }
-        if (items.some(p => p.sent)) { input.value = ""; } else
-        input.value = text;
-        input.dispatchEvent(new Event("input")); // the box grows back to fit it
-        if (e.message === "__BLOCKED_BY_ME__") {
-            showInfoModal("User blocked", "You've blocked this user. Unblock them to send a message.");
-        } else if (e.message !== "__RESTRICTED__") {
-            showInfoModal("Couldn't send message", e.message);
-        }
-    }
-    isDmSending = false;
-    sendBtn.disabled = false;
+    chatMedia.dm = []; // (the message on its way has them now)
+    paintChatPhotoBar("dm");
+    renderDmMessages(window._lastDmMessages || []);
+    const box = document.getElementById("dmMessages");
+    box.scrollTop = box.scrollHeight;
+    input.focus(); // keep the keyboard open for the next message
+    await queueDm(p);
 };
+// one at a time, in the order you sent them (so they can't arrive the wrong way round)
+let dmQueue = Promise.resolve();
+function queueDm(p) {
+    p.state = "sending"; p.error = "";
+    dmQueue = dmQueue.then(() => deliverDm(p), () => deliverDm(p));
+    return dmQueue;
+}
+async function deliverDm(p) {
+    p.state = "sending"; p.error = ""; p.status = "";
+    const redraw = () => { if (currentDmThreadId === p.thread) renderDmMessages(window._lastDmMessages || []); };
+    redraw();
+    try {
+        const uploads = p.items.length ? await uploadItems("dm", p.items, (s) => { p.status = s; redraw(); }) : [];
+        p.status = "";
+        if (!uploads.length) {
+            if (!p.sentCount) { p.ids.push(await AppState.sendDmMessage(p.thread, p.text, p.reply)); p.sentCount = 1; }
+        } else {
+            // one message each (the text and the reply go with the first); a retry carries on where it stopped
+            for (let i = p.sentCount; i < uploads.length; i++) {
+                p.ids.push(await AppState.sendDmMessage(p.thread, i ? "" : p.text, i ? null : p.reply, uploads[i].image, uploads[i].video));
+                p.items[i].uploaded = null;
+                p.sentCount = i + 1;
+            }
+        }
+        p.state = "sent"; p.sentAt = Date.now();
+    } catch (e) {
+        p.state = "failed";
+        p.error = e.message === "__RESTRICTED__" ? "your account is restricted" : e.message === "__BLOCKED_BY_ME__" ? "you've blocked them" : e.message;
+    }
+    redraw();
+}
+function dmPendingAction(kind, id) {
+    const p = dmPending.find(x => x.tempId === id);
+    if (!p) return;
+    if (kind === "retry") { if (p.state === "failed") { queueDm(p); renderDmMessages(window._lastDmMessages || []); } return; }
+    p.items.forEach(x => { deleteUploadedMedia(x.uploaded); });
+    dropPending(dmPending, p);
+    dmPending = dmPending.filter(x => x !== p);
+    renderDmMessages(window._lastDmMessages || []);
+}
         // Enter starts a new line (the Send button sends); on a computer,
         // Ctrl+Enter / Cmd+Enter sends too. The box grows as you type.
         const dmInputEl = document.getElementById("dmInput");
@@ -8243,6 +8419,7 @@ window.sendDmFromInput = async function () {
             if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); window.sendDmFromInput(); }
         });
         dmInputEl.addEventListener("input", fitDmInput);
+        dmInputEl.addEventListener("input", () => { if (currentDmThreadId) keepDraftText("dm:" + currentDmThreadId, dmInputEl.value); });
 
         // Mobile Send handling: don't rely on click at all. preventDefault()
         // on touchstart (the old approach) unreliably suppresses the browser's
