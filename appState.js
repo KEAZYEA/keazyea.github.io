@@ -2906,21 +2906,20 @@ async function getClanPostCooldownRemaining() {
         if (!trimmed && !image && !video) throw new Error("Message cannot be empty.");
         if (trimmed.length > 2000) throw new Error("Message is too long.");
 
-        const profile = await getProfile();
+        // The checks run side by side (they used to run one after another, which
+        // is most of why a sent message took a while to show up).
+        const [profile, threadSnap] = await Promise.all([getProfile(), getDoc(doc(db, "dmThreads", threadId))]);
         if (isBannedNow(profile)) {
             showRestrictedNotice(profile.banReason, profile.banUntil);
             throw new Error("__RESTRICTED__");
         }
-
-        const threadSnap = await getDoc(doc(db, "dmThreads", threadId));
         let otherUid = null;
         if (threadSnap.exists()) {
             otherUid = threadSnap.data().members.find(m => m !== currentUser.uid);
-            if (otherUid && await amIBlockedBy(otherUid)) {
-                throw new Error("You can't message this user.");
-            }
-            if (otherUid && await haveIBlocked(otherUid)) {
-                throw new Error("You have blocked this user. Unblock them before sending messages.");
+            if (otherUid) {
+                const [blockedMe, iBlocked] = await Promise.all([amIBlockedBy(otherUid), haveIBlocked(otherUid)]);
+                if (blockedMe) throw new Error("You can't message this user.");
+                if (iBlocked) throw new Error("You have blocked this user. Unblock them before sending messages.");
             }
         }
 
@@ -2955,7 +2954,9 @@ async function getClanPostCooldownRemaining() {
         // The message itself is the proof, so report it whether or not the
         // thread-preview update below succeeds.
         reportQuestProgress("sendMessage", threadId + "/" + msgRef.id);
-        await updateDoc(doc(db, "dmThreads", threadId), patch);
+        // the chat list's preview, unread count: no need to wait for it
+        updateDoc(doc(db, "dmThreads", threadId), patch).catch(e => console.warn("DM preview not updated:", e.message));
+        return msgRef.id;
     }
 // Lets a user edit the text of their own already-sent message. Also
     // keeps the thread's lastMessageText preview in sync if the edited
