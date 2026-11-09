@@ -1038,6 +1038,12 @@
             min-height: 200px;
         }
 
+        /* zoomed in: one finger moves the photo, not the page */
+        .fc-stage.zoomed { touch-action: none; }
+        .fc-stage.zoomed img { cursor: grab; }
+        #ivStage img { cursor: zoom-in; }
+        #ivStage.zoomed img { cursor: grab; }
+
         .fc-stage img {
             max-width: 100%;
             max-height: 380px;
@@ -4858,6 +4864,116 @@ window.removeClanIconPreview = function () {
             setTimeout(() => heart.remove(), 800);
         }
 
+        /* ---- Pinch to zoom on a photo ----
+           Two fingers zoom in (up to 5×) around where they are; while zoomed
+           in, one finger moves the photo around and swiping to the next
+           photo is off. On a computer: Ctrl + scroll (or a trackpad pinch)
+           zooms and dragging moves it; in the photo viewer plain scrolling
+           zooms too. Showing another photo starts it un-zoomed. */
+        function makeZoomable(stage, img, opts = {}) {
+            const MAX = 5;
+            let s = 1, tx = 0, ty = 0, multi = false, g = null;
+            const origin = () => { // the photo's top-left corner on screen, un-zoomed
+                const r = img.offsetParent ? img.offsetParent.getBoundingClientRect() : { left: 0, top: 0 };
+                return { x: r.left + img.offsetLeft, y: r.top + img.offsetTop };
+            };
+            const apply = () => {
+                if (s <= 1.01) { s = 1; tx = 0; ty = 0; }
+                const w = img.offsetWidth, h = img.offsetHeight; // keep the photo covering its own spot
+                tx = Math.min(0, Math.max(w * (1 - s), tx));
+                ty = Math.min(0, Math.max(h * (1 - s), ty));
+                img.style.transformOrigin = "0 0";
+                img.style.transform = s === 1 ? "" : `translate(${tx}px, ${ty}px) scale(${s})`;
+                stage.classList.toggle("zoomed", s > 1);
+            };
+            const zoomAt = (ns, px, py) => { // new scale, keeping the point under (px, py) where it is
+                const o = origin();
+                ns = Math.min(MAX, Math.max(1, ns));
+                const cx = (px - o.x - tx) / s, cy = (py - o.y - ty) / s;
+                s = ns; tx = px - o.x - cx * s; ty = py - o.y - cy * s;
+                apply();
+            };
+            const reset = () => { s = 1; apply(); };
+            stage.zoomBusy = () => s > 1 || multi;
+            stage.zoomReset = reset;
+            new MutationObserver(reset).observe(img, { attributes: true, attributeFilter: ["src"] });
+            const dist = (t) => Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
+            const mid = (t) => ({ x: (t[0].clientX + t[1].clientX) / 2, y: (t[0].clientY + t[1].clientY) / 2 });
+            const begin = (t) => {
+                if (t.length >= 2) { multi = true; const m = mid(t); g = { pinch: true, d: dist(t), s, x: m.x, y: m.y, tx, ty }; }
+                else if (t.length === 1 && s > 1) g = { pinch: false, x: t[0].clientX, y: t[0].clientY, tx, ty };
+                else g = null;
+            };
+            stage.addEventListener("touchstart", (e) => { if (e.touches.length === 1) multi = false; begin(e.touches); }, { passive: true });
+            stage.addEventListener("touchmove", (e) => {
+                if (!g) return;
+                e.preventDefault(); // the page doesn't scroll or zoom under the photo
+                const t = e.touches;
+                if (g.pinch && t.length >= 2) {
+                    // the spot that was between the fingers stays between them
+                    const m = mid(t), o = origin();
+                    const cx = (g.x - o.x - g.tx) / g.s, cy = (g.y - o.y - g.ty) / g.s;
+                    s = Math.min(MAX, Math.max(1, g.s * dist(t) / g.d));
+                    tx = m.x - o.x - cx * s; ty = m.y - o.y - cy * s; apply();
+                } else if (!g.pinch && t.length === 1) {
+                    tx = g.tx + t[0].clientX - g.x; ty = g.ty + t[0].clientY - g.y; apply();
+                }
+            }, { passive: false });
+            stage.addEventListener("touchend", (e) => begin(e.touches)); // a finger lifted: carry on with the rest
+            stage.addEventListener("touchcancel", () => { g = null; });
+            stage.addEventListener("gesturestart", (e) => e.preventDefault()); // iPhone: not the whole page zooming
+            // computer: Ctrl + scroll / trackpad pinch (and plain scroll where asked), drag to move
+            stage.addEventListener("wheel", (e) => {
+                if (!e.ctrlKey && !opts.wheel) return;
+                e.preventDefault();
+                zoomAt(s * Math.exp(-e.deltaY * (e.ctrlKey ? 0.01 : 0.0025)), e.clientX, e.clientY);
+            }, { passive: false });
+            let drag = null;
+            img.addEventListener("mousedown", (e) => { if (s > 1 && e.button === 0) { e.preventDefault(); drag = { x: e.clientX, y: e.clientY, tx, ty, moved: false }; } });
+            window.addEventListener("mousemove", (e) => {
+                if (!drag) return;
+                if (Math.abs(e.clientX - drag.x) + Math.abs(e.clientY - drag.y) > 4) drag.moved = true;
+                tx = drag.tx + e.clientX - drag.x; ty = drag.ty + e.clientY - drag.y; apply();
+            });
+            window.addEventListener("mouseup", () => {
+                if (drag && drag.moved) { // a drag isn't a tap
+                    const eat = (e) => e.stopImmediatePropagation();
+                    stage.addEventListener("click", eat, { capture: true, once: true });
+                    setTimeout(() => stage.removeEventListener("click", eat, { capture: true }), 0);
+                }
+                drag = null;
+            });
+            // double-tap (or double-click) zooms in there, and back out — read
+            // from the fingers themselves, so it doesn't hang on the browser
+            // turning both taps into clicks
+            if (opts.doubleTap) {
+                const toggle = (x, y) => { if (s > 1) reset(); else zoomAt(2.5, x, y); };
+                let down = null, lastTap = null, touchedAt = 0;
+                stage.addEventListener("touchstart", (e) => {
+                    down = e.touches.length === 1 && !e.target.closest("button") ? { x: e.touches[0].clientX, y: e.touches[0].clientY, moved: false } : null;
+                }, { passive: true });
+                stage.addEventListener("touchmove", (e) => {
+                    if (down && Math.hypot(e.touches[0].clientX - down.x, e.touches[0].clientY - down.y) > 10) down.moved = true;
+                }, { passive: true });
+                stage.addEventListener("touchend", (e) => {
+                    touchedAt = Date.now();
+                    const t = down; down = null;
+                    if (!t || t.moved || multi || e.touches.length) { lastTap = null; return; }
+                    if (lastTap && touchedAt - lastTap.at < 350 && Math.hypot(t.x - lastTap.x, t.y - lastTap.y) < 40) {
+                        lastTap = null;
+                        e.preventDefault(); // (no click from this one)
+                        toggle(t.x, t.y);
+                    } else lastTap = { at: touchedAt, x: t.x, y: t.y };
+                });
+                stage.addEventListener("dblclick", (e) => { // a mouse
+                    if (Date.now() - touchedAt < 800 || e.target.closest("button")) return;
+                    toggle(e.clientX, e.clientY);
+                });
+            }
+            return { reset };
+        }
+        makeZoomable(document.getElementById("fcStage"), document.getElementById("formationCarouselImg")); // double-tap here likes the post
+
         // Click fires from both a mouse click and a tap (browsers synthesize
         // it either way), so timing two of them ourselves works for both
         // input types instead of relying on the sometimes-flaky native
@@ -4888,6 +5004,7 @@ window.removeClanIconPreview = function () {
             stage.addEventListener("touchstart", (e) => { startX = e.touches[0].clientX; }, { passive: true });
             stage.addEventListener("touchend", (e) => {
                 if (startX === null) return;
+                if (stage.zoomBusy && stage.zoomBusy()) { startX = null; return; } // pinching / zoomed in: not a swipe
                 const deltaX = e.changedTouches[0].clientX - startX;
                 if (Math.abs(deltaX) > 40) {
                     if (deltaX < 0) nextFn(); else prevFn();
@@ -4977,6 +5094,7 @@ window.removeClanIconPreview = function () {
             stage.addEventListener("touchstart", (e) => { startX = e.touches[0].clientX; }, { passive: true });
             stage.addEventListener("touchend", (e) => {
                 if (startX === null) return;
+                if (stage.zoomBusy && stage.zoomBusy()) { startX = null; return; } // pinching / zoomed in: not a swipe
                 const deltaX = e.changedTouches[0].clientX - startX;
                 if (Math.abs(deltaX) > 40) {
                     if (deltaX < 0) nextFn(); else prevFn();
@@ -4984,6 +5102,7 @@ window.removeClanIconPreview = function () {
                 startX = null;
             });
         })("ivStage", () => window.imageViewerPrev(), () => window.imageViewerNext());
+        makeZoomable(document.getElementById("ivStage"), document.getElementById("imageViewerImg"), { doubleTap: true, wheel: true });
 
         /* ===== Comments, the Instagram way =====
            Top-level comments in order. Under each, every reply in its thread
@@ -7083,12 +7202,13 @@ window.removeClanIconPreview = function () {
             const meMsg = pendHere.length ? [...worldAll()].reverse().find(m => m.uid === myUid) : null;
             const meLp = pendHere.length && AppState.getLocalProfile ? AppState.getLocalProfile() || {} : {};
             const meLook = { uid: myUid, name: (meMsg && meMsg.name) || meLp.name || "You", avatar: (meMsg && meMsg.avatar) || meLp.avatar || "" };
+            const myBubbleFx = pendHere.length && window.ProgressCore ? ProgressCore.styleClass(styleOf(myUid), "bubble") : ""; // your equipped bubble from the start
             pendHere.forEach(p => {
                 const quote = p.reply ? `<span class="dm-msg-quote wc-quote"><b>${escapeHtml(p.reply.name)}</b>${escapeHtml(p.reply.text)}</span>` : "";
                 html += `<div class="wc-msg mine pending${p.state === "failed" ? " failed" : ""}" id="wcPend_${p.tempId}">
                     <div class="wc-av">${prev && prev.uid === myUid ? "" : `<span class="wc-av-tap">${bordered(myUid, worldAvatar(meLook))}</span>`}</div>
                     <div class="wc-main">
-                        <div class="wc-bubble">${quote}${pendThumbs(p.items)}${p.text ? `<span class="dm-msg-text">${escapeHtml(p.text)}</span>` : ""}</div>
+                        <div class="wc-bubble${myBubbleFx ? " " + myBubbleFx : ""}">${quote}${pendThumbs(p.items)}${p.text ? `<span class="dm-msg-text">${escapeHtml(p.text)}</span>` : ""}</div>
                         ${pendStatus(p, "world")}
                     </div>
                 </div>`;
@@ -8093,9 +8213,10 @@ document.getElementById("dmActionsMenu").classList.remove("open");
 
     // messages of yours on their way (this chat's): gone once the real ones are here
     dmPending = dmPending.filter(p => { const here = pendArrived(p, id => messages.some(m => m.id === id)); if (here) dropPending(dmPending, p); return !here; });
+    const myDmBubble = window.ProgressCore ? ProgressCore.styleClass(styleOf(AppState.getCurrentUser()?.uid), "bubble") : ""; // your equipped bubble from the start
     dmPending.filter(p => p.thread === currentDmThreadId).forEach(p => {
         const quote = p.reply ? `<span class="dm-msg-quote">${escapeHtml((p.reply.text || "").slice(0, 200))}</span>` : "";
-        html += `<div class="dm-msg mine pending${p.state === "failed" ? " failed" : ""}" id="dmPend_${p.tempId}">${quote}${pendThumbs(p.items.slice(p.sentCount))}${p.text && !(p.items.length && p.sentCount) ? `<span class="dm-msg-text">${escapeHtml(p.text)}</span>` : ""}${pendStatus(p, "dm")}</div>`;
+        html += `<div class="dm-msg mine pending${p.state === "failed" ? " failed" : ""}${myDmBubble ? " " + myDmBubble : ""}" id="dmPend_${p.tempId}">${quote}${pendThumbs(p.items.slice(p.sentCount))}${p.text && !(p.items.length && p.sentCount) ? `<span class="dm-msg-text">${escapeHtml(p.text)}</span>` : ""}${pendStatus(p, "dm")}</div>`;
     });
 
     // Stay where you are (e.g. reacting to or editing an older message);
