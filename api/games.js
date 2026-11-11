@@ -20,6 +20,16 @@
  *   runStart    { game }          -> a new run (sign-in needed): its first question
  *   runAnswer   { runId, input }  -> one move: what happened, then the next
  *                                    question or the end of the run
+ *   runPeek     { runId, deal, pairs, deadline, sig, card }
+ *                                 -> 🃏 Memory: what one card is. The cards of a
+ *                                    ranked Memory level never reach the browser
+ *                                    all at once — it asks for each card as it's
+ *                                    flipped. No database: `sig` (sent with the
+ *                                    level) proves the run, level and clock are
+ *                                    this server's, and the deck comes from a
+ *                                    secret only this server has (memDeckFor).
+ *                                    A level scores once its whole deck is handed
+ *                                    in by runAnswer, before the clock runs out.
  *   leaderboard                   -> this week's top players, your place, the
  *                                    prizes, last week's winners and each game's
  *                                    all-time high score — names (and uids, to
@@ -27,7 +37,7 @@
  *                                    signed-in caller; anyone else gets just the
  *                                    week's end, the prizes and the record scores
  *
- * Weekly score = your best run this week in each of the five games — a
+ * Weekly score = your best run this week in each of the six games — a
  * run's score is its points, of which the board counts at most G.LB_CAP (a
  * run goes on past it, for the all-time high score); a run started on the day its
  * game is Today's Puzzle (G.bonusGameFor) counts double — added up, so at
@@ -157,14 +167,45 @@ async function croppedPicture(imgPath, picture) {
 }
 
 // What the browser gets for a run's current question (never its answer).
-async function publicView(run) {
+// Memory: the level, and once it's started, what lets it ask for its cards.
+async function publicView(run, runId, uid) {
   const view = G.runView(loadUnits(), run);
+  if (run.game === "memory" && !run.waiting) {
+    view.peek = { deal: view.deal, pairs: view.pairs, deadline: run.deadline, sig: memPeekSig(uid, runId, view.deal, view.pairs, run.deadline) };
+  }
   if (run.game === "blur") {
     view.image = await croppedPicture(view.img, view.picture);
     delete view.img;
     delete view.picture;
   }
   return view;
+}
+
+/* ---------------- 🃏 Memory: the server's own decks ----------------
+   A ranked Memory deck is made from a secret (never the run's seed, which
+   is sent to the player when the run ends and is only 31 bits), so it can't
+   be worked out from the cards already seen. */
+let memKey = null;
+const memHmac = (text) => {
+  if (!memKey) memKey = crypto.createHash("sha256").update("kih-memory:" + (process.env.GAMES_SECRET || process.env.FIREBASE_PRIVATE_KEY || "")).digest();
+  return crypto.createHmac("sha256", memKey).update(text).digest();
+};
+const memDeckFor = (runId, deal, pairs) => G.memDeck(loadUnits(), G.seededRandom(memHmac(`deck:${runId}:${deal}`).readUInt32BE(0)), pairs);
+const memRunDeckFor = (runId) => (run) => memDeckFor(runId, run.deal || 0, G.memLevelInfo(run.step + 1).pairs);
+const memPeekSig = (uid, runId, deal, pairs, deadline) => memHmac(`peek:${uid}:${runId}:${deal}:${pairs}:${deadline}`).toString("base64url");
+
+// One card of a ranked Memory level (no database: everything is in the signed level).
+function runPeek(uid, body, now) {
+  const { runId, deal, pairs, deadline, sig, card } = body;
+  const int = (x, lo, hi) => Number.isInteger(x) && x >= lo && x <= hi;
+  if (typeof runId !== "string" || !/^[0-9a-f]{24}$/.test(runId) || !int(deal, 0, 1e6) || !int(pairs, 1, G.MEM_MAX_PAIRS)
+    || !int(deadline, 0, 1e15) || typeof sig !== "string" || !int(card, 0, pairs * 2 - 1)) throw new HttpError(400, "Missing card.");
+  const want = Buffer.from(memPeekSig(uid, runId, deal, pairs, deadline));
+  const got = Buffer.from(sig);
+  if (got.length !== want.length || !crypto.timingSafeEqual(got, want)) throw new HttpError(403, "That card isn't from your game.");
+  if (now > deadline + G.RUN_GRACE_MS) throw new HttpError(409, "Time's up for this level.");
+  const key = memDeckFor(runId, deal, pairs)[card];
+  return { ok: true, card, key, img: G.unitByKey(loadUnits(), key).img };
 }
 
 /* ---------------- runs ---------------- */
@@ -206,12 +247,14 @@ async function runStart(db, uid, body, now) {
   const pts = lb.exists ? G.lbPts(lb.data())[game] : 0;
   const rec = records[game];
   const record = rec ? { score: rec.score, name: rec.name, me: rec.uid === uid } : null;
-  return { ok: true, runId, game, week, bonus, bonusGame, score: 0, over: false, best, pts, record, deadline: run.deadline, now, extraMs: run.extraMs || 0, lives: run.lives || 0, view: await publicView(run) };
+  return { ok: true, runId, game, week, bonus, bonusGame, score: 0, over: false, best, pts, record, deadline: run.deadline, now, extraMs: run.extraMs || 0, lives: run.lives || 0, view: await publicView(run, runId, uid) };
 }
 
 // Only the fields a move can have, with the right types.
 function cleanInput(input) {
   if (!input || typeof input !== "object") return null;
+  if (input.start === true) return { start: true }; // Memory: start the level's clock
+  if (Array.isArray(input.cards)) return { cards: input.cards.slice(0, G.MEM_MAX_PAIRS * 2).map(k => (typeof k === "string" ? k.slice(0, 80) : "")) }; // Memory: the level's deck
   if (input.hint === true) return { hint: true }; // Blur
   if (Number.isInteger(input.answer)) return { answer: input.answer };
   if (typeof input.pick === "string") return { pick: input.pick.slice(0, 80) };
@@ -240,7 +283,7 @@ async function runAnswer(db, uid, body, now) {
     const lbSnap = doc.week === thisWeek ? guessSnap : await tx.get(lbRef);
     let step;
     try {
-      step = G.runStep(loadUnits(), doc.run, input, now, G.RUN_GRACE_MS);
+      step = G.runStep(loadUnits(), doc.run, input, now, G.RUN_GRACE_MS, doc.game === "memory" ? { deck: memRunDeckFor(runId) } : undefined);
     } catch (e) {
       throw new HttpError(400, e.message);
     }
@@ -302,7 +345,7 @@ async function runAnswer(db, uid, body, now) {
     ...(result.tenPaid ? { tenPaid: result.tenPaid } : {}),
     deadline: run.deadline,
     now,
-    view: run.over ? null : await publicView(run),
+    view: run.over ? null : await publicView(run, runId, uid),
     // Once it's over the seed gives nothing away, and lets a friend replay
     // the same run as a challenge.
     seed: run.over ? run.seed : undefined
@@ -515,6 +558,7 @@ module.exports = async (req, res) => {
       case "ping": loadUnits(); await verifyCaller(admin, req, false, body); result = { ok: true }; break;
       case "runStart": result = await runStart(db, await verifyCaller(admin, req, true, body), body, now); break;
       case "runAnswer": result = await runAnswer(db, await verifyCaller(admin, req, true, body), body, now); break;
+      case "runPeek": result = runPeek(await verifyCaller(admin, req, true, body), body, now); break;
       case "leaderboard": result = await leaderboard(db, await verifyCaller(admin, req, false, body), now); break;
       default: throw new HttpError(400, "Unknown action.");
     }
@@ -527,5 +571,6 @@ module.exports = async (req, res) => {
 };
 
 // For tests.
-module.exports._internals = { weekOf, weekEndsAt, weeksBefore, finalizeWeek, rescoreWeek, WEEKLY_PRIZES, saveRecord, allRecords,
+module.exports._internals = { weekOf, weekEndsAt, weeksBefore, finalizeWeek, rescoreWeek, WEEKLY_PRIZES, saveRecord, allRecords, memDeckFor,
+  resetMemKey: () => { memKey = null; },
   resetRecordCache: () => { recordsCache = null; for (const k in recordSeen) delete recordSeen[k]; } };

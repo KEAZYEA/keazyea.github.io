@@ -20,7 +20,7 @@ const RULES = [
     { name: "Slack token", re: /\bxox[baprs]-[0-9A-Za-z-]{10,}/ },
     { name: "OpenAI / Anthropic key", re: /\b(?:sk-ant-[0-9A-Za-z_-]{20,}|sk-(?:proj-)?[0-9A-Za-z]{32,})/ },
     // a secret written straight into the code instead of read from process.env
-    { name: "hard-coded secret", re: /\b(?:PAYPAL_SECRET|PAYPAL_CLIENT_SECRET|FIREBASE_PRIVATE_KEY|CRON_SECRET|GOOGLE_TRANSLATE_KEY|PAYPAL_WEBHOOK_ID)\s*[:=]\s*["'`][^"'`\s]{8,}["'`]/ }
+    { name: "hard-coded secret", re: /\b(?:PAYPAL_SECRET|PAYPAL_CLIENT_SECRET|FIREBASE_PRIVATE_KEY|CRON_SECRET|GOOGLE_TRANSLATE_KEY|PAYPAL_WEBHOOK_ID|GAMES_SECRET)\s*[:=]\s*["'`][^"'`\s]{8,}["'`]/ }
 ];
 const SECRET_FILE = /(^|\/)(\.env(\.[\w.-]+)?|[^/]*service[-_]?account[^/]*\.json|[^/]*credentials[^/]*\.json|id_rsa|[^/]*\.pem|[^/]*\.p12|[^/]*\.key)$/i;
 

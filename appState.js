@@ -976,6 +976,8 @@ async function signOutUser() {
     }
     const gamesRunStart = (game) => callGamesApi("runStart", { game });
     const gamesRunAnswer = (runId, input) => callGamesApi("runAnswer", { runId, input });
+    // 🃏 Memory: what one card of a ranked level is (peek: what the level came with).
+    const gamesRunPeek = (runId, peek, card) => callGamesApi("runPeek", { runId, deal: peek.deal, pairs: peek.pairs, deadline: peek.deadline, sig: peek.sig, card });
     const gamesLeaderboard = () => callGamesApi("leaderboard");
     // Wakes the games server up while the page loads (errors don't matter).
     const gamesPing = () => callGamesApi("ping").catch(() => null);
@@ -5641,7 +5643,7 @@ async function maybeRefreshAd(containerId) {
         uploadChatPhoto, deleteChatPhoto, prepareChatVideo, uploadChatVideo, deleteChatVideo, unlockChatVideoAudio, myVideoLimit, VIDEO_LIMITS, shrinkChatPhoto, canPostWorldPhotos, CHAT_PHOTO_DAYS, CHAT_PHOTO_MIN_AGE_DAYS,
         translateChat, adminChatStatus, chatLimits, deleteDmMessage,
         sendWorldChat, deleteWorldChat, adminWorldChatSettings, listenToWorldChat, loadOlderWorldChat, listenToWorldChatConfig, getMyBlockedUids,
-        getTodaysQuests, listenToMyWallet, listenToMyQuestProgress, claimQuestRewards, submitDailyPuzzle, gamesRunStart, gamesRunAnswer, gamesLeaderboard, gamesPing, getMyTokenBalance,
+        getTodaysQuests, listenToMyWallet, listenToMyQuestProgress, claimQuestRewards, submitDailyPuzzle, gamesRunStart, gamesRunAnswer, gamesRunPeek, gamesLeaderboard, gamesPing, getMyTokenBalance,
         listenToMyGiftClaims, claimTokenGift, adminTokens,
         reportQuestProgress, startDailyQuestTracking, stakeTokensOnSecretGiveaway, setSecretGiveawayStake, refreshSecretGiveawayMaxStake, getSecretOdds,
         // achievements, badges, profile likes, items

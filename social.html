@@ -8335,7 +8335,8 @@ const CHALLENGE_GAMES = {
     guess: { icon: "🪢", title: "Hangman", out: 6 }, // the id stays "guess" (it was Guess the Unit)
     unitle: { icon: "🎯", title: "Unitle", out: 6 },
     hilo: { icon: "⬆️", title: "Higher or Lower", out: 10 },
-    blur: { icon: "🔍", title: "Blur", out: 3 }
+    blur: { icon: "🔍", title: "Blur", out: 3 },
+    memory: { icon: "🃏", title: "Memory", out: 10 }
 };
 function parseDmChallenge(text) {
     const m = DM_CHALLENGE_RE.exec(text || "");
@@ -8347,10 +8348,11 @@ function parseDmChallenge(text) {
     const today = new Date(Date.now() + 8 * 3600e3).toISOString().slice(0, 10);
     const which = !day ? "Endless run" : day === today ? "Today's puzzle" : `Puzzle of ${day}`;
     // A day's puzzle keeps that puzzle's scoring; free play is an endless
-    // run, scored as a streak (Trivia, Hi-Lo) or in points (Unitle, Hangman, Blur).
+    // run, scored as a streak (Trivia, Hi-Lo) or in points (Unitle, Hangman, Blur, Memory).
     let scoreLabel;
     if (!day) scoreLabel = gameId === "trivia" || gameId === "hilo" ? `a streak of ${score === "x" ? 0 : score}` : `${score === "x" ? 0 : score} point${score === "1" ? "" : "s"}`;
     else if (gameId === "hilo") scoreLabel = `${score}/${game.out}`;
+    else if (gameId === "memory") scoreLabel = score === "x" ? "not finished" : `${score} move${score === "1" ? "" : "s"}`;
     else if (score === "x") scoreLabel = gameId === "guess" ? "not solved" : `didn't get it (X/${game.out})`;
     else if (gameId === "trivia") scoreLabel = `${score}/${game.out}`;
     else if (gameId === "guess") scoreLabel = score === "0" ? "no misses" : `${score} miss${score === "1" ? "" : "es"}`;
