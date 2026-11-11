@@ -55,7 +55,9 @@ jobs:
 
   smoke:
     name: Every page loads in a phone browser (+ code coverage)
-    runs-on: ubuntu-latest
+    # Ubuntu 24.04, not ubuntu-latest: GitHub moved ubuntu-latest to Ubuntu 26 (Oct 2026), which this
+    # Playwright version can't install Chrome on yet. Move up together with a newer playwright@.
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4

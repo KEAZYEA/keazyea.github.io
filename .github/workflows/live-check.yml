@@ -20,7 +20,9 @@ concurrency:
 jobs:
   live:
     name: Live site and API work
-    runs-on: ubuntu-latest
+    # Ubuntu 24.04, not ubuntu-latest: GitHub moved ubuntu-latest to Ubuntu 26 (Oct 2026), which this
+    # Playwright version can't install Chrome on yet. Move up together with a newer playwright@.
+    runs-on: ubuntu-24.04
     timeout-minutes: 25
     env:
       SITE: https://keazyea.github.io/
