@@ -51,7 +51,7 @@ for (const f of files.filter(f => f.endsWith(".js") && !f.startsWith("vendor/"))
 const htmlFiles = files.filter(f => f.endsWith(".html"));
 for (const f of htmlFiles) {
     const html = noComments(read(f));
-    const re = /<script\b([^>]*)>([\s\S]*?)<\/script>/gi;
+    const re = /<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi;
     let m;
     while ((m = re.exec(html))) {
         const attrs = m[1], code = m[2];
@@ -89,7 +89,7 @@ if (fs.existsSync(path.join(ROOT, "data/bundle.json"))) {
 let refCount = 0;
 const REF = /<(script|img|iframe|link|a|source|video)\b[^>]*?\s(src|data-src|href)\s*=\s*"([^"]+)"/gi;
 for (const f of htmlFiles) {
-    const html = noComments(read(f)).replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, m => m.replace(/[^\n]/g, " ")); // not inside scripts (built at runtime)
+    const html = noComments(read(f)).replace(/<script\b[^>]*>[\s\S]*?<\/script\s*>/gi, m => m.replace(/[^\n]/g, " ")); // not inside scripts (built at runtime)
     let m;
     while ((m = REF.exec(html))) {
         const [, tag, attr, raw] = m;

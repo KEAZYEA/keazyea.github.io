@@ -25,15 +25,17 @@ const RULES = [
 const SECRET_FILE = /(^|\/)(\.env(\.[\w.-]+)?|[^/]*service[-_]?account[^/]*\.json|[^/]*credentials[^/]*\.json|id_rsa|[^/]*\.pem|[^/]*\.p12|[^/]*\.key)$/i;
 
 const files = execFileSync("git", ["ls-files", "--cached", "--others", "--exclude-standard"], { cwd: ROOT, encoding: "utf8" })
-    .split("\n").filter(f => f && fs.existsSync(path.join(ROOT, f)));
+    .split("\n").filter(Boolean);
 const found = [];
 let scanned = 0;
 for (const f of files) {
     if (SECRET_FILE.test(f) && !/\.example$/i.test(f)) found.push(`${f}: a secrets file shouldn't be in the repo`);
     if (SKIP.test(f) || f.startsWith("tests/secret-scan")) continue;
-    const full = path.join(ROOT, f);
-    if (fs.statSync(full).size > 5 * 1024 * 1024) continue;
-    const text = fs.readFileSync(full, "utf8");
+    // read once (no separate "does it exist / how big" check first); a file that's gone is skipped
+    let buf;
+    try { buf = fs.readFileSync(path.join(ROOT, f)); } catch (e) { continue; }
+    if (buf.length > 5 * 1024 * 1024) continue;
+    const text = buf.toString("utf8");
     scanned++;
     text.split("\n").forEach((line, i) => {
         for (const r of RULES) {

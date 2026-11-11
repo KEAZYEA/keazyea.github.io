@@ -53,9 +53,14 @@ global.fetch = async (url) => {
     url = String(url);
     state.paypalCalls.push(url);
     const reply = (status, data) => ({ ok: status < 300, status, json: async () => data, text: async () => JSON.stringify(data) });
-    if (url.includes("paypal.com/v1/oauth2/token")) return reply(200, { access_token: "ci-paypal-token" });
-    if (url.includes("paypal.com/v1/notifications/verify-webhook-signature")) return reply(200, { verification_status: "FAILURE" });
-    if (url.includes("paypal.com")) return reply(404, { name: "RESOURCE_NOT_FOUND" });
+    let u;
+    try { u = new URL(url); } catch (e) { throw new Error("TEST: bad URL " + url); }
+    // PayPal's API hosts only (api-m.paypal.com / api-m.sandbox.paypal.com) — matched on the host, not anywhere in the text
+    if (u.protocol === "https:" && /^api-m\.(sandbox\.)?paypal\.com$/.test(u.hostname)) {
+        if (u.pathname === "/v1/oauth2/token") return reply(200, { access_token: "ci-paypal-token" });
+        if (u.pathname === "/v1/notifications/verify-webhook-signature") return reply(200, { verification_status: "FAILURE" });
+        return reply(404, { name: "RESOURCE_NOT_FOUND" });
+    }
     throw new Error("TEST: unexpected network call to " + url);
 };
 
