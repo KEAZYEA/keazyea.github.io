@@ -53,9 +53,26 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Install a headless Chrome
+      - name: Get a browser
+        # The Google Chrome already on GitHub's Ubuntu runner: nothing to download.
+        # (Installing Playwright's own Chrome pulls fonts and libraries from Ubuntu's
+        # package mirror, which hung for 10 minutes at a time and failed the job.)
+        # Only if the runner has no Chrome is Playwright's installed, tried up to 3 times.
+        timeout-minutes: 14
         run: |
           npm install --no-save --no-fund --no-audit playwright@1.56.1
-          npx playwright install --with-deps chromium
+          CHROME="$(command -v google-chrome || command -v google-chrome-stable || true)"
+          if [ -n "$CHROME" ]; then
+            "$CHROME" --version
+            echo "CHROME_PATH=$CHROME" >> "$GITHUB_ENV"
+            exit 0
+          fi
+          echo "::warning::No Google Chrome on this runner — installing Playwright's"
+          for try in 1 2 3; do
+            if timeout 240 npx playwright install --with-deps chromium; then exit 0; fi
+            echo "::warning::Installing Chrome failed (try $try of 3) — trying again"
+            sleep 15
+          done
+          exit 1
       - name: Every live page loads without errors
         run: SMOKE_BASE_URL="$SITE" node tests/smoke.js

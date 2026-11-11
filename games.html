@@ -346,7 +346,7 @@
         .lb-note summary { cursor: pointer; color: #c8c8e0; font-weight: 700; }
         .lb-empty { text-align: center; color: #9a9ab0; font-size: 0.9rem; padding: 12px 4px; }
         .lb-more { display: block; width: 100%; margin-top: 4px; padding: 7px; border: none; border-radius: 8px; background: none; color: #8fa8ff; font-family: inherit; font-weight: 700; cursor: pointer; }
-        /* 🃏 Memory: flip two cards, find the pairs. Each level doubles the cards. */
+        /* 🃏 Memory: flip two cards, find the pairs. Each level adds 4 more cards. */
         .game-card.mem { padding: 12px 10px; }
         .mem-grid { display: grid; gap: 5px; margin: 0 auto; touch-action: manipulation; }
         .mem-card { position: relative; aspect-ratio: 1; padding: 0; border: none; background: none; cursor: pointer; perspective: 600px; container-type: inline-size; -webkit-tap-highlight-color: transparent; }
@@ -510,7 +510,7 @@
             guess: { daily: "Guess today's unit a letter at a time — 6 misses and you're out. The clue says what kind of unit it is.", free: "Hangman, unit after unit — 6 misses ends the run, 90 seconds a unit. Fewer misses, more points." },
             unitle: { daily: "Find today's mystery unit in 6 guesses. Each guess shows what matches.", free: "Find mystery units one after another — 6 guesses and 3 minutes each. Fewer guesses, more points." },
             hilo: { daily: "Which has more? 10 match-ups — one wrong answer ends the run.", free: "Which has more? Keep going until you miss — 15 seconds a pick." },
-            memory: { daily: `Find all ${C.MEM_DAILY_PAIRS} pairs — the same cards for everyone today. No clock: fewer moves is better (a move is two flips).`, free: "Match every pair before the clock runs out. Each level doubles the cards and gives you more time — clearing level N scores N points." },
+            memory: { daily: `Find all ${C.MEM_DAILY_PAIRS} pairs — the same cards for everyone today. No clock: fewer moves is better (a move is two flips).`, free: "Match every pair before the clock runs out. Each level adds 4 more cards and more time — clearing level N scores N points." },
             blur: { daily: "Who's in the blurry close-up? Type the name — 3 guesses, up to 3 hints. Each wrong guess zooms out.", free: `Name unit after unit from a blurry close-up — 3 guesses and a minute each, and ${C.RUN_BLUR_HINTS} hints for the whole run (used ones don't come back). Fewer guesses, more points.` }
         };
         const DAILY_PREFIX = "kih_games_daily_v2_";
@@ -1973,7 +1973,7 @@
            🎲 Today's Puzzle: one deck of C.MEM_DAILY_PAIRS pairs, the same
            for everyone, untimed; fewer moves (a move is two flips) is better.
            The tab is an endless run like the other games: level after level
-           against the clock — each level doubles the cards (4, 8, 16, 32,
+           against the clock — each level adds 4 more cards (4, 8, 12 …
            64; then 64 with a little less time each) and clearing level N
            scores N points. A level's clock starts on its first flip.
            A ranked run never has the cards: each flip asks the server what
@@ -2085,7 +2085,7 @@
             const c = ui.memCleared;
             if (c) {
                 return `<div class="mem-next"><div class="mem-next-title">🎉 Level ${c.level} cleared! +${c.points}</div>
-                    <div class="dim" style="margin-top:4px;">${Math.ceil((c.leftMs || 0) / 1000)}s to spare · the next level ${v.cards > C.memLevelInfo(c.level).cards ? "doubles the cards" : "has a little less time"}</div>${go}</div>${msg}`;
+                    <div class="dim" style="margin-top:4px;">${Math.ceil((c.leftMs || 0) / 1000)}s to spare · the next level ${v.cards > C.memLevelInfo(c.level).cards ? `has ${v.cards - C.memLevelInfo(c.level).cards} more cards` : "has a little less time"}</div>${go}</div>${msg}`;
             }
             if (ui.memLife) return `<div class="mem-life"><b>❤️ Extra life used</b> — level ${v.level} again, with new cards.${go}</div>${msg}`;
             return `<div class="mem-hint">The clock starts when you flip your first card — ${fmtClock(v.ms)} for ${v.pairs} pairs.</div>${msg}`;

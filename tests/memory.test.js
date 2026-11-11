@@ -3,7 +3,7 @@
    - Today's Puzzle: Memory joins the rotation on 2026-11-16 — every day
      before keeps the game it had; from then on each week has all six games.
    - A day's cards: only a possible, finished play counts; fewer moves is better.
-   - A run: each level waits for "start", doubles the cards and scores its
+   - A run: each level waits for "start", adds 4 more cards and scores its
      level number once the whole deck is handed in, in time.
    - Ranked: the cards never leave the server all at once — each card is asked
      for on its own (runPeek, no database), only with the level's signature
@@ -18,6 +18,7 @@ const games = require("../api/games.js");
 const { weekOf, memDeckFor, resetMemKey } = games._internals;
 
 const UNITS = loadUnits();
+const L1 = G.memLevelInfo(1).ms; // level 1's clock (20s)
 const dayAfter = (day, n) => new Date(Date.parse(day + "T00:00:00Z") + n * 864e5).toISOString().slice(0, 10);
 
 describe("Today's Puzzle rotation", () => {
@@ -75,9 +76,11 @@ describe("a day's cards", () => {
 });
 
 describe("the levels", () => {
-    test("cards double to 64, the time grows, then 64 with less time (never under a minute)", () => {
-        const rows = [1, 2, 3, 4, 5, 6, 7, 20].map(n => [G.memLevelInfo(n).cards, G.memLevelInfo(n).ms / 1000]);
-        assert.deepEqual(rows, [[4, 18], [8, 26], [16, 42], [32, 74], [64, 138], [64, 124], [64, 112], [64, 60]]);
+    test("4 more cards each level up to 64, 10s + 5s a pair, then 64 with 5% less time (never under 100s)", () => {
+        const rows = [1, 2, 3, 4, 5, 6, 8, 10, 12, 16, 17, 18, 30].map(n => [G.memLevelInfo(n).cards, G.memLevelInfo(n).ms / 1000]);
+        assert.deepEqual(rows, [[4, 20], [8, 30], [12, 40], [16, 50], [20, 60], [24, 70], [32, 90], [40, 110], [48, 130], [64, 170], [64, 162], [64, 153], [64, 100]]);
+        // every grid fits a phone (at most 8 a row)
+        for (let n = 1; n <= 20; n++) { const i = G.memLevelInfo(n); assert.ok(i.cols >= 2 && i.cols <= 8 && i.cards % 2 === 0, `level ${n}`); }
         assert.equal(G.memPoints(6), 6);
     });
 });
@@ -88,10 +91,10 @@ describe("a run (the same rules the page plays unranked)", () => {
         let run = G.runNew("memory", 12345, 1000);
         assert.equal(run.waiting, true);
         assert.equal(run.deadline, null);
-        assert.deepEqual(G.runView(UNITS, run), { level: 1, pairs: 2, cards: 4, cols: 2, ms: 18000, waiting: true, deal: 0 });
+        assert.deepEqual(G.runView(UNITS, run), { level: 1, pairs: 2, cards: 4, cols: 2, ms: L1, waiting: true, deal: 0 });
         assert.throws(() => G.runStep(UNITS, run, { cards: deckOf(run) }, 1000), /Start the level/);
         run = G.runStep(UNITS, run, { start: true }, 2000).run;
-        assert.equal(run.deadline, 2000 + 18000);
+        assert.equal(run.deadline, 2000 + L1);
         const wrong = deckOf(run).slice(), j = wrong.findIndex(k => k !== wrong[0]);
         [wrong[0], wrong[j]] = [wrong[j], wrong[0]]; // two different cards swapped
         assert.throws(() => G.runStep(UNITS, run, { cards: wrong }, 3000), /aren't this level's cards/);
@@ -99,7 +102,7 @@ describe("a run (the same rules the page plays unranked)", () => {
         let s = G.runStep(UNITS, run, { cards: deckOf(run) }, 5000);
         assert.equal(s.feedback.cleared, true);
         assert.equal(s.feedback.points, 1);
-        assert.equal(s.feedback.leftMs, 15000);
+        assert.equal(s.feedback.leftMs, L1 - 3000);
         assert.equal(s.run.score, 1);
         assert.equal(s.run.waiting, true);
         assert.equal(G.runView(UNITS, s.run).cards, 8);
@@ -109,12 +112,12 @@ describe("a run (the same rules the page plays unranked)", () => {
     });
     test("too late: the run ends and shows the cards", () => {
         let run = G.runStep(UNITS, G.runNew("memory", 7, 0), { start: true }, 0).run;
-        const late = G.runStep(UNITS, run, { cards: deckOf(run) }, 18001 + G.RUN_GRACE_MS, G.RUN_GRACE_MS);
+        const late = G.runStep(UNITS, run, { cards: deckOf(run) }, L1 + 1 + G.RUN_GRACE_MS, G.RUN_GRACE_MS);
         assert.equal(late.run.over, true);
         assert.equal(late.feedback.timedOut, true);
         assert.deepEqual(late.feedback.deck, deckOf(run));
         assert.equal(late.run.score, 0);
-        const timeUp = G.runStep(UNITS, run, null, 18001);
+        const timeUp = G.runStep(UNITS, run, null, L1 + 1);
         assert.equal(timeUp.run.over, true);
     });
     test("an extra life: the same level again with new cards, no points", () => {
@@ -129,8 +132,8 @@ describe("a run (the same rules the page plays unranked)", () => {
     });
     test("items: more time on every level", () => {
         const run = G.runStep(UNITS, G.runNew("memory", 5, 0, { extraMs: 4000 }), { start: true }, 0).run;
-        assert.equal(run.deadline, 22000);
-        assert.equal(G.runView(UNITS, run).ms, 22000);
+        assert.equal(run.deadline, L1 + 4000);
+        assert.equal(G.runView(UNITS, run).ms, L1 + 4000);
     });
     test("leaving between levels ends it", () => {
         const s = G.runStep(UNITS, G.runNew("memory", 5, 0), null, 0);
@@ -157,7 +160,7 @@ describe("ranked runs on the server", () => {
 
     test("a level: start, ask for each card (no database), hand in the deck → its points on the board", async () => {
         const s = await start();
-        assert.deepEqual(s.view, { level: 1, pairs: 2, cards: 4, cols: 2, ms: 18000, waiting: true, deal: 0 });
+        assert.deepEqual(s.view, { level: 1, pairs: 2, cards: 4, cols: 2, ms: L1, waiting: true, deal: 0 });
         assert.equal(s.deadline, null, "no clock before the level starts");
         const go = await answer(s.runId, { start: true });
         assert.equal(go.status, 200, JSON.stringify(go.body));
@@ -234,7 +237,7 @@ describe("ranked runs on the server", () => {
         const s = await start();
         const p = (await answer(s.runId, { start: true })).body.view.peek;
         const deck = memDeckFor(s.runId, 0, 2);
-        const later = 18000 + G.RUN_GRACE_MS + 1000;
+        const later = L1 + G.RUN_GRACE_MS + 1000;
         assert.equal((await withClock(later, () => peek(s.runId, p, 0))).status, 409);
         const r = await withClock(later, () => answer(s.runId, { cards: deck }));
         assert.equal(r.status, 200);

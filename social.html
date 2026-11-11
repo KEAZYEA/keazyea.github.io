@@ -3311,19 +3311,29 @@
            Social as before (Home handles that). */
         const backStack = []; // what's open, in the order it opened
         let backSkip = 0;     // our own history.back()s still to arrive as popstate
+        let pushesWaiting = 0; // steps for popups that opened while one of those was on its way
         const openLayers = () => [...document.querySelectorAll(".modal-overlay.open, .find-bar.show")].map(el => el.id).filter(Boolean);
+        // history.back() only happens a moment later. A step added before it
+        // lands would be the one it takes away (one popup closing as another
+        // opens, e.g. Cancel → View Profile) — and closing the new popup would
+        // then step out of Social to Home. So new steps wait for it.
+        function pushLayerStep() {
+            if (backSkip > 0) { pushesWaiting++; return; }
+            history.pushState({ ...(history.state || {}), kihSocialLayer: backStack.length }, "");
+        }
         function syncBackStack() {
             const open = openLayers();
             for (let i = backStack.length - 1; i >= 0; i--) {
                 if (!open.includes(backStack[i])) { // closed with its own button
                     backStack.splice(i, 1);
+                    if (pushesWaiting > 0) { pushesWaiting--; continue; } // its step was never added
                     backSkip++;
                     history.back();
                 }
             }
             open.filter(id => !backStack.includes(id)).forEach(id => {
                 backStack.push(id);
-                history.pushState({ ...(history.state || {}), kihSocialLayer: backStack.length }, "");
+                pushLayerStep();
             });
         }
         function closeLayer(id) {
@@ -3336,7 +3346,11 @@
             else el.classList.remove("open");
         }
         window.addEventListener("popstate", () => {
-            if (backSkip > 0) { backSkip--; return; }
+            if (backSkip > 0) {
+                backSkip--;
+                if (backSkip === 0) for (; pushesWaiting > 0; pushesWaiting--) history.pushState({ ...(history.state || {}), kihSocialLayer: backStack.length }, "");
+                return;
+            }
             const id = backStack.pop();
             if (id) closeLayer(id); // (already off the list, so closing it doesn't step back again)
         });

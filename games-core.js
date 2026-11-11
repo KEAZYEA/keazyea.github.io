@@ -624,19 +624,29 @@
        `pairs` different units, two cards each, shuffled. Today's puzzle is
        one deck of MEM_DAILY_PAIRS, untimed, scored in moves (two flips; fewer
        is better). A run goes level after level, against the clock: each
-       level doubles the cards (4, 8, 16, 32, 64) and gives more time; after
-       64 cards the levels stay at 64 with a little less time each. Clearing
-       level N scores N points (1 + 2 + 3 …). */
+       level adds MEM_STEP_PAIRS pairs (4, 8, 12, 16 … 64 cards) and gives
+       MEM_BASE_SECS + MEM_SECS_PER_PAIR a pair (20s, 30s, 40s … 2:50); after
+       64 cards the levels stay at 64 with 5% less time each, never under
+       MEM_MIN_SECS. Clearing level N scores N points (1 + 2 + 3 …). */
     const MEM_DAILY_PAIRS = 10;
     const MEM_MAX_PAIRS = 32;
     const MEM_MAX_FLIPS = 400; // a day's play longer than this isn't a real one
+    const MEM_STEP_PAIRS = 2, MEM_BASE_SECS = 10, MEM_SECS_PER_PAIR = 5, MEM_MIN_SECS = 100;
+    // Columns for a grid: 4 a row up to 16 cards, then whatever fills rows
+    // evenly (up to 8 a row, the most that fit a phone), else 8.
+    function memCols(cards) {
+        if (cards <= 4) return 2;
+        if (cards <= 16) return 4;
+        for (let c = 4; c <= 8; c++) if (cards % c === 0 && cards / c <= c + 2) return c;
+        return 8;
+    }
     function memLevelInfo(level) {
         const n = Math.max(1, Math.floor(level));
-        const doubled = 2 * 2 ** Math.min(n - 1, 10);
-        const pairs = Math.min(doubled, MEM_MAX_PAIRS);
-        const secs = doubled <= MEM_MAX_PAIRS ? 10 + 4 * pairs // 18s, 26s, 42s, 74s, 138s
-            : Math.max(60, Math.round((10 + 4 * MEM_MAX_PAIRS) * 0.9 ** (n - 5))); // then 124s, 112s, … 60s
-        return { level: n, pairs, cards: pairs * 2, ms: secs * 1000, cols: pairs <= 2 ? 2 : pairs <= 8 ? 4 : 8 };
+        const pairs = Math.min(MEM_STEP_PAIRS * n, MEM_MAX_PAIRS);
+        const full = MEM_BASE_SECS + MEM_SECS_PER_PAIR * pairs; // 20s, 30s, 40s … 170s
+        const past = Math.max(0, n - MEM_MAX_PAIRS / MEM_STEP_PAIRS); // levels after the first at 64 cards
+        const secs = past ? Math.max(MEM_MIN_SECS, Math.round(full * 0.95 ** past)) : full;
+        return { level: n, pairs, cards: pairs * 2, ms: secs * 1000, cols: memCols(pairs * 2) };
     }
     const memPoints = (level) => level;
     function memDeck(units, rand, pairs) {
