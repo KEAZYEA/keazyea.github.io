@@ -71,7 +71,7 @@ jobs:
       - run: node tests/smoke.js
       - name: Keep the coverage numbers
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: browser-coverage
           path: coverage/
