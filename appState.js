@@ -3040,6 +3040,68 @@ async function getClanPostCooldownRemaining() {
         }
     }
 
+    /* ---------------- 🔴 What's new in Social ----------------
+       The numbers on Home's Social button and on Social's tabs. "Seen" is kept
+       on this device (localStorage, so Home and Social share it): World Chat
+       per channel — the same "kih_world_seen_<channel>" Social's channel
+       buttons use — and each post feed up to the newest post you've had in
+       front of you. Others' posts and messages after that count as new; with
+       nothing seen yet, the last day's do. */
+    const SOCIAL_NEW_SINCE_MS = 24 * 60 * 60 * 1000;
+    const POSTS_SEEN_KEY = "kih_posts_seen_"; // + clan | formation | tierList
+    const WORLD_SEEN_KEY_PREFIX = "kih_world_seen_"; // + channel (Social sets it)
+    const readSeen = (key) => { try { return Number(localStorage.getItem(key)) || 0; } catch (e) { return 0; } };
+    function postsSeenAt(kind) { return readSeen(POSTS_SEEN_KEY + kind); }
+    // posts you've now seen: up to the newest of them
+    function markPostsSeen(kind, posts) {
+        const newest = Math.max(0, ...(posts || []).map(p => Number(p.createdAt) || 0));
+        if (newest > postsSeenAt(kind)) try { localStorage.setItem(POSTS_SEEN_KEY + kind, String(newest)); } catch (e) { }
+    }
+    // how many of these posts (newest first or not) are new to you
+    function countNewPosts(kind, posts, now = Date.now(), me = currentUser ? currentUser.uid : null) {
+        const since = postsSeenAt(kind) || now - SOCIAL_NEW_SINCE_MS;
+        return (posts || []).filter(p => p && p.uid !== me && (Number(p.createdAt) || 0) > since).length;
+    }
+    // new World Chat messages from others, across all channels (blocked players left out)
+    function countNewWorldChat(msgs, blocked, now = Date.now(), me = currentUser ? currentUser.uid : null) {
+        return (msgs || []).filter(m => {
+            if (!m || m.uid === me || (blocked && blocked.has(m.uid))) return false;
+            const since = readSeen(WORLD_SEEN_KEY_PREFIX + (m.tag || "general")) || now - SOCIAL_NEW_SINCE_MS;
+            return (Number(m.createdAt) || 0) > since;
+        }).length;
+    }
+    // Home: { world, clan, formation, tierList } live — a few of the newest of
+    // each (enough to count up to "9+"), counted again whenever Social marks
+    // something seen (the "storage" event reaches Home from Social's frame).
+    function listenToSocialNews(callback) {
+        if (!currentUser) { callback({ world: 0, clan: 0, formation: 0, tierList: 0 }); return () => { }; }
+        const latest = { world: [], clan: [], formation: [], tierList: [] };
+        let blocked = new Set(), stopped = false;
+        const emit = () => {
+            if (stopped) return;
+            callback({
+                world: countNewWorldChat(latest.world, blocked),
+                clan: countNewPosts("clan", latest.clan),
+                formation: countNewPosts("formation", latest.formation),
+                tierList: countNewPosts("tierList", latest.tierList)
+            });
+        };
+        // (each asked for the same way Social's own feed asks, just fewer)
+        const feed = (kind, q) => onSnapshot(q,
+            snap => { latest[kind] = snap.docs.map(d => ({ id: d.id, ...d.data() })); emit(); },
+            err => console.warn("Social news (" + kind + "):", err.message));
+        const stops = [
+            listenToWorldChat(30, msgs => { latest.world = msgs; emit(); }),
+            feed("clan", query(collection(db, "clanPosts"), orderBy("createdAt", "desc"), limit(10))),
+            feed("formation", query(collection(db, "formationPosts"), where("expiresAt", ">", Timestamp.now()), orderBy("expiresAt", "desc"), limit(10))),
+            feed("tierList", query(collection(db, "tierLists"), orderBy("createdAt", "desc"), limit(10)))
+        ];
+        getMyBlockedUids().then(list => { blocked = new Set(list); emit(); }).catch(() => { });
+        const onStorage = (e) => { if (!e.key || e.key.startsWith(POSTS_SEEN_KEY) || e.key.startsWith(WORLD_SEEN_KEY_PREFIX)) emit(); };
+        window.addEventListener("storage", onStorage);
+        return () => { stopped = true; stops.forEach(f => f()); window.removeEventListener("storage", onStorage); };
+    }
+
     // Counts CONVERSATIONS with unread messages, not total unread messages —
     // e.g. one friend sending 4 messages still shows "1" here (matches how
     // normal messaging apps badge their conversation list).
@@ -5590,6 +5652,7 @@ async function maybeRefreshAd(containerId) {
         // DMs
         getOrCreateDmThread, sendDmMessage, editDmMessage, listenToDmMessages, listenToMyDmThreads, deleteDmMessagesOnly,
         markDmThreadRead, listenToUnreadDmCount,
+        listenToSocialNews, markPostsSeen, countNewPosts, countNewWorldChat,
         // blocking
         blockUser, unblockUser, amIBlockedBy, haveIBlocked,
         // reports

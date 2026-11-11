@@ -2484,11 +2484,11 @@
                     onclick="switchSocialTab('friends')">Friends<span class="clan-filter-count" id="dmUnreadBadge"
                         style="display:none;"></span></button>
                 <button class="social-tab-btn" id="tabBtnClan" onclick="switchSocialTab('clan')">Clan
-                    Recruit&shy;ment</button>
+                    Recruit&shy;ment<span class="clan-filter-count" id="clanNewBadge" style="display:none;"></span></button>
                 <button class="social-tab-btn" id="tabBtnFormation" onclick="switchSocialTab('formation')">Forma&shy;tion
-                    Help</button>
+                    Help<span class="clan-filter-count" id="formationNewBadge" style="display:none;"></span></button>
                 <button class="social-tab-btn" id="tabBtnTierList" onclick="switchSocialTab('tierlist')">Tier
-                    List</button>
+                    List<span class="clan-filter-count" id="tierListNewBadge" style="display:none;"></span></button>
             </div>
 
             <!-- 🌍 WORLD CHAT TAB -->
@@ -3639,10 +3639,42 @@ function buildCountrySelectOptions(selectId, includeAny) {
             if (tab === "tierlist") ensureUnitDataLoaded();
             if (tab === "world") { document.getElementById("wcList").dataset.drawn = ""; renderWorldChat(); markWorldSeen(); maybeShowChatRules(); }
             updateWorldBadge();
+            updatePostBadges();
             // Remembered so returning from Home lands back on the tab you
             // were actually using instead of always resetting to Friends.
             try { localStorage.setItem(SOCIAL_TAB_KEY, tab); } catch (e) {}
         };
+        // Social on screen? (not just loaded: it stays loaded behind Home, and
+        // nothing should count as seen while you're looking at Home)
+        function socialShowing() {
+            if (document.hidden) return false;
+            try { return !window.frameElement || window.frameElement.getClientRects().length > 0; } catch (e) { return true; }
+        }
+        // 🔴 new posts since you last looked: a number on Clan Recruitment,
+        // Formation Help and Tier List (Home's Social button counts them too)
+        const POST_BADGES = [
+            { tab: "clan", kind: "clan", badge: "clanNewBadge", posts: () => allClanPosts },
+            { tab: "formation", kind: "formation", badge: "formationNewBadge", posts: () => allFormationPosts },
+            { tab: "tierlist", kind: "tierList", badge: "tierListNewBadge", posts: () => allTierListPosts }
+        ];
+        function updatePostBadges() {
+            if (!AppState.countNewPosts) return; // (an older cached appState.js)
+            POST_BADGES.forEach(b => {
+                const open = document.getElementById("tabBtn" + { clan: "Clan", formation: "Formation", tierlist: "TierList" }[b.tab]).classList.contains("active");
+                const posts = b.posts() || [];
+                if (open && socialShowing()) AppState.markPostsSeen(b.kind, posts);
+                const n = open ? 0 : AppState.countNewPosts(b.kind, posts, Date.now(), AppState.getCurrentUser()?.uid);
+                const el = document.getElementById(b.badge);
+                el.textContent = n > 9 ? "9+" : String(n);
+                el.style.display = n > 0 ? "inline-block" : "none";
+            });
+        }
+        // Home calls this when you come back to Social: what's on screen is seen now
+        window.socialShown = function () {
+            if (worldTabOpen()) markWorldSeen();
+            updatePostBadges();
+        };
+        document.addEventListener("visibilitychange", () => { if (!document.hidden) updatePostBadges(); });
         const SOCIAL_TAB_KEY = "kih_social_tab";
         const SOCIAL_TABS = ["world", "friends", "clan", "formation", "tierlist"];
         function avatarColorFor(name) {
@@ -4192,6 +4224,7 @@ window.removeClanIconPreview = function () {
             ensureCards((posts || []).map(p => p.uid), () => renderClanPosts(posts), "clanPosts");
             allClanPosts = posts;
             applyClanFiltersAndRender();
+            updatePostBadges();
         }
 
         function applyClanFiltersAndRender() {
@@ -4633,6 +4666,7 @@ window.removeClanIconPreview = function () {
             ensureCards((posts || []).map(p => p.uid), () => renderFormationPosts(posts), "formationPosts");
             allFormationPosts = posts;
             applyFormationFiltersAndRender();
+            updatePostBadges();
             // Keep the open detail modal (if any) in sync with live updates
             // (e.g. commentCount changing, or an edit changing the images,
             // while a viewer has the post open).
@@ -6036,6 +6070,7 @@ window.removeClanIconPreview = function () {
             ensureCards((posts || []).map(p => p.uid), () => renderTierListPosts(posts), "tierListPosts");
             allTierListPosts = posts;
             applyTierListFiltersAndRender();
+            updatePostBadges();
             if (pendingTierListIdFromUrl && allTierListPosts.some(x => x.id === pendingTierListIdFromUrl)) {
                 const id = pendingTierListIdFromUrl;
                 pendingTierListIdFromUrl = null;
@@ -7078,7 +7113,7 @@ window.removeClanIconPreview = function () {
             if (msgs.length < WORLD_PAGE && !worldOlder.length) worldNoOlder = true;
             worldLive = msgs;
             renderWorldChat();
-            if (worldTabOpen() && !document.hidden) markWorldSeen(); else updateWorldBadge();
+            if (worldTabOpen() && socialShowing()) markWorldSeen(); else updateWorldBadge();
         }
         function listenToChannel() {
             if (worldUnsub) { worldUnsub(); worldUnsub = null; }
@@ -7768,7 +7803,7 @@ window.removeClanIconPreview = function () {
                 await AppState.deleteDmMessage(currentDmThreadId, msgId);
             } catch (e) { showInfoModal("Couldn't delete", e.message); }
         };
-        document.addEventListener("visibilitychange", () => { if (!document.hidden && worldTabOpen()) markWorldSeen(); });
+        document.addEventListener("visibilitychange", () => { if (worldTabOpen() && socialShowing()) markWorldSeen(); });
         window.addEventListener("resize", () => paintWorldCompose()); // the placeholder fits the box
 
         /* ---- ℹ️ how the chat works ----

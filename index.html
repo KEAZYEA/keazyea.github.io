@@ -2774,6 +2774,10 @@ body {
         // Reload whatever it's showing now (setSectionFrameUrl may have moved
         // it on from its src attribute). A reload never adds a Back step.
         if (existingFrame) setSectionFrameUrl(existingFrame, currentSectionFrameUrl(existingFrame, existingFrame.getAttribute("src")));
+    } else if (page === "social") {
+        // Back in Social: what's on its open tab counts as seen now (its 🔴 numbers, and Home's)
+        let socialFrame = target.querySelector("iframe");
+        try { socialFrame?.contentWindow?.socialShown?.(); } catch (e) { }
     } else if (page === "games") {
         // Back in Games: it shows Today's Puzzle, not the game left open.
         let gamesFrame = target.querySelector("iframe");
@@ -4955,11 +4959,35 @@ window.closeInboxItemModal = closeInboxItemModal;
             if (!user) { updateSocialUnreadBadgeHome(0); return; }
             unsubUnreadDmHome = AppState.listenToUnreadDmCount(updateSocialUnreadBadgeHome);
         }
+        // Social's number on Home: unread DMs + new World Chat messages + new
+        // Clan Recruitment / Formation Help / Tier List posts (AppState.listenToSocialNews)
+        let socialDmUnreadHome = 0, socialNewsHome = { world: 0, clan: 0, formation: 0, tierList: 0 };
         function updateSocialUnreadBadgeHome(count) {
+            socialDmUnreadHome = count || 0;
+            paintSocialBadgeHome();
+        }
+        function paintSocialBadgeHome() {
             const badge = document.getElementById("socialUnreadBadgeHome");
             if (!badge) return;
+            const n = socialNewsHome, count = socialDmUnreadHome + n.world + n.clan + n.formation + n.tierList;
             badge.textContent = count > 9 ? "9+" : String(count);
             badge.style.display = count > 0 ? "flex" : "none";
+            const s = (c) => c > 1 ? "s" : "";
+            badge.title = [
+                socialDmUnreadHome && `${socialDmUnreadHome} unread chat${s(socialDmUnreadHome)}`,
+                n.world && `${n.world} new in World Chat`,
+                n.clan && `${n.clan} new clan post${s(n.clan)}`,
+                n.formation && `${n.formation} new formation post${s(n.formation)}`,
+                n.tierList && `${n.tierList} new tier list${s(n.tierList)}`
+            ].filter(Boolean).join(" · ");
+        }
+        let unsubSocialNewsHome = null;
+        function startSocialNewsListenerHome() {
+            if (unsubSocialNewsHome) { unsubSocialNewsHome(); unsubSocialNewsHome = null; }
+            socialNewsHome = { world: 0, clan: 0, formation: 0, tierList: 0 };
+            paintSocialBadgeHome();
+            if (!AppState.getCurrentUser() || typeof AppState.listenToSocialNews !== "function") return;
+            unsubSocialNewsHome = AppState.listenToSocialNews(n => { socialNewsHome = n; paintSocialBadgeHome(); });
         }
         function setInboxFilter(f) {
             currentInboxFilter = f;
@@ -5678,6 +5706,7 @@ window.closeInboxItemModal = closeInboxItemModal;
                 startFriendReqListenerHome();
                 startPersonalNotifListener();
                 startUnreadDmListenerHome();
+                startSocialNewsListenerHome();
                 startGiveawayBadgeListener();
                 checkTermsGate();
             });
@@ -5706,6 +5735,7 @@ AppState.waitForAuthReady().then(() => {
     startFriendReqListenerHome();
     startPersonalNotifListener();
     startUnreadDmListenerHome();
+    startSocialNewsListenerHome();
     startGiveawayBadgeListener();
     AppState.touchLastActive();
     setInterval(() => AppState.touchLastActive(), 5 * 60 * 1000);
