@@ -3,7 +3,7 @@
 
 <head>
     <title>Games — Keazyea's Intelligence Hub</title>
-    <meta name="description" content="Daily Kingdom Clash puzzle and quiz games — Unitle, Hangman, Higher or Lower, Trivia and Blur — with a weekly leaderboard.">
+    <meta name="description" content="Daily Kingdom Clash puzzle and quiz games — Unitle, Hangman, Higher or Lower, Trivia, Blur and Memory — with a weekly leaderboard.">
     <link rel="icon" href="images/KIH.jpg">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="fx-styles.css">
@@ -26,15 +26,15 @@
         .games-tabs { background: rgba(24, 24, 44, 0.95); border-radius: 14px; padding: 6px; }
         body { padding: 0 12px 40px; box-sizing: border-box; }
         h1 { font-size: 2.2rem; margin: 18px 0 6px; }
-        /* Seven tabs on a phone: Today's Puzzle and Ranks across the top, the
-           five games below (icon over a short label). */
-        .games-tabs { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 4px; }
+        /* Eight tabs on a phone: Today's Puzzle and Ranks across the top, the
+           six games below (icon over a short label). */
+        .games-tabs { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 4px; }
         .games-tabs .tab-btn {
             grid-column: span 2;
             display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 2px;
             padding: 8px 2px; font-size: 0.8rem; line-height: 1.15; min-width: 0; margin: 0;
         }
-        .games-tabs .tab-btn.wide { grid-column: span 5; flex-direction: row; justify-content: center; gap: 7px; padding: 9px 6px; font-size: 0.9rem; }
+        .games-tabs .tab-btn.wide { grid-column: span 6; flex-direction: row; justify-content: center; gap: 7px; padding: 9px 6px; font-size: 0.9rem; }
         .games-tabs .tab-btn.wide .tab-icon { font-size: 1.15rem; }
         .games-tabs .tab-btn .tab-icon { font-size: 1.25rem; line-height: 1.2; }
         .games-tabs .tab-btn { position: relative; }
@@ -82,7 +82,6 @@
         .daily-bar .coin { color: #ffd75e; white-space: nowrap; }
         .roulette { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; margin: 6px 0 14px; }
         .roulette .rl-tile { grid-column: span 2; }
-        .roulette .rl-tile:nth-child(4) { grid-column: 2 / span 2; }
         .rl-tile {
             display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 18px 6px;
             border-radius: 14px; border: 2px solid #34345e; background: #26264a; font-weight: 800; font-size: 0.88rem; line-height: 1.2; text-align: center;
@@ -347,6 +346,39 @@
         .lb-note summary { cursor: pointer; color: #c8c8e0; font-weight: 700; }
         .lb-empty { text-align: center; color: #9a9ab0; font-size: 0.9rem; padding: 12px 4px; }
         .lb-more { display: block; width: 100%; margin-top: 4px; padding: 7px; border: none; border-radius: 8px; background: none; color: #8fa8ff; font-family: inherit; font-weight: 700; cursor: pointer; }
+        /* 🃏 Memory: flip two cards, find the pairs. Each level doubles the cards. */
+        .game-card.mem { padding: 12px 10px; }
+        .mem-grid { display: grid; gap: 5px; margin: 0 auto; touch-action: manipulation; }
+        .mem-card { position: relative; aspect-ratio: 1; padding: 0; border: none; background: none; cursor: pointer; perspective: 600px; container-type: inline-size; -webkit-tap-highlight-color: transparent; }
+        .mem-inner { position: absolute; inset: 0; transition: transform 0.32s ease; transform-style: preserve-3d; }
+        .mem-card.up .mem-inner, .mem-card.done .mem-inner { transform: rotateY(180deg); }
+        .mem-back, .mem-face { position: absolute; inset: 0; border-radius: 9px; overflow: hidden; -webkit-backface-visibility: hidden; backface-visibility: hidden; box-sizing: border-box; }
+        .mem-back {
+            display: flex; align-items: center; justify-content: center; font-size: 42cqw; font-weight: 900; color: rgba(255, 255, 255, 0.85);
+            background: repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.05) 0 6px, transparent 6px 12px), linear-gradient(145deg, #5b3bd6, #8a4dff 55%, #c04dd8);
+            border: 2px solid #a98bff; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.25);
+        }
+        .mem-card:active:not(.up):not(.done) .mem-back { filter: brightness(1.2); }
+        .mem-face { transform: rotateY(180deg); background: #2a2a4a; border: 2px solid #4a4a7a; }
+        .mem-face img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+        .mem-card.done .mem-face { border-color: #2ecc71; box-shadow: 0 0 10px rgba(46, 204, 113, 0.55); animation: memMatch 0.45s ease 0.2s; }
+        .mem-card.done.settled .mem-face { opacity: 0.5; box-shadow: none; transition: opacity 0.4s; }
+        .mem-card.miss .mem-face { border-color: #e53935; animation: memShake 0.35s ease 0.3s; }
+        .mem-card.done, .mem-card.lost { cursor: default; }
+        .mem-card.lost .mem-face { opacity: 0.45; filter: grayscale(0.7); }
+        @keyframes memMatch { 50% { transform: rotateY(180deg) scale(1.12); } }
+        @keyframes memShake { 25% { transform: rotateY(180deg) translateX(-4px); } 75% { transform: rotateY(180deg) translateX(4px); } }
+        .mem-foot:empty { display: none; }
+        .mem-next { text-align: center; margin-top: 12px; padding: 14px 12px; border-radius: 14px; background: rgba(46, 125, 50, 0.2); border: 1px solid #2e7d32; animation: pop 0.3s ease; }
+        .mem-next-title { font-size: 1.15rem; font-weight: 900; }
+        .mem-next .game-actions { margin-top: 10px; }
+        .mem-hint { text-align: center; font-size: 0.8rem; color: #9a9ab0; margin-top: 8px; }
+        /* a ranked card on its way from the server */
+        .mem-card.loading .mem-face::after { content: ""; position: absolute; inset: 0; margin: auto; width: 34%; height: 34%; border-radius: 50%; border: 3px solid #4a4a7a; border-top-color: #c8b6ff; animation: memSpin 0.7s linear infinite; }
+        @keyframes memSpin { to { transform: rotate(360deg); } }
+        .mem-life { text-align: center; margin-top: 12px; padding: 12px; border-radius: 14px; background: rgba(229, 57, 53, 0.14); border: 1px solid #e57373; }
+        .mem-life .game-actions { margin-top: 10px; }
+        .mem-result { margin-top: 12px; }
         /* 🪢 Hangman */
         .hang-top { display: flex; align-items: center; gap: 14px; margin-bottom: 10px; }
         .hang-svg { width: 118px; height: 110px; flex-shrink: 0; }
@@ -428,6 +460,7 @@
         <button class="tab-btn" data-tab="trivia" onclick="switchTab('trivia')"><span class="tab-icon">🧠</span><span class="tab-label">Trivia</span></button>
         <button class="tab-btn" data-tab="guess" onclick="switchTab('guess')"><span class="tab-icon">🪢</span><span class="tab-label">Hangman</span></button>
         <button class="tab-btn" data-tab="blur" onclick="switchTab('blur')"><span class="tab-icon">🔍</span><span class="tab-label">Blur</span></button>
+        <button class="tab-btn" data-tab="memory" onclick="switchTab('memory')"><span class="tab-icon">🃏</span><span class="tab-label">Memory</span></button>
     </div>
     <div class="games-wrap">
         <p class="game-intro" id="gameIntro"></p>
@@ -477,6 +510,7 @@
             guess: { daily: "Guess today's unit a letter at a time — 6 misses and you're out. The clue says what kind of unit it is.", free: "Hangman, unit after unit — 6 misses ends the run, 90 seconds a unit. Fewer misses, more points." },
             unitle: { daily: "Find today's mystery unit in 6 guesses. Each guess shows what matches.", free: "Find mystery units one after another — 6 guesses and 3 minutes each. Fewer guesses, more points." },
             hilo: { daily: "Which has more? 10 match-ups — one wrong answer ends the run.", free: "Which has more? Keep going until you miss — 15 seconds a pick." },
+            memory: { daily: `Find all ${C.MEM_DAILY_PAIRS} pairs — the same cards for everyone today. No clock: fewer moves is better (a move is two flips).`, free: "Match every pair before the clock runs out. Each level doubles the cards and gives you more time — clearing level N scores N points." },
             blur: { daily: "Who's in the blurry close-up? Type the name — 3 guesses, up to 3 hints. Each wrong guess zooms out.", free: `Name unit after unit from a blurry close-up — 3 guesses and a minute each, and ${C.RUN_BLUR_HINTS} hints for the whole run (used ones don't come back). Fewer guesses, more points.` }
         };
         const DAILY_PREFIX = "kih_games_daily_v2_";
@@ -601,16 +635,26 @@
         // A one-off puzzle: today's (isDaily), or `fixed` = { puzzle, src,
         // challenge } — an earlier day's puzzle a friend challenged you to.
         // (The other tabs are endless runs — see ENDLESS RUNS below.)
+        // Each game's one-off puzzle: how it starts and draws. (A Map, not an
+        // object: a game name from a link can only find these, never anything
+        // an object inherits.)
+        const DAY_GAMES = new Map([
+            ["trivia", { start: startTrivia, render: renderTrivia }], ["guess", { start: startGuess, render: renderGuess }],
+            ["unitle", { start: startUnitle, render: renderUnitle }], ["hilo", { start: startHilo, render: renderHilo }],
+            ["blur", { start: startBlur, render: renderBlur }], ["memory", { start: startMemory, render: renderMemory }]
+        ]);
         function startGame(id, isDaily, fixed) {
             hideRun();
             let p, src;
             if (isDaily) { p = daily.puzzle; src = "d" + daily.day.replace(/-/g, ""); }
             else { p = fixed.puzzle; src = fixed.src; }
             if (!isDaily) setIntro(`${INTROS[id].daily.replace("today's", "that day's").replace("today", "that day")}<small>⚔️ A friend's challenge — the same puzzle they played. No tokens here; 🎲 Today's Puzzle pays +1 🪙.</small>`);
-            ({ trivia: startTrivia, guess: startGuess, unitle: startUnitle, hilo: startHilo, blur: startBlur })[id](isDaily, p);
+            const play = DAY_GAMES.get(id);
+            if (!play) return;
+            play.start(isDaily, p);
             game.src = src;
             game.challenge = isDaily ? dailyChallenge : (fixed && fixed.challenge) || null;
-            ({ trivia: renderTrivia, guess: renderGuess, unitle: renderUnitle, hilo: renderHilo, blur: renderBlur })[id]();
+            play.render();
             if (isDaily && dailyFinished()) collectToken();
         }
 
@@ -623,7 +667,7 @@
            ================================================================ */
         let dailyChallenge = null; // a challenge on today's puzzle, while this page is open
         function parseChallenge(code) {
-            const m = /^(trivia|guess|unitle|hilo|blur)\.(d\d{8}|s[0-9a-z]{1,8})\.(\d{1,3}|x)$/.exec(String(code || "").toLowerCase());
+            const m = /^(trivia|guess|unitle|hilo|blur|memory)\.(d\d{8}|s[0-9a-z]{1,8})\.(\d{1,3}|x)$/.exec(String(code || "").toLowerCase());
             if (!m) return null;
             const [, id, src, score] = m;
             const day = src[0] === "d" ? `${src.slice(1, 5)}-${src.slice(5, 7)}-${src.slice(7, 9)}` : null;
@@ -636,20 +680,23 @@
             if (g.id === "trivia") { const n = g.answers.filter((a, k) => a === g.questions[k].answer).length; return { value: n, label: `${n}/${g.questions.length}` }; }
             if (g.id === "hilo") { const n = hiloScore(g).score; return { value: n, label: g.fixed ? `${n}/${g.rounds.length}` : `a streak of ${n}` }; }
             if (g.id === "guess") { const st = guessStatus(g); return { value: st.won ? st.wrong.length : null, label: st.won ? missesText(st.wrong.length) : "not solved" }; }
+            if (g.id === "memory") { const st = memDailyState(g); return { value: st.done ? st.moves : null, label: st.done ? movesText(st.moves) : "not finished" }; }
             const won = g.guesses.includes(g.target), max = g.id === "blur" ? C.BLUR_GUESSES : C.UNITLE_TRIES;
             return { value: won ? g.guesses.length : null, label: won ? `${g.guesses.length}/${max}` : `X/${max}` };
         }
         const missesText = (n) => (n === 0 ? "no misses" : `${n} miss${n === 1 ? "" : "es"}`);
+        const movesText = (n) => `${n} move${n === 1 ? "" : "s"}`;
         function challengeLabel(ch) {
             if (!ch.day) return runScoreLabel(ch.game, ch.score || 0);
             if (ch.game === "trivia") return `${ch.score}/${C.TRIVIA_COUNT}`;
             if (ch.game === "hilo") return ch.day ? `${ch.score}/${C.HILO_DAILY_ROUNDS}` : `a streak of ${ch.score}`;
             if (ch.game === "guess") return ch.score == null ? "not solved" : missesText(ch.score);
+            if (ch.game === "memory") return ch.score == null ? "not finished" : movesText(ch.score);
             const max = ch.game === "blur" ? C.BLUR_GUESSES : C.UNITLE_TRIES;
             return ch.score == null ? `X/${max}` : `${ch.score}/${max}`;
         }
         // > 0: you did better. More right is better in Trivia and Higher or
-        // Lower; fewer misses / guesses is better in Hangman, Unitle and Blur (not solved = worst).
+        // Lower; fewer misses / guesses / moves is better in Hangman, Unitle, Blur and Memory (not solved = worst).
         function versus(id, mine, theirs) {
             if (id === "trivia" || id === "hilo") return (mine || 0) - (theirs || 0);
             const v = (x) => (x == null ? 99 : x);
@@ -689,6 +736,7 @@
             let brag;
             if (g.id === "trivia") brag = `I scored ${s.label} in ${icon} ${title}`;
             else if (g.id === "hilo") brag = `I got ${s.label} in ${icon} ${title}`;
+            else if (g.id === "memory") brag = `I found every pair in ${icon} ${title} in ${movesText(s.value)}`;
             else if (s.value == null) brag = g.id === "guess" ? `I couldn't solve ${icon} ${title}` : g.id === "blur" ? `I couldn't crack ${icon} ${title}` : `I couldn't find the ${icon} ${title} unit`;
             else if (g.id === "guess") brag = `I solved ${icon} ${title} with ${missesText(s.value)}`;
             else brag = `I got ${icon} ${title} in ${s.value} guess${s.value === 1 ? "" : "es"}`;
@@ -710,10 +758,10 @@
         }
 
         // The grid shows the games in the same order as the tabs (unitle,
-        // hilo, trivia / guess, blur); the light runs clockwise around it.
+        // hilo, trivia / guess, blur, memory); the light runs clockwise around it.
         // Display only — which game is today's comes from C.dailyGameFor.
-        const RL_GRID = ["unitle", "hilo", "trivia", "guess", "blur"];
-        const RL_ORDER = ["unitle", "hilo", "trivia", "blur", "guess"];
+        const RL_GRID = ["unitle", "hilo", "trivia", "guess", "blur", "memory"];
+        const RL_ORDER = ["unitle", "hilo", "trivia", "memory", "blur", "guess"];
         function renderRoulette() {
             setIntro(`One game a day, the same for everyone. Finish it to earn <b>+1 🪙</b> — however you score.`);
             $("gameArea").innerHTML = `<div class="game-card">
@@ -1360,8 +1408,8 @@
         // Each game's latest run, kept while you look at other tabs: its clock
         // keeps going (the server's does anyway), and coming back picks it up
         // where you left it instead of starting a new one.
-        const runs = {};
-        const liveRun = (ui) => runs[ui.game] === ui; // not replaced by a newer run
+        const runs = new Map(); // game -> its run (a Map: a game name can never reach anything an object inherits)
+        const liveRun = (ui) => runs.get(ui.game) === ui; // not replaced by a newer run
         const paintRun = (ui, keepFocus) => { if (runUi === ui) renderRun(keepFocus); };
         const newSeed = () => Math.floor(Math.random() * 2 ** 31);
         const runIsStreak = (g) => g === "trivia" || g === "hilo";
@@ -1399,7 +1447,8 @@
         function markRunTabs() {
             C.GAMES.forEach(g => {
                 const btn = document.querySelector(`.games-tabs [data-tab="${g}"]`);
-                if (btn) btn.classList.toggle("run-live", !!(runs[g] && !runs[g].over && !runs[g].starting));
+                const r = runs.get(g);
+                if (btn) btn.classList.toggle("run-live", !!(r && !r.over && !r.starting));
             });
         }
         function runViewFits(id, view) {
@@ -1420,10 +1469,11 @@
         // haven't seen how), otherwise a new one. opts: { fresh } for Play
         // again; { seed, challenge } to replay a friend's run (never ranked).
         async function startRun(id, opts = {}) {
-            const kept = runs[id];
+            if (!C.GAMES.includes(id)) return;
+            const kept = runs.get(id);
             if (kept && !opts.fresh && !opts.challenge && !(kept.over && kept.seenOver)) { showRun(kept); return; }
             const ui = { game: id, starting: true, ranked: false, challenge: opts.challenge || null, score: 0, best: 0, over: false, view: null, feedback: null, typed: "", msg: "", note: "", busy: false, holding: false, unitNo: 1 };
-            runs[id] = ui;
+            runs.set(id, ui);
             markRunTabs();
             showRun(ui);
             let resp = null;
@@ -1463,12 +1513,12 @@
             applyRunResp(ui, resp, true);
         }
         function runIntro(ui) {
-            const note = ui.starting ? "" : ui.challenge ? "⚔️ A friend's challenge — the same run they played. Not ranked."
+            const note = ui.starting ? "" : ui.challenge ? (ui.game === "memory" ? "⚔️ A friend's challenge — the same levels and clock they had. Not ranked." : "⚔️ A friend's challenge — the same run they played. Not ranked.")
                 : ui.ranked && ui.bonus ? `⭐ Today's Puzzle game — runs you start today count <b>double</b> on the leaderboard (${C.LB_CAP} points = ${C.LB_GAME_MAX}).`
                 : ui.ranked ? `🏆 Ranked — your best run this week counts on the weekly leaderboard: your score is your points (up to ${C.LB_CAP}). Keep going past it for the 👑 all-time record.`
                 : ui.note === "signin" ? "Sign in to put your runs on the weekly leaderboard." : esc(ui.note);
             const perks = ui.ranked && (ui.lives || ui.extraMs)
-                ? `<small>🎒 Your items: ${ui.lives ? `<span class="run-lives">❤️ × ${ui.lives}</span>` : ""}${ui.extraMs ? ` +${ui.extraMs / 1000}s per question` : ""}</small>` : "";
+                ? `<small>🎒 Your items: ${ui.lives ? `<span class="run-lives">❤️ × ${ui.lives}</span>` : ""}${ui.extraMs ? ` +${ui.extraMs / 1000}s per ${ui.game === "memory" ? "level" : "question"}` : ""}</small>` : "";
             return `${INTROS[ui.game].free}${note ? `<small>${note}</small>` : ""}${perks}`;
         }
 
@@ -1486,7 +1536,7 @@
             if (ui.ranked && ui.runId && window.AppState) window.AppState.gamesRunAnswer(ui.runId, null).catch(() => { });
             ui.over = true;
             ui.abandoned = true;
-            if (runs[ui.game] === ui) delete runs[ui.game];
+            if (runs.get(ui.game) === ui) runs.delete(ui.game);
             if (runUi === ui) hideRun();
             if (ui.ranked) lbLoadedAt = 0;
             markRunTabs();
@@ -1623,6 +1673,7 @@
                 if (runUi === ui) setTimeout(() => { const o = document.querySelector(".run-over"); if (o) o.scrollIntoView({ behavior: "smooth", block: "nearest" }); }, 60);
                 return;
             }
+            if (ui.game === "memory") { memAfterMove(ui, resp, fb); return; }
             // Show what just happened, then move on to the next one.
             let hold = 0;
             if (fb.lifeUsed) {
@@ -1664,15 +1715,18 @@
         function tickRun() {
             const ui = runUi;
             if (!ui || ui.over || ui.starting) return;
-            const total = C.RUN_LIMIT_MS[ui.game] + (ui.extraMs || 0);
-            const left = ui.deadline - (Date.now() + (ui.skew || 0));
+            // Memory: each level has its own time, and none runs between levels.
+            const mem = ui.game === "memory", waiting = mem && (!ui.view || ui.view.waiting);
+            const total = mem ? (ui.view ? ui.view.ms : 1) : C.RUN_LIMIT_MS[ui.game] + (ui.extraMs || 0);
+            const left = waiting ? total : ui.deadline - (Date.now() + (ui.skew || 0));
             const shown = Math.max(0, Math.min(total, left));
             const fill = $("runTimerFill"), text = $("runTimerText");
             if (fill) { fill.style.transform = `scaleX(${shown / total})`; fill.classList.toggle("low", shown < total * 0.25); }
             if (text) text.textContent = ui.holding ? "" : `⏱ ${fmtClock(shown)}`;
-            if (left <= 0 && !ui.busy && !ui.holding && !ui.error) runMove(null);
+            if (!waiting && left <= 0 && !ui.busy && !ui.holding && !ui.error) runMove(null);
         }
 
+        const RUN_BODIES = new Map([["trivia", runTriviaBody], ["hilo", runHiloBody], ["unitle", runUnitleBody], ["guess", runGuessBody], ["blur", runBlurBody], ["memory", runMemoryBody]]);
         function renderRun(keepFocus) {
             const ui = runUi;
             if (!ui) return;
@@ -1685,7 +1739,8 @@
                 <div class="run-bar"><span class="run-score${ui.gained ? " bump" : ""}">🔥 ${ui.score}${ui.score < C.LB_CAP ? `<small>/${C.LB_CAP}</small>` : ""}</span><span class="run-best">${ui.challenge ? "" : ui.ranked ? `On the leaderboard: <b>${ui.pts || 0}</b>` : `Your best: <b>${ui.best}</b>`}</span>${ui.ranked && ui.bonus ? `<span class="run-tag bonus" title="Today's Puzzle game: double leaderboard points">⭐ ×2 = ${Math.min(ui.score, C.LB_CAP) * 2}</span>` : ""}${tag}</div>
                 ${ui.challenge ? "" : runRecordHtml(ui)}
                 ${ui.over ? "" : `<div class="run-timer"><div class="run-timer-fill" id="runTimerFill"></div></div><div class="run-timer-text" id="runTimerText"></div>`}`;
-            const body = { trivia: runTriviaBody, hilo: runHiloBody, unitle: runUnitleBody, guess: runGuessBody, blur: runBlurBody }[ui.game]();
+            const drawBody = RUN_BODIES.get(ui.game);
+            const body = drawBody ? drawBody() : "";
             const err = ui.error ? `<div class="reward-box">${esc(ui.error.message)}<br><button class="btn-primary" onclick="retryRunMove()">Try again</button></div>` : "";
             $("gameArea").innerHTML = `<div class="game-card">${head}${body}${err}${ui.over ? runOverHtml() : ""}</div>`;
             tickRun();
@@ -1890,6 +1945,7 @@
                 ${unit}
                 <div class="run-over-score">${ui.score}</div>
                 <div class="dim">${what}</div>
+                ${ui.game === "memory" && fb.level ? `<div class="dim" style="margin-top:2px;">Reached level ${fb.level} (${C.memLevelInfo(fb.level).cards} cards)</div>` : ""}
                 ${record}${counts}${best}${outcome}${note}
                 ${ui.ranked ? `<button class="lb-link" onclick="switchTab('ranks')">🏆 See where you rank</button>` : ""}
                 <div class="game-actions"><button class="${share ? "btn-ghost" : "btn-primary"}" onclick="startRun('${ui.game}', { fresh: true })">▶️ Play again</button>${share}</div>
@@ -1913,6 +1969,216 @@
         }
 
         /* ================================================================
+           🃏 MEMORY — flip two cards at a time and find every pair.
+           🎲 Today's Puzzle: one deck of C.MEM_DAILY_PAIRS pairs, the same
+           for everyone, untimed; fewer moves (a move is two flips) is better.
+           The tab is an endless run like the other games: level after level
+           against the clock — each level doubles the cards (4, 8, 16, 32,
+           64; then 64 with a little less time each) and clearing level N
+           scores N points. A level's clock starts on its first flip.
+           A ranked run never has the cards: each flip asks the server what
+           that one card is (AppState.gamesRunPeek), and the level counts once
+           the whole deck is handed in (runMove({ cards })) in time. Unranked
+           runs deal from their seed here, with the same rules (games-core.js).
+           The grid is drawn once per level; a flip only changes classes, so
+           the cards turn over smoothly.
+           ================================================================ */
+        const MEM_LOOK_MS = 800; // how long two cards that don't match stay up
+        let memPreloaded = false;
+        function memPreload() { // every unit's picture, so a flipped card shows at once
+            if (memPreloaded) return;
+            memPreloaded = true;
+            UNITS.forEach(u => { const im = new Image(); im.decoding = "async"; im.src = thumb(u.img); });
+        }
+        const memFace = (img) => (img ? `<img src="${esc(thumb(img))}" alt="" ${THUMB_FALLBACK}>` : "");
+        const memCardHtml = (i, tap, img, cls) =>
+            `<button type="button" class="mem-card${cls}" data-i="${i}" onclick="${tap}(${i})" aria-label="Card ${i + 1}"><span class="mem-inner"><span class="mem-back">?</span><span class="mem-face">${memFace(img)}</span></span></button>`;
+        const memGridHtml = (cols, cards) => `<div class="mem-grid" id="memGrid" style="grid-template-columns: repeat(${cols}, minmax(0, 1fr)); max-width: ${cols * 92}px;">${cards}</div>`;
+        const memCardEl = (i) => document.querySelector(`#memGrid .mem-card[data-i="${i}"]`);
+        function memTurnBack(list) { list.forEach(k => { const el = memCardEl(k); if (el) el.classList.remove("up", "miss"); }); }
+        function memMarkDone(list) {
+            list.forEach(k => {
+                const el = memCardEl(k);
+                if (!el) return;
+                el.classList.remove("up", "miss");
+                el.classList.add("done");
+                setTimeout(() => el.classList.add("settled"), 700);
+            });
+        }
+        const memPairsText = (found, pairs) => `${found} of ${pairs} pairs`;
+
+        /* ---------------- 🎲 today's (or a friend's day's) cards ---------------- */
+        function startMemory(isDaily, p) {
+            const saved = isDaily && daily.play && Array.isArray(daily.play.flips) ? daily.play.flips : [];
+            game = { id: "memory", daily: isDaily, cards: p.cards.slice(), flips: saved.slice(), miss: null, missTimer: null };
+            memPreload();
+        }
+        const memDailyState = (g) => C.memReplay(g.cards, g.flips) || { matched: g.cards.map(() => false), open: -1, moves: 0, done: false };
+        function renderMemory() {
+            const g = game, st = memDailyState(g), pairs = g.cards.length / 2;
+            const bar = (g.daily ? dailyBar() : "") + challengeBar(g);
+            const cards = g.cards.map((k, i) => memCardHtml(i, "memTapDaily", unitByKey(k).img, st.matched[i] ? " done settled" : i === st.open ? " up" : "")).join("");
+            const end = st.done
+                ? `<div class="mem-result"><div class="result-big">${movesText(st.moves)}</div>
+                    <div class="result-note">${st.moves === pairs ? "Perfect memory — not a single miss! 🏆" : st.moves <= Math.round(pairs * 1.5) ? "Sharp memory! 👏" : "Every pair found! 🧩"}</div>
+                    ${challengeOutcome(g)}${resultActions()}</div>`
+                : `<div class="mem-hint">${g.daily ? "Today's cards — the same for everyone. " : ""}No clock: fewer moves is better (a move is two flips).</div>`;
+            $("gameArea").innerHTML = `${bar}<div class="game-card mem">
+                <div class="game-progress"><span id="memPairs">${memPairsText(st.matched.filter(Boolean).length / 2, pairs)}</span><span id="memMoves">${movesText(st.moves)}</span></div>
+                ${memGridHtml(5, cards)}${end}</div>`;
+        }
+        function memTapDaily(i) {
+            const g = game;
+            if (!g || g.id !== "memory") return;
+            const st = memDailyState(g);
+            if (st.done || st.matched[i] || i === st.open) return;
+            // Two that didn't match are still showing: a new tap turns them back at once.
+            if (g.miss) { clearTimeout(g.missTimer); memTurnBack(g.miss); g.miss = null; }
+            g.flips.push(i);
+            const now = memDailyState(g);
+            memCardEl(i).classList.add("up");
+            if (st.open >= 0) {
+                const pair = [st.open, i];
+                if (now.matched[i]) memMarkDone(pair);
+                else {
+                    g.miss = pair;
+                    pair.forEach(k => memCardEl(k).classList.add("miss"));
+                    g.missTimer = setTimeout(() => { if (game === g && g.miss === pair) { memTurnBack(pair); g.miss = null; } }, MEM_LOOK_MS);
+                }
+            }
+            $("memPairs").textContent = memPairsText(now.matched.filter(Boolean).length / 2, g.cards.length / 2);
+            $("memMoves").textContent = movesText(now.moves);
+            if (g.daily) afterDailyMove({ flips: g.flips.slice() });
+            if (now.done) setTimeout(() => { if (game === g) renderMemory(); }, 750);
+        }
+
+        /* ---------------- the run (its tab) ---------------- */
+        // What this page knows of the level on screen; a new deal starts it over.
+        function memRunState(ui) {
+            const v = ui.view;
+            if (!ui.mem || ui.mem.deal !== v.deal || ui.mem.level !== v.level) {
+                if (ui.mem) clearTimeout(ui.mem.missTimer);
+                ui.mem = { deal: v.deal, level: v.level, known: new Array(v.cards).fill(null), matched: new Array(v.cards).fill(false), open: [], miss: null, missTimer: null, handedIn: false };
+            }
+            return ui.mem;
+        }
+        function runMemoryBody() {
+            const ui = runUi, v = ui.view;
+            if (!v) return "";
+            memPreload();
+            const m = memRunState(ui);
+            const deck = ui.over && ui.feedback && Array.isArray(ui.feedback.deck) && ui.feedback.deck.length === v.cards ? ui.feedback.deck : null;
+            const cards = m.known.map((k, i) => {
+                const key = k || (deck ? deck[i] : null), u = key ? unitByKey(key) : null;
+                const cls = m.matched[i] ? " done settled" : ui.over && u ? " up lost" : m.open.includes(i) && u ? " up" : "";
+                return memCardHtml(i, "memTapRun", u ? u.img : null, cls);
+            }).join("");
+            return `<div class="game-progress"><span>Level <b>${v.level}</b> · ${v.cards} cards</span><span id="memPairs">${memPairsText(m.matched.filter(Boolean).length / 2, v.pairs)}</span></div>
+                ${memGridHtml(v.cols, cards)}<div class="mem-foot" id="memFoot">${memRunFootHtml(ui)}</div>`;
+        }
+        function memRunFootHtml(ui) {
+            const v = ui.view;
+            if (ui.over) return "";
+            const msg = ui.msg ? `<p class="guess-msg">${ui.msg}</p>` : "";
+            if (!v.waiting) return msg;
+            const go = `<div class="game-actions"><button class="btn-primary" id="memStartBtn" onclick="memStartLevel()"${ui.busy ? " disabled" : ""}>▶ Start level ${v.level}: ${v.cards} cards · ${fmtClock(v.ms)}</button></div>`;
+            const c = ui.memCleared;
+            if (c) {
+                return `<div class="mem-next"><div class="mem-next-title">🎉 Level ${c.level} cleared! +${c.points}</div>
+                    <div class="dim" style="margin-top:4px;">${Math.ceil((c.leftMs || 0) / 1000)}s to spare · the next level ${v.cards > C.memLevelInfo(c.level).cards ? "doubles the cards" : "has a little less time"}</div>${go}</div>${msg}`;
+            }
+            if (ui.memLife) return `<div class="mem-life"><b>❤️ Extra life used</b> — level ${v.level} again, with new cards.${go}</div>${msg}`;
+            return `<div class="mem-hint">The clock starts when you flip your first card — ${fmtClock(v.ms)} for ${v.pairs} pairs.</div>${msg}`;
+        }
+        // Tapping a card on a level that hasn't started starts it (the card flips once it has).
+        function memStartLevel(firstCard) {
+            const ui = runUi;
+            if (!ui || ui.game !== "memory" || ui.over || ui.busy || !ui.view || !ui.view.waiting) return;
+            ui.memFirstTap = Number.isInteger(firstCard) ? firstCard : null;
+            const btn = $("memStartBtn");
+            if (btn) btn.disabled = true;
+            runMove({ start: true });
+        }
+        async function memPeek(ui, i) {
+            if (!ui.ranked) return C.memRunDeck(UNITS, ui.local)[i];
+            const r = await window.AppState.gamesRunPeek(ui.runId, ui.view.peek, i);
+            return r.key;
+        }
+        async function memTapRun(i) {
+            const ui = runUi;
+            if (!ui || ui.game !== "memory" || ui.over || ui.starting || ui.error || !ui.view) return;
+            if (ui.view.waiting) { memStartLevel(i); return; }
+            if (ui.busy) return;
+            const m = memRunState(ui);
+            if (m.handedIn || m.matched[i] || (m.open.includes(i) && !m.miss)) return;
+            if (m.open.length === 2) {
+                if (!m.miss) return; // those two are still being checked
+                clearTimeout(m.missTimer);
+                memTurnBack(m.miss);
+                m.miss = null;
+                m.open = [];
+            }
+            m.open.push(i);
+            ui.moved = true;
+            if (ui.msg) { ui.msg = ""; const f = $("memFoot"); if (f) f.innerHTML = memRunFootHtml(ui); }
+            const el = memCardEl(i);
+            el.classList.add("up");
+            if (!m.known[i]) {
+                el.classList.add("loading");
+                let key;
+                try { key = await memPeek(ui, i); }
+                catch (e) {
+                    if (!liveRun(ui) || ui.mem !== m || ui.over) return;
+                    m.open = m.open.filter(k => k !== i);
+                    el.classList.remove("up", "loading");
+                    if (e.status === 409) { tickRun(); return; } // the clock ran out
+                    ui.msg = esc((e && e.message) || "Couldn't turn that card over — tap it again.");
+                    const f = $("memFoot");
+                    if (f) f.innerHTML = memRunFootHtml(ui);
+                    return;
+                }
+                if (!liveRun(ui) || ui.mem !== m || ui.over) return;
+                m.known[i] = key;
+                const face = el.querySelector(".mem-face");
+                face.innerHTML = memFace(unitByKey(key).img);
+                el.classList.remove("loading");
+            }
+            memSettle(ui, m);
+        }
+        // Both open cards known: a pair stays up, two different ones turn back.
+        function memSettle(ui, m) {
+            if (m.open.length !== 2 || m.miss || m.open.some(k => !m.known[k])) return;
+            const pair = m.open.slice();
+            if (m.known[pair[0]] === m.known[pair[1]]) {
+                pair.forEach(k => { m.matched[k] = true; });
+                m.open = [];
+                memMarkDone(pair);
+                const p = $("memPairs");
+                if (p) p.textContent = memPairsText(m.matched.filter(Boolean).length / 2, ui.view.pairs);
+                if (m.matched.every(Boolean)) { m.handedIn = true; runMove({ cards: m.known.slice() }); }
+                return;
+            }
+            m.miss = pair;
+            pair.forEach(k => { const el = memCardEl(k); if (el) el.classList.add("miss"); });
+            m.missTimer = setTimeout(() => { if (ui.mem === m && m.miss === pair) { memTurnBack(pair); m.miss = null; m.open = []; } }, MEM_LOOK_MS);
+        }
+        // What came back from a level's start, hand-in or end of time.
+        function memAfterMove(ui, resp, fb) {
+            ui.view = resp.view;
+            ui.feedback = null;
+            if (fb.cleared) { ui.memCleared = fb; ui.memLife = false; }
+            if (fb.started) { ui.memCleared = null; ui.memLife = false; }
+            if (fb.lifeUsed) {
+                ui.memCleared = null;
+                ui.memLife = true;
+                showRunToast(`❤️ Extra life used — ${fb.livesLeft ? `${fb.livesLeft} left` : "that was the last one"}. Same level, new cards!`);
+            }
+            paintRun(ui);
+            if (fb.started && ui.memFirstTap != null) { const i = ui.memFirstTap; ui.memFirstTap = null; memTapRun(i); }
+            if (fb.cleared || fb.lifeUsed) setTimeout(() => { const f = $("memFoot"); if (runUi === ui && f) f.scrollIntoView({ behavior: "smooth", block: "nearest" }); }, 60);
+        }
+
+        /* ================================================================
            🏆 WEEKLY LEADERBOARD — its own tab: the top 3 on a podium, everyone
            else in order below, your place, and how points work (folded away).
            Every game counts the same: your best run this week in each is its
@@ -1921,7 +2187,7 @@
            api/games.js). Names are only sent to signed-in players.
            ================================================================ */
         let lbData = null, lbLoadedAt = 0, lbLoading = false, lbError = false, lbShowAll = false;
-        const LB_ORDER = ["unitle", "hilo", "trivia", "guess", "blur"];
+        const LB_ORDER = ["unitle", "hilo", "trivia", "guess", "blur", "memory"];
         async function loadLeaderboard(force) {
             if (tab !== "ranks" && !force) return; // nothing to load until the tab is open
             if (lbLoading) return;
@@ -1958,7 +2224,7 @@
             const pay = prizes ? prizes.map((p, i) => `${placeIcon(i)} ${p}`).join(" · ") + " 🪙" : "tokens";
             return `<details class="lb-how"><summary>How points work</summary><ul>
                     <li>Your score in a game <b>is</b> your points, up to <b>${C.LB_CAP}</b> — the most a run counts. A run goes on until you miss, so keep going past it for the 👑 all-time record.</li>
-                    <li>🧠 Trivia · ⬆️ Hi-Lo: 1 point per right answer. 🎯 Unitle · 🪢 Hangman · 🔍 Blur: more points for fewer guesses or misses on each unit.</li>
+                    <li>🧠 Trivia · ⬆️ Hi-Lo: 1 point per right answer. 🎯 Unitle · 🪢 Hangman · 🔍 Blur: more points for fewer guesses or misses on each unit. 🃏 Memory: clearing level N in time scores N points (1 + 2 + 3 …).</li>
                     <li>⭐ Each day, the game that's <b>🎲 Today's Puzzle</b> counts <b>double</b>: a run you start that day is worth twice its score (${C.LB_CAP} = ${C.LB_GAME_MAX}).${bonus ? ` Today: ${C.GAME_ICONS[bonus]} <b>${C.GAME_TITLES[bonus]}</b>.` : ""}</li>
                     <li>Each game counts its best run of the week, doubled or not — so up to ${C.LB_GAME_MAX} each, and <b>${C.LB_MAX}</b> for the week if you hit ${C.LB_CAP} in every game on its double day (every game comes up at least once a week).</li>
                     <li>Only your best run this week in each game counts, played signed in (not friends' challenges or 🎲 Today's Puzzle).</li>

@@ -65,7 +65,7 @@ global.fetch = async (url) => {
 };
 
 /* A small in-memory Firestore: doc get/set (merge), collection add/where(==)/
-   orderBy/limit/get, subcollections, runTransaction with getAll/set. */
+   orderBy/limit/get, subcollections, runTransaction with getAll/get/set/update. */
 function memoryFirestore() {
     const data = new Map();
     let n = 0;
@@ -93,7 +93,7 @@ function memoryFirestore() {
     }
     return {
         collection: (c) => colRef(c),
-        runTransaction: async (fn) => fn({ getAll: async (...refs) => refs.map(r => snap(r.path)), get: async (r) => snap(r.path), set: (r, v, o) => write(r.path, v, o) }),
+        runTransaction: async (fn) => fn({ getAll: async (...refs) => refs.map(r => snap(r.path)), get: async (r) => snap(r.path), set: (r, v, o) => write(r.path, v, o), update: (r, v) => write(r.path, v, { merge: true }) }),
         _data: data,
         _docs: (c) => [...data.entries()].filter(([k]) => k.startsWith(c + "/") && !k.slice(c.length + 1).includes("/")).map(([k, v]) => ({ id: k.split("/").pop(), ...v }))
     };

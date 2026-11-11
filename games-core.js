@@ -11,12 +11,12 @@
     "use strict";
 
     const RARITIES = ["common", "rare", "epic", "legendary", "mythic"];
-    const GAMES = ["trivia", "guess", "unitle", "hilo", "blur"];
+    const GAMES = ["trivia", "guess", "unitle", "hilo", "blur", "memory"];
     // "guess" is Hangman (it was Guess the Unit; the id stays so saved scores,
     // challenge links and the leaderboard keep working). "blur" is the zoomed,
     // blurred picture game that used to be Guess the Unit.
-    const GAME_TITLES = { trivia: "Trivia", guess: "Hangman", unitle: "Unitle", hilo: "Higher or Lower", blur: "Blur" };
-    const GAME_ICONS = { trivia: "🧠", guess: "🪢", unitle: "🎯", hilo: "⬆️", blur: "🔍" };
+    const GAME_TITLES = { trivia: "Trivia", guess: "Hangman", unitle: "Unitle", hilo: "Higher or Lower", blur: "Blur", memory: "Memory" };
+    const GAME_ICONS = { trivia: "🧠", guess: "🪢", unitle: "🎯", hilo: "⬆️", blur: "🔍", memory: "🃏" };
 
     /* ---------------- randomness ---------------- */
     function hashString(s) {
@@ -48,6 +48,7 @@
     // never chains. Until DAILY_FIVE_FROM the blocks were the first four games
     // (so days already played keep their game); from then on Blur is in too.
     const DAILY_FOUR = ["trivia", "guess", "unitle", "hilo"];
+    const DAILY_FIVE = ["trivia", "guess", "unitle", "hilo", "blur"];
     const DAILY_FIVE_FROM = "2026-10-21";
     const dayNumber = (day) => Math.floor(Date.parse(day + "T00:00:00Z") / 864e5);
     function inBlocks(list, salt, m, before) {
@@ -62,23 +63,39 @@
     // Monday to Friday are the five in a shuffled order, and Saturday and
     // Sunday two more of them — so a week of Today's Puzzles is a week of
     // every game's double-points day. Never the same game two days running.
+    // From DAILY_SIX_FROM (a Monday) Memory is in too: Monday to Saturday are
+    // the six in a shuffled order, and Sunday one more of them. Days before
+    // it keep the game they had.
     const DAILY_WEEKS_FROM = "2026-11-02";
+    const DAILY_SIX_FROM = "2026-11-16";
     function dailyWeekOrder(w, prevDay) {
-        const o = shuffle(seededRandom(hashString("kih-daily-week:" + w)), GAMES);
+        const o = shuffle(seededRandom(hashString("kih-daily-week:" + w)), DAILY_FIVE);
         if (o[0] === prevDay) [o[0], o[1]] = [o[1], o[0]];
         const r = seededRandom(hashString("kih-daily-weekend:" + w));
-        const sat = pick(r, GAMES.filter(g => g !== o[4]));
-        const sun = pick(r, GAMES.filter(g => g !== sat));
+        const sat = pick(r, DAILY_FIVE.filter(g => g !== o[4]));
+        const sun = pick(r, DAILY_FIVE.filter(g => g !== sat));
         return [...o, sat, sun];
     }
+    function dailyWeekOrder6(w, prevDay) {
+        const o = shuffle(seededRandom(hashString("kih-daily-week6:" + w)), GAMES);
+        if (o[0] === prevDay) [o[0], o[1]] = [o[1], o[0]];
+        const sun = pick(seededRandom(hashString("kih-daily-sunday6:" + w)), GAMES.filter(g => g !== o[5]));
+        return [...o, sun];
+    }
     function dailyGameFor(day) {
-        const n = dayNumber(day), from = dayNumber(DAILY_FIVE_FROM), weeks = dayNumber(DAILY_WEEKS_FROM);
+        const n = dayNumber(day), from = dayNumber(DAILY_FIVE_FROM), weeks = dayNumber(DAILY_WEEKS_FROM), six = dayNumber(DAILY_SIX_FROM);
         if (n < from) return inBlocks(DAILY_FOUR, "kih-daily-game:", n);
         const lastFour = inBlocks(DAILY_FOUR, "kih-daily-game:", from - 1);
-        if (n < weeks) return inBlocks(GAMES, "kih-daily-game5:", n - from, lastFour);
+        if (n < weeks) return inBlocks(DAILY_FIVE, "kih-daily-game5:", n - from, lastFour);
+        if (n >= six) {
+            const w6 = Math.floor((n - six) / 7);
+            // the Sunday before (a Sunday never depends on the week before it)
+            const prev = w6 === 0 ? dailyWeekOrder(Math.floor((six - 1 - weeks) / 7), null)[6] : dailyWeekOrder6(w6 - 1, null)[6];
+            return dailyWeekOrder6(w6, prev)[(n - six) % 7];
+        }
         const w = Math.floor((n - weeks) / 7);
         // the Sunday before (one step back: a Sunday never looks further)
-        const prevSunday = w === 0 ? inBlocks(GAMES, "kih-daily-game5:", weeks - 1 - from, lastFour) : dailyWeekOrder(w - 1, null)[6];
+        const prevSunday = w === 0 ? inBlocks(DAILY_FIVE, "kih-daily-game5:", weeks - 1 - from, lastFour) : dailyWeekOrder(w - 1, null)[6];
         return dailyWeekOrder(w, prevSunday)[(n - weeks) % 7];
     }
 
@@ -602,6 +619,49 @@
         return A[r.stat] > B[r.stat] ? r.a : r.b;
     }
 
+    /* ---------------- Memory ----------------
+       Cards face down, two flipped at a time; find every pair. A deck is
+       `pairs` different units, two cards each, shuffled. Today's puzzle is
+       one deck of MEM_DAILY_PAIRS, untimed, scored in moves (two flips; fewer
+       is better). A run goes level after level, against the clock: each
+       level doubles the cards (4, 8, 16, 32, 64) and gives more time; after
+       64 cards the levels stay at 64 with a little less time each. Clearing
+       level N scores N points (1 + 2 + 3 …). */
+    const MEM_DAILY_PAIRS = 10;
+    const MEM_MAX_PAIRS = 32;
+    const MEM_MAX_FLIPS = 400; // a day's play longer than this isn't a real one
+    function memLevelInfo(level) {
+        const n = Math.max(1, Math.floor(level));
+        const doubled = 2 * 2 ** Math.min(n - 1, 10);
+        const pairs = Math.min(doubled, MEM_MAX_PAIRS);
+        const secs = doubled <= MEM_MAX_PAIRS ? 10 + 4 * pairs // 18s, 26s, 42s, 74s, 138s
+            : Math.max(60, Math.round((10 + 4 * MEM_MAX_PAIRS) * 0.9 ** (n - 5))); // then 124s, 112s, … 60s
+        return { level: n, pairs, cards: pairs * 2, ms: secs * 1000, cols: pairs <= 2 ? 2 : pairs <= 8 ? 4 : 8 };
+    }
+    const memPoints = (level) => level;
+    function memDeck(units, rand, pairs) {
+        const keys = sample(rand, units.map(u => u.key), pairs);
+        return shuffle(rand, [...keys, ...keys]);
+    }
+    // A run's deck for its current deal (each level, and each retry with an
+    // extra life, is a new deal). The server deals ranked runs from a secret
+    // of its own instead (api/games.js), so the cards can't be worked out.
+    const memRunDeck = (units, run) => memDeck(units, runRng("memory", run.seed, run.deal || 0), memLevelInfo(run.step + 1).pairs);
+    // Replays flips on a deck: { matched, open, moves } — null if a flip
+    // isn't possible (no such card, a card already found, the open one again).
+    function memReplay(deck, flips) {
+        const matched = new Array(deck.length).fill(false);
+        let open = -1, moves = 0;
+        for (const i of flips) {
+            if (!Number.isInteger(i) || i < 0 || i >= deck.length || matched[i] || i === open) return null;
+            if (open < 0) { open = i; continue; }
+            moves++;
+            if (deck[i] === deck[open]) matched[i] = matched[open] = true;
+            open = -1;
+        }
+        return { matched, open, moves, done: matched.every(Boolean) };
+    }
+
     /* ---------------- today's puzzle ---------------- */
     // The whole puzzle for a day, answers included.
     function dailyPuzzle(units, day) {
@@ -611,6 +671,7 @@
         if (game === "guess") return { game, target: hangTarget(units, rand) };
         if (game === "unitle") return { game, target: unitleTarget(units, rand) };
         if (game === "blur") return { game, ...blurPuzzle(units, rand) };
+        if (game === "memory") return { game, cards: memDeck(units, rand, MEM_DAILY_PAIRS) };
         return { game, rounds: hiloRounds(units, rand, HILO_DAILY_ROUNDS) };
     }
 
@@ -621,7 +682,7 @@
     // the day's token only for a play that's possible AND finished.
     //   trivia { answers: [option index] }    guess { letters: ["A", ...] }
     //   unitle { guesses: [unit key] }         hilo  { picks: [unit key] }
-    //   blur { guesses: [unit key], hints }
+    //   blur { guesses: [unit key], hints }   memory { flips: [card index] }
     function dailyResult(units, day, play) {
         const p = dailyPuzzle(units, day);
         const game = p.game;
@@ -653,6 +714,15 @@
             const won = g.includes(p.target);
             return { game, finished: won || g.length === max, won, score: won ? g.length : 0, total: max };
         }
+        if (game === "memory") {
+            const f = play.flips;
+            if (!Array.isArray(f) || f.length > MEM_MAX_FLIPS) return null;
+            // nothing after the last pair is found
+            for (let k = 1; k < f.length; k++) { const st = memReplay(p.cards, f.slice(0, k)); if (!st || st.done) return null; }
+            const st = memReplay(p.cards, f);
+            if (!st) return null;
+            return { game, finished: st.done, won: st.done, score: st.moves, total: MEM_DAILY_PAIRS };
+        }
         const picks = play.picks;
         if (!Array.isArray(picks) || picks.length > p.rounds.length) return null;
         let score = 0;
@@ -673,7 +743,8 @@
        signed-in players, where answers never reach the browser and the score
        counts toward the weekly leaderboard (api/games.js). Everything about a
        run follows from its seed and its step, so both agree exactly. */
-    const RUN_LIMIT_MS = { trivia: 20000, hilo: 15000, unitle: 180000, guess: 90000, blur: 60000 };
+    // (Memory's clock is per level: memLevelInfo.)
+    const RUN_LIMIT_MS = { trivia: 20000, hilo: 15000, unitle: 180000, guess: 90000, blur: 60000, memory: memLevelInfo(1).ms };
     // Each new question's clock starts this long after the answer comes back,
     // so the moment spent looking at what you got right isn't counted.
     const RUN_PAUSE_MS = 2000;
@@ -734,13 +805,21 @@
         if (extraMs) run.extraMs = extraMs;
         if (p.lives > 0) run.lives = Math.floor(p.lives);
         if (game === "blur") { run.hints = 0; run.hintsLeft = RUN_BLUR_HINTS + Math.max(0, Math.floor(Number(p.blurHints) || 0)); }
+        // Memory: each level waits for "start" (the clock starts then, not before).
+        if (game === "memory") { run.deadline = null; run.waiting = true; run.deal = 0; }
         return run;
+    }
+    // Memory's level as the player sees it (never the cards).
+    function memRunView(run) {
+        const info = memLevelInfo(run.step + 1);
+        return { level: info.level, pairs: info.pairs, cards: info.cards, cols: info.cols, ms: info.ms + (run.extraMs || 0), waiting: !!run.waiting, deal: run.deal || 0 };
     }
 
     // What the player sees now — never the answer. (Blur's `img` names the
     // unit, so the server swaps it for a cropped, blurred picture.)
     function runView(units, run) {
         const { game, seed, step } = run;
+        if (game === "memory") return memRunView(run);
         if (game === "trivia") {
             const q = runTriviaQuestion(units, seed, step);
             return { q: q.q, options: q.options, img: q.img || null, unitOptions: !!q.unitOptions };
@@ -769,12 +848,15 @@
 
     // One move. input: trivia { answer: option index }, hilo { pick: unit
     // key }, unitle { guess: unit key }, guess (Hangman) { letter: "A".."Z" },
-    // blur { guess: unit key } or { hint: true };
+    // blur { guess: unit key } or { hint: true }, memory { start: true } or
+    // { cards: [the level's unit keys, card by card] } when every pair is found;
     // null (or arriving after the deadline + grace) means time
     // ran out. Returns the next state and what happened; throws on a move
     // that isn't allowed (a guess that isn't a unit, the same guess twice).
-    function runStep(units, run, input, now, grace = 0) {
+    // opts.deck(run): Memory's deck for the run's current deal (the server's own).
+    function runStep(units, run, input, now, grace = 0, opts) {
         if (run.over) throw new Error("This run has ended.");
+        if (run.game === "memory") return memStep(units, run, input, now, grace, (opts && opts.deck) || ((r) => memRunDeck(units, r)));
         const r = { ...run, guesses: run.guesses.slice(), letters: (run.letters || []).slice() };
         const late = now > run.deadline + grace;
         const unitInfo = (key) => { const u = unitByKey(units, key); return { key, name: u.name, img: u.img }; };
@@ -860,12 +942,49 @@
         return { run: r, feedback: { wrong: true, guess: unitInfo(input.guess) } };
     }
 
+    // Memory, one level at a time. Cards are flipped in the page (a ranked
+    // run asks the server what each card is, one at a time); the level counts
+    // once the whole deck is handed in, in time.
+    function memStep(units, run, input, now, grace, deckOf) {
+        const r = { ...run };
+        if (r.waiting) {
+            if (input && input.start === true) {
+                r.waiting = false;
+                r.deadline = now + memLevelInfo(r.step + 1).ms + (r.extraMs || 0);
+                return { run: r, feedback: { started: true } };
+            }
+            if (input == null) { r.over = true; return { run: r, feedback: { ended: true } }; } // left between levels
+            throw new Error("Start the level first.");
+        }
+        const deck = deckOf(run);
+        const late = now > r.deadline + grace;
+        if (late || input == null) {
+            const fb = { timedOut: true, deck, level: r.step + 1 };
+            // An extra life: the same level again, newly dealt, and no points.
+            if (r.lives > 0) {
+                r.lives--; r.deal = (r.deal || 0) + 1; r.waiting = true; r.deadline = null;
+                return { run: r, feedback: { ...fb, lifeUsed: true, livesLeft: r.lives } };
+            }
+            r.over = true;
+            return { run: r, feedback: fb };
+        }
+        if (input.start === true) throw new Error("This level has already started.");
+        const cards = input.cards;
+        if (!Array.isArray(cards) || cards.length !== deck.length || cards.some((k, i) => k !== deck[i])) throw new Error("Those aren't this level's cards.");
+        const level = r.step + 1, points = memPoints(level);
+        r.score += points; r.step++; r.deal = (r.deal || 0) + 1; r.waiting = true;
+        const leftMs = Math.max(0, r.deadline - now);
+        r.deadline = null;
+        return { run: r, feedback: { cleared: true, level, points, leftMs, ...(run.score < LB_CAP && r.score >= LB_CAP ? { maxed: true } : {}) } };
+    }
+
 
     return {
         RUN_LIMIT_MS, RUN_PAUSE_MS, RUN_GRACE_MS, RUN_TRIVIA_KINDS, RUN_BLUR_HINTS, unitlePoints, hangPoints, blurPoints,
         LB_CAP, LB_GAME_MAX, LB_MAX, lbPoints, lbRunPoints, lbPts, lbTotal, bonusGameFor, BONUS_FROM, DAILY_WEEKS_FROM,
         runNew, runView, runStep, runTriviaQuestion, runHiloRound, runUnitleTarget, runHangTarget, runBlurPuzzle,
-        RARITIES, GAMES, GAME_TITLES, GAME_ICONS, DAILY_FIVE_FROM,
+        RARITIES, GAMES, GAME_TITLES, GAME_ICONS, DAILY_FIVE_FROM, DAILY_FIVE, DAILY_SIX_FROM,
+        MEM_DAILY_PAIRS, MEM_MAX_PAIRS, MEM_MAX_FLIPS, memLevelInfo, memPoints, memDeck, memRunDeck, memReplay, memRunView,
         hashString, seededRandom, dayRng, pick, shuffle, sample, dailyGameFor,
         esc, cap, fmt, buildUnits, unitByKey, levelOf, normName, nameAliases, resolveName, nameMask,
         ABILITY_FILES, ABILITY_NUMBERS, DATA_FILES, ALL_DATA_FILES, unitsFromFiles, redactNames,
