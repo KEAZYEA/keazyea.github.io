@@ -4,7 +4,9 @@
   "description": "",
   "main": "abilities.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node tests/static-checks.js && node tests/secret-scan.js && node --test \"tests/*.test.js\"",
+    "test:coverage": "node --test --experimental-test-coverage --test-coverage-include=api/** \"tests/*.test.js\"",
+    "test:smoke": "node tests/smoke.js",
     "start": "node server.js",
     "dev": "npx --yes serve -l 5500 ."
   },

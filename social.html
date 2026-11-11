@@ -2301,6 +2301,10 @@
         .wc-new-btn { display: none; position: absolute; left: 50%; transform: translateX(-50%); bottom: 112px; z-index: 2; border: none; border-radius: 999px;
             padding: 6px 14px; font-weight: 700; font-size: 0.8rem; color: #fff; background: #4169e1; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4); cursor: pointer; font-family: inherit; }
         .wc-new-btn.show { display: block; }
+        /* ↓ all the way down (shows once you've scrolled up a bit) */
+        .wc-down-btn { display: none; position: absolute; right: 14px; bottom: 112px; z-index: 2; width: 40px; height: 40px; border-radius: 50%; border: none;
+            background: #4169e1; color: #fff; font-size: 1.15rem; line-height: 1; cursor: pointer; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4); align-items: center; justify-content: center; }
+        .wc-down-btn.show { display: flex; }
         .wc-reply-bar { display: none; align-items: center; gap: 10px; padding: 7px 12px; background: #20203a; border-top: 1px solid #2a2a4a; font-size: 0.8rem; color: #c8c8e0; flex-shrink: 0; }
         .wc-reply-bar.show { display: flex; }
         .wc-reply-bar span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -2507,6 +2511,7 @@
                         </div>
                         <div class="wc-list" id="wcList"><div class="wc-empty">Loading the chat…</div></div>
                         <button type="button" class="wc-new-btn" id="wcNewBtn">⬇ New messages</button>
+                        <button type="button" class="wc-down-btn" id="wcDownBtn" title="Jump to the latest" aria-label="Jump to the latest">↓</button>
                         <div class="wc-reply-bar" id="wcReplyBar"><span id="wcReplyText"></span><button type="button" onclick="cancelWorldReply()" aria-label="Cancel reply">✕</button></div>
                         <div class="wc-compose">
                             <div class="chat-photo-bar" id="wcPhotoBar"><div class="cp-tiles" id="wcPhotoTiles"></div><div class="cp-info"><span id="wcPhotoText"></span><small class="cp-limits" id="wcPhotoLimits"></small></div></div>
@@ -7219,6 +7224,7 @@ window.removeClanIconPreview = function () {
                     ? `<span class="dm-msg-quote wc-quote" data-jump="${escapeHtml(m.replyTo.id)}"><b>${escapeHtml(m.replyTo.name)}</b>${escapeHtml(m.replyTo.text)}</span>` : "";
                 const actions = `<button type="button" class="dm-msg-action-link" data-wc="reply">↩ Reply</button>`
                     + `<button type="button" class="dm-msg-action-link" data-wc="react">😊 React</button>`
+                    + (m.text ? `<button type="button" class="dm-msg-action-link" data-wc="copy">📋 Copy</button>` : "")
                     + (!mine && canTranslate(m.text) ? `<button type="button" class="dm-msg-action-link" data-wc="translate">${trActionLabel("world", m.id)}</button>` : "")
                     + (mine ? "" : `<button type="button" class="dm-msg-action-link" data-wc="report">🚩 Report</button>`)
                     + (mine || admin ? `<button type="button" class="dm-msg-action-link" data-wc="delete">🗑 Delete</button>` : "")
@@ -7262,16 +7268,60 @@ window.removeClanIconPreview = function () {
             if (box.clientHeight) box.dataset.drawn = "1"; // drawn while visible (a hidden tab draws again when opened)
             box.dataset.lastId = lastId;
             if (finding.world.q.trim()) applyFind("world", false); // keep the 🔍 highlights
+            updateWorldDownBtn();
         }
         document.getElementById("wcList").addEventListener("scroll", (e) => {
             const box = e.currentTarget;
             if (box.scrollTop + box.clientHeight >= box.scrollHeight - 80) document.getElementById("wcNewBtn").classList.remove("show");
+            updateWorldDownBtn();
         });
         document.getElementById("wcNewBtn").addEventListener("click", () => {
             const box = document.getElementById("wcList");
             box.scrollTop = box.scrollHeight;
             document.getElementById("wcNewBtn").classList.remove("show");
         });
+        // ↓ : all the way down to the latest (smoothly), shown once you're well up
+        function updateWorldDownBtn() {
+            const box = document.getElementById("wcList"), btn = document.getElementById("wcDownBtn");
+            if (!box || !btn) return;
+            const up = box.scrollHeight - box.clientHeight - box.scrollTop;
+            btn.classList.toggle("show", up > Math.max(240, box.clientHeight * 0.6) && !document.getElementById("wcNewBtn").classList.contains("show"));
+            // just above the bottom of the messages (clear of the photo tiles and the reply bar)
+            const holder = btn.offsetParent;
+            if (holder) btn.style.bottom = Math.max(12, Math.round(holder.getBoundingClientRect().bottom - box.getBoundingClientRect().bottom + 12)) + "px";
+        }
+        document.getElementById("wcDownBtn").addEventListener("click", () => {
+            const box = document.getElementById("wcList");
+            box.scrollTo({ top: box.scrollHeight, behavior: "smooth" });
+            document.getElementById("wcNewBtn").classList.remove("show");
+        });
+        // A message's row (with its Reply / React / ... buttons) fully on screen:
+        // the list scrolls just enough, up or down.
+        function showWholeRow(box, row) {
+            if (!box || !row || !row.isConnected) return;
+            const b = box.getBoundingClientRect(), r = row.getBoundingClientRect();
+            if (r.bottom > b.bottom - 8) box.scrollBy({ top: Math.min(r.bottom - b.bottom + 12, r.top - b.top - 8), behavior: "smooth" });
+            else if (r.top < b.top + 8) box.scrollBy({ top: r.top - b.top - 8, behavior: "smooth" });
+        }
+        // 📋 a message's words to the clipboard (World Chat and DMs)
+        window.copyChatText = async function (text) {
+            text = String(text || "");
+            if (!text) return;
+            let ok = false;
+            try { await navigator.clipboard.writeText(text); ok = true; } catch (e) { }
+            if (!ok) { // older phones, or no clipboard permission: the old way
+                const t = document.createElement("textarea");
+                t.value = text; t.setAttribute("readonly", ""); t.style.cssText = "position:fixed; top:0; left:0; opacity:0; font-size:16px;";
+                document.body.appendChild(t); t.select(); t.setSelectionRange(0, text.length);
+                try { ok = document.execCommand("copy"); } catch (e) { }
+                t.remove();
+            }
+            showToast(ok ? "📋 Copied" : "Couldn't copy — press and hold the message to select it instead.");
+        };
+        window.copyDmMessage = function (id) {
+            const m = (window._lastDmMessages || []).find(x => x.id === id);
+            if (m) copyChatText(m.text);
+        };
         document.getElementById("wcChips").addEventListener("click", (e) => {
             const b = e.target.closest("[data-filter]");
             if (b) setWorldFilter(b.dataset.filter);
@@ -7298,7 +7348,7 @@ window.removeClanIconPreview = function () {
                 // tap a message: its Reply / React / Report row (tap again to hide)
                 worldActionsFor = worldActionsFor === m.id ? null : m.id;
                 document.querySelectorAll(".wc-msg.acts").forEach(r => r.classList.remove("acts"));
-                if (worldActionsFor) row.classList.add("acts");
+                if (worldActionsFor) { row.classList.add("acts"); requestAnimationFrame(() => showWholeRow(document.getElementById("wcList"), row)); }
             }
         });
         function jumpToWorldMessage(id) {
@@ -7315,6 +7365,8 @@ window.removeClanIconPreview = function () {
                 document.getElementById("wcInput").focus();
             } else if (kind === "react") {
                 openReactionPicker(e, "world", m.id);
+            } else if (kind === "copy") {
+                copyChatText(m.text);
             } else if (kind === "translate") {
                 toggleTranslate("world", m.id);
             } else if (kind === "report") {
@@ -8241,7 +8293,7 @@ document.getElementById("dmActionsMenu").classList.remove("open");
             ${timeHtml}
             ${reactionsHtml("dm", m)}
             <div class="dm-msg-actions">
-                ${replyBtn}${reactBtn}${translateBtn}${editBtn}${mine ? `<button class="dm-msg-action-link" onclick="deleteMyDmMessage(${jsStr(m.id)})">🗑 Delete</button>` : ""}${reportBtn}
+                ${replyBtn}${reactBtn}${m.text && !parseDmChallenge(m.text) ? `<button class="dm-msg-action-link" onclick="copyDmMessage(${jsStr(m.id)})">📋 Copy</button>` : ""}${translateBtn}${editBtn}${mine ? `<button class="dm-msg-action-link" onclick="deleteMyDmMessage(${jsStr(m.id)})">🗑 Delete</button>` : ""}${reportBtn}
             </div>
         </div>`;
     });

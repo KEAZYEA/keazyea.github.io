@@ -1,0 +1,76 @@
+# Runs on every push and pull request. A pull request shows ✅ or ❌ for each
+# job before you merge it into main (which is what goes live).
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: Code checks (syntax, JSON, game data bundle, links)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node tests/static-checks.js
+
+  security:
+    name: Security (dependencies, secrets, API access rules)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install the API's packages
+        run: npm ci --no-fund
+      - name: Known vulnerabilities in packages (fails on high or critical)
+        run: npm audit --omit=dev --audit-level=high
+      - name: No passwords or secret keys in the repo
+        run: node tests/secret-scan.js
+      - name: API tests — security and bug reports (+ code coverage)
+        run: |
+          node --test --experimental-test-coverage --test-coverage-include='api/**' --test-reporter=spec 'tests/*.test.js' 2>&1 | tee api-tests.txt
+          {
+            echo "### 🔒 API tests (security + bug reports): $(grep -oP '^ℹ pass \K\d+' api-tests.txt) passed, $(grep -oP '^ℹ fail \K\d+' api-tests.txt) failed"
+            echo "API code coverage (how much of api/ the tests ran):"
+            echo '```'
+            grep -E '^ℹ (file|all files| +[A-Za-z0-9_.-]+\.js)' api-tests.txt | sed 's/^ℹ //'
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  smoke:
+    name: Every page loads in a phone browser (+ code coverage)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install a headless Chrome
+        run: |
+          npm install --no-save --no-fund --no-audit playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - run: node tests/smoke.js
+      - name: Keep the coverage numbers
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-coverage
+          path: coverage/
+          if-no-files-found: ignore

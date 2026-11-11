@@ -1,0 +1,13 @@
+# Opens a pull request when a package the API uses (or a GitHub Action these
+# workflows use) gets a fix — CI then tests it before you merge.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
