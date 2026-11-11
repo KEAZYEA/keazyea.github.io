@@ -28,7 +28,7 @@ jobs:
       SITE: https://keazyea.github.io/
       API: https://kih-store.vercel.app
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Wait for GitHub Pages to publish this commit
         env:
           GH_TOKEN: ${{ github.token }}
