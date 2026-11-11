@@ -54,8 +54,15 @@ jobs:
         with:
           node-version: 22
       - name: Install a headless Chrome
+        # a download or package mirror that hangs is tried again (up to 3 times, 4 minutes each)
+        timeout-minutes: 14
         run: |
           npm install --no-save --no-fund --no-audit playwright@1.56.1
-          npx playwright install --with-deps chromium
+          for try in 1 2 3; do
+            if timeout 240 npx playwright install --with-deps chromium; then exit 0; fi
+            echo "::warning::Installing Chrome failed (try $try of 3) — trying again"
+            sleep 15
+          done
+          exit 1
       - name: Every live page loads without errors
         run: SMOKE_BASE_URL="$SITE" node tests/smoke.js

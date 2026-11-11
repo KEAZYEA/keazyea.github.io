@@ -14,6 +14,11 @@ try { pw = require("playwright"); } catch (e) { pw = require("playwright-core");
 
 const ROOT = path.join(__dirname, "..");
 const SETTLE_MS = Number(process.env.SMOKE_SETTLE_MS || 2500);
+// How long a page gets to finish loading everything, other sites' files
+// included. Past it, only OUR files still loading fail the page: another
+// site that hangs (an ad network, Google sign-in) is reported, not failed —
+// it isn't ours to fix, and one slow outside server used to stall every page.
+const LOAD_MS = Number(process.env.SMOKE_LOAD_MS || 20000);
 const PAGES = [
     ...fs.readdirSync(ROOT).filter(f => f.endsWith(".html") && !/^google[0-9a-f]+\.html$/.test(f)).sort(),
     "units/index.html",
@@ -60,7 +65,7 @@ function addCoverage(entry, base) {
     const server = live ? null : await serve();
     const base = live ? live.replace(/\/?$/, "/") : `http://127.0.0.1:${server.address().port}/`;
     const browser = await pw.chromium.launch(process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : {});
-    const problems = [];
+    const problems = [], slowOthers = new Set();
     for (const pg of PAGES) {
         const ctx = await browser.newContext({ viewport: { width: 390, height: 800 }, isMobile: true, hasTouch: true });
         await ctx.addInitScript(() => { try { localStorage.setItem("kih_terms_accepted_version", "9999"); } catch (e) { } });
@@ -72,15 +77,29 @@ function addCoverage(entry, base) {
             errs.push(e.message.split("\n")[0] + ((e.stack || "").match(new RegExp(base.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "[^\\s)]+"))?.[0]?.replace(base, " @ ") || ""));
         });
         page.on("response", r => { if (r.url().startsWith(base) && r.status() >= 400) missing.push(`${r.status()} ${r.url().replace(base, "/")}`); });
+        const pending = new Map(); // requests still on their way
+        page.on("request", r => pending.set(r, r.url()));
+        page.on("requestfinished", r => pending.delete(r));
+        page.on("requestfailed", r => pending.delete(r));
+        const slowHere = new Set();
         await page.coverage.startJSCoverage({ resetOnNavigation: false });
         const t0 = Date.now();
         try {
-            await page.goto(base + pg, { waitUntil: "load", timeout: 45000 });
+            // the page itself has to arrive; then everything it loads gets LOAD_MS
+            await page.goto(base + pg, { waitUntil: "commit", timeout: 45000 });
+            const loaded = await page.waitForLoadState("load", { timeout: LOAD_MS }).then(() => true, () => false);
+            if (!loaded) {
+                const waiting = [...pending.values()];
+                const ours = waiting.filter(u => u.startsWith(base)).map(u => u.replace(base, "/"));
+                if (ours.length) errs.push(`didn't finish loading — still waiting for ${ours.slice(0, 3).join(", ")}`);
+                waiting.filter(u => !u.startsWith(base)).forEach(u => { try { slowHere.add(new URL(u).host); slowOthers.add(new URL(u).host); } catch (e) { } });
+            }
             await page.waitForTimeout(SETTLE_MS);
         } catch (e) { errs.push("didn't finish loading: " + e.message.split("\n")[0]); }
         for (const entry of await page.coverage.stopJSCoverage()) addCoverage(entry, base);
         const ok = !errs.length && !missing.length;
         console.log(`${ok ? "✓" : "✗"} ${pg}  (${((Date.now() - t0) / 1000).toFixed(1)}s)`);
+        if (slowHere.size) console.log(`    (other sites still loading after ${LOAD_MS / 1000}s: ${[...slowHere].join(", ")} — not ours, not a failure)`);
         errs.forEach(e => { console.log("    error: " + e); problems.push(`${pg}: ${e}`); });
         missing.forEach(m => { console.log("    missing: " + m); problems.push(`${pg}: missing ${m}`); });
         await ctx.close();
@@ -109,6 +128,10 @@ function addCoverage(entry, base) {
             rows.slice(0, 30).map(([n, t]) => `| ${pct(t.ran, t.total)}% | ${n} |`).join("\n") + "\n\n");
     }
 
+    if (slowOthers.size) {
+        console.log(`\n⚠ Other sites that were slow to answer (not a failure): ${[...slowOthers].join(", ")}`);
+        if (process.env.GITHUB_STEP_SUMMARY) fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY, `⚠ Other sites slow to answer during the page check (not a failure): ${[...slowOthers].join(", ")}\n\n`);
+    }
     if (problems.length) {
         console.error(`\n${problems.length} problem${problems.length > 1 ? "s" : ""} on ${PAGES.length} pages.`);
         process.exit(1);

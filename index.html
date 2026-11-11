@@ -1680,6 +1680,11 @@ body {
             font-family: inherit; font-size: 0.98rem; font-weight: 800; color: #1a1a2e; border: none;
             background: linear-gradient(90deg, #ffd75e, #ff9f5a); box-shadow: 0 0 16px rgba(255, 170, 70, 0.35); }
         .share-site-btn:active { transform: scale(0.98); }
+        /* 🐞 Report a bug, on Home: smaller than Share, easy to spot */
+        .bug-home-btn { margin-top: clamp(8px, 1.4vh, 12px); padding: 9px 16px; border-radius: 999px; cursor: pointer; flex-shrink: 0;
+            font-family: inherit; font-size: 0.9rem; font-weight: 800; color: #ffc4c4;
+            background: rgba(229, 57, 53, 0.14); border: 1px solid rgba(239, 115, 115, 0.7); }
+        .bug-home-btn:active { transform: scale(0.97); }
         .kih-pop { position: fixed; inset: 0; z-index: 3000; display: flex; align-items: center; justify-content: center; padding: 16px;
             background: rgba(6, 6, 18, 0.72); animation: popFade 0.2s ease; }
         @keyframes popFade { from { opacity: 0; } }
@@ -1981,6 +1986,7 @@ body {
                 </button>
             </div>
             <button type="button" class="share-site-btn" onclick="openShareSite()">📣 Share KIH with friends</button>
+            <button type="button" class="bug-home-btn" id="bugHomeBtn" onclick="openBugReport()">🐞 Found a bug? Report it</button>
             <button class="about-creator-link" onclick="goToPage('about')">About the Creator</button>
             <!-- Plain links (search engines follow these, not the buttons above) -->
             <nav class="home-guide-links"><a href="units/">📖 Troops &amp; heroes guide</a><span>·</span><a href="about.html">About &amp; contact</a></nav>
@@ -2097,6 +2103,7 @@ body {
                         <div class="about-section">
                             <div class="about-section-title">Get in touch</div>
                             <p>Got feedback, bug reports, or suggestions? Reach out anytime.</p>
+                            <p><a href="#" class="about-link" onclick="openBugReport(); return false;">🐞 Report a bug</a> — with up to 5 screenshots; the reply comes to your inbox here.</p>
                             <p><a href="mailto:keazyea@gmail.com" class="about-link">📧 keazyea@gmail.com</a></p>
                         </div>
 
