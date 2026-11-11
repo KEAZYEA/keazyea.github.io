@@ -1,0 +1,7 @@
+# installed packages and test output (never committed)
+node_modules/
+coverage/
+# secrets live in Vercel's Environment Variables, never in a file here
+.env
+.env.*
+!.env.example

@@ -1,0 +1,61 @@
+# After something is merged into main (which GitHub Pages and Vercel then put
+# live by themselves), checks the LIVE site: waits for GitHub Pages to finish
+# publishing this commit, then makes sure the API answers and every page loads
+# without errors for a visitor.
+name: Live site check
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: read
+
+concurrency:
+  group: live-check
+  cancel-in-progress: true
+
+jobs:
+  live:
+    name: Live site and API work
+    # Ubuntu 24.04, not ubuntu-latest: GitHub moved ubuntu-latest to Ubuntu 26 (Oct 2026), which this
+    # Playwright version can't install Chrome on yet. Move up together with a newer playwright@.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      SITE: https://keazyea.github.io/
+      API: https://kih-store.vercel.app
+    steps:
+      - uses: actions/checkout@v4
+      - name: Wait for GitHub Pages to publish this commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for i in $(seq 1 40); do
+            read -r status commit < <(gh api "repos/${{ github.repository }}/pages/builds/latest" --jq '.status + " " + .commit' 2>/dev/null || echo "unknown none")
+            echo "Pages: $status ($commit)"
+            if [ "$commit" = "${{ github.sha }}" ] && [ "$status" = "built" ]; then exit 0; fi
+            if [ "$commit" = "${{ github.sha }}" ] && [ "$status" = "errored" ]; then echo "::error::GitHub Pages failed to publish this commit"; exit 1; fi
+            sleep 15
+          done
+          echo "::warning::Pages hadn't finished after 10 minutes — checking what's live anyway"
+      - name: The API answers (Vercel)
+        run: |
+          fail=0
+          for route in tokens chat polls progress games token-packs cancel-subscription; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' -X OPTIONS "$API/api/$route")
+            echo "$route: $code"
+            [ "$code" = "204" ] || { echo "::error::$API/api/$route answered $code (expected 204)"; fail=1; }
+          done
+          exit $fail
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install a headless Chrome
+        run: |
+          npm install --no-save --no-fund --no-audit playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Every live page loads without errors
+        run: SMOKE_BASE_URL="$SITE" node tests/smoke.js

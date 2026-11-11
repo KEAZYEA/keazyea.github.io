@@ -170,6 +170,20 @@
         }
         .token-form label { display: flex; flex-direction: column; gap: 4px; font-size: 0.85rem; color: #b0b0c0; }
         .token-form-wide { grid-column: 1 / -1; }
+        /* 🐞 bug reports */
+        .bug-card { border: 1px solid #2a2a4a; border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; text-align: left; background: rgba(255, 255, 255, 0.02); }
+        .bug-card.closed { opacity: 0.8; }
+        .bug-head { display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: baseline; font-size: 0.85rem; }
+        .bug-head b { font-size: 0.95rem; }
+        .bug-chip { border-radius: 999px; padding: 1px 9px; font-size: 0.75rem; font-weight: 700; background: #4169e1; color: #fff; }
+        .bug-chip.fixed { background: #2e7d32; } .bug-chip.notBug { background: #6b6b80; }
+        .bug-text { white-space: pre-wrap; word-break: break-word; margin: 8px 0; line-height: 1.45; }
+        .bug-meta { font-size: 0.75rem; color: #9a9ab0; word-break: break-word; }
+        .bug-imgs { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+        .bug-imgs a img { width: 84px; height: 84px; object-fit: cover; border-radius: 8px; border: 1px solid #2a2a4a; display: block; }
+        .bug-tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 8px; }
+        .bug-tools .token-input { width: auto; }
+        .bug-gift { margin-top: 10px; padding-top: 10px; border-top: 1px dashed #2a2a4a; }
         .token-scroll { max-height: 50vh; overflow-y: auto; overscroll-behavior: contain; padding-right: 4px; }
         .token-card { border: 1px solid #2a2a4a; border-radius: 10px; padding: 12px 14px; margin-bottom: 8px; }
         .token-card.alert { border-color: #aa3838; background: rgba(170, 56, 56, 0.08); }
@@ -610,6 +624,25 @@
                 <h3 style="margin:28px 0 4px;">📋 Polls</h3>
                 <div id="adminPollsList" class="token-scroll"></div>
                 <button class="token-small-btn" onclick="loadAdminPolls()">↻ Refresh</button>
+                </details>
+
+                <hr style="border-color:#2a2a4a; margin:40px 0;">
+
+                <details class="admin-section" id="bugReportsSection">
+                <summary>🐞 Bug reports <span class="promo-sub" id="bugReportsOpenCount"></span></summary>
+                <p class="promo-sub" style="margin-top:0;">Players send these from Settings → 🐞 Report a bug (up to 5 screenshots each;
+                    screenshots are deleted after 90 days like chat photos, and each player can send 5 a day). You get an inbox
+                    note for each new one. Mark it ✅ Fixed or 🚫 Not a bug with an optional reply; "Tell them" puts your reply in
+                    their inbox. 🎁 sends a thank-you gift (tokens, chest draws or an item) they claim from their inbox.</p>
+                <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                    <select id="bugReportsFilter" class="token-input" style="width:auto;" onchange="loadBugReports()">
+                        <option value="open" selected>Open</option>
+                        <option value="closed">Closed (fixed / not a bug)</option>
+                        <option value="all">All</option>
+                    </select>
+                    <button class="token-small-btn" style="margin-top:0;" onclick="loadBugReports()">↻ Refresh</button>
+                </div>
+                <div id="bugReportsList" class="token-scroll" style="margin-top:12px; max-height:none;"></div>
                 </details>
 
                 <hr style="border-color:#2a2a4a; margin:40px 0;">
@@ -3508,6 +3541,82 @@ async function handleLookupUserByUid() {
                 try { await AppState.adminPolls("adminDelete", { pollId }); await loadAdminPolls(); } catch (e) { showInfoModal("Couldn't delete it", e.message); }
             };
             document.getElementById("pollsSection").addEventListener("toggle", (e) => { if (e.target.open) loadAdminPolls(); });
+
+            // 🐞 bug reports: read, reply, mark fixed / not a bug, send a thank-you gift
+            let bugReportsById = {};
+            const BUG_STATUS = { open: "Open", fixed: "✅ Fixed", notBug: "🚫 Not a bug" };
+            function bugCardHtml(r) {
+                const when = new Date(r.createdAt).toLocaleString();
+                const dev = r.device || {};
+                const meta = [r.page && "📍 " + r.page, dev.screen && "📱 " + dev.screen, dev.lang, dev.standalone ? "home-screen app" : "", dev.ua].filter(Boolean).join(" · ");
+                const gift = r.gift && r.gift.what ? `<div class="bug-meta">🎁 Sent: ${escapeHtml(r.gift.what)}</div>` : "";
+                return `<div class="bug-card${r.status === "open" ? "" : " closed"}" id="bugCard_${escapeHtml(r.id)}">
+                    <div class="bug-head"><b>${escapeHtml(r.name || "(no name)")}</b><span class="bug-chip ${escapeHtml(r.status)}">${BUG_STATUS[r.status] || escapeHtml(r.status)}</span>
+                        <span class="promo-sub">${escapeHtml(when)}</span>
+                        <button class="token-small-btn" style="margin:0;" onclick="navigator.clipboard.writeText(${escapeHtml(JSON.stringify(r.uid))}).then(() => showInfoModal('Copied', 'Their user ID is copied — paste it into 🪙 Tokens or Moderation Lookup.'))">📋 uid</button></div>
+                    <div class="bug-text">${escapeHtml(r.text)}</div>
+                    ${r.images.length ? `<div class="bug-imgs">${r.images.map((im, i) => `<a href="${escapeHtml(im.url)}" target="_blank" rel="noopener" title="Open screenshot ${i + 1}"><img src="${escapeHtml(im.url)}" alt="Screenshot ${i + 1}" loading="lazy" onerror="this.alt='(screenshot expired)'"></a>`).join("")}</div>` : ""}
+                    ${meta ? `<div class="bug-meta">${escapeHtml(meta)}</div>` : ""}
+                    ${gift}
+                    <textarea class="token-input" id="bugReply_${escapeHtml(r.id)}" rows="2" maxlength="500" placeholder="Reply to them (optional) — e.g. Thanks! Fixed in today's update." style="margin-top:8px;">${escapeHtml(r.reply || "")}</textarea>
+                    <div class="bug-tools">
+                        <label style="display:flex; align-items:center; gap:6px; font-size:0.85rem;"><input type="checkbox" id="bugNotify_${escapeHtml(r.id)}" checked> 📬 Tell them</label>
+                        <button class="btn-primary" style="padding:8px 14px;" onclick="setBugStatus('${escapeHtml(r.id)}', 'fixed')">✅ Fixed</button>
+                        <button class="token-small-btn" style="margin:0;" onclick="setBugStatus('${escapeHtml(r.id)}', 'notBug')">🚫 Not a bug</button>
+                        ${r.status === "open" ? "" : `<button class="token-small-btn" style="margin:0;" onclick="setBugStatus('${escapeHtml(r.id)}', 'open')">↩ Reopen</button>`}
+                    </div>
+                    <div class="bug-gift">
+                        <div class="bug-tools">
+                            <label class="promo-sub">🪙 <input type="number" id="bugGiftTokens_${escapeHtml(r.id)}" min="0" step="1" value="0" class="token-input" style="width:80px;"></label>
+                            <label class="promo-sub">🧰 <input type="number" id="bugGiftDraws_${escapeHtml(r.id)}" min="0" max="100" step="1" value="0" class="token-input" style="width:70px;"></label>
+                            <select id="bugGiftItem_${escapeHtml(r.id)}" class="token-input" style="max-width:220px;"><option value="">— no item —</option>${itemOptionsHtml("")}</select>
+                            <button class="token-small-btn" style="margin:0;" onclick="sendBugGift('${escapeHtml(r.id)}')">🎁 Send thank-you gift</button>
+                        </div>
+                    </div>
+                </div>`;
+            }
+            async function loadBugReports() {
+                const list = document.getElementById("bugReportsList");
+                if (typeof AppState.adminBugReports !== "function") { list.innerHTML = '<p class="promo-sub">Update appState.js to use this.</p>'; return; }
+                list.innerHTML = '<p class="promo-sub">Loading…</p>';
+                try {
+                    const { reports, open } = await AppState.adminBugReports("adminList", { status: document.getElementById("bugReportsFilter").value });
+                    bugReportsById = Object.fromEntries(reports.map(r => [r.id, r]));
+                    document.getElementById("bugReportsOpenCount").textContent = open ? `(${open} open)` : "";
+                    list.innerHTML = reports.length ? reports.map(bugCardHtml).join("") : '<p class="promo-sub">Nothing here. 🎉</p>';
+                } catch (e) { list.innerHTML = `<p class="promo-sub">Couldn't load: ${escapeHtml(e.message)}</p>`; }
+            }
+            window.loadBugReports = loadBugReports;
+            window.setBugStatus = async (id, status) => {
+                const notify = document.getElementById("bugNotify_" + id).checked;
+                const reply = document.getElementById("bugReply_" + id).value.trim();
+                try {
+                    await AppState.adminBugReports("adminUpdate", { id, status, reply, notify });
+                    await loadBugReports();
+                } catch (e) { showInfoModal("Couldn't save", e.message); }
+            };
+            window.sendBugGift = async (id) => {
+                const r = bugReportsById[id];
+                if (!r) return;
+                const amount = Number(document.getElementById("bugGiftTokens_" + id).value || 0);
+                const draws = Number(document.getElementById("bugGiftDraws_" + id).value || 0);
+                const itemId = document.getElementById("bugGiftItem_" + id).value;
+                const PC = window.ProgressCore;
+                const what = [amount ? `${amount} token${amount === 1 ? "" : "s"}` : "", draws ? `${draws} free chest draw${draws === 1 ? "" : "s"}` : "",
+                    itemId && PC && PC.BY_ID[itemId] ? `${PC.BY_ID[itemId].icon} ${PC.BY_ID[itemId].name}` : ""].filter(Boolean).join(" + ");
+                if (!what) { showInfoModal("Nothing to send", "Put some tokens, chest draws or an item in the gift."); return; }
+                if (!await showConfirmModal("Send this gift?", `${what} to ${r.name || r.uid}, to claim from their inbox within 30 days.`)) return;
+                try {
+                    const g = await AppState.adminTokens("adminSendGift", {
+                        target: r.uid, amount, draws, itemIds: itemId ? [itemId] : [], expiresInHours: 24 * 30,
+                        title: "🐞 Thanks for reporting a bug!", message: `Here's ${what} for helping us find a problem — tap Claim to get it.`
+                    });
+                    await AppState.adminBugReports("adminUpdate", { id, status: r.status, reply: document.getElementById("bugReply_" + id).value.trim(), notify: false, gift: { giftId: g.giftId, what } });
+                    showInfoModal("Gift sent 🎁", `${what} is waiting in ${r.name || "their"}'s inbox.`);
+                    await loadBugReports();
+                } catch (e) { showInfoModal("Couldn't send the gift", e.message); }
+            };
+            document.getElementById("bugReportsSection").addEventListener("toggle", (e) => { if (e.target.open) loadBugReports(); });
 
             // 🌍 World Chat: slow mode and pause (live, so it shows what players have now)
             let wcCfgUnsub = null;

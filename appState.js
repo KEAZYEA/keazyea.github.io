@@ -515,6 +515,53 @@ async function signOutUser() {
         }
         return data;
     }
+    /* ---------------- 🐞 Bug reports (api/bug-reports.js) ----------------
+       Screenshots go up first like DM photos (shrunk on the phone, your own
+       folder), then the report is sent with them. */
+    const BUG_REPORT_MAX_IMAGES = 5;
+    async function callBugReportsApi(action, payload = {}) {
+        await waitForAuthReady();
+        if (!currentUser) throw new Error("Sign in with Google first.");
+        const res = await fetch(BACKEND_BASE + "/api/bug-reports", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Authorization: "Bearer " + await getIdToken() },
+            body: JSON.stringify({ action, ...payload })
+        });
+        let data = null;
+        try { data = await res.json(); } catch (e) { /* non-JSON error page */ }
+        if (!res.ok) {
+            const err = new Error((data && data.error) || `Request failed (${res.status})`);
+            err.status = res.status;
+            throw err;
+        }
+        return data;
+    }
+    // text, files (up to 5 pictures), page → { ok, id }. onProgress("Uploading 2 of 3…")
+    async function submitBugReport({ text, files = [], page = "" }, onProgress = () => { }) {
+        await waitForAuthReady();
+        if (!currentUser) throw new Error("Sign in with Google first.");
+        if (files.length > BUG_REPORT_MAX_IMAGES) throw new Error(`Up to ${BUG_REPORT_MAX_IMAGES} screenshots.`);
+        const images = [];
+        for (let i = 0; i < files.length; i++) {
+            onProgress(`Uploading screenshot ${i + 1} of ${files.length}…`);
+            const up = await uploadChatPhoto("dm", files[i]);
+            images.push({ url: up.url, path: up.path, w: up.w, h: up.h });
+        }
+        onProgress("Sending…");
+        const device = {
+            ua: navigator.userAgent, lang: navigator.language || "",
+            screen: `${Math.round(screen.width)}x${Math.round(screen.height)} @${window.devicePixelRatio || 1}x`,
+            standalone: !!(window.matchMedia && window.matchMedia("(display-mode: standalone)").matches)
+        };
+        return callBugReportsApi("submit", { text, images, page, device });
+    }
+    const myBugReports = () => callBugReportsApi("mine");
+    async function adminBugReports(action, payload = {}) {
+        await waitForAuthReady();
+        if (!currentUser || currentUser.uid !== ADMIN_UID) throw new Error("Not authorized.");
+        return callBugReportsApi(action, payload);
+    }
+
     // { polls: [{ id, kind, question, options, ended, expiresAt, counts|null, answers|null, total|null,
     //   myPicks|null, myText|null, reward, rewarded }], now }
     const listPolls = () => callPollsApi("list");
@@ -5590,6 +5637,7 @@ async function maybeRefreshAd(containerId) {
         // auth
         signIn, signOut: signOutUser, getCurrentUser, onAuthChange, waitForAuthReady, getIdToken,
         listPolls, votePoll, adminPolls,
+        submitBugReport, myBugReports, adminBugReports, BUG_REPORT_MAX_IMAGES,
         uploadChatPhoto, deleteChatPhoto, prepareChatVideo, uploadChatVideo, deleteChatVideo, unlockChatVideoAudio, myVideoLimit, VIDEO_LIMITS, shrinkChatPhoto, canPostWorldPhotos, CHAT_PHOTO_DAYS, CHAT_PHOTO_MIN_AGE_DAYS,
         translateChat, adminChatStatus, chatLimits, deleteDmMessage,
         sendWorldChat, deleteWorldChat, adminWorldChatSettings, listenToWorldChat, loadOlderWorldChat, listenToWorldChatConfig, getMyBlockedUids,
