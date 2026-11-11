@@ -635,16 +635,26 @@
         // A one-off puzzle: today's (isDaily), or `fixed` = { puzzle, src,
         // challenge } — an earlier day's puzzle a friend challenged you to.
         // (The other tabs are endless runs — see ENDLESS RUNS below.)
+        // Each game's one-off puzzle: how it starts and draws. (A Map, not an
+        // object: a game name from a link can only find these, never anything
+        // an object inherits.)
+        const DAY_GAMES = new Map([
+            ["trivia", { start: startTrivia, render: renderTrivia }], ["guess", { start: startGuess, render: renderGuess }],
+            ["unitle", { start: startUnitle, render: renderUnitle }], ["hilo", { start: startHilo, render: renderHilo }],
+            ["blur", { start: startBlur, render: renderBlur }], ["memory", { start: startMemory, render: renderMemory }]
+        ]);
         function startGame(id, isDaily, fixed) {
             hideRun();
             let p, src;
             if (isDaily) { p = daily.puzzle; src = "d" + daily.day.replace(/-/g, ""); }
             else { p = fixed.puzzle; src = fixed.src; }
             if (!isDaily) setIntro(`${INTROS[id].daily.replace("today's", "that day's").replace("today", "that day")}<small>⚔️ A friend's challenge — the same puzzle they played. No tokens here; 🎲 Today's Puzzle pays +1 🪙.</small>`);
-            ({ trivia: startTrivia, guess: startGuess, unitle: startUnitle, hilo: startHilo, blur: startBlur, memory: startMemory })[id](isDaily, p);
+            const play = DAY_GAMES.get(id);
+            if (!play) return;
+            play.start(isDaily, p);
             game.src = src;
             game.challenge = isDaily ? dailyChallenge : (fixed && fixed.challenge) || null;
-            ({ trivia: renderTrivia, guess: renderGuess, unitle: renderUnitle, hilo: renderHilo, blur: renderBlur, memory: renderMemory })[id]();
+            play.render();
             if (isDaily && dailyFinished()) collectToken();
         }
 
@@ -1398,8 +1408,8 @@
         // Each game's latest run, kept while you look at other tabs: its clock
         // keeps going (the server's does anyway), and coming back picks it up
         // where you left it instead of starting a new one.
-        const runs = {};
-        const liveRun = (ui) => runs[ui.game] === ui; // not replaced by a newer run
+        const runs = new Map(); // game -> its run (a Map: a game name can never reach anything an object inherits)
+        const liveRun = (ui) => runs.get(ui.game) === ui; // not replaced by a newer run
         const paintRun = (ui, keepFocus) => { if (runUi === ui) renderRun(keepFocus); };
         const newSeed = () => Math.floor(Math.random() * 2 ** 31);
         const runIsStreak = (g) => g === "trivia" || g === "hilo";
@@ -1437,7 +1447,8 @@
         function markRunTabs() {
             C.GAMES.forEach(g => {
                 const btn = document.querySelector(`.games-tabs [data-tab="${g}"]`);
-                if (btn) btn.classList.toggle("run-live", !!(runs[g] && !runs[g].over && !runs[g].starting));
+                const r = runs.get(g);
+                if (btn) btn.classList.toggle("run-live", !!(r && !r.over && !r.starting));
             });
         }
         function runViewFits(id, view) {
@@ -1458,10 +1469,11 @@
         // haven't seen how), otherwise a new one. opts: { fresh } for Play
         // again; { seed, challenge } to replay a friend's run (never ranked).
         async function startRun(id, opts = {}) {
-            const kept = runs[id];
+            if (!C.GAMES.includes(id)) return;
+            const kept = runs.get(id);
             if (kept && !opts.fresh && !opts.challenge && !(kept.over && kept.seenOver)) { showRun(kept); return; }
             const ui = { game: id, starting: true, ranked: false, challenge: opts.challenge || null, score: 0, best: 0, over: false, view: null, feedback: null, typed: "", msg: "", note: "", busy: false, holding: false, unitNo: 1 };
-            runs[id] = ui;
+            runs.set(id, ui);
             markRunTabs();
             showRun(ui);
             let resp = null;
@@ -1524,7 +1536,7 @@
             if (ui.ranked && ui.runId && window.AppState) window.AppState.gamesRunAnswer(ui.runId, null).catch(() => { });
             ui.over = true;
             ui.abandoned = true;
-            if (runs[ui.game] === ui) delete runs[ui.game];
+            if (runs.get(ui.game) === ui) runs.delete(ui.game);
             if (runUi === ui) hideRun();
             if (ui.ranked) lbLoadedAt = 0;
             markRunTabs();
@@ -1714,6 +1726,7 @@
             if (!waiting && left <= 0 && !ui.busy && !ui.holding && !ui.error) runMove(null);
         }
 
+        const RUN_BODIES = new Map([["trivia", runTriviaBody], ["hilo", runHiloBody], ["unitle", runUnitleBody], ["guess", runGuessBody], ["blur", runBlurBody], ["memory", runMemoryBody]]);
         function renderRun(keepFocus) {
             const ui = runUi;
             if (!ui) return;
@@ -1726,7 +1739,8 @@
                 <div class="run-bar"><span class="run-score${ui.gained ? " bump" : ""}">🔥 ${ui.score}${ui.score < C.LB_CAP ? `<small>/${C.LB_CAP}</small>` : ""}</span><span class="run-best">${ui.challenge ? "" : ui.ranked ? `On the leaderboard: <b>${ui.pts || 0}</b>` : `Your best: <b>${ui.best}</b>`}</span>${ui.ranked && ui.bonus ? `<span class="run-tag bonus" title="Today's Puzzle game: double leaderboard points">⭐ ×2 = ${Math.min(ui.score, C.LB_CAP) * 2}</span>` : ""}${tag}</div>
                 ${ui.challenge ? "" : runRecordHtml(ui)}
                 ${ui.over ? "" : `<div class="run-timer"><div class="run-timer-fill" id="runTimerFill"></div></div><div class="run-timer-text" id="runTimerText"></div>`}`;
-            const body = { trivia: runTriviaBody, hilo: runHiloBody, unitle: runUnitleBody, guess: runGuessBody, blur: runBlurBody, memory: runMemoryBody }[ui.game]();
+            const drawBody = RUN_BODIES.get(ui.game);
+            const body = drawBody ? drawBody() : "";
             const err = ui.error ? `<div class="reward-box">${esc(ui.error.message)}<br><button class="btn-primary" onclick="retryRunMove()">Try again</button></div>` : "";
             $("gameArea").innerHTML = `<div class="game-card">${head}${body}${err}${ui.over ? runOverHtml() : ""}</div>`;
             tickRun();
