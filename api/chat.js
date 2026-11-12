@@ -1,8 +1,10 @@
 /**
  * api/chat.js
  * 🌍 World Chat (in Social): one chat everyone signed in can talk in. Each
- * message carries a tag (General, Tips, Noobies, Formation, Games) so the
- * chat can be filtered without splitting people into separate rooms.
+ * message carries a tag (its channel). Only General is left: Tips, Noobies,
+ * Formation and Games were dropped on 2026-11-12 for 📜 Lore (story posts,
+ * written straight to Firestore lorePosts/ by appState.js, not through here);
+ * a message sent with an old tag goes to General.
  *
  * Messages are written here, never by the browser, so slow mode, a paused
  * chat, timeouts/bans and the length limit can't be skipped. The browser
@@ -57,7 +59,7 @@ const { FieldValue } = require("firebase-admin/firestore");
 const { videoDurationSeconds } = require("./_media");
 
 const ADMIN_UID = "Ts92RY0ipMYDRJa2s5toQfDYxtp1"; // same as tokens.js and appState.js
-const TAGS = ["general", "tips", "noobies", "formation", "games"]; // same as social.html WORLD_TAGS
+const TAGS = ["general"]; // same as social.html WORLD_TAGS
 const MAX_TEXT = 2000;
 const QUOTE_LEN = 140;
 const DEFAULT_SLOW_SECONDS = 5;

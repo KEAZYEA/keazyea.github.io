@@ -57,6 +57,24 @@
                 max-width: 118px;
             }
         }
+
+        /* 🐉 Bosses (boss-calc.js): laid out like a troop — these are only the bits a troop doesn't have */
+        .bc-level-label { display: inline-flex; align-items: center; gap: 6px; }
+        .bc-num-input { width: 74px; padding: 6px 6px; border-radius: 6px; border: 1px solid gray; background: #2a2a4a; color: #fff;
+            font-family: inherit; font-size: 16px; font-weight: bold; text-align: center; -moz-appearance: textfield; }
+        .bc-num-input::-webkit-outer-spin-button, .bc-num-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        .bc-none { text-align: center; color: #9a9ab0; padding: 16px; }
+        #bossCard .bc-pic { display: flex; justify-content: center; }
+        #bossCard .bc-img { border-radius: 10px; }
+        #bossCard h3 { text-align: center; }
+        .bc-pills { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-top: 6px; }
+        .bc-pill { background: #4169e1; color: white; padding: 4px 12px; border-radius: 12px; font-size: 14px; font-weight: bold; white-space: nowrap; }
+        .bc-pill.boss { background: crimson; }
+        .bc-note { font-size: 14px; color: #9a9ab0; text-align: center; line-height: 1.45; margin: 10px 4px 0; }
+        #bossCard td.bc-ab-name { font-size: 19px; font-weight: bold; color: #ffd75e; padding-top: 18px; }
+        .bc-same { font-size: 13px; color: #9a9ab0; font-weight: normal; }
+        #bossCard .bc-skill-img { display: block; width: 96px; height: 96px; object-fit: cover; border-radius: 12px; margin: 0 auto 8px; border: 2px solid #3a3a66; }
+        #bossCard td.bc-sub { font-size: 16px; font-weight: bold; color: #c8b6ff; padding-top: 12px; }
     </style>
 </head>
 
@@ -67,6 +85,7 @@
 <div class="tabs">
     <button class="tab-btn active" onclick="switchTab('troops')">Troops & Heroes</button>
     <button class="tab-btn" onclick="switchTab('compare')">Compare</button>
+    <button class="tab-btn" onclick="switchTab('bosses')">🐉 Bosses</button>
 </div>
 
 <div id="troopsPage" class="page active">
@@ -100,6 +119,24 @@
             <div class="adsterra-slot" id="adSlot300x250" style="justify-content:center; margin:10px auto; max-width:100%; overflow:hidden;"></div>
         </div>
     </div>
+        </div>
+
+        <!-- 🐉 Bosses: pick a boss, set its level (boss-calc.js) — laid out like the troops -->
+        <div id="bossesPage" class="page">
+            <div class="sticky-controls">
+                <div class="search-row">
+                    <input type="text" id="bossSearch" placeholder="Search Boss" />
+                    <button type="button" class="clear-btn" id="bossSearchClear">Clear</button>
+                </div>
+                <div class="slider-row">
+                    <input type="range" min="1" max="300" value="1" id="bossSlider" aria-label="Boss level" />
+                    <span class="bc-level-label">Level <input type="number" id="bcLevel" class="bc-num-input" min="1" value="1" inputmode="numeric" aria-label="Boss level (type any level)" /></span>
+                </div>
+                <div id="bossBackBtnSlot"></div>
+            </div>
+            <div id="bossResults"></div>
+            <div id="bossCard"></div>
+            <div id="bossesAdAnchor"></div>
         </div>
 
         <div class="applies-to-modal-overlay" id="appliesToModalOverlay">
@@ -178,6 +215,7 @@
         </script>
         <script src="abilities.js"></script>
         <script src="talents.js"></script>
+        <script src="boss-calc.js"></script>
         <script>
 
             /* ================================================================
@@ -1441,19 +1479,25 @@ function unlockBackgroundScroll() {
             }
             function moveSharedAdBlock(tab) {
     let block = document.getElementById("sharedAdBlock");
-    let target = document.getElementById(tab === "troops" ? "troopsAdAnchor" : "compareAdAnchor");
+    let target = document.getElementById(tab === "troops" ? "troopsAdAnchor" : tab === "bosses" ? "bossesAdAnchor" : "compareAdAnchor");
     if (block && target) target.appendChild(block); // appendChild MOVES the existing node, doesn't clone it
 }
 
 let troopsScrollY = 0;
 let compareScrollY = 0;
+let bossesScrollY = 0;
 
+// ?tab=bosses (e.g. from the 🧭 guide on Home) opens the boss calculator.
+window.addEventListener("DOMContentLoaded", () => {
+    if (new URLSearchParams(location.search).get("tab") === "bosses") switchTab("bosses");
+});
 function switchTab(tab) {
 
     // remember where we were on the tab we're LEAVING
     let current = document.querySelector(".page.active");
     if (current && current.id === "troopsPage") troopsScrollY = window.scrollY;
     if (current && current.id === "comparePage") compareScrollY = window.scrollY;
+    if (current && current.id === "bossesPage") bossesScrollY = window.scrollY;
 
     document.querySelectorAll(".page").forEach((p) => p.classList.remove("active"));
     // Same logic as above, so the tab is no longer light blue since no active
@@ -1466,6 +1510,12 @@ function switchTab(tab) {
         // since troops tab is above compare, troops will be tab-btn[0], while compare is tab-btn[1]
         document.querySelectorAll(".tab-btn")[0].classList.add("active");
         window.scrollTo(0, troopsScrollY);
+    } else if (tab === "bosses") {
+        // 🐉 the boss calculator: loads its few files the first time it opens
+        document.getElementById("bossesPage").classList.add("active");
+        document.querySelectorAll(".tab-btn")[2].classList.add("active");
+        window.scrollTo(0, bossesScrollY);
+        if (window.BossCalc) window.BossCalc.mount({ loadJSON, record: recordTroopsView });
     } else {
         // same logic
         document.getElementById("comparePage").classList.add("active");
@@ -1644,6 +1694,7 @@ var restoringTroopsHistory = false; // var: switchTab() may run before this line
 
 function currentTroopsView() {
     if (document.getElementById("comparePage").classList.contains("active")) return { thView: "compare" };
+    if (document.getElementById("bossesPage").classList.contains("active")) return { thView: "bosses", key: (window.BossCalc && window.BossCalc.current && window.BossCalc.current()) || null };
     return selectTroop
         ? { thView: "unit", key: selectTroop.key, unitType: troopType, level: parseInt(troopsLevel) || 1 }
         : { thView: "gallery" };
@@ -1680,8 +1731,11 @@ window.addEventListener("popstate", (e) => {
     try {
         if (target.thView === "compare") {
             if (now.thView !== "compare") switchTab("compare");
+        } else if (target.thView === "bosses") {
+            if (now.thView !== "bosses") switchTab("bosses");
+            if (window.BossCalc && window.BossCalc.show && now.key !== (target.key || null)) window.BossCalc.show(target.key || null);
         } else {
-            if (now.thView === "compare") switchTab("troops");
+            if (now.thView === "compare" || now.thView === "bosses") switchTab("troops");
             if (target.thView === "unit") {
                 let unit = (target.unitType === "hero" ? heroList : troopList).find(u => u.key === target.key);
                 if (unit && (now.key !== target.key || now.level !== target.level)) {
