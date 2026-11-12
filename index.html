@@ -1685,6 +1685,44 @@ body {
             font-family: inherit; font-size: 0.9rem; font-weight: 800; color: #ffc4c4;
             background: rgba(229, 57, 53, 0.14); border: 1px solid rgba(239, 115, 115, 0.7); }
         .bug-home-btn:active { transform: scale(0.97); }
+        /* 🧭 KIH Guide (help-guide.js): the button on Home and its chat sheet */
+        .kih-guide-fab { position: fixed; right: 14px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 90; display: flex; align-items: center; gap: 6px;
+            padding: 11px 15px 11px 13px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, 0.25); cursor: pointer; font-family: inherit; font-size: 0.95rem; font-weight: 800; color: #fff;
+            background: linear-gradient(135deg, #4169e1, #8a4dff); box-shadow: 0 6px 20px rgba(65, 105, 225, 0.45); }
+        .kih-guide-fab span { font-size: 0.9rem; }
+        .kih-guide-fab:active { transform: scale(0.95); }
+        .home-landing.hidden .kih-guide-fab, body.kih-guide-on .kih-guide-fab { display: none; }
+        .kih-guide-overlay { position: fixed; inset: 0; z-index: 2500; display: none; align-items: flex-end; justify-content: center; background: rgba(6, 6, 18, 0.6); }
+        .kih-guide-overlay.open { display: flex; animation: popFade 0.2s ease; }
+        .kih-guide-sheet { width: 100%; max-width: 520px; height: min(78vh, 640px); height: min(78dvh, 640px); display: flex; flex-direction: column; background: #17172e;
+            border: 1px solid #3a3a66; border-bottom: none; border-radius: 18px 18px 0 0; box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.5); color: #fff; overflow: hidden; }
+        .kih-guide-head { display: flex; align-items: center; justify-content: space-between; padding: 14px 14px 10px 16px; border-bottom: 1px solid #2a2a4a; }
+        .kih-guide-title { font-weight: 900; font-size: 1.08rem; }
+        .kih-guide-title small { display: block; font-weight: 600; font-size: 0.78rem; color: #9a9ab0; margin-top: 2px; }
+        .kih-guide-x { width: 36px; height: 36px; border-radius: 50%; border: none; background: #2a2a4a; color: #fff; font-size: 1rem; cursor: pointer; }
+        .kih-guide-log { flex: 1; overflow-y: auto; padding: 14px 12px; display: flex; flex-direction: column; gap: 10px; overscroll-behavior: contain; }
+        .kg-msg { max-width: 88%; padding: 10px 12px; border-radius: 14px; font-size: 0.93rem; line-height: 1.45; overflow-wrap: anywhere; }
+        .kg-bot { align-self: flex-start; background: #232346; border: 1px solid #34345e; border-bottom-left-radius: 4px; }
+        .kg-you { align-self: flex-end; background: linear-gradient(135deg, #4169e1, #6a4dff); border-bottom-right-radius: 4px; }
+        .kg-text b { color: #ffd75e; }
+        .kg-acts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 9px; }
+        .kg-acts button { padding: 8px 12px; border-radius: 10px; border: none; font-family: inherit; font-size: 0.86rem; font-weight: 800; cursor: pointer; }
+        .kg-go { background: linear-gradient(90deg, #2ecc71, #27ae60); color: #0d2316; }
+        .kg-show { background: #34345e; color: #fff; }
+        .kg-or { margin-top: 9px; font-size: 0.8rem; color: #9a9ab0; }
+        .kg-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 9px; }
+        .kg-chip { padding: 7px 11px; border-radius: 999px; border: 1px solid #4a4a7a; background: #1c1c38; color: #dcdcf2; font-family: inherit; font-size: 0.82rem; font-weight: 700; cursor: pointer; }
+        .kih-guide-ask { display: flex; gap: 8px; padding: 10px 12px calc(12px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid #2a2a4a; background: #141428; }
+        .kih-guide-ask input { flex: 1; min-width: 0; padding: 12px 14px; border-radius: 12px; border: 1px solid #3a3a66; background: #0f0f22; color: #fff; font-family: inherit; font-size: 16px; }
+        .kih-guide-ask button { width: 48px; border-radius: 12px; border: none; background: linear-gradient(135deg, #4169e1, #8a4dff); color: #fff; font-size: 1.1rem; cursor: pointer; }
+        .guide-top-btn { position: relative; }
+        /* After "Take me there": where to tap to ask again */
+        .kih-guide-tip { position: fixed; z-index: 2400; max-width: 220px; padding: 9px 12px; border-radius: 12px; background: #ffd75e; color: #1a1a2e;
+            font-size: 0.85rem; font-weight: 800; line-height: 1.3; box-shadow: 0 8px 22px rgba(0, 0, 0, 0.45); animation: popFade 0.2s ease; pointer-events: none; }
+        .kih-guide-tip::before { content: ""; position: absolute; top: -6px; left: var(--tip-x, 20px); width: 12px; height: 12px; background: #ffd75e; transform: rotate(45deg); }
+        /* "Show me": the button glows */
+        .kih-guide-spot { position: relative; z-index: 5; animation: kgSpot 1.05s ease-in-out 4; outline: 3px solid #ffd75e; outline-offset: 3px; border-radius: 12px; }
+        @keyframes kgSpot { 50% { outline-color: rgba(255, 215, 94, 0.15); box-shadow: 0 0 0 10px rgba(255, 215, 94, 0.25); } }
         .kih-pop { position: fixed; inset: 0; z-index: 3000; display: flex; align-items: center; justify-content: center; padding: 16px;
             background: rgba(6, 6, 18, 0.72); animation: popFade 0.2s ease; }
         @keyframes popFade { from { opacity: 0; } }
@@ -1908,6 +1946,8 @@ body {
         <div class="home-topbar" id="pageTopbar" style="display:none;">
             <button class="back-to-about-btn" title="Back" id="backToAboutBtn" onclick="pageBack()" style="display:none;">← Back</button>
             <button class="icon-btn" title="Home" onclick="goHome()">🏠</button>
+            <!-- 🧭 the guide, from any page (help-guide.js) — the way back to it after "Take me there" -->
+            <button class="icon-btn guide-top-btn" id="guideTopBtn" title="Ask the guide" aria-label="Ask the guide" onclick="openHelpGuide()">🧭</button>
             <!-- Your tokens, on every page: tap for Daily Quests, + for the Store.
                  Rewards and purchases fly into it (kihFlyToHud). -->
             <div class="hud" id="hudPage" style="display:none;">
@@ -1924,6 +1964,7 @@ body {
                         📬 Inbox <span class="badge-dot" id="inboxBadgeMenu" style="display:none;"></span>
                     </button>
                     <button onclick="goToPage('settings'); closeMenu();">⚙️ Settings</button>
+                    <button onclick="closeMenu(); openHelpGuide();">🧭 Ask the guide</button>
                     <button onclick="goToPage('profile'); closeMenu();">
                         <img id="topbarAvatar" src="" alt="Profile" class="topbar-avatar-icon">
                         <span id="topbarAvatarFallback2" class="topbar-avatar-fallback" style="display:flex;">👤</span>
@@ -1989,6 +2030,7 @@ body {
             <button type="button" class="bug-home-btn" id="bugHomeBtn" onclick="openBugReport()">🐞 Found a bug? Report it</button>
             <button class="about-creator-link" onclick="goToPage('about')">About the Creator</button>
             <!-- Plain links (search engines follow these, not the buttons above) -->
+            <button type="button" class="kih-guide-fab" id="guideFab" onclick="openHelpGuide()" aria-label="Ask the KIH Guide where something is">🧭<span>Ask</span></button>
             <nav class="home-guide-links"><a href="units/">📖 Troops &amp; heroes guide</a><span>·</span><a href="about.html">About &amp; contact</a></nav>
             </div>
             <!-- Adsterra ad slots — hidden by default, shown via JS if not VIP/No-Ads -->
@@ -2162,6 +2204,14 @@ body {
                             </div>
                             <button class="btn-settings-action" onclick="goToPage('store')">Manage</button>
                         </div> -->
+
+                        <div class="settings-row">
+    <div>
+        <div class="settings-label">🧭 App guide</div>
+        <div class="settings-sub">Ask where anything is — it takes you there</div>
+    </div>
+    <button class="btn-settings-action" onclick="openHelpGuide()">Ask</button>
+</div>
 
                         <div class="settings-row">
     <div>
@@ -2461,6 +2511,7 @@ body {
     <script src="prize.js"></script>
     <script src="progress-core.js"></script>
     <script src="thing-details.js"></script>
+    <script src="help-guide.js"></script>
     <script type="module" src="appState.js"></script>
     <script>
         /* ---------------- KEYBOARD-SAFE INPUT SCROLLING ----------------
