@@ -2184,6 +2184,189 @@ async function getClanPostCooldownRemaining() {
     }
 
     /* ======================================================
+       📜 LORE — fan fiction and lore theories (World Chat's
+       📜 Lore tab). A story: a title, the story itself (up to
+       LORE_MAX_TEXT characters), a category and an optional cover
+       picture (uploaded like a formation screenshot). Likes and
+       threaded comments work like formation posts'; stories don't
+       expire. lorePosts/{id}, with comments/ and likes/ under it.
+       ====================================================== */
+    const LORE_CATEGORIES = [
+        { id: "fanfic", icon: "📖", label: "Fan fiction" },
+        { id: "theory", icon: "🔮", label: "Lore theory" }
+    ];
+    const LORE_MAX_TITLE = 100, LORE_MAX_TEXT = 20000, LORE_MAX_COMMENT = 2000;
+    const loreDoc = (...path) => doc(db, "lorePosts", ...path);
+
+    // What a story is saved as (the same checks as the Firestore rules).
+    function loreFields(data) {
+        const title = String(data.title || "").replace(/\s+/g, " ").trim();
+        const text = String(data.text || "").replace(/\r\n?/g, "\n").trim();
+        const category = LORE_CATEGORIES.some(c => c.id === data.category) ? data.category : "fanfic";
+        const coverPath = typeof data.coverPath === "string" ? data.coverPath : "";
+        const coverUrl = coverPath && typeof data.coverUrl === "string" ? data.coverUrl : "";
+        if (!title) throw new Error("Give your story a title.");
+        if (title.length > LORE_MAX_TITLE) throw new Error(`Titles can be up to ${LORE_MAX_TITLE} characters.`);
+        if (!text) throw new Error("Write your story first.");
+        if (text.length > LORE_MAX_TEXT) throw new Error(`Stories can be up to ${LORE_MAX_TEXT.toLocaleString("en-US")} characters.`);
+        return { title, text, category, coverUrl, coverPath: coverUrl ? coverPath : "" };
+    }
+
+    // You, signed in, not restricted, with a name — or an error saying why not.
+    async function loreWriter(what) {
+        await waitForAuthReady();
+        if (!currentUser) throw new Error(`Sign in with Google first to ${what}.`);
+        const profile = await getProfile();
+        if (isBannedNow(profile)) {
+            showRestrictedNotice(profile.banReason, profile.banUntil);
+            throw new Error("__RESTRICTED__");
+        }
+        if (!profile.name) throw new Error(`Set an in-game name in your profile before you ${what}.`);
+        return profile;
+    }
+
+    async function postLore(data) {
+        const fields = loreFields(data);
+        const profile = await loreWriter("post");
+        const ref = await addDoc(collection(db, "lorePosts"), {
+            uid: currentUser.uid, name: profile.name, avatar: profile.avatar || "",
+            ...fields, commentCount: 0, likeCount: 0, createdAt: Date.now()
+        });
+        return ref.id;
+    }
+
+    async function updateLore(postId, data) {
+        const fields = loreFields(data);
+        await loreWriter("edit");
+        const snap = await getDoc(loreDoc(postId));
+        if (!snap.exists()) throw new Error("That story isn't there any more.");
+        if (snap.data().uid !== currentUser.uid) throw new Error("You can only edit your own story.");
+        await updateDoc(loreDoc(postId), { ...fields, editedAt: Date.now() });
+        return postId;
+    }
+
+    // Newest first.
+    function listenToLorePosts(callback, maxCount = 200, onError) {
+        if (!currentUser) return signedOutFeed(callback);
+        const q = query(collection(db, "lorePosts"), orderBy("createdAt", "desc"), limit(maxCount));
+        return onSnapshot(q, (snap) => {
+            const items = [];
+            snap.forEach(d => items.push({ id: d.id, ...d.data() }));
+            callback(items);
+        }, (err) => { console.warn("Couldn't load lore:", err.message); if (onError) onError(err); });
+    }
+
+    // The story's comments and likes first (the rules let its writer remove
+    // other people's only while the story is still there), then the story,
+    // then its cover picture.
+    async function deleteLore(postId) {
+        await waitForAuthReady();
+        if (!currentUser) throw new Error("Not signed in.");
+        const snap = await getDoc(loreDoc(postId));
+        if (!snap.exists()) return;
+        const [comments, likes] = await Promise.all([
+            getDocs(collection(db, "lorePosts", postId, "comments")),
+            getDocs(collection(db, "lorePosts", postId, "likes"))
+        ]);
+        await Promise.all([
+            ...comments.docs.map(c => deleteDoc(c.ref)),
+            ...likes.docs.map(l => deleteDoc(l.ref))
+        ]);
+        await deleteDoc(loreDoc(postId));
+        await deleteFormationImageSafe(snap.data().coverPath);
+    }
+
+    async function addLoreComment(postId, data) {
+        const text = String(data.text || "").trim();
+        const parentId = data.parentId || null;
+        if (!text) throw new Error("Write something first.");
+        if (text.length > LORE_MAX_COMMENT) throw new Error(`Comments can be up to ${LORE_MAX_COMMENT.toLocaleString("en-US")} characters.`);
+        const profile = await loreWriter("comment");
+        const ref = await addDoc(collection(db, "lorePosts", postId, "comments"), {
+            uid: currentUser.uid, name: profile.name, avatar: profile.avatar || "",
+            text, imageUrls: [], imagePaths: [], parentId, createdAt: Date.now()
+        });
+        await updateDoc(loreDoc(postId), { commentCount: increment(1) });
+
+        // Tell the story's writer (a comment) or the comment's writer (a
+        // reply) — never yourself; a failed notification doesn't undo it.
+        try {
+            const target = await getDoc(parentId ? loreDoc(postId, "comments", parentId) : loreDoc(postId));
+            const toUid = target.exists() ? target.data().uid : null;
+            if (toUid && toUid !== currentUser.uid) {
+                await addPersonalNotification(toUid, {
+                    type: parentId ? "loreReply" : "loreComment",
+                    title: parentId ? `💬 ${profile.name} replied to your comment` : `📜 ${profile.name} commented on your story`,
+                    body: text.slice(0, 100),
+                    fromUid: currentUser.uid, fromName: profile.name, fromAvatar: profile.avatar || "",
+                    postId, commentId: ref.id
+                });
+            }
+        } catch (e) {
+            console.warn("Couldn't send comment notification:", e.message);
+        }
+        return ref.id;
+    }
+
+    async function updateLoreComment(postId, commentId, data) {
+        const text = String(data.text || "").trim();
+        if (!text) throw new Error("Write something first.");
+        if (text.length > LORE_MAX_COMMENT) throw new Error(`Comments can be up to ${LORE_MAX_COMMENT.toLocaleString("en-US")} characters.`);
+        await loreWriter("comment");
+        const ref = loreDoc(postId, "comments", commentId);
+        const snap = await getDoc(ref);
+        if (!snap.exists()) throw new Error("Comment not found.");
+        if (snap.data().uid !== currentUser.uid) throw new Error("You can only edit your own comment.");
+        await updateDoc(ref, { text });
+        return commentId;
+    }
+
+    function listenToLoreComments(postId, callback) {
+        if (!currentUser) return signedOutFeed(callback);
+        const q = query(collection(db, "lorePosts", postId, "comments"), orderBy("createdAt", "asc"));
+        return onSnapshot(q, (snap) => {
+            const items = [];
+            snap.forEach(d => items.push({ id: d.id, ...d.data() }));
+            callback(items);
+        }, (err) => console.warn("Couldn't load comments:", err.message));
+    }
+
+    async function deleteLoreComment(postId, commentId) {
+        await waitForAuthReady();
+        if (!currentUser) throw new Error("Not signed in.");
+        const ref = loreDoc(postId, "comments", commentId);
+        const snap = await getDoc(ref);
+        if (!snap.exists()) return;
+        await deleteDoc(ref);
+        await updateDoc(loreDoc(postId), { commentCount: increment(-1) });
+    }
+
+    // ❤️ on or off (one like doc per player, so it can't be counted twice);
+    // the like and the count change together. Returns whether it's liked now.
+    async function toggleLoreLike(postId) {
+        await loreWriter("like a story");
+        const uid = currentUser.uid;
+        const likeRef = loreDoc(postId, "likes", uid), postRef = loreDoc(postId);
+        return runTransaction(db, async (tx) => {
+            const likeSnap = await tx.get(likeRef);
+            if (likeSnap.exists()) {
+                tx.delete(likeRef);
+                tx.update(postRef, { likeCount: increment(-1) });
+                return false;
+            }
+            tx.set(likeRef, { uid, createdAt: Date.now() });
+            tx.update(postRef, { likeCount: increment(1) });
+            return true;
+        });
+    }
+
+    async function hasLikedLore(postId) {
+        await waitForAuthReady();
+        if (!currentUser) return false;
+        return (await getDoc(loreDoc(postId, "likes", currentUser.uid))).exists();
+    }
+
+    /* ======================================================
        TIER LISTS — drag-and-drop hero/troop rankings.
        Same Instagram-style social pattern as formation sharing
        (unlimited posts/user, threaded comments w/ up to 3 images
@@ -3016,6 +3199,7 @@ async function getClanPostCooldownRemaining() {
        (older ones are a single emoji string). `emojis` is your whole new
        list; an empty list (or null) takes all of yours off.
        target: { kind: "formation", postId, commentId }
+             | { kind: "lore", postId, commentId }
              | { kind: "tierList", tierListId, commentId }
              | { kind: "dm", threadId, msgId }
              | { kind: "world", msgId } */
@@ -3030,6 +3214,7 @@ async function getClanPostCooldownRemaining() {
         const list = [...new Set(emojis == null ? [] : Array.isArray(emojis) ? emojis : [emojis])];
         if (!list.every(e => REACTIONS.includes(e))) throw new Error("That reaction isn't available.");
         const ref = target.kind === "formation" ? doc(db, "formationPosts", target.postId, "comments", target.commentId)
+            : target.kind === "lore" ? doc(db, "lorePosts", target.postId, "comments", target.commentId)
             : target.kind === "tierList" ? doc(db, "tierLists", target.tierListId, "comments", target.commentId)
             : target.kind === "world" ? doc(db, "worldChat", target.msgId)
             : doc(db, "dmThreads", target.threadId, "messages", target.msgId);
@@ -5687,6 +5872,11 @@ async function maybeRefreshAd(containerId) {
         postFormation, updateFormation, listenToFormations, deleteFormation, sweepExpiredFormations,
         addFormationComment, updateFormationComment, listenToFormationComments, deleteFormationComment,
         toggleFormationLike, likeFormation, hasLikedFormation,
+        // 📜 lore (fan fiction and lore theories)
+        LORE_CATEGORIES, LORE_MAX_TITLE, LORE_MAX_TEXT, LORE_MAX_COMMENT,
+        postLore, updateLore, listenToLorePosts, deleteLore,
+        addLoreComment, updateLoreComment, listenToLoreComments, deleteLoreComment,
+        toggleLoreLike, hasLikedLore,
         // tier lists
         TIER_KEYS, postTierList, updateTierList, listenToTierLists, deleteTierList,
         voteOnTierList, getMyTierListVote,

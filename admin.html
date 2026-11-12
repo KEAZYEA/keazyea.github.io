@@ -2604,6 +2604,7 @@ const targetBtn = r.targetUid
             <button class="view-history-btn" data-uid="${escapeHtml(r.targetUid || "")}" style="background:#4169e1; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">View Name History</button>
             <button class="timeout-report-btn" data-report-id="${escapeHtml(r.id)}" data-uid="${escapeHtml(r.targetUid || "")}" style="background:#aa7a1e; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Timeout...</button>
             <button class="ban-report-btn" data-report-id="${escapeHtml(r.id)}" data-uid="${escapeHtml(r.targetUid || "")}" style="background:#aa3838; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Ban Permanently</button>
+            ${r.where === "lore" && r.contentId ? `<button class="delete-lore-btn" data-post-id="${escapeHtml(r.contentId)}" style="background:#6c3fb5; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">🗑 Delete the 📜 story</button>` : ""}
             ${r.where === "worldChat" && r.contentId ? `<button class="delete-chat-msg-btn" data-report-id="${escapeHtml(r.id)}" data-msg-id="${escapeHtml(r.contentId)}" style="background:#6c3fb5; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">🗑 Delete the 🌍 chat message</button>` : ""}
             <button class="dismiss-report-btn" data-report-id="${escapeHtml(r.id)}" style="background:#555; color:white; border:none; border-radius:6px; padding:6px 12px; cursor:pointer;">Dismiss</button>
         </div>
@@ -2630,6 +2631,17 @@ const targetBtn = r.targetUid
                 });
                 list.querySelectorAll(".dismiss-report-btn").forEach(btn => {
                     btn.addEventListener("click", () => handleDismissReport(btn.dataset.reportId));
+                });
+                // a reported 📜 Lore story: deleted with its comments and likes
+                list.querySelectorAll(".delete-lore-btn").forEach(btn => {
+                    btn.addEventListener("click", async () => {
+                        if (!await showConfirmModal("Delete story", "Delete this 📜 Lore story, its comments and likes for everyone? (The report stays open — Dismiss it, or time them out, after.)")) return;
+                        try {
+                            await AppState.deleteLore(btn.dataset.postId);
+                            btn.disabled = true;
+                            btn.textContent = "✓ Deleted";
+                        } catch (e) { showInfoModal("Couldn't delete", e.message); }
+                    });
                 });
                 list.querySelectorAll(".delete-chat-msg-btn").forEach(btn => {
                     btn.addEventListener("click", async () => {

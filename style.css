@@ -260,7 +260,7 @@ body.kih-glow .sticky-controls {
     box-shadow: none;
 }
 
-#troopsResults .gallery-section-label {
+#troopsResults .gallery-section-label, #bossResults .gallery-section-label {
     font-size: 28px;
     font-weight: bold;
     color: #4169e1;
@@ -271,7 +271,7 @@ body.kih-glow .sticky-controls {
 
 /* this refers to the list of items, when we let item = document.createElement("div");
    then resultsDiv.appendChild(item); so it applies to each item in the list. creating boxes */
-#troopsResults div:not(.gallery-section-label) {
+#troopsResults div:not(.gallery-section-label), #bossResults div:not(.gallery-section-label) {
     padding: 10px 16px;
     border: 1px solid #1a1a2e;
     border-radius: 6px;
@@ -309,35 +309,35 @@ body.kih-glow .sticky-controls {
 
 #leftResults div.rare,
 #rightResults div.rare,
-#troopsResults div.rare {
+#troopsResults div.rare, #bossResults div.rare {
     background: #4169e1;
     color: white;
 }
 
 #leftResults div.common,
 #rightResults div.common,
-#troopsResults div.common {
+#troopsResults div.common, #bossResults div.common {
     background: gray;
     color: white;
 }
 
 #leftResults div.epic,
 #rightResults div.epic,
-#troopsResults div.epic {
+#troopsResults div.epic, #bossResults div.epic {
     background: purple;
     color: white;
 }
 
 #leftResults div.legendary,
 #rightResults div.legendary,
-#troopsResults div.legendary {
+#troopsResults div.legendary, #bossResults div.legendary {
     background: gold;
     color: black;
 }
 
 #leftResults div.mythic,
 #rightResults div.mythic,
-#troopsResults div.mythic {
+#troopsResults div.mythic, #bossResults div.mythic {
     background: crimson;
     color: white;
 }
@@ -526,7 +526,7 @@ body.kih-glow .sticky-controls {
 /* this means select all text input boxes that are inside the element with id troopsPage 
    so this <input type="text" id="leftSearch" placeholder="Search troop/Hero" /> is selected
    The space means it is inside of. e.g. input is inside of troopsPage*/
-#troopsPage input[type="text"] {
+#troopsPage input[type="text"], #bossesPage input[type="text"] {
     width: 100%;
     padding: 10px;
     font-size: 16px;
@@ -539,7 +539,7 @@ body.kih-glow .sticky-controls {
 }
 
 /* we make it a column becuase we want it like an up down list */
-#troopsResults {
+#troopsResults, #bossResults {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -547,7 +547,7 @@ body.kih-glow .sticky-controls {
     margin-top: 8px;
 }
 
-#troopsCard {
+#troopsCard, #bossCard {
     margin-top: 20px;
     font-size: 20px;
 }
@@ -555,7 +555,7 @@ body.kih-glow .sticky-controls {
 /* table is created dynamically in JS let html = '...' 
    table is the box containing all the stats. from the for loop...
    border-collapse merges all the borders into 1 line, so no double lines*/
-#troopsCard table {
+#troopsCard table, #bossCard table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 10px;
@@ -563,7 +563,7 @@ body.kih-glow .sticky-controls {
 
 /* td is the table data. html += `<tr><td>${key}</td><td>${stats[key]}</td></tr>`;
    in this case it will e for e.g. attack 600. so the format is for them */
-#troopsCard td {
+#troopsCard td, #bossCard td {
     padding: 10px 16px;
     font-size: 20px;
     text-align: center;
@@ -571,11 +571,11 @@ body.kih-glow .sticky-controls {
 }
 
 /* this is for the key images, e.g. unit,hp,dmg... */
-#troopsCard td:first-child {
+#troopsCard td:first-child, #bossCard td:first-child {
     text-align: center;
 }
 
-#troopsCard h3 {
+#troopsCard h3, #bossCard h3 {
     font-size: 26px;
 }
 
@@ -960,7 +960,7 @@ body.kih-glow .sticky-controls {
         gap: 4px;
     }
 
-    #troopsPage input[type="text"],
+    #troopsPage input[type="text"], #bossesPage input[type="text"],
     #comparePage input[type="text"] {
         padding: 6px 8px;
         font-size: 13px;
@@ -971,7 +971,7 @@ body.kih-glow .sticky-controls {
         height: 44px;
     }
 
-    #troopsResults div,
+    #troopsResults div, #bossResults div,
     #leftResults div,
     #rightResults div {
         font-size: 12px;
@@ -988,7 +988,7 @@ body.kih-glow .sticky-controls {
         height: 32px;
     }
 
-    #troopsCard td {
+    #troopsCard td, #bossCard td {
         padding: 6px 10px;
         font-size: 16px;
     }
@@ -1094,7 +1094,7 @@ body.kih-glow .sticky-controls {
         padding: 8px 6px;
     }
 
-    #troopsResults div,
+    #troopsResults div, #bossResults div,
     #leftResults div,
     #rightResults div {
         font-size: 13px;

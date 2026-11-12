@@ -10,11 +10,17 @@
  * Run it from the repo folder after copying in new game files:
  *     node tools/strip-boss-data.js
  * It's safe to run more than once; files with nothing to remove are left alone.
+ *
+ * Before taking the boss rows out it saves their numbers into data/bosses.json
+ * (tools/build-boss-data.js) — the 🐉 Bosses tab reads that small file instead.
  */
 const fs = require("fs");
 const path = require("path");
 
 const ROOT = path.join(__dirname, "..");
+
+// The bosses' numbers first (only does anything while the files still have boss rows).
+require("./build-boss-data.js").run([]);
 const TARGETS = fs.readdirSync(ROOT).filter(f => /^ability.*\.json$/.test(f) || f === "troopsLevel.json");
 
 // A row is boss-only when its own key, or the id it belongs to, starts with "boss".

@@ -53,6 +53,8 @@ describe("the topics", () => {
         assert.match(games, /params\.get\("game"\)/, "games.html?game= opens a tab");
         const promo = read("promo.html");
         H.TABS.promo.forEach(t => assert.ok(promo.includes(`switchPromoTab('${t}')`), "promo tab " + t));
+        const troops = read("troopsandheroes.html");
+        H.TABS.troops.forEach(t => assert.ok(troops.includes(`switchTab('${t}')`) && troops.includes(`get("tab") === "${t}"`), "troops tab " + t));
         const store = read("store.html");
         H.STORE_AT.forEach(a => assert.ok(store.includes(`id="${a}"`) && store.includes(`"#${a}"`), "store part " + a));
         ["goToPage", "goHome", "openPromoTab", "setSectionFrameUrl", "switchProfileTab"].forEach(fn =>
@@ -98,6 +100,7 @@ describe("questions people ask", () => {
         unitle: ["unitle"], hilo: ["higher or lower"], trivia: ["trivia quiz"], hangman: ["hangman"], blur: ["blur game"],
         social: ["social", "where is the community"],
         worldChat: ["world chat", "where is global chat", "chat with everyone", "can i talk to other players", "how to delete my message"],
+        lore: ["lore", "where can i write fan fiction", "fanfic", "post my lore theory", "i want to write a story", "where are the stories"],
         friends: ["my friends", "where are my messages", "dm a friend"],
         addFriend: ["how do i add a friend", "add friends"],
         friendRequests: ["friend requests", "who added me", "accept friend requests"],
@@ -106,6 +109,7 @@ describe("questions people ask", () => {
         tierList: ["tier list", "best units", "who is the best hero"],
         reportPlayer: ["report a player", "someone is spamming", "how do i block someone"],
         troops: ["unit stats", "compare heroes", "where can i see troop stats"],
+        bosses: ["boss calculator", "where are the bosses", "balthazar abilities", "how strong is the kraken at level 50", "ashira spiders", "glorious hunt boss"],
         tips: ["team comps", "strategy tips"],
         inbox: ["inbox", "where are my notifications", "did i get a gift"],
         news: ["news", "polls"],

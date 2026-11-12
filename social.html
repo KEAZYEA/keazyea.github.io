@@ -2425,6 +2425,68 @@
         .find-bar { display: none; align-items: center; gap: 6px; padding: 6px 10px; background: #1f1f3a; border-bottom: 1px solid #2a2a4a; flex-shrink: 0; }
         .find-bar.show { display: flex; }
         .wc-box.finding .wc-top { display: none; } /* the search box takes the top row (✕ brings it back) */
+
+        /* ---------------- 📜 Lore (World Chat's second tab) ----------------
+           Story posts instead of chat: the chat's own parts step aside. */
+        .lore-panel { display: none; flex: 1; min-height: 0; flex-direction: column; }
+        .wc-box.lore-mode .lore-panel { display: flex; }
+        .wc-box.lore-mode .wc-find-btn, .wc-box.lore-mode .wc-notice, .wc-box.lore-mode .find-bar, .wc-box.lore-mode .wc-list,
+        .wc-box.lore-mode .wc-new-btn, .wc-box.lore-mode .wc-down-btn, .wc-box.lore-mode .wc-reply-bar,
+        .wc-box.lore-mode .wc-compose { display: none !important; }
+        .lore-bar { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-bottom: 1px solid #23233f; flex-shrink: 0; }
+        .lore-cats { display: flex; gap: 6px; flex: 1; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+        .lore-cats::-webkit-scrollbar { display: none; }
+        .lore-cat-btn { flex-shrink: 0; border: 1px solid #34345e; background: #20203a; color: #d6d6ea; border-radius: 999px; padding: 5px 10px;
+            font-size: 0.78rem; font-weight: 700; cursor: pointer; font-family: inherit; white-space: nowrap; }
+        .lore-cat-btn.active { background: #3a2f5e; border-color: #8a6dff; color: #fff; }
+        .lore-sort { flex-shrink: 0; background: #20203a; color: #d6d6ea; border: 1px solid #34345e; border-radius: 8px; padding: 5px 4px;
+            font-size: 0.78rem; font-family: inherit; }
+        .lore-write { flex-shrink: 0; padding: 7px 12px; font-size: 0.82rem; white-space: nowrap; }
+        .lore-list { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 10px; display: flex; flex-direction: column; gap: 10px; }
+        .lore-card { display: flex; gap: 12px; padding: 12px; border: 1px solid #2a2a4a; border-radius: 12px; background: #1c1c34; cursor: pointer;
+            text-align: left; flex-shrink: 0; }
+        .lore-card:hover { border-color: #4a4a7a; }
+        .lore-card.mine { border-color: rgba(138, 109, 255, 0.55); }
+        .lore-thumb { width: 76px; height: 100px; flex-shrink: 0; object-fit: cover; border-radius: 8px; background: #11111f; }
+        .lore-card-main { flex: 1; min-width: 0; }
+        .lore-card-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 0.74rem; color: #9a9ab0; }
+        .lore-cat { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 0.72rem; font-weight: 700; }
+        .lore-cat-fanfic { background: rgba(255, 196, 110, 0.15); color: #ffcf80; }
+        .lore-cat-theory { background: rgba(160, 120, 255, 0.18); color: #c7b0ff; }
+        .lore-card-title { margin: 6px 0 4px; font-size: 1rem; font-weight: 800; color: #fff; line-height: 1.3; overflow-wrap: anywhere; }
+        .lore-card-excerpt { font-size: 0.85rem; color: #c8c8e0; line-height: 1.45; overflow-wrap: anywhere;
+            display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        .lore-card-foot { display: flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 0.75rem; color: #9a9ab0; flex-wrap: wrap; }
+        .lore-card-foot .lore-by { color: #d6d6ea; font-weight: 700; }
+        .lore-empty { text-align: center; color: #9a9ab0; padding: 40px 16px; font-size: 0.92rem; line-height: 1.6; }
+        /* the reader */
+        .lore-cover { display: block; width: 100%; max-height: 280px; object-fit: cover; border-radius: 12px; margin: 0 0 12px; cursor: zoom-in; background: #11111f; }
+        .lore-detail-top { display: flex; align-items: center; gap: 8px; margin: 2px 0 8px; flex-wrap: wrap; font-size: 0.78rem; color: #9a9ab0; }
+        .lore-detail-top .formation-like-btn { margin-left: auto; }
+        .lore-detail-title { margin: 0 0 10px; font-size: 1.35rem; line-height: 1.3; color: #fff; overflow-wrap: anywhere; padding-right: 30px; }
+        .lore-story { margin-top: 16px; font-size: 1rem; line-height: 1.75; color: #e4e4f2; white-space: pre-wrap; overflow-wrap: anywhere; }
+        .lore-edited { font-size: 0.75rem; color: #8a8aa8; margin-top: 10px; }
+        /* the writer */
+        .lore-cover-pick { display: flex; align-items: center; gap: 12px; margin: 0 0 16px; flex-wrap: wrap; }
+        .lore-cover-preview { position: relative; width: 90px; height: 120px; }
+        .lore-cover-preview img { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; background: #1a1a2e; }
+        .lore-cover-preview button { position: absolute; top: -8px; right: -8px; width: 24px; height: 24px; border-radius: 50%; background: #c62828;
+            color: white; border: none; font-size: 0.8rem; cursor: pointer; }
+        .lore-cover-btn { background: #20203a; color: #d6d6ea; border: 1px solid #34345e; border-radius: 10px; padding: 9px 14px; font-weight: 700;
+            font-family: inherit; cursor: pointer; }
+        #postLoreText { min-height: 220px; line-height: 1.6; }
+        .lore-count.over { color: #ff7b7b; }
+        .lore-short { display: none; }
+        @media (max-width: 380px) { .lore-long { display: none; } .lore-short { display: inline; } } /* "Fiction", "Theory" */
+        @media (max-width: 560px) {
+            .lore-thumb { width: 62px; height: 82px; }
+            .lore-detail-title { font-size: 1.2rem; }
+            /* phones: the categories get their own row (all in view), Sort and Write below */
+            .lore-bar { gap: 6px; padding: 8px; flex-wrap: wrap; }
+            .lore-cats { flex: 1 1 100%; overflow: visible; }
+            .lore-cat-btn { flex: 1 1 auto; padding: 5px 6px; }
+            .lore-write { margin-left: auto; padding: 7px 12px; }
+        }
         .find-bar input { flex: 1; min-width: 0; height: 34px; box-sizing: border-box; border-radius: 8px; border: 1px solid #34345e; background: #17172c; color: #eaeaf0; padding: 0 10px; font-size: 16px; font-family: inherit; }
         .find-bar .find-count { font-size: 0.75rem; color: #9a9ab0; white-space: nowrap; }
         .find-bar button { flex-shrink: 0; height: 34px; min-width: 34px; border-radius: 8px; border: 1px solid #34345e; background: #20203a; color: #d6d6ea; cursor: pointer; font-family: inherit; font-size: 0.85rem; padding: 0 8px; }
@@ -2500,6 +2562,18 @@
                 <div class="social-content-inner">
                     <div class="wc-box">
                         <div class="wc-top"><div class="wc-chips" id="wcChips"></div><button type="button" class="wc-find-btn" id="wcFindBtn" onclick="openChatFind('world')" aria-label="Find in this channel" title="Find">🔍</button></div>
+                        <!-- 📜 Lore: fan fiction and lore theories (shown instead of the chat) -->
+                        <div class="lore-panel" id="lorePanel">
+                            <div class="lore-bar">
+                                <div class="lore-cats" id="loreCats" role="group" aria-label="Show"></div>
+                                <select class="lore-sort" id="loreSort" aria-label="Sort stories">
+                                    <option value="new">Newest</option>
+                                    <option value="liked">Most liked</option>
+                                </select>
+                                <button type="button" class="btn-primary lore-write" id="loreWriteBtn" onclick="openPostLoreModal()" data-requires-not-banned>✍️ Write</button>
+                            </div>
+                            <div class="lore-list" id="loreList"><div class="lore-empty">Loading stories…</div></div>
+                        </div>
                         <div class="wc-notice" id="wcNotice"></div>
                         <div class="find-bar" id="wcFindBar" role="search">
                             <input type="search" id="wcFindInput" placeholder="Find in this channel…" aria-label="Find" enterkeyhint="search">
@@ -2894,6 +2968,84 @@
                         placeholder="Add a comment..." style="margin-bottom:0; flex:1;" rows="1"></textarea>
                     <button type="button" class="emoji-btn" onclick="toggleEmojiPanel(this, 'formationCommentTextInput')" title="Emoji" aria-label="Add an emoji">😊</button>
                     <button class="btn-primary" id="formationCommentSendBtn" onclick="submitFormationComment()" style="flex-shrink:0;">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 📜 Write (or edit) a story — World Chat → 📜 Lore -->
+    <div class="modal-overlay" id="postLoreModalOverlay">
+        <div class="modal-box postclan-box">
+            <button type="button" class="postclan-close-btn" onclick="closePostLoreModal()" title="Close">✕</button>
+            <div class="modal-title" id="postLoreModalTitle">Write a story</div>
+            <p class="compose-hint" style="margin:0 0 14px;">📜 Your fan fiction, or your theory about the game's lore. Stories stay up —
+                they don't expire. Keep it friendly: nothing hateful or explicit, and no real people.</p>
+
+            <label class="modal-field-label" for="postLoreTitle">Title</label>
+            <input type="text" id="postLoreTitle" class="modal-field-input" maxlength="100" placeholder="e.g. The Last Night of the Ice Serpent"
+                style="margin-bottom:16px;" autocomplete="off">
+
+            <label class="modal-field-label" for="postLoreCategory">Category</label>
+            <select id="postLoreCategory" class="modal-field-input" style="margin-bottom:16px;"></select>
+
+            <label class="modal-field-label">Cover picture (optional)</label>
+            <div class="lore-cover-pick">
+                <div id="postLoreCoverPreview"></div>
+                <button type="button" class="lore-cover-btn" id="postLoreCoverBtn" onclick="document.getElementById('postLoreCoverInput').click()">🖼️ Choose a picture</button>
+                <input type="file" id="postLoreCoverInput" accept="image/*" hidden>
+            </div>
+
+            <label class="modal-field-label" for="postLoreText">Your story</label>
+            <textarea id="postLoreText" class="modal-field-input" maxlength="20000" rows="12" placeholder="Long ago, before the first clash…"></textarea>
+            <div class="compose-hint lore-count" id="postLoreCount" style="text-align:right; margin:-6px 0 12px;">0/20,000</div>
+
+            <div class="modal-actions" style="flex-direction:row;">
+                <button class="modal-cancel" onclick="closePostLoreModal()" style="flex:1;">Cancel</button>
+                <button class="btn-primary" id="submitPostLoreBtn" onclick="submitLorePost()" style="flex:1;">Post</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 📜 Reading a story (with likes and comments) -->
+    <div class="modal-overlay" id="loreDetailModalOverlay">
+        <div class="modal-box postclan-box postclan-box-flex" style="max-width:620px; text-align:left;">
+            <button type="button" class="postclan-close-btn" onclick="closeLoreDetailModal()" title="Close">✕</button>
+            <div class="postclan-scroll-region" id="loreDetailScroll">
+                <img class="lore-cover" id="loreDetailCover" alt="" style="display:none;">
+                <div class="lore-detail-top">
+                    <span id="loreDetailCategory" class="lore-cat"></span>
+                    <span id="loreDetailRead"></span>
+                    <button type="button" class="formation-like-btn" id="loreDetailLikeBtn" onclick="toggleLoreDetailLike()" title="Like this story">
+                        <span id="loreDetailLikeIcon">🤍</span> <span id="loreDetailLikeCount">0</span>
+                    </button>
+                </div>
+                <h2 class="lore-detail-title" id="loreDetailTitle"></h2>
+                <div class="clan-post-head" id="loreDetailPosterRow">
+                    <span id="loreDetailAvatarWrap"><img class="clan-post-avatar" id="loreDetailAvatar" onerror="this.style.visibility='hidden'" alt=""></span>
+                    <span class="clan-post-name" id="loreDetailPosterName"></span>
+                    <span class="clan-post-time" id="loreDetailTime"></span>
+                </div>
+                <div class="lore-story" id="loreDetailText"></div>
+                <div class="lore-edited" id="loreDetailEdited"></div>
+                <div class="clan-post-footer">
+                    <button class="edit-post-link" id="loreDetailEditBtn" style="display:none;">✏️ Edit</button>
+                    <button class="delete-post-link" id="loreDetailDeleteBtn" style="display:none;">🗑️ Delete</button>
+                    <button class="report-link" id="loreDetailReportBtn" style="display:none;">🚩 Report</button>
+                </div>
+
+                <div class="formation-comments-section">
+                    <div class="friends-section-title" style="margin-top:18px;">Comments</div>
+                    <div id="loreCommentsList"></div>
+                </div>
+            </div>
+
+            <div class="comment-compose-footer">
+                <div id="loreCommentEditingNote" class="compose-hint" style="display:none; margin-top:10px;"></div>
+                <div class="formation-comment-input-row">
+                    <textarea id="loreCommentTextInput" class="modal-field-input comment-textarea" maxlength="2000"
+                        placeholder="Add a comment..." style="margin-bottom:0; flex:1;" rows="1"></textarea>
+                    <button type="button" class="emoji-btn" onclick="toggleEmojiPanel(this, 'loreCommentTextInput')" title="Emoji" aria-label="Add an emoji">😊</button>
+                    <button class="btn-primary" id="loreCommentSendBtn" onclick="submitLoreComment()" style="flex-shrink:0;">Send</button>
                 </div>
             </div>
         </div>
@@ -3387,7 +3539,8 @@
             new MutationObserver(() => { if (overlay.classList.contains("open")) handleViewportChange(); })
                 .observe(overlay, { attributes: true, attributeFilter: ["class"] });
         }
-        ["postTierListModalOverlay", "tierListDetailModalOverlay", "formationDetailModalOverlay", "postClanModalOverlay", "postFormationModalOverlay"]
+        ["postTierListModalOverlay", "tierListDetailModalOverlay", "formationDetailModalOverlay", "postClanModalOverlay", "postFormationModalOverlay",
+            "postLoreModalOverlay", "loreDetailModalOverlay"]
             .forEach(setupModalKeyboardViewportHandling);
 
         // Clears the inline sizing setupModalKeyboardViewportHandling applies,
@@ -3506,7 +3659,8 @@
         // they're prose, not messages.
         [
             { id: "formationCommentTextInput", send: () => submitFormationComment() },
-            { id: "tierListCommentTextInput", send: () => submitTierListComment() }
+            { id: "tierListCommentTextInput", send: () => submitTierListComment() },
+            { id: "loreCommentTextInput", send: () => submitLoreComment() }
         ].forEach(({ id, send }) => {
             const el = document.getElementById(id);
             if (!el) return;
@@ -3656,7 +3810,7 @@ function buildCountrySelectOptions(selectId, includeAny) {
             document.getElementById("tabPanelFriends").classList.toggle("active", tab === "friends");
             if (tab === "friends") loadSuggestedFriends();
             if (tab === "tierlist") ensureUnitDataLoaded();
-            if (tab === "world") { document.getElementById("wcList").dataset.drawn = ""; renderWorldChat(); markWorldSeen(); maybeShowChatRules(); }
+            if (tab === "world") { document.getElementById("wcList").dataset.drawn = ""; renderWorldChat(); if (loreOpen) renderLore(); markWorldSeen(); maybeShowChatRules(); }
             updateWorldBadge();
             updatePostBadges();
             // Remembered so returning from Home lands back on the tab you
@@ -4406,7 +4560,7 @@ window.removeClanIconPreview = function () {
            Screenshots aren't included — File objects can't be serialised to
            localStorage — so the prompt says so outright rather than letting
            someone assume their images came back. */
-        const DRAFT_KEYS = { formation: "kih_draft_formation", tierlist: "kih_draft_tierlist" };
+        const DRAFT_KEYS = { formation: "kih_draft_formation", tierlist: "kih_draft_tierlist", lore: "kih_draft_lore" };
 
         function readDraft(kind) {
             try {
@@ -5175,9 +5329,15 @@ window.removeClanIconPreview = function () {
                 edit: "startEditTierListComment", del: "deleteTierListCommentConfirm", viewImg: "openImageViewerForTierListComment",
                 empty: "No comments yet — be the first to give feedback!",
                 target: (id) => ({ kind: "tierList", tierListId: currentTierListDetailId, commentId: id })
+            },
+            lore: {
+                listId: "loreCommentsList", close: "closeLoreDetailModal", reply: "startReplyLoreComment",
+                edit: "startEditLoreComment", del: "deleteLoreCommentConfirm", viewImg: "openImageViewerForComment",
+                empty: "No comments yet — tell the writer what you think!",
+                target: (id) => ({ kind: "lore", postId: currentLoreDetailId, commentId: id })
             }
         };
-        const commentState = { formation: { comments: [], byId: {} }, tierList: { comments: [], byId: {} } };
+        const commentState = { formation: { comments: [], byId: {} }, tierList: { comments: [], byId: {} }, lore: { comments: [], byId: {} } };
         const openCommentThreads = new Set(); // "<kind>:<top comment id>" whose replies are showing
         let pendingCommentFocus = null; // { kind, id } from an inbox "View & reply"
 
@@ -7058,16 +7218,14 @@ window.removeClanIconPreview = function () {
             submitBtn.textContent = "Submit report";
         };
         /* ---------------- 🌍 WORLD CHAT ----------------
-           One chat for everyone signed in. Each message has a tag, so the chat
-           can be filtered (All, General, Tips, …) without splitting people into
-           separate rooms. Sending and deleting go through api/chat.js (slow mode,
-           pauses, timeouts); the latest messages are read live. */
+           One chat for everyone signed in (General), and beside it 📜 Lore:
+           fan fiction and lore theories as story posts (see 📜 LORE below).
+           Sending and deleting go through api/chat.js (slow mode, pauses,
+           timeouts); the latest messages are read live. Tips, Noobies,
+           Formation and Games were channels until 2026-11-12; their old
+           messages are still stored but no longer shown. */
         const WORLD_TAGS = [ // the same ids as api/chat.js TAGS
-            { id: "general", icon: "💬", label: "General" },
-            { id: "tips", icon: "💡", label: "Tips" },
-            { id: "noobies", icon: "🐣", label: "Noobies" },
-            { id: "formation", icon: "🛡️", label: "Formation" },
-            { id: "games", icon: "🎮", label: "Games" }
+            { id: "general", icon: "💬", label: "General" }
         ];
         const WORLD_TAG_BY_ID = Object.fromEntries(WORLD_TAGS.map(t => [t.id, t]));
         const WORLD_PAGE = 60, WORLD_MAX_LEN = 2000, WORLD_SEEN_KEY = "kih_world_seen";
@@ -7076,6 +7234,9 @@ window.removeClanIconPreview = function () {
         // the open channel (General, Tips, …): each is its own chat
         const WORLD_CHANNEL_KEY = "kih_world_channel";
         let worldFilter = (() => { try { const c = localStorage.getItem(WORLD_CHANNEL_KEY); return WORLD_TAG_BY_ID[c] ? c : "general"; } catch (e) { return "general"; } })();
+        // 📜 Lore showing instead of the chat (remembered like a channel)
+        let loreOpen = (() => { try { return localStorage.getItem(WORLD_CHANNEL_KEY) === "lore"; } catch (e) { return false; } })();
+        let lorePosts = null, loreFailed = false; // the newest stories (live); null until loaded
         let worldUnsub = null, worldCfgUnsub = null, worldFailed = false;
         let worldCfg = { slowSeconds: 5, paused: false };
         let worldBlocked = new Set();
@@ -7097,6 +7258,7 @@ window.removeClanIconPreview = function () {
             try { return Number(localStorage.getItem(seenKey(ch))) || 0; } catch (e) { return 0; }
         }
         function markWorldSeen() {
+            if (loreOpen) { markLoreSeen(); return; } // the chat isn't what's on screen
             const last = (worldLive || [])[(worldLive || []).length - 1];
             if (last) try { if (last.createdAt > worldSeenAt(worldFilter)) localStorage.setItem(seenKey(worldFilter), String(last.createdAt)); } catch (e) { }
             updateWorldBadge();
@@ -7110,7 +7272,8 @@ window.removeClanIconPreview = function () {
         function updateWorldBadge() {
             const badge = document.getElementById("worldUnreadBadge");
             if (!badge) return;
-            const n = WORLD_TAGS.reduce((sum, t) => sum + (worldTabOpen() && t.id === worldFilter ? 0 : worldUnread(t.id)), 0);
+            const n = WORLD_TAGS.reduce((sum, t) => sum + (worldTabOpen() && !loreOpen && t.id === worldFilter ? 0 : worldUnread(t.id)), 0)
+                + (worldTabOpen() && loreOpen ? 0 : loreUnread());
             badge.textContent = n > 9 ? "9+" : String(n);
             badge.style.display = n > 0 && !worldTabOpen() ? "inline-block" : "none";
             paintWorldChips();
@@ -7132,7 +7295,7 @@ window.removeClanIconPreview = function () {
             if (msgs.length < WORLD_PAGE && !worldOlder.length) worldNoOlder = true;
             worldLive = msgs;
             renderWorldChat();
-            if (worldTabOpen() && socialShowing()) markWorldSeen(); else updateWorldBadge();
+            if (worldTabOpen() && socialShowing() && !loreOpen) markWorldSeen(); else updateWorldBadge();
         }
         function listenToChannel() {
             if (worldUnsub) { worldUnsub(); worldUnsub = null; }
@@ -7175,10 +7338,11 @@ window.removeClanIconPreview = function () {
         // the channel buttons (each with how many are unread), and what the box says
         function paintWorldChips() {
             const chips = document.getElementById("wcChips");
+            const chip = (id, icon, label, on, n) => `<button type="button" class="wc-chip${on ? " active" : ""}" data-filter="${id}"><span class="wc-chip-icon">${icon}</span><span class="wc-chip-label">${label}</span>${n ? `<span class="wc-chip-n">${n > 9 ? "9+" : n}</span>` : ""}</button>`;
             const html = WORLD_TAGS.map(t => {
-                const n = t.id === worldFilter ? 0 : worldUnread(t.id);
-                return `<button type="button" class="wc-chip${worldFilter === t.id ? " active" : ""}" data-filter="${t.id}"><span class="wc-chip-icon">${t.icon}</span><span class="wc-chip-label">${t.label.replace("Formation", "Forma­tion")}</span>${n ? `<span class="wc-chip-n">${n > 9 ? "9+" : n}</span>` : ""}</button>`;
-            }).join("");
+                const on = !loreOpen && worldFilter === t.id;
+                return chip(t.id, t.icon, t.label, on, on ? 0 : worldUnread(t.id));
+            }).join("") + chip("lore", "📜", "Lore", loreOpen, loreOpen ? 0 : loreUnread());
             if (chips.innerHTML !== html) chips.innerHTML = html;
             const ch = WORLD_TAG_BY_ID[worldFilter] || WORLD_TAG_BY_ID.general;
             document.getElementById("wcTag").value = ch.id;
@@ -7201,6 +7365,425 @@ window.removeClanIconPreview = function () {
             renderWorldChat();
             updateWorldBadge();
             restoreWorldDraft(); // …and the one you're in gets its own back
+        };
+
+        /* ---------------- 📜 LORE ----------------
+           World Chat's second tab: fan fiction and lore theories as story
+           posts — a title, the story (up to 20,000 characters), a category
+           and an optional cover picture — with likes and comments (the same
+           comment threads as formation posts). Stories don't expire. The
+           newest LORE_PAGE are read live (startPostListeners). */
+        const LORE_PAGE = 200;
+        const LORE_SEEN_KEY = "kih_lore_seen", LORE_VIEW_KEY = "kih_lore_view";
+        const loreCats = () => AppState.LORE_CATEGORIES || [{ id: "fanfic", icon: "📖", label: "Fan fiction" }, { id: "theory", icon: "🔮", label: "Lore theory" }];
+        const loreCat = (id) => loreCats().find(c => c.id === id) || loreCats()[0];
+        const LORE_MAX_TEXT = 20000, LORE_MAX_TITLE = 100;
+        let loreView = (() => { // { cat: "" | "fanfic" | "theory", sort: "new" | "liked" }
+            try { const v = JSON.parse(localStorage.getItem(LORE_VIEW_KEY) || "{}"); return { cat: v.cat || "", sort: v.sort === "liked" ? "liked" : "new" }; }
+            catch (e) { return { cat: "", sort: "new" }; }
+        })();
+        let currentLoreDetailId = null, unsubLoreComments = null, pendingLorePostId = null;
+        let loreCommentsById = {}, editingLoreCommentId = null, replyingToLoreCommentId = null;
+        let loreCommentSubmitting = false, loreLikeInFlight = false, lorePostSubmitting = false;
+        let editingLorePostId = null, loreCoverFile = null, loreCoverExisting = null; // { url, path } kept from the story being edited
+
+        const loreById = (id) => (lorePosts || []).find(p => p.id === id);
+        // a short date: the time today, else "12 Nov" (with the year if it isn't this year's)
+        function loreDate(ts) {
+            const d = new Date(ts), now = new Date();
+            if (d.toDateString() === now.toDateString()) return d.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+            return d.toLocaleDateString([], { day: "numeric", month: "short", ...(d.getFullYear() === now.getFullYear() ? {} : { year: "numeric" }) });
+        }
+        const readMinutes = (text) => Math.max(1, Math.round(String(text || "").trim().split(/\s+/).filter(Boolean).length / 200));
+        function loreSeenAt() { try { return Number(localStorage.getItem(LORE_SEEN_KEY)) || 0; } catch (e) { return 0; } }
+        function markLoreSeen() {
+            const newest = (lorePosts || [])[0];
+            if (newest && newest.createdAt > loreSeenAt()) try { localStorage.setItem(LORE_SEEN_KEY, String(newest.createdAt)); } catch (e) { }
+            updateWorldBadge();
+        }
+        // New stories by others since you last looked (the last day's, the first time).
+        function loreUnread() {
+            const myUid = AppState.getCurrentUser()?.uid, since = loreSeenAt() || Date.now() - 86400000;
+            return (lorePosts || []).filter(p => p.uid !== myUid && p.createdAt > since && !worldBlocked.has(p.uid)).length;
+        }
+
+        // 📜 Lore instead of the chat, or back to the chat.
+        function setLoreOpen(open) {
+            if (open === loreOpen) return;
+            loreOpen = open;
+            try { localStorage.setItem(WORLD_CHANNEL_KEY, open ? "lore" : worldFilter); } catch (e) { }
+            if (open && document.getElementById("wcFindBar").classList.contains("show")) document.getElementById("wcFindClose").click();
+            document.querySelector(".wc-box").classList.toggle("lore-mode", open);
+            if (open) {
+                renderLore();
+                if (worldTabOpen() && socialShowing()) markLoreSeen();
+            } else {
+                document.getElementById("wcList").dataset.drawn = ""; // to the latest messages
+                renderWorldChat();
+                if (worldTabOpen() && socialShowing()) markWorldSeen();
+            }
+            paintWorldChips();
+            updateWorldBadge();
+        }
+        window.setLoreOpen = setLoreOpen;
+        document.querySelector(".wc-box").classList.toggle("lore-mode", loreOpen);
+
+        function onLorePosts(posts) {
+            lorePosts = posts;
+            loreFailed = false;
+            ensureCards(posts.map(p => p.uid), renderLore, "lore");
+            renderLore();
+            if (loreOpen && worldTabOpen() && socialShowing()) markLoreSeen(); else updateWorldBadge();
+            // the story you're reading changed (an edit, a like, a comment) — or was deleted
+            if (currentLoreDetailId) {
+                const p = loreById(currentLoreDetailId);
+                if (p) renderLoreDetailStatic(p);
+                else { closeLoreDetailModal(); showToast("That story was deleted."); }
+            }
+            // arrived from a "commented on your story" notification
+            if (pendingLorePostId && loreById(pendingLorePostId)) {
+                const id = pendingLorePostId;
+                pendingLorePostId = null;
+                switchSocialTab("world");
+                setLoreOpen(true);
+                openLoreDetailModal(id);
+            }
+        }
+
+        function renderLore() {
+            const cats = document.getElementById("loreCats");
+            const short = { fanfic: "Fiction", theory: "Theory" }; // the narrowest phones
+            const catsHtml = [{ id: "", icon: "📚", label: "All" }, ...loreCats()].map(c =>
+                `<button type="button" class="lore-cat-btn${loreView.cat === c.id ? " active" : ""}" data-lore-cat="${c.id}">${c.icon} ${short[c.id]
+                    ? `<span class="lore-long">${escapeHtml(c.label)}</span><span class="lore-short">${short[c.id]}</span>` : escapeHtml(c.label)}</button>`).join("");
+            if (cats.innerHTML !== catsHtml) cats.innerHTML = catsHtml;
+            document.getElementById("loreSort").value = loreView.sort;
+            const list = document.getElementById("loreList");
+            const me = AppState.getCurrentUser();
+            let html;
+            if (!me) html = `<div class="lore-empty">📜 Sign in with Google to read and write stories.</div>`;
+            else if (loreFailed) html = `<div class="lore-empty">Couldn't load the stories — refresh the page to try again.</div>`;
+            else if (!lorePosts) html = `<div class="lore-empty">Loading stories…</div>`;
+            else {
+                let shown = lorePosts.filter(p => !worldBlocked.has(p.uid) && (!loreView.cat || p.category === loreView.cat));
+                if (loreView.sort === "liked") shown = [...shown].sort((a, b) => (b.likeCount || 0) - (a.likeCount || 0) || b.createdAt - a.createdAt);
+                html = shown.length ? shown.map(p => loreCardHtml(p, me.uid)).join("")
+                    : `<div class="lore-empty">${lorePosts.length ? "No stories in this category yet." : "📜 No stories yet."}<br>Tap <b>✍️ Write</b> to tell the first one!</div>`;
+            }
+            if (list.innerHTML !== html) list.innerHTML = html;
+        }
+        function loreCardHtml(p, myUid) {
+            const c = loreCat(p.category);
+            const excerpt = String(p.text || "").replace(/\s+/g, " ").slice(0, 220);
+            const likes = Math.max(0, p.likeCount || 0), comments = Math.max(0, p.commentCount || 0);
+            return `<div class="lore-card${p.uid === myUid ? " mine" : ""}" data-lore="${escapeHtml(p.id)}" role="button" tabindex="0">
+                ${p.coverUrl ? `<img class="lore-thumb" src="${escapeHtml(p.coverUrl)}" alt="" loading="lazy" onerror="this.remove()">` : ""}
+                <div class="lore-card-main">
+                    <div class="lore-card-top"><span class="lore-cat lore-cat-${escapeHtml(c.id)}">${c.icon} ${escapeHtml(c.label)}</span><span>${readMinutes(p.text)} min read</span></div>
+                    <div class="lore-card-title">${escapeHtml(p.title || "Untitled")}</div>
+                    <div class="lore-card-excerpt">${escapeHtml(excerpt)}</div>
+                    <div class="lore-card-foot"><span class="lore-by ${nameFx(p.uid)}">${escapeHtml(p.name || "Commander")}</span><span>· ${loreDate(p.createdAt)}</span>${likes ? `<span>· ❤️ ${likes}</span>` : ""}${comments ? `<span>· 💬 ${comments}</span>` : ""}</div>
+                </div>
+            </div>`;
+        }
+        document.getElementById("loreCats").addEventListener("click", (e) => {
+            const b = e.target.closest("[data-lore-cat]");
+            if (!b) return;
+            loreView.cat = b.dataset.loreCat;
+            try { localStorage.setItem(LORE_VIEW_KEY, JSON.stringify(loreView)); } catch (err) { }
+            renderLore();
+        });
+        document.getElementById("loreSort").addEventListener("change", (e) => {
+            loreView.sort = e.target.value === "liked" ? "liked" : "new";
+            try { localStorage.setItem(LORE_VIEW_KEY, JSON.stringify(loreView)); } catch (err) { }
+            renderLore();
+        });
+        const openLoreCard = (e) => {
+            const card = e.target.closest("[data-lore]");
+            if (card) openLoreDetailModal(card.dataset.lore);
+        };
+        document.getElementById("loreList").addEventListener("click", openLoreCard);
+        document.getElementById("loreList").addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); openLoreCard(e); } });
+
+        /* ---- ✍️ the writer ---- */
+        const loreEl = (id) => document.getElementById(id);
+        function paintLoreCount() {
+            const n = loreEl("postLoreText").value.length;
+            const el = loreEl("postLoreCount");
+            el.textContent = `${n.toLocaleString("en-US")}/${LORE_MAX_TEXT.toLocaleString("en-US")}`;
+            el.classList.toggle("over", n > LORE_MAX_TEXT);
+        }
+        function paintLoreCover() {
+            const src = loreCoverFile ? URL.createObjectURL(loreCoverFile) : loreCoverExisting ? loreCoverExisting.url : "";
+            loreEl("postLoreCoverPreview").innerHTML = src
+                ? `<div class="lore-cover-preview"><img src="${escapeHtml(src)}" alt="Cover"><button type="button" onclick="removeLoreCover()" title="Remove the picture" aria-label="Remove the picture">✕</button></div>` : "";
+            loreEl("postLoreCoverBtn").textContent = src ? "🖼️ Change picture" : "🖼️ Choose a picture";
+        }
+        window.removeLoreCover = function () { loreCoverFile = null; loreCoverExisting = null; paintLoreCover(); };
+        loreEl("postLoreCoverInput").addEventListener("change", (e) => {
+            const f = e.target.files && e.target.files[0];
+            e.target.value = "";
+            if (!f) return;
+            if (!f.type.startsWith("image/")) { showToast("That isn't a picture."); return; }
+            if (f.size > 5 * 1024 * 1024) { showToast("Pictures must be under 5 MB."); return; }
+            loreCoverFile = f;
+            paintLoreCover();
+        });
+        function saveLoreDraft() {
+            if (editingLorePostId || !loreEl("postLoreModalOverlay").classList.contains("open")) return;
+            const title = loreEl("postLoreTitle").value, text = loreEl("postLoreText").value;
+            if (!title.trim() && !text.trim()) { clearDraft("lore"); return; }
+            writeDraft("lore", { title, text, category: loreEl("postLoreCategory").value });
+        }
+        ["postLoreTitle", "postLoreText", "postLoreCategory"].forEach(id => {
+            loreEl(id).addEventListener("input", saveLoreDraft);
+            loreEl(id).addEventListener("change", saveLoreDraft);
+        });
+        loreEl("postLoreText").addEventListener("input", paintLoreCount);
+
+        function fillLoreWriter(v) {
+            loreEl("postLoreCategory").innerHTML = loreCats().map(c => `<option value="${c.id}">${c.icon} ${escapeHtml(c.label)}</option>`).join("");
+            loreEl("postLoreTitle").value = v.title || "";
+            loreEl("postLoreCategory").value = loreCats().some(c => c.id === v.category) ? v.category : loreCats()[0].id;
+            loreEl("postLoreText").value = v.text || "";
+            paintLoreCount();
+            paintLoreCover();
+            const btn = loreEl("submitPostLoreBtn");
+            btn.disabled = false;
+            btn.textContent = editingLorePostId ? "Save changes" : "Post";
+            loreEl("postLoreModalTitle").textContent = editingLorePostId ? "Edit your story" : "Write a story";
+        }
+        async function loreWriterAllowed() {
+            if (!AppState.getCurrentUser()) { showInfoModal("Sign in required", "Sign in with Google first."); return false; }
+            const profile = await AppState.getProfile();
+            if (AppState.isBannedNow(profile)) { AppState.showRestrictedNotice(profile.banReason, profile.banUntil); return false; }
+            if (!profile.name) { showInfoModal("Set your name", "Set an in-game name in your profile before posting."); return false; }
+            return true;
+        }
+        window.openPostLoreModal = async function () {
+            if (!await loreWriterAllowed()) return;
+            editingLorePostId = null; loreCoverFile = null; loreCoverExisting = null;
+            fillLoreWriter({});
+            const draft = await offerDraft("lore", "You started a story and didn't finish it. Restore what you wrote? (A cover picture isn't saved — pick it again.)");
+            if (draft) fillLoreWriter(draft);
+            loreEl("postLoreModalOverlay").classList.add("open");
+        };
+        window.openEditLoreModal = async function (postId) {
+            const p = loreById(postId);
+            if (!p || !await loreWriterAllowed()) return;
+            editingLorePostId = postId; loreCoverFile = null;
+            loreCoverExisting = p.coverUrl ? { url: p.coverUrl, path: p.coverPath || "" } : null;
+            fillLoreWriter(p);
+            loreEl("postLoreModalOverlay").classList.add("open");
+        };
+        window.closePostLoreModal = function () {
+            loreEl("postLoreModalOverlay").classList.remove("open");
+            resetModalKeyboardViewportSizing("postLoreModalOverlay");
+            editingLorePostId = null; loreCoverFile = null; loreCoverExisting = null;
+        };
+        window.submitLorePost = async function () {
+            if (lorePostSubmitting) return;
+            const title = loreEl("postLoreTitle").value.trim(), text = loreEl("postLoreText").value.trim();
+            if (!title) { showInfoModal("Add a title", "Give your story a title."); return; }
+            if (!text) { showInfoModal("Write your story", "Your story is empty."); return; }
+            if (text.length > LORE_MAX_TEXT) { showInfoModal("Too long", `Stories can be up to ${LORE_MAX_TEXT.toLocaleString("en-US")} characters.`); return; }
+            const editId = editingLorePostId, old = editId ? loreById(editId) : null;
+            const btn = loreEl("submitPostLoreBtn");
+            lorePostSubmitting = true;
+            btn.disabled = true;
+            let uploaded = null;
+            try {
+                let cover = loreCoverExisting ? { coverUrl: loreCoverExisting.url, coverPath: loreCoverExisting.path } : { coverUrl: "", coverPath: "" };
+                if (loreCoverFile) {
+                    btn.textContent = "Uploading the picture…";
+                    const up = await AppState.uploadFormationImage(loreCoverFile);
+                    uploaded = up.imagePath;
+                    cover = { coverUrl: up.imageUrl, coverPath: up.imagePath };
+                }
+                btn.textContent = editId ? "Saving…" : "Posting…";
+                const data = { title, text, category: loreEl("postLoreCategory").value, ...cover };
+                if (editId) await AppState.updateLore(editId, data);
+                else await AppState.postLore(data);
+                // the picture it had before, if it was changed or taken off
+                if (old && old.coverPath && old.coverPath !== cover.coverPath) AppState.deleteFormationImageSafe(old.coverPath);
+                if (!editId) clearDraft("lore");
+                closePostLoreModal();
+                showToast(editId ? "Story updated." : "📜 Story posted!");
+            } catch (e) {
+                if (uploaded) AppState.deleteFormationImageSafe(uploaded); // not used after all
+                if (e.message !== "__RESTRICTED__") showInfoModal("Couldn't post", e.message);
+            }
+            lorePostSubmitting = false;
+            btn.disabled = false;
+            btn.textContent = editingLorePostId ? "Save changes" : "Post";
+        };
+
+        /* ---- 📖 the reader (likes and comments) ---- */
+        function renderLoreDetailStatic(p) {
+            const c = loreCat(p.category);
+            const cover = loreEl("loreDetailCover");
+            if (p.coverUrl) { if (cover.getAttribute("src") !== p.coverUrl) cover.src = p.coverUrl; cover.style.display = ""; }
+            else { cover.removeAttribute("src"); cover.style.display = "none"; }
+            cover.onclick = () => openImageViewer([p.coverUrl], 0);
+            const cat = loreEl("loreDetailCategory");
+            cat.className = "lore-cat lore-cat-" + c.id;
+            cat.textContent = `${c.icon} ${c.label}`;
+            loreEl("loreDetailRead").textContent = `${readMinutes(p.text)} min read`;
+            loreEl("loreDetailLikeCount").textContent = Math.max(0, p.likeCount || 0);
+            loreEl("loreDetailTitle").textContent = p.title || "Untitled";
+            loreEl("loreDetailText").textContent = p.text || "";
+            loreEl("loreDetailEdited").textContent = p.editedAt ? `Edited ${loreDate(p.editedAt)}` : "";
+            loreEl("loreDetailAvatar").src = avatarOf(p.uid, p.avatar);
+            loreEl("loreDetailPosterName").textContent = p.name || "Commander";
+            styleDetailPoster("loreDetail", p.uid);
+            loreEl("loreDetailTime").textContent = loreDate(p.createdAt);
+            loreEl("loreDetailTime").title = new Date(p.createdAt).toLocaleString();
+            loreEl("loreDetailPosterRow").onclick = (e) => posterTap(e, p.uid, p.name, closeLoreDetailModal);
+
+            const mine = p.uid === AppState.getCurrentUser()?.uid, admin = AppState.isAdmin && AppState.isAdmin();
+            const editBtn = loreEl("loreDetailEditBtn"), delBtn = loreEl("loreDetailDeleteBtn"), reportBtn = loreEl("loreDetailReportBtn");
+            editBtn.style.display = mine ? "inline-block" : "none";
+            delBtn.style.display = mine || admin ? "inline-block" : "none";
+            reportBtn.style.display = mine ? "none" : "inline-block";
+            editBtn.onclick = () => { closeLoreDetailModal(); openEditLoreModal(p.id); };
+            delBtn.onclick = () => deleteLoreConfirm(p.id);
+            reportBtn.onclick = () => {
+                closeLoreDetailModal();
+                openReportModal("post", p.uid, p.name, p.id, `📜 ${p.title}\n\n${p.text || ""}`.slice(0, 1800), "lore", p.coverUrl ? [p.coverUrl] : []);
+            };
+        }
+        function updateLoreLikeUI(liked) {
+            loreEl("loreDetailLikeBtn").classList.toggle("liked", liked);
+            loreEl("loreDetailLikeIcon").textContent = liked ? "❤️" : "🤍";
+        }
+        window.openLoreDetailModal = function (postId) {
+            const p = loreById(postId);
+            if (!p) return;
+            currentLoreDetailId = postId;
+            renderLoreDetailStatic(p);
+            loreEl("loreDetailScroll").scrollTop = 0;
+            updateLoreLikeUI(false);
+            AppState.hasLikedLore(postId).then(liked => { if (currentLoreDetailId === postId) updateLoreLikeUI(liked); }).catch(() => { });
+            loreCommentSubmitting = false;
+            editingLoreCommentId = null; replyingToLoreCommentId = null;
+            loreEl("loreCommentSendBtn").disabled = false;
+            loreEl("loreCommentSendBtn").textContent = "Send";
+            loreEl("loreCommentEditingNote").style.display = "none";
+            loreEl("loreCommentTextInput").value = "";
+            autoGrowCommentTextarea(loreEl("loreCommentTextInput"));
+            loreCommentsById = {};
+            loreEl("loreCommentsList").innerHTML = "";
+            if (unsubLoreComments) unsubLoreComments();
+            unsubLoreComments = AppState.listenToLoreComments(postId, (comments) => {
+                loreCommentsById = {};
+                comments.forEach(c => { loreCommentsById[c.id] = c; });
+                renderCommentList("lore", comments);
+            });
+            loreEl("loreDetailModalOverlay").classList.add("open");
+        };
+        window.closeLoreDetailModal = function () {
+            loreEl("loreDetailModalOverlay").classList.remove("open");
+            resetModalKeyboardViewportSizing("loreDetailModalOverlay");
+            if (unsubLoreComments) { unsubLoreComments(); unsubLoreComments = null; }
+            currentLoreDetailId = null;
+        };
+        window.toggleLoreDetailLike = async function () {
+            if (loreLikeInFlight || !currentLoreDetailId) return;
+            if (!AppState.getCurrentUser()) { showInfoModal("Sign in required", "Sign in with Google first to like a story."); return; }
+            loreLikeInFlight = true;
+            try { updateLoreLikeUI(await AppState.toggleLoreLike(currentLoreDetailId)); }
+            catch (e) { if (e.message !== "__RESTRICTED__") showInfoModal("Couldn't like", e.message); }
+            loreLikeInFlight = false;
+        };
+        window.deleteLoreConfirm = async function (postId) {
+            const p = loreById(postId);
+            const mine = p && p.uid === AppState.getCurrentUser()?.uid;
+            const ok = await showConfirmModal("Delete this story?", mine ? "Your story, its likes and its comments will be gone for good." : `Delete ${p ? p.name : "their"}'s story, its likes and its comments for good?`, "Delete");
+            if (!ok) return;
+            try {
+                if (currentLoreDetailId === postId) closeLoreDetailModal();
+                await AppState.deleteLore(postId);
+                showToast("Story deleted.");
+            } catch (e) {
+                showInfoModal("Couldn't delete", e.message);
+            }
+        };
+
+        // Comments: the same threads as formation posts (text only here).
+        window.startEditLoreComment = function (commentId) {
+            const c = loreCommentsById[commentId];
+            if (!c) return;
+            replyingToLoreCommentId = null;
+            editingLoreCommentId = commentId;
+            const input = loreEl("loreCommentTextInput");
+            input.value = c.text || "";
+            autoGrowCommentTextarea(input);
+            const note = loreEl("loreCommentEditingNote");
+            note.innerHTML = 'Editing your comment — <button type="button" class="field-clear-btn" onclick="cancelEditLoreComment()">Cancel</button>';
+            note.style.display = "block";
+            loreEl("loreCommentSendBtn").textContent = "Save";
+            input.focus();
+        };
+        window.cancelEditLoreComment = function () {
+            editingLoreCommentId = null;
+            loreEl("loreCommentTextInput").value = "";
+            autoGrowCommentTextarea(loreEl("loreCommentTextInput"));
+            loreEl("loreCommentEditingNote").style.display = "none";
+            loreEl("loreCommentSendBtn").textContent = "Send";
+        };
+        window.startReplyLoreComment = function (commentId, name) {
+            editingLoreCommentId = null;
+            replyingToLoreCommentId = commentId;
+            openCommentThreads.add("lore:" + commentRootId("lore", commentId)); // your reply shows when it lands
+            const input = loreEl("loreCommentTextInput");
+            input.value = "";
+            autoGrowCommentTextarea(input);
+            const note = loreEl("loreCommentEditingNote");
+            note.innerHTML = `Replying to <strong>${escapeHtml(name)}</strong> — <button type="button" class="field-clear-btn" onclick="cancelReplyLoreComment()">Cancel</button>`;
+            note.style.display = "block";
+            loreEl("loreCommentSendBtn").textContent = "Reply";
+            input.focus();
+        };
+        window.cancelReplyLoreComment = function () {
+            replyingToLoreCommentId = null;
+            loreEl("loreCommentEditingNote").style.display = "none";
+            loreEl("loreCommentSendBtn").textContent = "Send";
+        };
+        window.submitLoreComment = async function () {
+            if (loreCommentSubmitting || !currentLoreDetailId) return;
+            if (!AppState.getCurrentUser()) { showInfoModal("Sign in required", "Sign in with Google first to comment."); return; }
+            const input = loreEl("loreCommentTextInput"), text = input.value.trim();
+            if (!text) return;
+            const postId = currentLoreDetailId, editId = editingLoreCommentId, parentId = replyingToLoreCommentId;
+            loreCommentSubmitting = true;
+            const btn = loreEl("loreCommentSendBtn");
+            btn.disabled = true;
+            try {
+                if (editId) {
+                    await AppState.updateLoreComment(postId, editId, { text });
+                    cancelEditLoreComment();
+                } else {
+                    await AppState.addLoreComment(postId, { text, parentId });
+                    input.value = "";
+                    autoGrowCommentTextarea(input);
+                    if (parentId) cancelReplyLoreComment();
+                }
+            } catch (e) {
+                if (e.message !== "__RESTRICTED__") showInfoModal("Couldn't comment", e.message);
+            }
+            loreCommentSubmitting = false;
+            btn.disabled = false;
+        };
+        window.deleteLoreCommentConfirm = async function (commentId) {
+            if (!currentLoreDetailId) return;
+            if (!await showConfirmModal("Delete this comment?", "This can't be undone.")) return;
+            try {
+                await AppState.deleteLoreComment(currentLoreDetailId, commentId);
+                if (editingLoreCommentId === commentId) cancelEditLoreComment();
+                if (replyingToLoreCommentId === commentId) cancelReplyLoreComment();
+            } catch (e) {
+                showInfoModal("Couldn't delete", e.message);
+            }
         };
 
         function renderWorldChat() {
@@ -7338,7 +7921,10 @@ window.removeClanIconPreview = function () {
         };
         document.getElementById("wcChips").addEventListener("click", (e) => {
             const b = e.target.closest("[data-filter]");
-            if (b) setWorldFilter(b.dataset.filter);
+            if (!b) return;
+            if (b.dataset.filter === "lore") { setLoreOpen(true); return; }
+            if (loreOpen) setLoreOpen(false);
+            setWorldFilter(b.dataset.filter);
         });
         document.getElementById("wcList").addEventListener("click", (e) => {
             if (e.target.closest("[data-older]")) { loadOlderWorldChat(); return; }
@@ -7893,7 +8479,7 @@ window.removeClanIconPreview = function () {
             ];
             const slow = worldCfg && worldCfg.slowSeconds ? `Slow mode: one message every <b>${worldCfg.slowSeconds}s</b>.` : "";
             return [
-                ["💬", "<b>Five channels</b> (General, Tips, Noobies, Formation, Games) — what you send goes to the one you're in."],
+                ["💬", "<b>General</b> is the chat for everyone. <b>📜 Lore</b> (next to it) is for fan fiction and lore theories — write a story, like and comment on others'."],
                 ["🤝", "<b>Be kind.</b> No spam, scams or anything nasty. Tap a message → 🚩 Report. Moderators can delete messages and time people out (no posting anywhere on the site)."],
                 ["🐢", `${slow} Messages can be up to 2,000 characters; the same message twice in a minute isn't sent.`],
                 ["📷", `<b>Photos and videos</b> once your account is ${age} day${age === 1 ? "" : "s"} old. Each day: <b>${CHAT_DAILY.free.photos} photos and ${CHAT_DAILY.free.videos} videos</b> (⭐ VIP: ${CHAT_DAILY.vip.photos} and ${CHAT_DAILY.vip.videos}). What you have left shows when you add one.`],
@@ -8762,18 +9348,25 @@ function dmPendingAction(kind, id) {
             // it's highlighted and you're ready to reply to it.
             const tierListIdFromUrl = params.get("tierListId");
             if (tierListIdFromUrl) pendingTierListIdFromUrl = tierListIdFromUrl;
+            // …or a story's (📜 Lore, in World Chat)
+            const lorePostIdFromUrl = params.get("lorePostId");
+            if (lorePostIdFromUrl) pendingLorePostId = lorePostIdFromUrl;
             const commentIdFromUrl = params.get("commentId");
-            if (commentIdFromUrl && (formationPostId || tierListIdFromUrl)) {
-                pendingCommentFocus = { kind: formationPostId ? "formation" : "tierList", id: commentIdFromUrl };
+            if (commentIdFromUrl && (formationPostId || tierListIdFromUrl || lorePostIdFromUrl)) {
+                pendingCommentFocus = { kind: formationPostId ? "formation" : tierListIdFromUrl ? "tierList" : "lore", id: commentIdFromUrl };
             }
         });
         // Posts carry names and profile pictures, so they're only fetched for
         // someone signed in — started (again) on sign-in, dropped on sign-out.
+        let unsubLore = null;
         function startPostListeners() {
-            [unsubPosts, unsubFormations, unsubTierLists].forEach(u => { if (typeof u === "function") u(); });
+            [unsubPosts, unsubFormations, unsubTierLists, unsubLore].forEach(u => { if (typeof u === "function") u(); });
             unsubPosts = AppState.listenToClanPosts(renderClanPosts);
             unsubFormations = AppState.listenToFormations(renderFormationPosts);
             unsubTierLists = AppState.listenToTierLists(renderTierListPosts);
+            lorePosts = null; loreFailed = false;
+            unsubLore = typeof AppState.listenToLorePosts === "function"
+                ? AppState.listenToLorePosts(onLorePosts, LORE_PAGE, () => { loreFailed = true; renderLore(); }) : null;
         }
         AppState.onAuthChange(async () => {
             await refreshComposeBox();

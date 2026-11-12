@@ -4705,7 +4705,8 @@ function getNewsTypeInfo(type) {
         function inboxIconFor(n) {
             return ({
                 spookyGift: "🎃", tokenGift: "🪙", tokensGranted: "🪙", tokenAdjust: "🪙", secretGiveawayWin: "🏆", giveawayWin: "🏆", promoCodes: "🎟️", promo: "🎁",
-                weeklyGiveawayNew: "🎡", secretGiveawayNew: "🎁", tip: "💡", poll: "📊", friendAccepted: "🤝", formationComment: "💬", formationReply: "💬", tierListComment: "💬", tierListReply: "💬"
+                weeklyGiveawayNew: "🎡", secretGiveawayNew: "🎁", tip: "💡", poll: "📊", friendAccepted: "🤝", formationComment: "💬", formationReply: "💬", tierListComment: "💬", tierListReply: "💬",
+                loreComment: "📜", loreReply: "💬"
             })[n.type] || "📢";
         }
         // A message's one action (View Code, Message, Enter Giveaway…) — the
@@ -4715,7 +4716,10 @@ function getNewsTypeInfo(type) {
             if (n.type === "tip") return `<button class="btn-primary" style="${style}" onclick="openInboxTip('${n.sourceId}')">View Tip</button>`;
             if (n.type === "friendAccepted") return `<button class="btn-primary" style="${style}" onclick="openInboxFriendChat(${jsArgHome(n.fromUid)}, ${jsArgHome(n.fromName)}, ${jsArgHome(n.fromAvatar || "")})">💬 Message</button>`;
             if (n.type === "giveawayWin" || n.type === "promoCodes") return prizeButtonHtml(n, style);
-            if (COMMENT_NOTIF_TYPES.includes(n.type)) return `<button class="btn-primary" style="${style}" onclick="openInboxComment('${n.postId ? "formation" : "tierList"}', '${n.postId || n.tierListId || ""}', '${n.commentId || ""}')">💬 View &amp; reply</button>`;
+            if (COMMENT_NOTIF_TYPES.includes(n.type)) {
+                const kind = String(n.type).startsWith("lore") ? "lore" : n.postId ? "formation" : "tierList";
+                return `<button class="btn-primary" style="${style}" onclick="openInboxComment(${jsArgHome(kind)}, ${jsArgHome(n.postId || n.tierListId || "")}, ${jsArgHome(n.commentId || "")})">💬 View &amp; reply</button>`;
+            }
             if (n.type === "secretGiveawayWin") {
                 // Newer wins carry the code on the notification, so it can be shown and
                 // copied right here — and it still works after the giveaway is deleted.
@@ -5097,13 +5101,13 @@ window.closeInboxItemModal = closeInboxItemModal;
         // (used by "commented on your post" / "replied to your comment").
         // Someone commented on your post / replied to you: open it in Social
         // at that comment (highlighted, its thread open), ready to reply.
-        const COMMENT_NOTIF_TYPES = ["formationComment", "formationReply", "tierListComment", "tierListReply"];
+        const COMMENT_NOTIF_TYPES = ["formationComment", "formationReply", "tierListComment", "tierListReply", "loreComment", "loreReply"];
         function openInboxComment(kind, id, commentId) {
             if (!id) return;
             const frame = document.querySelector("#page-social iframe");
             const url = new URL(currentSectionFrameUrl(frame, "social.html"), window.location.href);
-            ["formationPostId", "tierListId", "commentId", "dmUid", "dmName", "dmAvatar"].forEach(k => url.searchParams.delete(k));
-            url.searchParams.set(kind === "formation" ? "formationPostId" : "tierListId", id);
+            ["formationPostId", "tierListId", "lorePostId", "commentId", "dmUid", "dmName", "dmAvatar"].forEach(k => url.searchParams.delete(k));
+            url.searchParams.set(kind === "formation" ? "formationPostId" : kind === "lore" ? "lorePostId" : "tierListId", id);
             if (commentId) url.searchParams.set("commentId", commentId);
             setSectionFrameUrl(frame, url.toString());
             goToPage("social");

@@ -19,10 +19,12 @@
 
     /* ---------------- topics ----------------
        k: words and phrases that point to it (the more of them a question has,
-          the better the match; a phrase counts more than a word)
+          the better the match; a phrase counts more than a word; a word
+          ending in "!" is a name that can only mean this topic, and counts more)
        a: the answer (written here, so it may hold a little HTML)
        go: where "Take me there" goes — { page, tab } / { page: "store", at } /
-           { call } / { click }; none = an answer only
+           { call } / { click }; none = an answer only. Social's World Chat
+           opens on the chat, or on 📜 Lore with lore: true
        show: what "Show me" points at on Home (a selector) */
     const TOPICS = [
         // ----- you -----
@@ -94,6 +96,9 @@
         { id: "worldChat", title: "🌍 World Chat", k: ["world chat", "global chat", "public chat", "chat with everyone", "chatroom", "chat room", "world", "talk", "talk to players", "talk to people", "delete message", "delete my message", "translate", "reply", "react"],
             a: "<b>Social → 🌍 World Chat</b> — one chat for everyone. Tap a message for Reply, React, Copy, Translate or Report — and Delete on your own messages.",
             go: { page: "social", tab: "world" } },
+        { id: "lore", title: "📜 Lore & fan fiction", k: ["lore!", "fan fiction!", "fanfiction!", "fanfic!", "fan fic!", "lore theory", "lore theories", "theory", "theories", "story", "stories", "write a story", "my story", "backstory", "write"],
+            a: "<b>Social → 🌍 World Chat → 📜 Lore</b> — fan fiction and lore theories. Tap <b>✍️ Write</b> for a title, your story (up to 20,000 characters) and a cover picture if you like. Tap a story to read it, ❤️ like it and comment.",
+            go: { page: "social", tab: "world", lore: true } },
         { id: "friends", title: "💬 Friends & messages", k: ["friends", "friend list", "my friends", "message", "messages", "dm", "dms", "private message", "inbox chat", "direct message", "talk to friend"],
             a: "<b>Social → Friends</b>: your friends and your private chats with them, plus suggested friends.",
             go: { page: "social", tab: "friends" } },
@@ -120,6 +125,10 @@
         { id: "troops", title: "⚔️ Troops & Heroes", k: ["troops", "troop", "heroes", "hero", "units", "unit", "stats", "unit stats", "compare", "comparison", "damage", "hp", "abilities", "ability", "talent", "talents", "upgrade"],
             a: "<b>⚔️ Troops & Heroes</b> on Home: every unit's stats, abilities and talents — search one, or compare units side by side.",
             go: { page: "troops" }, show: ".home-menu-btn[onclick=\"goToPage('troops')\"]" },
+        { id: "bosses", title: "🐉 Boss calculator", k: ["boss", "bosses", "boss calculator", "boss level", "boss stats", "boss abilities", "boss damage", "glorious hunt", "hunt",
+                "balthazar!", "ashira!", "dagon!", "kalidor!", "goltharax!", "shai khold", "khold!", "fire dragon", "spider queen", "kraken!", "ancient kraken", "ice snake", "gold keeper", "lord of the dunes", "dragon boss", "spiders"],
+            a: "<b>Troops & Heroes → 🐉 Bosses</b>: pick a boss, set its level, and see the game's own numbers — every attack's damage, its spiders and guardians, and the damage it takes to reach that level.",
+            go: { page: "troops", tab: "bosses" } },
         { id: "tips", title: "💡 Tips & strategy", k: ["tips", "tip", "guide", "strategy", "team comp", "team comps", "comps", "how to win", "advice", "beginner", "event strategy"],
             a: "<b>💡 Tips</b> on Home: team comps, talents and event strategy.",
             go: { page: "tips" }, show: ".home-menu-btn[onclick=\"openTipsFresh()\"]" },
@@ -197,9 +206,11 @@
     // (A keyword that comes out the same as another of the topic's counts once.)
     const PREPARED = TOPICS.map(t => {
         const seen = new Set(), keys = [];
-        for (const k of t.k) {
+        for (const k0 of t.k) {
+            const strong = k0.endsWith("!"), k = strong ? k0.slice(0, -1) : k0;
             const all = words(k).map(stem), main = all.filter(w => !STOP.has(w));
             const key = main.length ? { words: main } : { words: all, whole: true };
+            if (strong) key.strong = true;
             const sig = (key.whole ? "=" : "") + key.words.join(" ");
             if (!seen.has(sig)) { seen.add(sig); keys.push(key); }
         }
@@ -219,8 +230,8 @@
             for (const kw of keys) {
                 if (kw.whole) { if (has(allText, kw.words)) score += 2 * kw.words.length + 1; }
                 else if (kw.words.length > 1) { if (has(text, kw.words)) score += 2 * kw.words.length + 1; }
-                else if (meaningful.includes(kw.words[0])) score += 2;
-                else if (meaningful.some(w => close(w, kw.words[0]))) score += 1.5;
+                else if (meaningful.includes(kw.words[0])) score += kw.strong ? 3 : 2;
+                else if (meaningful.some(w => close(w, kw.words[0]))) score += kw.strong ? 2.5 : 1.5;
             }
             // small talk only wins when the whole question is small talk
             if (t.small && meaningful.length > 3) score = Math.min(score, 1);
@@ -245,7 +256,8 @@
         profile: ["edit", "ach", "items", "style"],
         social: ["world", "friends", "clan", "formation", "tierlist"],
         games: ["today", "ranks", "trivia", "guess", "unitle", "hilo", "blur", "memory"],
-        promo: ["codes", "vip", "secret"]
+        promo: ["codes", "vip", "secret"],
+        troops: ["bosses"]
     };
     const STORE_AT = ["chest", "event"];
     const CALLS = ["openBugReport", "openShareSite"];
@@ -292,8 +304,14 @@
             return;
         }
         if (page === "social" && to.tab) {
-            try { localStorage.setItem("kih_social_tab", to.tab); } catch (e) { } // a Social that hasn't loaded yet opens on it
-            Promise.resolve(window.goToPage("social")).then(() => callInSection("social", "switchSocialTab", to.tab));
+            try { // a Social that hasn't loaded yet opens on it
+                localStorage.setItem("kih_social_tab", to.tab);
+                if (to.tab === "world") localStorage.setItem("kih_world_channel", to.lore ? "lore" : "general");
+            } catch (e) { }
+            Promise.resolve(window.goToPage("social")).then(() => {
+                callInSection("social", "switchSocialTab", to.tab);
+                if (to.tab === "world") callInSection("social", "setLoreOpen", !!to.lore); // World Chat: the chat, or 📜 Lore
+            });
             return;
         }
         if (page === "games" && to.tab) {
@@ -310,9 +328,28 @@
             window.goToPage("games");
             return;
         }
+        if (page === "troops" && to.tab) {
+            const frame = document.querySelector("#page-troops iframe");
+            let w = null;
+            try { w = frame && frame.getAttribute("src") && frame.contentWindow; } catch (e) { }
+            if (w && typeof w.switchTab === "function") { Promise.resolve(window.goToPage("troops")).then(() => w.switchTab(to.tab)); return; }
+            if (frame) window.setSectionFrameUrl(frame, "troopsandheroes.html?tab=" + encodeURIComponent(to.tab));
+            window.goToPage("troops");
+            return;
+        }
         Promise.resolve(window.goToPage(page)).then(() => {
             if (page === "profile" && to.tab && typeof window.switchProfileTab === "function") window.switchProfileTab(to.tab);
         });
+    }
+    // A button glows for a few seconds. Glowing it again restarts that —
+    // the earlier glow's timer is cancelled, or it would cut the new one short.
+    const glowTimers = new WeakMap();
+    function glow(el) {
+        clearTimeout(glowTimers.get(el));
+        el.classList.remove("kih-guide-spot");
+        void el.offsetWidth;
+        el.classList.add("kih-guide-spot");
+        glowTimers.set(el, setTimeout(() => el.classList.remove("kih-guide-spot"), 4200));
     }
     // "Show me": back to Home, the button glows for a few seconds
     function show(selector) {
@@ -320,10 +357,7 @@
             const el = document.querySelector(selector);
             if (!el) return;
             el.scrollIntoView({ behavior: "smooth", block: "center" });
-            el.classList.remove("kih-guide-spot");
-            void el.offsetWidth;
-            el.classList.add("kih-guide-spot");
-            setTimeout(() => el.classList.remove("kih-guide-spot"), 4200);
+            glow(el);
         };
         const onHome = $("homeLanding") && !$("homeLanding").classList.contains("hidden");
         if (onHome) finish(); else { Promise.resolve(window.goHome()).then(() => setTimeout(finish, 350)); }
@@ -333,18 +367,20 @@
        back to the guide (with the conversation still there). The first few
        times a bubble says so too. */
     const TIP_KEY = "kih_guide_tips_seen";
+    let tipTimer = null, pointTimer = null;
     function pointBack() {
-        setTimeout(() => {
+        clearTimeout(pointTimer);
+        pointTimer = setTimeout(() => {
             const btn = $("guideTopBtn"), bar = $("pageTopbar");
             if (!btn || !bar || getComputedStyle(bar).display === "none" || (sheet && sheet.classList.contains("open"))) return;
-            btn.classList.remove("kih-guide-spot");
-            void btn.offsetWidth;
-            btn.classList.add("kih-guide-spot");
-            setTimeout(() => btn.classList.remove("kih-guide-spot"), 4200);
+            glow(btn);
             let seen = 0;
             try { seen = parseInt(localStorage.getItem(TIP_KEY) || "0", 10) || 0; localStorage.setItem(TIP_KEY, String(seen + 1)); } catch (e) { }
             if (seen >= 3) return;
             const r = btn.getBoundingClientRect();
+            const old = $("kihGuideTip");
+            if (old) old.remove();
+            clearTimeout(tipTimer);
             const tip = el("div", "kih-guide-tip", "Tap 🧭 to ask me something else");
             tip.id = "kihGuideTip";
             document.body.appendChild(tip);
@@ -352,7 +388,7 @@
             tip.style.left = left + "px";
             tip.style.top = (r.bottom + 10) + "px";
             tip.style.setProperty("--tip-x", Math.round(r.left + r.width / 2 - left - 6) + "px");
-            setTimeout(() => tip.remove(), 4000);
+            tipTimer = setTimeout(() => tip.remove(), 4000);
         }, 700);
     }
 
