@@ -618,9 +618,17 @@
         // Coming back to Games from elsewhere on the site (index.html says so):
         // back to Today's Puzzle rather than straight into a game. A run left
         // going isn't lost — its tab keeps the orange dot.
+        // The 🧭 Guide on Home can ask for a tab ("where's the leaderboard?"):
+        // sent after "gamesReturn", so it lands after it, and the tab it asks for wins.
         window.addEventListener("message", (e) => {
-            if (e.source !== window.parent || !e.data || e.data.kih !== "gamesReturn") return;
-            if (UNITS.length && tab !== "today") switchTab("today");
+            if (e.source !== window.parent || e.origin !== window.location.origin || !e.data) return;
+            if (e.data.kih === "gamesReturn") {
+                if (UNITS.length && tab !== "today") switchTab("today");
+            } else if (e.data.kih === "gamesOpen") {
+                const want = String(e.data.tab || "");
+                const valid = want === "today" || want === "ranks" || C.GAMES.includes(want);
+                if (UNITS.length && valid && want !== tab) switchTab(want);
+            }
         });
         function render() {
             if (!UNITS.length) return;
