@@ -100,6 +100,7 @@ describe("questions people ask", () => {
         unitle: ["unitle"], hilo: ["higher or lower"], trivia: ["trivia quiz"], hangman: ["hangman"], blur: ["blur game"],
         social: ["social", "where is the community"],
         worldChat: ["world chat", "where is global chat", "chat with everyone", "can i talk to other players", "how to delete my message"],
+        music: ["music", "how do i turn off the music", "mute the sound", "the music is too loud", "volume"],
         lore: ["lore", "where can i write fan fiction", "fanfic", "post my lore theory", "i want to write a story", "where are the stories"],
         friends: ["my friends", "where are my messages", "dm a friend"],
         addFriend: ["how do i add a friend", "add friends"],

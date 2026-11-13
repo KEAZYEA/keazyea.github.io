@@ -529,6 +529,12 @@
         const $ = (id) => document.getElementById(id);
         const unitByKey = (k) => C.unitByKey(UNITS, k);
         // Singapore date, the same day boundary as daily quests.
+        // 🔔 sound effects: the app's KihMusic (music.js, in the page around this one)
+        // plays them, at the player's volume — or not, if they're switched off.
+        // On its own (no app around it) the games are silent.
+        function sfx(name) {
+            try { const M = window.parent !== window && window.parent.KihMusic; if (M && M.sfx) M.sfx(name); } catch (e) { }
+        }
         function dayKey() { return new Date(Date.now() + 8 * 3600e3).toISOString().slice(0, 10); }
 
         // appState.js is a module and may still be loading.
@@ -932,6 +938,10 @@
             if (g.showing !== null || g.answers.length >= g.questions.length) return;
             g.answers.push(k);
             g.showing = g.answers.length - 1;
+            const q = g.questions[g.showing];
+            if (k !== q.answer) sfx("wrong");
+            else if (g.answers.length === g.questions.length && g.answers.every((a, i) => a === g.questions[i].answer)) sfx("win"); // all right
+            else sfx("right");
             renderTrivia();
             if (g.daily) afterDailyMove({ answers: g.answers.slice() });
         }
@@ -1012,6 +1022,8 @@
             const g = game;
             if (!g || g.id !== "guess" || guessStatus(g).done || g.letters.includes(L)) return;
             g.letters.push(L);
+            const st = guessStatus(g);
+            sfx(st.won ? "win" : st.done ? "lose" : unitByKey(g.target).name.toUpperCase().includes(L) ? "tick" : "wrong");
             renderGuess();
             if (g.daily) afterDailyMove({ letters: g.letters.slice() });
         }
@@ -1161,6 +1173,7 @@
             g.typed = "";
             g.guesses.push(unit.key);
             const st = blurStatus(g);
+            sfx(st.won ? "win" : st.done ? "lose" : "wrong");
             renderBlur(!st.done);
             if (g.daily) afterDailyMove({ guesses: g.guesses.slice(), hints: g.hints });
         }
@@ -1242,6 +1255,7 @@
             const g = game;
             if (g.guesses.includes(g.target) || g.guesses.length >= C.UNITLE_TRIES || g.guesses.includes(key) || !unitByKey(key)) return;
             g.guesses.push(key);
+            sfx(key === g.target ? "win" : g.guesses.length >= C.UNITLE_TRIES ? "lose" : "wrong");
             renderUnitle();
             if (g.daily) afterDailyMove({ guesses: g.guesses.slice() });
         }
@@ -1314,7 +1328,9 @@
             if (!r || (key !== r.a && key !== r.b)) return;
             g.picks.push(key);
             g.showing = true;
-            const { score } = hiloScore(g);
+            const { score, over } = hiloScore(g);
+            const rightPick = key === C.hiloWinner(UNITS, r);
+            sfx(!rightPick ? "lose" : over ? "win" : "right"); // one miss ends it; all 10 of today's is a win
             if (!g.fixed && score > hiloBest()) {
                 try { localStorage.setItem("kih_games_hilo_best", String(score)); } catch (e) { }
             }
@@ -1669,6 +1685,7 @@
             markRunTabs();
             if (first) { ui.view = resp.view; paintRun(ui); return; }
             const fb = resp.feedback || {};
+            sfx(runSound(ui, resp, fb));
             ui.feedback = fb;
             if (ui.over) {
                 // ranked: a better score, or more points on the board (a doubled run can do that with a lower score)
@@ -1716,6 +1733,17 @@
             }, hold);
         }
 
+        // 🔔 a ranked run's move: which sound (null = none)
+        function runSound(ui, resp, fb) {
+            if (fb.ended) return null; // you left it
+            if (resp.over) return fb.cleared || fb.solved || fb.correct ? "win" : "lose"; // (the end: usually a miss or the time)
+            if (fb.lifeUsed) return "wrong";
+            if (ui.game === "memory") return fb.cleared ? "win" : null; // pairs make their own sounds as they turn
+            if (fb.correct || fb.solved) return "right";
+            if (fb.letter) return fb.hit ? "tick" : "wrong";
+            if (fb.wrong) return "wrong";
+            return null;
+        }
         function fmtClock(ms) {
             const s = Math.ceil(ms / 1000);
             return s >= 60 ? `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}` : `${s}s`;
@@ -2047,8 +2075,9 @@
             memCardEl(i).classList.add("up");
             if (st.open >= 0) {
                 const pair = [st.open, i];
-                if (now.matched[i]) memMarkDone(pair);
+                if (now.matched[i]) { memMarkDone(pair); sfx(now.done ? "win" : "match"); }
                 else {
+                    sfx("wrong");
                     g.miss = pair;
                     pair.forEach(k => memCardEl(k).classList.add("miss"));
                     g.missTimer = setTimeout(() => { if (game === g && g.miss === pair) { memTurnBack(pair); g.miss = null; } }, MEM_LOOK_MS);
@@ -2161,12 +2190,14 @@
                 pair.forEach(k => { m.matched[k] = true; });
                 m.open = [];
                 memMarkDone(pair);
+                sfx("match");
                 const p = $("memPairs");
                 if (p) p.textContent = memPairsText(m.matched.filter(Boolean).length / 2, ui.view.pairs);
                 if (m.matched.every(Boolean)) { m.handedIn = true; runMove({ cards: m.known.slice() }); }
                 return;
             }
             m.miss = pair;
+            sfx("wrong");
             pair.forEach(k => { const el = memCardEl(k); if (el) el.classList.add("miss"); });
             m.missTimer = setTimeout(() => { if (ui.mem === m && m.miss === pair) { memTurnBack(pair); m.miss = null; m.open = []; } }, MEM_LOOK_MS);
         }
