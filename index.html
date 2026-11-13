@@ -1797,6 +1797,33 @@ body {
         }
         @keyframes toastUp { from { opacity: 0; transform: translate(-50%, 20px); } }
 
+        /* ---- 🎵 background music (music.js): the panel under the 🎵 buttons ---- */
+        .music-pop { position: fixed; z-index: 700; display: none; width: 230px; box-sizing: border-box; padding: 12px 14px;
+            background: #1b1b33; border: 1px solid #3a3a66; border-radius: 14px; box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5); color: #e8e8f6; }
+        .music-pop.open { display: block; }
+        .music-pop-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-weight: 800; }
+        .music-pop-vol { display: flex; align-items: center; gap: 8px; margin-top: 12px; font-size: 1rem; }
+        .music-pop-vol input { flex: 1; min-width: 0; accent-color: #8a6dff; }
+        .music-pop-row { margin-top: 12px; font-weight: 700; font-size: 0.92rem; }
+        .music-pop-sub { margin-top: 8px; font-size: 0.75rem; color: #9a9ab0; line-height: 1.4; }
+        .music-toggle { border: none; border-radius: 999px; padding: 6px 14px; min-width: 56px; font-weight: 800; font-family: inherit; cursor: pointer;
+            background: linear-gradient(135deg, #8a4dff, #4169e1); color: #fff; }
+        .music-toggle.off { background: #2c2c4a; color: #b9b9d6; }
+        .music-vol-text { min-width: 38px; text-align: right; font-size: 0.8rem; color: #b9b9d6; }
+        /* the page top bar on the narrowest phones (← Back + 🪙 + ☰ need the room): 🎵 lives in ☰ there */
+        #musicMenuItem { display: none; }
+        @media (max-width: 370px) { #musicBtnPage { display: none; } #musicMenuItem { display: flex; } }
+        .settings-music { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+        .settings-music input { width: 110px; accent-color: #8a6dff; }
+
+        /* With 🎵 the home bar has six icons on the right: phones up to 440px
+           get a little less space around each (the rule below goes tighter still). */
+        @media (max-width: 440px) {
+            .home-topbar { padding: 2px 12px; }
+            .topbar-right { gap: 2px; }
+            .home-topbar .icon-btn { font-size: 1.6rem; min-width: 40px; min-height: 40px; padding: 5px; }
+        }
+
         /* Five icons on the right plus the avatar on the left only just fit a
            320px phone at the default spacing — about 8px to spare, and emoji
            render at different widths on different phones, so it could spill
@@ -1938,6 +1965,7 @@ body {
                 <button class="icon-btn" title="Inbox" onclick="goToPage('inbox')">
                     📬<span class="badge-dot" id="inboxBadgeHome" style="display:none;"></span>
                 </button>
+                <button class="icon-btn music-btn" id="musicBtnHome" data-music-btn title="Music" aria-label="Music">🎵</button>
                 <button class="icon-btn" title="Settings" onclick="goToPage('settings')">⚙️</button>
             </div>
         </div>
@@ -1948,6 +1976,7 @@ body {
             <button class="icon-btn" title="Home" onclick="goHome()">🏠</button>
             <!-- 🧭 the guide, from any page (help-guide.js) — the way back to it after "Take me there" -->
             <button class="icon-btn guide-top-btn" id="guideTopBtn" title="Ask the guide" aria-label="Ask the guide" onclick="openHelpGuide()">🧭</button>
+            <button class="icon-btn music-btn" id="musicBtnPage" data-music-btn title="Music" aria-label="Music">🎵</button>
             <!-- Your tokens, on every page: tap for Daily Quests, + for the Store.
                  Rewards and purchases fly into it (kihFlyToHud). -->
             <div class="hud" id="hudPage" style="display:none;">
@@ -1965,6 +1994,7 @@ body {
                     </button>
                     <button onclick="goToPage('settings'); closeMenu();">⚙️ Settings</button>
                     <button onclick="closeMenu(); openHelpGuide();">🧭 Ask the guide</button>
+                    <button id="musicMenuItem" data-music-open="#pageTopbar .menu-wrapper > .icon-btn" onclick="closeMenu();">🎵 Music &amp; sounds</button>
                     <button onclick="goToPage('profile'); closeMenu();">
                         <img id="topbarAvatar" src="" alt="Profile" class="topbar-avatar-icon">
                         <span id="topbarAvatarFallback2" class="topbar-avatar-fallback" style="display:flex;">👤</span>
@@ -2204,6 +2234,25 @@ body {
                             </div>
                             <button class="btn-settings-action" onclick="goToPage('store')">Manage</button>
                         </div> -->
+
+                        <div class="settings-row">
+    <div>
+        <div class="settings-label">🎵 Music</div>
+        <div class="settings-sub">Background music while you use the app (Games has its own tune)</div>
+    </div>
+    <div class="settings-music">
+        <input type="range" min="0" max="100" step="1" data-music-vol aria-label="Music volume">
+        <button type="button" class="music-toggle" id="musicToggleSettings" data-music-toggle aria-pressed="true">On</button>
+    </div>
+</div>
+
+                        <div class="settings-row">
+    <div>
+        <div class="settings-label">🔔 Game sounds</div>
+        <div class="settings-sub">A ding when you're right, a buzz when you're wrong</div>
+    </div>
+    <button type="button" class="music-toggle" id="sfxToggleSettings" data-sfx-toggle aria-pressed="true">On</button>
+</div>
 
                         <div class="settings-row">
     <div>
@@ -2512,6 +2561,14 @@ body {
     <script src="progress-core.js"></script>
     <script src="thing-details.js"></script>
     <script src="help-guide.js"></script>
+    <!-- 🎵 background music: the panel the 🎵 buttons open (music.js) -->
+    <div class="music-pop" id="musicPop" role="dialog" aria-label="Music">
+        <div class="music-pop-head"><span>🎵 Music</span><button type="button" class="music-toggle" data-music-toggle aria-pressed="true">On</button></div>
+        <div class="music-pop-vol"><span aria-hidden="true">🔈</span><input type="range" min="0" max="100" step="1" data-music-vol aria-label="Music volume"><span aria-hidden="true">🔊</span><span class="music-vol-text" data-music-vol-text></span></div>
+        <div class="music-pop-head music-pop-row"><span>🔔 Game sounds</span><button type="button" class="music-toggle" data-sfx-toggle aria-pressed="true">On</button></div>
+        <div class="music-pop-sub">Original music made for this app (Games has its own tune). Your choices are remembered on this device.</div>
+    </div>
+    <script src="music.js"></script>
     <script type="module" src="appState.js"></script>
     <script>
         /* ---------------- KEYBOARD-SAFE INPUT SCROLLING ----------------
