@@ -25,7 +25,8 @@
        go: where "Take me there" goes — { page, tab } / { page: "store", at } /
            { call } / { click }; none = an answer only. Social's World Chat
            opens on the chat, or on 📜 Lore with lore: true
-       show: what "Show me" points at on Home (a selector) */
+       show: what "Show me" points at on Home (a selector)
+       tiles: "bosses" — the answer also shows every boss as a picture to tap */
     const TOPICS = [
         // ----- you -----
         { id: "profile", broad: true, title: "🏅 Your profile", k: ["profile", "my profile", "my account", "account page", "my card", "my stats", "me page"],
@@ -125,13 +126,13 @@
             go: { page: "social", tab: "world" } },
 
         // ----- info -----
-        { id: "troops", title: "⚔️ Troops & Heroes", k: ["troops", "troop", "heroes", "hero", "units", "unit", "stats", "unit stats", "compare", "comparison", "damage", "hp", "abilities", "ability", "talent", "talents", "upgrade"],
-            a: "<b>⚔️ Troops & Heroes</b> on Home: every unit's stats, abilities and talents — search one, or compare units side by side.",
+        { id: "troops", title: "⚔️ Troops, Heroes & Bosses", k: ["troops", "troop", "heroes", "hero", "units", "unit", "stats", "unit stats", "compare", "comparison", "damage", "hp", "abilities", "ability", "talent", "talents", "upgrade"],
+            a: "<b>⚔️ Troops, Heroes & Bosses</b> on Home: every unit's stats, abilities and talents — search one, or compare any two units side by side (a troop with a hero too).",
             go: { page: "troops" }, show: ".home-menu-btn[onclick=\"goToPage('troops')\"]" },
-        { id: "bosses", title: "🐉 Boss calculator", k: ["boss", "bosses", "boss calculator", "boss level", "boss stats", "boss abilities", "boss damage", "glorious hunt", "hunt",
+        { id: "bosses", title: "🐉 Bosses", k: ["boss", "bosses", "boss calculator", "boss level", "boss stats", "boss abilities", "boss damage", "compare bosses", "glorious hunt", "hunt",
                 "balthazar!", "ashira!", "dagon!", "kalidor!", "goltharax!", "shai khold", "khold!", "fire dragon", "spider queen", "kraken!", "ancient kraken", "ice snake", "gold keeper", "lord of the dunes", "dragon boss", "spiders"],
-            a: "<b>Troops & Heroes → 🐉 Bosses</b>: pick a boss, set its level, and see the game's own numbers — every attack's damage, its spiders and guardians, and the damage it takes to reach that level.",
-            go: { page: "troops", tab: "bosses" } },
+            a: "<b>Troops, Heroes & Bosses → Bosses</b>: tap a boss to see the game's own numbers at any level from 1 to 300 — every attack's damage, its spiders and guardians, and the damage it takes to reach that level. <b>Compare → Bosses</b> puts two side by side.",
+            go: { page: "troops", tab: "bosses" }, tiles: "bosses" },
         { id: "tips", title: "💡 Tips & strategy", k: ["tips", "tip", "guide", "strategy", "team comp", "team comps", "comps", "how to win", "advice", "beginner", "event strategy"],
             a: "<b>💡 Tips</b> on Home: team comps, talents and event strategy.",
             go: { page: "tips" }, show: ".home-menu-btn[onclick=\"openTipsFresh()\"]" },
@@ -171,6 +172,24 @@
         { id: "help", title: "🧭 What can you do?", k: ["help", "what can you do", "how does this work", "what is this", "what is this app", "guide me", "how to use"], small: true,
             a: "I can find anything in the app for you. Ask things like <i>\"where is World Chat?\"</i>, <i>\"how do I change my name?\"</i> or <i>\"where are the promo codes?\"</i> — then tap <b>▶ Take me there</b>. To ask me again from any page, tap <b>🧭</b> at the top." }
     ];
+
+    /* The bosses, as the 🐉 answer's pictures (the same ids and pictures as
+       boss-calc.js — the tests check). k: the words that name one, so
+       "how strong is Shai-Khold" opens Shai-Khold. */
+    const BOSSES = [
+        { id: "dragon", name: "Balthazar", title: "Fire Dragon", img: "BOSSDRAGON", k: ["balthazar", "fire dragon"] },
+        { id: "spiderQueen", name: "Ashira", title: "Spider Queen", img: "BOSSSPIDERQUEEN", k: ["ashira", "spider queen", "spider"] },
+        { id: "kraken", name: "Dagon", title: "Ancient Kraken", img: "BOSSKRAKEN", k: ["dagon", "kraken"] },
+        { id: "sand", name: "Kalidor", title: "Lord of the Dunes", img: "BOSSSAND", k: ["kalidor", "lord of the dunes", "dunes", "sand"] },
+        { id: "gold", name: "Goltharax", title: "Gold Keeper", img: "BOSSDRAGON", gold: true, k: ["goltharax", "gold keeper", "gold dragon", "gold"] },
+        { id: "iceSnake", name: "Shai-Khold", title: "Ice Snake", img: "BOSSICESNAKE", k: ["shai khold", "khold", "shai", "ice snake", "ice serpent", "snake", "serpent"] }
+    ];
+    // The one boss a question names (null: none, or more than one).
+    function bossIn(question) {
+        const q = " " + norm(question).split(" ").map(stem).join(" ") + " ";
+        const hits = BOSSES.filter(b => b.k.some(k => q.includes(" " + norm(k).split(" ").map(stem).join(" ") + " ")));
+        return hits.length === 1 ? hits[0] : null;
+    }
 
     // Asked often — shown as chips when the guide opens and after "I'm not sure".
     const STARTERS = ["profile", "earnTokens", "codes", "worldChat", "games", "bug"];
@@ -265,7 +284,7 @@
     const STORE_AT = ["chest", "event"];
     const CALLS = ["openBugReport", "openShareSite"];
 
-    return { TOPICS, STARTERS, PAGES, TABS, STORE_AT, CALLS, ask, scores, norm, stem, close, byId };
+    return { TOPICS, STARTERS, PAGES, TABS, STORE_AT, CALLS, BOSSES, bossIn, ask, scores, norm, stem, close, byId };
 });
 
 /* ================================================================
@@ -335,8 +354,10 @@
             const frame = document.querySelector("#page-troops iframe");
             let w = null;
             try { w = frame && frame.getAttribute("src") && frame.contentWindow; } catch (e) { }
+            // one boss (a picture tapped): straight to its page
+            if (to.boss && w && typeof w.openBoss === "function") { Promise.resolve(window.goToPage("troops")).then(() => w.openBoss(to.boss)); return; }
             if (w && typeof w.switchTab === "function") { Promise.resolve(window.goToPage("troops")).then(() => w.switchTab(to.tab)); return; }
-            if (frame) window.setSectionFrameUrl(frame, "troopsandheroes.html?tab=" + encodeURIComponent(to.tab));
+            if (frame) window.setSectionFrameUrl(frame, "troopsandheroes.html?tab=" + encodeURIComponent(to.tab) + (to.boss ? "&boss=" + encodeURIComponent(to.boss) : ""));
             window.goToPage("troops");
             return;
         }
@@ -429,17 +450,43 @@
     function scrollDown() { log.scrollTop = log.scrollHeight; }
     function youSay(text) { log.appendChild(el("div", "kg-msg kg-you", text)); scrollDown(); }
     // A reply: the topic's answer and its buttons, or a line of text; chips = topics to tap
-    function botSay(topic, line, chips) {
+    // The bosses as pictures to tap; `pick` (the one the question named) glows and comes first.
+    function bossTiles(pick) {
+        const grid = el("div", "kg-bosses");
+        const list = pick ? [pick, ...G.BOSSES.filter(b => b !== pick)] : G.BOSSES;
+        list.forEach(b => {
+            const t = el("button", "kg-boss" + (b === pick ? " kg-boss-pick" : "") + (b.gold ? " kg-boss-gold" : ""));
+            t.type = "button";
+            t.dataset.boss = b.id;
+            t.setAttribute("aria-label", `${b.name}, ${b.title}`);
+            const img = el("img");
+            img.alt = "";
+            img.loading = "lazy";
+            img.decoding = "async";
+            img.src = `images/thumbs/${b.img}.jpg`;
+            img.onerror = () => { img.onerror = null; img.src = `images/${b.img}.jpg`; };
+            const cap = el("span", "kg-boss-cap");
+            cap.append(el("b", null, b.name), el("small", null, b.title));
+            t.append(img, cap);
+            t.onclick = () => { closeGuide(true); go({ page: "troops", tab: "bosses", boss: b.id }); pointBack(); };
+            grid.appendChild(t);
+        });
+        return grid;
+    }
+    function botSay(topic, line, chips, question) {
         const m = el("div", "kg-msg kg-bot");
         if (topic) {
             const body = el("div", "kg-text");
             body.innerHTML = topic.a; // written in help-guide.js, never from what was typed
             m.appendChild(body);
+            const pick = topic.tiles === "bosses" && question ? G.bossIn(question) : null;
+            if (topic.tiles === "bosses") m.appendChild(bossTiles(pick));
             const acts = el("div", "kg-acts");
             if (topic.go) {
-                const b = el("button", "kg-go", "▶ Take me there");
+                const b = el("button", "kg-go", pick ? `▶ Open ${pick.name}` : "▶ Take me there");
                 b.type = "button";
-                b.onclick = () => { closeGuide(true); go(topic.go); pointBack(); };
+                const to = pick ? { ...topic.go, boss: pick.id } : topic.go;
+                b.onclick = () => { closeGuide(true); go(to); pointBack(); };
                 acts.appendChild(b);
             }
             if (topic.show) {
@@ -469,7 +516,7 @@
         youSay(q);
         const r = G.ask(q);
         if (r.topic) {
-            botSay(r.topic, null, r.also.length ? r.also : null);
+            botSay(r.topic, null, r.also.length ? r.also : null, q);
             if (r.also.length) log.lastChild.querySelector(".kg-chips").insertAdjacentElement("beforebegin", el("div", "kg-or", "Or did you mean:"));
         } else {
             botSay(null, "Hmm, I'm not sure about that one. Try other words — or tap one of these:",

@@ -110,7 +110,8 @@ describe("questions people ask", () => {
         tierList: ["tier list", "best units", "who is the best hero"],
         reportPlayer: ["report a player", "someone is spamming", "how do i block someone"],
         troops: ["unit stats", "compare heroes", "where can i see troop stats"],
-        bosses: ["boss calculator", "where are the bosses", "balthazar abilities", "how strong is the kraken at level 50", "ashira spiders", "glorious hunt boss"],
+        bosses: ["boss calculator", "where are the bosses", "balthazar abilities", "how strong is the kraken at level 50", "ashira spiders", "glorious hunt boss",
+            "compare bosses", "shai khold", "how strong is the ice snake"],
         tips: ["team comps", "strategy tips"],
         inbox: ["inbox", "where are my notifications", "did i get a gift"],
         news: ["news", "polls"],
@@ -151,5 +152,32 @@ describe("questions people ask", () => {
     test("small talk inside a real question doesn't hide the answer", () => {
         assert.equal(H.ask("hi where are my achievements please").topic.id, "achievements");
         assert.equal(H.ask("thanks, now how do i earn tokens").topic.id, "earnTokens");
+    });
+});
+
+describe("🐉 the bosses as pictures to tap", () => {
+    const B = require("../boss-calc.js");
+    test("the bosses answer shows them; the same bosses and pictures as the Bosses tab", () => {
+        assert.equal(H.byId("bosses").tiles, "bosses");
+        assert.deepEqual(H.BOSSES.map(b => [b.id, b.img]), B.BOSSES.map(b => [b.id, b.img]));
+        H.BOSSES.forEach(b => {
+            assert.ok(fs.existsSync(path.join(ROOT, `images/${b.img}.jpg`)), b.img);
+            assert.ok(b.name && b.title && b.k.length, b.id);
+        });
+    });
+    test("a question that names one boss opens that boss", () => {
+        const one = { "how strong is shai-khold": "iceSnake", "shai khold level 100": "iceSnake", "the ice snake": "iceSnake", "balthazar abilities": "dragon",
+            "how strong is the kraken at level 50": "kraken", "ashira spiders": "spiderQueen", "kalidor": "sand", "goltharax": "gold", "Dagon!": "kraken" };
+        for (const [q, id] of Object.entries(one)) assert.equal(H.bossIn(q) && H.bossIn(q).id, id, q);
+        ["where are the bosses", "boss calculator", "compare balthazar and dagon"].forEach(q => assert.equal(H.bossIn(q), null, q));
+    });
+    test("a picture opens Troops, Heroes & Bosses on that boss", () => {
+        const guide = read("help-guide.js"), troops = read("troopsandheroes.html");
+        assert.match(guide, /go\(\{ page: "troops", tab: "bosses", boss: b\.id \}\)/);
+        assert.match(guide, /w\.openBoss\(to\.boss\)/);
+        assert.match(guide, /"&boss=" \+ encodeURIComponent\(to\.boss\)/);
+        assert.match(troops, /function openBoss\(id\)/);
+        assert.match(INDEX, /\.kg-bosses \{/);
+        assert.match(INDEX, /\.kg-boss-pick \{/);
     });
 });
