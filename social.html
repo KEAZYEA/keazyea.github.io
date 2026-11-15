@@ -699,6 +699,44 @@
         #friendProfileModalOverlay {
             z-index: 150;
         }
+        /* 💗 Hearts (Friends tab) */
+        .hearts-panel { margin: 4px 0 14px; padding: 12px; border-radius: 14px; border: 1px solid rgba(255, 79, 139, 0.5);
+            background: linear-gradient(160deg, rgba(255, 79, 139, 0.16), rgba(26, 26, 46, 0.9)); }
+        .hp-head { display: flex; align-items: center; gap: 8px; }
+        .hp-head b { font-size: 1rem; }
+        .hp-have { margin-left: auto; font-weight: 900; color: #ffb3d4; }
+        .hp-shop { padding: 4px 10px; border-radius: 999px; border: 1px solid rgba(255, 179, 212, 0.5); background: transparent; color: #ffb3d4; font: inherit; font-size: 0.75rem; font-weight: 800; cursor: pointer; }
+        .hp-sub { margin: 6px 0 8px; font-size: 0.78rem; color: #c8b8d0; line-height: 1.35; }
+        .hp-sub b { color: #fff; }
+        .hp-list { display: flex; flex-direction: column; gap: 6px; }
+        .hp-row { display: flex; align-items: center; gap: 8px; padding: 6px; border-radius: 12px; background: rgba(0, 0, 0, 0.25); min-width: 0; }
+        .hp-who { flex: 1; min-width: 0; display: flex; flex-direction: column; font-weight: 800; font-size: 0.86rem; overflow: hidden; }
+        .hp-who > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .hp-who small { font-weight: 600; font-size: 0.7rem; color: #9a9ab0; }
+        .hp-get, .hp-back, .hp-all { flex-shrink: 0; padding: 6px 10px; border-radius: 999px; border: none; font: inherit; font-size: 0.74rem; font-weight: 900; cursor: pointer; }
+        .hp-get { background: linear-gradient(135deg, #ffb3d4, #ff4f8b); color: #2a0515; }
+        .hp-back { background: rgba(255, 79, 139, 0.15); color: #ffb3d4; border: 1px solid rgba(255, 79, 139, 0.5); }
+        .hp-back:disabled, .hp-get:disabled { opacity: 0.5; cursor: default; }
+        .hp-all { display: block; width: 100%; margin-top: 8px; padding: 9px; background: linear-gradient(135deg, #ffb3d4, #ff4f8b); color: #2a0515; }
+        .hp-empty { font-size: 0.8rem; color: #c8b8d0; }
+        .hp-send-title { margin: 10px 0 6px; font-weight: 900; font-size: 0.86rem; }
+        .hp-send-title small { margin-left: 6px; font-weight: 700; color: #c8b8d0; }
+        .hp-send { display: flex; gap: 8px; overflow-x: auto; padding: 2px 2px 8px; scrollbar-width: thin; }
+        .hp-chip { flex: 0 0 auto; width: 76px; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 6px 4px; border-radius: 12px; background: rgba(0, 0, 0, 0.25); }
+        .hp-chip.sent { opacity: 0.55; }
+        .hp-chip-av { width: 44px; height: 53px; cursor: pointer; }
+        .hp-chip small { max-width: 100%; font-size: 0.7rem; font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .hp-chip button { padding: 4px 8px; border-radius: 999px; border: none; font: inherit; font-size: 0.7rem; font-weight: 900; cursor: pointer; background: linear-gradient(135deg, #ffb3d4, #ff4f8b); color: #2a0515; }
+        .hp-chip button:disabled { background: rgba(255, 255, 255, 0.12); color: #c8b8d0; cursor: default; }
+        .heart-wait-badge { margin-left: 5px; padding: 1px 6px; border-radius: 999px; background: #ff4f8b; color: #fff; font-size: 0.68rem; font-weight: 900; }
+        [data-char-uid] { cursor: pointer; }
+        /* 💗 a heart for a friend, on their row */
+        .friend-heart { flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%; border: 1px solid rgba(255, 79, 139, 0.55); background: rgba(255, 79, 139, 0.12);
+            font-size: 1rem; cursor: pointer; margin-left: 6px; }
+        .friend-heart.sent, .friend-heart:disabled { filter: grayscale(0.2); opacity: 0.5; cursor: default; }
+        .friend-heart.sent { background: rgba(255, 79, 139, 0.35); }
+        .vp-look { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 3px; border-radius: 12px; border: 2px solid transparent; background: none; color: inherit; font: inherit; cursor: pointer; }
+        .vp-look.on { border-color: #ff6bd6; }
 
         /* Report modal can be triggered from inside an already-open DM or
            profile popup, so it needs to outrank both of those layers. */
@@ -2135,6 +2173,19 @@
         #dmHeaderAvatar > .fx-av, #friendProfileAvatar > .fx-av { width: 100%; height: 100%; }
         .fx-av > .avatar-wrap { width: 100%; height: 100%; }
         .pf-badges { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin: 0 0 12px; }
+        /* a player's 🧍 character (head & shoulders) where their picture was */
+        .kc-av { display: inline-block; overflow: hidden; border-radius: 8px !important; flex-shrink: 0; vertical-align: middle;
+            height: auto !important; aspect-ratio: 5 / 6; background: #3a2f6e; }
+        .kc-av svg, .kc-av img { display: block; width: 100%; height: 100%; }
+        .kc-av > span { display: none; } /* (an initial letter under a picture) */
+        /* a player's 🧍 character in their profile popup */
+        .vp-char { display: block; width: max-content !important; margin: 0 auto 14px !important; border-radius: 16px; overflow: hidden; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35); }
+        .vp-char svg { display: block; }
+        .vp-looks-title { font-size: 0.72rem; font-weight: 800; color: var(--kih-text-dim, #9a9ab0); margin: 0 0 6px; text-align: center; }
+        .vp-looks { display: flex; justify-content: center; gap: 8px; margin: 0 0 12px; }
+        .vp-look { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+        .vp-look svg { display: block; border-radius: 10px; }
+        .vp-look small { font-size: 0.66rem; font-weight: 800; color: var(--kih-text-dim, #9a9ab0); }
         .pf-badges:empty { display: none; }
         .pf-badge { display: inline-flex; align-items: center; gap: 5px; max-width: 100%; padding: 3px 9px 3px 3px; border-radius: 999px;
             border: 1px solid var(--tc); background: color-mix(in srgb, var(--tc) 14%, transparent); font-size: 0.74rem; font-weight: 800; color: #f0f0f5; }
@@ -2548,7 +2599,7 @@
                         class="clan-filter-count" id="worldUnreadBadge" style="display:none;"></span></button>
                 <button class="social-tab-btn active" id="tabBtnFriends"
                     onclick="switchSocialTab('friends')">Friends<span class="clan-filter-count" id="dmUnreadBadge"
-                        style="display:none;"></span></button>
+                        style="display:none;"></span><span class="heart-wait-badge" id="heartWaitBadge" style="display:none;"></span></button>
                 <button class="social-tab-btn" id="tabBtnClan" onclick="switchSocialTab('clan')">Clan
                     Recruit&shy;ment<span class="clan-filter-count" id="clanNewBadge" style="display:none;"></span></button>
                 <button class="social-tab-btn" id="tabBtnFormation" onclick="switchSocialTab('formation')">Forma&shy;tion
@@ -2746,6 +2797,9 @@
                         <div class="friends-section-title">Search Results</div>
                         <div id="friendSearchResultsList" class="friend-search-results-scroll"></div>
                     </div>
+
+                    <!-- 💗 hearts from your friends: collect them, send one back -->
+                    <div id="heartsPanel" class="hearts-panel" style="display:none;"></div>
 
                     <div id="friendsSection">
                         <div class="friends-section-title">Friends</div>
@@ -3253,24 +3307,18 @@
     <!-- Friend / suggested profile modal -->
     <div class="modal-overlay" id="friendProfileModalOverlay">
         <div class="modal-box" style="max-width:360px; max-height:85vh; overflow-y:auto; text-align:center;">
-            <div id="friendProfileAvatar" style="width:84px; height:84px; margin:0 auto 14px;"></div>
-            <div id="friendProfileName" style="font-weight:800; font-size:1.2rem; margin-bottom:6px;"></div>
-            <div id="friendProfileBio" class="compose-hint" style="margin-bottom:14px; display:none;"></div>
-            <div class="pf-badges" id="friendProfileBadges"></div>
-            <button type="button" class="pf-like-btn" id="friendProfileLikeBtn" style="display:none;"></button>
-
-            <div id="friendProfileStats"
-                style="text-align:left; background:#1a1a2e; border:1px solid #2a2a4a; border-radius:10px; padding:12px 16px; margin-bottom:16px; display:none;">
-                <div id="statServer" class="profile-stat-row" style="display:none;"><span>📱
-                        Server</span><span></span></div>
-                <div id="statTrophies" class="profile-stat-row" style="display:none;"><span>🏆 Highest
-                        Trophies</span><span></span></div>
-                <div id="statClan" class="profile-stat-row" style="display:none;"><span>🏰 Current
-                        Clan</span><span></span></div>
-                <div id="statLevel" class="profile-stat-row" style="display:none;"><span>⭐ Level</span><span></span>
+            <!-- the same card as a player's own Profile page (profile-card.js) -->
+            <div class="pf-card" style="margin-bottom:16px;">
+                <span id="friendProfileAvatarWrap"><div id="friendProfileAvatar" style="width:84px; height:84px; margin:0 auto;"></div></span>
+                <div id="friendProfileLooks"></div>
+                <div id="friendProfileName" class="pf-hero-name"></div>
+                <div class="pf-hero-stats">
+                    <button type="button" class="pf-like-btn" id="friendProfileLikeBtn" style="display:none;"></button>
+                    <span class="pf-stat" id="friendProfileItems" hidden></span>
                 </div>
-                <div id="statPower" class="profile-stat-row" style="display:none;"><span>💪 Power</span><span></span>
-                </div>
+                <div class="pf-badges" id="friendProfileBadges"></div>
+                <div class="pf-hero-bio" id="friendProfileBio"></div>
+                <div class="pf-hero-facts" id="friendProfileFacts"></div>
             </div>
 
             <div class="modal-actions">
@@ -3372,6 +3420,8 @@
     </div>
 
     <script src="progress-core.js"></script>
+    <script src="character-core.js"></script>
+    <script src="profile-card.js"></script>
     <script type="module" src="appState.js"></script>
     <script type="module">
         /* ---------------- KEYBOARD-SAFE INPUT SCROLLING ----------------
@@ -3808,7 +3858,7 @@ function buildCountrySelectOptions(selectId, includeAny) {
             document.getElementById("tabPanelFormation").classList.toggle("active", tab === "formation");
             document.getElementById("tabPanelTierList").classList.toggle("active", tab === "tierlist");
             document.getElementById("tabPanelFriends").classList.toggle("active", tab === "friends");
-            if (tab === "friends") loadSuggestedFriends();
+            if (tab === "friends") { loadSuggestedFriends(); loadMyHearts(); }
             if (tab === "tierlist") ensureUnitDataLoaded();
             if (tab === "world") { document.getElementById("wcList").dataset.drawn = ""; renderWorldChat(); if (loreOpen) renderLore(); markWorldSeen(); maybeShowChatRules(); }
             updateWorldBadge();
@@ -3858,7 +3908,10 @@ function buildCountrySelectOptions(selectId, includeAny) {
             return colors[Math.abs(hash) % colors.length];
         }
 
-        function avatarHtml(url, name, sizeClass) {
+        // Someone's picture spot. With their uid: their 🧍 character (a full-body
+        // card; the starter look until their card is read, then theirs).
+        function avatarHtml(url, name, sizeClass, uid) {
+            if (uid && window.CharacterCore) return charCard(uid, "avatar-wrap " + (sizeClass || ""));
             const initial = (name || "?").trim().charAt(0).toUpperCase() || "?";
             const color = avatarColorFor(name);
             const safeUrl = url ? escapeHtml(url) : "";
@@ -5368,6 +5421,8 @@ window.removeClanIconPreview = function () {
            From their public card; read once a minute at most (AppState).
            Lists draw straight away and redraw once the cards arrive. */
         const cardsByUid = {};
+        // what shows of a card: its styles and its 🧍 character (a change to either redraws)
+        const looksKey = (card) => JSON.stringify([(card || {}).style || null, (card || {}).outfit || null]);
         const cardsAt = {}; // when each was read: a minute later it's read again (a changed style shows up)
         // Their picture now: posts and comments keep the one they were written with.
         const avatarByUid = {};
@@ -5384,13 +5439,18 @@ window.removeClanIconPreview = function () {
                 let changed = false;
                 for (const [u, card] of Object.entries(found)) {
                     const next = card || {};
-                    if (JSON.stringify(next.style || null) !== JSON.stringify((cardsByUid[u] || {}).style || null)) changed = true;
+                    if (looksKey(next) !== looksKey(cardsByUid[u])) changed = true;
                     cardsByUid[u] = next;
                 }
                 for (const [u, pic] of Object.entries(pics || {})) {
                     if (pic && pic !== avatarByUid[u]) { avatarByUid[u] = pic; changed = true; }
                 }
-                if (changed && redraw) redraw();
+                // everything on screen that shows players: the character
+                // pictures usually ask first, and a list asking for the same
+                // players a moment later has to repaint too (name effects!)
+                if (changed) new Set([redraw, ...liveRedraws.values()]).forEach(fn => { try { if (fn) fn(); } catch (e) { } });
+                // names drawn once (search results, suggestions, requests): their effect, in place
+                if (changed) document.querySelectorAll("[data-fx-uid]").forEach(el => { el.className = ((el.dataset.fxKeep || "") + " " + nameFx(el.dataset.fxUid)).trim(); });
             }).catch(() => { });
         }
         const redrawAllLooks = () => liveRedraws.forEach(fn => { try { fn(); } catch (e) { } });
@@ -5402,10 +5462,10 @@ window.removeClanIconPreview = function () {
             myLiveUid = me ? me.uid : null;
             if (!me || !AppState.listenToMyCard) return;
             stopMyLooks.push(AppState.listenToMyCard(card => {
-                const before = JSON.stringify((cardsByUid[me.uid] || {}).style || null);
+                const before = looksKey(cardsByUid[me.uid]);
                 cardsByUid[me.uid] = card || {};
                 cardsAt[me.uid] = Date.now();
-                if (JSON.stringify((card || {}).style || null) !== before) redrawAllLooks();
+                if (looksKey(card) !== before) redrawAllLooks();
             }));
             stopMyLooks.push(AppState.listenToMyProfile(profile => {
                 const pic = (profile && profile.avatar) || "";
@@ -5424,11 +5484,52 @@ window.removeClanIconPreview = function () {
                 document.getElementById(prefix + "AvatarWrap").className = b ? `fx-av fx-border-${b.css}${b.anim ? " fx-" + b.anim : ""}` : "";
                 document.getElementById(prefix + "PosterName").className = "clan-post-name " + nameFx(uid);
                 if (avatarByUid[uid]) document.getElementById(prefix + "Avatar").src = avatarByUid[uid];
+                // their 🧍 character instead of the picture
+                // their 🧍 character (the starter look until they dress up) instead of the picture
+                const img = document.getElementById(prefix + "Avatar");
+                if (window.CharacterCore && uid) {
+                    let ch = document.getElementById(prefix + "Char");
+                    if (!ch) { ch = document.createElement("span"); ch.id = prefix + "Char"; ch.className = "clan-post-avatar kc-av"; img.after(ch); }
+                    ch.innerHTML = CharacterCore.pic((cardsByUid[uid] || {}).outfit || CharacterCore.cleanOutfit({}, []), { size: 64 });
+                    img.style.display = "none";
+                }
             };
             paint();
             ensureCards([uid], paint, "detail:" + prefix);
         }
-        const bordered = (uid, html) => window.ProgressCore ? ProgressCore.withBorder(html, styleOf(uid)) : html;
+        // Their 🧍 character in place of their picture, at the picture's size
+        // (its class). As a picture (CharacterCore.pic: one <img>, each look made
+        // once) — drawing hundreds of characters into the page made Social slow;
+        // the live, animated one is drawn only when you open their profile.
+        function charCard(uid, cls) {
+            const o = (cardsByUid[uid] || {}).outfit || CharacterCore.cleanOutfit({}, []); // the starter look until theirs is read
+            ensureCards([uid], hydrateChars, "chars");
+            return `<span class="${cls} kc-av" data-char-uid="${escapeHtml(uid)}" data-k="${escapeHtml(JSON.stringify((cardsByUid[uid] || {}).outfit || null))}">${CharacterCore.pic(o, { size: 64 })}</span>`;
+        }
+        // Cards that arrived later: put each player's own character in.
+        function hydrateChars() {
+            document.querySelectorAll("[data-char-uid]").forEach(el => {
+                const o = (cardsByUid[el.dataset.charUid] || {}).outfit;
+                const k = JSON.stringify(o || null);
+                if (o && el.dataset.k !== k) { el.innerHTML = CharacterCore.pic(o, { size: 64 }); el.dataset.k = k; }
+            });
+        }
+        // Tap someone's picture — anywhere (posts, chat, friends, hearts, search…) — for their profile.
+        // (Captured first, so a row that opens a chat still opens the profile from its picture.)
+        document.addEventListener("click", (e) => {
+            const pic = e.target instanceof Element && e.target.closest("[data-char-uid]");
+            const me = AppState.getCurrentUser && AppState.getCurrentUser();
+            if (!pic || !pic.dataset.charUid || (me && pic.dataset.charUid === me.uid)) return;
+            e.stopPropagation();
+            e.preventDefault();
+            onPosterClick(pic.dataset.charUid, "");
+        }, true);
+        function charOr(uid, html) {
+            if (!uid || !window.CharacterCore) return html;
+            const cls = (String(html).match(/class="([^"]*)"/) || [])[1] || "";
+            return charCard(uid, cls);
+        }
+        const bordered = (uid, html) => { html = charOr(uid, html); return window.ProgressCore ? ProgressCore.withBorder(html, styleOf(uid)) : html; };
         // One person's reactions as a list (older messages stored just one).
         const reactList = (v) => Array.isArray(v) ? v : (typeof v === "string" && v ? [v] : []);
         function reactionsHtml(kind, item) {
@@ -6747,8 +6848,8 @@ window.removeClanIconPreview = function () {
             list.innerHTML = requests.map(r => `
                 <div class="friend-req-item">
                     <div class="friend-req-person" style="display:flex; align-items:center; gap:8px; cursor:pointer;" onclick="openViewProfileModal(${jsStr(r.fromName)}, '${escapeHtml(r.fromAvatar || "")}')">
-                        ${avatarHtml(r.fromAvatar, r.fromName, "friend-req-avatar")}
-                        <span class="friend-req-name">${escapeHtml(r.fromName)}</span>
+                        ${avatarHtml(r.fromAvatar, r.fromName, "friend-req-avatar", r.fromUid)}
+                        <span class="friend-req-name ${nameFx(r.fromUid)}" data-fx-uid="${escapeHtml(r.fromUid || "")}" data-fx-keep="friend-req-name">${escapeHtml(r.fromName)}</span>
                     </div>
                     <div class="friend-req-actions">
                         <button class="mini-btn accept" onclick="respondReq('${r.id}', true)">Accept</button>
@@ -6771,7 +6872,6 @@ window.removeClanIconPreview = function () {
                 showInfoModal("Couldn't respond", e.message);
             }
         };
-        const SERVER_LABELS = { ios: "iOS 🍎", android: "Android 🤖", both: "iOS & Android" };
 
         window.showProfileModal = function (profile, isFriend) {
             if (profile && profile.uid) {
@@ -6781,29 +6881,21 @@ window.removeClanIconPreview = function () {
             fillProfileExtras(profile && profile.uid);
     document.body.style.overflow = "hidden";
     document.documentElement.style.overflow = "hidden";
-            document.getElementById("friendProfileAvatar").innerHTML = avatarHtml(profile.avatar, profile.name, "");
+            const fav = document.getElementById("friendProfileAvatar");
+            fav.innerHTML = avatarHtml(profile.avatar, profile.name, "");
+            fav.style.width = fav.style.height = "84px";
+            fav.classList.remove("vp-char");
+            document.getElementById("friendProfileLooks").innerHTML = "";
             document.getElementById("friendProfileName").textContent = profile.name;
-            document.getElementById("friendProfileName").className = "";
+            document.getElementById("friendProfileName").className = "pf-hero-name";
+            document.getElementById("friendProfileItems").hidden = true;
+            document.getElementById("friendProfileAvatarWrap").className = "";
             const box = document.querySelector("#friendProfileModalOverlay .modal-box");
             [...box.classList].filter(c => c.startsWith("fx-")).forEach(c => box.classList.remove(c));
 
-            const bioEl = document.getElementById("friendProfileBio");
-            if (profile.bio) { bioEl.textContent = profile.bio; bioEl.style.display = "block"; }
-            else { bioEl.style.display = "none"; }
-
-            const statMap = [
-                ["statServer", profile.server ? SERVER_LABELS[profile.server] || profile.server : null],
-                ["statTrophies", profile.highestTrophies ? Number(profile.highestTrophies).toLocaleString() : null],
-                ["statClan", profile.currentClan],
-                ["statLevel", profile.currentLevel || null],
-                ["statPower", profile.currentPower ? Number(profile.currentPower).toLocaleString() : null]
-            ];
-            statMap.forEach(([id, value]) => {
-                const row = document.getElementById(id);
-                row.querySelector("span:last-child").textContent = value || "—";
-                row.style.display = "flex";
-            });
-            document.getElementById("friendProfileStats").style.display = "block";
+            // their bio and game stats, drawn as on their own Profile page (profile-card.js)
+            document.getElementById("friendProfileBio").textContent = String(profile.bio || "").trim();
+            document.getElementById("friendProfileFacts").innerHTML = ProfileCard.facts(profile);
             const msgBtn = document.getElementById("friendProfileMessageBtn");
             const addBtn = document.getElementById("friendProfileAddBtn");
             const reportBtn = document.getElementById("friendProfileReportBtn");
@@ -6824,6 +6916,174 @@ window.removeClanIconPreview = function () {
 
             document.getElementById("friendProfileModalOverlay").classList.add("open");
         };
+// All of someone's looks (3 at least — the starter look where one's not
+        // dressed), named, the one they wear ✓; tap one to see it big.
+        function cardLooks(card) {
+            const CC = window.CharacterCore;
+            const list = Array.isArray(card.outfits) && card.outfits.length ? card.outfits : [card.outfit];
+            return Array.from({ length: Math.max(CC.LOOKS_FREE, list.length) }, (_, i) => list[i] || CC.cleanOutfit({}, []));
+        }
+        function allLooksHtml(card, svg) {
+            const CC = window.CharacterCore, eq = Number.isInteger(card.equipped) ? card.equipped : 0;
+            return `<div class="vp-looks-title">Their looks <small>· tap one to see it</small></div><div class="vp-looks">${cardLooks(card).map((o, i) =>
+                `<button type="button" class="vp-look${i === eq ? " on" : ""}" data-vp-look="${i}" aria-label="${escapeHtml(CC.lookName(card.lookNames, i))}">${svg(o, { size: 64 })}<small>${escapeHtml(CC.lookName(card.lookNames, i))}${i === eq ? " ✓" : ""}</small></button>`).join("")}</div>`;
+        }
+        function wireLooks(row, bigEl, card) {
+            const looks = cardLooks(card);
+            row.onclick = (e) => {
+                const b = e.target.closest("[data-vp-look]");
+                if (!b) return;
+                const i = Number(b.dataset.vpLook);
+                bigEl.innerHTML = CharacterCore.svg(looks[i], { size: 150, title: CharacterCore.lookName(card.lookNames, i), animate: true });
+                row.querySelectorAll("[data-vp-look]").forEach(x => x.classList.toggle("on", x === b));
+            };
+        }
+        /* 💗 hearts: a friend gets one from you once a day (up to 10 a day);
+           you get one too. myHearts: who you've sent one to today. */
+        let myHearts = null;
+        async function loadMyHearts() {
+            if (!AppState.getCurrentUser() || !AppState.getHeartStatus) { myHearts = null; renderHeartsPanel(); return; }
+            try { myHearts = await AppState.getHeartStatus(); } catch (e) { return; }
+            renderHeartsPanel();
+            if (friends && friends.length) renderFriends(friends);
+        }
+        // 💗 Hearts (Friends tab): what you have, today's sends, and hearts
+        // friends sent you — Collect, and 💗 Send back.
+        function renderHeartsPanel() {
+            const box = document.getElementById("heartsPanel");
+            if (!box) return;
+            if (!myHearts) { box.style.display = "none"; return; }
+            const h = myHearts, waiting = h.waiting || [];
+            const sentTo = (uid) => (h.heartsToday || []).includes(uid);
+            const badge = document.getElementById("heartWaitBadge");
+            if (badge) { badge.textContent = `💗${waiting.length > 9 ? "9+" : waiting.length}`; badge.style.display = waiting.length ? "" : "none"; }
+            // 💗 Send hearts: your friends — whoever sent you one first (send it back), then who's online
+            const sentMe = new Set(waiting.map(w => w.from));
+            const pals = (friends || []).slice().sort((a, b) => (sentTo(a.uid) - sentTo(b.uid)) || (sentMe.has(b.uid) - sentMe.has(a.uid))
+                || (isFriendOnline(b) - isFriendOnline(a)) || ((b.lastActiveAt || 0) - (a.lastActiveAt || 0)));
+            const sendStrip = !pals.length ? `<div class="hp-empty">Add friends to send them hearts.</div>`
+                : `<div class="hp-send-title">💗 Send hearts <small>${h.heartsLeft > 0 ? `${h.heartsLeft} of ${h.heartsPerDay} left today · send all ${h.heartsPerDay} for +${window.ProgressCore.HEARTS.dayBonus} 💗` : "all sent today ✓ — more tomorrow"}</small></div>
+                <div class="hp-send">${pals.map(p => {
+                    const sent = sentTo(p.uid);
+                    return `<div class="hp-chip${sent ? " sent" : ""}">${charCard(p.uid, "hp-chip-av")}<small><span data-fx-uid="${escapeHtml(p.uid)}" class="${nameFx(p.uid)}">${escapeHtml(p.name || "Friend")}</span></small>
+                        <button type="button" onclick="sendHeartBack('${escapeHtml(p.uid)}', this)"${sent || h.heartsLeft <= 0 ? " disabled" : ""} aria-label="Send ${escapeHtml(p.name || "them")} a heart">${sent ? "✓ Sent" : sentMe.has(p.uid) ? "💗 Back" : "💗 Send"}</button></div>`;
+                }).join("")}</div>`;
+            box.style.display = "";
+            box.innerHTML = `
+                <div class="hp-head"><b>💗 Hearts</b><span class="hp-have">${h.hearts} 💗</span><button type="button" class="hp-shop" onclick="goHeartShop()">Heart Shop ›</button></div>
+                <div class="hp-sub">Friends send you hearts — collect them here and send one back. You can send each friend one a day: <b>${h.heartsLeft}</b> of ${h.heartsPerDay} left today${h.vip ? "" : " (Super Supporters send 10)"}.</div>
+                <div class="hp-send-title">📬 Waiting for you</div>
+                ${waiting.length ? `<div class="hp-list">${waiting.map(w => `
+                    <div class="hp-row">
+                        ${avatarHtml("", w.fromName, "friend-row-avatar", w.from)}
+                        <div class="hp-who"><span data-fx-uid="${escapeHtml(w.from)}" class="${nameFx(w.from)}">${escapeHtml(w.fromName)}</span><small>sent you a heart · ${heartAgo(w.at)}</small></div>
+                        <button type="button" class="hp-get" onclick="collectHeart('${escapeHtml(w.from)}', this)">Collect</button>
+                        <button type="button" class="hp-back" onclick="sendHeartBack('${escapeHtml(w.from)}', this)"${sentTo(w.from) || h.heartsLeft <= 0 ? " disabled" : ""}>${sentTo(w.from) ? "✓ Sent" : "💗 Send back"}</button>
+                    </div>`).join("")}</div>
+                    ${waiting.length > 1 ? `<button type="button" class="hp-all" onclick="collectHeart(null, this)">💗 Collect all ${waiting.length}</button>` : ""}`
+                : `<div class="hp-empty">No hearts waiting for you right now.</div>`}
+                ${sendStrip}`;
+        }
+        // "just now", "5m ago", "3h ago", "yesterday", then the date
+        function heartAgo(ts) {
+            const m = Math.max(0, Math.floor((Date.now() - (ts || 0)) / 60000));
+            if (m < 1) return "just now";
+            if (m < 60) return m + "m ago";
+            if (m < 1440) return Math.floor(m / 60) + "h ago";
+            if (m < 2880) return "yesterday";
+            return new Date(ts).toLocaleDateString();
+        }
+        window.goHeartShop = function () {
+            try { if (window.top !== window && window.top.openStoreAt) { window.top.openStoreAt("hearts"); return; } } catch (e) { }
+            location.href = "store.html#hearts";
+        };
+        // collect one friend's heart (from), or all of them (null)
+        window.collectHeart = async function (from, btn) {
+            if (btn) btn.disabled = true;
+            try {
+                const r = await AppState.collectHearts(from || undefined);
+                myHearts = { ...myHearts, hearts: r.hearts, waiting: (myHearts.waiting || []).filter(w => !r.collected.includes(w.from)) };
+                renderHeartsPanel();
+                showToast(`+${r.got} 💗${r.bonus ? ` — lucky! ${r.bonus} bonus heart${r.bonus === 1 ? "" : "s"}` : ""}`);
+            } catch (e) {
+                if (btn) btn.disabled = false;
+                showInfoModal("Couldn't collect it", e.message);
+                loadMyHearts();
+            }
+        };
+        window.sendHeartBack = async function (uid, btn) {
+            if (btn) btn.disabled = true;
+            try {
+                const r = await sendHeartTo(uid);
+                renderHeartsPanel();
+                if (friends && friends.length) renderFriends(friends);
+                showToast(sentToast(r));
+            } catch (e) {
+                if (btn) btn.disabled = false;
+                showInfoModal("Couldn't send it", e.message);
+            }
+        };
+        const sentToast = (r) => `💗 Sent! They'll find it in their Hearts.${r.bonus ? " Lucky — you got 1 💗 too!" : ""}${r.dayBonus ? ` 🎉 All ${r.heartsPerDay} sent today: +${r.dayBonus} 💗 for you!` : ""}`;
+        AppState.waitForAuthReady().then(loadMyHearts);
+        AppState.onAuthChange(loadMyHearts);
+        async function sendHeartTo(uid) {
+            const r = await AppState.sendHeart(uid);
+            myHearts = { ...(myHearts || {}), hearts: r.hearts, heartsToday: r.heartsToday, heartsLeft: r.heartsLeft, heartsPerDay: r.heartsPerDay };
+            renderHeartsPanel();
+            if (cardsByUid[uid]) cardsByUid[uid] = { ...cardsByUid[uid], heartsGot: Math.max(0, cardsByUid[uid].heartsGot || 0) + 1 };
+            return r;
+        }
+        // the 💗 on a friend's row in your friends list
+        window.quickHeart = async function (uid, btn) {
+            if (btn.disabled) return;
+            btn.disabled = true;
+            try {
+                const r = await sendHeartTo(uid);
+                btn.classList.add("sent");
+                btn.title = "Heart sent today ✓";
+                showToast(sentToast(r));
+            } catch (e) {
+                btn.disabled = false;
+                showInfoModal("Couldn't send it", e.message);
+            }
+        };
+        // the 💗 button on someone's profile
+        async function fillHeartButton(uid, btn, card) {
+            const me = AppState.getCurrentUser(), PC = window.ProgressCore;
+            let count = Math.max(0, card.heartsGot || 0) + Math.max(0, card.likeCount || 0);
+            const label = () => `💗 ${count} heart${count === 1 ? "" : "s"}`;
+            btn.style.display = "inline-flex";
+            btn.classList.remove("on");
+            btn.textContent = label();
+            btn.disabled = true;
+            btn.onclick = null;
+            btn.title = !me ? "Sign in to send hearts" : me.uid === uid ? "That's you!" : "";
+            if (!me || me.uid === uid || !AppState.getHeartStatus) return;
+            let hs;
+            try { hs = await AppState.getHeartStatus(uid); } catch (e) { return; }
+            if (profileExtrasFor !== uid) return;
+            if (!hs.friend) { btn.title = "Add them as a friend to send hearts"; btn.textContent = label(); return; }
+            const draw = (sent) => {
+                btn.classList.toggle("on", sent);
+                btn.textContent = sent ? `💗 Sent today ✓ · ${count}` : hs.heartsLeft > 0 ? `💗 Send a heart · ${count}` : `💗 All ${hs.heartsPerDay} sent today · ${count}`;
+                btn.disabled = sent || hs.heartsLeft <= 0;
+                btn.title = sent ? "You can send another tomorrow" : "A heart for them to collect";
+            };
+            draw(hs.heartsToday.includes(uid));
+            btn.onclick = async () => {
+                btn.disabled = true;
+                try {
+                    const r = await sendHeartTo(uid);
+                    count++; hs.heartsLeft = r.heartsLeft;
+                    draw(true);
+                    if (friends && friends.length) renderFriends(friends);
+                    showToast(sentToast(r));
+                } catch (e) {
+                    draw(false);
+                    showInfoModal("Couldn't send it", e.message);
+                }
+            };
+        }
         // Their shown badges and the 👍 like button. A newer popup supersedes
         // an older one still loading, so a slow answer never lands on the
         // wrong person.
@@ -6835,35 +7095,29 @@ window.removeClanIconPreview = function () {
             badgesEl.innerHTML = "";
             likeBtn.style.display = "none";
             if (!uid || !window.ProgressCore) return;
-            const me = AppState.getCurrentUser();
-            const [card, liked] = await Promise.all([AppState.getPlayerCard(uid), me && me.uid !== uid ? AppState.haveILikedProfile(uid) : false]);
+            const card = await AppState.getPlayerCard(uid);
             if (profileExtrasFor !== uid) return;
             showSpookyButton(uid, likeBtn);
             badgesEl.innerHTML = (card.badges || []).map(b => ProgressCore.badgeHtml(b)).join("");
             cardsByUid[uid] = card;
             const av = document.getElementById("friendProfileAvatar");
-            if (card.style && card.style.border) av.innerHTML = ProgressCore.withBorder(av.innerHTML, card.style);
-            document.getElementById("friendProfileName").className = ProgressCore.styleClass(card.style, "name");
+            if (window.CharacterCore) {
+                // their 🧍 character (the starter look until they dress up), in place of a picture
+                av.innerHTML = CharacterCore.svg(card.outfit || CharacterCore.cleanOutfit({}, []), { size: 150, title: "Their character", animate: true });
+                av.style.width = av.style.height = "auto";
+                av.classList.add("vp-char");
+                // their border, round the character (as on their own Profile page)
+                const bd = card.style && ProgressCore.STYLE_BY_ID[card.style.border];
+                document.getElementById("friendProfileAvatarWrap").className = bd ? `fx-av fx-border-${bd.css}${bd.anim ? " fx-" + bd.anim : ""}` : "";
+                const row = document.getElementById("friendProfileLooks");
+                row.innerHTML = allLooksHtml(card, CharacterCore.svg);
+                wireLooks(row, av, card);
+            } else if (card.style && card.style.border) av.innerHTML = ProgressCore.withBorder(av.innerHTML, card.style);
+            document.getElementById("friendProfileName").className = "pf-hero-name " + ProgressCore.styleClass(card.style, "name");
+            const items = document.getElementById("friendProfileItems");
+            items.textContent = ProfileCard.itemsText(card.itemCount); items.hidden = false;
             document.querySelector("#friendProfileModalOverlay .modal-box").classList.add(...(ProgressCore.styleClass(card.style, "background") || "fx-none").split(" "));
-            let count = Math.max(0, card.likeCount || 0), on = liked;
-            const draw = () => { likeBtn.textContent = `👍 ${count} like${count === 1 ? "" : "s"}`; likeBtn.classList.toggle("on", on); };
-            draw();
-            likeBtn.style.display = "inline-flex";
-            likeBtn.disabled = !me || me.uid === uid;
-            likeBtn.title = !me ? "Sign in to like profiles" : me.uid === uid ? "That's you!" : on ? "Take your like back" : "Like this profile";
-            likeBtn.onclick = async () => {
-                likeBtn.disabled = true;
-                const want = !on;
-                on = want; count = Math.max(0, count + (want ? 1 : -1)); draw();
-                try {
-                    const r = await AppState.setProfileLike(uid, want);
-                    on = r.liked; count = r.likeCount; draw();
-                } catch (e) {
-                    on = !want; count = Math.max(0, count + (want ? -1 : 1)); draw();
-                    showInfoModal("Couldn't update your like", e.message);
-                }
-                likeBtn.disabled = false;
-            };
+            fillHeartButton(uid, likeBtn, card);
         }
         // 🎃 Spooky Gifts: while the event is on, a button on other players'
         // profiles to send them your one gift (they open it from their inbox).
@@ -6907,6 +7161,27 @@ window.removeClanIconPreview = function () {
         }
         AppState.onAuthChange && AppState.onAuthChange(() => { spookySent = null; });
 
+        /* Popups here sit inside the app's frame: the app dims its top bar
+           while one's showing, so nothing behind it can be tapped. (Back
+           closes them — PHONE / BROWSER BACK above.) Only a popup you can
+           see counts. */
+        (function () {
+            const app = () => { try { return window.top !== window && window.top.kihChildPopup ? window.top : null; } catch (e) { return null; } };
+            // (a chat isn't a popup: it's a page of its own, and the top bar stays yours)
+            const showing = () => [...document.querySelectorAll(".modal-overlay.open")].some(el => el.id !== "dmModalOverlay" && el.getClientRects().length > 0 && getComputedStyle(el).visibility !== "hidden");
+            let was = false;
+            const check = () => {
+                const now = showing();
+                if (now === was) return;
+                was = now;
+                const a = app();
+                if (a) a.kihChildPopup(now, window);
+            };
+            // (just the popups — watching every change on the page made it slow)
+            const watch = new MutationObserver(check);
+            document.querySelectorAll(".modal-overlay").forEach(el => watch.observe(el, { attributes: true, attributeFilter: ["class", "style"] }));
+            window.addEventListener("pagehide", () => { const a = app(); if (a && was) a.kihChildPopup(false, window); });
+        })();
         window.closeFriendProfileModal = function () {
     document.getElementById("friendProfileModalOverlay").classList.remove("open");
     document.body.style.overflow = "";
@@ -6978,19 +7253,22 @@ window.removeClanIconPreview = function () {
                 return `
         <div class="friend-row" onclick="openDmWith('${f.uid}', ${jsStr(f.name)}, '${escapeHtml(f.avatar || "")}')">
             <div class="friend-avatar-status-wrap">
-                ${avatarHtml(f.avatar, f.name, "friend-row-avatar")}
+                ${avatarHtml(f.avatar, f.name, "friend-row-avatar", f.uid)}
                 ${isOnline ? '<span class="online-dot" title="Online"></span>' : ""}
             </div>
             <div class="friend-row-info" style="min-width:0;">
                 <div style="display:flex; align-items:center; justify-content:space-between; gap:8px;">
-                    <div class="friend-row-name" style="${f.unreadCount > 0 ? 'font-weight:800;' : ''}">${escapeHtml(f.name)}</div>
+                    <div class="friend-row-name" style="${f.unreadCount > 0 ? 'font-weight:800;' : ''}"><span class="${nameFx(f.uid)}">${escapeHtml(f.name)}</span></div>
                     ${hasMsg ? `<span style="color:#9a9ab0; font-size:0.72rem; flex-shrink:0;">${timeAgo(f.lastMessageAt)}</span>` : ""}
                 </div>
                 <div class="friend-row-status" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; ${f.unreadCount > 0 ? 'color:#eaeaf0; font-weight:600;' : ''}">${escapeHtml(previewRaw)}</div>
             </div>
             ${badge}
+            ${myHearts ? `<button type="button" class="friend-heart${myHearts.heartsToday.includes(f.uid) ? " sent" : ""}" onclick="event.stopPropagation(); quickHeart('${f.uid}', this)"${myHearts.heartsToday.includes(f.uid) || myHearts.heartsLeft <= 0 ? " disabled" : ""} title="${myHearts.heartsToday.includes(f.uid) ? "Heart sent today ✓" : "Send a heart (for them to collect)"}" aria-label="Send ${escapeHtml(f.name)} a heart">💗</button>` : ""}
         </div>`;
             }).join("");
+            ensureCards(list.map(f => f.uid), () => renderFriends(friends), "friends");
+            renderHeartsPanel();
         }
 
         window.clearFriendSearch = function () {
@@ -7015,9 +7293,9 @@ window.removeClanIconPreview = function () {
                 window._lastSearchResults = results;
                 list.innerHTML = results.map((r, i) => `
                     <div class="friend-row" onclick="showProfileModal(window._lastSearchResults[${i}], ${isFriendUid(r.uid)})">
-                        ${avatarHtml(r.avatar, r.name, "friend-row-avatar")}
+                        ${avatarHtml(r.avatar, r.name, "friend-row-avatar", r.uid)}
                         <div class="friend-row-info">
-                            <div class="friend-row-name">${escapeHtml(r.name)}</div>
+                            <div class="friend-row-name"><span data-fx-uid="${escapeHtml(r.uid)}" class="${nameFx(r.uid)}">${escapeHtml(r.name)}</span></div>
                             <div class="friend-row-status">${formatLastActive(r.lastActiveAt)}</div>
                         </div>
                         ${isFriendUid(r.uid)
@@ -7040,9 +7318,9 @@ window.removeClanIconPreview = function () {
                 window._lastSuggestions = suggestions;
                 container.innerHTML = suggestions.map((s, i) => `
     <div class="friend-row" onclick="openPersonActionSheet('${s.uid}', ${jsStr(s.name)}, window._lastSuggestions[${i}], false)">
-        ${avatarHtml(s.avatar, s.name, "friend-row-avatar")}
+        ${avatarHtml(s.avatar, s.name, "friend-row-avatar", s.uid)}
         <div class="friend-row-info">
-            <div class="friend-row-name">${escapeHtml(s.name)}</div>
+            <div class="friend-row-name"><span data-fx-uid="${escapeHtml(s.uid)}" class="${nameFx(s.uid)}">${escapeHtml(s.name)}</span></div>
             <div class="friend-row-status">${formatLastActive(s.lastActiveAt)}</div>
         </div>
         <span class="friend-row-chevron">›</span>
@@ -7060,7 +7338,10 @@ window.removeClanIconPreview = function () {
 
         /* ---------------- ACTION SHEET (click a poster) ---------------- */
 
+        // Tapping someone opens their profile straight away; Message / Add Friend
+        // are at its bottom. (The old in-between menu is kept for anything still calling it.)
         window.openPersonActionSheet = function (uid, name, profile, isFriend) {
+    if (profile && window.showProfileModal) { profile.uid = profile.uid || uid; profile.name = profile.name || name; return showProfileModal(profile, isFriend); }
     document.getElementById("actionModalTitle").textContent = name;
     window._lastActionSheetProfile = profile;
     document.getElementById("actionModalActions").innerHTML = `
@@ -7097,7 +7378,8 @@ window.removeClanIconPreview = function () {
             profile.uid = uid;
             profile.name = profile.name || name;
 
-            openPersonActionSheet(uid, name, profile, isFriendUid(uid));
+            // straight to their profile (Message / Add Friend are at its bottom)
+            showProfileModal(profile, isFriendUid(uid));
         };
 
         window.closeActionModal = function () {
@@ -8783,7 +9065,7 @@ window.removeClanIconPreview = function () {
                 currentDmOtherUid = uid;
                 currentDmOtherName = name;
                 document.getElementById("dmHeaderName").textContent = name;
-                document.getElementById("dmHeaderAvatar").innerHTML = avatarHtml(avatar, name, "");
+                document.getElementById("dmHeaderAvatar").innerHTML = avatarHtml(avatar, name, "", uid);
                 // Their border and name effect up top; both of your bubble colours below.
                 const drawHeader = () => {
                     if (currentDmOtherUid !== uid) return;
@@ -9150,6 +9432,14 @@ document.getElementById("dmMessages").addEventListener("scroll", rafThrottle(upd
             closeImageViewer();
             closePostTierListModal();
             closeTierListDetailModal();
+            // …and someone's profile, the chat rules, Lore — left open, they
+            // came back with you (and kept the app's top bar locked meanwhile)
+            closeFriendProfileModal();
+            closeViewProfileModal();
+            closeChatRules();
+            closeLoreDetailModal();
+            closePostLoreModal();
+            closeInfoModal();
             document.body.style.overflow = "";
             document.documentElement.style.overflow = "";
             document.getElementById("dmActionsMenu")?.classList.remove("open");

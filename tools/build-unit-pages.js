@@ -3,10 +3,11 @@
      icons — a fraction of the full picture's size;
    - data/bundle.json: every game data file in one download, which Games and
      Troops & Heroes read instead of fetching ~120 files one by one;
-   - the Troops & Heroes guide: one page per unit (units/<slug>.html) showing
-     the app's own unit card at every level (drawn by the app itself — see
-     render-unit-cards.js), an index laid out like the app's gallery
-     (units/index.html), and the sitemap.
+   - the Troops, Heroes & Bosses guide: one page per unit (units/<slug>.html)
+     showing the app's own unit card at every level (drawn by the app itself —
+     see render-unit-cards.js), one per Glorious Hunt boss (units/boss-<slug>.html,
+     the numbers boss-calc.js gives the app's Bosses tab), an index laid out
+     like the app's gallery (units/index.html), and the sitemap.
    The interactive Troops & Heroes page builds everything in the browser, so
    search engines (and Google's ad review) see almost no text there; the guide
    carries the same information as plain, readable pages.
@@ -23,6 +24,12 @@ const { renderUnitCards } = require(path.join(__dirname, "render-unit-cards.js")
 const units = G.unitsFromFiles(f => require(path.join(ROOT, f)));
 const byKey = new Map(units.map(u => [u.key, u]));
 const OUT = path.join(ROOT, "units");
+// the bosses: the same numbers the app's 🐉 Bosses tab shows (boss-calc.js)
+const B = require(path.join(ROOT, "boss-calc.js"));
+const readJSON = (f) => JSON.parse(fs.readFileSync(path.join(ROOT, f), "utf8"));
+const BOSS_DATA = { bosses: readJSON("data/bosses.json"), localization: readJSON("localization.json"), en: readJSON("en.json"), troopsLevel: readJSON("troopsLevel.json"),
+    abilityAoeDamageSuicide: readJSON("abilityAoeDamageSuicide.json"), modifiers: readJSON("unitParameterModifierNested.json") };
+const BOSS_LEVELS = [1, 50, 100, 150, 200, 250, 300];
 const TODAY = new Date().toISOString().slice(0, 10);
 
 /* ---------------- helpers ---------------- */
@@ -112,7 +119,7 @@ function buildBundle() {
 }
 
 /* ---------------- page parts ---------------- */
-const CSS_VERSION = "2";
+const CSS_VERSION = "3";
 function head({ title, description, canonical, image }) {
     return `<!DOCTYPE html>
 <html lang="en">
@@ -148,16 +155,16 @@ function head({ title, description, canonical, image }) {
 // and after (in the app's order), and the whole list.
 function guideBar(prev, next, isIndex) {
     const step = (u, dir) => u
-        ? `<a class="gb-step" href="${urlOf(u)}" title="${dir === "‹" ? "Previous" : "Next"}: ${esc(u.name)}" aria-label="${dir === "‹" ? "Previous" : "Next"}: ${esc(u.name)}">${dir}</a>`
+        ? `<a class="gb-step" href="${u.bossPage || urlOf(u)}" title="${dir === "‹" ? "Previous" : "Next"}: ${esc(u.name)}" aria-label="${dir === "‹" ? "Previous" : "Next"}: ${esc(u.name)}">${dir}</a>`
         : `<span class="gb-step off" aria-hidden="true">${dir}</span>`;
     return `<nav class="guide-bar" aria-label="Guide">
         <button type="button" class="gb-back" onclick="guideBack()">← Back</button>
-        ${isIndex ? `<span class="gb-title">📖 Troops &amp; Heroes guide</span>` : `${step(prev, "‹")}<a class="gb-all" href="./">📖 All units</a>${step(next, "›")}`}
+        ${isIndex ? `<span class="gb-title">📖 Troops, Heroes &amp; Bosses guide</span>` : `${step(prev, "‹")}<a class="gb-all" href="./">📖 All units</a>${step(next, "›")}`}
         <a class="gb-app" href="../">🏠 App</a>
     </nav>`;
 }
 const footer = `<footer class="guide-foot">
-        <p><a href="../">Open the app</a> · <a href="./">Troops &amp; heroes guide</a> · <a href="../about.html">About &amp; contact</a> · <a href="../privacy.html">Privacy</a> · <a href="../terms.html">Terms</a></p>
+        <p><a href="../">Open the app</a> · <a href="./">Troops, heroes &amp; bosses guide</a> · <a href="../about.html">About &amp; contact</a> · <a href="../privacy.html">Privacy</a> · <a href="../terms.html">Terms</a></p>
         <p class="disclaimer">Keazyea's Intelligence Hub is an unofficial, fan-made guide to ${GAME}. It isn't affiliated with or endorsed by the game's publisher or developer; game names, characters and images belong to their owners.</p>
     </footer>`;
 
@@ -326,6 +333,85 @@ function unitPage(u, ctx) {
 `;
 }
 
+/* ---------------- 🐉 bosses ----------------
+   One page per Glorious Hunt boss: its picture, what it is, every ability
+   (with its icon and the game's description) and its numbers at a few levels
+   from 1 to 300 — the same numbers the app's Bosses tab shows at any level. */
+const bossSlug = (b) => "boss-" + slugOf({ name: b.name });
+const bossesAt = (lv) => B.BOSSES.map(b => B.bossAt(BOSS_DATA, b.id, lv));
+const fmtVal = (v) => (typeof v === "number" ? fmt(Math.round(v * 100) / 100) : esc(v));
+function bossGalleryItem(b) {
+    return `<a class="gallery-item legendary" href="${bossSlug(b)}.html" data-name="${esc(b.name.toLowerCase())} ${esc(b.title.toLowerCase())}" data-type="boss" data-rarity="" data-faction="" data-attack="">
+            <img src="../images/thumbs/${esc(b.img)}.jpg" alt="" loading="lazy" decoding="async" width="100" height="100"><span>${esc(b.name)}</span></a>`;
+}
+// one ability: its numbers at each of BOSS_LEVELS (the rows the app shows, in its order)
+function bossAbilityTable(id, ai) {
+    const at = BOSS_LEVELS.map(lv => B.bossAt(BOSS_DATA, id, lv).abilities[ai]);
+    const labels = [];
+    at.forEach(a => a.rows.forEach(r => { if (!labels.includes(r.label)) labels.push(r.label); }));
+    if (!labels.length) return "";
+    const val = (a, label) => { const r = a.rows.find(x => x.label === label); return r ? fmtVal(r.value) : "—"; };
+    return `<div class="tbl"><table><thead><tr><th>Level</th>${BOSS_LEVELS.map(lv => `<th>${lv}</th>`).join("")}</tr></thead>
+        <tbody>${labels.map(l => `<tr><td>${esc(l)}</td>${at.map(a => `<td>${val(a, l)}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+}
+function bossPage(id, prev, next) {
+    const b = B.bossAt(BOSS_DATA, id, 1), top = B.bossAt(BOSS_DATA, id, B.MAX_LEVEL);
+    const attacks = b.abilities.filter(a => a.kind === "attack"), passives = b.abilities.filter(a => a.kind === "passive");
+    const named = (list) => list.map(a => `<em>${esc(a.name)}</em>`).join(list.length === 2 ? " and " : ", ");
+    const lead = [`<strong>${esc(b.name)}</strong>, the ${esc(b.title)}, is a Glorious Hunt boss in ${GAME}, from level 1 to ${B.MAX_LEVEL}.`,
+        attacks.length ? `It attacks with ${named(attacks)}.` : "",
+        passives.length ? `Its passive abilit${passives.length === 1 ? "y is" : "ies are"} ${named(passives)}.` : "",
+        top.levelUp && top.levelUp.total ? `Pushing it all the way to level ${B.MAX_LEVEL} takes ${fmt(top.levelUp.total)} damage in total.` : ""].filter(Boolean).join(" ");
+    const description = `${b.name} (${b.title}), a ${GAME} Glorious Hunt boss: every ability, its damage, area and cooldown at levels 1–${B.MAX_LEVEL}, as the app shows them.`;
+    const appLinkBoss = `../?goto=troops&amp;boss=${encodeURIComponent(id)}`;
+    const ability = (a, i) => `<div class="boss-ab">
+            <div class="boss-ab-head">${a.icon && fs.existsSync(path.join(ROOT, "images", a.icon + ".jpg")) ? `<img src="../images/${esc(a.icon)}.jpg" alt="" width="44" height="44" loading="lazy">` : `<span class="boss-ab-ico">${a.kind === "passive" ? "🛡️" : "⚔️"}</span>`}
+                <div><h3>${esc(a.name)}</h3><span class="chip">${a.kind === "passive" ? "Passive" : "Attack"}</span>${a.sameAs ? ` <span class="dim">(as ${esc(a.sameAs)})</span>` : ""}</div></div>
+            ${a.desc ? `<p>${esc(a.desc)}</p>` : ""}
+            ${bossAbilityTable(id, i)}
+        </div>`;
+    const lvTable = `<div class="tbl"><table><thead><tr><th>Level</th>${BOSS_LEVELS.map(lv => `<th>${lv}</th>`).join("")}</tr></thead>
+        <tbody><tr><td>Damage to reach it</td>${BOSS_LEVELS.map(lv => `<td>${fmt(B.bossAt(BOSS_DATA, id, lv).levelUp.total)}</td>`).join("")}</tr>
+        <tr><td>Damage for the next level</td>${BOSS_LEVELS.map(lv => { const n = B.bossAt(BOSS_DATA, id, lv).levelUp.next; return `<td>${n == null ? "—" : fmt(n)}</td>`; }).join("")}</tr></tbody></table></div>`;
+    return `${head({ title: `${b.name} — ${GAME} boss: abilities & damage by level | Keazyea's Intelligence Hub`, description, canonical: `${SITE}/units/${bossSlug(b)}.html`, image: `images/${b.img}.jpg` })}
+<body class="kih-glow glow-troops kih-stars guide-page">
+    ${guideBar(prev, next, false)}
+    <main class="guide-main">
+        <p class="crumbs"><a href="./">Troops, Heroes &amp; Bosses</a> › <a href="./?type=boss">Bosses</a> › ${esc(b.name)}</p>
+        <div class="guide-hero">
+            <img src="../images/${esc(b.img)}.jpg" alt="${esc(b.name)}" width="120" height="120">
+            <div><h1>${esc(b.name)}</h1><div class="chips"><span class="chip r-legendary">Boss</span><span class="chip">${esc(b.title)}</span><span class="chip">Levels 1–${B.MAX_LEVEL}</span></div></div>
+        </div>
+        <p class="lead">${lead}</p>
+        <div class="guide-actions">
+            <a class="ga-btn" href="${appLinkBoss}">🐉 Open in the app (any level)</a>
+        </div>
+        <section class="guide-section"><h2>⚔️ Abilities</h2>
+            <p class="dim">Each ability's numbers at levels ${BOSS_LEVELS.join(", ")} — the app shows any level from 1 to ${B.MAX_LEVEL}.</p>
+            ${b.abilities.map(ability).join("")}
+        </section>
+        <section class="guide-section"><h2>📈 Pushing its level</h2>
+            <p class="dim">How much damage it takes, in total, to push the boss to each level — and to the next one.</p>
+            ${lvTable}
+        </section>
+        <nav class="guide-prevnext" aria-label="More bosses">
+            ${prev ? `<a href="${prev.bossPage}">‹ ${esc(prev.name)}</a>` : "<span></span>"}
+            ${next ? `<a href="${next.bossPage}">${esc(next.name)} ›</a>` : "<span></span>"}
+        </nav>
+    </main>
+    ${footer}
+    <script>
+        function guideBack() {
+            try { if (document.referrer && new URL(document.referrer).origin === location.origin && history.length > 1) { history.back(); return; } } catch (e) { }
+            location.href = "./";
+        }
+        ${ZOOM_GUARD}
+    </script>
+</body>
+</html>
+`;
+}
+
 // The same pinch-zoom guard as the app's pages (see style.css .kih-zoomed).
 const ZOOM_GUARD = `(function () {
             var vv = window.visualViewport;
@@ -342,26 +428,29 @@ function indexPage(ordered, names) {
     const chipRow = (group, items) => `<div class="filter-row" data-group="${group}">${items.map(([v, label], i) => `<button type="button" class="filter-chip${i === 0 ? " on" : ""}" data-value="${v}">${label}</button>`).join("")}</div>`;
     const section = (type, label) => `<div class="gallery-section-label" data-section="${type}">${label}</div>
             <div class="unit-gallery" data-section="${type}">${ordered.filter(u => u.type === type).map(u => galleryItem(u, names[u.key])).join("")}</div>`;
-    return `${head({ title: `All ${GAME} troops & heroes — stats, abilities & talents | Keazyea's Intelligence Hub`, description: `Every ${GAME} hero and troop: every stat at every level, ability and talent details, as shown in the app. ${heroes} heroes and ${troops} troops.`, canonical: `${SITE}/units/`, image: "images/KIH_HP.jpg" })}
+    const bosses = bossesAt(1);
+    return `${head({ title: `All ${GAME} troops, heroes & bosses — stats, abilities & talents | Keazyea's Intelligence Hub`, description: `Every ${GAME} hero, troop and Glorious Hunt boss: every stat at every level, ability and talent details, as shown in the app. ${heroes} heroes, ${troops} troops and ${bosses.length} bosses.`, canonical: `${SITE}/units/`, image: "images/KIH_HP.jpg" })}
 <body class="kih-glow glow-troops kih-stars guide-page">
     ${guideBar(null, null, true)}
     <main class="guide-main">
-        <h1>Troops &amp; Heroes</h1>
-        <p class="lead">A guide to every unit in ${GAME}: <strong>${heroes} heroes</strong> and <strong>${troops} troops</strong> across the ${factions.length} factions (${factions.join(", ")}). Each page shows the unit's card exactly as the app does, at every level: HP, attack, range, speed and more, ${withAb} units' abilities with their numbers, and each hero's talent.</p>
+        <h1>Troops, Heroes &amp; Bosses</h1>
+        <p class="lead">A guide to every unit in ${GAME}: <strong>${heroes} heroes</strong> and <strong>${troops} troops</strong> across the ${factions.length} factions (${factions.join(", ")}), and the <strong>${bosses.length} Glorious Hunt bosses</strong>. Each unit's page shows its card exactly as the app does, at every level: HP, attack, range, speed and more, ${withAb} units' abilities with their numbers, and each hero's talent. Each boss's page shows every ability and its numbers from level 1 to ${B.MAX_LEVEL}.</p>
         <div class="guide-filters">
-            <div class="search-row"><input type="text" id="guideSearch" placeholder="Search Troop/Hero" aria-label="Search troops and heroes"><button type="button" class="clear-btn" id="guideClear">Clear</button></div>
-            ${chipRow("type", [["", "All"], ["troop", "Troops"], ["hero", "Heroes"]])}
+            <div class="search-row"><input type="text" id="guideSearch" placeholder="Search Troop/Hero/Boss" aria-label="Search troops, heroes and bosses"><button type="button" class="clear-btn" id="guideClear">Clear</button></div>
+            ${chipRow("type", [["", "All"], ["troop", "Troops"], ["hero", "Heroes"], ["boss", "Bosses"]])}
             ${chipRow("rarity", [["", "Any rarity"], ...RARITY_ORDER.map(r => [r, cap(r)])])}
             ${chipRow("faction", [["", "Any faction"], ...factions.map(f => [f.toLowerCase(), f])])}
         </div>
         <div id="troopsResults">
             ${section("troop", "Troops")}
             ${section("hero", "Heroes")}
+            <div class="gallery-section-label" data-section="boss">Bosses</div>
+            <div class="unit-gallery" data-section="boss">${B.BOSSES.map(x => bossGalleryItem(bosses.find(b => b.id === x.id))).join("")}</div>
             <p class="none" id="guideNone" hidden>No units match — try another search or filter.</p>
         </div>
         <section class="guide-section">
             <h2>About this guide</h2>
-            <p>Heroes are single, powerful units with abilities and talents; troops fight as squads that grow as they level up. Rarity runs from Common through Rare, Epic and Legendary up to Mythic. To compare two units side by side, build a formation or check the latest promo codes, <a href="../">open the app</a>.</p>
+            <p>Heroes are single, powerful units with abilities and talents; troops fight as squads that grow as they level up; bosses are the Glorious Hunt's giants, from level 1 to ${B.MAX_LEVEL}. Rarity runs from Common through Rare, Epic and Legendary up to Mythic. To compare two units side by side, build a formation or check the latest promo codes, <a href="../">open the app</a>.</p>
         </section>
     </main>
     ${footer}
@@ -393,11 +482,11 @@ function indexPage(ordered, names) {
                 document.querySelectorAll("#troopsResults .gallery-item").forEach(function (el) {
                     var d = el.dataset;
                     var ok = (!state.type || d.type === state.type) && (!state.rarity || d.rarity === state.rarity) && (!state.faction || d.faction === state.faction)
-                        && (!q || d.name.indexOf(q) >= 0 || d.faction === q || d.rarity === q || d.attack === q || d.type === q || (q === "troops" && d.type === "troop") || (q === "heroes" && d.type === "hero"));
+                        && (!q || d.name.indexOf(q) >= 0 || d.faction === q || d.rarity === q || d.attack === q || d.type === q || (q === "troops" && d.type === "troop") || (q === "heroes" && d.type === "hero") || (q === "bosses" && d.type === "boss"));
                     el.hidden = !ok;
                     if (ok) shown++;
                 });
-                ["troop", "hero"].forEach(function (t) {
+                ["troop", "hero", "boss"].forEach(function (t) {
                     var any = document.querySelector('.unit-gallery[data-section="' + t + '"] .gallery-item:not([hidden])');
                     document.querySelectorAll('[data-section="' + t + '"]').forEach(function (el) { el.hidden = !any; });
                 });
@@ -433,15 +522,17 @@ function indexPage(ordered, names) {
         prev: ordered[i - 1] || null, next: ordered[i + 1] || null,
         cards: app && app.cards[u.key], names, videos: app ? app.videos : {}
     })));
+    const bossList = bossesAt(1).map(b => ({ ...b, bossPage: bossSlug(b) + ".html" }));
+    bossList.forEach((b, i) => fs.writeFileSync(path.join(OUT, b.bossPage), bossPage(b.id, bossList[i - 1] || null, bossList[i + 1] || null)));
     fs.writeFileSync(path.join(OUT, "index.html"), indexPage(ordered, names));
     if (unknownHandlers.size) console.warn("⚠️  Card buttons this page doesn't handle yet:\n   " + [...unknownHandlers].join("\n   "));
 
     const pages = ["", "units/", "about.html", "promo.html", "tips.html", "games.html", "troopsandheroes.html", "social.html", "store.html", "privacy.html", "terms.html"]
-        .concat(ordered.map(u => "units/" + urlOf(u)));
+        .concat(ordered.map(u => "units/" + urlOf(u)), bossList.map(b => "units/" + b.bossPage));
     fs.writeFileSync(path.join(ROOT, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${pages.map(p => `  <url><loc>${SITE}/${p}</loc><lastmod>${TODAY}</lastmod></url>`).join("\n")}
 </urlset>
 `);
-    console.log(`guide: ${ordered.length} unit pages${app ? " with the app's cards" : " (no app cards)"}, units/index.html, sitemap.xml (${pages.length} URLs)`);
+    console.log(`guide: ${ordered.length} unit pages${app ? " with the app's cards" : " (no app cards)"}, ${bossList.length} boss pages, units/index.html, sitemap.xml (${pages.length} URLs)`);
 })();

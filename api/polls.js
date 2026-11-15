@@ -242,7 +242,7 @@ async function vote(admin, db, uid, body, now) {
       tx.set(claimRef, { kind: "poll", pollId, amount: r.amount || 0, draws: r.draws || 0, items: got.added, dupTokens: got.dupTokens, claimedAt: now });
       if (tokens) tx.set(walletRef, { balance: balance + tokens, lifetimeGifted: FieldValue.increment(tokens), updatedAt: now }, { merge: true });
       pollUpdate.rewardCount = FieldValue.increment(1);
-      gift = { amount: r.amount || 0, draws: r.draws || 0, items: got.added, duplicates: got.dups, dupTokens: got.dupTokens, balance: balance + tokens };
+      gift = { amount: r.amount || 0, draws: r.draws || 0, items: got.added, duplicates: got.dups, dupTokens: got.dupTokens, dupStardust: got.dupStardust, balance: balance + tokens };
       rewarded = true;
     }
     tx.update(ref, pollUpdate);

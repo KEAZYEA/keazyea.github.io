@@ -3205,7 +3205,8 @@ async function handleLookupUserByUid() {
                     const PCa = window.ProgressCore;
                     const grantText = (h) => [h.draws ? `${h.draws} free chest draw${h.draws === 1 ? "" : "s"}` : "",
                         ...(h.items || []).map(id => PCa && PCa.BY_ID[id] ? `${PCa.BY_ID[id].icon} ${PCa.BY_ID[id].name}` : id),
-                        h.amount ? `${h.amount} 🪙 for duplicates (${h.before} → ${h.after})` : ""].filter(Boolean).join(" + ") || "nothing";
+                        h.amount ? `${h.amount} 🪙 for duplicates (${h.before} → ${h.after})` : "",
+                        h.dupStardust ? `${h.dupStardust} ✨ for duplicates` : ""].filter(Boolean).join(" + ") || "nothing";
                     const history = a.adjustments.length
                         ? a.adjustments.map(h => `<div class="token-history-row">${escapeHtml(fmtDate(h.at))} · ${h.mode === "grant" ? `🎒 Gave ${escapeHtml(grantText(h))}` : `${modeLabel[h.mode] || h.mode} ${h.amount} · ${h.before} → ${h.after}`}${h.reason ? " · " + escapeHtml(h.reason) : ""}</div>`).join("")
                         : "<p class='promo-sub'>No manual changes yet.</p>";
@@ -3254,7 +3255,7 @@ async function handleLookupUserByUid() {
                 if (reason === null) return;
                 try {
                     const r = await AppState.adminTokens("adminGrantItems", { uid: tokenAccountUid, draws, itemIds: itemId ? [itemId] : [], reason, notify: !!(document.getElementById("tokenNotifyBox") || {}).checked });
-                    showInfoModal("Done", `Gave ${tokenAccountName} ${what}.${r.dups && r.dups.length ? ` They already had ${r.dups.map(id => window.ProgressCore.BY_ID[id].name).join(", ")}, so they got ${r.dupTokens} 🪙 instead.` : ""}`);
+                    showInfoModal("Done", `Gave ${tokenAccountName} ${what}.${r.dups && r.dups.length ? ` They already had ${r.dups.map(id => window.ProgressCore.BY_ID[id].name).join(", ")}, so they got ${r.dupStardust || 0} ✨ Stardust instead.` : ""}`);
                     await openTokenAccount(tokenAccountUid);
                 } catch (e) {
                     showInfoModal("Couldn't give that", e.message);
@@ -3313,8 +3314,10 @@ async function handleLookupUserByUid() {
                 const resultText = (r) => r.id ? `${label(r.id)}${r.duplicate ? " (dup)" : ""}` : r.candy ? `🍬 +${r.candy} 🪙` : "👻 trick";
                 const opens = a.chestOpens.length ? a.chestOpens.map(o => {
                     const ev = o.event && PC.EVENTS && PC.EVENTS[o.event];
-                    const what = ev ? `${ev.icon} ${escapeHtml(ev.name)} ×${o.count} · ${o.free ? "free" : `${o.price} 🪙`}` : o.free ? "🎁 free draw" : `×${o.count} · ${o.price} 🪙`;
-                    return `<div class="token-history-row">${escapeHtml(fmtDate(o.at))} · ${what}${o.refund ? ` · +${o.refund} 🪙 back` : ""}<br>${o.results.map(resultText).join(", ")}</div>`;
+                    const cur = o.currency === "stardust" ? "✨" : "🪙";
+                    if (o.kind === "convert") return `<div class="token-history-row">${escapeHtml(fmtDate(o.at))} · 🪙 → ✨ ${o.price} 🪙 → ${o.stardustGot} ✨</div>`;
+                    const what = ev ? `${ev.icon} ${escapeHtml(ev.name)} ×${o.count} · ${o.free ? "free" : `${o.price} ${cur}`}` : o.free ? "🎁 free draw" : `×${o.count} · ${o.price} ${cur}`;
+                    return `<div class="token-history-row">${escapeHtml(fmtDate(o.at))} · ${what}${o.refund ? ` · +${o.refund} ${cur} back` : ""}<br>${o.results.map(resultText).join(", ")}</div>`;
                 }).join("") : "<p class='promo-sub'>No chest draws yet.</p>";
                 const pay = a.purchases.length ? a.purchases.map(p => `<div class="token-history-row">${escapeHtml(fmtDate(p.at))} · ${p.kind === "pack" ? `Token pack (${escapeHtml(p.pack)})${p.amount ? ` · ${escapeHtml(p.currency)} ${escapeHtml(p.amount)}` : ""}` : `${p.plan === "vip" ? "Super Supporter" : p.plan === "noAds" ? "Supporter" : escapeHtml(p.plan)} payment`} · +${p.tokens} 🪙</div>`).join("") : "<p class='promo-sub'>No payments.</p>";
                 return `

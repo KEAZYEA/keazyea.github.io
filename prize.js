@@ -241,9 +241,12 @@
 .pz-tile { position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 2px;
     padding: 12px 8px 10px; border-radius: 14px; border: 1px solid rgba(var(--pz), 0.55);
     background: radial-gradient(circle at 50% 0%, rgba(var(--pz), 0.32), transparent 70%), linear-gradient(180deg, rgba(var(--pz), 0.12), rgba(255, 255, 255, 0.02)); }
-.pz.one .pz-tile { flex-direction: row; text-align: left; gap: 14px; padding: 12px 14px; }
-.pz.one .pz-tile .pz-icon { margin: 0; }
-.pz.one .pz-tile > b, .pz.one .pz-tile > span, .pz.one .pz-tile > small { display: block; }
+/* one prize: its picture on the left, and beside it, one under the other,
+   the amount (×2), what it is and the small print — not each in a column of its own */
+.pz.one .pz-tile { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 14px; row-gap: 2px; align-items: center; justify-items: start; text-align: left; padding: 12px 14px; }
+.pz.one .pz-tile .pz-icon { grid-column: 1; grid-row: 1 / span 3; margin: 0; }
+.pz.one .pz-tile > b, .pz.one .pz-tile > span, .pz.one .pz-tile > small { grid-column: 2; display: block; max-width: 100%; }
+.pz.one .pz-unit .pz-icon { margin: 0 0 8px; }
 .pz-icon { width: 58px; height: 58px; margin: 0 auto 2px; flex-shrink: 0; display: grid; place-items: center; filter: drop-shadow(0 0 10px rgba(var(--pz), 0.55)); }
 .pz-icon svg { width: 100%; height: 100%; }
 .pz-portrait { width: 58px; height: 58px; border-radius: 12px; object-fit: cover; object-position: top; border: 2px solid rgba(var(--pz), 0.9); }
@@ -254,7 +257,7 @@
 .pz-shard { position: absolute; top: -6px; right: -8px; font-size: 1rem; filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.6)); }
 .pz-unit .pz-icon { margin-bottom: 9px; }
 .pz-tile small.pz-sub-strong { color: #fff; font-weight: 800; font-size: 0.78rem; }
-.pz-num { font-size: 1.55rem; font-weight: 900; line-height: 1.05; color: #fff; text-shadow: 0 0 12px rgba(var(--pz), 0.8); font-variant-numeric: tabular-nums; }
+.pz-num { white-space: nowrap; font-size: 1.55rem; font-weight: 900; line-height: 1.05; color: #fff; text-shadow: 0 0 12px rgba(var(--pz), 0.8); font-variant-numeric: tabular-nums; }
 .pz-label { font-weight: 800; font-size: 0.92rem; color: rgb(var(--pz)); overflow-wrap: break-word; }
 .pz-tile small { font-size: 0.72rem; color: #b8b8d0; }
 .pz-note { margin: 8px 0 0; font-size: 0.85rem; color: #d0d0e4; text-align: center; }

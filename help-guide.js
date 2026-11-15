@@ -29,21 +29,24 @@
        tiles: "bosses" — the answer also shows every boss as a picture to tap */
     const TOPICS = [
         // ----- you -----
-        { id: "profile", broad: true, title: "🏅 Your profile", k: ["profile", "my profile", "my account", "account page", "my card", "my stats", "me page"],
-            a: "Your profile is the <b>🏅 Profile</b> button on Home — or tap <b>your picture</b> at the top left. It has your card, achievements, items and styles, and where you edit your details.",
-            go: { page: "profile", tab: "edit" }, show: ".home-menu-btn[onclick=\"goToPage('profile')\"]" },
-        { id: "editProfile", title: "✏️ Change your name or picture", k: ["change name", "edit name", "rename", "username", "name", "nickname", "change picture", "avatar", "pfp", "profile picture", "photo", "bio", "edit profile", "trophies", "power", "clan name", "level", "server", "game stats", "change clan", "my clan name", "update profile"],
-            a: "Open <b>Profile → ✏️ Profile</b>. Change your in-game name, picture, bio, server, level, trophies, power and clan there, then tap <b>Save profile</b>.",
-            go: { page: "profile", tab: "edit" } },
+        { id: "profile", broad: true, title: "👤 Your profile", k: ["profile", "my profile", "my account", "account page", "my card", "my stats", "me page"],
+            a: "Tap <b>your character</b> at the top left of Home (or ☰ → Profile). It shows your card as others see it — your character, badges and 💗 hearts — and <b>✏️ Edit details</b> for your name, bio and game stats.",
+            go: { page: "profile" }, show: "#topbarAvatarWrap" },
+        { id: "editProfile", title: "✏️ Change your name or details", k: ["change name", "edit name", "rename", "username", "name", "nickname", "bio", "edit profile", "trophies", "power", "clan name", "level", "server", "game stats", "change clan", "my clan name", "update profile"],
+            a: "Open <b>Profile → ✏️ Edit details</b>. Change your in-game name, bio, server, level, trophies, power and clan there, then tap <b>Save profile</b>.",
+            go: { page: "profile" } },
+        { id: "character", title: "🧍 Your character", k: ["character", "my character", "avatar", "pfp", "profile picture", "picture", "change picture", "photo", "dress up", "outfit", "clothes", "wardrobe", "wear", "hat", "hats", "hair", "hairstyle", "eyes", "glasses", "shirt", "top", "pants", "shoes", "pet", "pets", "guy or girl", "skin"],
+            a: "<b>🧍 Character</b> on Home: dress your character head to toe — hair, hat, eyes, glasses, mouth, neck, top, bottom, shoes, what you hold, a pet and a background. Pick guy or girl and skin; everything else comes from drops (the chest, achievements, events). Things you don't have are greyed out: 👁 Preview tries one on.",
+            go: { page: "character", tab: "wardrobe" }, show: ".home-menu-btn[onclick=\"goToPage('character')\"]" },
         { id: "achievements", title: "🏅 Achievements & badges", k: ["achievement", "achievements", "badge", "badges", "trophy case", "milestone", "rewards for playing"],
-            a: "<b>Profile → 🏅 Achievements</b> shows what you've unlocked and what's next. Badges you've earned can be shown on your card.",
-            go: { page: "profile", tab: "ach" } },
-        { id: "items", title: "🎒 Your items", k: ["item", "items", "bag", "backpack", "inventory", "bonus", "bonuses", "perk", "perks"],
-            a: "<b>Profile → 🎒 Items</b> lists the items you've got and the bonuses they give you — they're always on and add up.",
-            go: { page: "profile", tab: "items" } },
-        { id: "style", title: "🎨 Styles (borders, name effects, chat bubbles)", k: ["style", "styles", "border", "avatar border", "frame", "name effect", "name colour", "name color", "glow", "name glow", "glowing name", "make name glow", "chat bubble", "bubble", "background", "profile background", "emote", "emotes", "cosmetic", "cosmetics"],
-            a: "<b>Profile → 🎨 Style</b>: pick your avatar border, name effect, chat bubble and profile background. Everyone sees them — on your profile, posts, chat and the Games leaderboard. Faded ones aren't yours yet; tap ⓘ to see how to get them.",
-            go: { page: "profile", tab: "style" } },
+            a: "<b>🏅 Achievements</b> on Home shows what you've unlocked and what's next — claim the rewards there. Badges you've earned can be shown on your card.",
+            go: { page: "achievements" }, show: ".home-menu-btn[onclick=\"goToPage('achievements')\"]" },
+        { id: "items", title: "💪 Your items and bonuses", k: ["item", "items", "bag", "backpack", "inventory", "bonus", "bonuses", "perk", "perks"],
+            a: "Every item is something to wear — find them in <b>Character → 👕 Wardrobe</b>. <b>Character → 💪 Bonuses</b> adds up what they all give you: always on, worn or not.",
+            go: { page: "character", tab: "bonuses" } },
+        { id: "style", title: "✨ Styles (frames, name effects, chat bubbles)", k: ["style", "styles", "border", "avatar border", "frame", "name effect", "name colour", "name color", "glow", "name glow", "glowing name", "make name glow", "chat bubble", "bubble", "emote", "emotes", "cosmetic", "cosmetics"],
+            a: "<b>Character → ✨ Style</b>: pick the frame around your character, your name effect, chat bubble and emote packs. Everyone sees them — on your profile, posts, chat and the Games leaderboard. Faded ones aren't yours yet; tap ⓘ to see how to get them.",
+            go: { page: "character", tab: "style" } },
 
         // ----- tokens, quests, store -----
         { id: "quests", title: "⚔️ Daily quests", k: ["quest", "quests", "daily quest", "daily quests", "mission", "missions", "task", "tasks", "daily login", "login reward", "check in", "streak", "sunday chest", "claim"],
@@ -53,11 +56,23 @@
             a: "Free ways to earn 🪙: log in every day (<b>1 🪙</b>, plus Sunday's chest), do the <b>daily quests</b> (<b>4 🪙</b> a day), and finish <b>🎲 Today's Puzzle</b> in Games (<b>1 🪙</b>). The weekly Games leaderboard pays the top 5 too. You can also buy token packs in the Store.",
             go: { page: "quests" }, show: ".icon-btn[title='Daily Quests']" },
         { id: "store", title: "🛒 Store (token packs & supporter plans)", k: ["store", "shop", "buy", "purchase", "pay", "paypal", "token pack", "token packs", "buy tokens", "supporter", "subscription", "subscribe", "monthly plan", "vip", "premium", "no ads", "remove ads", "turn off ads", "ads", "donate"],
-            a: "The <b>🛒 Store</b> has token packs and monthly Supporter plans (80 or 180 🪙 a month). Tap <b>+</b> next to your tokens on Home to get there too.",
+            a: "The <b>🛒 Store</b> has token packs ($1 to $10 — the $10 pack is 1,000 🪙, which turns into 10,000 ✨ Stardust if you like) and monthly Supporter plans (80 or 180 🪙 a month). Tap <b>+</b> next to your tokens on Home to get there too.",
             go: { page: "store" }, show: ".home-menu-btn[onclick=\"goToPage('store')\"]" },
         { id: "chest", title: "🧰 Adventurer's Chest", k: ["chest", "adventurer chest", "adventurers chest", "loot", "loot box", "open chest", "random item", "seasonal"],
-            a: "The <b>🧰 Adventurer's Chest</b> is in the Store — open it for a random item or style.",
+            a: "The <b>🧰 Adventurer's Chest</b> is in the Store — open it with ✨ Stardust for a random thing to wear or a style.",
             go: { page: "store", at: "chest" } },
+        { id: "hearts", title: "💗 Hearts (send a friend a heart)", k: ["heart", "hearts", "send heart", "send a heart", "send hearts", "give heart", "give a heart", "like profile", "like a profile", "collect hearts", "collect heart", "my hearts", "send back"],
+            a: "Send each friend a <b>💗 heart</b> once a day (5 a day, 10 for Super Supporters): tap <b>💗</b> next to them in <b>Social → Friends</b>, or <b>💗 Send a heart</b> on their profile. It's theirs — they collect it in <b>Social → Friends → 💗 Hearts</b> and can send one back. Send all of yours in a day for +3 💗. Hearts took over from 👍 likes (your old likes still count).",
+            go: { page: "social", tab: "friends" } },
+        { id: "heartShop", title: "💗 Heart Shop", k: ["heart shop", "hearts shop", "spend hearts", "spend my hearts", "heart spin", "spin", "wheel", "love bunny", "red rose", "heart headband", "heart shades", "sweater"],
+            a: "The <b>💗 Heart Shop</b> is in the Store: spend hearts on things to wear (each with a bonus) or a <b>🎡 spin</b> (50 💗) for tokens, chest draws, items and Heart Spin-only treasures like the Love Bunny.",
+            go: { page: "store", at: "hearts" } },
+        { id: "sets", title: "👘 Outfit Sets", k: ["outfit set", "outfit sets", "set", "suit", "full outfit", "buy a full outfit", "whole set", "full set", "costume", "celestial", "celestial set", "whole outfit", "stargazer coat", "nebula hair"],
+            a: "<b>👘 Outfit Sets</b> are in the Store: a whole look, head to toe, for ✨ Stardust. Buy it and you get every piece at once (each with a bonus — more ✨ with every login and Heart Spin, an extra heart to send), and <b>🧍 Wear the set</b> puts it all on.",
+            go: { page: "store", at: "sets" } },
+        { id: "stardust", title: "✨ Stardust (free every day)", k: ["stardust", "star dust", "free stardust", "daily gift", "free gift", "daily deals", "deals", "discount", "sale", "convert tokens", "convert", "converter", "exchange", "free chest", "sunday chest"],
+            a: "<b>✨ Stardust</b> pays for the chest, things to wear and more looks. Your <b>daily login</b> in <b>📅 Daily Quests</b> gives it on Tuesdays, Thursdays and Saturdays (and Sunday brings a free chest), achievements and the Heart Spin give more, and in the <b>🛒 Store</b> you can shop the <b>🛍️ Daily Deals</b> (30% off) or turn tokens into Stardust (1 🪙 = 10 ✨ — it can't be turned back).",
+            go: { page: "quests" } },
         { id: "event", title: "🎉 Events", k: ["event", "events", "limited time", "halloween", "christmas", "festival"],
             a: "When there's an event on, it has its own part in the <b>🛒 Store</b>.",
             go: { page: "store", at: "event" } },
@@ -154,9 +169,9 @@
         { id: "privacy", title: "🔒 Privacy & terms", k: ["privacy", "privacy policy", "terms", "terms of service", "data", "my data", "rules", "tos"],
             a: "The <b>Privacy Policy</b> and <b>Terms of Service</b> are in <b>⚙️ Settings</b>.",
             go: { page: "settings" } },
-        { id: "about", title: "👋 About the creator", k: ["about", "creator", "who made", "who made this", "developer", "dev", "owner", "contact", "email", "discord", "youtube", "keazyea", "join clan of creator"],
-            a: "<b>About the Creator</b> is at the bottom of Home: who made the app, how to get in touch (email, Discord, YouTube) and the creator's clan.",
-            go: { page: "about" }, show: ".about-creator-link" },
+        { id: "about", title: "👋 About & contact", k: ["about", "creator", "who made", "who made this", "developer", "dev", "owner", "contact", "email", "discord", "youtube", "keazyea", "join clan of creator"],
+            a: "<b>👋 About &amp; contact</b> is at the bottom of Home: what's on the site, who made it, how to get in touch (🐞 bug report, email, Discord, YouTube) and the creator's clan.",
+            go: { href: "about.html" }, show: "#aboutHomeBtn" },
         { id: "share", title: "📣 Share the app", k: ["share", "invite", "invite friends", "send link", "tell friends", "link"],
             a: "Tap <b>📣 Share KIH with friends</b> on Home to copy or send a link.",
             go: { call: "openShareSite" }, show: ".share-site-btn" },
@@ -273,15 +288,15 @@
 
     /* ---------------- where "Take me there" can go ----------------
        (checked by the tests against index.html and the sections) */
-    const PAGES = ["home", "troops", "promo", "tips", "games", "social", "store", "quests", "about", "settings", "profile", "inbox"];
+    const PAGES = ["home", "troops", "promo", "tips", "games", "social", "store", "quests", "settings", "profile", "character", "achievements", "inbox"];
     const TABS = {
-        profile: ["edit", "ach", "items", "style"],
+        character: ["wardrobe", "style", "bonuses"],
         social: ["world", "friends", "clan", "formation", "tierlist"],
         games: ["today", "ranks", "trivia", "guess", "unitle", "hilo", "blur", "memory"],
         promo: ["codes", "vip", "secret"],
         troops: ["bosses"]
     };
-    const STORE_AT = ["chest", "event"];
+    const STORE_AT = ["chest", "event", "hearts", "deals", "sets"];
     const CALLS = ["openBugReport", "openShareSite"];
 
     return { TOPICS, STARTERS, PAGES, TABS, STORE_AT, CALLS, BOSSES, bossIn, ask, scores, norm, stem, close, byId };
@@ -316,6 +331,8 @@
             return;
         }
         if (to.click) { const el = document.querySelector(to.click); if (el) el.click(); return; }
+        // a page of the site's own (About & contact)
+        if (to.href) { location.href = to.href; return; }
         const page = to.page;
         if (page === "home") { window.goHome(); return; }
         if (page === "promo") { window.openPromoTab(to.tab || "codes"); return; }
@@ -362,7 +379,7 @@
             return;
         }
         Promise.resolve(window.goToPage(page)).then(() => {
-            if (page === "profile" && to.tab && typeof window.switchProfileTab === "function") window.switchProfileTab(to.tab);
+            if (page === "character" && to.tab && typeof window.switchCharTab === "function") window.switchCharTab(to.tab);
         });
     }
     // A button glows for a few seconds. Glowing it again restarts that —

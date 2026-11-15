@@ -41,8 +41,10 @@
         { id: "posts", stat: "posts", icon: "📝", name: "Content Creator", desc: "Share formations, tier lists and clan posts", targets: [1, 5, 10, 25, 50, 100] },
         { id: "comments", stat: "comments", icon: "💬", name: "Helping Hand", desc: "Comment on other players' posts (one per post counts)", targets: [1, 10, 25, 50, 75, 100] },
         { id: "visits", stat: "visits", icon: "👀", name: "Explorer", desc: "Visit other players' profiles", targets: [1, 10, 25, 50, 75, 100] },
-        { id: "likesGiven", stat: "likesGiven", icon: "👍", name: "Friendly", desc: "Like other players' profiles", targets: [1, 10, 25, 50, 75, 100] },
-        { id: "likesReceived", stat: "likesReceived", icon: "⭐", name: "Popular", desc: "Get likes on your profile", targets: [1, 10, 25, 50, 75, 100] },
+        // 💗 hearts took over from 👍 profile likes: same ids (your tiers stay), and old likes still count
+        { id: "likesGiven", stat: "likesGiven", icon: "💌", name: "Heart Giver", desc: "Send hearts to your friends (old profile likes count too)", targets: [1, 10, 25, 50, 75, 100] },
+        { id: "likesReceived", stat: "likesReceived", icon: "💗", name: "Beloved", desc: "Get hearts from your friends (old profile likes count too)", targets: [1, 10, 25, 50, 75, 100] },
+        { id: "heartSpins", stat: "heartSpins", icon: "💞", name: "Heart Spinner", desc: "Spin the wheel in the 💗 Heart Shop", targets: [1, 5, 10, 25, 50, 100] },
         { id: "gamePoints", stat: "gamePoints", icon: "🎮", name: "Gamer", desc: "Score points in Games (ranked runs)", targets: [50, 100, 250, 500, 750, 1000] },
         { id: "champion", stat: "lbTop5", icon: "🏆", name: "Champion", desc: "Finish top 5 on the weekly Games leaderboard", targets: [1, 2, 3, 5, 10, 25] },
         { id: "puzzles", stat: "puzzles", icon: "🧩", name: "Puzzle Solver", desc: "Finish Today's Puzzle in Games", targets: [1, 7, 14, 30, 60, 100] },
@@ -76,11 +78,12 @@
 
     /* ---------------- rarities ---------------- */
     const RARITIES = {
-        common: { label: "Common", color: "#b8c0d0", weight: 55, refund: 10 },
-        uncommon: { label: "Uncommon", color: "#5fd38a", weight: 27, refund: 15 },
-        rare: { label: "Rare", color: "#5aa8ff", weight: 12, refund: 25 },
-        epic: { label: "Epic", color: "#b46bff", weight: 5, refund: 35 },
-        legendary: { label: "Legendary", color: "#ffb02e", weight: 1, refund: 50 }
+        // refund: ✨ Stardust back for a duplicate
+        common: { label: "Common", color: "#b8c0d0", weight: 55, refund: 100 },
+        uncommon: { label: "Uncommon", color: "#5fd38a", weight: 27, refund: 150 },
+        rare: { label: "Rare", color: "#5aa8ff", weight: 12, refund: 250 },
+        epic: { label: "Epic", color: "#b46bff", weight: 5, refund: 350 },
+        legendary: { label: "Legendary", color: "#ffb02e", weight: 1, refund: 500 }
     };
     const RARITY_ORDER = ["common", "uncommon", "rare", "epic", "legendary"];
 
@@ -108,10 +111,15 @@
        badgeSlots      +N badges shown on your profile                  api/progress.js
        questFlat       +N 🪙 once all of a day's quests are claimed      api/tokens.js
        tierBonus       +N 🪙 for every achievement tier you claim         api/progress.js
-       weeklyFreeDraw  +N free chest draws every week (Mon, SGT)         api/progress.js */
+       weeklyFreeDraw  +N free chest draws every week (Mon, SGT)         api/progress.js
+       heartGetChance  N% chance of an extra 💗 for each heart you collect api/progress.js
+       heartSendChance N% chance of a 💗 for you when you send one         api/progress.js
+       loginStardust   +N ✨ with every daily login                       api/tokens.js
+       spinStardust    +N ✨ with every Heart Spin                        api/progress.js
+       heartSends      +N hearts you can send a day                       api/progress.js */
     const PERK_KINDS = ["gameFlat", "gameBest", "gameMult", "doubleBoost", "gameTime", "lives", "blurHints", "gameTen", "prizeMult",
         "loginBonus", "sundayBonus", "puzzleBonus", "questMult", "secretChance", "stakeMult", "weeklyTickets", "chestDiscount", "dupBonus", "badgeSlots",
-        "questFlat", "tierBonus", "weeklyFreeDraw"];
+        "questFlat", "tierBonus", "weeklyFreeDraw", "heartGetChance", "heartSendChance", "loginStardust", "spinStardust", "heartSends"];
     const x = (v) => `×${(1 + v / 100).toFixed(2).replace(/0$/, "")}`;
     const PERK_TEXT = {
         gameFlat: (v) => `+${v} weekly Games score`,
@@ -130,12 +138,17 @@
         secretChance: (v) => `+${v} Secret Giveaway chance${v === 1 ? "" : "s"}`,
         stakeMult: (v) => `Secret Giveaway tokens count ${x(v)}`,
         weeklyTickets: (v) => `+${v} weekly giveaway ticket${v === 1 ? "" : "s"}`,
-        chestDiscount: (v) => `chests ${v} 🪙 cheaper`,
-        dupBonus: (v) => `+${v} 🪙 on duplicates`,
+        chestDiscount: (v) => `chests ${v * 10} ✨ cheaper`,
+        dupBonus: (v) => `+${v * 10} ✨ on duplicates`,
         badgeSlots: (v) => `+${v} badge slot${v === 1 ? "" : "s"}`,
         questFlat: (v) => `+${v} 🪙 for finishing all of a day's quests`,
         tierBonus: (v) => `+${v} 🪙 per achievement tier you claim`,
-        weeklyFreeDraw: (v) => `${v} free chest draw${v === 1 ? "" : "s"} every week`
+        weeklyFreeDraw: (v) => `${v} free chest draw${v === 1 ? "" : "s"} every week`,
+        heartGetChance: (v) => `${Math.min(100, v)}% chance of an extra 💗 for each heart you collect`,
+        heartSendChance: (v) => `${Math.min(100, v)}% chance of a 💗 for you when you send one`,
+        loginStardust: (v) => `+${v} ✨ with every daily login`,
+        spinStardust: (v) => `+${v} ✨ with every Heart Spin`,
+        heartSends: (v) => `+${v} heart${v === 1 ? "" : "s"} you can send a day`
     };
     const perkText = (perk) => (PERK_TEXT[perk.kind] ? PERK_TEXT[perk.kind](perk.value) : "");
 
@@ -147,49 +160,109 @@
         // common
         { id: "cap", icon: "🧢", name: "Recruit's Cap", rarity: "common", chest: true, perks: [{ kind: "gameFlat", value: 1 }] },
         { id: "gloves", icon: "🍞", name: "Ration Pack", rarity: "common", chest: true, perks: [{ kind: "loginBonus", value: 1 }] },
-        { id: "candle", icon: "🕯️", name: "Candle", rarity: "common", chest: true, perks: [{ kind: "puzzleBonus", value: 1 }] },
+        { id: "candle", icon: "🏮", name: "Candle Lantern", rarity: "common", chest: true, perks: [{ kind: "puzzleBonus", value: 1 }] },
         { id: "compass", icon: "🧭", name: "Compass", rarity: "common", chest: true, perks: [{ kind: "gameTime", value: 1 }] },
-        { id: "clover", icon: "🍀", name: "Four-Leaf Clover", rarity: "common", chest: true, perks: [{ kind: "secretChance", value: 1 }] },
+        { id: "clover", icon: "🍀", name: "Clover Hairpin", rarity: "common", chest: true, perks: [{ kind: "secretChance", value: 1 }] },
         { id: "quill", icon: "✒️", name: "Quill", rarity: "common", chest: true, perks: [{ kind: "questMult", value: 5 }] },
-        { id: "crate", icon: "📦", name: "Spare Crate", rarity: "common", chest: true, perks: [{ kind: "dupBonus", value: 5 }] },
+        { id: "crate", icon: "🧺", name: "Trader's Apron", rarity: "common", chest: true, perks: [{ kind: "dupBonus", value: 5 }] },
         { id: "muddy", icon: "🥾", name: "Muddy Boots", rarity: "common", chest: true, perks: [{ kind: "gameTen", value: 1 }] },
         { id: "juice", icon: "🧃", name: "Juice Box", rarity: "common", chest: true, perks: [{ kind: "sundayBonus", value: 1 }] },
-        { id: "raffle", icon: "🎫", name: "Raffle Stub", rarity: "rare", chest: true, perks: [{ kind: "weeklyTickets", value: 1 }] },
+        { id: "raffle", icon: "🎩", name: "Showman's Top Hat", rarity: "rare", chest: true, perks: [{ kind: "weeklyTickets", value: 1 }] },
         // uncommon
         { id: "boots", icon: "👢", name: "Swift Boots", rarity: "uncommon", chest: true, perks: [{ kind: "gameFlat", value: 3 }] },
         { id: "ticket", icon: "🎟️", name: "Golden Ticket", rarity: "epic", chest: true, perks: [{ kind: "weeklyTickets", value: 2 }] },
-        { id: "ledger", icon: "🧾", name: "Quest Ledger", rarity: "uncommon", chest: true, perks: [{ kind: "questFlat", value: 2 }] },
+        { id: "ledger", icon: "👓", name: "Reading Glasses", rarity: "uncommon", chest: true, perks: [{ kind: "questFlat", value: 2 }] },
         { id: "beads", icon: "📿", name: "Lucky Beads", rarity: "uncommon", chest: true, perks: [{ kind: "stakeMult", value: 10 }] },
         { id: "torch", icon: "🔥", name: "Torch", rarity: "uncommon", chest: true, perks: [{ kind: "sundayBonus", value: 2 }] },
         { id: "hourglass", icon: "⏱️", name: "Hourglass", rarity: "uncommon", chest: true, perks: [{ kind: "gameTime", value: 2 }] },
-        { id: "heart", icon: "❤️", name: "Spare Heart", rarity: "uncommon", chest: true, perks: [{ kind: "lives", value: 1 }] },
-        { id: "spyglass", icon: "🔭", name: "Spyglass", rarity: "uncommon", chest: true, perks: [{ kind: "blurHints", value: 1 }] },
+        { id: "heart", icon: "💋", name: "Heart Lips", rarity: "uncommon", chest: true, perks: [{ kind: "lives", value: 1 }, { kind: "heartGetChance", value: 5 }] },
+        { id: "spyglass", icon: "🧐", name: "Monocle", rarity: "uncommon", chest: true, perks: [{ kind: "blurHints", value: 1 }] },
         // rare
-        { id: "crest", icon: "🛡️", name: "Champion's Crest", rarity: "rare", chest: true, perks: [{ kind: "gameBest", value: 10 }] },
+        { id: "crest", icon: "🦸", name: "Champion's Cape", rarity: "rare", chest: true, perks: [{ kind: "gameBest", value: 10 }] },
         { id: "pouch", icon: "💰", name: "Coin Pouch", rarity: "rare", chest: true, perks: [{ kind: "questMult", value: 10 }] },
-        { id: "mark", icon: "🎯", name: "Hunter's Mark", rarity: "rare", chest: true, perks: [{ kind: "secretChance", value: 2 }] },
-        { id: "key", icon: "🗝️", name: "Chest Key", rarity: "rare", chest: true, perks: [{ kind: "chestDiscount", value: 5 }] },
+        { id: "mark", icon: "🎯", name: "Hunter's Gaze", rarity: "rare", chest: true, perks: [{ kind: "secretChance", value: 2 }] },
+        { id: "key", icon: "🗝️", name: "Key Pendant", rarity: "rare", chest: true, perks: [{ kind: "chestDiscount", value: 5 }] },
         { id: "pin", icon: "📌", name: "Badge Pin", rarity: "rare", chest: true, perks: [{ kind: "badgeSlots", value: 1 }] },
-        { id: "dice", icon: "🎲", name: "Loaded Dice", rarity: "rare", chest: true, perks: [{ kind: "doubleBoost", value: 10 }] },
-        { id: "medal", icon: "🏅", name: "Medal Polish", rarity: "rare", chest: true, perks: [{ kind: "tierBonus", value: 1 }] },
+        { id: "dice", icon: "🕶️", name: "Gambler's Shades", rarity: "rare", chest: true, perks: [{ kind: "doubleBoost", value: 10 }] },
+        { id: "medal", icon: "🏅", name: "Champion's Medal", rarity: "rare", chest: true, perks: [{ kind: "tierBonus", value: 1 }] },
         // epic
         { id: "crown", icon: "👑", name: "Royal Crown", rarity: "epic", chest: true, perks: [{ kind: "gameMult", value: 10 }] },
         { id: "amulet", icon: "💎", name: "Gem Amulet", rarity: "epic", chest: true, perks: [{ kind: "questMult", value: 20 }] },
         { id: "trophy", icon: "🏆", name: "Victor's Trophy", rarity: "epic", chest: true, perks: [{ kind: "prizeMult", value: 25 }] },
-        { id: "feather", icon: "🪶", name: "Phoenix Feather", rarity: "epic", chest: true, perks: [{ kind: "lives", value: 1 }, { kind: "gameTime", value: 2 }] },
+        { id: "feather", icon: "🪶", name: "Phoenix Plume Hat", rarity: "epic", chest: true, perks: [{ kind: "lives", value: 1 }, { kind: "gameTime", value: 2 }] },
         { id: "scroll", icon: "📜", name: "Weekly Scroll", rarity: "epic", chest: true, perks: [{ kind: "weeklyFreeDraw", value: 1 }] },
         // legendary
-        { id: "dragon", icon: "🐉", name: "Dragon Heart", rarity: "legendary", chest: true, perks: [{ kind: "questMult", value: 30 }] },
+        { id: "dragon", icon: "🐉", name: "Baby Dragon", rarity: "legendary", chest: true, perks: [{ kind: "questMult", value: 30 }] },
         { id: "blade", icon: "⚡", name: "Storm Blade", rarity: "legendary", chest: true, perks: [{ kind: "gameMult", value: 20 }, { kind: "gameFlat", value: 5 }] },
-        { id: "star", icon: "🌟", name: "Star of Fortune", rarity: "legendary", chest: true, perks: [{ kind: "secretChance", value: 3 }, { kind: "stakeMult", value: 20 }] },
-        { id: "jackpot", icon: "🎰", name: "Jackpot Charm", rarity: "legendary", chest: true, perks: [{ kind: "weeklyTickets", value: 3 }, { kind: "secretChance", value: 2 }] },
+        { id: "star", icon: "🤩", name: "Starry Eyes", rarity: "legendary", chest: true, perks: [{ kind: "secretChance", value: 3 }, { kind: "stakeMult", value: 20 }] },
+        { id: "jackpot", icon: "🪙", name: "Jackpot Medallion", rarity: "legendary", chest: true, perks: [{ kind: "weeklyTickets", value: 3 }, { kind: "secretChance", value: 2 }] },
+        // 👕 clothes for your character (character-core.js draws them)
+        { id: "sh_jerkin", icon: "🦺", name: "Leather Jerkin", rarity: "common", chest: true, perks: [{ kind: "questMult", value: 5 }] },
+        { id: "pa_linen", icon: "👖", name: "Linen Trousers", rarity: "common", chest: true, perks: [{ kind: "puzzleBonus", value: 1 }] },
+        { id: "sh_tabard", icon: "👕", name: "Knight's Tabard", rarity: "uncommon", chest: true, perks: [{ kind: "gameFlat", value: 2 }] },
+        { id: "pa_leather", icon: "🩳", name: "Leather Breeches", rarity: "uncommon", chest: true, perks: [{ kind: "gameTime", value: 1 }] },
+        { id: "sh_robe", icon: "👘", name: "Mage Robe", rarity: "rare", chest: true, perks: [{ kind: "blurHints", value: 1 }] },
+        { id: "pa_chain", icon: "⛓️", name: "Chainmail Leggings", rarity: "rare", chest: true, perks: [{ kind: "lives", value: 1 }] },
+        { id: "sh_plate", icon: "🥋", name: "Steel Breastplate", rarity: "epic", chest: true, perks: [{ kind: "secretChance", value: 2 }] },
+        { id: "pa_shadow", icon: "🌑", name: "Shadow Greaves", rarity: "epic", chest: true, perks: [{ kind: "stakeMult", value: 15 }] },
+        { id: "sh_dragon", icon: "🐲", name: "Dragonscale Armor", rarity: "legendary", chest: true, perks: [{ kind: "gameMult", value: 15 }, { kind: "lives", value: 1 }] },
+        // 💇 hair, eyes and mouths for your character
+        { id: "hr_crop", icon: "💇", name: "Messy Crop", rarity: "common", chest: true, perks: [{ kind: "sundayBonus", value: 1 }] },
+        { id: "hr_waves", icon: "👱‍♀️", name: "Long Waves", rarity: "common", chest: true, perks: [{ kind: "puzzleBonus", value: 1 }] },
+        { id: "hr_spiky", icon: "🔥", name: "Spiky Crest", rarity: "uncommon", chest: true, perks: [{ kind: "gameTime", value: 1 }] },
+        { id: "hr_twin", icon: "🎀", name: "Twin Tails", rarity: "uncommon", chest: true, perks: [{ kind: "questFlat", value: 1 }] },
+        { id: "ey_sleepy", icon: "😪", name: "Sleepy Eyes", rarity: "common", chest: true, perks: [{ kind: "dupBonus", value: 5 }] },
+        { id: "ey_fierce", icon: "😠", name: "Fierce Eyes", rarity: "uncommon", chest: true, perks: [{ kind: "secretChance", value: 1 }] },
+        { id: "mo_grin", icon: "😁", name: "Toothy Grin", rarity: "common", chest: true, perks: [{ kind: "questMult", value: 5 }] },
+        { id: "mo_fangs", icon: "🧛", name: "Little Fangs", rarity: "uncommon", chest: true, perks: [{ kind: "stakeMult", value: 5 }] },
+        // ✨ more to wear — every one with a perk, the rarer the stronger
+        { id: "nk_scarf", icon: "🧣", name: "Woolly Scarf", rarity: "common", chest: true, perks: [{ kind: "sundayBonus", value: 1 }] },
+        { id: "sw_sandals", icon: "🩴", name: "Sandals", rarity: "common", chest: true, perks: [{ kind: "gameTen", value: 1 }] },
+        { id: "gl_aviator", icon: "✈️", name: "Aviators", rarity: "uncommon", chest: true, perks: [{ kind: "gameFlat", value: 2 }] },
+        { id: "mo_stache", icon: "🥸", name: "Gentleman's Moustache", rarity: "uncommon", chest: true, perks: [{ kind: "questFlat", value: 1 }, { kind: "dupBonus", value: 5 }] },
+        { id: "sh_hoodie", icon: "🧥", name: "Cosy Hoodie", rarity: "uncommon", chest: true, perks: [{ kind: "puzzleBonus", value: 1 }, { kind: "questMult", value: 5 }] },
+        { id: "pt_fox", icon: "🦊", name: "Fox Cub", rarity: "uncommon", chest: true, perks: [{ kind: "dupBonus", value: 5 }, { kind: "sundayBonus", value: 1 }] },
+        { id: "ht_wizard", icon: "🧙", name: "Wizard Hat", rarity: "rare", chest: true, perks: [{ kind: "blurHints", value: 1 }, { kind: "puzzleBonus", value: 1 }] },
+        { id: "hr_silver", icon: "🤍", name: "Silver Ponytail", rarity: "rare", chest: true, perks: [{ kind: "gameTime", value: 1 }, { kind: "questFlat", value: 1 }] },
+        { id: "ey_ice", icon: "🧊", name: "Frost Eyes", rarity: "rare", chest: true, perks: [{ kind: "lives", value: 1 }] },
+        { id: "nk_fang", icon: "🦷", name: "Fang Necklace", rarity: "rare", chest: true, perks: [{ kind: "gameBest", value: 8 }] },
+        { id: "hd_bow", icon: "🏹", name: "Hunter's Bow", rarity: "rare", chest: true, perks: [{ kind: "gameBest", value: 10 }] },
+        { id: "pt_owl", icon: "🦉", name: "Wise Owl", rarity: "rare", chest: true, perks: [{ kind: "puzzleBonus", value: 2 }] },
+        { id: "ht_viking", icon: "⛑️", name: "Viking Helmet", rarity: "epic", chest: true, perks: [{ kind: "gameMult", value: 8 }, { kind: "lives", value: 1 }] },
+        { id: "hr_flame", icon: "🔥", name: "Flame Hair", rarity: "epic", chest: true, perks: [{ kind: "gameMult", value: 8 }, { kind: "gameFlat", value: 3 }] },
+        { id: "hd_staff", icon: "🪄", name: "Arcane Staff", rarity: "epic", chest: true, perks: [{ kind: "blurHints", value: 2 }, { kind: "gameMult", value: 5 }] },
+        { id: "ht_halo", icon: "😇", name: "Golden Halo", rarity: "legendary", chest: true, perks: [{ kind: "secretChance", value: 3 }, { kind: "weeklyTickets", value: 1 }] },
+        { id: "ey_dragon", icon: "👁️", name: "Dragon Eyes", rarity: "legendary", chest: true, perks: [{ kind: "gameMult", value: 12 }, { kind: "secretChance", value: 1 }] },
+        { id: "sh_royal", icon: "🫅", name: "Royal Robe", rarity: "legendary", chest: true, perks: [{ kind: "prizeMult", value: 25 }, { kind: "weeklyTickets", value: 1 }] },
+        { id: "sw_wings", icon: "🪽", name: "Winged Boots", rarity: "legendary", chest: true, perks: [{ kind: "gameTime", value: 3 }, { kind: "gameMult", value: 10 }] },
+        { id: "pt_phoenix", icon: "🐦", name: "Phoenix", rarity: "legendary", chest: true, perks: [{ kind: "lives", value: 2 }, { kind: "gameTime", value: 2 }] },
+        // 💗 the Heart Shop: bought with hearts (heart: its price) …
+        { id: "hs_band", icon: "💕", name: "Heart Headband", rarity: "uncommon", heart: 150, perks: [{ kind: "heartGetChance", value: 10 }] },
+        { id: "hs_shades", icon: "😍", name: "Heart Shades", rarity: "uncommon", heart: 150, perks: [{ kind: "heartSendChance", value: 10 }] },
+        { id: "hs_locket", icon: "💝", name: "Heart Locket", rarity: "rare", heart: 300, perks: [{ kind: "heartGetChance", value: 20 }, { kind: "loginBonus", value: 1 }] },
+        { id: "hs_letter", icon: "💌", name: "Love Letter", rarity: "rare", heart: 300, perks: [{ kind: "heartSendChance", value: 20 }, { kind: "questFlat", value: 1 }] },
+        { id: "hs_sweater", icon: "🧶", name: "Sweetheart Sweater", rarity: "epic", heart: 600, perks: [{ kind: "heartGetChance", value: 15 }, { kind: "heartSendChance", value: 15 }, { kind: "questMult", value: 10 }] },
+        // … and only ever from its 🎡 Heart Spin (heartSpin: true)
+        { id: "hs_rose", icon: "🌹", name: "Red Rose", rarity: "rare", heartSpin: true, perks: [{ kind: "heartSendChance", value: 15 }, { kind: "secretChance", value: 1 }] },
+        { id: "hs_bunny", icon: "🐰", name: "Love Bunny", rarity: "epic", heartSpin: true, perks: [{ kind: "heartGetChance", value: 25 }, { kind: "weeklyTickets", value: 1 }] },
+        // ✨ / 💗 helpers in the chest
+        { id: "hd_starpouch", icon: "👛", name: "Stardust Pouch", rarity: "uncommon", chest: true, perks: [{ kind: "loginStardust", value: 10 }] },
+        { id: "ht_beanie", icon: "🧶", name: "Heart Beanie", rarity: "rare", chest: true, perks: [{ kind: "heartSends", value: 1 }, { kind: "heartGetChance", value: 5 }] },
+        // 🌌 the Celestial Set: only as a set, in the Store (SETS) — set: its id
+        { id: "cs_hair", icon: "🌌", name: "Nebula Hair", rarity: "rare", set: "celestial", perks: [{ kind: "loginStardust", value: 5 }] },
+        { id: "cs_eyes", icon: "🌟", name: "Starlit Eyes", rarity: "rare", set: "celestial", perks: [{ kind: "spinStardust", value: 20 }] },
+        { id: "cs_mouth", icon: "🌙", name: "Moonlit Smile", rarity: "rare", set: "celestial", perks: [{ kind: "heartGetChance", value: 5 }] },
+        { id: "cs_neck", icon: "☄️", name: "Comet Pendant", rarity: "rare", set: "celestial", perks: [{ kind: "loginStardust", value: 10 }] },
+        { id: "cs_top", icon: "🔭", name: "Stargazer Coat", rarity: "epic", set: "celestial", perks: [{ kind: "loginStardust", value: 15 }, { kind: "heartSends", value: 1 }] },
+        { id: "cs_bottom", icon: "👖", name: "Nebula Trousers", rarity: "rare", set: "celestial", perks: [{ kind: "spinStardust", value: 20 }] },
+        { id: "cs_shoes", icon: "🥾", name: "Moonwalkers", rarity: "rare", set: "celestial", perks: [{ kind: "heartSendChance", value: 5 }] },
         // achievement rewards (Mythic only)
-        { id: "a_joystick", icon: "🕹️", name: "Gamer's Joystick", rarity: "epic", perks: [{ kind: "gameTime", value: 1 }, { kind: "blurHints", value: 1 }] },
+        { id: "a_joystick", icon: "🥽", name: "Gamer Visor", rarity: "epic", perks: [{ kind: "gameTime", value: 1 }, { kind: "blurHints", value: 1 }] },
         { id: "a_laurel", icon: "🌿", name: "Champion's Laurel", rarity: "legendary", perks: [{ kind: "gameMult", value: 5 }] },
         { id: "a_pass", icon: "🎡", name: "Regular's Pass", rarity: "epic", perks: [{ kind: "weeklyTickets", value: 1 }, { kind: "loginBonus", value: 1 }] },
         { id: "a_charm", icon: "🧿", name: "Hunter's Charm", rarity: "epic", perks: [{ kind: "secretChance", value: 1 }, { kind: "stakeMult", value: 5 }] },
         // 🎃 Halloween 2026 (Trick or Treat, 31 Oct only) — limited
-        { id: "h_candy", icon: "🍬", name: "Candy Bag", rarity: "common", event: "halloween2026", perks: [{ kind: "loginBonus", value: 1 }] },
+        { id: "h_candy", icon: "🍭", name: "Lollipop", rarity: "common", event: "halloween2026", perks: [{ kind: "loginBonus", value: 1 }] },
         { id: "h_broom", icon: "🧹", name: "Witch's Broom", rarity: "uncommon", event: "halloween2026", perks: [{ kind: "gameTime", value: 2 }] },
         { id: "h_cat", icon: "🐈‍⬛", name: "Black Cat", rarity: "rare", event: "halloween2026", perks: [{ kind: "secretChance", value: 1 }, { kind: "puzzleBonus", value: 1 }] },
         { id: "h_king", icon: "🎃", name: "Pumpkin King", rarity: "legendary", event: "halloween2026", perks: [{ kind: "weeklyTickets", value: 1 }, { kind: "secretChance", value: 1 }] }
@@ -259,6 +332,7 @@
         { id: "e_spooky", type: "emotes", pack: "spooky", icon: "🎃", name: "Spooky Pack", rarity: "rare", chest: true },
         { id: "e_winter", type: "emotes", pack: "winter", icon: "❄️", name: "Winter Pack", rarity: "rare", chest: true },
         { id: "e_hearts", type: "emotes", pack: "hearts", icon: "💞", name: "Hearts Pack", rarity: "legendary" },
+        { id: "b_heartbeat", type: "border", css: "heartbeat", anim: "pulse", icon: "💓", name: "Heartbeat Ring", rarity: "legendary" },
         // 🎃 Halloween 2026 (Trick or Treat, 31 Oct only) — limited
         { id: "hb_pumpkin", type: "border", css: "pumpkin", anim: "spin", icon: "🎃", name: "Jack-o'-Lantern", rarity: "epic", event: "halloween2026" },
         { id: "hb_ghost", type: "border", css: "ghost", anim: "pulse", icon: "👻", name: "Ghost Glow", rarity: "rare", event: "halloween2026" },
@@ -286,7 +360,7 @@
     const ACHIEVEMENT_REWARDS = {
         posts: ["b_scribe"], comments: ["n_helper"], visits: ["b_wanderer"], likesGiven: ["e_hearts"], likesReceived: ["n_star"],
         gamePoints: ["b_arcade", "a_joystick"], champion: ["b_laurel", "a_laurel"], puzzles: ["n_puzzle"], logins: ["b_flame"],
-        weekly: ["a_pass"], secret: ["a_charm"], supporter: ["b_patron"], collector: ["b_aura"]
+        weekly: ["a_pass"], secret: ["a_charm"], supporter: ["b_patron"], collector: ["b_aura"], heartSpins: ["b_heartbeat"]
     };
 
     // Reactions: the six everyone has, plus the first four of each emote pack.
@@ -305,8 +379,9 @@
     /* ---------------- the chest ----------------
        One chest holds both: perk items and styles. Each rarity's chance is
        split evenly between everything in it. A duplicate (anything you already
-       own) is turned into tokens by its rarity (RARITIES[...].refund). */
-    const CHEST = { id: "chest", icon: "🧰", name: "Adventurer's Chest", price: 50, price10: 450,
+       own) is turned into ✨ Stardust by its rarity (RARITIES[...].refund).
+       Prices are in ✨ Stardust. */
+    const CHEST = { id: "chest", icon: "🧰", name: "Adventurer's Chest", price: 500, price10: 4500,
         desc: "Perk items (bonuses that are always on) and styles (borders, name effects, chat bubbles, emote packs)." };
     // Is a seasonal style in the chest on this day ("YYYY-MM-DD")?
     function inSeason(s, dayKey) {
@@ -368,10 +443,122 @@
 
     // What a draw costs you (the Chest Key makes each draw cheaper).
     function chestPrice(count, perks) {
-        const off = Math.max(0, Math.floor(Number((perks || {}).chestDiscount) || 0)) * count;
+        const off = 10 * Math.max(0, Math.floor(Number((perks || {}).chestDiscount) || 0)) * count;
         return Math.max(0, (count === 10 ? CHEST.price10 : CHEST.price) - off);
     }
-    const refundFor = (id, perks) => RARITIES[BY_ID[id].rarity].refund + Math.max(0, Math.floor(Number((perks || {}).dupBonus) || 0));
+    /* Buying one thing outright (instead of trying the chest): only what the
+       chest has, and well above a draw — the chest is the cheap way to
+       collect; this is for the one piece you really want. Achievement and
+       event things can't be bought. */
+    // ✨ Stardust. Lined up with money: the $10 token pack (1,000 🪙) is 10,000 ✨ —
+    // a Legendary, or the Celestial Set with some left over.
+    const BUY_PRICES = { common: 500, uncommon: 1000, rare: 2000, epic: 4000, legendary: 10000 };
+    const buyPrice = (id) => { const x = Object.prototype.hasOwnProperty.call(BY_ID, id) ? BY_ID[id] : null; return x && x.chest && !x.vip ? BUY_PRICES[x.rarity] || null : null; };
+    const refundFor = (id, perks) => RARITIES[BY_ID[id].rarity].refund + 10 * Math.max(0, Math.floor(Number((perks || {}).dupBonus) || 0));
+
+    /* ---------------- ✨ Stardust ----------------
+       The fun money: the chest, buying things outright, more looks — so 🪙
+       tokens stay for giveaways. Tokens turn into Stardust (perToken each),
+       never back. The daily login (Daily Quests) pays some days in ✨ — see
+       LOGIN_WEEK. In the Store: `dealCount` Daily Deals — things to wear at
+       `dealOff`% off. Every achievement tier you claim adds `tierBonus`.
+       api/progress.js and api/tokens.js keep the balances. */
+    const STARDUST = { perToken: 10, dealCount: 4, dealOff: 30, tierBonus: 100 };
+    /* 🗓️ The daily login, Monday → Sunday (Singapore): 🪙 some days, ✨ others,
+       and on Sunday a chest of `chest` rarity or better — on top of Sunday's
+       coins (3–5 🪙 after logging in Monday to Saturday, 1 otherwise; the
+       Ration Pack's +🪙 comes every day). api/tokens.js pays it on Claim. */
+    const LOGIN_WEEK = [{ tokens: 2 }, { stardust: 50 }, { tokens: 2 }, { stardust: 100 }, { tokens: 2 }, { stardust: 50 }, { chest: "uncommon" }];
+    const loginGift = (dayKey) => LOGIN_WEEK[(new Date(String(dayKey) + "T00:00:00Z").getUTCDay() + 6) % 7];
+    const isSunday = (dayKey) => new Date(String(dayKey) + "T00:00:00Z").getUTCDay() === 0;
+    // the day's Daily Deals: the same for everyone that day (a seeded shuffle of
+    // the chest's things to wear — at most one Legendary)
+    function dailyDeals(dayKey) {
+        let h = 2166136261;
+        for (const c of String(dayKey)) { h ^= c.charCodeAt(0); h = Math.imul(h, 16777619) >>> 0; }
+        const rnd = () => { h = (Math.imul(h ^ (h >>> 15), 2246822507) + 0x6D2B79F5) >>> 0; return h / 4294967296; };
+        const pool = ITEMS.filter(i => i.chest && BUY_PRICES[i.rarity]).map(i => i.id);
+        for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
+        const out = [];
+        for (const id of pool) {
+            if (out.length >= STARDUST.dealCount) break;
+            if (ITEM_BY_ID[id].rarity === "legendary" && out.some(x => ITEM_BY_ID[x].rarity === "legendary")) continue;
+            out.push(id);
+        }
+        return out.map(id => ({ id, was: BUY_PRICES[ITEM_BY_ID[id].rarity], price: Math.round(BUY_PRICES[ITEM_BY_ID[id].rarity] * (100 - STARDUST.dealOff) / 1000) * 10 }));
+    }
+    const dealPrice = (id, dayKey) => { const d = dailyDeals(dayKey).find(x => x.id === id); return d ? d.price : null; };
+    /* 👘 Outfit sets: a whole look, head to toe, sold together for ✨ in the
+       Store (its pieces can't be had any other way). Buy it and you can wear
+       every piece; together their bonuses add up like any items'.
+       Its price adds up: `worth` is its pieces at BUY_PRICES (what each would
+       cost on its own), and a set is SET_OFF % off that (to the 100 ✨). */
+    const SET_OFF = 40;
+    const SETS = [
+        { id: "celestial", icon: "🌌", name: "Celestial Set", desc: "Nebula hair, starlit eyes and a coat full of stars — a little more ✨ with every login and spin.",
+            pieces: ["cs_hair", "cs_eyes", "cs_mouth", "cs_neck", "cs_top", "cs_bottom", "cs_shoes"] }
+    ];
+    SETS.forEach(s => {
+        s.worth = s.pieces.reduce((n, p) => n + BUY_PRICES[ITEM_BY_ID[p].rarity], 0);
+        s.price = Math.round(s.worth * (100 - SET_OFF) / 10000) * 100;
+    });
+    const SET_BY_ID = Object.fromEntries(SETS.map(s => [s.id, s]));
+    const setOf = (id) => { const x = Object.prototype.hasOwnProperty.call(ITEM_BY_ID, id) ? ITEM_BY_ID[id] : null; return x && x.set ? SET_BY_ID[x.set] || null : null; };
+
+    /* ---------------- 💗 hearts ----------------
+       Send a friend a heart once a Singapore day each — perDay a day
+       (vipPerDay with Super Supporter). It's theirs, not yours: it waits in
+       their 💗 Hearts (Social → Friends) to collect, and they can send one
+       back. Items with heartGetChance / heartSendChance can add a heart
+       (for each one collected / sent). Spend them in the Heart Shop: a 🎡
+       spin (spinCost) or a Heart Shop thing (its `heart` price). Send all
+       of the day's hearts and you get dayBonus 💗 (once a day).
+       api/progress.js does it all; this is the rulebook. */
+    const HEARTS = { perDay: 5, vipPerDay: 10, spinCost: 50, dayBonus: 3 };
+    // + your items' heartSends (Heart Beanie, Stargazer Coat), never more than +5
+    const heartsPerDay = (vip, perks) => (vip ? HEARTS.vipPerDay : HEARTS.perDay) + Math.min(5, Math.max(0, Math.floor((perks && perks.heartSends) || 0)));
+    // ✨ your items add to every login / Heart Spin (never more than 200)
+    const perkStardust = (perks, kind) => Math.min(200, Math.max(0, Math.floor((perks && perks[kind]) || 0)));
+    // an extra heart's chance from your items' perks, as 0–1
+    const heartChance = (perks, kind) => Math.min(100, Math.max(0, Number((perks || {})[kind]) || 0)) / 100;
+    // What a spin can land on (weights add up to 100). "item": a chest item
+    // you don't have, Rare or below; "exclusive": a Heart Spin-only thing you
+    // don't have. Nothing left of either? Then the fallback's tokens.
+    const HEART_SPIN = [
+        { key: "s100", kind: "stardust", value: 100, weight: 30, icon: "✨", label: "100 ✨" },
+        { key: "s200", kind: "stardust", value: 200, weight: 22, icon: "✨", label: "200 ✨" },
+        { key: "h20", kind: "hearts", value: 20, weight: 15, icon: "💗", label: "20 💗 back" },
+        { key: "s500", kind: "stardust", value: 500, weight: 8, icon: "🌟", label: "500 ✨" },
+        { key: "draw", kind: "draw", value: 1, weight: 10, icon: "🧰", label: "A free chest draw" },
+        { key: "item", kind: "item", weight: 8, icon: "🎁", label: "A chest item you don't have (up to Rare)" },
+        { key: "exclusive", kind: "exclusive", weight: 5, icon: "🌹", label: "A Heart Spin-only treasure" },
+        { key: "t50", kind: "tokens", value: 50, weight: 2, icon: "💎", label: "Jackpot: 50 🪙" }
+    ];
+    const HEART_SPIN_FALLBACK = 500; // ✨ Stardust, when there's no item left for you
+    const heartPrice = (id) => { const x = Object.prototype.hasOwnProperty.call(ITEM_BY_ID, id) ? ITEM_BY_ID[id] : null; return x && x.heart > 0 ? x.heart : null; };
+    const HEART_SHOP = ITEMS.filter(i => i.heart > 0);
+    const HEART_SPIN_ONLY = ITEMS.filter(i => i.heartSpin);
+    // One spin: { key, kind, tokens, stardust, hearts, draws, id } (id: the item you got). rnd: () => [0, 1).
+    function rollHeartSpin(owned, rnd) {
+        const r = typeof rnd === "function" ? rnd : Math.random;
+        const have = new Set(owned || []);
+        let roll = r() * 100, slot = HEART_SPIN[HEART_SPIN.length - 1];
+        for (const s of HEART_SPIN) { if (roll < s.weight) { slot = s; break; } roll -= s.weight; }
+        const out = { key: slot.key, kind: slot.kind, tokens: 0, stardust: 0, hearts: 0, draws: 0, id: null };
+        const pick = (list) => list[Math.min(list.length - 1, Math.floor(r() * list.length))];
+        if (slot.kind === "tokens") out.tokens = slot.value;
+        else if (slot.kind === "stardust") out.stardust = slot.value;
+        else if (slot.kind === "hearts") out.hearts = slot.value;
+        else if (slot.kind === "draw") out.draws = slot.value;
+        else {
+            const list = slot.kind === "item"
+                ? ITEMS.filter(i => i.chest && ["common", "uncommon", "rare"].includes(i.rarity) && !have.has(i.id))
+                : HEART_SPIN_ONLY.filter(i => !have.has(i.id));
+            if (list.length) out.id = pick(list).id;
+            else { out.kind = "stardust"; out.stardust = HEART_SPIN_FALLBACK; }
+        }
+        return out;
+    }
 
     /* ---------------- events ----------------
        A limited chest that's only open for a while (Singapore days, both
@@ -521,7 +708,9 @@
         TIERS, TIER_REWARDS, FREE_DRAW_TIER, MAX_BADGES, ACHIEVEMENTS, ACHIEVEMENT_BY_ID, tiersReached, rewardBetween, achievementStates,
         RARITIES, RARITY_ORDER, PERK_KINDS, perkText, perkLines, ITEMS, ITEM_BY_ID, STYLES, STYLE_BY_ID, STYLE_TYPES, BY_ID,
         EMOTE_PACKS, BASE_REACTIONS, ALL_REACTIONS, emotesOf, ACHIEVEMENT_REWARDS,
-        CHEST, PITY, inSeason, chestPool, dropRates, rollChest, drawChest, pityLeft, chestPrice, refundFor,
+        CHEST, PITY, inSeason, chestPool, dropRates, rollChest, drawChest, pityLeft, chestPrice, refundFor, BUY_PRICES, buyPrice,
+        STARDUST, LOGIN_WEEK, loginGift, isSunday, dailyDeals, dealPrice, SET_OFF, SETS, SET_BY_ID, setOf,
+        HEARTS, heartsPerDay, perkStardust, heartChance, HEART_SPIN, HEART_SPIN_FALLBACK, heartPrice, HEART_SHOP, HEART_SPIN_ONLY, rollHeartSpin,
         EVENTS, TRICKS, eventThings, eventAvatars, activeEvent, eventPrice, knock, SPOOKY_REWARDS, rollSpooky, pickMissingTreat,
         perksOf, gamePerkBonus, runPerks, questBonus, secretWeight, badgeLimit, badgeHtml, styleClass, withBorder
     };

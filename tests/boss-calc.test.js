@@ -211,3 +211,41 @@ describe("on the Troops, Heroes & Bosses page", () => {
         assert.equal(new Set(B.BOSSES.map(b => b.img)).size, 5);
     });
 });
+
+describe("the Troops, Heroes & Bosses guide (units/)", () => {
+    const page = (f) => fs.readFileSync(path.join(ROOT, "units", f), "utf8");
+    const slug = (name) => "boss-" + name.toLowerCase().normalize("NFKD").replace(/['’.]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") + ".html";
+    test("every boss has a guide page with all its abilities and the game's numbers", () => {
+        for (const b of B.BOSSES) {
+            const r = B.bossAt(DATA, b.id, 300), html = page(slug(r.name));
+            assert.match(html, new RegExp(`<h1>${r.name}</h1>`), b.id);
+            r.abilities.forEach(a => assert.ok(html.includes(`<h3>${a.name.replace(/&/g, "&amp;").replace(/'/g, "&#39;")}</h3>`), `${b.id}: ${a.name}`));
+            const first = r.abilities.find(a => a.rows.some(x => typeof x.value === "number"));
+            const v = first.rows.find(x => typeof x.value === "number").value;
+            assert.ok(html.includes(Math.round(v * 100) / 100 >= 1000 ? (Math.round(v * 100) / 100).toLocaleString("en-US") : String(Math.round(v * 100) / 100)), `${b.id}: its level-300 numbers are there`);
+            assert.ok(html.includes(`../?goto=troops&amp;boss=${b.id}`), `${b.id}: Open in the app`);
+        }
+    });
+    test("the guide's index lists the bosses (with a Bosses filter); the sitemap has their pages", () => {
+        const index = page("index.html");
+        assert.match(index, /<h1>Troops, Heroes &amp; Bosses<\/h1>/);
+        assert.match(index, /data-value="boss">Bosses<\/button>/);
+        for (const b of B.BOSSES) assert.ok(index.includes(`href="${slug(B.bossAt(DATA, b.id, 1).name)}"`), b.id);
+        const map = fs.readFileSync(path.join(ROOT, "sitemap.xml"), "utf8");
+        for (const b of B.BOSSES) assert.ok(map.includes("units/" + slug(B.bossAt(DATA, b.id, 1).name)), "sitemap: " + b.id);
+    });
+    test("the app: ?goto=troops&boss=<id> opens that boss; Home's guide link is a real button", () => {
+        const home = fs.readFileSync(path.join(ROOT, "index.html"), "utf8");
+        assert.match(home, /"troopsandheroes\.html\?tab=bosses&boss=" \+ encodeURIComponent\(linkBoss\)/);
+        assert.match(home, /<a href="units\/" class="home-guide-btn">📖 Troops, Heroes &amp; Bosses guide/);
+        assert.match(home, /\.home-guide-links \.home-guide-btn \{ display: inline-flex;[^}]*padding: 9px 16px;[^}]*background: linear-gradient/);
+        // About the Creator + About & contact: one page (about.html), one button the same kind as the guide's
+        assert.match(home, /<a href="about\.html" class="home-guide-btn" id="aboutHomeBtn">👋 About &amp; contact/);
+        assert.doesNotMatch(home, /id="page-about"|>About the Creator</, "no second, in-app About page");
+        assert.match(home, /if \(page === "about"\) \{ location\.href = "about\.html"; return; \}/, "anything opening About (the 🧭 guide) gets about.html");
+        assert.match(home, /if \(gotoPage === "bug"\) \{[\s\S]{0,300}AppState\.waitForAuthReady\(\)\.then\(\(\) => window\.openBugReport\(\)\)/, "?goto=bug opens the bug report, once sign-in is known");
+        const about = fs.readFileSync(path.join(ROOT, "about.html"), "utf8");
+        for (const s of ['href="./?goto=bug">🐞 Report a bug', 'href="mailto:keazyea@gmail.com"', 'discord.gg', 'youtube.com/@keazyea', 'Join my clan', 'Troops, heroes &amp; bosses', 'href="./?goto=character"', 'href="./?goto=achievements"'])
+            assert.ok(about.includes(s), "about.html: " + s);
+    });
+});

@@ -186,7 +186,7 @@
 
         .pack-options {
             display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
+            grid-template-columns: repeat(6, minmax(0, 1fr));
             gap: 10px;
             max-width: 420px;
             margin: 20px auto 12px;
@@ -330,6 +330,9 @@
         .pack-unit { color: #d0d0e8; }
         .pack-price { display: inline-block; margin-top: 8px; padding: 3px 12px; border-radius: 999px; background: rgba(255, 255, 255, 0.1); }
         .pack-bonus { font-weight: 800; color: #7ddc92; margin-top: 4px; }
+        .pack-option { grid-column: span 2; }
+        .pack-option.pack-wide { grid-column: span 3; }
+        .pack-sd { font-size: 0.72rem; font-weight: 800; color: #b9e6ff; }
         .pack-option.bought { animation: packBought 0.7s cubic-bezier(.2, 1.5, .4, 1); }
         @keyframes packBought { 30% { transform: scale(1.14) rotate(-2deg); box-shadow: 0 0 40px rgba(255, 196, 0, 0.9); } 60% { transform: scale(0.97); } }
         .pack-summary { font-weight: 700; color: #fff; }
@@ -357,6 +360,72 @@
         .pack-option .ripple { clip-path: inset(0 round 16px); }
 
         /* 🧰 The chest: perk items and styles, 1 or 10 draws. */
+        /* ✨ Stardust: your wallet, today's gift, Daily Deals, 🪙 → ✨ */
+        .sd-wallet { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 4px 0 6px; }
+        .sd-wallet span { padding: 6px 14px; border-radius: 999px; font-weight: 800; font-size: 0.9rem; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.12); }
+        .sd-wallet span:first-child { border-color: rgba(156, 220, 255, 0.55); color: #d9f2ff; }
+        .sd-card { margin: 0 0 14px; padding: 14px; border-radius: 18px; text-align: center; border: 1px solid rgba(156, 220, 255, 0.4);
+            background: radial-gradient(circle at 50% 0%, rgba(120, 200, 255, 0.2), transparent 65%), linear-gradient(170deg, #1f2a4a, #17172e); }
+        .sd-note { margin-top: 8px; font-size: 0.76rem; color: #b8c4e8; }
+        .sd-deals { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; text-align: center; }
+        .sd-deal { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 6px; border-radius: 14px; background: rgba(0, 0, 0, 0.28); border: 1px solid var(--rc); min-width: 0; position: relative; }
+        .sd-deal .kih-thumb { border-radius: 10px; background: rgba(255, 255, 255, 0.06); }
+        .sd-deal b { font-size: 0.8rem; line-height: 1.2; }
+        .sd-deal small { font-size: 0.66rem; color: #c8c0e8; line-height: 1.25; }
+        .sd-off { position: absolute; top: 6px; left: 6px; padding: 1px 6px; border-radius: 999px; background: #ff4f8b; color: #fff; font-size: 0.64rem; font-weight: 900; }
+        .sd-price s { color: #8f8fb0; font-size: 0.74rem; font-weight: 800; }
+        .sd-price { font-weight: 900; font-size: 0.86rem; color: #d9f2ff; }
+        .sd-deal button { margin-top: auto; padding: 6px 12px; border-radius: 999px; border: none; font: inherit; font-size: 0.74rem; font-weight: 900; cursor: pointer; background: linear-gradient(135deg, #b9e6ff, #4aa8ff); color: #08223d; }
+        .sd-deal .hs-own { font-size: 0.72rem; font-weight: 900; color: #7ddc92; margin-top: auto; }
+        .sd-convert h3 { margin: 0 0 4px; font-size: 1rem; }
+        .sd-conv-row { display: flex; gap: 8px; align-items: center; justify-content: center; flex-wrap: wrap; margin: 10px 0 6px; }
+        .sd-conv-row input { width: 90px; padding: 9px 10px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.2); background: rgba(0, 0, 0, 0.3); color: #fff; font: inherit; font-weight: 800; text-align: center; }
+        .sd-chip { padding: 6px 10px; border-radius: 999px; border: 1px solid rgba(156, 220, 255, 0.45); background: transparent; color: #d9f2ff; font: inherit; font-size: 0.74rem; font-weight: 800; cursor: pointer; }
+        .sd-conv-go { padding: 9px 16px; border-radius: 999px; border: none; font: inherit; font-weight: 900; cursor: pointer; background: linear-gradient(135deg, #ffd75e, #f2a93b); color: #2a1a05; }
+        .sd-conv-go:disabled { filter: grayscale(1); opacity: 0.55; cursor: default; }
+        /* 👘 Outfit sets */
+        .set-card { margin: 0 0 14px; padding: 14px; border-radius: 18px; border: 1px solid rgba(156, 220, 255, 0.45); display: flex; flex-direction: column; gap: 10px; align-items: center;
+            background: radial-gradient(circle at 25% 30%, rgba(140, 120, 255, 0.35), transparent 60%), linear-gradient(160deg, #1c1f4f, #0f1230); }
+        /* the set on a boy and a girl, side by side */
+        .set-hero { display: flex; gap: 10px; justify-content: center; }
+        .set-fig { display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 0.7rem; font-weight: 800; color: #c8c8ea; }
+        .set-fig svg { width: 120px; height: 144px; border-radius: 12px; }
+        .set-info { width: 100%; min-width: 0; text-align: center; }
+        .set-info h3 { margin: 0 0 2px; font-size: 1.05rem; }
+        .set-info p { margin: 0 0 6px; font-size: 0.76rem; color: #c8c8ea; line-height: 1.35; }
+        .set-pieces { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 6px; justify-content: center; }
+        .set-pieces span { width: 34px; height: 34px; border-radius: 9px; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--rc); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; }
+        .set-perks { margin: 0 auto 8px; padding: 0; list-style: none; font-size: 0.72rem; color: #d9f2ff; line-height: 1.4; display: inline-block; text-align: left; }
+        .set-perks li::before { content: "✦ "; color: #ffe27a; }
+        .set-btn { padding: 8px 18px; border-radius: 999px; border: none; font: inherit; font-size: 0.86rem; font-weight: 900; cursor: pointer; background: linear-gradient(135deg, #b9e6ff, #4aa8ff); color: #08223d; }
+        .set-btn:disabled { opacity: 0.6; cursor: default; }
+        .set-was { font-size: 0.74rem; color: #b8c4e8; margin: 0 0 6px; }
+        .set-was s { color: #8f8fb0; font-weight: 800; }
+        .set-was b { color: #ff8fb8; }
+        .set-own { font-size: 0.78rem; font-weight: 900; color: #7ddc92; margin-right: 6px; }
+        @media (max-width: 340px) { .set-fig svg { width: 108px; height: 130px; } }
+        /* 💗 the Heart Shop */
+        .hs-card { margin: 0 0 18px; padding: 16px 14px; border-radius: 20px; text-align: center; border: 1px solid rgba(255, 79, 139, 0.55);
+            background: radial-gradient(circle at 50% 0%, rgba(255, 79, 139, 0.26), transparent 65%), linear-gradient(170deg, #3a1630, #17172e); }
+        .hs-bal { font-size: 1.6rem; font-weight: 900; }
+        .hs-bal small { display: block; font-size: 0.78rem; font-weight: 700; color: #f2c6da; margin-top: 2px; }
+        .hs-how { color: #f2c6da; font-size: 0.82rem; margin: 6px auto 12px; max-width: 420px; }
+        .hs-sub { font-weight: 900; margin: 14px 0 8px; text-align: left; }
+        .hs-sub small { font-weight: 700; color: #c8a0b8; margin-left: 6px; }
+        .hs-spin-btn { display: block; width: 100%; max-width: 340px; margin: 0 auto 8px; background: linear-gradient(180deg, #ffb3d4, #ff4f8b) !important; box-shadow: 0 5px 0 #b3245a !important; }
+        .hs-spin-btn small { display: block; font-size: 0.72rem; font-weight: 700; opacity: 0.85; }
+        .hs-prizes { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; }
+        .hs-prizes span { padding: 3px 9px; border-radius: 999px; font-size: 0.72rem; font-weight: 800; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 179, 212, 0.4); color: #ffd6e8; }
+        .hs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 8px; }
+        .hs-item { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 6px; border-radius: 14px; background: rgba(0, 0, 0, 0.28); border: 1px solid var(--rc); min-width: 0; }
+        .hs-item .kih-thumb { border-radius: 10px; background: rgba(255, 255, 255, 0.06); }
+        .hs-item b { font-size: 0.78rem; line-height: 1.2; }
+        .hs-item small { font-size: 0.66rem; color: #c8c0e8; line-height: 1.25; }
+        .hs-item button { margin-top: auto; padding: 5px 10px; border-radius: 999px; border: none; font: inherit; font-size: 0.72rem; font-weight: 900; cursor: pointer;
+            background: linear-gradient(135deg, #ffb3d4, #ff4f8b); color: #2a0515; }
+        .hs-item button:disabled { filter: grayscale(1); opacity: 0.55; cursor: default; }
+        .hs-item .hs-own { font-size: 0.72rem; font-weight: 900; color: #7ddc92; margin-top: auto; }
+        .hs-item.spin-only { border-style: dashed; }
         .chest-card { position: relative; margin: 0 0 18px; padding: 18px 16px; border-radius: 20px; text-align: center; overflow: hidden;
             border: 1px solid rgba(180, 107, 255, 0.55);
             background: radial-gradient(circle at 50% 0%, rgba(180, 107, 255, 0.28), transparent 65%), linear-gradient(170deg, #241d48, #17172e); }
@@ -384,7 +453,13 @@
         .chest-contents { padding: 0 14px 12px; }
         .chest-contents h4 { margin: 10px 0 6px; font-size: 0.82rem; color: var(--rc); text-transform: uppercase; letter-spacing: 0.04em; }
         .chest-contents .cc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 4px; }
-        .chest-contents .cc-grid div { font-size: 0.78rem; color: #e0d8ff; display: flex; gap: 6px; align-items: baseline; min-width: 0; }
+        .chest-contents .cc-grid div { font-size: 0.78rem; color: #e0d8ff; display: flex; gap: 6px; align-items: center; min-width: 0; }
+        /* a thing's picture (what you'd wear), instead of its emoji */
+        .kih-thumb { display: block; flex-shrink: 0; }
+        .cc-grid .kih-thumb { border-radius: 6px; background: rgba(255, 255, 255, 0.06); }
+        .reel-tile .kih-thumb, .cr-item-icon .kih-thumb, .cr-front .ic .kih-thumb, .ev-thing .ic .kih-thumb { margin: 0 auto; }
+        .cr-wear { display: block; margin: 10px auto 0; padding: 9px 18px; border-radius: 999px; border: none; font: inherit; font-weight: 900; font-size: 0.9rem; cursor: pointer;
+            background: linear-gradient(90deg, #ffb35e, #c99bff); color: #1d1030; box-shadow: 0 4px 14px rgba(201, 155, 255, 0.35); }
         .chest-contents .cc-grid div small { color: #9a92c0; margin-left: auto; white-space: nowrap; }
         .chest-contents .cc-grid .own { opacity: 0.45; }
 
@@ -577,7 +652,54 @@
     </div>
 
     <div id="storePage" style="display:none;">
-        <p class="store-tagline">Tokens = extra chances in Secret Giveaways 🎁</p>
+        <p class="store-tagline">✨ Stardust is for your character · 🪙 Tokens are for giveaways 🎁</p>
+        <div class="sd-wallet" id="sdWallet"></div>
+
+        <!-- ✨ STARDUST: the Daily Deals (things to wear, 30% off, new every
+             day) and 🪙 → ✨ (one way). Free ✨ comes with the daily login
+             (Daily Quests). Rules: progress-core.js STARDUST; api/progress.js does it. -->
+
+        <h2 class="store-section" id="deals"><span>🛍️</span> Daily Deals <small id="sdDealsWhen"></small></h2>
+        <div class="sd-card" id="sdDeals"></div>
+        <div class="sd-card sd-convert" id="sdConvert"></div>
+
+        <!-- 👘 OUTFIT SETS: a whole look, head to toe, for ✨ — its pieces come
+             only with the set (progress-core.js SETS; api/progress.js buySet). -->
+        <h2 class="store-section" id="sets"><span>👘</span> Outfit Sets <small>every piece at once</small></h2>
+        <div id="sdSets"></div>
+
+        <!-- 🎃 AN EVENT (e.g. Trick or Treat): only while it's on (progress-core.js
+             EVENTS); the admin sees a preview any day. Filled in by renderEventCard(). -->
+        <div id="eventBox" style="display:none;"></div>
+
+        <!-- 💗 THE HEART SHOP: hearts come from sending friends one (Social, a
+             friend's profile); spend them on a 🎡 spin or things to wear. Rules:
+             progress-core.js (HEARTS, HEART_SPIN, HEART_SHOP); api/progress.js does it. -->
+        <h2 class="store-section" id="hearts"><span>💗</span> Heart Shop</h2>
+        <div class="hs-card" id="heartShop"></div>
+
+        <!-- THE CHEST. Contents, odds, prices and guarantees come from
+             progress-core.js; api/progress.js does the actual draws. -->
+        <h2 class="store-section" id="chest"><span>🧰</span> Adventurer's Chest</h2>
+        <div class="chest-card">
+            <div class="chest-art">🧰</div>
+            <div class="chest-title">Adventurer's Chest</div>
+            <p class="chest-desc">Things to wear — each with a bonus that's always on — and styles: avatar borders, name effects, chat bubbles, profile backgrounds and emote packs. Paid in ✨ Stardust.</p>
+            <div class="chest-odds" id="chestOdds"></div>
+            <div class="chest-pity" id="chestPity"></div>
+            <div class="chest-actions">
+                <button type="button" class="cel-primary free ripple-host" id="openFreeBtn" onclick="openStoreChest(1, true)" style="display:none;"></button>
+                <button type="button" class="cel-primary ripple-host" id="open1Btn" onclick="openStoreChest(1)"></button>
+                <button type="button" class="cel-primary ten ripple-host" id="open10Btn" onclick="openStoreChest(10)"></button>
+                <button type="button" class="cel-ghost" onclick="goMyItems()">🎒 My items &amp; styles</button>
+            </div>
+            <details class="chest-rules">
+                <summary>📜 What's inside &amp; the rules</summary>
+                <ul id="chestRulesList"></ul>
+                <div class="chest-contents" id="chestContents"></div>
+            </details>
+        </div>
+
 
         <!-- MONTHLY PLANS. Each card shows at once; its button area is a
              placeholder until refreshPlanButtons() has the profile and
@@ -633,42 +755,31 @@
                     <span class="pack-bonus">+10 bonus</span>
                 </button>
                 <button type="button" class="pack-option ripple-host" data-pack="large" aria-pressed="false" onclick="selectPack('large')">
-                    <span class="pack-ribbon">Best value</span>
                     <span class="pack-art">👑</span>
                     <span class="pack-tokens">240</span>
                     <span class="pack-unit">tokens</span>
                     <span class="pack-price">$3</span>
                     <span class="pack-bonus">+30 bonus</span>
                 </button>
+                <button type="button" class="pack-option ripple-host pack-wide" data-pack="big" aria-pressed="false" onclick="selectPack('big')">
+                    <span class="pack-art">💎</span>
+                    <span class="pack-tokens">450</span>
+                    <span class="pack-unit">tokens</span>
+                    <span class="pack-price">$5</span>
+                    <span class="pack-bonus">+100 bonus</span>
+                </button>
+                <button type="button" class="pack-option ripple-host pack-wide" data-pack="mega" aria-pressed="false" onclick="selectPack('mega')">
+                    <span class="pack-ribbon">Best value</span>
+                    <span class="pack-art">🏆</span>
+                    <span class="pack-tokens">1,000</span>
+                    <span class="pack-unit">tokens</span>
+                    <span class="pack-price">$10</span>
+                    <span class="pack-bonus">+300 bonus</span>
+                    <span class="pack-sd">= 10,000 ✨</span>
+                </button>
             </div>
             <p class="pack-summary" id="packSummary">150 tokens for USD $2</p>
             <div id="packButtonBox"></div>
-        </div>
-
-        <!-- 🎃 AN EVENT (e.g. Trick or Treat): only while it's on (progress-core.js
-             EVENTS); the admin sees a preview any day. Filled in by renderEventCard(). -->
-        <div id="eventBox" style="display:none;"></div>
-
-        <!-- THE CHEST. Contents, odds, prices and guarantees come from
-             progress-core.js; api/progress.js does the actual draws. -->
-        <h2 class="store-section" id="chest"><span>🧰</span> Adventurer's Chest</h2>
-        <div class="chest-card">
-            <div class="chest-art">🧰</div>
-            <div class="chest-title">Adventurer's Chest</div>
-            <p class="chest-desc">Perk items — bonuses that are always on and add up — and styles: avatar borders, name effects, chat bubbles, profile backgrounds and emote packs.</p>
-            <div class="chest-odds" id="chestOdds"></div>
-            <div class="chest-pity" id="chestPity"></div>
-            <div class="chest-actions">
-                <button type="button" class="cel-primary free ripple-host" id="openFreeBtn" onclick="openStoreChest(1, true)" style="display:none;"></button>
-                <button type="button" class="cel-primary ripple-host" id="open1Btn" onclick="openStoreChest(1)"></button>
-                <button type="button" class="cel-primary ten ripple-host" id="open10Btn" onclick="openStoreChest(10)"></button>
-                <button type="button" class="cel-ghost" onclick="goMyItems()">🎒 My items &amp; styles</button>
-            </div>
-            <details class="chest-rules">
-                <summary>📜 What's inside &amp; the rules</summary>
-                <ul id="chestRulesList"></ul>
-                <div class="chest-contents" id="chestContents"></div>
-            </details>
         </div>
 
         <div class="donate-box">
@@ -729,6 +840,7 @@
     </div>
 
     <script src="progress-core.js"></script>
+    <script src="character-core.js"></script>
     <script src="thing-details.js"></script>
     <script type="module" src="appState.js"></script>
     <script>
@@ -897,7 +1009,9 @@
         const TOKEN_PACKS = {
             small: { tokens: 70, price: 1 },
             medium: { tokens: 150, price: 2 },
-            large: { tokens: 240, price: 3 }
+            large: { tokens: 240, price: 3 },
+            big: { tokens: 450, price: 5 },
+            mega: { tokens: 1000, price: 10 }
         };
         let selectedPack = "medium";
         let packButtonsRendered = false;
@@ -911,7 +1025,7 @@
                 btn.setAttribute("aria-pressed", on ? "true" : "false");
             });
             const pack = TOKEN_PACKS[packId];
-            document.getElementById("packSummary").textContent = `${pack.tokens} tokens for USD $${pack.price}`;
+            document.getElementById("packSummary").textContent = `${pack.tokens.toLocaleString("en-US")} tokens for USD $${pack.price} · = ${(pack.tokens * PC.STARDUST.perToken).toLocaleString("en-US")} ✨ if you convert them`;
         }
         window.selectPack = selectPack;
 
@@ -948,7 +1062,7 @@
             }
         }
 
-        // One PayPal button for all three packs: it buys whichever tile is
+        // One PayPal button for all five packs: it buys whichever tile is
         // selected at the moment it's tapped.
         function renderPackButtons() {
             if (packButtonsRendered || !AppState.getCurrentUser()) return;
@@ -1009,6 +1123,7 @@
                 storeBalance = (wallet && wallet.balance) || 0;
                 countUp(document.getElementById("storeTokenBalance"), storeBalance);
                 updateChestButtons();
+                renderWallet(); renderConvert();
             });
         }
 
@@ -1231,6 +1346,338 @@
         let chestState = { items: [], perks: {}, pity: { epic: 0, legendary: 0 }, freeDraws: 0 };
         const sgtDay = () => new Date(Date.now() + 8 * 3600e3).toISOString().slice(0, 10);
         const escS = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+        // A thing's picture: the item itself if it's something you wear
+        // (character-core.js), its emoji otherwise.
+        const CCh = window.CharacterCore;
+        const thingPic = (x, size) => (CCh && CCh.wearOf(x.id) && CCh.itemPic(x.id, size)) || x.icon;
+        // After a draw: 🧍 Wear it (something to wear) or 🎨 Use it (a border, name effect, chat bubble).
+        function wearBtnHtml(id) {
+            const st = PC.STYLE_BY_ID[id];
+            if (CCh && CCh.wearOf(id)) return `<button type="button" class="cr-wear" onclick="goWear('${id}')">🧍 Wear it now</button>`;
+            if (st && st.type !== "emotes") return `<button type="button" class="cr-wear" onclick="goWear('${id}')">🎨 Use it</button>`;
+            return "";
+        }
+        // to 🧍 Character's Wardrobe, wearing it (or 🎨 Style, for a style)
+        window.goWear = function (id) {
+            if (!chestBusy) closeChestOverlay();
+            try { if (window.top !== window && window.top.openWardrobeAt) { window.top.openWardrobeAt(id, true); return; } } catch (e) { }
+            window.location.href = "index.html?goto=character";
+        };
+        /* ---- ✨ STARDUST: your wallet, today's free gift, the Daily Deals, 🪙 → ✨ ---- */
+        const fmtN = (n) => Math.max(0, Math.floor(Number(n) || 0)).toLocaleString("en-US");
+        function renderStardust() { renderWallet(); renderDeals(); renderConvert(); renderSets(); }
+        function renderWallet() {
+            const el = document.getElementById("sdWallet");
+            if (el) el.innerHTML = AppState.getCurrentUser() ? `<span>✨ <b id="sdBal">${fmtN(chestState.stardust)}</b> Stardust</span><span>🪙 <b>${fmtN(storeBalance)}</b> tokens</span>` : "";
+        }
+        const untilTomorrow = () => { const ms = 86400000 - ((Date.now() + 8 * 3600e3) % 86400000); return `${Math.floor(ms / 3600e3)}h ${Math.floor(ms % 3600e3 / 60000)}m`; };
+        function renderDeals() {
+            const box = document.getElementById("sdDeals");
+            if (!box) return;
+            const day = sgtDay(), owned = new Set(chestState.items), signed = !!AppState.getCurrentUser();
+            document.getElementById("sdDealsWhen").textContent = `${PC.STARDUST.dealOff}% off · new deals in ${untilTomorrow()}`;
+            box.innerHTML = `<div class="sd-deals">${PC.dailyDeals(day).map(d => {
+                const it = PC.BY_ID[d.id], yours = owned.has(d.id);
+                return `<div class="sd-deal" style="--rc:${PC.RARITIES[it.rarity].color}"><span class="sd-off">−${PC.STARDUST.dealOff}%</span>
+                    <span data-thing="${d.id}">${thingPic(it, 64)}</span><b data-thing="${d.id}">${escS(it.name)}</b><small>${escS(PC.RARITIES[it.rarity].label)} · ${escS(chestWhat(it))}</small>
+                    ${yours ? `<span class="hs-own">✓ Yours</span><button type="button" onclick="goWear('${d.id}')">🧍 Wear it</button>`
+                        : `<span class="sd-price"><s>${fmtN(d.was)} ✨</s></span><button type="button" id="sdBuy_${d.id}" onclick="buyDeal('${d.id}')"${!signed || chestBusy ? " disabled" : ""} aria-label="Buy for ${fmtN(d.price)} Stardust">✨ ${fmtN(d.price)}</button>`}
+                </div>`;
+            }).join("")}</div>`;
+        }
+        // Two taps to buy (short of ✨: it offers 🪙 → ✨ first)
+        window.buyDeal = async function (id) {
+            const b = document.getElementById("sdBuy_" + id), d = PC.dailyDeals(sgtDay()).find(x => x.id === id), it = PC.BY_ID[id];
+            if (!b || !d || b.disabled) return;
+            if (b.dataset.armed !== "1") {
+                b.dataset.armed = "1";
+                b.textContent = `Tap again · ✨ ${fmtN(d.price)}`;
+                setTimeout(() => { if (b.isConnected && b.dataset.armed === "1") { b.dataset.armed = ""; b.textContent = `✨ ${fmtN(d.price)}`; } }, 4000);
+                return;
+            }
+            b.dataset.armed = "";
+            if (!(await haveStardust(d.price))) { b.textContent = `✨ ${fmtN(d.price)}`; return; }
+            b.disabled = true;
+            b.textContent = "Buying…";
+            try {
+                const r = await AppState.buyItem(id, true);
+                chestState.stardust = r.stardust; chestState.items = r.items; chestState.perks = r.perks;
+                renderChestCard();
+                showResultModal(`${it.icon} ${it.name} is yours!`, `${fmtN(r.price)} ✨ — a Daily Deal. Its bonus is on now; tap 🧍 Wear it to put it on.`);
+            } catch (e) {
+                b.disabled = false; b.textContent = `✨ ${fmtN(d.price)}`;
+                showResultModal("Couldn't buy it", e.message);
+            }
+        };
+        /* ---- 👘 OUTFIT SETS: shown on a boy and a girl (your skin and what
+           you wear, or the starter look), with every piece of the set on ---- */
+        function setOutfit(set, body) {
+            const o = chestState.outfit && chestState.outfit.base ? chestState.outfit : { base: CCh.DEFAULT_BASE, wear: CCh.DEFAULT_WEAR };
+            const wear = { ...(o.wear || {}) };
+            set.pieces.forEach(p => { const w = CCh.wearOf(p); if (w) wear[w.slot] = p; });
+            return { base: { ...o.base, body }, wear };
+        }
+        function renderSets() {
+            const box = document.getElementById("sdSets");
+            if (!box || !CCh) return;
+            const owned = new Set(chestState.items), signed = !!AppState.getCurrentUser();
+            box.innerHTML = PC.SETS.map(set => {
+                const yours = set.pieces.every(p => owned.has(p));
+                const perks = PC.perkLines ? PC.perkLines(PC.perksOf(set.pieces)).map(l => l.text) : [];
+                return `<div class="set-card" id="set_${set.id}">
+                    <div class="set-hero">${[["guy", "Boy"], ["girl", "Girl"]].map(([b, label]) => `<span class="set-fig" data-body="${b}">${CCh.svg(setOutfit(set, b), { size: 120, animate: true })}<small>${label}</small></span>`).join("")}</div>
+                    <div class="set-info"><h3>${set.icon} ${escS(set.name)}</h3><p>${escS(set.desc)} <b>${set.pieces.length} pieces</b> — only in this set.</p>
+                        <div class="set-pieces">${set.pieces.map(p => `<span data-thing="${p}" title="${escS(PC.BY_ID[p].name)}" style="--rc:${PC.RARITIES[PC.BY_ID[p].rarity].color}">${CCh.itemPic(p, 32) || PC.BY_ID[p].icon}</span>`).join("")}</div>
+                        <ul class="set-perks">${perks.map(t => `<li>${escS(t)}</li>`).join("")}</ul>
+                        ${yours ? `<span class="set-own">✓ Yours</span><button type="button" class="set-btn" onclick="wearSet('${set.id}')">🧍 Wear the set</button>`
+                            : `<div class="set-was"><s>${fmtN(set.worth)} ✨</s> bought one by one · <b>−${PC.SET_OFF}% as a set</b></div><button type="button" class="set-btn" id="setBuy_${set.id}" onclick="buySet('${set.id}')"${!signed || chestBusy ? " disabled" : ""} aria-label="Buy the ${escS(set.name)} for ${fmtN(set.price)} Stardust">✨ ${fmtN(set.price)}</button>`}
+                    </div></div>`;
+            }).join("");
+        }
+        // Two taps to buy (short of ✨: it offers 🪙 → ✨ first)
+        window.buySet = async function (id) {
+            const b = document.getElementById("setBuy_" + id), set = PC.SET_BY_ID[id];
+            if (!b || !set || b.disabled) return;
+            if (b.dataset.armed !== "1") {
+                b.dataset.armed = "1";
+                b.textContent = `Tap again · ✨ ${fmtN(set.price)}`;
+                setTimeout(() => { if (b.isConnected && b.dataset.armed === "1") { b.dataset.armed = ""; b.textContent = `✨ ${fmtN(set.price)}`; } }, 4000);
+                return;
+            }
+            b.dataset.armed = "";
+            if (!(await haveStardust(set.price))) { b.textContent = `✨ ${fmtN(set.price)}`; return; }
+            b.disabled = true;
+            b.textContent = "Buying…";
+            try {
+                const r = await AppState.buySet(id);
+                chestState.stardust = r.stardust; chestState.items = r.items; chestState.perks = r.perks;
+                renderChestCard();
+                showResultModal(`${set.icon} The ${set.name} is yours!`, `${fmtN(r.price)} ✨ — all ${set.pieces.length} pieces. Their bonuses are on now; tap 🧍 Wear the set to put it all on.`);
+            } catch (e) {
+                b.disabled = false; b.textContent = `✨ ${fmtN(set.price)}`;
+                showResultModal("Couldn't buy it", e.message);
+            }
+        };
+        // to 🧍 Character's Wardrobe, wearing every piece
+        window.wearSet = function (id) {
+            const set = PC.SET_BY_ID[id];
+            if (!set) return;
+            try { if (window.top !== window && window.top.openWardrobeAt) { window.top.openWardrobeAt(set.pieces, true); return; } } catch (e) { }
+            window.location.href = "index.html?goto=character";
+        };
+        // 🪙 → ✨: one way only
+        let convertAmount = 10;
+        function renderConvert() {
+            const box = document.getElementById("sdConvert");
+            if (!box) return;
+            const signed = !!AppState.getCurrentUser(), most = Math.max(0, storeBalance);
+            convertAmount = Math.max(1, Math.min(convertAmount, most || 1));
+            box.innerHTML = `<h3>🔁 Tokens → Stardust</h3><p class="sd-note" style="margin:0;">1 🪙 = ${PC.STARDUST.perToken} ✨. <b>One way only</b> — Stardust can't be turned back into tokens.</p>
+                <div class="sd-conv-row"><input type="number" id="sdConvIn" min="1" max="${most}" value="${convertAmount}" inputmode="numeric" aria-label="Tokens to convert">
+                    <span>🪙 → <b id="sdConvOut">${fmtN(convertAmount * PC.STARDUST.perToken)}</b> ✨</span></div>
+                <div class="sd-conv-row">${[10, 50, 100].map(n => `<button type="button" class="sd-chip" onclick="setConvert(${n})">${n}</button>`).join("")}<button type="button" class="sd-chip" onclick="setConvert(${most})">All (${fmtN(most)})</button></div>
+                <button type="button" class="sd-conv-go" id="sdConvGo" onclick="convertNow()"${!signed || most < 1 ? " disabled" : ""}>${!signed ? "Sign in first" : most < 1 ? "No tokens to convert" : `Convert ${fmtN(convertAmount)} 🪙`}</button>`;
+            const input = document.getElementById("sdConvIn");
+            input.addEventListener("input", () => {
+                convertAmount = Math.max(0, Math.floor(Number(input.value) || 0));
+                document.getElementById("sdConvOut").textContent = fmtN(convertAmount * PC.STARDUST.perToken);
+                const go = document.getElementById("sdConvGo");
+                go.disabled = convertAmount < 1 || convertAmount > storeBalance;
+                go.textContent = convertAmount > storeBalance ? `You have ${fmtN(storeBalance)} 🪙` : `Convert ${fmtN(convertAmount)} 🪙`;
+                go.dataset.armed = "";
+            });
+        }
+        window.setConvert = function (n) { convertAmount = Math.max(1, Math.floor(n) || 1); renderConvert(); };
+        async function convertTokensNow(n) {
+            const r = await AppState.convertTokens(n);
+            chestState.stardust = r.stardust;
+            storeBalance = r.balance;
+            countUp(document.getElementById("storeTokenBalance"), r.balance);
+            renderChestCard();
+            return r;
+        }
+        window.convertNow = async function () {
+            const b = document.getElementById("sdConvGo"), n = convertAmount;
+            if (!b || b.disabled || n < 1) return;
+            if (b.dataset.armed !== "1") {
+                b.dataset.armed = "1";
+                b.textContent = `Tap again: ${fmtN(n)} 🪙 → ${fmtN(n * PC.STARDUST.perToken)} ✨ (can't be undone)`;
+                setTimeout(() => { if (b.isConnected && b.dataset.armed === "1") { b.dataset.armed = ""; b.textContent = `Convert ${fmtN(n)} 🪙`; } }, 4000);
+                return;
+            }
+            b.disabled = true;
+            try {
+                const r = await convertTokensNow(n);
+                showResultModal(`+${fmtN(r.stardustGot)} ✨ Stardust`, `${fmtN(n)} 🪙 turned into Stardust.`);
+            } catch (e) {
+                b.disabled = false;
+                showResultModal("Couldn't convert", e.message);
+            }
+        };
+        // About to spend `price` ✨: enough? If not, offer to make up the rest from tokens (one way).
+        async function haveStardust(price) {
+            const have = Math.max(0, chestState.stardust || 0);
+            if (have >= price) return true;
+            const need = price - have, tokens = Math.ceil(need / PC.STARDUST.perToken);
+            if (storeBalance < tokens) {
+                showResultModal("Not enough ✨ Stardust", `That's ${fmtN(price)} ✨ — you have ${fmtN(have)}. Your daily login gives free ✨ every day (📅 Daily Quests), or top up with tokens (1 🪙 = ${PC.STARDUST.perToken} ✨): you'd need ${fmtN(tokens)} 🪙 and have ${fmtN(storeBalance)}. Get tokens in 🪙 Token packs, at the bottom of the Store ($10 → 1,000 🪙 = 10,000 ✨).`);
+                return false;
+            }
+            if (!confirm(`You need ${fmtN(need)} more ✨.\n\nConvert ${fmtN(tokens)} 🪙 → ${fmtN(tokens * PC.STARDUST.perToken)} ✨ first?\n(Stardust can't be turned back into tokens.)`)) return false;
+            try { await convertTokensNow(tokens); return true; } catch (e) { showResultModal("Couldn't convert", e.message); return false; }
+        }
+        setInterval(() => { const w = document.getElementById("sdDealsWhen"); if (w) w.textContent = `${PC.STARDUST.dealOff}% off · new deals in ${untilTomorrow()}`; }, 60000);
+
+        /* ---- 💗 THE HEART SHOP ---- */
+        function renderHeartShop() {
+            const box = document.getElementById("heartShop");
+            if (!box) return;
+            const H = PC.HEARTS, signed = !!AppState.getCurrentUser(), have = Math.max(0, chestState.hearts || 0);
+            const owned = new Set(chestState.items);
+            const itemTile = (it, spinOnly) => {
+                const yours = owned.has(it.id);
+                return `<div class="hs-item${spinOnly ? " spin-only" : ""}" style="--rc:${PC.RARITIES[it.rarity].color}">
+                    <span data-thing="${it.id}">${thingPic(it, 64)}</span><b data-thing="${it.id}">${escS(it.name)}</b><small>${escS(chestWhat(it))}</small>
+                    ${yours ? `<span class="hs-own">✓ Yours</span><button type="button" onclick="goWear('${it.id}')">🧍 Wear it</button>`
+                        : spinOnly ? `<small>🎡 Only from a spin</small>`
+                        : `<button type="button" id="hsBuy_${it.id}" onclick="buyHeartThing('${it.id}')"${!signed || chestBusy ? " disabled" : ""}>💗 ${it.heart}</button>`}
+                </div>`;
+            };
+            box.innerHTML = `
+                <div class="hs-bal">💗 ${signed ? have : "—"}<small>${signed ? "hearts to spend" : "Sign in to collect hearts"}</small></div>
+                <p class="hs-how">Hearts come from your friends: each can send you one a day — collect them in <b>Social → Friends → 💗 Hearts</b>, and send one back. You can send ${H.perDay} a day (${H.vipPerDay} as a Super Supporter) — send them all for +${H.dayBonus} 💗.</p>
+                <button type="button" class="cel-primary ripple-host hs-spin-btn" id="hsSpinBtn" onclick="spinHearts()"></button>
+                <div class="hs-prizes">${PC.HEART_SPIN.map(s => `<span title="${s.weight}%">${s.label.includes(s.icon) ? "" : s.icon + " "}${escS(s.label)} · ${s.weight}%</span>`).join("")}</div>
+                <div class="hs-sub">🛍️ To wear <small>each with a bonus, bought with hearts</small></div>
+                <div class="hs-grid">${PC.HEART_SHOP.map(it => itemTile(it, false)).join("")}</div>
+                <div class="hs-sub">🎡 Spin-only treasures <small>you can't buy these</small></div>
+                <div class="hs-grid">${PC.HEART_SPIN_ONLY.map(it => itemTile(it, true)).join("")}</div>`;
+            updateHeartButtons();
+        }
+        function updateHeartButtons() {
+            const b = document.getElementById("hsSpinBtn");
+            if (!b) return;
+            const cost = PC.HEARTS.spinCost, have = Math.max(0, chestState.hearts || 0), signed = !!AppState.getCurrentUser();
+            b.innerHTML = !signed ? `🎡 Spin · ${cost} 💗<small>sign in first</small>` : have < cost ? `🎡 Need ${cost} 💗 to spin<small>you have ${have} — send your friends hearts</small>` : `🎡 Spin · ${cost} 💗<small>tokens, chest draws, items — maybe a treasure</small>`;
+            b.disabled = chestBusy || !signed || have < cost;
+            const again = document.getElementById("crAgain");
+            if (again && again.dataset.hearts) {
+                again.textContent = have < cost ? `Need ${cost} 💗 to spin again` : `🎡 Spin again · ${cost} 💗`;
+                again.disabled = chestBusy || have < cost;
+                again.onclick = () => spinHearts();
+            }
+        }
+        // 🎡 a spin: the reel slows onto what you got
+        window.spinHearts = async function () {
+            if (chestBusy || Math.max(0, chestState.hearts || 0) < PC.HEARTS.spinCost) return;
+            chestBusy = true;
+            updateChestButtons();
+            const overlay = document.getElementById("chestOverlay");
+            document.getElementById("crTitle").textContent = "🎡 Heart Spin…";
+            document.getElementById("crSum").textContent = "";
+            document.getElementById("crActions").style.visibility = "hidden";
+            document.getElementById("crSkip").style.display = "";
+            document.getElementById("crClose").style.display = "none";
+            overlay.classList.remove("cr-ten");
+            overlay.scrollTop = 0;
+            document.getElementById("crStage").innerHTML = `<div class="reel"><div class="reel-marker"></div><div class="reel-strip" id="reelStrip"></div></div><div class="cr-result" id="crResult"></div>`;
+            overlay.classList.add("open");
+            let r;
+            try {
+                r = await AppState.heartSpin();
+            } catch (e) {
+                overlay.classList.remove("open");
+                chestBusy = false;
+                updateChestButtons();
+                showResultModal("Couldn't spin", e.message);
+                return;
+            }
+            chestState.hearts = r.hearts; chestState.items = r.items; chestState.perks = r.perks; chestState.freeDraws = r.freeDraws;
+            if (typeof r.stardust === "number") chestState.stardust = r.stardust;
+            renderWallet();
+            if (typeof r.balance === "number" && r.balance !== storeBalance) { storeBalance = r.balance; countUp(document.getElementById("storeTokenBalance"), r.balance); }
+            await revealHeartSpin(r.prize);
+            if (r.spinBonus > 0) { // ✨ Starlit Eyes, Nebula Trousers…
+                const sum = document.getElementById("crSum");
+                sum.textContent = (sum.textContent ? sum.textContent + " · " : "") + `+${fmtN(r.spinBonus)} ✨ from your items`;
+            }
+            document.getElementById("crSkip").style.display = "none";
+            const again = document.getElementById("crAgain");
+            again.dataset.count = ""; again.dataset.event = ""; again.dataset.hearts = "1";
+            chestBusy = false;
+            renderChestCard();
+            document.getElementById("crActions").style.visibility = "visible";
+            document.getElementById("crClose").style.display = "";
+            setTimeout(() => document.getElementById("crActions").scrollIntoView({ block: "nearest", behavior: "smooth" }), 150);
+        };
+        function heartPrizeCardHtml(p) {
+            if (p.id) {
+                const e = PC.BY_ID[p.id], rr = PC.RARITIES[e.rarity];
+                return `<div class="cr-item" data-thing="${p.id}" style="--rc:${rr.color}"><div class="cr-item-icon">${thingPic(e, 76)}</div><span class="cr-rarity">${rr.label}${e.heartSpin ? " · Heart Spin only" : ""}</span>
+                    <div class="cr-name">${escS(e.name)}</div><div class="cr-what">${escS(chestWhat(e))}</div><div class="cr-dup">New! Its bonus is on now.</div></div>${wearBtnHtml(p.id)}`;
+            }
+            const big = p.tokens >= 50;
+            const [icon, name, sub] = p.tokens ? [big ? "💎" : "🪙", `+${p.tokens} 🪙`, big ? "Jackpot! Added to your wallet." : "Added to your wallet."]
+                : p.stardust ? ["✨", `+${fmtN(p.stardust)} ✨`, "Stardust — for the chest, Daily Deals and more."]
+                : p.hearts ? ["💗", `${p.hearts} 💗 back`, "Hearts to spin or shop with."]
+                : ["🧰", "A free chest draw", "Open it in the Adventurer's Chest below."];
+            return `<div class="cr-item" style="--rc:${big ? "#ffd75e" : "#ff8fbf"}"><div class="cr-item-icon">${icon}</div><div class="cr-name">${escS(name)}</div><div class="cr-dup">${escS(sub)}</div></div>`;
+        }
+        function revealHeartSpin(p) {
+            return new Promise(resolve => {
+                const slot = PC.HEART_SPIN.find(s => s.key === p.key) || PC.HEART_SPIN[0];
+                const pic = (s) => s.icon;
+                const N = 34, AT = 30, W = 88;
+                const tiles = Array.from({ length: N }, (_, i) => i === AT ? null : PC.HEART_SPIN[Math.floor(Math.random() * PC.HEART_SPIN.length)]);
+                const strip = document.getElementById("reelStrip");
+                strip.innerHTML = tiles.map(s => s ? `<div class="reel-tile" style="--rc:#ff8fbf">${pic(s)}</div>`
+                    : `<div class="reel-tile" style="--rc:#ffd75e">${p.id ? thingPic(PC.BY_ID[p.id], 60) : pic(p.kind === "tokens" && slot.kind !== "tokens" ? { icon: "🪙" } : slot)}</div>`).join("");
+                const reelW = strip.parentElement.clientWidth;
+                const end = -(AT * W + 40 - reelW / 2) + (Math.random() * 40 - 20);
+                let finished = false;
+                const finish = () => {
+                    if (finished) return;
+                    finished = true; revealDone = null;
+                    strip.getAnimations().forEach(a => a.cancel());
+                    strip.style.transform = `translateX(${-(AT * W + 40 - reelW / 2)}px)`;
+                    document.getElementById("crResult").innerHTML = heartPrizeCardHtml(p);
+                    document.getElementById("crTitle").textContent = p.id ? "💗 You got…" : p.tokens >= 50 ? "💎 Jackpot!" : "🎡 You got…";
+                    burstFrom(document.querySelector("#crResult .cr-item-icon"), ["💗", "✨", "💕", "⭐"], p.id || p.tokens >= 50 ? 30 : 16);
+                    setTimeout(resolve, 350);
+                };
+                revealDone = finish;
+                if (!strip.animate || matchMedia("(prefers-reduced-motion: reduce)").matches) { finish(); return; }
+                const anim = strip.animate([{ transform: "translateX(0px)" }, { transform: `translateX(${end}px)` }],
+                    { duration: 2800, easing: "cubic-bezier(.08,.75,.16,1)", fill: "forwards" });
+                anim.onfinish = finish;
+            });
+        }
+        // Two taps to buy: the first asks, the second buys.
+        window.buyHeartThing = async function (id) {
+            const b = document.getElementById("hsBuy_" + id), it = PC.BY_ID[id], price = PC.heartPrice(id);
+            if (!b || !it || !price || b.disabled) return;
+            const have = Math.max(0, chestState.hearts || 0);
+            if (have < price) { b.textContent = `Need ${price} 💗 (you have ${have})`; return; }
+            if (b.dataset.armed !== "1") {
+                b.dataset.armed = "1";
+                b.textContent = `Tap again · ${price} 💗`;
+                setTimeout(() => { if (b.isConnected && b.dataset.armed === "1") { b.dataset.armed = ""; b.textContent = `💗 ${price}`; } }, 4000);
+                return;
+            }
+            b.disabled = true;
+            b.textContent = "Buying…";
+            try {
+                const r = await AppState.buyHeartItem(id);
+                chestState.hearts = r.hearts; chestState.items = r.items; chestState.perks = r.perks;
+                renderChestCard();
+                showResultModal(`${it.icon} ${it.name} is yours!`, "Its bonus is on now. Tap 🧍 Wear it to put it on.");
+            } catch (e) {
+                b.disabled = false;
+                b.dataset.armed = "";
+                b.textContent = `💗 ${price}`;
+                showResultModal("Couldn't buy it", e.message);
+            }
+        };
         // What one thing does, in a line.
         function chestWhat(x) {
             if (x.kind === "item" || PC.ITEM_BY_ID[x.id]) return PC.ITEM_BY_ID[x.id].perks.map(PC.perkText).join(" · ");
@@ -1253,33 +1700,35 @@
                 <div style="--rc:${PC.RARITIES.legendary.color}; --pct:${bar(left.legendary, PC.PITY.legendary)}%">Legendary<b>within ${left.legendary} draw${left.legendary === 1 ? "" : "s"}</b><i></i></div>`;
             const r = PC.RARITIES;
             document.getElementById("chestRulesList").innerHTML = `
-                <li>Each draw gives one random thing — a perk item or a style. You own each one once.</li>
-                <li><b>Duplicates</b> — anything you already have, or get twice in one go — turn into tokens:
-                    <div class="chest-refunds">${PC.RARITY_ORDER.map(k => `<span style="--rc:${r[k].color}">${r[k].label} ${r[k].refund} 🪙</span>`).join("")}</div>
-                    ${chestState.perks.dupBonus ? `<small>Your Spare Crate adds ${chestState.perks.dupBonus} 🪙 to each.</small>` : ""}</li>
-                <li><b>×10</b> costs ${PC.CHEST.price10} 🪙 (one draw free) and always has at least one Rare or better.</li>
+                <li>Each draw costs ✨ Stardust and gives one random thing — something to wear or a style. You own each one once.</li>
+                <li><b>Duplicates</b> — anything you already have, or get twice in one go — turn into ✨ Stardust:
+                    <div class="chest-refunds">${PC.RARITY_ORDER.map(k => `<span style="--rc:${r[k].color}">${r[k].label} ${r[k].refund} ✨</span>`).join("")}</div>
+                    ${chestState.perks.dupBonus ? `<small>Your Trader's Apron adds ${chestState.perks.dupBonus * 10} ✨ to each.</small>` : ""}</li>
+                <li><b>×10</b> costs ${fmtN(PC.CHEST.price10)} ✨ (one draw free) and always has at least one Rare or better.</li>
                 <li><b>Guarantees:</b> an Epic or better at least every ${PC.PITY.epic} draws, and a Legendary at least every ${PC.PITY.legendary}. Your count carries over between visits.</li>
-                <li><b>Free draws:</b> every achievement's Gold tier gives you one (Profile → Achievements).</li>
-                <li>Perk items' bonuses are always on and add up. Styles (borders, name effects, chat bubbles, profile backgrounds, emote packs) are looks only — pick which to show in Profile → 🎨 Style.</li>
+                <li><b>Free draws:</b> every achievement's Gold tier gives you one (🏅 Achievements) — and every Sunday, your daily login brings a free chest of Uncommon or better (📅 Daily Quests).</li>
+                <li>Perk items' bonuses are always on and add up — and each one is something to wear: put it on in 🧍 Character → 👕 Wardrobe. Styles (borders, name effects, chat bubbles, profile backgrounds, emote packs) are looks only — pick which to show in 🧍 Character → 🎨 Style.</li>
                 <li>Nothing here has any cash value or can be traded.</li>`;
             const owned = new Set(chestState.items);
             document.getElementById("chestContents").innerHTML = PC.RARITY_ORDER.slice().reverse().map(k => {
                 const list = pool.filter(x => x.rarity === k);
                 if (!list.length) return "";
                 return `<h4 style="--rc:${r[k].color}">${r[k].label} · ${r[k].weight}%</h4><div class="cc-grid">${list.map(x =>
-                    `<div class="${owned.has(x.id) ? "own" : ""}" data-thing="${x.id}" title="${escS(chestWhat(x))}">${x.icon} ${escS(x.name)}<small>${rates[x.id].toFixed(rates[x.id] < 1 ? 2 : 1)}%</small></div>`).join("")}</div>`;
+                    `<div class="${owned.has(x.id) ? "own" : ""}" data-thing="${x.id}" title="${escS(chestWhat(x))}">${thingPic(x, 24)} ${escS(x.name)}<small>${rates[x.id].toFixed(rates[x.id] < 1 ? 2 : 1)}%</small></div>`).join("")}</div>`;
             }).join("") + `<p style="font-size:0.75rem; color:#9a92c0; margin:8px 0 0;">Faded: already yours. Tap any to see what it does.</p>`;
             updateChestButtons();
             renderEventCard();
+            renderHeartShop();
+            renderStardust();
         }
         function updateChestButtons() {
             const p1 = PC.chestPrice(1, chestState.perks), p10 = PC.chestPrice(10, chestState.perks);
             const set = (id, price, label, sub) => {
                 const b = document.getElementById(id);
                 if (!b) return;
-                const short = storeBalance < price;
-                b.innerHTML = short ? `Need ${price} 🪙 <small>you have ${storeBalance}</small>` : `${label} · ${price} 🪙${sub ? `<small>${sub}</small>` : ""}`;
-                b.disabled = chestBusy || short;
+                const have = Math.max(0, chestState.stardust || 0), short = have < price;
+                b.innerHTML = short ? `${label} · ${fmtN(price)} ✨ <small>you have ${fmtN(have)} ✨ — tap to top up with 🪙</small>` : `${label} · ${fmtN(price)} ✨${sub ? `<small>${sub}</small>` : ""}`;
+                b.disabled = chestBusy;
             };
             set("open1Btn", p1, "Open ×1", "");
             set("open10Btn", p10, "Open ×10", "one free · a Rare or better guaranteed");
@@ -1291,17 +1740,18 @@
             if (again && again.dataset.count) {
                 const c = Number(again.dataset.count), price = c === 10 ? p10 : p1;
                 const useFree = c === 1 && chestState.freeDraws > 0;
-                again.textContent = useFree ? "🎁 Open another — free" : storeBalance < price ? `Need ${price} 🪙 for another` : `Open ${c === 10 ? "×10" : "another"} · ${price} 🪙`;
-                again.disabled = chestBusy || (!useFree && storeBalance < price);
+                again.textContent = useFree ? "🎁 Open another — free" : `Open ${c === 10 ? "×10" : "another"} · ${fmtN(price)} ✨`;
+                again.disabled = chestBusy;
                 again.onclick = () => openStoreChest(c, useFree);
             }
             updateEventButtons();
+            updateHeartButtons();
         }
         async function loadChestState() {
             if (!AppState.getCurrentUser()) return;
             try {
                 const st = await AppState.getProgressStatus();
-                chestState = { items: st.items || [], perks: st.perks || {}, pity: st.pity || { epic: 0, legendary: 0 }, freeDraws: st.freeDraws || 0, events: st.events || {} };
+                chestState = { items: st.items || [], perks: st.perks || {}, pity: st.pity || { epic: 0, legendary: 0 }, freeDraws: st.freeDraws || 0, events: st.events || {}, outfit: st.outfit || null, hearts: Math.max(0, st.hearts || 0), stardust: Math.max(0, st.stardust || 0) };
                 renderChestCard();
                 claimLoginGift();
             } catch (e) { console.warn("Couldn't load your items:", e.message); }
@@ -1351,12 +1801,12 @@
                             : `<div>A treat guaranteed<b>within ${left} knock${left === 1 ? "" : "s"}</b></div>`}
                     </div>
                     ${got === things.length
-                        ? `<div class="ev-done" id="evDone">🎉 You've collected every treat!<small>All ${things.length} are yours — show them off in Profile → 🎨 Style.</small></div>`
+                        ? `<div class="ev-done" id="evDone">🎉 You've collected every treat!<small>All ${things.length} are yours — show them off in 🧍 Character.</small></div>`
                         : `<div class="ev-actions">
                         <button type="button" class="cel-primary ripple-host" id="ev1Btn" onclick="knockEvent(1)"></button>
                         <button type="button" class="cel-primary ten ripple-host" id="ev10Btn" onclick="knockEvent(10)"></button>
                     </div>`}
-                    <div class="ev-grid">${things.map(x => `<div class="ev-thing${owned.has(x.id) ? " own" : ""}" data-thing="${x.id}" style="--rc:${PC.RARITIES[x.rarity].color}" title="${escS(PC.RARITIES[x.rarity].label + " · " + chestWhat(x))}"><div class="ic">${x.icon}</div><div class="nm">${escS(x.name)}</div></div>`).join("")}</div>
+                    <div class="ev-grid">${things.map(x => `<div class="ev-thing${owned.has(x.id) ? " own" : ""}" data-thing="${x.id}" style="--rc:${PC.RARITIES[x.rarity].color}" title="${escS(PC.RARITIES[x.rarity].label + " · " + chestWhat(x))}"><div class="ic">${thingPic(x, 38)}</div><div class="nm">${escS(x.name)}</div></div>`).join("")}</div>
                     <div class="cr-hint">Tap one to see what it does</div>
                     ${eventPicsHtml(ev, owned)}
                     ${spookyHtml(ev, mine)}
@@ -1416,7 +1866,7 @@
                 countUp(document.getElementById("storeTokenBalance"), r.balance);
                 chestState.items = r.items;
                 renderChestCard();
-                showResultModal(`🖼️ ${p.name} is yours!`, "Pick it in Profile → ✏️ Edit Profile → Choose Avatar.");
+                showResultModal(`🖼️ ${p.name} is yours!`, "Wear it in 🧍 Character → 👕 Wardrobe.");
             } catch (e) {
                 b.disabled = false;
                 b.dataset.armed = "";
@@ -1438,7 +1888,7 @@
                 renderChestCard();
                 if (!r.already && r.id) {
                     const p = PC.BY_ID[r.id];
-                    showResultModal(`🎃 Happy Halloween!`, `You got a free profile picture: ${p.name}! Pick it in Profile → ✏️ Edit Profile → Choose Avatar. Your first knock at Trick or Treat (below) is free too.`);
+                    showResultModal(`🎃 Happy Halloween!`, `You got ${p.name}! Wear it in 🧍 Character → 👕 Wardrobe. Your first knock at Trick or Treat (below) is free too.`);
                 }
             } catch (e) { console.warn("Couldn't claim the Halloween gift:", e.message); giftAsked = false; }
         }
@@ -1524,6 +1974,7 @@
             const again = document.getElementById("crAgain");
             again.dataset.count = "";
             again.dataset.event = String(count);
+            again.dataset.hearts = "";
             chestBusy = false;
             renderChestCard();
             document.getElementById("crActions").style.visibility = "visible";
@@ -1533,9 +1984,9 @@
         function knockCardHtml(x) {
             if (x.id) {
                 const e = PC.BY_ID[x.id], rr = PC.RARITIES[e.rarity];
-                return `<div class="cr-item" data-thing="${x.id}" style="--rc:${rr.color}"><div class="cr-item-icon">${e.icon}</div><span class="cr-rarity">${rr.label} · limited</span>
+                return `<div class="cr-item" data-thing="${x.id}" style="--rc:${rr.color}"><div class="cr-item-icon">${thingPic(e, 76)}</div><span class="cr-rarity">${rr.label} · limited</span>
                     <div class="cr-name">${escS(e.name)}</div><div class="cr-what">${escS(chestWhat(e))}</div>
-                    <div class="cr-dup" style="color:#7ddc92;">${PC.ITEM_BY_ID[x.id] ? "Treat! Its bonus is on now." : "Treat! Show it in Profile → 🎨 Style."}</div></div>`;
+                    <div class="cr-dup" style="color:#7ddc92;">${PC.ITEM_BY_ID[x.id] ? "Treat! Its bonus is on now." : "Treat! It's yours to show off."}</div></div>${wearBtnHtml(x.id)}`;
             }
             if (x.candy) return `<div class="cr-item" style="--rc:#ffb347"><div class="cr-item-icon">🍬</div><div class="cr-name">A handful of candy</div><div class="cr-dup">You have every treat — +${x.candy} 🪙</div></div>`;
             const msg = PC.TRICKS[x.msg] || PC.TRICKS[0];
@@ -1602,7 +2053,7 @@
         window.openStoreChest = async function (count, free) {
             if (chestBusy) return;
             const price = free ? 0 : PC.chestPrice(count, chestState.perks);
-            if (!free && storeBalance < price) return;
+            if (!free && !(await haveStardust(price))) return; // short: offers 🪙 → ✨ first
             chestBusy = true;
             updateChestButtons();
             const overlay = document.getElementById("chestOverlay");
@@ -1626,18 +2077,19 @@
                 showResultModal("Couldn't open the chest", e.message);
                 return;
             }
-            storeBalance = r.balance;
-            countUp(document.getElementById("storeTokenBalance"), r.balance);
+            chestState.stardust = r.stardust;
             chestState.items = r.items; chestState.perks = r.perks; chestState.pity = r.pity; chestState.freeDraws = r.freeDraws;
+            renderWallet();
             await (count === 10 ? revealTen(r.results) : revealOne(r.results[0]));
             document.getElementById("crSkip").style.display = "none";
             const fresh = r.results.filter(x => !x.duplicate).length;
             document.getElementById("crSum").textContent = count === 10
-                ? `${fresh} new · ${r.results.length - fresh} duplicate${r.results.length - fresh === 1 ? "" : "s"}${r.refund ? ` (+${r.refund} 🪙 back)` : ""}`
+                ? `${fresh} new · ${r.results.length - fresh} duplicate${r.results.length - fresh === 1 ? "" : "s"}${r.refund ? ` (+${fmtN(r.refund)} ✨ back)` : ""}`
                 : "";
             const again = document.getElementById("crAgain");
             again.dataset.count = String(count);
             again.dataset.event = "";
+            again.dataset.hearts = "";
             chestBusy = false;
             renderChestCard();
             document.getElementById("crActions").style.visibility = "visible";
@@ -1655,12 +2107,13 @@
             document.getElementById("chestOverlay").classList.remove("open");
             document.getElementById("crAgain").dataset.count = "";
             document.getElementById("crAgain").dataset.event = "";
+            document.getElementById("crAgain").dataset.hearts = "";
         };
         function itemCardHtml(x) {
             const e = PC.BY_ID[x.id], rr = PC.RARITIES[e.rarity];
-            return `<div class="cr-item" data-thing="${x.id}" style="--rc:${rr.color}"><div class="cr-item-icon">${e.icon}</div><span class="cr-rarity">${rr.label}</span>
+            return `<div class="cr-item" data-thing="${x.id}" style="--rc:${rr.color}"><div class="cr-item-icon">${thingPic(e, 76)}</div><span class="cr-rarity">${rr.label}</span>
                 <div class="cr-name">${escS(e.name)}</div><div class="cr-what">${escS(chestWhat(e))}</div>
-                <div class="cr-dup">${x.duplicate ? `Already yours — ${x.refund} 🪙 back` : PC.ITEM_BY_ID[x.id] ? "New! Its bonus is on now." : "New! Show it in Profile → 🎨 Style."}</div></div>`;
+                <div class="cr-dup">${x.duplicate ? `Already yours — ${fmtN(x.refund)} ✨ back` : PC.ITEM_BY_ID[x.id] ? "New! Its bonus is on now." : "New! It's yours to show off."}</div></div>${wearBtnHtml(x.id)}`;
         }
         // One draw: a strip of chest things spins past and slows onto it.
         function revealOne(x) {
@@ -1669,7 +2122,7 @@
                 const N = 34, AT = 30, W = 88;
                 const tiles = Array.from({ length: N }, (_, i) => i === AT ? PC.BY_ID[x.id] : pool[Math.floor(Math.random() * pool.length)]);
                 const strip = document.getElementById("reelStrip");
-                strip.innerHTML = tiles.map(e => `<div class="reel-tile" style="--rc:${PC.RARITIES[e.rarity].color}">${e.icon}</div>`).join("");
+                strip.innerHTML = tiles.map(e => `<div class="reel-tile" style="--rc:${PC.RARITIES[e.rarity].color}">${thingPic(e, 60)}</div>`).join("");
                 const reelW = strip.parentElement.clientWidth;
                 const end = -(AT * W + 40 - reelW / 2) + (Math.random() * 40 - 20);
                 let finished = false;
@@ -1700,7 +2153,7 @@
                     const big = PC.RARITY_ORDER.indexOf(e.rarity) >= 2;
                     return `<div class="cr-card${big ? " big" : ""}" id="crCard${i}" data-thing="${x.id}" style="--rc:${rr.color}"><div class="cr-card-in">
                         <div class="cr-face cr-back">🧰</div>
-                        <div class="cr-face cr-front"><span class="tg${x.duplicate ? " dup" : ""}">${x.duplicate ? "+" + x.refund + "🪙" : "NEW"}</span><div class="ic">${e.icon}</div><div class="nm">${escS(e.name)}</div></div>
+                        <div class="cr-face cr-front"><span class="tg${x.duplicate ? " dup" : ""}">${x.duplicate ? "+" + x.refund + "🪙" : "NEW"}</span><div class="ic">${thingPic(e, 40)}</div><div class="nm">${escS(e.name)}</div></div>
                     </div></div>`;
                 }).join("")}</div><div class="cr-hint">Tap a card to see what it is</div><div class="cr-result" id="crResult" style="min-height:0;"></div>`;
                 let i = 0, timer = null, finished = false;
@@ -1715,6 +2168,7 @@
                     finished = true; revealDone = null; clearInterval(timer);
                     results.forEach((_, k) => flip(k));
                     document.getElementById("crTitle").textContent = "🎉 Your 10 draws";
+                    document.querySelector("#crStage .cr-hint").textContent = "Tap a card to see it — and wear it";
                     // The best one, shown big underneath.
                     const best = results.slice().sort((a, b) => PC.RARITY_ORDER.indexOf(PC.BY_ID[b.id].rarity) - PC.RARITY_ORDER.indexOf(PC.BY_ID[a.id].rarity) || (a.duplicate - b.duplicate))[0];
                     document.getElementById("crResult").innerHTML = `<div style="margin-top:12px;">${itemCardHtml(best)}</div>`;
@@ -1726,7 +2180,8 @@
         }
         // Tap any item or style (a ×10 card, the result, the chest's contents,
         // the event grid) for what it is: thing-details.js, told what you own.
-        ThingDetails.context = () => ({ items: chestState.items, perks: chestState.perks });
+        ThingDetails.context = () => ({ items: chestState.items, perks: chestState.perks, outfit: chestState.outfit });
+        ThingDetails.onWear = (id) => goWear(id);
 
         window.goMyItems = function () {
             try {
@@ -1741,7 +2196,7 @@
         // store is showing, and again if only the #chest part changes.
         // #chest or #event (the Trick or Treat card, once it's drawn)
         function scrollToChestIfAsked() {
-            const id = location.hash === "#chest" ? "chest" : location.hash === "#event" ? "event" : null;
+            const id = { "#chest": "chest", "#event": "event", "#hearts": "hearts", "#deals": "deals", "#sets": "sets" }[location.hash] || null;
             if (!id) return;
             let tries = 0;
             const go = () => { const el = document.getElementById(id); if (el && el.offsetParent) el.scrollIntoView({ block: "start" }); else if (++tries < 10) setTimeout(go, 300); };
