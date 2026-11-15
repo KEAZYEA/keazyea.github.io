@@ -1211,6 +1211,7 @@
     </div>
 
         <script src="progress-core.js"></script>
+        <script src="kih-dialog.js"></script>
         <script src="prize.js"></script>
         <script type="module" src="appState.js"></script>
         <script type="module">
@@ -1509,7 +1510,7 @@
                         btn.classList.remove("copied");
                     }, 1500);
                 }).catch(() => {
-                    alert("Couldn't copy automatically — the code is: " + code);
+                    KihDialog.alert({ icon: "📋", title: "Copy your code", message: "It couldn't be copied automatically. Copy it from here:", code });
                 });
                 AppState.maybeRefreshAd("promoAdSlot");
             }
@@ -1524,7 +1525,7 @@
                     await AppState.signIn();
                     await refreshVipState();
                 } catch (e) {
-                    alert("Sign-in failed: " + e.message);
+                    KihDialog.alert({ icon: "⚠️", title: "Couldn't sign in", message: e.message });
                 }
             }
             window.handleSignIn = handleSignIn;
@@ -2181,7 +2182,7 @@ document.getElementById("prizeRevealCloseBtn").addEventListener("click", () => {
                         await AppState.joinGiveaway(device);
                         freshJoin = !wasIn;
                     } catch (e) {
-                        alert("Couldn't join: " + e.message);
+                        KihDialog.alert({ icon: "⚠️", title: "Couldn't join", message: e.message });
                     }
                 }
 

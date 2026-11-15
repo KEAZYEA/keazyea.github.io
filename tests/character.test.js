@@ -590,20 +590,23 @@ describe("💗 hearts on the server (api/progress.js)", () => {
         assert.equal(r.status, 200, "a Super Supporter has 10");
         assert.deepEqual([r.body.heartsPerDay, r.body.heartsLeft], [10, 4]);
     });
-    test("send all of the day's hearts: +3 💗 for you (once — 5 sends, or 10 for a Super Supporter)", async () => {
+    test("send 5 hearts in a day: +3 💗 for you (once — the 5th, even for a Super Supporter who can send 10)", async () => {
         db._data.set(`heartDays/player1_${today()}`, { to: ["f1", "f2", "f3"] });
         let r = await act({ action: "sendHeart", toUid: "player2" });
         assert.deepEqual([r.body.dayBonus, r.body.hearts], [0, 0], "the 4th: nothing yet");
         db._data.set("friendRequests/player1_player4", { status: "accepted" });
         r = await act({ action: "sendHeart", toUid: "player4" });
         assert.deepEqual([r.body.dayBonus, r.body.hearts, r.body.heartsLeft, inv("player1").hearts], [3, 3, 0, 3], "the 5th: +3");
-        // a Super Supporter: the bonus comes with the 10th, not the 5th
+        // a Super Supporter: the bonus comes with the 5th too (not the 10th), and only once
         db._data.set("users/player1", { vipExpiresAt: Date.now() + 86400000 });
         db._data.set(`heartDays/player1_${today()}`, { to: ["f1", "f2", "f3", "f4"] });
         db._data.set("inventories/player1", { items: {} });
         db._data.delete(`heartGifts/player2_${today()}_player1`);
         r = await act({ action: "sendHeart", toUid: "player2" });
-        assert.deepEqual([r.body.dayBonus, r.body.heartsLeft], [0, 5], "VIP: the 5th isn't the last");
+        assert.deepEqual([r.body.dayBonus, r.body.heartsLeft, inv("player1").hearts], [3, 5, 3], "VIP: the 5th → +3, with 5 still to send");
+        db._data.set("friendRequests/player1_player5", { status: "accepted" });
+        r = await act({ action: "sendHeart", toUid: "player5" });
+        assert.deepEqual([r.body.dayBonus, inv("player1").hearts], [0, 3], "the 6th: no second bonus");
     });
     test("heartStatus: your hearts, today's sends and limit, what's waiting, and whether someone's your friend", async () => {
         await act({ action: "sendHeart", toUid: "player2" });
@@ -721,7 +724,7 @@ describe("in the app: hearts, named looks, friends' name effects, popups", () =>
     test("Store: the 💗 Heart Shop (a spin, things to buy, spin-only treasures), linked from the Wardrobe and the guide", () => {
         assert.match(store, /<h2 class="store-section" id="hearts"><span>💗<\/span> Heart Shop<\/h2>/);
         for (const s of ["function renderHeartShop()", "window.spinHearts = async function", "window.buyHeartThing = async function", "r = await AppState.heartSpin();", "const r = await AppState.buyHeartItem(id);"]) assert.ok(store.includes(s), s);
-        assert.match(store, /\{ "#chest": "chest", "#event": "event", "#hearts": "hearts", "#deals": "deals", "#sets": "sets" \}\[location\.hash\]/);
+        assert.match(store, /\{ "#chest": "chest", "#event": "event", "#hearts": "hearts", "#deals": "deals", "#sets": "sets", "#packs": "tokenPacksCard" \}\[location\.hash\]/);
         assert.match(index, /data-ch-heartshop="\$\{id\}"[^>]*>💗 \$\{PC\.heartPrice\(id\)\}<\/button>/);
         assert.match(index, /if \(t\.dataset\.chHeartshop\) \{ window\.openStoreAt\("hearts"\); return; \}/);
         assert.match(td, /if \(x\.heart\) return `💗 Heart Shop \(in the Store\) — \$\{x\.heart\} 💗`;/);
@@ -820,9 +823,9 @@ describe("✨ Stardust in the app (the Store, the Wardrobe)", () => {
         assert.doesNotMatch(store, /convertStardust|stardust → 🪙|✨ → 🪙/, "nothing turns ✨ into 🪙");
     });
     test("short of ✨ (the chest, a deal, the Wardrobe, a look): it offers 🪙 → ✨ first", () => {
-        assert.match(store, /if \(!free && !\(await haveStardust\(price\)\)\) return;/);
-        assert.match(store, /if \(!\(await haveStardust\(d\.price\)\)\)/);
-        assert.match(index, /if \(!\(await haveStardust\(price, `\$\{deal \? "🛍️ Today's deal: " : ""\}\$\{it\.name\}`\)\)\) return;/);
+        assert.match(store, /if \(!free && !\(await haveStardust\(price, count === 10 \? "10 chest draws" : "A chest draw"\)\)\) return;/);
+        assert.match(store, /if \(!\(await haveStardust\(d\.price, it\.name\)\)\)/);
+        assert.match(index, /if \(!\(await haveStardust\(price, `\$\{deal \? "🛍️ Today's deal: " : ""\}\$\{it\.name\}`, CC\.itemPic\(id, 72\)\)\)\) return;/);
         assert.match(index, /if \(!\(await haveStardust\(price, `Another look/);
         for (const page of [store, index]) assert.match(page, /AppState\.convertTokens\(/);
     });
@@ -980,7 +983,7 @@ describe("👘 outfit sets and the ✨ / 💗 bonus items", () => {
         db._data.set(`heartDays/player1_${today}`, { to: ["f1", "f2", "f3", "f4", "f5"] });
         const r = await act({ action: "sendHeart", toUid: "player2" });
         assert.equal(r.status, 200, "a 6th heart with the Heart Beanie: " + JSON.stringify(r.body));
-        assert.deepEqual([r.body.heartsPerDay, r.body.heartsLeft, r.body.dayBonus], [6, 0, 3]);
+        assert.deepEqual([r.body.heartsPerDay, r.body.heartsLeft, r.body.dayBonus], [6, 0, 0], "(the +3 comes with the 5th, not the last)");
         assert.equal((await act({ action: "heartStatus" })).body.heartsPerDay, 6);
         assert.ok(read("api/progress.js").includes("heartsPerDay: P.heartsPerDay(vip, perks), heartsLeft: Math.max(0, P.heartsPerDay(vip, perks) - heartsToday.length),"), "status too");
     });
@@ -1018,7 +1021,7 @@ describe("👘 outfit sets in the app (the Store, the Wardrobe, the guide)", () 
         const order = ['id="deals"', 'id="sdConvert"', 'id="sets"', 'id="hearts"', 'id="chest"'].map(at);
         assert.deepEqual(order, order.slice().sort((a, b) => a - b));
         assert.match(store, /const r = await AppState\.buySet\(id\);/);
-        assert.match(store, /if \(!\(await haveStardust\(set\.price\)\)\)/, "short of ✨: 🪙 → ✨ first");
+        assert.match(store, /if \(!\(await haveStardust\(set\.price, `The \$\{set\.name\}`\)\)\)/, "short of ✨: 🪙 → ✨ first");
         assert.match(app, /async function buySet\(id\) \{\s+return callProgressApi\("buySet", \{ id \}\);/);
     });
     test("🧍 Wear the set: the Wardrobe puts every piece on at once", () => {
@@ -1186,5 +1189,35 @@ describe("🎁 a gift of something you already have pays ✨, like a chest dupli
         assert.equal((tokens.match(/grantToInventory\(tx, db, /g) || []).length, 4, "the function + inbox gifts, Secret Giveaway prizes, admin");
         assert.match(polls, /grantToInventory\(tx, db, uid, invSnap/);
         assert.match(read("index.html"), /result\.dupStardust \? `\+\$\{result\.dupStardust\} ✨ for what you already had`/);
+    });
+});
+
+describe("🪟 the app's own popups (kih-dialog.js), never the browser's boxes", () => {
+    const pages = ["index.html", "store.html", "games.html", "promo.html", "social.html", "about.html", "admin.html"].map(f => [f, read(f)]);
+    test("no page uses the browser's confirm() / alert() / prompt() any more", () => {
+        // each line of code (lines that are comments — "replaces alert()" — don't count)
+        const isComment = (line) => /^\s*(\/\/|\/\*|\*|<!--)/.test(line) || /replaces (native )?(confirm|alert)|own confirm\(|plain alert\(/.test(line);
+        for (const [f, s] of pages) {
+            const hits = s.split("\n").filter(line => !isComment(line) && /(^|[^\w.$])(window\.)?(confirm|alert|prompt)\(/.test(line));
+            assert.deepEqual(hits, [], f);
+        }
+        for (const f of ["index.html", "store.html", "games.html", "promo.html"]) assert.match(read(f), /<script src="kih-dialog\.js"><\/script>/, f);
+    });
+    test("short of ✨: a popup with the exchange as two tiles, Convert / Not now; short of 🪙 too: 🪙 Get tokens", () => {
+        const store = read("store.html"), index = read("index.html"), kd = read("kih-dialog.js");
+        for (const s of [store, index]) {
+            assert.match(s, /exchange: \{ from: \{ icon: "🪙", amount: [^}]+, label: "Tokens" \}, to: \{ icon: "✨", amount: [^}]+, label: "Stardust" \} \}/);
+            assert.match(s, /buttons: \[\{ label: "🪙 Get tokens", value: "packs", tone: "gold", key: "packs" \}, \{ label: "OK", value: null, key: "ok" \}\]/);
+            assert.match(s, /note: "Stardust can't be turned back into tokens\."/);
+        }
+        assert.match(index, /if \(go === "packs"\) window\.openStoreAt\("packs"\);/);
+        assert.match(store, /if \(go === "packs"\) document\.getElementById\("tokenPacksCard"\)\.scrollIntoView/);
+        assert.match(kd, /const side = \(cls, s\) => \{ const d = el\("div", "kd-side " \+ cls\); d\.append\(el\("span", "ico", s\.icon\), el\("b", "", s\.amount\), el\("small", "", s\.label\)\);/);
+        assert.match(kd, /if \(o\.artHtml\) \{ const a = el\("div", "kd-art"\); a\.innerHTML = o\.artHtml;/, "pictures are ours (CharacterCore); everything else goes in as text");
+        assert.doesNotMatch(kd.replace(/a\.innerHTML = o\.artHtml/, ""), /innerHTML/);
+    });
+    test("the Store's ✨ is fresh each time you open it (an achievement's ✨ shows at once)", () => {
+        assert.match(read("store.html"), /window\.kihRefresh = \(\) => loadChestState\(\);/);
+        assert.match(read("index.html"), /\} else if \(page === "store"\) \{[\s\S]{0,160}target\.querySelector\("iframe"\)\?\.contentWindow\?\.kihRefresh\?\.\(\);/);
     });
 });
