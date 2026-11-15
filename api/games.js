@@ -474,12 +474,13 @@ async function playerLooks(db, uids, now) {
   await Promise.all([...new Set(uids)].map(async (u) => {
     const hit = looksCache.get(u);
     if (hit && now - hit.at < 60000) { out[u] = hit.looks; return; }
-    const looks = { fx: "", avatar: "", border: null };
+    const looks = { fx: "", avatar: "", border: null, outfit: null };
     try {
       const [card, prof] = await Promise.all([db.collection("playerCards").doc(u).get(), db.collection("publicProfiles").doc(u).get()]);
       const style = card.exists ? card.data().style || {} : {};
       looks.fx = P.styleClass(style, "name");
       looks.border = style.border || null;
+      looks.outfit = card.exists && card.data().outfit ? card.data().outfit : null; // their 🧍 character (saved cleaned)
       looks.avatar = prof.exists && typeof prof.data().avatar === "string" ? prof.data().avatar.slice(0, 500) : "";
     } catch (e) { /* shown plain */ }
     looksCache.set(u, { at: now, looks });
@@ -516,7 +517,7 @@ async function leaderboard(db, uid, now) {
   // ties share a place: 1 + how many have more points
   // (uid: so a tap on a player opens their profile — signed-in callers only, like the names)
   const rows = top.map(p => ({ rank: 1 + top.filter(o => o.total > p.total).length, uid: p.uid, name: p.name, total: p.total, best: { ...blankBest(), ...p.best }, pts: G.lbPts(p), dbl: p.dbl || {}, perk: p.perk || 0,
-    nameFx: (looks[p.uid] || {}).fx || "", avatar: (looks[p.uid] || {}).avatar || "", border: (looks[p.uid] || {}).border || null, me: p.uid === uid }));
+    nameFx: (looks[p.uid] || {}).fx || "", avatar: (looks[p.uid] || {}).avatar || "", border: (looks[p.uid] || {}).border || null, outfit: (looks[p.uid] || {}).outfit || null, me: p.uid === uid }));
   let me = null;
   if (meSnap && meSnap.exists && meSnap.data().total > 0) {
     const mine = meSnap.data();
@@ -526,13 +527,13 @@ async function leaderboard(db, uid, now) {
   } else if (uid) {
     me = { rank: null, total: 0, best: blankBest(), pts: blankPts(), dbl: {}, perk: 0 };
   }
-  const lastWeek = lastWinners.map(w => ({ rank: w.rank, uid: w.uid, name: w.name, total: w.total, prize: w.prize, avatar: (looks[w.uid] || {}).avatar || "", border: (looks[w.uid] || {}).border || null }));
+  const lastWeek = lastWinners.map(w => ({ rank: w.rank, uid: w.uid, name: w.name, total: w.total, prize: w.prize, avatar: (looks[w.uid] || {}).avatar || "", border: (looks[w.uid] || {}).border || null, outfit: (looks[w.uid] || {}).outfit || null }));
   // Each game's all-time high score: its holder's picture, border and name effect as they are now.
   const records = Object.fromEntries(G.GAMES.map(g => {
     const r = recs[g];
     if (!r) return [g, null];
     const lk = looks[r.uid] || {};
-    return [g, { score: r.score, uid: r.uid, name: r.name, at: r.at, avatar: lk.avatar || "", border: lk.border || null, nameFx: lk.fx || "", me: r.uid === uid }];
+    return [g, { score: r.score, uid: r.uid, name: r.name, at: r.at, avatar: lk.avatar || "", border: lk.border || null, outfit: lk.outfit || null, nameFx: lk.fx || "", me: r.uid === uid }];
   }));
   return { ...base, top: rows, me, lastWeek, records };
 }

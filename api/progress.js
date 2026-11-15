@@ -14,11 +14,30 @@
  *   badges  { badges: [ids] }  -> the achievements shown on your profile (3, or 4
  *                                 with the Badge Pin)
  *   like / unlike { targetUid } -> 👍 someone's profile (or take it back)
- *   openChest { count, free }  -> 1 or 10 draws from the chest (a 10-draw has at
+ *   convertTokens { tokens }   -> 🪙 → ✨ (P.STARDUST.perToken each) — never the other way
+ *   openChest { count, free }  -> 1 or 10 draws from the chest, for ✨ (a 10-draw has at
  *                                 least one Rare); free: true spends a free draw
  *                                 (from a Gold achievement tier) instead of tokens
  *   equipStyle { type, id }    -> shows one of your borders / name effects / chat
  *                                 bubbles (id null takes it off)
+ *   saveOutfit { outfit, look, equip } -> one of your 🧍 looks (C.cleanOutfit: its
+ *                                 body, and only items you own, one per slot);
+ *                                 equip: true also wears it
+ *   equipLook { look }         -> wear another of your looks (the one everyone sees)
+ *   buyLookSlot                -> one more look, for C.lookPrice tokens
+ *   renameLook { look, name }  -> ✏️ a look's name (C.cleanLookName; "" = "Look N")
+ *   sendHeart { toUid }        -> 💗 a heart to a friend: once a day each, up to
+ *                                 P.heartsPerDay(vip) a day; it waits for them to collect;
+ *                                 the day's last one gives you P.HEARTS.dayBonus 💗
+ *   collectHearts { fromUid }  -> collect the hearts friends sent you (one, or all)
+ *   heartStatus { uid }        -> your 💗, who you've sent one to today, hearts waiting
+ *                                 for you, and (uid) whether that player's your friend
+ *   heartSpin                  -> 🎡 one Heart Shop spin (P.HEARTS.spinCost 💗; + spinStardust ✨)
+ *   buyHeartItem { id }        -> a Heart Shop thing, for its P.heartPrice 💗
+ *   buySet { id }              -> 👘 every piece of an outfit set (P.SETS), for its ✨ price
+ *   buyItem { id, deal }       -> one chest item or style outright, for P.buyPrice ✨
+ *                                 (well above a draw; deal: today's Daily Deal price);
+ *                                 logged with the chest opens
  *   trickOrTreat { count }     -> 1 or 10 knocks at an event's door (P.EVENTS),
  *                                 only while it's on; each a treat or a trick
  *
@@ -33,7 +52,9 @@
  *   weekly            — your weekly giveaway entries (giveawayEntries)
  *   purchases         — token pack captures + subscription payments
  *   lbTop5            — weekly Games winners lists (gameLeaderboards/{week})
- *   likesReceived     — playerCards/{uid}.likeCount
+ *   likesReceived     — playerCards/{uid}.likeCount + heartsGot (💗 replaced 👍)
+ *   likesGiven        — like events + inventories/{uid}.heartsSent
+ *   heartSpins        — inventories/{uid}.heartSpins
  *   gamePoints        — achievementStats/{uid}.gamePoints, added to by api/games.js
  *   items             — inventories/{uid}.items
  *
@@ -41,9 +62,19 @@
  * clients read their own, and anyone signed in read playerCards):
  *   achievementStats/{uid}   { claimed: {achievementId: tiers}, gamePoints, backfilledAt }
  *   playerCards/{uid}        { badges: [{a, t}], likeCount, itemCount,
- *                              style: {border, name, bubble} }   (public)
+ *                              style: {border, name, bubble},
+ *                              outfit: {base, wear} (the look you wear),
+ *                              outfits: [looks], equipped: index }   (public)
  *   profileLikes/{target}/likers/{uid}  { active, at }
- *   inventories/{uid}        { items: {id: {at}} (items and styles), perks, count, freeDraws }
+ *   inventories/{uid}        { items: {id: {at}} (items and styles), perks, count, freeDraws,
+ *                              hearts (💗 to spend), heartsSent, heartSpins,
+ *                              stardust (✨ — from logins (api/tokens.js), the Heart Spin, tiers, duplicates) }
+ *   chestOpens/{id}          … currency: "stardust" (from ✨ on; older ones were 🪙),
+ *                              kind "convert": 🪙 spent on ✨ (the admin's token check counts it)
+ *   playerCards/{uid}        … heartsGot (💗 received, public), lookNames: [names]
+ *   heartDays/{uid}_{day}    { to: [uids] } — who you've sent a heart to that day
+ *   heartGifts/{to}_{day}_{from}  { to, from, fromName, day, at, collected } — a heart
+ *                              waiting to be collected (then collected: true)
  *   chestOpens/{id}          a log of every chest opened
  */
 
@@ -51,6 +82,7 @@ const crypto = require("crypto");
 const { getFirebaseAdmin, dayKeyFor, weekDayKeys, isBannedNow, toMillis, ADMIN_UID } = require("./_lib");
 const { FieldValue } = require("firebase-admin/firestore");
 const P = require("../progress-core.js");
+const C = require("../character-core.js");
 const G = require("../games-core.js");
 
 const MIN_COMMENT_CHARS = 8; // same as the comment quest
@@ -153,9 +185,11 @@ async function computeStats(db, uid, now) {
   const sd = statsSnap.exists ? statsSnap.data() : {};
   return {
     stats: {
-      posts, comments, visits, likesGiven, secret, logins, puzzles, weekly, lbTop5,
+      posts, comments, visits, secret, logins, puzzles, weekly, lbTop5,
+      likesGiven: likesGiven + (inv.exists ? Math.max(0, inv.data().heartsSent || 0) : 0), // 👍 likes, then 💗 hearts
       purchases: packs + subs,
-      likesReceived: card.exists ? Math.max(0, card.data().likeCount || 0) : 0,
+      likesReceived: card.exists ? Math.max(0, card.data().likeCount || 0) + Math.max(0, card.data().heartsGot || 0) : 0,
+      heartSpins: inv.exists ? Math.max(0, inv.data().heartSpins || 0) : 0,
       gamePoints: Math.max(0, Math.floor(sd.gamePoints || 0)),
       // Collector: different things from chests (items and styles)
       items: inv.exists ? Object.keys(inv.data().items || {}).filter(id => P.BY_ID[id] && P.BY_ID[id].chest).length : 0
@@ -184,11 +218,13 @@ async function isVip(db, uid, now) {
 }
 
 async function status(db, uid, now) {
-  const [{ stats, claimed, card, inv }, wallet, vip] = await Promise.all([
+  const [{ stats, claimed, card, inv }, wallet, vip, heartDay] = await Promise.all([
     computeStats(db, uid, now),
     db.collection("tokenWallets").doc(uid).get(),
-    isVip(db, uid, now)
+    isVip(db, uid, now),
+    heartDayRef(db, uid, dayKeyFor(now)).get()
   ]);
+  const heartsToday = heartDay.exists && Array.isArray(heartDay.data().to) ? heartDay.data().to : [];
   const items = Object.keys(inv.items || {});
   const perks = P.perksOf(items);
   const style = { border: null, name: null, bubble: null, background: null, ...(card.style || {}) };
@@ -211,10 +247,16 @@ async function status(db, uid, now) {
     badges: card.badges || [],
     badgeLimit: P.badgeLimit(perks),
     likeCount: Math.max(0, card.likeCount || 0),
+    // 💗 to spend; got (received, with your old 👍 likes); who you've sent one to today
+    hearts: Math.max(0, inv.hearts || 0),
+    stardust: Math.max(0, inv.stardust || 0), // ✨
+    heartsGot: Math.max(0, card.heartsGot || 0) + Math.max(0, card.likeCount || 0),
+    heartsToday, heartsPerDay: P.heartsPerDay(vip, perks), heartsLeft: Math.max(0, P.heartsPerDay(vip, perks) - heartsToday.length),
     items, perks, style, vip,
     freeDraws,
     pity: inv.pity || { epic: 0, legendary: 0 },
     events: inv.events || {}, // your Trick or Treat counts: { [eventId]: { pity, freeUsed, knocks } }
+    ...looksOf(card, items, inv.lookSlots), // your 🧍 looks: outfit (worn), looks, equipped, lookSlots
     balance: wallet.exists ? (wallet.data().balance || 0) : 0
   };
 }
@@ -327,17 +369,20 @@ async function claim(db, uid, body, now) {
     if (!newly.length) return { ok: true, paid: 0, claimed: [], balance, claimedTiers: claimed };
     const tierBonus = tiers * perTier;
     paid += tierBonus;
+    const stardustGot = tiers * P.STARDUST.tierBonus; // ✨ for every tier, too
+    const stardust = Math.max(0, (inv.exists && inv.data().stardust) || 0) + stardustGot;
     tx.set(statsRef(db, uid), { claimed }, { merge: true });
     tx.set(walletRef, { balance: balance + paid, lifetimeEarned: FieldValue.increment(paid), updatedAt: now }, { merge: true });
     const totalFree = Math.max(0, (inv.exists && inv.data().freeDraws) || 0) + freeDraws;
     let perks = P.perksOf(Object.keys(items));
-    if (gifts.length || freeDraws) perks = writeInventory(tx, db, uid, items, { freeDraws: totalFree }, lbRef, row, now);
+    if (gifts.length || freeDraws) perks = writeInventory(tx, db, uid, items, { freeDraws: totalFree, stardust }, lbRef, row, now);
+    else tx.set(invRef(db, uid), { stardust, updatedAt: now }, { merge: true });
     // Shown badges move up with their tier; someone with none shown yet gets
     // their first ones shown without having to pick.
     let badges = ((c.exists && c.data().badges) || []).filter(b => P.ACHIEVEMENT_BY_ID[b.a]).map(b => ({ a: b.a, t: claimed[b.a] || b.t }));
     if (!badges.length) badges = newly.slice(0, P.badgeLimit(perks)).map(x => ({ a: x.id, t: x.to }));
     tx.set(cardRef(db, uid), { badges, updatedAt: now }, { merge: true });
-    return { ok: true, paid, tierBonus, claimed: newly, balance: balance + paid, claimedTiers: claimed, badges, freeDraws: totalFree, newFreeDraws: freeDraws, gifts };
+    return { ok: true, paid, tierBonus, stardustGot, stardust, claimed: newly, balance: balance + paid, claimedTiers: claimed, badges, freeDraws: totalFree, newFreeDraws: freeDraws, gifts };
   });
 }
 
@@ -354,6 +399,153 @@ async function setBadges(db, uid, body, now) {
   const badges = list.map(id => ({ a: id, t: claimed[id] }));
   await cardRef(db, uid).set({ badges, updatedAt: now }, { merge: true });
   return { ok: true, badges };
+}
+
+/* ---------------- 💗 hearts ----------------
+   (They took over from 👍 profile likes: the like actions still answer,
+   but the pages send hearts now.) */
+const heartDayRef = (db, uid, day) => db.collection("heartDays").doc(`${uid}_${day}`);
+async function areFriends(db, a, b) {
+  const f = await db.collection("friendRequests").doc(a < b ? `${a}_${b}` : `${b}_${a}`).get();
+  return f.exists && f.data().status === "accepted";
+}
+const giftRef = (db, to, day, from) => db.collection("heartGifts").doc(`${to}_${day}_${from}`);
+const rnd = () => crypto.randomInt(1000000000) / 1000000000;
+// A heart to a friend: once a (Singapore) day each, up to P.heartsPerDay a
+// day (more with Super Supporter). It's theirs — it waits for them to
+// collect (Social → Friends → 💗 Hearts). You get nothing for it, unless an
+// item of yours gives a chance (heartSendChance).
+async function sendHeart(db, uid, body, now) {
+  await assertNotBanned(db, uid);
+  const to = body.toUid;
+  if (!isDocId(to)) throw new HttpError(400, "Missing player.");
+  if (to === uid) throw new HttpError(400, "Send your hearts to your friends! 💗");
+  const [friends, meProf, vip] = await Promise.all([areFriends(db, uid, to), db.collection("publicProfiles").doc(uid).get(), isVip(db, uid, now)]);
+  if (!friends) throw new HttpError(400, "Hearts are for friends — add them as a friend first.");
+  const fromName = String((meProf.exists && meProf.data().name) || "A friend").slice(0, 40);
+  const day = dayKeyFor(now);
+  const dayRef = heartDayRef(db, uid, day);
+  const roll = rnd();
+  return db.runTransaction(async (tx) => {
+    const [d, myInv, theirCard] = await tx.getAll(dayRef, invRef(db, uid), cardRef(db, to));
+    const perDay = P.heartsPerDay(vip, myInv.exists ? myInv.data().perks : null); // + Heart Beanie, Stargazer Coat
+    const sent = d.exists && Array.isArray(d.data().to) ? d.data().to : [];
+    if (sent.includes(to)) throw new HttpError(400, "You've sent them a heart today already — again tomorrow! 💗");
+    if (sent.length >= perDay) throw new HttpError(400, `That's all ${perDay} of today's hearts sent — more tomorrow!${vip ? "" : " (Super Supporters send " + P.HEARTS.vipPerDay + ".)"}`);
+    const mine = myInv.exists ? myInv.data() : {};
+    const bonus = roll < P.heartChance(mine.perks, "heartSendChance") ? 1 : 0;
+    const today = [...sent, to];
+    // the day's last heart sent: a little thank-you
+    const dayBonus = today.length === perDay ? P.HEARTS.dayBonus : 0;
+    const hearts = Math.max(0, mine.hearts || 0) + bonus + dayBonus;
+    tx.set(dayRef, { uid, day, to: today, updatedAt: now });
+    tx.set(invRef(db, uid), { hearts, heartsSent: Math.max(0, mine.heartsSent || 0) + 1, updatedAt: now }, { merge: true });
+    tx.set(cardRef(db, to), { heartsGot: Math.max(0, (theirCard.exists && theirCard.data().heartsGot) || 0) + 1, updatedAt: now }, { merge: true });
+    tx.set(giftRef(db, to, day, uid), { to, from: uid, fromName, day, at: now, collected: false });
+    return { ok: true, toUid: to, bonus, dayBonus, hearts, heartsToday: today, heartsPerDay: perDay, heartsLeft: Math.max(0, perDay - today.length) };
+  });
+}
+// Hearts waiting for you (the newest first).
+async function heartsWaiting(db, uid) {
+  const q = await db.collection("heartGifts").where("to", "==", uid).where("collected", "==", false).get();
+  return q.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => (b.at || 0) - (a.at || 0)).slice(0, 100);
+}
+// Collect them: one friend's (fromUid), or all. Each is 1 💗 — and maybe one
+// more (heartGetChance).
+async function collectHearts(db, uid, body, now) {
+  await assertNotBanned(db, uid);
+  const from = body.fromUid == null ? null : body.fromUid;
+  if (from !== null && !isDocId(from)) throw new HttpError(400, "Missing player.");
+  const waiting = (await heartsWaiting(db, uid)).filter(g => !from || g.from === from);
+  if (!waiting.length) throw new HttpError(400, "No hearts waiting for you right now.");
+  const rolls = waiting.map(() => rnd());
+  return db.runTransaction(async (tx) => {
+    const [inv, ...gifts] = await tx.getAll(invRef(db, uid), ...waiting.map(g => db.collection("heartGifts").doc(g.id)));
+    const d = inv.exists ? inv.data() : {};
+    const chance = P.heartChance(d.perks, "heartGetChance");
+    let got = 0, bonus = 0;
+    const collected = [];
+    gifts.forEach((g, k) => {
+      if (!g.exists || g.data().collected !== false || g.data().to !== uid) return;
+      const extra = rolls[k] < chance ? 1 : 0;
+      got += 1 + extra; bonus += extra;
+      collected.push(g.data().from);
+      tx.update(g.ref, { collected: true, collectedAt: now });
+    });
+    if (!got) throw new HttpError(400, "No hearts waiting for you right now.");
+    const hearts = Math.max(0, d.hearts || 0) + got;
+    tx.set(invRef(db, uid), { hearts, updatedAt: now }, { merge: true });
+    return { ok: true, got, bonus, hearts, collected };
+  });
+}
+// Your hearts now (light: for Social, the Store and profile popups).
+async function heartStatus(db, uid, body, now) {
+  const other = isDocId(body.uid) && body.uid !== uid ? body.uid : null;
+  const [inv, day, vip, waiting, friend] = await Promise.all([invRef(db, uid).get(), heartDayRef(db, uid, dayKeyFor(now)).get(), isVip(db, uid, now),
+    heartsWaiting(db, uid), other ? areFriends(db, uid, other) : false]);
+  const heartsToday = day.exists && Array.isArray(day.data().to) ? day.data().to : [];
+  const perDay = P.heartsPerDay(vip, inv.exists ? inv.data().perks : null);
+  return {
+    ok: true, hearts: Math.max(0, (inv.exists && inv.data().hearts) || 0), heartsToday, heartsPerDay: perDay, heartsLeft: Math.max(0, perDay - heartsToday.length), vip,
+    waiting: waiting.map(g => ({ from: g.from, fromName: g.fromName || "A friend", at: g.at || 0, day: g.day })),
+    ...(other ? { uid: other, friend } : {})
+  };
+}
+// 🎡 One Heart Shop spin. Tokens it gives are logged like a gift's
+// (lifetimeGifted), so the admin's token check adds up.
+async function heartSpin(db, uid, body, now) {
+  await assertNotBanned(db, uid);
+  const walletRef = db.collection("tokenWallets").doc(uid);
+  const lbRef = db.collection("gameLeaderboards").doc(weekOf(now)).collection("players").doc(uid);
+  const logRef = db.collection("chestOpens").doc(now.toString(36) + crypto.randomBytes(6).toString("hex"));
+  const rolls = [0, 1, 2].map(() => crypto.randomInt(1000000000) / 1000000000);
+  return db.runTransaction(async (tx) => {
+    const [inv, w, row] = await tx.getAll(invRef(db, uid), walletRef, lbRef);
+    const d = inv.exists ? inv.data() : {};
+    const have = Math.max(0, d.hearts || 0);
+    if (have < P.HEARTS.spinCost) throw new HttpError(400, `A spin costs ${P.HEARTS.spinCost} 💗 — you have ${have}. Send your friends hearts to get more!`);
+    const items = { ...(d.items || {}) };
+    let k = 0;
+    const prize = P.rollHeartSpin(Object.keys(items), () => rolls[k++ % rolls.length]);
+    const spinBonus = P.perkStardust(P.perksOf(Object.keys(items)), "spinStardust"); // ✨ Starlit Eyes, Nebula Trousers
+    const extra = {
+      stardust: Math.max(0, d.stardust || 0) + prize.stardust + spinBonus,
+      hearts: have - P.HEARTS.spinCost + prize.hearts,
+      heartSpins: Math.max(0, d.heartSpins || 0) + 1,
+      freeDraws: Math.max(0, d.freeDraws || 0) + prize.draws
+    };
+    let balance = w.exists ? (w.data().balance || 0) : 0;
+    if (prize.tokens) {
+      balance += prize.tokens;
+      tx.set(walletRef, { balance, lifetimeGifted: FieldValue.increment(prize.tokens), updatedAt: now }, { merge: true });
+    }
+    let perks = P.perksOf(Object.keys(items));
+    if (prize.id) {
+      items[prize.id] = { at: now, from: "heartSpin" };
+      perks = writeInventory(tx, db, uid, items, extra, lbRef, row, now);
+    } else tx.set(invRef(db, uid), { ...extra, updatedAt: now }, { merge: true });
+    tx.set(logRef, { uid, kind: "heartSpin", count: 1, free: false, price: 0, hearts: P.HEARTS.spinCost, refund: 0, tokens: prize.tokens, results: prize.id ? [{ id: prize.id }] : [], at: now });
+    return { ok: true, prize, spinBonus, hearts: extra.hearts, stardust: extra.stardust, heartSpins: extra.heartSpins, freeDraws: extra.freeDraws, balance, items: Object.keys(items), perks };
+  });
+}
+// A Heart Shop thing, for hearts.
+async function buyHeartItem(db, uid, body, now) {
+  await assertNotBanned(db, uid);
+  const id = typeof body.id === "string" ? body.id : "";
+  const price = P.heartPrice(id);
+  if (!price) throw new HttpError(400, "That isn't in the Heart Shop.");
+  const lbRef = db.collection("gameLeaderboards").doc(weekOf(now)).collection("players").doc(uid);
+  return db.runTransaction(async (tx) => {
+    const [inv, row] = await tx.getAll(invRef(db, uid), lbRef);
+    const d = inv.exists ? inv.data() : {};
+    const items = { ...(d.items || {}) };
+    if (id in items) throw new HttpError(400, "You already have it.");
+    const have = Math.max(0, d.hearts || 0);
+    if (have < price) throw new HttpError(400, `That's ${price} 💗 — you have ${have}.`);
+    items[id] = { at: now, from: "hearts" };
+    const perks = writeInventory(tx, db, uid, items, { hearts: have - price }, lbRef, row, now);
+    return { ok: true, id, price, hearts: have - price, items: Object.keys(items), perks };
+  });
 }
 
 /* ---------------- profile likes ---------------- */
@@ -382,29 +574,29 @@ async function setLike(db, uid, body, now, on) {
 
 /* ---------------- the chest ----------------
    1 or 10 draws, with the guarantees in P.drawChest. Anything you already
-   own — or get twice in one 10-draw — is a duplicate, paid back in tokens
-   by its rarity. A free draw (from a Gold achievement tier) costs nothing. */
+   own — or get twice in one 10-draw — is a duplicate, paid back in ✨
+   Stardust by its rarity. Draws cost ✨. A free draw (from a Gold
+   achievement tier) costs nothing. */
 async function openChest(db, uid, body, now) {
   await assertNotBanned(db, uid);
   const count = body.count === 10 ? 10 : 1;
   const free = body.free === true;
   if (free && count !== 1) throw new HttpError(400, "A free draw is one draw.");
   const dayKey = dayKeyFor(now);
-  const walletRef = db.collection("tokenWallets").doc(uid);
   const lbRef = db.collection("gameLeaderboards").doc(weekOf(now)).collection("players").doc(uid);
   const logRef = db.collection("chestOpens").doc(now.toString(36) + crypto.randomBytes(6).toString("hex"));
   const rolls = Array.from({ length: count }, () => crypto.randomInt(1000000000) / 1000000000);
   const rescue = crypto.randomInt(1000000000) / 1000000000;
   return db.runTransaction(async (tx) => {
-    const [w, inv, row] = await tx.getAll(walletRef, invRef(db, uid), lbRef);
-    const balance = w.exists ? (w.data().balance || 0) : 0;
+    const [inv, row] = await tx.getAll(invRef(db, uid), lbRef);
+    const balance = Math.max(0, (inv.exists && inv.data().stardust) || 0); // ✨
     const items = { ...((inv.exists && inv.data().items) || {}) };
     const perksBefore = P.perksOf(Object.keys(items));
     const top = weeklyTopUp(inv.exists ? inv.data() : {}, now);
     const freeLeft = top.freeDraws;
     if (free && freeLeft < 1) throw new HttpError(400, "You don't have a free draw.");
     const price = free ? 0 : P.chestPrice(count, perksBefore);
-    if (balance < price) throw new HttpError(400, `That costs ${price} 🪙 — you have ${balance}.`);
+    if (balance < price) throw new HttpError(400, `That costs ${price.toLocaleString("en-US")} ✨ — you have ${balance.toLocaleString("en-US")}.`);
 
     // The draws, with the guarantees (Epic every P.PITY.epic, Legendary every
     // P.PITY.legendary, a Rare in every 10-draw).
@@ -421,11 +613,10 @@ async function openChest(db, uid, body, now) {
       return { id, duplicate: false, refund: 0 };
     });
     const after = balance - price + refund;
-    tx.set(walletRef, { balance: after, updatedAt: now }, { merge: true });
-    const extra = { pity: drawn.pity, ...(free || top.changed ? { freeDraws: freeLeft - (free ? 1 : 0) } : {}), ...(top.changed ? { weeklyFreeWeek: top.weeklyFreeWeek } : {}) };
+    const extra = { stardust: after, pity: drawn.pity, ...(free || top.changed ? { freeDraws: freeLeft - (free ? 1 : 0) } : {}), ...(top.changed ? { weeklyFreeWeek: top.weeklyFreeWeek } : {}) };
     const perks = writeInventory(tx, db, uid, items, extra, lbRef, row, now);
-    tx.set(logRef, { uid, count, free, price, refund, results, pity: drawn.pity, at: now });
-    return { ok: true, count, free, price, refund, results, balance: after, items: Object.keys(items), perks, pity: drawn.pity, freeDraws: free ? freeLeft - 1 : freeLeft };
+    tx.set(logRef, { uid, count, free, price, refund, currency: "stardust", results, pity: drawn.pity, at: now });
+    return { ok: true, count, free, price, refund, results, stardust: after, items: Object.keys(items), perks, pity: drawn.pity, freeDraws: free ? freeLeft - 1 : freeLeft };
   });
 }
 
@@ -629,6 +820,139 @@ async function equipStyle(db, uid, body, now) {
   return { ok: true, type, id };
 }
 
+// Your looks as saved (an old single outfit becomes your first look).
+function looksOf(card, items, slots) {
+  const n = C.looksOf(slots);
+  const looks = C.cleanLooks(Array.isArray(card.outfits) ? card.outfits : [card.outfit], items, n);
+  const equipped = Number.isInteger(card.equipped) && card.equipped >= 0 && card.equipped < n ? card.equipped : 0;
+  const lookNames = Array.from({ length: n }, (_, i) => C.cleanLookName((Array.isArray(card.lookNames) ? card.lookNames : [])[i]));
+  return { outfit: looks[equipped], looks, equipped, lookSlots: n, lookNames };
+}
+/* ---------------- 🧍 your character ----------------
+   What it wears is public (playerCards.outfit) and only ever saved cleaned:
+   its body, and items you own, one in each slot. Wearing is looks only —
+   perks count either way. */
+// One chest thing outright, for its (steep) price. Logged like a bought event
+// picture, so the admin's token check counts it.
+async function buyItem(db, uid, body, now) {
+  await assertNotBanned(db, uid);
+  const id = typeof body.id === "string" ? body.id : "";
+  if (!P.buyPrice(id)) throw new HttpError(400, "That can't be bought — it comes from achievements or events.");
+  const deal = body.deal === true ? P.dealPrice(id, dayKeyFor(now)) : null;
+  if (body.deal === true && !deal) throw new HttpError(400, "That isn't one of today's Daily Deals any more.");
+  const price = deal || P.buyPrice(id);
+  const lbRef = db.collection("gameLeaderboards").doc(weekOf(now)).collection("players").doc(uid);
+  const logRef = db.collection("chestOpens").doc(now.toString(36) + crypto.randomBytes(6).toString("hex"));
+  return db.runTransaction(async (tx) => {
+    const [inv, row] = await tx.getAll(invRef(db, uid), lbRef);
+    const balance = Math.max(0, (inv.exists && inv.data().stardust) || 0);
+    const items = { ...((inv.exists && inv.data().items) || {}) };
+    if (id in items) throw new HttpError(400, "You already have it.");
+    if (balance < price) throw new HttpError(400, `That costs ${price.toLocaleString("en-US")} ✨ — you have ${balance.toLocaleString("en-US")}.`);
+    items[id] = { at: now, from: deal ? "deal" : "buy" };
+    const perks = writeInventory(tx, db, uid, items, { stardust: balance - price }, lbRef, row, now);
+    tx.set(logRef, { uid, kind: "buy", count: 1, free: false, price, refund: 0, currency: "stardust", deal: !!deal, results: [{ id }], bought: true, at: now });
+    return { ok: true, id, price, deal: !!deal, stardust: balance - price, items: Object.keys(items), perks };
+  });
+}
+// 👘 A whole outfit set (P.SETS), every piece at once, for its ✨ price.
+async function buySet(db, uid, body, now) {
+  await assertNotBanned(db, uid);
+  const id = typeof body.id === "string" ? body.id : "";
+  const set = Object.prototype.hasOwnProperty.call(P.SET_BY_ID, id) ? P.SET_BY_ID[id] : null;
+  if (!set) throw new HttpError(400, "That set isn't in the Store.");
+  const lbRef = db.collection("gameLeaderboards").doc(weekOf(now)).collection("players").doc(uid);
+  const logRef = db.collection("chestOpens").doc(now.toString(36) + crypto.randomBytes(6).toString("hex"));
+  return db.runTransaction(async (tx) => {
+    const [inv, row] = await tx.getAll(invRef(db, uid), lbRef);
+    const balance = Math.max(0, (inv.exists && inv.data().stardust) || 0);
+    const items = { ...((inv.exists && inv.data().items) || {}) };
+    const missing = set.pieces.filter(p => !(p in items));
+    if (!missing.length) throw new HttpError(400, "You already have the whole set.");
+    if (balance < set.price) throw new HttpError(400, `The ${set.name} costs ${set.price.toLocaleString("en-US")} ✨ — you have ${balance.toLocaleString("en-US")}.`);
+    missing.forEach(p => { items[p] = { at: now, from: "set" }; });
+    const perks = writeInventory(tx, db, uid, items, { stardust: balance - set.price }, lbRef, row, now);
+    tx.set(logRef, { uid, kind: "set", set: id, count: missing.length, free: false, price: set.price, refund: 0, currency: "stardust", results: missing.map(p => ({ id: p })), bought: true, at: now });
+    return { ok: true, id, price: set.price, pieces: set.pieces, stardust: balance - set.price, items: Object.keys(items), perks };
+  });
+}
+async function saveOutfit(db, uid, body, now) {
+  await assertNotBanned(db, uid);
+  const [inv, card] = await Promise.all([invRef(db, uid).get(), cardRef(db, uid).get()]);
+  const items = Object.keys((inv.exists && inv.data().items) || {});
+  const cur = looksOf(card.exists ? card.data() : {}, items, inv.exists ? inv.data().lookSlots : 0);
+  const look = body.look == null ? cur.equipped : body.look;
+  if (!Number.isInteger(look) || look < 0 || look >= cur.lookSlots) throw new HttpError(400, "That look isn't one of yours.");
+  const looks = cur.looks.slice();
+  looks[look] = C.cleanOutfit(body.outfit, items);
+  const equipped = body.equip === true ? look : cur.equipped;
+  const out = { outfits: looks, equipped, outfit: looks[equipped] };
+  await cardRef(db, uid).set({ ...out, updatedAt: now }, { merge: true });
+  return { ok: true, ...out, looks, lookSlots: cur.lookSlots };
+}
+// Wear another of your looks.
+async function equipLook(db, uid, body, now) {
+  await assertNotBanned(db, uid);
+  const [inv, card] = await Promise.all([invRef(db, uid).get(), cardRef(db, uid).get()]);
+  const items = Object.keys((inv.exists && inv.data().items) || {});
+  const cur = looksOf(card.exists ? card.data() : {}, items, inv.exists ? inv.data().lookSlots : 0);
+  const look = body.look;
+  if (!Number.isInteger(look) || look < 0 || look >= cur.lookSlots) throw new HttpError(400, "That look isn't one of yours.");
+  const out = { outfits: cur.looks, equipped: look, outfit: cur.looks[look] };
+  await cardRef(db, uid).set({ ...out, updatedAt: now }, { merge: true });
+  return { ok: true, ...out, looks: cur.looks, lookSlots: cur.lookSlots };
+}
+// ✏️ Name one of your looks (shown on your profile). "" puts back "Look N".
+async function renameLook(db, uid, body, now) {
+  await assertNotBanned(db, uid);
+  const [inv, card] = await Promise.all([invRef(db, uid).get(), cardRef(db, uid).get()]);
+  const cur = looksOf(card.exists ? card.data() : {}, [], inv.exists ? inv.data().lookSlots : 0);
+  const look = body.look;
+  if (!Number.isInteger(look) || look < 0 || look >= cur.lookSlots) throw new HttpError(400, "That look isn't one of yours.");
+  if (body.name != null && typeof body.name !== "string") throw new HttpError(400, "A name is words.");
+  const lookNames = cur.lookNames.slice();
+  lookNames[look] = C.cleanLookName(body.name);
+  await cardRef(db, uid).set({ lookNames, updatedAt: now }, { merge: true });
+  return { ok: true, look, name: lookNames[look], lookNames };
+}
+// One more look, for tokens (logged with the chest opens for the admin's check).
+async function buyLookSlot(db, uid, body, now) {
+  await assertNotBanned(db, uid);
+  const logRef = db.collection("chestOpens").doc(now.toString(36) + crypto.randomBytes(6).toString("hex"));
+  return db.runTransaction(async (tx) => {
+    const [inv] = await tx.getAll(invRef(db, uid));
+    const balance = Math.max(0, (inv.exists && inv.data().stardust) || 0);
+    const have = C.looksOf(inv.exists ? inv.data().lookSlots : 0);
+    const price = C.lookPrice(have);
+    if (price == null) throw new HttpError(400, `You have all ${C.LOOKS_MAX} looks.`);
+    if (balance < price) throw new HttpError(400, `That costs ${price.toLocaleString("en-US")} ✨ — you have ${balance.toLocaleString("en-US")}.`);
+    tx.set(invRef(db, uid), { lookSlots: have + 1, stardust: balance - price, updatedAt: now }, { merge: true });
+    tx.set(logRef, { uid, kind: "look", count: 1, free: false, price, refund: 0, currency: "stardust", results: [], bought: true, at: now });
+    return { ok: true, lookSlots: have + 1, price, stardust: balance - price };
+  });
+}
+
+/* ---------------- ✨ Stardust: 🪙 → ✨ ---------------- */
+// 🪙 tokens → ✨ Stardust (never back). Logged for the admin's token check.
+async function convertTokens(db, uid, body, now) {
+  await assertNotBanned(db, uid);
+  const tokens = body.tokens;
+  if (!Number.isInteger(tokens) || tokens < 1 || tokens > 100000) throw new HttpError(400, "Pick how many tokens to turn into Stardust.");
+  const walletRef = db.collection("tokenWallets").doc(uid);
+  const logRef = db.collection("chestOpens").doc(now.toString(36) + crypto.randomBytes(6).toString("hex"));
+  return db.runTransaction(async (tx) => {
+    const [w, inv] = await tx.getAll(walletRef, invRef(db, uid));
+    const balance = w.exists ? (w.data().balance || 0) : 0;
+    if (balance < tokens) throw new HttpError(400, `You have ${balance} 🪙.`);
+    const got = tokens * P.STARDUST.perToken;
+    const stardust = Math.max(0, (inv.exists && inv.data().stardust) || 0) + got;
+    tx.set(walletRef, { balance: balance - tokens, updatedAt: now }, { merge: true });
+    tx.set(invRef(db, uid), { stardust, updatedAt: now }, { merge: true });
+    tx.set(logRef, { uid, kind: "convert", count: 0, free: false, price: tokens, refund: 0, currency: "tokens", stardustGot: got, results: [], at: now });
+    return { ok: true, tokens, stardustGot: got, balance: balance - tokens, stardust };
+  });
+}
+
 module.exports = async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
@@ -651,7 +975,19 @@ module.exports = async (req, res) => {
       case "like": result = await setLike(db, uid, body, now, true); break;
       case "unlike": result = await setLike(db, uid, body, now, false); break;
       case "openChest": result = await openChest(db, uid, body, now); break;
+      case "convertTokens": result = await convertTokens(db, uid, body, now); break;
       case "equipStyle": result = await equipStyle(db, uid, body, now); break;
+      case "saveOutfit": result = await saveOutfit(db, uid, body, now); break;
+      case "equipLook": result = await equipLook(db, uid, body, now); break;
+      case "buyLookSlot": result = await buyLookSlot(db, uid, body, now); break;
+      case "renameLook": result = await renameLook(db, uid, body, now); break;
+      case "sendHeart": result = await sendHeart(db, uid, body, now); break;
+      case "heartStatus": result = await heartStatus(db, uid, body, now); break;
+      case "collectHearts": result = await collectHearts(db, uid, body, now); break;
+      case "heartSpin": result = await heartSpin(db, uid, body, now); break;
+      case "buyHeartItem": result = await buyHeartItem(db, uid, body, now); break;
+      case "buyItem": result = await buyItem(db, uid, body, now); break;
+      case "buySet": result = await buySet(db, uid, body, now); break;
       case "trickOrTreat": result = await trickOrTreat(db, uid, body, now); break;
       case "eventGift": result = await eventGift(db, uid, body, now); break;
       case "buyEventItem": result = await buyEventItem(db, uid, body, now); break;

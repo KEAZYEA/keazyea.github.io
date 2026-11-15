@@ -105,3 +105,11 @@ a.chip { color: #fff; }
     .guide-hero img { width: 88px; height: 88px; }
     .guide-actions { grid-template-columns: 1fr; }
 }
+
+/* 🐉 a boss's abilities */
+.boss-ab { margin: 12px 0 18px; padding: 12px; border-radius: 14px; background: rgba(0, 0, 0, 0.22); border: 1px solid rgba(255, 255, 255, 0.08); }
+.boss-ab-head { display: flex; align-items: center; gap: 10px; }
+.boss-ab-head img { border-radius: 10px; flex-shrink: 0; }
+.boss-ab-head h3 { margin: 0 0 3px; font-size: 1.02rem; }
+.boss-ab-ico { width: 44px; height: 44px; display: grid; place-items: center; font-size: 1.5rem; border-radius: 10px; background: #2a2a4a; flex-shrink: 0; }
+.boss-ab p { margin: 8px 0; }

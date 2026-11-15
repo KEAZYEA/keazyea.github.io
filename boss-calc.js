@@ -1,4 +1,4 @@
-/* boss-calc.js — 🐉 the Bosses tab of Troops & Heroes.
+/* boss-calc.js — 🐉 the Bosses tab of Troops, Heroes & Bosses (and Compare → Bosses).
 
    Every Glorious Hunt boss at the level you choose (1–300), with the game's
    own numbers: each attack's damage, hits, area and cooldown, how many
@@ -67,8 +67,8 @@
             abilities: dragon("bossDragonGold", "boss_dragon_gold_", { sameAs: "dragon" }).map((a, i) => (i === 0 ? { ...a, sameAs: undefined } : a)) },
         { id: "iceSnake", icon: "❄️", img: "BOSSICESNAKE", name: "boss_IceSnake_name", title: "boss_IceSnake_name_description", levelUp: "bossIceSnake_DmgLvlUp", abilities: [
             act("boss_IceSnake_ability1_name", "boss_IceSnake_ability1_description", "bossIceSnake_defaultAoe", "needles", "BOSSICESNAKE_ICEARROWS"),
-            act("boss_IceSnake_ability2_name", "boss_IceSnake_ability2_description", null, "guardians", "BOSSICESNAKE_SUMMON", { unit: "bossIceSnakeSummon", unitAttack: "bossIceSnakeSummon_lightning" }),
-            pas("bossSand_passive_range_name", "bossSand_passive_range_description", null, "text", "BOSSSAND_PASSIVE_RANGE")] }
+            // (the game gives Shai-Khold these two and no passive)
+            act("boss_IceSnake_ability2_name", "boss_IceSnake_ability2_description", null, "guardians", "BOSSICESNAKE_SUMMON", { unit: "bossIceSnakeSummon", unitAttack: "bossIceSnakeSummon_lightning" })] }
     ];
     const MAX_LEVEL = 300;
 
@@ -240,8 +240,17 @@
     const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
     const KEY = "kih_boss_calc";
     const st = { boss: null, level: 1, open: {} };
-    try { st.level = B.clampLevel(JSON.parse(localStorage.getItem(KEY) || "{}").level); } catch (e) { }
-    const save = () => { try { localStorage.setItem(KEY, JSON.stringify({ level: st.level })); } catch (e) { } };
+    // Compare → Bosses: the left and right boss, each at its own level
+    const cmp = { l: { boss: "dragon", level: 1 }, r: { boss: "spiderQueen", level: 1 } };
+    try {
+        const saved = JSON.parse(localStorage.getItem(KEY) || "{}");
+        st.level = B.clampLevel(saved.level);
+        ["l", "r"].forEach(k => {
+            const c = saved.cmp && saved.cmp[k];
+            if (c && B.BOSSES.some(b => b.id === c.boss)) cmp[k] = { boss: c.boss, level: B.clampLevel(c.level) };
+        });
+    } catch (e) { }
+    const save = () => { try { localStorage.setItem(KEY, JSON.stringify({ level: st.level, cmp })); } catch (e) { } };
     let data = null, loading = null, opts = {};
 
     // The boss's picture, or its emoji when there's no picture (yet).
@@ -374,20 +383,125 @@
     B.show = show;
     B.current = () => st.boss;
 
-    let wired = false;
-    B.mount = function (options) {
-        opts = options || {};
-        if (!wired) { wired = true; wireBar(); wireCard(); }
-        if (data) { drawAll(); return Promise.resolve(); }
+    /* ---------------- Compare → Bosses ----------------
+       Two bosses side by side in Compare's table (#compareCard), each at
+       its own level: the health bar, then their attacks and passives
+       paired up in order, a row for every number either one has. */
+    const num = (v) => (typeof v === "number" ? v : typeof v === "string" && /^-?[\d.,]+(s|%)?$/.test(v) ? parseFloat(v.replace(/,/g, "")) : null);
+    // like Compare's units: the bigger number is green — but a shorter wait is better
+    function colorsFor(label, a, b) {
+        const x = num(a), y = num(b);
+        if (x == null || y == null || x === y) return ["stat-neutral", "stat-neutral"];
+        const leftWins = /cooldown|every/i.test(label) ? x < y : x > y;
+        return leftWins ? ["stat-better", "stat-worse"] : ["stat-worse", "stat-better"];
+    }
+    const cell = (v) => (v == null ? "—" : esc(fmt(v)));
+    function cmpRow(label, icon, a, b) {
+        const [ca, cb] = colorsFor(label, a, b);
+        return `<tr><td class="${ca}">${cell(a)}</td><td class="stat-label"><span class="stat-name"><span>${esc(label)}</span>${icon ? `<img src="images/thumbs/${esc(icon)}.jpg" class="stat-icon" alt="" onerror="this.style.display='none'">` : ""}</span></td><td class="${cb}">${cell(b)}</td></tr>`;
+    }
+    // an ability's numbers, its spiders' included
+    function numbersOf(a) {
+        const out = a.rows.map(r => ({ label: r.label, icon: r.icon, value: r.value }));
+        const s = a.spider;
+        if (s && s.level) {
+            const who = s.troopId === "spiderBang" ? "Explosive spider" : "Battle spider";
+            if (s.troopId === "spiderBang") out.push({ label: `${who}: blast damage`, icon: "ATTACK", value: s.blast }, { label: `${who}: blast radius`, icon: "AOERADIUS", value: s.blastRadius });
+            else out.push({ label: `${who}: attack`, icon: "ATTACK", value: s.attack }, { label: `${who}: attack speed`, icon: "ASPD", value: s.aspd });
+            out.push({ label: `${who}: health`, icon: "HEALTH", value: s.hp }, { label: `${who}: defense`, icon: "DEFENSE", value: s.defense });
+        }
+        return out;
+    }
+    const abilityHead = (a) => (a ? `${a.icon ? `<img class="bc-skill-img" src="images/${esc(a.icon)}.jpg" alt="" onerror="this.remove()">` : ""}<div>${esc(a.name || "Ability")}</div>` : "—");
+    function pairHtml(la, ra) {
+        let html = `<tr class="bcc-ab"><td>${abilityHead(la)}</td><td></td><td>${abilityHead(ra)}</td></tr>`;
+        const ln = la ? numbersOf(la) : [], rn = ra ? numbersOf(ra) : [];
+        const labels = [];
+        [...ln, ...rn].forEach(r => { if (!labels.some(x => x.label === r.label)) labels.push(r); });
+        labels.forEach(x => {
+            const l = ln.find(r => r.label === x.label), r = rn.find(r2 => r2.label === x.label);
+            html += cmpRow(x.label, x.icon, l ? l.value : null, r ? r.value : null);
+        });
+        return html;
+    }
+    const comparing = () => { const p = $("bossPickers"); return !!(p && !p.hidden); };
+    function drawCompare() {
+        const card = $("compareCard");
+        if (!data || !card || !comparing()) return;
+        ["l", "r"].forEach(k => {
+            const K = k.toUpperCase(), sel = $("bccSel" + K), box = $("bccLevel" + K);
+            if (!sel.options.length) B.BOSSES.forEach(b => sel.add(new Option(B.text(data, b.name), b.id)));
+            sel.value = cmp[k].boss;
+            $("bccSlider" + K).value = String(cmp[k].level);
+            if (document.activeElement !== box) box.value = String(cmp[k].level);
+        });
+        const L = B.bossAt(data, cmp.l.boss, cmp.l.level), R = B.bossAt(data, cmp.r.boss, cmp.r.level);
+        if (!L || !R) { card.innerHTML = ""; return; }
+        const head = (r, side) => `<div class="bcc-pic" data-side="${side}"></div><div class="flex-center-gap10">${esc(r.name)} (Lvl ${esc(r.level)})</div><div class="bc-pills"><span class="bc-pill">${esc(r.title)}</span></div>`;
+        let html = `<table class="bcc-table"><tr><th>${head(L, "l")}</th><th></th><th>${head(R, "r")}</th></tr>`;
+        html += `<tr><td colspan="3" class="section-header">❤️ Health bar</td></tr>`;
+        html += cmpRow("Damage to reach it", "HEALTH", L.levelUp && L.levelUp.total, R.levelUp && R.levelUp.total);
+        html += cmpRow("Damage to next level", "HEALTH", L.levelUp && L.levelUp.next, R.levelUp && R.levelUp.next);
+        ["attack", "passive"].forEach(kind => {
+            const la = L.abilities.filter(a => a.kind === kind), ra = R.abilities.filter(a => a.kind === kind);
+            if (!la.length && !ra.length) return;
+            html += `<tr><td colspan="3" class="section-header">${kind === "attack" ? "⚔️ Attacks & Abilities" : "🛡️ Passive Abilities"}</td></tr>`;
+            for (let i = 0; i < Math.max(la.length, ra.length); i++) html += pairHtml(la[i], ra[i]);
+        });
+        html += "</table>";
+        card.innerHTML = html;
+        [["l", L], ["r", R]].forEach(([side, r]) => {
+            const at = card.querySelector(`.bcc-pic[data-side="${side}"]`);
+            if (at) at.appendChild(pic(Object.assign(document.createElement("img"), { className: "troop-img" }), B.BOSSES.find(b => b.id === r.id), false));
+        });
+    }
+    function wireCompare() {
+        ["l", "r"].forEach(k => {
+            const K = k.toUpperCase(), sel = $("bccSel" + K), slider = $("bccSlider" + K), box = $("bccLevel" + K);
+            slider.max = box.max = String(B.MAX_LEVEL);
+            const setLevel = (v, from) => {
+                cmp[k].level = B.clampLevel(v);
+                if (from !== "box") box.value = String(cmp[k].level);
+                slider.value = String(cmp[k].level);
+                save();
+                drawCompare();
+            };
+            slider.addEventListener("input", () => setLevel(slider.value, "slider"));
+            box.addEventListener("input", () => { if (box.value !== "") setLevel(box.value, "box"); });
+            box.addEventListener("change", () => setLevel(box.value));
+            sel.addEventListener("change", () => { if (B.BOSSES.some(b => b.id === sel.value)) { cmp[k].boss = sel.value; save(); drawCompare(); } });
+        });
+    }
+
+    // The data, loaded once for the Bosses tab and Compare.
+    function ensureData() {
+        if (data) return Promise.resolve(data);
         if (!loading) {
-            $("bossResults").innerHTML = "<p class=\"bc-none\">Loading the bosses…</p>";
             loading = Promise.all(["data/bosses.json", "localization.json", "en.json", "troopsLevel.json", "abilityAoeDamageSuicide.json", "unitParameterModifierNested.json"].map(f => opts.loadJSON(f)))
                 .then(([bosses, localization, en, troopsLevel, abilityAoeDamageSuicide, modifiers]) => {
                     data = { bosses, localization, en, troopsLevel, abilityAoeDamageSuicide, modifiers };
-                    drawAll();
-                })
-                .catch(() => { loading = null; $("bossResults").innerHTML = "<p class=\"bc-none\">Couldn't load the boss data — check your connection and open this tab again.</p>"; });
+                    return data;
+                });
+            loading.catch(() => { loading = null; });
         }
         return loading;
+    }
+
+    let wired = false;
+    B.mount = function (options) {
+        opts = Object.assign({}, opts, options || {});
+        if (!wired) { wired = true; wireBar(); wireCard(); }
+        if (data) { drawAll(); return Promise.resolve(); }
+        $("bossResults").innerHTML = "<p class=\"bc-none\">Loading the bosses…</p>";
+        return ensureData().then(() => drawAll(),
+            () => { $("bossResults").innerHTML = "<p class=\"bc-none\">Couldn't load the boss data — check your connection and open this tab again.</p>"; });
+    };
+    let cmpWired = false;
+    B.mountCompare = function (options) {
+        opts = Object.assign({}, opts, options || {});
+        if (!cmpWired) { cmpWired = true; wireCompare(); }
+        if (!data && comparing()) $("compareCard").innerHTML = "<p class=\"bc-none\">Loading the bosses…</p>";
+        return ensureData().then(() => drawCompare(),
+            () => { if (comparing()) $("compareCard").innerHTML = "<p class=\"bc-none\">Couldn't load the boss data — check your connection and try again.</p>"; });
     };
 })();

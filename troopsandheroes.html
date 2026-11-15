@@ -2,8 +2,8 @@
 <html lang="en">
 
 <head>
-    <title>Troops &amp; Heroes — Keazyea's Intelligence Hub</title>
-    <meta name="description" content="Browse and compare every Kingdom Clash troop and hero: HP, attack, defence and power by level, abilities and talents.">
+    <title>Troops, Heroes &amp; Bosses — Keazyea's Intelligence Hub</title>
+    <meta name="description" content="Browse and compare every Kingdom Clash troop, hero and boss: HP, attack, defence and power by level, abilities, talents and boss damage at levels 1–300.">
     <link rel="icon" href="images/KIH.jpg">
     <link rel="stylesheet" href="style.css">
     <script type="text/javascript">     (function(c,l,a,r,i,t,y){         c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};         t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;         y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);     })(window, document, "clarity", "script", "xupis8786d"); </script>
@@ -75,17 +75,40 @@
         .bc-same { font-size: 13px; color: #9a9ab0; font-weight: normal; }
         #bossCard .bc-skill-img { display: block; width: 96px; height: 96px; object-fit: cover; border-radius: 12px; margin: 0 auto 8px; border: 2px solid #3a3a66; }
         #bossCard td.bc-sub { font-size: 16px; font-weight: bold; color: #c8b6ff; padding-top: 12px; }
+        /* Compare: Troops & Heroes | Bosses */
+        .cmp-mode { display: flex; justify-content: center; gap: 6px; padding: 8px 0 10px; }
+        .cmp-mode-btn { flex: 0 1 170px; padding: 7px 12px; border-radius: 999px; border: 1px solid #4a4a7a; background: #1c1c38; color: #dcdcf2;
+            font-family: inherit; font-size: 14px; font-weight: bold; cursor: pointer; }
+        .cmp-mode-btn.active { background: linear-gradient(135deg, #4169e1, #8a4dff); border-color: transparent; color: #fff; }
+        #unitPickers[hidden], #bossPickers[hidden] { display: none !important; }
+        #comparePage .bcc-side { flex: 1; padding: 0 60px; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+        .bcc-select { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid gray; background: #2a2a4a; color: #fff; font-family: inherit; font-size: 16px; font-weight: bold; }
+        .bcc-slider-row { margin-bottom: 4px; flex-wrap: wrap; gap: 6px; }
+        .bcc-slider-row input[type="range"] { flex: 1 1 110px; min-width: 0; }
+        .bcc-slider-row .bc-num-input { width: 64px; }
+        #compareCard tr.bcc-ab td { text-align: center !important; font-weight: bold; color: #ffd75e; padding-top: 16px; }
+        #compareCard .bc-skill-img { display: block; width: 72px; height: 72px; object-fit: cover; border-radius: 12px; margin: 0 auto 6px; border: 2px solid #3a3a66; }
+        #compareCard .bcc-pic { display: flex; justify-content: center; }
+        #compareCard .bcc-pic img { border-radius: 10px; }
+        @media (max-width: 700px) {
+            #comparePage .bcc-side { flex: 1 1 calc(50% - 6px); max-width: calc(50% - 6px); padding: 0; box-sizing: border-box; }
+            /* the units' slider + "Level 10" in half a small phone (it ran 10px off a 320px one) */
+            #unitPickers .slider-row { gap: 6px; }
+            #unitPickers .slider-row input[type="range"] { flex: 1 1 60px; min-width: 0; width: auto; }
+            #unitPickers .slider-row span { flex: none; white-space: nowrap; }
+            #compareCard .bc-skill-img { width: 56px; height: 56px; }
+        }
     </style>
 </head>
 
 <body class="kih-glow glow-troops kih-stars">
     <div id="pageScroll">
-        <h1>Troops & Heroes</h1>
+        <h1>Troops, Heroes &amp; Bosses</h1>
 <div id="loadingMsg" style="text-align:center; padding:20px; font-size:16px;"></div>
 <div class="tabs">
     <button class="tab-btn active" onclick="switchTab('troops')">Troops & Heroes</button>
     <button class="tab-btn" onclick="switchTab('compare')">Compare</button>
-    <button class="tab-btn" onclick="switchTab('bosses')">🐉 Bosses</button>
+    <button class="tab-btn" onclick="switchTab('bosses')">Bosses</button>
 </div>
 
 <div id="troopsPage" class="page active">
@@ -149,7 +172,12 @@
 
         <div id="comparePage" class="page">
     <div class="sticky-controls">
-        <div class="container">
+        <!-- What to compare: units (any two troops/heroes) or two bosses -->
+        <div class="cmp-mode" role="group" aria-label="What to compare">
+            <button type="button" class="cmp-mode-btn active" data-cmp-mode="units" aria-pressed="true" onclick="setCompareMode('units')">Troops &amp; Heroes</button>
+            <button type="button" class="cmp-mode-btn" data-cmp-mode="bosses" aria-pressed="false" onclick="setCompareMode('bosses')">Bosses</button>
+        </div>
+        <div class="container" id="unitPickers">
             <div id="left">
                 <div class="search-row">
                     <input type="text" id="leftSearch" placeholder="Search Troop/Hero" />
@@ -171,6 +199,23 @@
                     <span id="rightLevel">Level 1</span>
                 </div>
                 <div id="rightResults"></div>
+            </div>
+        </div>
+        <!-- two bosses, each at its own level (boss-calc.js draws the table into #compareCard) -->
+        <div class="container" id="bossPickers" hidden>
+            <div class="bcc-side">
+                <select id="bccSelL" class="bcc-select" aria-label="Left boss"></select>
+                <div class="slider-row bcc-slider-row">
+                    <input type="range" min="1" max="300" value="1" id="bccSliderL" aria-label="Left boss level" />
+                    <span class="bc-level-label">Lvl <input type="number" id="bccLevelL" class="bc-num-input" min="1" value="1" inputmode="numeric" aria-label="Left boss level (type any level)" /></span>
+                </div>
+            </div>
+            <div class="bcc-side">
+                <select id="bccSelR" class="bcc-select" aria-label="Right boss"></select>
+                <div class="slider-row bcc-slider-row">
+                    <input type="range" min="1" max="300" value="1" id="bccSliderR" aria-label="Right boss level" />
+                    <span class="bc-level-label">Lvl <input type="number" id="bccLevelR" class="bc-num-input" min="1" value="1" inputmode="numeric" aria-label="Right boss level (type any level)" /></span>
+                </div>
             </div>
         </div>
     </div>
@@ -1487,10 +1532,43 @@ let troopsScrollY = 0;
 let compareScrollY = 0;
 let bossesScrollY = 0;
 
-// ?tab=bosses (e.g. from the 🧭 guide on Home) opens the boss calculator.
+// ?tab=bosses (e.g. from the 🧭 guide on Home) opens the boss calculator;
+// &boss=<id> (a boss's picture in the guide) opens that boss.
 window.addEventListener("DOMContentLoaded", () => {
-    if (new URLSearchParams(location.search).get("tab") === "bosses") switchTab("bosses");
+    const q = new URLSearchParams(location.search);
+    if (q.get("tab") === "bosses") {
+        // opened on Bosses: that's this page's first step (Back leaves it), not a step after the troops
+        history.replaceState({ thView: "bosses", key: null }, "");
+        if (q.get("boss")) openBoss(q.get("boss")); else switchTab("bosses");
+    }
 });
+// Compare: two units (troops and heroes, mixed or not) or two bosses.
+let compareMode = "units";
+function setCompareMode(mode) {
+    compareMode = mode === "bosses" ? "bosses" : "units";
+    document.querySelectorAll(".cmp-mode-btn").forEach(b => {
+        const on = b.dataset.cmpMode === compareMode;
+        b.classList.toggle("active", on);
+        b.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+    document.getElementById("unitPickers").hidden = compareMode !== "units";
+    document.getElementById("bossPickers").hidden = compareMode !== "bosses";
+    if (compareMode === "bosses") { if (window.BossCalc) window.BossCalc.mountCompare({ loadJSON }); }
+    else updateCards();
+    if (typeof updateStickyControlsHeight === "function") updateStickyControlsHeight();
+}
+// The Bosses tab on one boss's page — the first time, once its data has loaded.
+// Like tapping it in the gallery: Back goes to the gallery.
+function openBoss(id) {
+    if (window.BossCalc && window.BossCalc.current && window.BossCalc.current()) window.BossCalc.show(null);
+    switchTab("bosses");
+    if (!window.BossCalc) return;
+    Promise.resolve(window.BossCalc.mount({ loadJSON, record: recordTroopsView })).then(() => {
+        window.BossCalc.show(id);
+        window.scrollTo(0, 0);
+        recordTroopsView();
+    });
+}
 function switchTab(tab) {
 
     // remember where we were on the tab we're LEAVING
@@ -1521,6 +1599,7 @@ function switchTab(tab) {
         document.getElementById("comparePage").classList.add("active");
         document.querySelectorAll(".tab-btn")[1].classList.add("active");
         window.scrollTo(0, compareScrollY);
+        if (compareMode === "bosses" && window.BossCalc) window.BossCalc.mountCompare({ loadJSON });
     }
     moveSharedAdBlock(tab);
     recordTroopsView();
@@ -2640,24 +2719,14 @@ let rightDisplay = rightVal === "—" ? "—" : formatStatValue(key, rightVal, "
             }
 
             function updateCards() {
-                // Daily quest: compare two units of the same kind.
-                if (window.AppState && selectleft && selectright && leftType === rightType) {
+                // Daily quest: compare two units (a troop with a hero counts too).
+                if (window.AppState && selectleft && selectright) {
                     AppState.reportQuestProgress("compareUnits", selectleft.key + "_" + selectright.key);
                 }
                 document.querySelectorAll('[id^="desc-"]').forEach(el => {
                     if (el.style.display !== "none") persistedOpenDescs.add(el.id);
                 });
                 let compareCard = document.getElementById("compareCard");
-
-                // check if both are selected but are different types (one troop one hero)
-                if (selectleft && selectright && leftType !== rightType) {
-                    compareCard.innerHTML = `
-            <div class="error-msg">
-              ⚠️ Cannot compare a Troop with a Hero! Please select two Troops or two Heroes.
-            </div>
-          `;
-                    return;
-                }
 
                 if (selectleft && selectright) {
                     // both sides selected — full side-by-side compare in compareCard
@@ -2703,11 +2772,14 @@ let rightDisplay = rightVal === "—" ? "—" : formatStatValue(key, rightVal, "
 
                     // FIX: keys that are metadata, not real stats — skip them in the table
 
-                    // stats rows — iterate left side keys, match against right
-                    for (let key in leftData) {
+                    // stats rows — every stat either side has (a troop and a hero
+                    // don't share them all: the side without one shows "—")
+                    let statKeys = Object.keys(leftData || {});
+                    Object.keys(rightData || {}).forEach(k => { if (!statKeys.includes(k)) statKeys.push(k); });
+                    for (let key of statKeys) {
                         if (ignoreKeys.includes(key)) continue;
-                        let leftVal = leftData[key];
-                        let rightVal = rightData[key] !== undefined ? rightData[key] : "—";
+                        let leftVal = leftData && leftData[key] !== undefined ? leftData[key] : "—";
+                        let rightVal = rightData && rightData[key] !== undefined ? rightData[key] : "—";
                         let colors;
                         if (key === "upgradePrice") {
                             if (leftData.upgradeCurrency === rightData.upgradeCurrency) {
@@ -2718,7 +2790,7 @@ let rightDisplay = rightVal === "—" ? "—" : formatStatValue(key, rightVal, "
                         } else {
                             colors = getColor(key, leftVal, rightVal);
                         }
-                        let leftDisplay = formatStatValue(key, leftVal, "left");
+                        let leftDisplay = leftVal === "—" ? leftVal : formatStatValue(key, leftVal, "left");
                         let rightDisplay = rightVal === "—" ? rightVal : formatStatValue(key, rightVal, "right");
                         let desc = statDescriptions[key];
                         html += `

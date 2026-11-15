@@ -250,6 +250,10 @@ async function signOutUser() {
     async function setProfileLike(targetUid, on) {
         return callProgressApi(on ? "like" : "unlike", { targetUid });
     }
+    // 🪙 → ✨ (one way)
+    async function convertTokens(tokens) {
+        return callProgressApi("convertTokens", { tokens });
+    }
     // count 1 or 10; free: spend a free draw (from a Gold achievement tier).
     async function openItemChest(count = 1, free = false) {
         return callProgressApi("openChest", { count, free });
@@ -276,6 +280,55 @@ async function signOutUser() {
     // type "border" | "name" | "bubble"; id null takes it off.
     async function equipStyle(type, id) {
         return callProgressApi("equipStyle", { type, id });
+    }
+    async function equipLook(look) {
+        const r = await callProgressApi("equipLook", { look });
+        cardCache.delete(currentUser && currentUser.uid);
+        return r;
+    }
+    async function buyLookSlot() {
+        return callProgressApi("buyLookSlot", {});
+    }
+    // ✏️ a look's name ("" puts back "Look N"); others see it on your profile
+    async function renameLook(look, name) {
+        const r = await callProgressApi("renameLook", { look, name });
+        cardCache.delete(currentUser && currentUser.uid);
+        return r;
+    }
+    // 💗 hearts: send a friend one (once a day each); spin the Heart Shop wheel; buy a Heart Shop thing
+    async function sendHeart(toUid) {
+        const r = await callProgressApi("sendHeart", { toUid });
+        cardCache.delete(toUid);
+        return r;
+    }
+    // collect the hearts friends sent you: one friend's (fromUid), or all
+    async function collectHearts(fromUid) {
+        return callProgressApi("collectHearts", fromUid ? { fromUid } : {});
+    }
+    // { hearts, heartsToday: [uids], heartsPerDay, heartsLeft, waiting: [{ from, fromName, at }], friend (with uid) }
+    async function getHeartStatus(uid) {
+        return callProgressApi("heartStatus", uid ? { uid } : {});
+    }
+    async function heartSpin() {
+        return callProgressApi("heartSpin", {});
+    }
+    async function buyHeartItem(id) {
+        return callProgressApi("buyHeartItem", { id });
+    }
+    // 🛒 one chest thing outright (P.buyPrice tokens)
+    // 👘 a whole outfit set (P.SETS), for ✨
+    async function buySet(id) {
+        return callProgressApi("buySet", { id });
+    }
+    async function buyItem(id, deal) {
+        return callProgressApi("buyItem", { id, ...(deal ? { deal: true } : {}) });
+    }
+    // 🧍 your character: its body and what it wears
+    // look: which of your looks (default: the one you wear); equip: wear it too
+    async function saveOutfit(outfit, look, equip) {
+        const r = await callProgressApi("saveOutfit", { outfit, ...(look != null ? { look } : {}), ...(equip ? { equip: true } : {}) });
+        cardCache.delete(currentUser && currentUser.uid);
+        return r;
     }
     // Several players' cards at once ({ uid: card }), each read at most
     // once a minute — for borders and name effects in lists.
@@ -452,13 +505,14 @@ async function signOutUser() {
                 const c = d.data();
                 const status = c.status === "ready" ? "ready" : "claimed";
                 if (c.dayKey === dayKey) today[c.questId] = status;
-                if (c.questId === "login") logins[c.dayKey] = { status, reward: c.reward || 1, chest: !!c.chest };
+                // (a ✨ day's login can pay no 🪙: its reward is 0)
+                if (c.questId === "login") logins[c.dayKey] = { status, reward: typeof c.reward === "number" ? c.reward : 1, chest: !!c.chest, stardust: c.stardust || 0, itemChest: c.itemChest || null };
             });
             emit();
         }, onFail);
         const unsubReady = onSnapshot(query(claims, where("status", "==", "ready")), (snap) => {
             ready = [];
-            snap.forEach(d => ready.push({ id: d.id, questId: d.data().questId, dayKey: d.data().dayKey, reward: d.data().reward || 1, chest: !!d.data().chest }));
+            snap.forEach(d => ready.push({ id: d.id, questId: d.data().questId, dayKey: d.data().dayKey, reward: typeof d.data().reward === "number" ? d.data().reward : 1, chest: !!d.data().chest, stardust: d.data().stardust || 0, itemChest: d.data().itemChest || null }));
             ready.sort((a, b) => a.dayKey.localeCompare(b.dayKey));
             emit();
         }, onFail);
@@ -5833,7 +5887,7 @@ async function maybeRefreshAd(containerId) {
         reportQuestProgress, startDailyQuestTracking, stakeTokensOnSecretGiveaway, setSecretGiveawayStake, refreshSecretGiveawayMaxStake, getSecretOdds,
         // achievements, badges, profile likes, items
         trackProgress, getProgressStatus, claimAchievement, setShownBadges, setProfileLike, openItemChest, trickOrTreat, claimEventGift, buyEventItem, sendSpookyGift, openSpookyGift,
-        getPlayerCard, getPlayerCards, getPublicAvatars, listenToMyCard, haveILikedProfile, getMyPerks, getMyItemIds, getMyEventState, equipStyle,
+        getPlayerCard, getPlayerCards, getPublicAvatars, listenToMyCard, haveILikedProfile, getMyPerks, getMyItemIds, getMyEventState, equipStyle, saveOutfit, equipLook, buyLookSlot, buyItem, buySet, renameLook, convertTokens, sendHeart, collectHearts, getHeartStatus, heartSpin, buyHeartItem,
         // profile
         getProfile, setProfile, isVipActive, isNoAdsActive, isBannedNow, shouldShowAds, listenToMyProfile,
         // unique names

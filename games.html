@@ -328,6 +328,8 @@
         .lb-row.me { background: rgba(65, 105, 225, 0.25); border: 1px solid #4169e1; }
         .lb-rank { width: 30px; text-align: center; font-weight: 900; flex-shrink: 0; }
         .lb-av { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; display: block; flex-shrink: 0; }
+        .lb-char { overflow: hidden; background: #3a2f6e; border-radius: 6px !important; height: auto !important; aspect-ratio: 5 / 6; }
+        .lb-char svg { display: block; width: 100%; height: 100%; }
         .pod-av { display: flex; justify-content: center; margin-top: 4px; }
         .pod-av .lb-av { width: 44px; height: 44px; }
         .lb-last .lb-av { width: 18px; height: 18px; display: inline-block; vertical-align: middle; }
@@ -488,6 +490,7 @@
     </div>
 
     <script src="progress-core.js"></script>
+    <script src="character-core.js"></script>
     <script src="games-core.js"></script>
     <script type="module" src="appState.js"></script>
     <script>
@@ -2314,9 +2317,13 @@
                 return;
             }
             const medals = ["🥇", "🥈", "🥉"];
-            // Their picture in their border (so two players with the same name can be told apart).
+            // Their 🧍 character (head & shoulders) — or, without one, their picture — in
+            // their border (so two players with the same name can be told apart).
             const lbAvatar = (r) => {
-                const img = `<img class="lb-av" src="${esc(r.avatar || "images/KIH.jpg")}" alt="" loading="lazy" onerror="this.onerror=null; this.src='images/KIH.jpg'">`;
+                // their 🧍 character, full body (the starter look until they dress up)
+                const img = window.CharacterCore
+                    ? `<span class="lb-av lb-char">${CharacterCore.svg(r.outfit || CharacterCore.cleanOutfit({}, []), { size: 48 })}</span>`
+                    : `<img class="lb-av" src="${esc(r.avatar || "images/KIH.jpg")}" alt="" loading="lazy" onerror="this.onerror=null; this.src='images/KIH.jpg'">`;
                 const pic = window.ProgressCore ? ProgressCore.withBorder(img, { border: r.border }) : img;
                 const who = whoAttrs(r);
                 return who ? `<span class="lb-who"${who}>${pic}</span>` : pic;

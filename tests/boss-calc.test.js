@@ -40,10 +40,19 @@ describe("the bosses", () => {
             }
         }
     });
-    test("every ability shows numbers (Shai-Khold's passive: the game has only its text)", () => {
+    test("every ability shows numbers", () => {
         for (const b of B.BOSSES) {
             const r = B.bossAt(DATA, b.id, 1);
-            r.abilities.forEach(a => { if (!(b.id === "iceSnake" && a.kind === "passive")) assert.ok(a.rows.length, `${b.id}: ${a.name}`); });
+            r.abilities.forEach(a => assert.ok(a.rows.length, `${b.id}: ${a.name}`));
+        }
+    });
+    test("Shai-Khold: only his own two abilities — no other boss's passive (Wind Mantle is Kalidor's)", () => {
+        const r = B.bossAt(DATA, "iceSnake", 300);
+        assert.deepEqual(r.abilities.map(a => a.name), ["Frost Needles", "Summon Ice Guardians"]);
+        // nobody shows another boss's text
+        const own = { dragon: /^boss_dragon_/, gold: /^boss_dragon_gold_|^boss_dragon_/, spiderQueen: /^boss_spiderQueen_/, kraken: /^boss_kraken_/, sand: /^bossSand_/, iceSnake: /^boss_IceSnake_/ };
+        for (const b of B.BOSSES) for (const a of b.abilities) {
+            if (typeof a.desc === "string") assert.match(a.desc, own[b.id], `${b.id}: ${a.desc}`);
         }
     });
     test("text is always plain (the game's colour tags removed, however nested)", () => {
@@ -143,15 +152,32 @@ describe("tools/build-boss-data.js", () => {
     });
 });
 
-describe("on the Troops & Heroes page", () => {
+describe("on the Troops, Heroes & Bosses page", () => {
     const page = fs.readFileSync(path.join(ROOT, "troopsandheroes.html"), "utf8");
-    test("a 🐉 Bosses tab laid out like the troops: sticky bar (search, slider + a box to type), gallery, card", () => {
-        assert.match(page, /onclick="switchTab\('bosses'\)">🐉 Bosses</);
+    const index = fs.readFileSync(path.join(ROOT, "index.html"), "utf8");
+    test("a Bosses tab laid out like the troops: sticky bar (search, slider + a box to type), gallery, card", () => {
+        assert.match(page, /onclick="switchTab\('bosses'\)">Bosses</);
         assert.match(page, /<script src="boss-calc\.js"><\/script>/);
         assert.match(page, /id="bossesPage"[\s\S]*class="sticky-controls"[\s\S]*id="bossSearch"[\s\S]*class="slider-row"[\s\S]*type="range"[^>]*id="bossSlider"[\s\S]*id="bcLevel"[\s\S]*id="bossBackBtnSlot"[\s\S]*id="bossResults"[\s\S]*id="bossCard"/);
         assert.match(page, /BossCalc\.mount\(\{ loadJSON, record: recordTroopsView \}\)/);
-        assert.match(page, /get\("tab"\) === "bosses"\) switchTab\("bosses"\)/);
+        assert.match(page, /q\.get\("tab"\) === "bosses"\) \{[\s\S]{0,200}history\.replaceState\(\{ thView: "bosses", key: null \}, ""\);\s*if \(q\.get\("boss"\)\) openBoss\(q\.get\("boss"\)\); else switchTab\("bosses"\);/, "?tab=bosses (its first step), and &boss= opens one");
+        assert.match(page, /function openBoss\(id\) \{\s*if \([^\n]*\) window\.BossCalc\.show\(null\);\s*switchTab\("bosses"\);[\s\S]{0,300}BossCalc\.show\(id\)/, "Back from it: the gallery");
         assert.match(page, /thView: "bosses", key:/, "Back knows which boss");
+    });
+    test("named Troops, Heroes & Bosses; the three tabs are plain words, the same style", () => {
+        assert.match(page, /<title>Troops, Heroes &amp; Bosses — /);
+        assert.match(page, /<h1>Troops, Heroes &amp; Bosses<\/h1>/);
+        assert.match(index, /home-menu-text">Troops, Heroes & Bosses<small>/);
+        const tabs = [...page.match(/<div class="tabs">([\s\S]*?)<\/div>/)[1].matchAll(/<button class="tab-btn[^"]*" onclick="switchTab\('(\w+)'\)">([^<]*)<\/button>/g)].map(m => [m[1], m[2]]);
+        assert.deepEqual(tabs, [["troops", "Troops & Heroes"], ["compare", "Compare"], ["bosses", "Bosses"]]);
+    });
+    test("Compare: any two units (a troop with a hero too), or two bosses", () => {
+        assert.doesNotMatch(page, /Cannot compare a Troop with a Hero/);
+        assert.match(page, /data-cmp-mode="units"[^>]*>Troops &amp; Heroes<[\s\S]*data-cmp-mode="bosses"[^>]*>Bosses</);
+        assert.match(page, /id="unitPickers"[\s\S]*id="bossPickers" hidden[\s\S]*id="bccSelL"[\s\S]*id="bccSliderL"[\s\S]*id="bccLevelL"[\s\S]*id="bccSelR"[\s\S]*id="bccSliderR"[\s\S]*id="bccLevelR"/);
+        assert.match(page, /function setCompareMode\(mode\)[\s\S]{0,600}BossCalc\.mountCompare\(\{ loadJSON \}\)/);
+        assert.match(page, /Object\.keys\(rightData \|\| \{\}\)\.forEach/, "every stat either side has");
+        assert.match(index, /setCompareMode\("units"\)/, "the compare quest opens on units");
     });
     test("the boss gallery and card share the troop gallery's and card's styles", () => {
         const css = fs.readFileSync(path.join(ROOT, "style.css"), "utf8");
@@ -171,6 +197,10 @@ describe("on the Troops & Heroes page", () => {
         const kraken = B.bossAt(DATA, "kraken", 1).abilities;
         assert.deepEqual(["Tentacle Smash", "Hungry Jaws", "Gift From the Depths"].map(n => kraken.find(a => a.name === n).icon),
             ["BOSSKRAKEN_TENTACLESTRIKESAOE", "BOSSKRAKEN_TENTACLE", "BOSSKRAKEN_TENTACLETHROW"]);
+        ["BOSSICESNAKE_ICEARROWS", "BOSSICESNAKE_SUMMON"].forEach(i => assert.ok(fs.existsSync(path.join(ROOT, `images/${i}.jpg`)), i));
+        const snake = B.bossAt(DATA, "iceSnake", 1).abilities;
+        assert.deepEqual(["Frost Needles", "Summon Ice Guardians"].map(n => snake.find(a => a.name === n).icon),
+            ["BOSSICESNAKE_ICEARROWS", "BOSSICESNAKE_SUMMON"]);
     });
     test("every boss has a picture (+ a small gallery copy); Goltharax shares Balthazar's", () => {
         for (const b of B.BOSSES) {
@@ -179,5 +209,43 @@ describe("on the Troops & Heroes page", () => {
         }
         assert.equal(B.BOSSES.find(b => b.id === "gold").img, B.BOSSES.find(b => b.id === "dragon").img);
         assert.equal(new Set(B.BOSSES.map(b => b.img)).size, 5);
+    });
+});
+
+describe("the Troops, Heroes & Bosses guide (units/)", () => {
+    const page = (f) => fs.readFileSync(path.join(ROOT, "units", f), "utf8");
+    const slug = (name) => "boss-" + name.toLowerCase().normalize("NFKD").replace(/['’.]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") + ".html";
+    test("every boss has a guide page with all its abilities and the game's numbers", () => {
+        for (const b of B.BOSSES) {
+            const r = B.bossAt(DATA, b.id, 300), html = page(slug(r.name));
+            assert.match(html, new RegExp(`<h1>${r.name}</h1>`), b.id);
+            r.abilities.forEach(a => assert.ok(html.includes(`<h3>${a.name.replace(/&/g, "&amp;").replace(/'/g, "&#39;")}</h3>`), `${b.id}: ${a.name}`));
+            const first = r.abilities.find(a => a.rows.some(x => typeof x.value === "number"));
+            const v = first.rows.find(x => typeof x.value === "number").value;
+            assert.ok(html.includes(Math.round(v * 100) / 100 >= 1000 ? (Math.round(v * 100) / 100).toLocaleString("en-US") : String(Math.round(v * 100) / 100)), `${b.id}: its level-300 numbers are there`);
+            assert.ok(html.includes(`../?goto=troops&amp;boss=${b.id}`), `${b.id}: Open in the app`);
+        }
+    });
+    test("the guide's index lists the bosses (with a Bosses filter); the sitemap has their pages", () => {
+        const index = page("index.html");
+        assert.match(index, /<h1>Troops, Heroes &amp; Bosses<\/h1>/);
+        assert.match(index, /data-value="boss">Bosses<\/button>/);
+        for (const b of B.BOSSES) assert.ok(index.includes(`href="${slug(B.bossAt(DATA, b.id, 1).name)}"`), b.id);
+        const map = fs.readFileSync(path.join(ROOT, "sitemap.xml"), "utf8");
+        for (const b of B.BOSSES) assert.ok(map.includes("units/" + slug(B.bossAt(DATA, b.id, 1).name)), "sitemap: " + b.id);
+    });
+    test("the app: ?goto=troops&boss=<id> opens that boss; Home's guide link is a real button", () => {
+        const home = fs.readFileSync(path.join(ROOT, "index.html"), "utf8");
+        assert.match(home, /"troopsandheroes\.html\?tab=bosses&boss=" \+ encodeURIComponent\(linkBoss\)/);
+        assert.match(home, /<a href="units\/" class="home-guide-btn">📖 Troops, Heroes &amp; Bosses guide/);
+        assert.match(home, /\.home-guide-links \.home-guide-btn \{ display: inline-flex;[^}]*padding: 9px 16px;[^}]*background: linear-gradient/);
+        // About the Creator + About & contact: one page (about.html), one button the same kind as the guide's
+        assert.match(home, /<a href="about\.html" class="home-guide-btn" id="aboutHomeBtn">👋 About &amp; contact/);
+        assert.doesNotMatch(home, /id="page-about"|>About the Creator</, "no second, in-app About page");
+        assert.match(home, /if \(page === "about"\) \{ location\.href = "about\.html"; return; \}/, "anything opening About (the 🧭 guide) gets about.html");
+        assert.match(home, /if \(gotoPage === "bug"\) \{[\s\S]{0,300}AppState\.waitForAuthReady\(\)\.then\(\(\) => window\.openBugReport\(\)\)/, "?goto=bug opens the bug report, once sign-in is known");
+        const about = fs.readFileSync(path.join(ROOT, "about.html"), "utf8");
+        for (const s of ['href="./?goto=bug">🐞 Report a bug', 'href="mailto:keazyea@gmail.com"', 'discord.gg', 'youtube.com/@keazyea', 'Join my clan', 'Troops, heroes &amp; bosses', 'href="./?goto=character"', 'href="./?goto=achievements"'])
+            assert.ok(about.includes(s), "about.html: " + s);
     });
 });

@@ -4,8 +4,11 @@
    where it comes from, and whether it's yours. Used by the Store and the
    Profile pages; needs progress-core.js (and fx-styles.css for previews).
 
-   A page tells it what you own:  ThingDetails.context = () => ({ items, perks })
+   A page tells it what you own:  ThingDetails.context = () => ({ items, perks, outfit })
+     (outfit: your character — a border's preview shows it inside)
+   and what "🧍 Wear it" does:     ThingDetails.onWear = (id) => …
    Or opens one itself:            showThing(id) / closeThing()
+   With character-core.js on the page, something you wear shows as its picture.
    A ×10 card (.cr-card) that hasn't turned over yet stays a surprise. */
 (function () {
     const PC = window.ProgressCore;
@@ -23,6 +26,10 @@
             border: 2px solid var(--rc); background: radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--rc) 30%, transparent), #17172e 70%); box-shadow: 0 0 30px color-mix(in srgb, var(--rc) 40%, transparent); animation: tdPop 0.3s cubic-bezier(.2, 1.5, .4, 1); }
         .td-x { position: absolute; top: 8px; right: 8px; width: 34px; height: 34px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.25); background: rgba(0, 0, 0, 0.35); color: #fff; font-size: 1rem; cursor: pointer; }
         .td-icon { font-size: 3rem; line-height: 1.1; }
+        .td-icon svg { display: block; margin: 0 auto; border-radius: 14px; background: rgba(255, 255, 255, 0.06); }
+        .td-prev .td-char { display: block; width: 60px; height: 72px; }
+        .td-wear { margin-top: 12px; padding: 9px 18px; border-radius: 999px; border: none; font: inherit; font-weight: 900; font-size: 0.9rem; cursor: pointer;
+            background: linear-gradient(90deg, #ffb35e, #c99bff); color: #1d1030; }
         .td-kind { margin-top: 6px; font-size: 0.74rem; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; color: #c8c0e8; }
         .td-name { margin-top: 4px; font-size: 1.3rem; font-weight: 900; }
         .td-what { margin-top: 12px; padding: 10px 12px; border-radius: 12px; background: rgba(0, 0, 0, 0.3); text-align: left; font-size: 0.86rem; color: #e8e0ff; line-height: 1.45; }
@@ -45,6 +52,10 @@
         if (ev && x.type === "avatar") return `${ev.icon} ${esc(ev.label)} — limited: everyone who logs in on the day gets one of these free, or ${x.price} 🪙 each in the Store`;
         if (ev) return `${ev.icon} ${esc(ev.name)} (${esc(ev.label)}) — limited, a treat at the door`;
         if (x.vip) return "👑 Comes with Super Supporter";
+        if (x.heart) return `💗 Heart Shop (in the Store) — ${x.heart} 💗`;
+        if (x.heartSpin) return "🎡 Heart Spin only — a prize in the Heart Shop's spin";
+        const set = PC.setOf && PC.setOf(x.id);
+        if (set) return `👘 Only in the ${esc(set.name)} (Store → Outfit Sets) — all ${set.pieces.length} pieces for ${set.price.toLocaleString("en-US")} ✨`;
         if (x.chest) {
             if (x.season && !PC.inSeason(x, sgtDay())) return "🧰 Adventurer's Chest — seasonal, not in it right now";
             const rate = PC.dropRates(sgtDay())[x.id];
@@ -56,24 +67,30 @@
 
     function html(id, ctx) {
         const x = PC.BY_ID[id];
+        const CC = window.CharacterCore, wearable = !!(CC && CC.wearOf(id));
         const rr = PC.RARITIES[x.rarity];
         const st = PC.STYLE_BY_ID[id];
         let kind, what, prev = "";
         if (!st) {
             kind = "Perk item";
-            what = `<div>What it does — <b>always on</b> once it's yours, and it adds up with your other items:</div><ul>${x.perks.map(p => `<li>${esc(PC.perkText(p))}</li>`).join("")}</ul>`;
+            what = `<div>What it does — <b>always on</b> once it's yours, and it adds up with your other items:</div><ul>${x.perks.map(p => `<li>${esc(PC.perkText(p))}</li>`).join("")}</ul>`
+                + (wearable ? `<div>And it's something to wear — put it on in 🧍 Character → 👕 Wardrobe (the bonus counts either way).</div>` : "");
         } else {
             kind = PC.STYLE_TYPES[st.type];
-            if (st.type === "avatar") {
+            if (st.type === "avatar" && wearable) {
+                what = `<div>Something to wear — <b>looks only</b>. Put it on in 🧍 Character → 👕 Wardrobe; everyone sees your character next to your name.</div>`;
+            } else if (st.type === "avatar") {
                 what = `<div>A profile picture — <b>looks only</b>. Pick it in Profile → ✏️ Edit Profile → Choose Avatar; it shows on your profile, posts and comments.</div>`;
                 prev = `<img class="td-avatar" src="${esc(st.img)}" alt="" onerror="this.src='images/KIH.jpg'">`;
             } else if (st.type === "emotes") {
                 what = `<div>Adds these to your 😊 emoji panel, and the first four as <b>reactions</b> on comments and chat.</div>`;
                 prev = `<div class="td-emojis">${PC.EMOTE_PACKS[st.pack].join(" ")}</div>`;
             } else {
-                const where = st.type === "border" ? " around your picture" : st.type === "name" ? " on your name" : st.type === "bubble" ? " on your chat messages" : " behind your profile";
-                what = `<div>A look — <b>looks only</b>, no bonus. Pick it in Profile → 🎨 Style and everyone sees it${where}.</div>`;
-                if (st.type === "border") prev = PC.withBorder(`<img src="images/KIH.jpg" alt="">`, { border: id });
+                const where = st.type === "border" ? " around your character" : st.type === "name" ? " on your name" : st.type === "bubble" ? " on your chat messages" : " behind your profile";
+                what = `<div>A look — <b>looks only</b>, no bonus. Pick it in 🧍 Character → 🎨 Style and everyone sees it${where}.</div>`
+                    + (wearable ? `<div>It's also a background for your character — 🧍 Character → 👕 Wardrobe.</div>` : "");
+                // a border goes round your character (when the page knows it)
+                if (st.type === "border") prev = PC.withBorder(CC && ctx && ctx.outfit ? `<span class="kc-card td-char">${CC.svg(ctx.outfit, { size: 60 })}</span>` : `<img src="images/KIH.jpg" alt="">`, { border: id });
                 else if (st.type === "name") prev = `<span class="td-pname ${PC.styleClass({ name: id }, "name")}">Your Name</span>`;
                 else if (st.type === "bubble") prev = `<div class="td-bubble dm-msg ${PC.styleClass({ bubble: id }, "bubble")}">gg wp! 🎉</div>`;
                 else prev = `<div class="td-bg ${PC.styleClass({ background: id }, "background")}">Your profile</div>`;
@@ -81,9 +98,11 @@
         }
         const items = (ctx && ctx.items) || [];
         const owned = items.includes(id) || (x.vip && ctx && ctx.vip);
-        // a profile picture's icon is its picture
-        const icon = st && st.type === "avatar" ? "🖼️" : x.icon;
-        const dup = x.chest ? `<br>Already yours when you draw it? You get <b style="color:#ffd75e">${PC.refundFor(id, (ctx && ctx.perks) || {})} 🪙</b> back instead.` : "";
+        // something you wear: its picture; an old profile picture: 🖼️
+        const icon = wearable ? CC.itemPic(id, 76) : st && st.type === "avatar" ? "🖼️" : x.icon;
+        // yours: 🧍 Wear it (or 🎨 Use it, for a border, name effect, chat bubble) — when the page can
+        const canWear = owned && typeof api.onWear === "function" && (wearable || (st && !["emotes", "avatar"].includes(st.type)));
+        const dup = x.chest ? `<br>Already yours when you draw it? You get <b style="color:#9cdcff">${PC.refundFor(id, (ctx && ctx.perks) || {})} ✨</b> back instead.` : "";
         return `<button type="button" class="td-x" onclick="closeThing()" aria-label="Close">✕</button>
             <div class="td-icon">${icon}</div>
             <div class="td-kind">${esc(rr.label)} · ${esc(kind)}${x.event ? " · limited" : ""}</div>
@@ -91,7 +110,8 @@
             ${prev ? `<div class="td-prev">${prev}</div>` : ""}
             <div class="td-what">${what}</div>
             <div class="td-meta">${source(x)}${dup}</div>
-            ${ctx ? `<div class="td-own${owned ? "" : " no"}">${owned ? "✓ Yours" : "Not yours yet"}</div>` : ""}`;
+            ${ctx ? `<div class="td-own${owned ? "" : " no"}">${owned ? "✓ Yours" : "Not yours yet"}</div>` : ""}
+            ${canWear ? `<div><button type="button" class="td-wear" onclick="ThingDetails.wear('${esc(id)}')">${wearable ? "🧍 Wear it" : "🎨 Use it"}</button></div>` : ""}`;
     }
 
     let overlay = null;
@@ -141,7 +161,8 @@
         close();
     }, true);
 
-    const api = { show, close, html, context: null };
+    function wear(id) { close(); if (typeof api.onWear === "function") api.onWear(id); }
+    const api = { show, close, html, wear, context: null, onWear: null };
     window.ThingDetails = api;
     window.showThing = show;
     window.closeThing = close;

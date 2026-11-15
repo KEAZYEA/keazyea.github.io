@@ -93,7 +93,9 @@ async function paypalJson(path, { method = "GET", body, headers = {} } = {}) {
 const TOKEN_PACKS = {
   small: { tokens: 70, cents: 100 },
   medium: { tokens: 150, cents: 200 },
-  large: { tokens: 240, cents: 300 }
+  large: { tokens: 240, cents: 300 },
+  big: { tokens: 450, cents: 500 },
+  mega: { tokens: 1000, cents: 1000 }
 };
 const PACK_CURRENCY = "USD";
 

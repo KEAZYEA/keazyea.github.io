@@ -74,6 +74,11 @@ body {
         }
 
         #topbarAvatarWrap { display: inline-flex; border-radius: 50%; }
+        #topbarAvatarWrap:has(.topbar-char) { border-radius: 9px; }
+        /* your character fills the top-left button: no dark square round it */
+        .topbar-char { width: 38px; height: 46px; border-radius: 9px; box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.22), 0 4px 10px rgba(0, 0, 0, 0.35); }
+        .home-topbar .icon-btn[title="Profile"] { padding: 2px; }
+        .home-topbar .icon-btn[title="Profile"]:hover, .home-topbar .icon-btn[title="Profile"]:active { background: none; }
 
         .topbar-avatar-icon {
             width: 28px;
@@ -620,13 +625,26 @@ body {
             margin-top: 24px;
         }
 
-        /* ---- Profile: your card, badges, achievements, items ---- */
-        .pf-hero { display: flex; align-items: center; gap: 14px; margin: 0 0 14px; padding: 14px; border-radius: 16px;
-            background: linear-gradient(135deg, rgba(108, 99, 255, 0.18), rgba(255, 107, 214, 0.08)); border: 1px solid var(--kih-border); }
-        .pf-hero-avatar { width: 68px; height: 68px; flex-shrink: 0; border-radius: 50%; object-fit: cover; background: var(--kih-border); border: 2px solid var(--kih-accent); }
-        .pf-hero-main { min-width: 0; flex: 1; }
-        .pf-hero-name { font-size: 1.2rem; font-weight: 900; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .pf-hero-stats { margin-top: 6px; color: var(--kih-text-dim); font-size: 0.82rem; font-weight: 700; }
+        /* ---- Profile: your card (as others see it), badges, achievements, items ---- */
+        .pf-hero { position: relative; display: flex; flex-direction: column; align-items: center; gap: 12px; margin: 0 0 14px; padding: 30px 16px 18px; border-radius: 22px; text-align: center; overflow: hidden;
+            background: radial-gradient(circle at 50% 0%, rgba(108, 99, 255, 0.38), transparent 62%), linear-gradient(165deg, rgba(108, 99, 255, 0.16), rgba(255, 107, 214, 0.08)); border: 1px solid var(--kih-border); }
+        .pf-hero-tag { position: absolute; top: 10px; left: 14px; font-size: 0.64rem; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; color: var(--kih-text-dim); }
+        .pf-hero-avatar { width: 96px; height: 96px; flex-shrink: 0; border-radius: 50%; object-fit: cover; background: var(--kih-border); border: 2px solid var(--kih-accent); }
+        .pf-hero-main { width: 100%; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 9px; }
+        /* (its name, 💗/🎒 pills, bio and game stats: profile-card.js — the same in the popups) */
+        /* ✏️ Edit details, in two cards */
+        .pf-form-card { margin: 0 0 12px; padding: 4px 14px 16px; border-radius: 18px; background: var(--kih-panel); border: 1px solid var(--kih-border); }
+        .pf-form-card h3 { margin: 14px 0 2px; font-size: 0.98rem; font-weight: 900; }
+        .pf-form-card .field-label { margin: 12px 0 6px; font-size: 0.82rem; font-weight: 700; }
+        .pf-form-card .profile-name-input { border-radius: 12px; padding: 11px 12px; font-family: inherit; transition: border-color 0.15s, box-shadow 0.15s; }
+        .pf-form-card .profile-name-input:focus { outline: none; border-color: var(--kih-accent); box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.25); }
+        .pf-form-card textarea.profile-name-input { line-height: 1.45; resize: vertical; min-height: 84px; }
+        .pf-bio-count { margin-top: 4px; text-align: right; font-size: 0.72rem; font-weight: 700; color: var(--kih-text-dim); }
+        .pf-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 10px; }
+        .pf-form-grid > div { min-width: 0; }
+        .pf-form-grid .pf-wide { grid-column: 1 / -1; }
+        .pf-save { margin-top: 4px; font-size: 1.1rem; padding: 15px 24px; border-radius: 16px; }
+        @media (max-width: 340px) { .pf-form-grid { grid-template-columns: 1fr; } }
         .pf-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
         .pf-badges.center { justify-content: center; margin: 0 0 12px; }
         .pf-badges:empty { display: none; }
@@ -687,6 +705,19 @@ body {
         .ach-actions:empty { display: none; }
         .ach-claim { padding: 8px 12px; border: none; border-radius: 10px; font: inherit; font-size: 0.82rem; font-weight: 900; color: #1a1a2e; cursor: pointer;
             background: linear-gradient(90deg, #ffd75e, #ff9f5a); white-space: nowrap; }
+        /* a page's header: its icon (in colour) and a line about it */
+        .pg-hero { display: flex; align-items: center; gap: 14px; margin: 0 0 14px; padding: 14px 16px; border-radius: 18px; border: 1px solid var(--kih-border); text-align: left; }
+        .pg-hero-ach { background: linear-gradient(135deg, rgba(255, 200, 61, 0.22), rgba(255, 107, 214, 0.14) 60%, rgba(108, 99, 255, 0.12)); border-color: rgba(255, 200, 61, 0.45); }
+        .pg-hero-char { background: linear-gradient(135deg, rgba(255, 146, 43, 0.22), rgba(138, 77, 255, 0.16) 60%, rgba(65, 105, 225, 0.12)); border-color: rgba(255, 146, 43, 0.45); }
+        .pg-hero-ico { flex-shrink: 0; display: grid; place-items: center; width: 54px; height: 54px; border-radius: 16px; font-size: 1.9rem;
+            background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0.06)); box-shadow: 0 0 18px rgba(255, 200, 61, 0.45), inset 0 0 0 1px rgba(255, 255, 255, 0.25); }
+        .pg-hero-char .pg-hero-ico { box-shadow: 0 0 18px rgba(255, 146, 43, 0.45), inset 0 0 0 1px rgba(255, 255, 255, 0.25); }
+        .page-panel .pg-hero h1 { margin: 0; font-size: 1.55rem; line-height: 1.15; }
+        .pg-hero-ach h1 { background: linear-gradient(90deg, #ffd75e, #ff8fd8); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+        .pg-hero-char h1 { background: linear-gradient(90deg, #ffb35e, #c99bff); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+        .pg-hero small { display: block; margin-top: 3px; color: var(--kih-text-dim); font-weight: 700; font-size: 0.8rem; }
+        /* badges are often inside buttons (which default to black text): always the page's text colour */
+        .pf-badge, .ach-pin { color: var(--kih-text); }
         .ach-pin { width: 34px; height: 34px; border-radius: 10px; border: 1px solid var(--kih-border); background: transparent; font-size: 1rem; cursor: pointer; filter: grayscale(1); opacity: 0.55; }
         .ach-pin.on { filter: none; opacity: 1; border-color: #ff6bd6; background: rgba(255, 107, 214, 0.15); }
         .it-perks { padding: 14px; margin-bottom: 14px; border-radius: 14px; background: linear-gradient(135deg, rgba(95, 211, 138, 0.14), rgba(90, 168, 255, 0.1)); border: 1px solid var(--kih-border); }
@@ -711,6 +742,124 @@ body {
         .ach-rewards { display: flex; flex-wrap: wrap; gap: 4px 10px; margin: -3px 0 7px; font-size: 0.72rem; color: var(--kih-text-dim); }
         .ach-rewards .got { color: #7ddc92; }
         .ach-rewards .got::before { content: "✓ "; }
+        /* ---- 🧍 your character ---- */
+        .ch-stage { display: flex; flex-direction: column; align-items: center; padding: 14px 0 6px; border-radius: 18px; border: 1px solid var(--kih-border);
+            background: radial-gradient(circle at 50% 38%, rgba(138, 77, 255, 0.28), rgba(20, 20, 40, 0.6) 70%); position: relative; overflow: hidden; }
+        .ch-stage svg { display: block; filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.35)); position: relative; }
+        .ch-slots { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; margin: 12px 0 4px; font-weight: 800; }
+        .ch-slots b { color: #ffd75e; }
+        /* trying on something you don't have yet */
+        .ch-stage.previewing { border-color: #ffd75e; box-shadow: inset 0 0 0 1px rgba(255, 215, 94, 0.4); }
+        .ch-preview-note { align-self: stretch; margin: 4px 8px 2px; display: grid; grid-template-columns: 1fr auto; gap: 0 8px; align-items: center;
+            padding: 7px 10px; border-radius: 12px; background: rgba(12, 10, 24, 0.86); border: 1px solid rgba(255, 215, 94, 0.5); text-align: left; }
+        .ch-preview-note b { font-size: 0.82rem; color: #ffd75e; }
+        .ch-preview-note small { grid-column: 1; font-size: 0.7rem; color: var(--kih-text-dim); font-weight: 700; }
+        .ch-prev-stop { grid-row: 1 / span 3; grid-column: 2; padding: 6px 10px; border-radius: 999px; border: 1px solid var(--kih-border); background: #2a2a4a; color: #fff; font: inherit; font-size: 0.75rem; font-weight: 800; cursor: pointer; }
+        .ch-pv-list { grid-column: 1; display: flex; flex-wrap: wrap; gap: 4px; margin: 4px 0 3px; }
+        .ch-pv-chip { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px 2px 3px; border-radius: 999px; border: 1px solid rgba(255, 215, 94, 0.45);
+            background: rgba(255, 215, 94, 0.1); color: var(--kih-text); font: inherit; font-size: 0.7rem; font-weight: 800; cursor: pointer; max-width: 100%; }
+        .ch-pv-chip svg { display: block; flex-shrink: 0; border-radius: 6px; }
+        .ch-pv-chip span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .ch-pv-chip i { font-style: normal; color: #ffd75e; }
+        /* what you just got in the Store, when the Wardrobe opens on it */
+        .ch-item.flash { animation: chFlash 0.9s ease 3; }
+        @keyframes chFlash { 50% { box-shadow: 0 0 0 4px rgba(255, 215, 94, 0.8); transform: scale(1.05); } }
+        @media (prefers-reduced-motion: reduce) { .ch-item.flash { animation: none; box-shadow: 0 0 0 3px rgba(255, 215, 94, 0.8); } }
+        .ch-saved { margin-left: auto; color: var(--kih-text-dim); font-size: 0.78rem; font-weight: 700; }
+        /* your looks, above the figure */
+        .ch-looks { display: flex; gap: 8px; overflow-x: auto; padding: 2px 2px 10px; margin: 0 -2px 4px; scrollbar-width: thin; }
+        .ch-look { flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 5px 6px 6px; border-radius: 12px; border: 1px solid var(--kih-border);
+            background: var(--kih-panel); color: var(--kih-text); font: inherit; cursor: pointer; }
+        .ch-look svg { display: block; border-radius: 9px; }
+        .ch-look small { font-size: 0.66rem; font-weight: 800; color: var(--kih-text-dim); white-space: nowrap; }
+        .ch-look.on { border-color: #ff6bd6; box-shadow: 0 0 0 2px rgba(255, 107, 214, 0.45); }
+        .ch-look.worn small { color: #7ddc92; }
+        .ch-look.add { justify-content: center; min-width: 58px; border-style: dashed; }
+        .ch-look.add span { font-size: 1.6rem; line-height: 44px; color: #ffd75e; }
+        .ch-look-acts { display: flex; gap: 8px; align-items: center; justify-content: center; flex-wrap: wrap; margin: 10px 0 2px; }
+        .ch-wear-look, .ch-random { padding: 9px 14px; border-radius: 999px; border: none; font: inherit; font-size: 0.85rem; font-weight: 900; cursor: pointer; }
+        .ch-wear-look { background: linear-gradient(90deg, #2ecc71, #27ae60); color: #0d2316; }
+        .ch-random { background: #34345e; color: #fff; }
+        .ch-wearing { color: #7ddc92; font-weight: 800; font-size: 0.85rem; }
+        .ch-cats { display: flex; gap: 6px; overflow-x: auto; padding: 4px 2px 10px; margin: 6px -2px 6px; scrollbar-width: thin; }
+        .ch-cat { flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 56px; padding: 7px 6px; border-radius: 12px;
+            border: 1px solid var(--kih-border); background: var(--kih-panel); color: var(--kih-text); font: inherit; cursor: pointer; }
+        .ch-cat span { font-size: 1.35rem; line-height: 1; }
+        .ch-cat small { font-size: 0.66rem; font-weight: 800; color: var(--kih-text-dim); }
+        .ch-cat.on { border-color: #ff6bd6; box-shadow: 0 0 0 2px rgba(255, 107, 214, 0.45); }
+        .ch-cat.worn small { color: #ffd75e; }
+        .ch-opts { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+        .ch-opt { padding: 3px; border-radius: 12px; border: 2px solid transparent; background: var(--kih-panel); cursor: pointer; line-height: 0; }
+        .ch-opt.on { border-color: #ff6bd6; }
+        .ch-opts.color .ch-opt { border-radius: 50%; }
+        .ch-sw { display: block; width: 30px; height: 30px; border-radius: 50%; box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.25); }
+        .ch-items { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 8px; }
+        /* 🧺 the things, in a box you scroll (sizeWardrobeBox: it fits under your character) */
+        .ch-box { overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; padding: 10px; border-radius: 16px;
+            border: 1px solid var(--kih-border); background: rgba(0, 0, 0, 0.18); scrollbar-width: thin; }
+        .ch-box:focus { outline: none; }
+        .ch-box .ach-hint:last-child { margin-bottom: 0; }
+        .ch-stage > svg { width: auto; height: min(228px, 30vh); } /* (the character only — not the pictures in the 👁 note) */
+        #pfCharBody .ch-stage { scroll-margin-top: 8px; }
+        .ch-item { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 4px 8px; border-radius: 14px; border: 1px solid var(--kih-border);
+            border-bottom: 3px solid var(--rc, var(--kih-border)); background: var(--kih-panel); color: var(--kih-text); font: inherit; cursor: pointer; min-width: 0; }
+        .ch-item-ico { font-size: 1.9rem; line-height: 1.1; }
+        /* the thing's picture, as it looks worn */
+        .ch-item-ico svg, .it-icon svg { display: block; margin: 0 auto; border-radius: 10px; background: rgba(255, 255, 255, 0.05); }
+        .ch-cat span svg { display: block; border-radius: 7px; }
+        .ch-item small { font-size: 0.68rem; font-weight: 800; color: var(--kih-text-dim); text-align: center; overflow-wrap: anywhere; }
+        .ch-item.on { border-color: #ff6bd6; box-shadow: 0 0 0 2px rgba(255, 107, 214, 0.45); }
+        .ch-item { position: relative; }
+        .ch-item.locked { cursor: default; }
+        .ch-item.locked .ch-item-ico { filter: grayscale(1); opacity: 0.45; }
+        .ch-item.locked small { opacity: 0.6; }
+        .ch-item.locked.on { border-color: #ffd75e; box-shadow: 0 0 0 2px rgba(255, 215, 94, 0.45); }
+        .ch-buy-btn { padding: 4px 10px; border-radius: 999px; border: none; background: linear-gradient(135deg, #b9e6ff, #4aa8ff); color: #08223d; /* ✨ Stardust blue */
+            font: inherit; font-size: 0.66rem; font-weight: 900; cursor: pointer; white-space: nowrap; }
+        .ch-buy-btn:disabled { opacity: 0.6; cursor: default; }
+        .ch-earn { font-size: 0.64rem; font-weight: 800; color: var(--kih-text-dim); padding: 3px 0; }
+        /* the buttons sit at the bottom, in line, however long the name */
+        .ch-item.locked .ch-prev-btn { margin-top: auto; }
+        .ch-prev-btn { margin-top: 2px; padding: 4px 8px; border-radius: 999px; border: 1px solid rgba(255, 215, 94, 0.6); background: rgba(255, 215, 94, 0.1); color: #ffd75e;
+            font: inherit; font-size: 0.66rem; font-weight: 900; cursor: pointer; white-space: nowrap; }
+        .ch-opt.named { display: flex; flex-direction: column; align-items: center; gap: 2px; line-height: 1; padding-bottom: 5px; }
+        .ch-opt-name { font-size: 0.72rem; font-weight: 800; color: var(--kih-text); }
+        .ch-full { padding: 8px 10px; border-radius: 10px; background: rgba(255, 215, 94, 0.1); color: #ffd75e; font-size: 0.82rem; font-weight: 700; margin: 0 0 10px; }
+        .pf-hero-char { display: grid; place-items: center; width: 120px; height: 144px; border-radius: 18px; overflow: hidden; flex-shrink: 0;
+            background: radial-gradient(circle at 50% 40%, #3a2f6e, #1c1c38); border: 2px solid var(--kih-accent); box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35); }
+        .pf-hero-char svg { display: block; width: 100%; height: 100%; }
+        /* Profile → Character / Achievements: two cards, side by side at any width */
+        .pf-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 0 0 20px; }
+        .pf-link { position: relative; display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 0; padding: 16px 10px 14px; border-radius: 16px; border: 1px solid var(--kih-border);
+            background: linear-gradient(160deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.01)), var(--kih-panel); color: var(--kih-text); font: inherit; text-align: center; cursor: pointer;
+            transition: transform 0.12s, border-color 0.15s; }
+        .pf-link:active { transform: scale(0.97); }
+        .pf-link > span:first-child { flex-shrink: 0; display: grid; place-items: center; width: 42px; height: 42px; border-radius: 13px; font-size: 1.35rem; background: rgba(108, 99, 255, 0.24); }
+        .pf-link:nth-child(2) > span:first-child { background: rgba(255, 196, 0, 0.18); }
+        .pf-link b { display: block; max-width: 100%; min-width: 0; font-weight: 900; font-size: 0.95rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .pf-link small { display: block; margin-top: 2px; font-weight: 700; font-size: 0.7rem; line-height: 1.3; color: var(--kih-text-dim); white-space: normal; }
+        .pf-link .pf-tab-dot { top: 8px; right: 8px; }
+        @media (max-width: 360px) { .pf-link b { font-size: 0.88rem; } }
+        .pf-edit-title { font-size: 1.1rem; margin: 4px 2px 10px; }
+        .friend-req-char { width: 30px; height: 36px; border-radius: 8px; flex-shrink: 0; }
+        /* a character as a full-body card (the top bar, popups) */
+        .kc-card { display: block; overflow: hidden; border-radius: 10px; }
+        .kc-card svg { display: block; width: 100%; height: 100%; }
+        .vp-char { display: block; width: max-content; margin: -4px auto 8px; border-radius: 16px; overflow: hidden; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35); }
+        .vp-char svg { display: block; }
+        .vp-looks-title { font-size: 0.72rem; font-weight: 800; color: var(--kih-text-dim, #9a9ab0); margin: 0 0 6px; text-align: center; }
+        .vp-looks { display: flex; justify-content: center; gap: 8px; margin: 0 0 12px; }
+        .vp-look { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 3px; border-radius: 12px; border: 2px solid transparent; background: none; color: inherit; font: inherit; cursor: pointer; }
+        .vp-look.on { border-color: #ff6bd6; }
+        .vp-looks-title small { font-weight: 700; }
+        /* a section's popup open: the top bar can't be tapped behind it */
+        body.kih-child-popup .home-topbar { pointer-events: none; opacity: 0.35; transition: opacity 0.15s; }
+        .ch-rename-row { display: flex; gap: 8px; align-items: center; justify-content: center; margin: 10px 0 2px; }
+        .ch-rename-row input { flex: 1; min-width: 0; max-width: 220px; padding: 9px 12px; border-radius: 999px; border: 1px solid var(--kih-border); background: var(--kih-panel); color: var(--kih-text); font: inherit; font-weight: 800; }
+        .ch-buy-btn.heart { background: linear-gradient(135deg, #ff8fbf, #ff4f8b); color: #2a0515; }
+        .it-hearts { border-color: rgba(255, 79, 139, 0.6) !important; }
+        .vp-look svg { display: block; border-radius: 10px; }
+        .vp-look small { font-size: 0.66rem; font-weight: 800; color: var(--kih-text-dim, #9a9ab0); }
         .st-section { margin-bottom: 16px; }
         .st-title { font-weight: 900; margin-bottom: 8px; }
         .st-title small { margin-left: 6px; color: var(--kih-text-dim); font-weight: 700; }
@@ -728,6 +877,11 @@ body {
         .st-prev { min-height: 46px; display: flex; align-items: center; justify-content: center; max-width: 100%; }
         .st-none { color: var(--kih-text-dim); font-size: 0.8rem; }
         .st-av { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; display: block; }
+        /* your character in a border's preview, and on a background's */
+        .st-char { width: 36px; height: 43px; }
+        .st-bg { position: relative; overflow: hidden; }
+        .st-bg-char { position: absolute; left: 6px; bottom: -4px; line-height: 0; }
+        .st-bg-char svg { display: block; }
         .st-name { font-weight: 900; font-size: 0.9rem; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .st-bg { display: block; width: 76px; height: 44px; border-radius: 10px; }
         .st-bg::after { font-size: 0.8rem !important; right: 4px !important; bottom: 2px !important; top: auto !important; }
@@ -1675,6 +1829,13 @@ body {
         .home-guide-links { display: flex; justify-content: center; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0; margin-top: 2px; font-size: clamp(0.75rem, 2vh, 0.85rem); }
         .home-guide-links a { color: var(--kih-text-dim); text-underline-offset: 3px; }
         .home-guide-links span { color: var(--kih-text-dim); }
+        /* the guide: a real button, not a faint link */
+        .home-guide-links .home-guide-btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 16px; border-radius: 999px; text-decoration: none; font: inherit; font-weight: 800; color: var(--kih-text); cursor: pointer;
+            background: linear-gradient(135deg, rgba(108, 99, 255, 0.35), rgba(255, 143, 216, 0.25)); border: 1px solid rgba(160, 150, 255, 0.6); box-shadow: 0 4px 12px rgba(108, 99, 255, 0.3);
+            transition: transform 0.12s ease, box-shadow 0.12s ease; }
+        .home-guide-links .home-guide-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(108, 99, 255, 0.45); }
+        .home-guide-links .home-guide-btn:active { transform: translateY(1px); }
+        .home-guide-links .home-guide-btn span { color: #ffd75e; font-size: 1.1em; }
         /* 📣 Share the site: a button under the home menu, and its pop-up. */
         .share-site-btn { width: 100%; max-width: 420px; margin-top: clamp(8px, 1.6vh, 14px); padding: 12px 16px; border-radius: 12px; cursor: pointer; flex-shrink: 0;
             font-family: inherit; font-size: 0.98rem; font-weight: 800; color: #1a1a2e; border: none;
@@ -1712,6 +1873,27 @@ body {
         .kg-or { margin-top: 9px; font-size: 0.8rem; color: #9a9ab0; }
         .kg-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 9px; }
         .kg-chip { padding: 7px 11px; border-radius: 999px; border: 1px solid #4a4a7a; background: #1c1c38; color: #dcdcf2; font-family: inherit; font-size: 0.82rem; font-weight: 700; cursor: pointer; }
+        /* 🐉 the bosses as pictures to tap (the bosses answer) */
+        .kg-bot:has(.kg-bosses) { max-width: 100%; width: 100%; box-sizing: border-box; }
+        .kg-bosses { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 10px; }
+        .kg-boss { position: relative; display: block; padding: 0; aspect-ratio: 1; border-radius: 12px; overflow: hidden; cursor: pointer;
+            border: 2px solid #6a4dff; background: #12122a; box-shadow: 0 0 0 1px #0008, 0 4px 14px #6a4dff55; transition: transform .15s, box-shadow .15s; }
+        .kg-boss img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .3s; }
+        .kg-boss::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 45%, #0a0a1ae6 100%); pointer-events: none; }
+        .kg-boss-cap { position: absolute; left: 0; right: 0; bottom: 0; z-index: 1; padding: 4px 4px 5px; text-align: center; line-height: 1.1; }
+        .kg-boss-cap b { display: block; color: #fff; font-size: 0.78rem; text-shadow: 0 1px 3px #000; }
+        .kg-boss-cap small { display: block; color: #ffd75e; font-size: 0.62rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .kg-boss:hover, .kg-boss:focus-visible { transform: translateY(-2px); box-shadow: 0 0 0 1px #0008, 0 6px 20px #8a6dffaa; }
+        .kg-boss:hover img { transform: scale(1.07); }
+        .kg-boss:active { transform: scale(.96); }
+        .kg-boss-gold { border-color: #ffc83d; box-shadow: 0 0 0 1px #0008, 0 4px 14px #ffc83d55; }
+        .kg-boss-gold img { filter: sepia(1) saturate(3.2) hue-rotate(-12deg) brightness(1.05); }
+        /* the boss the question named: big, first, glowing */
+        .kg-boss-pick { grid-column: 1 / -1; aspect-ratio: 2 / 1; border-color: #ffd75e; animation: kgBossGlow 1.8s ease-in-out infinite; }
+        .kg-boss-pick .kg-boss-cap b { font-size: 1.05rem; }
+        .kg-boss-pick .kg-boss-cap small { font-size: 0.75rem; }
+        @keyframes kgBossGlow { 0%, 100% { box-shadow: 0 0 0 1px #0008, 0 0 10px #ffd75e66; } 50% { box-shadow: 0 0 0 1px #0008, 0 0 22px #ffd75ecc; } }
+        @media (prefers-reduced-motion: reduce) { .kg-boss, .kg-boss img { transition: none; } .kg-boss-pick { animation: none; } }
         .kih-guide-ask { display: flex; gap: 8px; padding: 10px 12px calc(12px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid #2a2a4a; background: #141428; }
         .kih-guide-ask input { flex: 1; min-width: 0; padding: 12px 14px; border-radius: 12px; border: 1px solid #3a3a66; background: #0f0f22; color: #fff; font-family: inherit; font-size: 16px; }
         .kih-guide-ask button { width: 48px; border-radius: 12px; border: none; background: linear-gradient(135deg, #4169e1, #8a4dff); color: #fff; font-size: 1.1rem; cursor: pointer; }
@@ -1723,6 +1905,18 @@ body {
         /* "Show me": the button glows */
         .kih-guide-spot { position: relative; z-index: 5; animation: kgSpot 1.05s ease-in-out 4; outline: 3px solid #ffd75e; outline-offset: 3px; border-radius: 12px; }
         @keyframes kgSpot { 50% { outline-color: rgba(255, 215, 94, 0.15); box-shadow: 0 0 0 10px rgba(255, 215, 94, 0.25); } }
+        /* Sunday's 🧰: what came out of it */
+        .lip-box { width: 100%; max-width: 300px; padding: 18px 16px; border-radius: 18px; text-align: center; color: #fff; display: flex; flex-direction: column; align-items: center; gap: 6px;
+            border: 2px solid var(--rc); background: radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--rc) 30%, transparent), #17172e 70%); animation: popIn 0.4s cubic-bezier(.2, 1.4, .4, 1) both; }
+        .lip-title { font-weight: 900; font-size: 1.05rem; }
+        .lip-pic svg { display: block; border-radius: 14px; background: rgba(255, 255, 255, 0.06); }
+        .lip-name { font-size: 1.15rem; }
+        .lip-box small { color: #c8c0e8; font-weight: 700; }
+        .lip-acts { display: flex; gap: 8px; margin-top: 8px; }
+        .lip-acts button { padding: 10px 18px; border-radius: 999px; border: none; font: inherit; font-weight: 900; cursor: pointer; }
+        .lip-wear { background: linear-gradient(90deg, #ffb35e, #c99bff); color: #1d1030; }
+        .lip-ok { background: #2a2a4a; color: #fff; }
+        .quest-week-key { margin-left: 6px; font-weight: 700; color: var(--kih-text-dim); font-size: 0.72rem; }
         .kih-pop { position: fixed; inset: 0; z-index: 3000; display: flex; align-items: center; justify-content: center; padding: 16px;
             background: rgba(6, 6, 18, 0.72); animation: popFade 0.2s ease; }
         @keyframes popFade { from { opacity: 0; } }
@@ -1894,6 +2088,7 @@ body {
         .home-menu-btn:nth-child(5) .home-menu-icon { background: linear-gradient(135deg, #22b8cf, #0b7285); box-shadow: 0 0 14px rgba(34, 184, 207, 0.45); }
         .home-menu-btn:nth-child(6) .home-menu-icon { background: linear-gradient(135deg, #ff922b, #c2410c); box-shadow: 0 0 14px rgba(255, 146, 43, 0.45); }
         .home-menu-btn:nth-child(7) .home-menu-icon { background: linear-gradient(135deg, #51cf66, #2b8a3e); box-shadow: 0 0 14px rgba(81, 207, 102, 0.45); }
+        .home-menu-btn:nth-child(8) .home-menu-icon { background: linear-gradient(135deg, #ff6b9a, #ff4d4d 55%, #ffb02e); box-shadow: 0 0 16px rgba(255, 90, 110, 0.55); }
         /* ...and the whole button in it too: a tinted face, a coloured edge and
            a bright stripe down the left, so each section stands out. */
         .home-menu-btn:nth-child(1) { --sec: 76, 110, 245; }
@@ -1903,6 +2098,7 @@ body {
         .home-menu-btn:nth-child(5) { --sec: 34, 184, 207; }
         .home-menu-btn:nth-child(6) { --sec: 255, 146, 43; }
         .home-menu-btn:nth-child(7) { --sec: 81, 207, 102; }
+        .home-menu-btn:nth-child(8) { --sec: 255, 90, 110; }
         .home-menu-btn {
             background: linear-gradient(100deg, rgba(var(--sec, 255, 255, 255), 0.5), rgba(var(--sec, 255, 255, 255), 0.16) 80%), var(--kih-panel);
             border-color: rgba(var(--sec, 255, 255, 255), 0.85);
@@ -1925,6 +2121,7 @@ body {
         .home-menu-btn:nth-child(5) { animation-delay: 0.2s; }
         .home-menu-btn:nth-child(6) { animation-delay: 0.25s; }
         .home-menu-btn:nth-child(7) { animation-delay: 0.3s; }
+        .home-menu-btn:nth-child(8) { animation-delay: 0.35s; }
         @keyframes menuIn { from { opacity: 0; transform: translateY(12px); } }
         .home-menu-btn:hover, .home-menu-btn:active { border-color: rgb(var(--sec, 160, 130, 255)); box-shadow: inset 4px 0 0 rgb(var(--sec, 160, 130, 255)), 0 0 22px rgba(var(--sec, 138, 77, 255), 0.4); transform: translateY(-2px); }
         .home-menu-btn:hover .home-menu-icon { animation: iconHop 0.5s ease; }
@@ -1995,6 +2192,8 @@ body {
                     <button onclick="goToPage('settings'); closeMenu();">⚙️ Settings</button>
                     <button onclick="closeMenu(); openHelpGuide();">🧭 Ask the guide</button>
                     <button id="musicMenuItem" data-music-open="#pageTopbar .menu-wrapper > .icon-btn" onclick="closeMenu();">🎵 Music &amp; sounds</button>
+                    <button onclick="goToPage('character'); closeMenu();">🧍 Character</button>
+                    <button onclick="goToPage('achievements'); closeMenu();">🏅 Achievements</button>
                     <button onclick="goToPage('profile'); closeMenu();">
                         <img id="topbarAvatar" src="" alt="Profile" class="topbar-avatar-icon">
                         <span id="topbarAvatarFallback2" class="topbar-avatar-fallback" style="display:flex;">👤</span>
@@ -2022,7 +2221,7 @@ body {
             <div class="home-menu">
                 <button class="home-menu-btn" onclick="goToPage('troops')">
                     <span class="home-menu-icon">⚔️</span>
-                    <span class="home-menu-text">Troops & Heroes<small>Browse & compare every unit</small></span>
+                    <span class="home-menu-text">Troops, Heroes & Bosses<small>Browse & compare every unit and boss</small></span>
                 </button>
                 <button class="home-menu-btn" onclick="openPromoTab('codes')" style="position:relative;">
                     <span class="home-menu-icon">🎁</span>
@@ -2045,9 +2244,13 @@ body {
                     <span class="badge-dot" id="socialUnreadBadgeHome"
                         style="display:none; position:absolute; top:10px; right:14px;"></span>
                 </button>
-                <button class="home-menu-btn" onclick="goToPage('profile')" style="position:relative;">
+                <button class="home-menu-btn" onclick="goToPage('character')">
+                    <span class="home-menu-icon">🧍</span>
+                    <span class="home-menu-text">Character<small>Dress up, style &amp; your bonuses</small></span>
+                </button>
+                <button class="home-menu-btn" onclick="goToPage('achievements')" style="position:relative;">
                     <span class="home-menu-icon">🏅</span>
-                    <span class="home-menu-text">Profile<small>Achievements, badges & items</small></span>
+                    <span class="home-menu-text">Achievements<small>Badges &amp; rewards</small></span>
                     <span class="badge-dot" id="profileMenuBadgeHome"
                         style="display:none; position:absolute; top:10px; right:14px;"></span>
                 </button>
@@ -2058,10 +2261,9 @@ body {
             </div>
             <button type="button" class="share-site-btn" onclick="openShareSite()">📣 Share KIH with friends</button>
             <button type="button" class="bug-home-btn" id="bugHomeBtn" onclick="openBugReport()">🐞 Found a bug? Report it</button>
-            <button class="about-creator-link" onclick="goToPage('about')">About the Creator</button>
             <!-- Plain links (search engines follow these, not the buttons above) -->
             <button type="button" class="kih-guide-fab" id="guideFab" onclick="openHelpGuide()" aria-label="Ask the KIH Guide where something is">🧭<span>Ask</span></button>
-            <nav class="home-guide-links"><a href="units/">📖 Troops &amp; heroes guide</a><span>·</span><a href="about.html">About &amp; contact</a></nav>
+            <nav class="home-guide-links"><a href="units/" class="home-guide-btn">📖 Troops, Heroes &amp; Bosses guide <span aria-hidden="true">›</span></a><a href="about.html" class="home-guide-btn" id="aboutHomeBtn">👋 About &amp; contact <span aria-hidden="true">›</span></a></nav>
             </div>
             <!-- Adsterra ad slots — hidden by default, shown via JS if not VIP/No-Ads -->
             <div class="adsterra-slot" id="adSlot728x90"></div>
@@ -2135,7 +2337,7 @@ body {
                             <details class="quest-how">
                                 <summary>How tokens work</summary>
                                 <ul>
-                                    <li>📅 Log in every day for <strong>1 🪙</strong>. Every day Monday–Saturday unlocks Sunday's chest: <strong>3–5 🪙</strong> (1 if you missed a day).</li>
+                                    <li>📅 Log in every day for a gift: <strong>2 🪙</strong> on Monday, Wednesday and Friday, <strong>✨ Stardust</strong> on Tuesday (50), Thursday (100) and Saturday (50). Sunday is the chest: <strong>3–5 🪙</strong> if you logged in every day Monday–Saturday (1 if you missed one) <strong>and a free chest of Uncommon or better</strong>.</li>
                                     <li>⚔️ Daily quests are worth <strong>4 🪙</strong>: "check out" quests pay 1, "do something" quests pay 2. Finish one, then tap <strong>Claim</strong> — unclaimed rewards don't expire.</li>
                                     <li>🎲 Finishing today's puzzle in <strong>Games</strong> pays <strong>1 🪙</strong> straight away.</li>
                                     <li>🎒 Items from the chest can add more: on your login, the Sunday chest, the puzzle — and quest-token items add their % to a day's quest tokens (rounded up) once you've claimed all of that day's quests.</li>
@@ -2148,67 +2350,6 @@ body {
                 </div>
 
                 <!-- ABOUT THE CREATOR -->
-                <div class="home-page-content" id="page-about">
-                    <div class="page-panel">
-                        <h1>About the Creator</h1>
-                        <div class="about-section">
-                            <p class="about-lead">Hello, I'm <strong>Keazyea</strong> — the creator of this app. 👋</p>
-                        </div>
-
-                        <div class="about-section">
-                            <div class="about-section-title">What this app is for</div>
-                            <ul class="about-list">
-                                <li onclick="goToPage('troops', true)" style="cursor:pointer;">⚔️ Troop & hero comparisons</li>
-                                <li onclick="goToPage('promo', true)" style="cursor:pointer;">🎁 Latest promo codes</li>
-                                <li onclick="goToPage('tips', true)" style="cursor:pointer;">💡 Tips, team comps & strategy</li>
-                                <li onclick="goToPage('promo', true)" style="cursor:pointer;">🎲 Weekly giveaways</li>
-                                <li onclick="goToPage('social', true)" style="cursor:pointer;">👥 Community — clan recruitment, friends & chat</li>
-                            </ul>
-                        </div>
-
-                        <div class="about-section">
-                            <div class="about-section-title">Join my clan</div>
-                            <p>🏰 <a href="https://play.google.com/store/apps/details?id=azurgames.idle.war&hl=en_SG"
-                                    target="_blank" rel="noopener noreferrer" class="about-link"><strong>Kingdom Clash</strong></a> — Android only for now!</p>
-                        </div>
-
-                        <div class="about-section">
-                            <div class="about-section-title">Get in touch</div>
-                            <p>Got feedback, bug reports, or suggestions? Reach out anytime.</p>
-                            <p><a href="#" class="about-link" onclick="openBugReport(); return false;">🐞 Report a bug</a> — with up to 5 screenshots; the reply comes to your inbox here.</p>
-                            <p><a href="mailto:keazyea@gmail.com" class="about-link">📧 keazyea@gmail.com</a></p>
-                        </div>
-
-                        <div class="about-section">
-                            <div class="social-btn-row">
-                                <a class="social-btn social-btn-youtube" href="https://www.youtube.com/@keazyea"
-                                    target="_blank" rel="noopener noreferrer">
-                                    <svg viewBox="0 0 24 24" width="18" height="18">
-                                        <path fill="#FF0000"
-                                            d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.4 31.4 0 0 0 0 12a31.4 31.4 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31.4 31.4 0 0 0 24 12a31.4 31.4 0 0 0-.5-5.8z">
-                                        </path>
-                                        <path fill="white" d="M9.6 15.6 15.8 12 9.6 8.4z"></path>
-                                    </svg>
-                                    <span>YouTube</span>
-                                </a>
-                                <a class="social-btn social-btn-discord" href="https://discord.gg/j3Zqb6GVmq"
-                                    target="_blank" rel="noopener noreferrer">
-                                    <svg viewBox="0 0 24 24" width="18" height="18">
-                                        <path fill="#5865F2"
-                                            d="M20.3 4.4A19.7 19.7 0 0 0 15.4 3c-.2.4-.5.9-.7 1.3a18.3 18.3 0 0 0-5.4 0A11 11 0 0 0 8.6 3 19.6 19.6 0 0 0 3.7 4.4C1 8.4.3 12.3.6 16.2A19.8 19.8 0 0 0 6.6 19c.5-.7.9-1.4 1.3-2.2-.7-.3-1.4-.6-2-1l.5-.4c3.8 1.8 7.9 1.8 11.7 0l.5.4c-.6.4-1.3.7-2 1 .4.8.8 1.5 1.3 2.2a19.7 19.7 0 0 0 6-2.8c.4-4.5-.7-8.4-2.9-11.8zM9.7 13.8c-1 0-1.8-1-1.8-2.1 0-1.2.8-2.2 1.8-2.2s1.9 1 1.8 2.2c0 1.1-.8 2.1-1.8 2.1zm6.6 0c-1 0-1.8-1-1.8-2.1 0-1.2.8-2.2 1.8-2.2s1.9 1 1.8 2.2c0 1.1-.8 2.1-1.8 2.1z">
-                                        </path>
-                                    </svg>
-                                    <span>Discord</span>
-                                </a>
-                                <a class="social-btn social-btn-donate" href="https://www.paypal.me/keazyea"
-                                    target="_blank" rel="noopener noreferrer">
-                                    <span>💸</span>
-                                    <span>Donate</span>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
                 <!-- SETTINGS (was a modal, now its own page) -->
 
@@ -2291,76 +2432,116 @@ body {
                 <!-- PROFILE (was a modal, now its own page) -->
                 <div class="home-page-content" id="page-profile">
                     <div class="page-panel">
-                        <!-- Your card as others see it: avatar, name, the badges you
-                             show, likes and items. -->
+                        <!-- Your card as others see it: your character, name, hearts and
+                             items, the badges you show, your bio and game stats. -->
                         <div class="pf-hero">
+                            <span class="pf-hero-tag">👀 How others see you</span>
                             <span id="pfHeroAvatarWrap"><img id="pfHeroAvatar" class="pf-hero-avatar" src="" alt="" onerror="this.src='images/KIH.jpg'"></span>
+                            <div id="pfHeroLooks" class="pf-hero-looks"></div>
                             <div class="pf-hero-main">
                                 <div class="pf-hero-name" id="pfHeroName">Commander</div>
-                                <div class="pf-badges" id="pfHeroBadges"></div>
                                 <div class="pf-hero-stats" id="pfHeroStats"></div>
+                                <div class="pf-badges" id="pfHeroBadges"></div>
+                                <div class="pf-hero-bio" id="pfHeroBio"></div>
+                                <div class="pf-hero-facts" id="pfHeroFacts"></div>
                             </div>
                         </div>
-                        <div class="kih-chips pf-tabs" id="pfTabs">
-                            <button type="button" class="kih-chip active" data-tab="edit" onclick="switchProfileTab('edit')">✏️ Profile</button>
-                            <button type="button" class="kih-chip" data-tab="ach" onclick="switchProfileTab('ach')">🏅 Achievements<span class="pf-tab-dot" id="pfAchDot"></span></button>
-                            <button type="button" class="kih-chip" data-tab="items" onclick="switchProfileTab('items')">🎒 Items</button>
-                            <button type="button" class="kih-chip" data-tab="style" onclick="switchProfileTab('style')">🎨 Style</button>
+                        <!-- where you dress up, and your achievements -->
+                        <div class="pf-links">
+                            <button type="button" class="pf-link" onclick="goToPage('character')"><span>👕</span><b>Character<small>Dress up · style · bonuses</small></b></button>
+                            <button type="button" class="pf-link" onclick="goToPage('achievements')"><span>🏅</span><b>Achievements<small>Badges &amp; rewards</small></b><span class="pf-tab-dot" id="pfAchDot"></span></button>
                         </div>
+                        <h2 class="pf-edit-title">✏️ Edit details</h2>
 
-                        <div id="pfTabAch" class="pf-tab" style="display:none;">
-                            <div id="pfAchBody"><p class="settings-sub">Loading…</p></div>
+                        <div id="pfTabEdit" class="pf-tab">
+                        <section class="pf-form-card">
+                            <h3>🙋 About you</h3>
+                            <label class="field-label" for="profileNameInput">In-game name</label>
+                            <input type="text" id="profileNameInput" class="profile-name-input"
+                                placeholder="Enter a name" />
+                            <div class="name-check-msg" id="nameCheckMsg"></div>
+
+                            <label class="field-label" style="display:none;">Avatar</label>
+                            <div class="avatar-picker-row" style="display:none;">
+                                <img id="avatarPreview" class="avatar-preview-thumb" src="" alt="Avatar"
+                                    onerror="this.src='images/KIH.jpg'">
+                                <button type="button" class="btn-settings-action" onclick="openAvatarModal()">Choose
+                                    Avatar</button>
+                            </div>
+
+                            <label class="field-label" for="profileBioInput">Bio</label>
+                            <textarea id="profileBioInput" class="profile-name-input" rows="3" maxlength="160"
+                                placeholder="Tell other commanders a bit about yourself..."></textarea>
+                            <div class="pf-bio-count" id="pfBioCount">0/160</div>
+                        </section>
+
+                        <section class="pf-form-card">
+                            <h3>🎮 In the game</h3>
+                            <div class="pf-form-grid">
+                                <div>
+                                    <label class="field-label" for="profileServerInput">📱 Server</label>
+                                    <select id="profileServerInput" class="profile-name-input">
+                                        <option value="">Not set</option>
+                                        <option value="ios">iOS</option>
+                                        <option value="android">Android</option>
+                                        <option value="both">Both</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="field-label" for="profileTrophiesInput">🏆 Highest trophies</label>
+                                    <input type="number" id="profileTrophiesInput" class="profile-name-input" min="0"
+                                        placeholder="e.g. 5000">
+                                </div>
+                                <div class="pf-wide">
+                                    <label class="field-label" for="profileClanInput">🛡️ Current clan</label>
+                                    <input type="text" id="profileClanInput" class="profile-name-input" maxlength="60"
+                                        placeholder="e.g. Dragon Warriors">
+                                </div>
+                                <div>
+                                    <label class="field-label" for="profileLevelInput">⭐ Level</label>
+                                    <input type="number" id="profileLevelInput" class="profile-name-input" min="1" max="10000"
+                                        placeholder="1–10000">
+                                </div>
+                                <div>
+                                    <label class="field-label" for="profilePowerInput">⚡ Power</label>
+                                    <input type="text" inputmode="numeric" id="profilePowerInput" class="profile-name-input"
+                                        placeholder="e.g. 6,700,000">
+                                </div>
+                            </div>
+                        </section>
+
+                        <button class="btn-primary btn-block pf-save" id="saveProfileBtn" onclick="saveProfile()">💾 Save profile</button>
                         </div>
-                        <div id="pfTabItems" class="pf-tab" style="display:none;">
-                            <div id="pfItemsBody"><p class="settings-sub">Loading…</p></div>
+                    </div>
+                </div>
+
+                <!-- 🧍 CHARACTER: dress up (Wardrobe), how you show (Style), what your items add up to (Bonuses) -->
+                <div class="home-page-content" id="page-character">
+                    <div class="page-panel">
+                        <div class="pg-hero pg-hero-char"><span class="pg-hero-ico">🧍</span><div><h1>Character</h1><small>Dress up · style · your bonuses</small></div></div>
+                        <div class="kih-chips pf-tabs" id="chTabs">
+                            <button type="button" class="kih-chip active" data-tab="wardrobe" onclick="switchCharTab('wardrobe')">👕 Wardrobe</button>
+                            <button type="button" class="kih-chip" data-tab="style" onclick="switchCharTab('style')">✨ Style</button>
+                            <button type="button" class="kih-chip" data-tab="bonuses" onclick="switchCharTab('bonuses')">💪 Bonuses</button>
+                        </div>
+                        <div id="pfTabChar" class="pf-tab">
+                            <div id="pfCharBody"><p class="settings-sub">Loading…</p></div>
                         </div>
                         <div id="pfTabStyle" class="pf-tab" style="display:none;">
                             <div id="pfStyleBody"><p class="settings-sub">Loading…</p></div>
                         </div>
-
-                        <div id="pfTabEdit" class="pf-tab">
-                        <label class="field-label">In-game name</label>
-                        <input type="text" id="profileNameInput" class="profile-name-input"
-                            placeholder="Enter a name" />
-                        <div class="name-check-msg" id="nameCheckMsg"></div>
-
-                        <label class="field-label">Avatar</label>
-                        <div class="avatar-picker-row">
-                            <img id="avatarPreview" class="avatar-preview-thumb" src="" alt="Avatar"
-                                onerror="this.src='images/KIH.jpg'">
-                            <button type="button" class="btn-settings-action" onclick="openAvatarModal()">Choose
-                                Avatar</button>
+                        <div id="pfTabItems" class="pf-tab" style="display:none;">
+                            <div id="pfItemsBody"><p class="settings-sub">Loading…</p></div>
                         </div>
+                    </div>
+                </div>
 
-                        <label class="field-label">Bio</label>
-                        <textarea id="profileBioInput" class="profile-name-input" rows="3" maxlength="160"
-                            placeholder="Tell other commanders a bit about yourself..."></textarea>
-
-                        <label class="field-label">Server</label>
-                        <select id="profileServerInput" class="profile-name-input">
-                            <option value="">Not set</option>
-                            <option value="ios">iOS</option>
-                            <option value="android">Android</option>
-                            <option value="both">Both</option>
-                        </select>
-
-                        <label class="field-label">Highest Trophies</label>
-                        <input type="number" id="profileTrophiesInput" class="profile-name-input" min="0"
-                            placeholder="e.g. 5000">
-
-                        <label class="field-label">Current Clan</label>
-                        <input type="text" id="profileClanInput" class="profile-name-input" maxlength="60"
-                            placeholder="e.g. Dragon Warriors">
-
-                        <label class="field-label">Current Level (1–10000)</label>
-                        <input type="number" id="profileLevelInput" class="profile-name-input" min="1" max="10000"
-                            placeholder="1–10000">
-
-                        <label class="field-label">Current Power</label>
-                        <input type="text" inputmode="numeric" id="profilePowerInput" class="profile-name-input"
-                            placeholder="e.g. 6,700,000">
-
-                                               <button class="btn-primary btn-block" id="saveProfileBtn" onclick="saveProfile()" style="font-size:1.15rem; padding:16px 24px;">Save profile</button>
+                <!-- 🏅 ACHIEVEMENTS -->
+                <div class="home-page-content" id="page-achievements">
+                    <div class="page-panel">
+                        <div class="pg-hero pg-hero-ach"><span class="pg-hero-ico">🏅</span><div><h1>Achievements</h1><small>Claim rewards · show off your badges</small></div></div>
+                        <div id="pfTabAch" class="pf-tab">
+                            <div id="pfAchBody"><p class="settings-sub">Loading…</p></div>
                         </div>
                     </div>
                 </div>
@@ -2404,7 +2585,7 @@ body {
             <label class="bug-field">Where? <small>(optional)</small>
                 <select id="bugReportPage">
                     <option value="">— somewhere else / not sure —</option>
-                    <option>Home</option><option>Troops &amp; Heroes</option><option>Codes &amp; Giveaways</option><option>Tips</option>
+                    <option>Home</option><option>Troops, Heroes &amp; Bosses</option><option>Codes &amp; Giveaways</option><option>Tips</option>
                     <option>Games</option><option>Social — World Chat</option><option>Social — Friends &amp; DMs</option><option>Social — posts</option>
                     <option>Profile &amp; Items</option><option>Store</option><option>Quests</option><option>Inbox / News</option><option>Sign-in</option>
                 </select>
@@ -2463,34 +2644,22 @@ body {
 </div>
         <!-- Mini profile view (from friend requests) -->
         <div class="mini-modal-overlay" id="viewProfileModalOverlayHome">
-            <div class="mini-modal-box" style="max-width:360px; text-align:left;">
-                <div style="text-align:center;">
+            <div class="mini-modal-box" style="max-width:360px;">
+                <!-- the same card as your own Profile page (profile-card.js) -->
+                <div class="pf-card" style="margin-bottom:16px;">
+                    <span id="viewProfileCharWrapHome"><div id="viewProfileCharHome" class="vp-char" hidden></div></span>
                     <span id="viewProfileAvatarWrapHome"><img id="viewProfileAvatarHome"
-                        style="width:84px; height:84px; border-radius:50%; object-fit:cover; background:var(--kih-border); margin-bottom:10px;"
+                        style="width:84px; height:84px; border-radius:50%; object-fit:cover; background:var(--kih-border);"
                         onerror="this.src='images/KIH.jpg'"></span>
-                    <div id="viewProfileNameHome" style="font-weight:800; font-size:1.2rem; margin-bottom:4px;"></div>
-                    <div id="viewProfileBioHome"
-                        style="color:var(--kih-text-dim); font-size:0.85rem; margin-bottom:10px;"></div>
+                    <div id="viewProfileLooksHome"></div>
+                    <div id="viewProfileNameHome" class="pf-hero-name"></div>
+                    <div class="pf-hero-stats">
+                        <button type="button" class="pf-like-btn" id="viewProfileLikeHome" style="display:none;"></button>
+                        <span class="pf-stat" id="viewProfileItemsHome" hidden></span>
+                    </div>
                     <div class="pf-badges center" id="viewProfileBadgesHome"></div>
-                    <button type="button" class="pf-like-btn" id="viewProfileLikeHome" style="display:none;"></button>
-                </div>
-                <div style="display:flex; flex-direction:column; margin-bottom:16px;">
-                    <div class="settings-row" style="padding:8px 0;">
-                        <span class="settings-label" style="font-size:0.85rem;">⭐ Level</span>
-                        <span id="viewProfileLevelHome"></span>
-                    </div>
-                    <div class="settings-row" style="padding:8px 0;">
-                        <span class="settings-label" style="font-size:0.85rem;">🏆 Highest Trophies</span>
-                        <span id="viewProfileTrophiesHome"></span>
-                    </div>
-                    <div class="settings-row" style="padding:8px 0;">
-                        <span class="settings-label" style="font-size:0.85rem;">⚔️ Power</span>
-                        <span id="viewProfilePowerHome"></span>
-                    </div>
-                    <div class="settings-row" style="padding:8px 0;">
-                        <span class="settings-label" style="font-size:0.85rem;">🏰 Clan</span>
-                        <span id="viewProfileClanHome"></span>
-                    </div>
+                    <div class="pf-hero-bio" id="viewProfileBioHome"></div>
+                    <div class="pf-hero-facts" id="viewProfileFactsHome"></div>
                 </div>
                 <button class="btn-settings-action btn-block" onclick="closeViewProfileModalHome()">Close</button>
             </div>
@@ -2559,7 +2728,9 @@ body {
 
     <script src="prize.js"></script>
     <script src="progress-core.js"></script>
+    <script src="character-core.js"></script>
     <script src="thing-details.js"></script>
+    <script src="profile-card.js"></script>
     <script src="help-guide.js"></script>
     <!-- 🎵 background music: the panel the 🎵 buttons open (music.js) -->
     <div class="music-pop" id="musicPop" role="dialog" aria-label="Music">
@@ -2863,7 +3034,49 @@ body {
            if (current === page) return;
            history.pushState({ kihPage: page }, "");
        }
+       /* A popup here (Home's profile popup) is a step Back undoes: Back
+          closes it instead of leaving the page. A popup inside a section's
+          frame (Social's profile, a chat…) tells this page (kihChildPopup),
+          which dims the top bar while that section is on screen with its popup
+          showing — nothing behind a popup can be tapped. (Social's own Back
+          steps close its popups; this page adds none for them.) */
+       let popupStepClose = null, popupStepPopping = false;
+       function popupStep(close) {
+           popupStepClose = close;
+           if (!(history.state && history.state.kihPopup)) history.pushState({ ...(history.state || {}), kihPopup: 1 }, "");
+       }
+       function leavePopupStep() {
+           popupStepClose = null;
+           if (history.state && history.state.kihPopup) { popupStepPopping = true; history.back(); }
+       }
+       window.closePopupFromHistory = function () {
+           if (popupStepPopping) { popupStepPopping = false; return true; }
+           if (!popupStepClose) return false;
+           const close = popupStepClose;
+           popupStepClose = null;
+           close();
+           return true;
+       };
+       const childPopups = new Set(); // frames (windows) with a popup showing
+       function refreshChildPopupLock() {
+           const on = [...childPopups].some(w => {
+               try { const fe = w.frameElement; return !!fe && fe.isConnected && fe.offsetParent !== null; } catch (e) { return false; }
+           });
+           document.body.classList.toggle("kih-child-popup", on);
+       }
+       window.kihChildPopup = function (open, win) {
+           if (open) childPopups.add(win); else childPopups.delete(win);
+           refreshChildPopupLock();
+       };
+       // another section on screen (or Home): its lock goes with it
+       document.addEventListener("DOMContentLoaded", () => {
+           const wrap = document.getElementById("homeContentWrap");
+           // (and again a moment later, once a page has faded in)
+           if (wrap) new MutationObserver(() => { refreshChildPopupLock(); setTimeout(refreshChildPopupLock, 400); }).observe(wrap, { subtree: true, attributes: true, attributeFilter: ["class", "style"] });
+       });
        window.addEventListener("popstate", (e) => {
+           // A popup open: Back closes it, and stays here.
+           if (window.closePopupFromHistory && window.closePopupFromHistory()) return;
            // A poll open in the News sheet: Back closes it (back to the list), and stays here.
            if (window.closeOpenPollFromHistory && window.closeOpenPollFromHistory()) return;
            // Steps inside a section (e.g. a unit in Troops & Heroes) fire in
@@ -2899,6 +3112,8 @@ body {
        });
 
        async function goToPage(page, fromAbout, fromHistory) {
+    // About & contact is its own page (about.html) — one version, also for search engines
+    if (page === "about") { location.href = "about.html"; return; }
     if (!(await okToLeaveGames(page, fromHistory))) return;
     if (page !== "profile" && isProfileDirty()) {
         let choice = await showUnsavedModal();
@@ -2962,6 +3177,7 @@ body {
     }
 
     if (page === "profile") await loadProfileIntoPage();
+    if (page === "character" || page === "achievements") loadProgress();
     if (page === "settings") await loadSettingsIntoPage();
     if (page === "inbox") {
         // A fresh look each visit: All again, and a dot on whatever's unread right now.
@@ -3274,6 +3490,11 @@ window.closeLegalModal = closeLegalModal;
             }
         });
 
+        function updateBioCount() {
+            const el = document.getElementById("pfBioCount"), input = document.getElementById("profileBioInput");
+            if (el && input) el.textContent = `${input.value.length}/${input.maxLength > 0 ? input.maxLength : 160}`;
+        }
+        document.getElementById("profileBioInput").addEventListener("input", updateBioCount);
         async function loadProfileIntoPage() {
             let profile = await AppState.getProfile();
             document.getElementById("profileNameInput").classList.remove("input-valid", "input-invalid");
@@ -3281,6 +3502,7 @@ window.closeLegalModal = closeLegalModal;
             isNameCurrentlyValid = true;
             document.getElementById("profileNameInput").value = profile.name;
             document.getElementById("profileBioInput").value = profile.bio || "";
+            updateBioCount();
             document.getElementById("profileServerInput").value = profile.server || "";
             document.getElementById("profileTrophiesInput").value = profile.highestTrophies || "";
             document.getElementById("profileClanInput").value = profile.currentClan || "";
@@ -3299,7 +3521,7 @@ window.closeLegalModal = closeLegalModal;
             // spaces, a missing name) mustn't count as an edit.
             profileSnapshot = getCurrentProfileFormValues();
             renderProfileHero(profile);
-            if (profileTab !== "edit") loadProgress();
+            loadProgress(); // your character, badges and likes on your card
         }
 
         function getCurrentProfileFormValues() {
@@ -3335,52 +3557,122 @@ window.closeLegalModal = closeLegalModal;
            Everything here comes from api/progress.js (AppState.getProgressStatus):
            it counts, pays and hands out items; this only shows it. */
         const PC = window.ProgressCore;
+        const CC = window.CharacterCore;
         let profileTab = "edit";
         let progressStatus = null;
+        // 🧍 the Character tab: the open category, unsaved changes, the save timer and its note
+        let charCat = "body", charDraft = null, charSaveTimer = null, charSavedText = "";
+        // 👁 what you're trying on (not yours yet): slot → id, as many slots as you like
+        let charPreview = {};
+        // from the Store: the thing to show (and put on) when the Wardrobe opens
+        let charFocus = null, charFocusSeen = false, charWearNext = null;
+        let charLook = null; // which of your looks you're dressing (null: the one you wear)
+        let charRenaming = null; // ✏️ the look whose name you're typing
         // Tap an item or style (Items, Style, an achievement's reward) for
         // what it is: thing-details.js, told what you own.
-        if (window.ThingDetails) ThingDetails.context = () => progressStatus ? { items: progressStatus.items || [], perks: progressStatus.perks || {}, vip: !!progressStatus.vip } : null;
+        if (window.ThingDetails) ThingDetails.context = () => progressStatus ? { items: progressStatus.items || [], perks: progressStatus.perks || {}, vip: !!progressStatus.vip, outfit: charWorn() } : null;
+        // ...and "🧍 Wear it" on something of yours you can wear
+        if (window.ThingDetails) ThingDetails.onWear = (id) => window.openWardrobeAt(id, true);
         let progressBusy = false;
 
         function escText(s) {
             return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
         }
         const badgeHtml = (b) => PC.badgeHtml(b);
-        // Someone else's badges and the 👍 button, under their name in a profile popup.
-        async function fillProfileCardExtras(uid, badgesEl, likeBtn) {
+// All of someone's looks (3 at least — the starter look where one's not
+        // dressed), named, the one they wear ✓; tap one to see it big.
+        function cardLooks(card) {
+            const list = Array.isArray(card.outfits) && card.outfits.length ? card.outfits : [card.outfit];
+            return Array.from({ length: Math.max(CC.LOOKS_FREE, list.length) }, (_, i) => list[i] || CC.cleanOutfit({}, []));
+        }
+        function allLooksHtml(card, svg, title) {
+            const eq = Number.isInteger(card.equipped) ? card.equipped : 0;
+            return `<div class="vp-looks-title">${title || "Their looks"} <small>· tap one to see it</small></div><div class="vp-looks">${cardLooks(card).map((o, i) =>
+                `<button type="button" class="vp-look${i === eq ? " on" : ""}" data-vp-look="${i}" aria-label="${escText(CC.lookName(card.lookNames, i))}">${svg(o, { size: 64 })}<small>${escText(CC.lookName(card.lookNames, i))}${i === eq ? " ✓" : ""}</small></button>`).join("")}</div>`;
+        }
+        // the looks row's taps: that look, big, in place of the one they wear
+        function wireLooks(row, bigEl, card) {
+            const looks = cardLooks(card);
+            row.onclick = (e) => {
+                const b = e.target.closest("[data-vp-look]");
+                if (!b) return;
+                const i = Number(b.dataset.vpLook);
+                bigEl.innerHTML = CC.svg(looks[i], { size: 150, title: CC.lookName(card.lookNames, i), animate: true });
+                row.querySelectorAll("[data-vp-look]").forEach(x => x.classList.toggle("on", x === b));
+            };
+        }
+        // 💗 the heart button on someone's profile: how many they've got (old
+        // 👍 likes count too) and — for a friend — Send a heart (once a day).
+        async function fillHeartButton(uid, btn, card) {
             const me = AppState.getCurrentUser();
-            const [card, liked] = await Promise.all([AppState.getPlayerCard(uid), me && me.uid !== uid ? AppState.haveILikedProfile(uid) : false]);
+            let count = Math.max(0, card.heartsGot || 0) + Math.max(0, card.likeCount || 0);
+            const label = () => `💗 ${count} heart${count === 1 ? "" : "s"}`;
+            btn.style.display = "inline-flex";
+            btn.classList.remove("on");
+            btn.textContent = label();
+            btn.disabled = true;
+            btn.onclick = null;
+            btn.title = !me ? "Sign in to send hearts" : me.uid === uid ? "That's you!" : "";
+            if (!me || me.uid === uid || !AppState.getHeartStatus) return;
+            let hs;
+            try { hs = await AppState.getHeartStatus(uid); } catch (e) { return; }
+            if (!hs.friend) { btn.title = "Add them as a friend to send hearts"; btn.textContent = label(); return; }
+            const draw = (sent) => {
+                btn.classList.toggle("on", sent);
+                btn.textContent = sent ? `💗 Sent today ✓ · ${count}` : hs.heartsLeft > 0 ? `💗 Send a heart · ${count}` : `💗 All ${hs.heartsPerDay} sent today · ${count}`;
+                btn.disabled = sent || hs.heartsLeft <= 0;
+                btn.title = sent ? "You can send another tomorrow" : "A heart for them to collect (Social → Friends)";
+            };
+            draw(hs.heartsToday.includes(uid));
+            btn.onclick = async () => {
+                btn.disabled = true;
+                try {
+                    const r = await AppState.sendHeart(uid);
+                    count++; hs.heartsLeft = r.heartsLeft;
+                    draw(true);
+                    if (progressStatus) { progressStatus.hearts = r.hearts; progressStatus.heartsToday = r.heartsToday; }
+                    showQuestToast(`💗 Sent! They'll find it in Social → Friends → Hearts.${r.bonus ? " Lucky — you got 1 💗 too!" : ""}${r.dayBonus ? ` 🎉 All ${r.heartsPerDay} sent today: +${r.dayBonus} 💗 for you!` : ""}`);
+                } catch (e) {
+                    draw(false);
+                    showQuestToast("Couldn't send it — " + e.message);
+                }
+            };
+        }
+        // Someone else's badges, looks and the 💗 button, under their name in a profile popup.
+        async function fillProfileCardExtras(uid, badgesEl, likeBtn) {
+            const card = await AppState.getPlayerCard(uid);
             badgesEl.innerHTML = (card.badges || []).map(badgeHtml).join("");
             // Their border and name effect, on the home mini profile.
             const wrap = document.getElementById("viewProfileAvatarWrapHome"), nameEl = document.getElementById("viewProfileNameHome");
             if (wrap && badgesEl.id === "viewProfileBadgesHome") {
                 const bd = card.style && PC.STYLE_BY_ID[card.style.border];
                 wrap.className = bd ? `fx-av fx-border-${bd.css}${bd.anim ? " fx-" + bd.anim : ""}` : "";
-                nameEl.className = PC.styleClass(card.style, "name");
+                nameEl.className = "pf-hero-name " + PC.styleClass(card.style, "name");
                 wrap.closest(".mini-modal-box").className = "mini-modal-box " + PC.styleClass(card.style, "background");
-            }
-            let count = Math.max(0, card.likeCount || 0);
-            let on = liked;
-            const draw = () => { likeBtn.textContent = `👍 ${count} like${count === 1 ? "" : "s"}`; likeBtn.classList.toggle("on", on); };
-            draw();
-            likeBtn.style.display = "inline-flex";
-            likeBtn.disabled = !me || me.uid === uid;
-            likeBtn.title = !me ? "Sign in to like profiles" : me.uid === uid ? "That's you!" : on ? "Take your like back" : "Like this profile";
-            likeBtn.onclick = async () => {
-                likeBtn.disabled = true;
-                const want = !on;
-                on = want; count = Math.max(0, count + (want ? 1 : -1)); draw();
-                try {
-                    const r = await AppState.setProfileLike(uid, want);
-                    on = r.liked; count = r.likeCount; draw();
-                } catch (e) {
-                    on = !want; count = Math.max(0, count + (want ? -1 : 1)); draw();
-                    showQuestToast("Couldn't update your like — " + e.message);
+                const items = document.getElementById("viewProfileItemsHome");
+                if (items) { items.textContent = ProfileCard.itemsText(card.itemCount); items.hidden = false; }
+                // their 🧍 character, in place of a picture
+                const charEl = document.getElementById("viewProfileCharHome");
+                if (charEl) {
+                    charEl.innerHTML = CC.svg(card.outfit || CC.cleanOutfit({}, []), { size: 150, title: "Their character", animate: true });
+                    charEl.hidden = false;
+                    wrap.style.display = "none";
+                    document.getElementById("viewProfileCharWrapHome").className = wrap.className; // their border, round the character
+                    const row = document.getElementById("viewProfileLooksHome");
+                    row.innerHTML = allLooksHtml(card, CC.svg);
+                    wireLooks(row, charEl, card);
                 }
-                likeBtn.disabled = false;
-            };
+            }
+            fillHeartButton(uid, likeBtn, card);
         }
 
+        // Your bio and game stats on your card — drawn as everyone sees them (profile-card.js)
+        function renderProfileFacts(profile) {
+            const bio = document.getElementById("pfHeroBio"), facts = document.getElementById("pfHeroFacts");
+            if (!bio || !facts) return;
+            bio.textContent = String(profile.bio || "").trim();
+            facts.innerHTML = ProfileCard.facts(profile);
+        }
         function renderProfileHero(profile) {
             if (profile) {
                 document.getElementById("pfHeroAvatar").src = profile.avatar || "images/KIH.jpg";
@@ -3390,10 +3682,30 @@ window.closeLegalModal = closeLegalModal;
             const shownBadges = st ? (st.badges || []).map(badgeHtml).join("") : "";
             document.getElementById("pfHeroBadges").innerHTML = shownBadges
                 || (st ? `<button type="button" class="pf-badge-empty" onclick="switchProfileTab('ach')">🏅 Pick badges to show</button>` : "");
-            document.getElementById("pfHeroStats").textContent = st
-                ? `👍 ${st.likeCount} like${st.likeCount === 1 ? "" : "s"} · 🎒 ${st.items.length} item${st.items.length === 1 ? "" : "s"} & styles`
-                : (AppState.getCurrentUser() ? "" : "Sign in to earn badges and items");
+            const hearts = st ? (st.heartsGot != null ? st.heartsGot : st.likeCount) : 0;
+            document.getElementById("pfHeroStats").innerHTML = st
+                ? `<span class="pf-stat">${ProfileCard.heartsText(hearts)}</span><span class="pf-stat">${ProfileCard.itemsText(st.items.length)}</span>`
+                : (AppState.getCurrentUser() ? "" : `<span class="pf-stat">Sign in to earn badges and items</span>`);
+            if (profile) renderProfileFacts(profile);
             const style = st ? st.style : null;
+            // your character's head & shoulders in place of a picture
+            const wrap = document.getElementById("pfHeroAvatarWrap");
+            const out = st ? charWorn() : null;
+            let ch = document.getElementById("pfHeroChar");
+            if (out) {
+                if (!ch) { ch = document.createElement("span"); ch.id = "pfHeroChar"; ch.className = "pf-hero-char"; wrap.appendChild(ch); }
+                ch.innerHTML = CC.svg(out, { size: 120, animate: true });
+            }
+            // your 3 looks, as others see them on your profile (tap one: it shows big)
+            const looksRow = document.getElementById("pfHeroLooks");
+            if (looksRow) {
+                if (st && ch) {
+                    const mine = { outfits: charLooks(), equipped: st.equipped || 0, lookNames: st.lookNames };
+                    looksRow.innerHTML = allLooksHtml(mine, CC.svg, "Your looks");
+                    wireLooks(looksRow, ch, mine);
+                } else looksRow.innerHTML = "";
+            }
+            document.getElementById("pfHeroAvatar").style.display = out ? "none" : "";
             const b = style && PC.STYLE_BY_ID[style.border];
             document.getElementById("pfHeroAvatarWrap").className = b ? `fx-av fx-border-${b.css}${b.anim ? " fx-" + b.anim : ""}` : "";
             if (st && window.applyTopbarBorder) window.applyTopbarBorder(style);
@@ -3401,17 +3713,27 @@ window.closeLegalModal = closeLegalModal;
             document.querySelector("#page-profile .pf-hero").className = "pf-hero " + PC.styleClass(style, "background");
         }
 
+        // 🧍 Character's tabs: Wardrobe, Style, Bonuses
+        let charTab = "wardrobe";
+        function showCharTab(tab) {
+            charTab = ["wardrobe", "style", "bonuses"].includes(tab) ? tab : "wardrobe";
+            document.querySelectorAll("#chTabs .kih-chip").forEach(c => c.classList.toggle("active", c.dataset.tab === charTab));
+            document.getElementById("pfTabChar").style.display = charTab === "wardrobe" ? "" : "none";
+            document.getElementById("pfTabStyle").style.display = charTab === "style" ? "" : "none";
+            document.getElementById("pfTabItems").style.display = charTab === "bonuses" ? "" : "none";
+        }
+        window.switchCharTab = function (tab) { showCharTab(tab); loadProgress(); };
+        // The old Profile tabs, now their own pages (the guide, the Store and
+        // old links still say switchProfileTab): edit → Profile, ach →
+        // Achievements, char/style/items → Character's Wardrobe/Style/Bonuses.
         function showProfileTab(tab) {
             profileTab = tab;
-            document.querySelectorAll("#pfTabs .kih-chip").forEach(c => c.classList.toggle("active", c.dataset.tab === tab));
-            document.getElementById("pfTabEdit").style.display = tab === "edit" ? "" : "none";
-            document.getElementById("pfTabAch").style.display = tab === "ach" ? "" : "none";
-            document.getElementById("pfTabItems").style.display = tab === "items" ? "" : "none";
-            document.getElementById("pfTabStyle").style.display = tab === "style" ? "" : "none";
+            const ct = { char: "wardrobe", style: "style", items: "bonuses" }[tab];
+            if (ct) showCharTab(ct);
         }
         window.switchProfileTab = function (tab) {
             showProfileTab(tab);
-            if (tab !== "edit") loadProgress();
+            goToPage(tab === "edit" ? "profile" : tab === "ach" ? "achievements" : "character");
         };
 
         // Fetches (or re-fetches) your achievements, badges and items, then
@@ -3422,20 +3744,23 @@ window.closeLegalModal = closeLegalModal;
                 document.getElementById("pfAchBody").innerHTML = signedOut;
                 document.getElementById("pfItemsBody").innerHTML = signedOut;
                 document.getElementById("pfStyleBody").innerHTML = signedOut;
+                document.getElementById("pfCharBody").innerHTML = signedOut;
                 return;
             }
             try {
                 progressStatus = await AppState.getProgressStatus();
             } catch (e) {
                 const err = `<p class="settings-sub">Couldn't load this — ${escText(e.message)}</p><button class="btn-settings-action" onclick="loadProgress()">Try again</button>`;
-                if (!progressStatus) { ["pfAchBody", "pfItemsBody", "pfStyleBody"].forEach(id => { document.getElementById(id).innerHTML = err; }); }
+                if (!progressStatus) { ["pfAchBody", "pfItemsBody", "pfStyleBody", "pfCharBody"].forEach(id => { document.getElementById(id).innerHTML = err; }); }
                 return;
             }
             renderAchievements();
             renderItems();
             renderStyle();
+            renderCharacter();
             renderProfileHero(null);
             updateAchievementDots();
+            if (charWearNext) { const id = charWearNext; charWearNext = null; charPutOn(id); }
         }
         window.loadProgress = loadProgress;
 
@@ -3524,6 +3849,8 @@ window.closeLegalModal = closeLegalModal;
                 updateAchievementDots();
                 (r.claimed || []).forEach(c => { const el = document.getElementById("ach_" + c.id); if (el) el.classList.add("flash"); });
                 const extras = [r.newFreeDraws ? `🎁 ${r.newFreeDraws} free chest draw${r.newFreeDraws === 1 ? "" : "s"}` : "", ...(r.gifts || []).map(id => `${PC.BY_ID[id].icon} ${PC.BY_ID[id].name}`)].filter(Boolean);
+                if (typeof r.stardust === "number") progressStatus.stardust = r.stardust;
+                if (r.stardustGot) extras.unshift(`${r.stardustGot.toLocaleString("en-US")} ✨`);
                 showQuestToast(r.paid ? `🎉 +${r.paid} 🪙 claimed!${extras.length ? " Plus " + extras.join(", ") + "!" : ""}` : "Nothing new to claim yet.");
             } catch (e) {
                 showGenericErrorModal(e.message, "Couldn't claim");
@@ -3560,13 +3887,15 @@ window.closeLegalModal = closeLegalModal;
         function rewardSource(id) {
             const x = PC.BY_ID[id], ev = x && x.event && PC.EVENTS[x.event];
             if (ev) return `${ev.icon} ${ev.name} (${ev.label}) — limited`;
+            if (x && x.heart) return `💗 Heart Shop — ${x.heart} 💗`;
+            if (x && x.heartSpin) return "🎡 Heart Spin only (Heart Shop)";
             const a = Object.keys(PC.ACHIEVEMENT_REWARDS).find(k => PC.ACHIEVEMENT_REWARDS[k].includes(id));
             return a ? `Mythic ${PC.ACHIEVEMENT_BY_ID[a].name}` : "";
         }
         function itemCardHtml(it, has, note) {
             const r = PC.RARITIES[it.rarity];
             return `<div class="it-card${has ? "" : " locked"}" data-thing="${it.id}" style="--rc:${r.color}">
-                <div class="it-icon">${it.icon}</div>
+                <div class="it-icon">${CC.itemPic(it.id, 46) || it.icon}</div>
                 <div class="it-name">${escText(it.name)}</div>
                 <div class="it-perk-text">${it.perks.map(PC.perkText).join(" · ")}</div>
                 ${has ? "" : `<div class="it-odds">${escText(note)}</div>`}
@@ -3594,35 +3923,370 @@ window.closeLegalModal = closeLegalModal;
                 const list = chestItems.filter(i => i.rarity === k);
                 return list.length ? `<div class="it-rar" style="--rc:${PC.RARITIES[k].color}">${PC.RARITIES[k].label}</div><div class="it-grid">${list.map(it => itemCardHtml(it, owned.has(it.id), pct(it.id))).join("")}</div>` : "";
             }).join("");
+            const owned2 = [...owned].filter(id => PC.ITEM_BY_ID[id]);
             document.getElementById("pfItemsBody").innerHTML = `
                 <div class="it-perks">
-                    <div class="it-perks-title">Your bonuses<small>always on — every item counts, and they add up</small></div>
+                    <div class="it-perks-title">Your bonuses<small>always on — every item counts, worn or not, and they add up</small></div>
                     ${lines.length ? lines.map(l => `<div class="it-perk"><span>${escText(l.text)}</span></div>`).join("") : `<div class="it-perk"><span>No items yet — open a chest for your first bonus.</span></div>`}
                     ${(st.perks || {}).questMult ? `<div class="it-note">Daily quest tokens: the bonus is worked out on the whole day, rounded up, and paid once you've claimed all of that day's quests.</div>` : ""}
                 </div>
                 ${st.freeDraws ? `<button type="button" class="ach-claim-all it-free" onclick="openChestInStore()">🎁 You have ${st.freeDraws} free chest draw${st.freeDraws === 1 ? "" : "s"} — open now</button>` : ""}
-                <div class="it-head"><span>Perk items</span><small>${chestItems.filter(i => owned.has(i.id)).length} / ${chestItems.length}</small></div>
-                ${byRarity}
-                <div class="it-head"><span>Achievement rewards</span><small>${achItems.filter(i => owned.has(i.id)).length} / ${achItems.length}</small></div>
-                <div class="it-grid">${achItems.map(it => itemCardHtml(it, owned.has(it.id), rewardSource(it.id))).join("")}</div>
-                ${evSections}
+                <div class="it-head"><span>What gives them</span><small>${owned2.length} item${owned2.length === 1 ? "" : "s"} · see them all in 👕 Wardrobe</small></div>
+                <div class="it-grid">${owned2.map(id => itemCardHtml(PC.ITEM_BY_ID[id], true, "")).join("") || `<p class="ach-hint">Nothing yet.</p>`}</div>
                 <div class="it-chest">
                     <div style="font-size:2rem;">${PC.CHEST.icon}</div>
-                    <b>${PC.CHEST.name} · ${PC.CHEST.price} 🪙 · ×10 ${PC.CHEST.price10} 🪙</b>
-                    <small>Perk items and styles. Duplicates turn into tokens. An Epic or better at least every ${PC.PITY.epic} draws, a Legendary every ${PC.PITY.legendary}.</small>
+                    <b>${PC.CHEST.name} · ${PC.CHEST.price} ✨ · ×10 ${PC.CHEST.price10.toLocaleString("en-US")} ✨</b>
+                    <small>New things to wear, each with a bonus, for ✨ Stardust (you have ${Math.max(0, st.stardust || 0).toLocaleString("en-US")} ✨ — free ✨ with your daily login, 📅 Daily Quests). Duplicates turn into ✨. An Epic or better at least every ${PC.PITY.epic} draws, a Legendary every ${PC.PITY.legendary}.</small>
                     <button type="button" class="ach-claim-all" onclick="openChestInStore()">Open the chest in the Store</button>
+                </div>
+                <div class="it-chest it-hearts">
+                    <div style="font-size:2rem;">💗</div>
+                    <b>Heart Shop · you have ${Math.max(0, st.hearts || 0)} 💗</b>
+                    <small>Your friends send you hearts (each can send you one a day) — collect them in Social → Friends → 💗 Hearts, and send one back. Spend hearts on things to wear (each with a bonus) or a 🎡 spin for tokens, chest draws and Heart Spin-only treasures.</small>
+                    <button type="button" class="ach-claim-all" onclick="openStoreAt('hearts')">Go to the Heart Shop</button>
                 </div>`;
         }
+
+        /* ---- 🧍 Character: dress it up, head to toe, with what you've collected ----
+           Guy or girl and skin are yours to pick; everything else comes from
+           drops (plus a free starter set). One thing per slot. Changes show at
+           once and save a moment after the last tap (charDraft holds them
+           until the server has them). Things you don't have yet are greyed
+           out — 👁 Preview tries one on (just to look; nothing is saved). */
+        // which look you're dressing, and the looks themselves
+        function charLookIndex() {
+            const st = progressStatus, n = charLooks().length;
+            if (charLook == null || charLook >= n) charLook = st ? st.equipped || 0 : 0;
+            return charLook;
+        }
+        // everyone has 3 free looks (more bought): always that many, the starter look where one's empty
+        const charLooks = () => progressStatus
+            ? CC.cleanLooks(progressStatus.looks || [progressStatus.outfit], progressStatus.items || [], progressStatus.lookSlots)
+            : CC.cleanLooks([], [], 0);
+        // the look everyone sees (with what you've just changed on it)
+        function charWorn() {
+            const st = progressStatus;
+            if (!st) return CC.cleanOutfit({}, []);
+            const eq = st.equipped || 0;
+            return charDraft && charLookIndex() === eq ? charDraft : charLooks()[eq] || CC.cleanOutfit({}, []);
+        }
+        const charOutfit = () => charDraft || (progressStatus && charLooks()[charLookIndex()]) || CC.cleanOutfit({}, []);
+        const CH_BODY = [["body", "Body", "part"], ["skin", "Skin", "color"]];
+        const CH_BODY_NAMES = { guy: "Guy", girl: "Girl" };
+        // where something you don't have comes from
+        function charWhere(id) {
+            const it = CC.thingOf(id);
+            if (it.chest) { const r = PC.dropRates(sgtDay())[id]; return `From the chest · ${PC.RARITIES[it.rarity].label}${r ? ` · ${r.toFixed(r < 1 ? 2 : 1)}% a draw` : ""}`; }
+            return rewardSource(id) || "Not yours yet";
+        }
+        // what the big picture shows: your outfit, with everything you're trying on
+        const charPreviewing = () => Object.keys(charPreview).filter(s => charPreview[s]);
+        function charShown() {
+            const o = charOutfit();
+            return charPreviewing().length ? { base: o.base, wear: { ...o.wear, ...charPreview } } : o;
+        }
+        function charBodyHtml(o) {
+            return CH_BODY.map(([k, label, kind]) => `<div class="st-title">${label}</div><div class="ch-opts ${kind}">${CC.BASE[k].map((v, i) => {
+                const val = kind === "color" ? i : v;
+                const inner = kind === "color" ? `<span class="ch-sw" style="background:${v}"></span>` : CC.svg({ base: { ...o.base, [k]: v }, wear: o.wear }, { size: 56, bust: true });
+                const name = k === "body" ? `<small class="ch-opt-name">${CH_BODY_NAMES[v]}</small>` : "";
+                return `<button type="button" class="ch-opt${o.base[k] === val ? " on" : ""}${name ? " named" : ""}" aria-label="${label}: ${escText(k === "body" ? CH_BODY_NAMES[v] : String(i + 1))}" data-ch-base="${k}" data-ch-val="${escText(String(val))}">${inner}${name}</button>`;
+            }).join("")}</div>`).join("") + `<p class="ach-hint">Hair, eyes, mouth, clothes and the rest come from drops — open the chest, finish achievements and events. Your starter set is free.</p>`;
+        }
+        function charSlotHtml(slot, o, owned) {
+            const s = CC.SLOTS.find(x => x.id === slot);
+            const mine = CC.forSlot(slot, owned);
+            const liveEv = PC.activeEvent(sgtDay());
+            // not yours yet: the chest's and achievements' (an event's while it's on)
+            const locked = CC.WEARABLE.filter(id => CC.wearOf(id).slot === slot && !CC.isStarter(id) && !owned.includes(id)
+                && (!CC.thingOf(id).event || (liveEv && liveEv.id === CC.thingOf(id).event)));
+            const cur = o.wear[slot];
+            const card = (id, has) => {
+                const it = CC.thingOf(id);
+                const rc = PC.RARITIES[it.rarity] ? PC.RARITIES[it.rarity].color : "#b8c0d0";
+                const on = has ? cur === id : charPreview[slot] === id;
+                return has
+                    ? `<button type="button" class="ch-item${on ? " on" : ""}${charFocus === id ? " flash" : ""}" style="--rc:${rc}" data-ch-wear="${slot}" data-ch-id="${id}"><span class="ch-item-ico">${CC.thumb(id, 56, o.base.body) || it.icon}</span><small>${escText(it.name)}</small></button>`
+                    : `<div class="ch-item locked${on ? " on" : ""}" style="--rc:${rc}"><span class="ch-item-ico">${CC.thumb(id, 56, o.base.body) || it.icon}</span><small>${escText(it.name)}</small>
+                        <button type="button" class="ch-prev-btn" data-ch-preview="${slot}" data-ch-id="${id}">${on ? "✓ Trying on" : "👁 Preview"}</button>
+                        ${PC.buyPrice(id) ? `<button type="button" class="ch-buy-btn" data-ch-buy="${id}" aria-label="Buy for ${(PC.dealPrice(id, sgtDay()) || PC.buyPrice(id)).toLocaleString("en-US")} Stardust${PC.dealPrice(id, sgtDay()) ? " (today's deal)" : ""}">${PC.dealPrice(id, sgtDay()) ? `🛍️ ✨ ${PC.dealPrice(id, sgtDay()).toLocaleString("en-US")}` : `✨ ${PC.buyPrice(id).toLocaleString("en-US")}`}</button>`
+                            : PC.heartPrice(id) ? `<button type="button" class="ch-buy-btn heart" data-ch-heartshop="${id}" aria-label="${PC.heartPrice(id)} hearts in the Heart Shop">💗 ${PC.heartPrice(id)}</button>`
+                            : PC.setOf(id) ? `<button type="button" class="ch-buy-btn" data-ch-set="${id}" aria-label="Part of the ${escText(PC.setOf(id).name)}, ${PC.setOf(id).price.toLocaleString("en-US")} Stardust in the Store">👘 Set</button>`
+                            : `<span class="ch-earn">${it.heartSpin ? "🎡 Heart Spin" : `🔒 ${it.event ? "Event only" : "Achievement"}`}</span>`}<span class="st-info" data-thing="${id}" aria-label="What is this?">i</span></div>`;
+            };
+            const none = CC.OPTIONAL.includes(slot) ? `<button type="button" class="ch-item${!cur ? " on" : ""}" data-ch-wear="${slot}" data-ch-id=""><span class="ch-item-ico">🚫</span><small>Nothing</small></button>` : "";
+            if (!mine.length && !locked.length) return `<p class="ach-hint">No ${s.name.toLowerCase()} things yet.</p>`;
+            return `<div class="ch-items">${none}${mine.map(id => card(id, true)).join("")}${locked.map(id => card(id, false)).join("")}</div>`
+                + (!mine.length ? `<p class="ach-hint" style="margin-top:10px;">You don't have any ${s.name.toLowerCase()} things yet — tap 👁 Preview to try one on.</p>` : "")
+                + (locked.length ? `<p class="ach-hint" style="margin-top:10px;">👁 Try on as many as you like — one in each slot, all at once. Nothing's saved.</p>` : "");
+        }
+        function renderCharacter() {
+            const st = progressStatus;
+            const body = document.getElementById("pfCharBody");
+            if (!st || !body) return;
+            const owned = st.items || [];
+            const o = charOutfit();
+            const drops = Object.values(o.wear).filter(id => !CC.isStarter(id)).length;
+            const cats = [["body", "🧑", "Body"], ...CC.SLOTS.map(s => [s.id, s.icon, s.name])].map(([id, ic, nm]) => {
+                const w = id !== "body" && o.wear[id] && !CC.isStarter(o.wear[id]) ? o.wear[id] : null;
+                return `<button type="button" class="ch-cat${charCat === id ? " on" : ""}${w ? " worn" : ""}" data-ch-cat="${id}"><span>${w ? CC.thumb(w, 30) : ic}</span><small>${nm}</small></button>`;
+            }).join("");
+            const scroll = body.querySelector(".ch-cats") ? body.querySelector(".ch-cats").scrollLeft : 0;
+            // where you'd scrolled to in the things box (kept while you tap things in the same category)
+            const oldBox = body.querySelector(".ch-panel");
+            const boxScroll = oldBox && oldBox.dataset.cat === charCat ? oldBox.scrollTop : 0;
+            const pv = charPreviewing();
+            const li = charLookIndex(), eq = st.equipped || 0, looks = charLooks(), lp = CC.lookPrice(looks.length);
+            const names = st.lookNames || [], nm = (i) => CC.lookName(names, i);
+            const lookRow = `<div class="ch-looks" role="tablist" aria-label="Your looks">${looks.map((lk, i) => `<button type="button" class="ch-look${i === li ? " on" : ""}${i === eq ? " worn" : ""}" data-ch-look="${i}" aria-label="${escText(nm(i))}${i === eq ? " (wearing)" : ""}">
+                    ${CC.svg(i === li ? o : lk, { size: 44, bust: true })}<small>${escText(nm(i))}${i === eq ? " ✓" : ""}</small></button>`).join("")}${lp != null
+                    ? `<button type="button" class="ch-look add" data-ch-buylook="1" aria-label="Another look for ${lp} Stardust"><span>＋</span><small>${lp.toLocaleString("en-US")} ✨</small></button>` : ""}</div>`;
+            const lookActs = charRenaming === li
+                ? `<div class="ch-rename-row"><input type="text" id="chLookName" maxlength="${CC.LOOK_NAME_MAX}" value="${escText(CC.cleanLookName(names[li]))}" placeholder="Look ${li + 1}" aria-label="This look's name" autocomplete="off">
+                    <button type="button" class="ch-wear-look" data-ch-rename-save="1">Save</button><button type="button" class="ch-random" data-ch-rename-cancel="1" aria-label="Cancel">✕</button></div>`
+                : `<div class="ch-look-acts">${li === eq ? `<span class="ch-wearing">✓ You're wearing ${escText(nm(li))}</span>` : `<button type="button" class="ch-wear-look" data-ch-equip="${li}">✅ Wear ${escText(nm(li))}</button>`}
+                <button type="button" class="ch-random" data-ch-rename="${li}" aria-label="Name this look">✏️ Name</button>
+                <button type="button" class="ch-random" data-ch-random="1">🎲 Random</button></div>`;
+            body.innerHTML = `${lookRow}
+                ${lookActs}
+                <div class="ch-stage ${PC.styleClass(st.style || {}, "background")}${pv.length ? " previewing" : ""}">${CC.svg(charShown(), { size: 190, title: "Your character", animate: true })}
+                    ${pv.length ? `<div class="ch-preview-note"><b>👁 Trying on ${pv.length === 1 ? "1 thing" : pv.length + " things"} · not saved</b>
+                        <div class="ch-pv-list">${pv.map(sl => { const id = charPreview[sl], x = CC.thingOf(id); return `<button type="button" class="ch-pv-chip" data-ch-unpreview="${sl}" title="${escText(charWhere(id))}" aria-label="Take off ${escText(x.name)}">${CC.itemPic(id, 22)}<span>${escText(x.name)}</span><i>✕</i></button>`; }).join("")}</div>
+                        <small>${pv.length === 1 ? escText(charWhere(charPreview[pv[0]])) : "Tap one to take it off"}</small><button type="button" class="ch-prev-stop" id="chPreviewStop">✕ Stop</button></div>` : ""}</div>
+                <div class="ch-cats" role="tablist">${cats}</div>
+                <div class="ch-panel ch-box" data-cat="${charCat}" tabindex="0" aria-label="Things to wear — scroll here">${charCat === "body" ? charBodyHtml(o) : charSlotHtml(charCat, o, owned)}</div>
+                <div class="ch-slots"><span>✨ ${escText(nm(li))} has <b>${drops}</b> of your drop${drops === 1 ? "" : "s"}</span><span class="ch-saved" id="chSaved">${escText(charSavedText)}</span></div>
+                <p class="ach-hint">Dress each look head to toe, one of each; wear one — everyone sees it next to your name, and all your looks on your profile. Looks only: every item's bonus counts whether you wear it or not.</p>`;
+            body.querySelector(".ch-cats").scrollLeft = scroll;
+            sizeWardrobeBox();
+            body.querySelector(".ch-panel").scrollTop = boxScroll;
+            // from the Store: you, wearing it, at the top (the thing lights up
+            // below for a few seconds — putting it on redraws this)
+            if (charFocus && !charFocusSeen && body.querySelector(".ch-item.flash")) {
+                charFocusSeen = true;
+                const box = body.querySelector(".ch-panel"), flash = body.querySelector(".ch-item.flash");
+                box.scrollTop = Math.max(0, flash.offsetTop - box.offsetTop - 12);
+                setTimeout(() => alignWardrobe(), 250);
+                setTimeout(() => { charFocus = null; }, 3000);
+            }
+        }
+        /* 🧺 The things box: as tall as fits under your character and the
+           categories, so you see yourself while you scroll through what to
+           try on (scrolling in the box, not the page). */
+        function sizeWardrobeBox() {
+            const body = document.getElementById("pfCharBody"), box = body && body.querySelector(".ch-panel"), stage = body && body.querySelector(".ch-stage");
+            if (!box || !stage || !box.offsetParent) return;
+            // the page scrolls in its own area, under the top bar
+            const page = stage.closest(".home-page-content"), view = page ? page.getBoundingClientRect() : { top: 0, bottom: window.innerHeight };
+            const above = box.getBoundingClientRect().top - stage.getBoundingClientRect().top; // the character + categories
+            const fits = Math.min(view.bottom, window.innerHeight) - Math.max(view.top, 0) - 8 - above - 12;
+            box.style.maxHeight = Math.max(180, Math.round(fits)) + "px";
+        }
+        // the page scrolled so your character's at the top, the box under it
+        function alignWardrobe() {
+            const stage = document.querySelector("#pfCharBody .ch-stage");
+            if (stage) stage.scrollIntoView({ block: "start", behavior: "smooth" });
+        }
+        window.addEventListener("resize", () => sizeWardrobeBox());
+        function charChanged() {
+            charSavedText = "Saving…";
+            charDraftLook = charLookIndex();
+            renderCharacter();
+            renderProfileHero(null);
+            clearTimeout(charSaveTimer);
+            charSaveTimer = setTimeout(charSave, 700);
+        }
+        let charDraftLook = 0;
+        // what the server now has: your looks, which you wear
+        function charTookLooks(r) {
+            if (r.looks) progressStatus.looks = r.looks;
+            if (r.outfit) progressStatus.outfit = r.outfit;
+            if (Number.isInteger(r.equipped)) progressStatus.equipped = r.equipped;
+            if (Number.isInteger(r.lookSlots)) progressStatus.lookSlots = r.lookSlots;
+            if (Array.isArray(r.lookNames)) progressStatus.lookNames = r.lookNames;
+        }
+        async function charSave(equip) {
+            clearTimeout(charSaveTimer);
+            const want = charDraft;
+            if (!want) return;
+            try {
+                const r = await AppState.saveOutfit(want, charDraftLook, equip === true);
+                charTookLooks(r);
+                if (charDraft === want) { charDraft = null; charSavedText = "Saved ✓"; }
+            } catch (e) {
+                if (charDraft === want) charDraft = null;
+                charSavedText = "";
+                showGenericErrorModal(e.message, "Couldn't save your character");
+            }
+            renderCharacter();
+            renderProfileHero(null);
+        }
+        // ✏️ save a look's name (an empty one puts back "Look N")
+        async function charRenameSave() {
+            const i = charRenaming, input = document.getElementById("chLookName");
+            if (i == null || !input || progressBusy) return;
+            const name = CC.cleanLookName(input.value);
+            progressBusy = true;
+            try {
+                const r = await AppState.renameLook(i, name);
+                progressStatus.lookNames = r.lookNames;
+                charRenaming = null;
+                charSavedText = `Named “${CC.lookName(r.lookNames, i)}” ✓`;
+            } catch (e) {
+                showGenericErrorModal(e.message, "Couldn't name it");
+            }
+            progressBusy = false;
+            renderCharacter();
+        }
+        document.addEventListener("keydown", (e) => {
+            if (e.target && e.target.id === "chLookName") {
+                if (e.key === "Enter") { e.preventDefault(); charRenameSave(); }
+                if (e.key === "Escape") { e.preventDefault(); charRenaming = null; renderCharacter(); }
+            }
+        });
+        // 👕 your looks: switch which you're dressing (what you'd changed is saved first)
+        async function charSwitchLook(i) {
+            if (charDraft) await charSave();
+            charRenaming = null;
+            charLook = i;
+            charPreview = {};
+            charSavedText = "";
+            renderCharacter();
+        }
+        async function charWearLook(i) {
+            if (progressBusy) return;
+            progressBusy = true;
+            try {
+                if (charDraft && charDraftLook === i) await charSave(true);
+                else charTookLooks(await AppState.equipLook(i));
+                charSavedText = `Wearing Look ${i + 1} ✓`;
+            } catch (err) {
+                showGenericErrorModal(err.message, "Couldn't wear that look");
+            }
+            progressBusy = false;
+            renderCharacter();
+            renderProfileHero(null);
+        }
+        async function charBuyLook(btn) {
+            const have = charLooks().length, price = CC.lookPrice(have);
+            if (price == null || progressBusy) return;
+            if (!(await haveStardust(price, `Another look (Look ${have + 1})`))) return;
+            progressBusy = true;
+            btn.disabled = true;
+            try {
+                const r = await AppState.buyLookSlot();
+                progressStatus.looks = [...charLooks(), CC.cleanOutfit({}, [])].slice(0, r.lookSlots);
+                progressStatus.lookSlots = r.lookSlots;
+                if (typeof r.stardust === "number") progressStatus.stardust = r.stardust;
+                charLook = r.lookSlots - 1;
+                charSavedText = `Look ${r.lookSlots} unlocked 🎉`;
+            } catch (err) {
+                showGenericErrorModal(err.message, "Couldn't unlock it");
+            }
+            progressBusy = false;
+            renderCharacter();
+        }
+        /* ✨ About to spend `price` Stardust on `what`: asks first. Short of it?
+           Offers to make up the rest from tokens (1 🪙 = STARDUST.perToken ✨,
+           one way — it can't be turned back). true: go ahead. */
+        async function haveStardust(price, what) {
+            const fmt = (n) => Math.max(0, Math.floor(n)).toLocaleString("en-US");
+            const have = Math.max(0, progressStatus.stardust || 0), tokens = Math.max(0, progressStatus.balance || 0);
+            if (have >= price) return confirm(`${what} for ${fmt(price)} ✨? (You have ${fmt(have)} ✨.)`);
+            const need = price - have, cost = Math.ceil(need / PC.STARDUST.perToken);
+            if (tokens < cost) {
+                showGenericErrorModal(`${what} is ${fmt(price)} ✨ — you have ${fmt(have)} ✨. Your daily login gives free ✨ every day (📅 Daily Quests), or top up with tokens (1 🪙 = ${PC.STARDUST.perToken} ✨): you'd need ${fmt(cost)} 🪙 and have ${fmt(tokens)}. Get tokens in the Store's 🪙 Token packs ($10 → 1,000 🪙 = 10,000 ✨).`, "Not enough ✨ Stardust");
+                return false;
+            }
+            if (!confirm(`${what} is ${fmt(price)} ✨ — you have ${fmt(have)} ✨.\n\nConvert ${fmt(cost)} 🪙 → ${fmt(cost * PC.STARDUST.perToken)} ✨ and buy it?\n(Stardust can't be turned back into tokens.)`)) return false;
+            try {
+                const r = await AppState.convertTokens(cost);
+                progressStatus.stardust = r.stardust;
+                progressStatus.balance = r.balance;
+                return true;
+            } catch (e) { showGenericErrorModal(e.message, "Couldn't convert"); return false; }
+        }
+        // 🛒 buy one outright for ✨ (well above a chest draw — or today's Daily Deal price), then wear it
+        async function charBuy(btn, id) {
+            const it = CC.thingOf(id), deal = PC.dealPrice(id, sgtDay()), price = deal || PC.buyPrice(id);
+            if (!it || !price || progressBusy) return;
+            if (!(await haveStardust(price, `${deal ? "🛍️ Today's deal: " : ""}${it.name}`))) return;
+            progressBusy = true;
+            btn.disabled = true;
+            try {
+                const r = await AppState.buyItem(id, !!deal);
+                progressStatus.items = r.items;
+                if (r.perks) progressStatus.perks = r.perks;
+                if (typeof r.stardust === "number") progressStatus.stardust = r.stardust;
+                const o = charOutfit(), slot = CC.wearOf(id).slot;
+                if (charPreview[slot] === id) delete charPreview[slot];
+                charDraft = CC.cleanOutfit({ base: { ...o.base }, wear: { ...o.wear, [slot]: id } }, r.items);
+                progressBusy = false;
+                charChanged();
+                renderItems();
+                return;
+            } catch (err) {
+                showGenericErrorModal(err.message, "Couldn't buy it");
+            }
+            progressBusy = false;
+            renderCharacter();
+        }
+        document.addEventListener("click", (e) => {
+            const t = e.target.closest("#pfCharBody [data-ch-cat], #pfCharBody [data-ch-base], #pfCharBody [data-ch-wear], #pfCharBody [data-ch-preview], #pfCharBody [data-ch-unpreview], #pfCharBody [data-ch-buy], #chPreviewStop, #pfCharBody [data-ch-look], #pfCharBody [data-ch-equip], #pfCharBody [data-ch-random], #pfCharBody [data-ch-buylook], #pfCharBody [data-ch-heartshop], #pfCharBody [data-ch-set], #pfCharBody [data-ch-rename], #pfCharBody [data-ch-rename-save], #pfCharBody [data-ch-rename-cancel]");
+            if (!t || !progressStatus) return;
+            const o = charOutfit();
+            if (t.id === "chPreviewStop") { charPreview = {}; renderCharacter(); return; }
+            if (t.dataset.chUnpreview) { delete charPreview[t.dataset.chUnpreview]; renderCharacter(); return; }
+            if (t.dataset.chLook) { charSwitchLook(Number(t.dataset.chLook)); return; }
+            if (t.dataset.chEquip) { charWearLook(Number(t.dataset.chEquip)); return; }
+            if (t.dataset.chBuylook) { charBuyLook(t); return; }
+            if (t.dataset.chRandom) {
+                // 🎲 a random look from what you own (saved to this look)
+                charPreview = {};
+                charDraft = CC.randomOutfit(progressStatus.items || []);
+                charChanged();
+                return;
+            }
+            if (t.dataset.chBuy) { charBuy(t, t.dataset.chBuy); return; }
+            if (t.dataset.chHeartshop) { window.openStoreAt("hearts"); return; }
+            if (t.dataset.chSet) { window.openStoreAt("sets"); return; }
+            if (t.dataset.chRename) { charRenaming = Number(t.dataset.chRename); renderCharacter(); const i = document.getElementById("chLookName"); if (i) { i.focus(); i.select(); } return; }
+            if (t.dataset.chRenameCancel) { charRenaming = null; renderCharacter(); return; }
+            if (t.dataset.chRenameSave) { charRenameSave(); return; }
+            if (t.dataset.chCat) { charCat = t.dataset.chCat; renderCharacter(); alignWardrobe(); return; }
+            if (t.dataset.chPreview) {
+                // try it on too (a slot holds one: it swaps out what you were trying there); again: take it off
+                const id = t.dataset.chId, slot = t.dataset.chPreview;
+                if (charPreview[slot] === id) delete charPreview[slot]; else charPreview[slot] = id;
+                renderCharacter();
+                if (charPreview[slot]) document.querySelector("#pfCharBody .ch-stage").scrollIntoView({ block: "nearest", behavior: "smooth" });
+                return;
+            }
+            if (t.dataset.chBase) {
+                const k = t.dataset.chBase, kind = CH_BODY.find(x => x[0] === k)[2];
+                charDraft = { base: { ...o.base, [k]: kind === "color" ? Number(t.dataset.chVal) : t.dataset.chVal }, wear: { ...o.wear } };
+                charChanged();
+                return;
+            }
+            if (t.dataset.chWear) {
+                const slot = t.dataset.chWear, id = t.dataset.chId || null;
+                const wear = { ...o.wear };
+                if (id) wear[slot] = id; else delete wear[slot];
+                delete charPreview[slot];
+                charDraft = CC.cleanOutfit({ base: { ...o.base }, wear }, [...(progressStatus.items || [])]);
+                charChanged();
+            }
+        });
 
         /* ---- 🎨 Style: which border, name effect and chat bubble you show ---- */
         const STYLE_SLOTS = [["border", "Avatar border"], ["name", "Name effect"], ["bubble", "Chat bubble"], ["background", "Profile background"]];
         function stylePreview(s) {
             const st = progressStatus;
-            const avatar = document.getElementById("pfHeroAvatar").getAttribute("src") || "images/KIH.jpg";
             const name = document.getElementById("pfHeroName").textContent || "You";
-            if (s.type === "border") return PC.withBorder(`<img class="st-av" src="${escText(avatar)}" alt="">`, { border: s.id });
+            // your character (the look you wear), as everyone sees it
+            if (s.type === "border") return PC.withBorder(`<span class="kc-card st-char">${CC.svg(charWorn(), { size: 36 })}</span>`, { border: s.id });
             if (s.type === "name") return `<span class="st-name ${PC.styleClass({ name: s.id }, "name")}">${escText(name)}</span>`;
-            if (s.type === "background") return `<span class="st-bg ${PC.styleClass({ background: s.id }, "background")}"></span>`;
+            if (s.type === "background") return `<span class="st-bg ${PC.styleClass({ background: s.id }, "background")}"><span class="st-bg-char">${CC.svg(charWorn(), { size: 30, bust: true })}</span></span>`;
             return `<span class="st-bubble ${PC.styleClass({ bubble: s.id }, "bubble")}">gg wp!</span>`;
         }
         function renderStyle() {
@@ -3667,15 +4331,41 @@ window.closeLegalModal = closeLegalModal;
             renderStyle(); renderProfileHero(null);
         };
 
-        // From the Store's "My items" button: Profile, on that tab.
-        window.openProfileTab = function (tab) {
-            showProfileTab(tab);
-            goToPage("profile"); // loads the tab
+        // From the Store after a chest draw ("🧍 Wear it"): Character's Wardrobe,
+        // open at that thing — put on the look you wear when `wear` (you can
+        // change it back there). A style (a border…) opens 🎨 Style instead.
+        // `id` can be a list: a whole 👘 outfit set, all put on at once.
+        window.openWardrobeAt = function (id, wear) {
+            if (window.closeThing) closeThing();
+            const ids = Array.isArray(id) ? id : [id];
+            id = ids[0];
+            const w = CC.wearOf(id), st = PC.STYLE_BY_ID[id];
+            if (!w && st && st.type !== "emotes") { window.switchProfileTab("style"); return; }
+            charLook = null;
+            charPreview = {};
+            if (w) { charCat = w.slot; charFocus = id; charFocusSeen = false; charWearNext = wear ? ids : null; }
+            window.switchProfileTab("char"); // opens the page, which loads what you own (the new thing too)
         };
+        // put something of yours on the look you wear (saved like a tap in the Wardrobe)
+        function charPutOn(id) {
+            const st = progressStatus;
+            const ids = (Array.isArray(id) ? id : [id]).filter(x => CC.wearOf(x) && st && (st.items || []).includes(x));
+            if (!ids.length) return;
+            charLook = st.equipped || 0;
+            const o = charOutfit();
+            const wear = { ...o.wear };
+            ids.forEach(x => { wear[CC.wearOf(x).slot] = x; });
+            const what = ids.length > 1 ? (PC.setOf(ids[0]) ? `the ${PC.setOf(ids[0]).name}` : "them") : CC.thingOf(ids[0]).name;
+            if (ids.every(x => o.wear[CC.wearOf(x).slot] === x)) { charSavedText = `Wearing ${what} ✓`; renderCharacter(); return; }
+            charDraft = CC.cleanOutfit({ base: { ...o.base }, wear }, st.items || []);
+            charChanged();
+        }
+        // From the Store's "My items" button: Profile, on that tab.
+        window.openProfileTab = function (tab) { window.switchProfileTab(tab); };
         // Straight to a part of the Store ("event": the Trick or Treat card, "chest") — for news posts' buttons.
         window.openStoreAt = function (at) {
             const frame = document.querySelector("#page-store iframe");
-            setSectionFrameUrl(frame, /^(event|chest)$/.test(at) ? "store.html#" + at : "store.html");
+            setSectionFrameUrl(frame, /^(event|chest|hearts|deals|sets)$/.test(at) ? "store.html#" + at : "store.html");
             goToPage("store");
         };
         window.openChestInStore = function () {
@@ -3922,6 +4612,8 @@ function applyTopbarProfile(profile) {
         dropdownIcon.style.display = "none";
         dropdownFallback.style.display = "flex";
     }
+    // signed in: your character stands there instead of a picture
+    if (document.getElementById("topbarChar")) { iconImg.style.display = "none"; iconFallback.style.display = "none"; }
     document.getElementById("topbarName").textContent = "Profile";
     homeName = (profile && typeof profile.name === "string" ? profile.name.trim() : "").slice(0, 24);
     renderHomeGreet();
@@ -4047,7 +4739,7 @@ let currentInboxItems = [];
             list.innerHTML = requests.map(r => `
                 <div class="friend-req-item">
                     <div class="friend-req-person" onclick="openViewProfileModalHome(${jsArgHome(r.fromUid)}, ${jsArgHome(r.fromName)}, ${jsArgHome(r.fromAvatar || "")})">
-                        <img class="friend-req-avatar" src="${escapeHomeHtml(r.fromAvatar || 'images/KIH.jpg')}" onerror="this.src='images/KIH.jpg'">
+                        <span class="kc-card friend-req-char" data-char-uid="${escapeHomeHtml(r.fromUid || "")}">${CC.svg(CC.cleanOutfit({}, []), { size: 30 })}</span>
                         <span class="friend-req-name">${escapeHomeHtml(r.fromName)}</span>
                     </div>
                     <div class="friend-req-actions">
@@ -4056,6 +4748,14 @@ let currentInboxItems = [];
                     </div>
                 </div>
             `).join("");
+            // their characters, once their cards are read
+            const uids = requests.map(r => r.fromUid).filter(Boolean);
+            if (uids.length && AppState.getPlayerCards) AppState.getPlayerCards(uids).then(cards => {
+                list.querySelectorAll("[data-char-uid]").forEach(el => {
+                    const c = cards[el.dataset.charUid];
+                    if (c && c.outfit) el.innerHTML = CC.svg(c.outfit, { size: 30 });
+                });
+            }).catch(() => { });
         }
         window.respondReqHome = async function (reqId, accept) {
             if (answeringRequestsHome.has(reqId)) return;
@@ -4582,16 +5282,20 @@ function getNewsTypeInfo(type) {
             document.getElementById("viewProfileNameHome").textContent = fallbackName || "Commander";
             document.getElementById("viewProfileAvatarHome").src = fallbackAvatar || "images/KIH.jpg";
             document.getElementById("viewProfileBioHome").textContent = "";
-            document.getElementById("viewProfileLevelHome").textContent = "—";
-            document.getElementById("viewProfileTrophiesHome").textContent = "—";
-            document.getElementById("viewProfilePowerHome").textContent = "—";
-            document.getElementById("viewProfileClanHome").textContent = "—";
+            document.getElementById("viewProfileFactsHome").innerHTML = "";
+            document.getElementById("viewProfileItemsHome").hidden = true;
             document.getElementById("viewProfileBadgesHome").innerHTML = "";
             document.getElementById("viewProfileAvatarWrapHome").className = "";
+            document.getElementById("viewProfileAvatarWrapHome").style.display = "";
+            document.getElementById("viewProfileCharHome").hidden = true;
+            document.getElementById("viewProfileCharWrapHome").className = "";
+            document.getElementById("viewProfileCharHome").innerHTML = "";
+            document.getElementById("viewProfileLooksHome").innerHTML = "";
             document.querySelector("#viewProfileModalOverlayHome .mini-modal-box").className = "mini-modal-box";
-            document.getElementById("viewProfileNameHome").className = "";
+            document.getElementById("viewProfileNameHome").className = "pf-hero-name";
             document.getElementById("viewProfileLikeHome").style.display = "none";
             overlay.classList.add("open");
+            popupStep(() => window.closeViewProfileModalHome(true)); // Back closes it
 
             if (!uid) return;
             AppState.reportQuestProgress("viewProfile", uid);
@@ -4602,14 +5306,12 @@ function getNewsTypeInfo(type) {
 
             document.getElementById("viewProfileNameHome").textContent = profile.name || fallbackName || "Commander";
             document.getElementById("viewProfileAvatarHome").src = profile.avatar || fallbackAvatar || "images/KIH.jpg";
-            document.getElementById("viewProfileBioHome").textContent = profile.bio || "";
-            document.getElementById("viewProfileLevelHome").textContent = profile.currentLevel || "—";
-            document.getElementById("viewProfileTrophiesHome").textContent = profile.highestTrophies || "—";
-            document.getElementById("viewProfilePowerHome").textContent = profile.currentPower || "—";
-            document.getElementById("viewProfileClanHome").textContent = profile.currentClan || "—";
+            document.getElementById("viewProfileBioHome").textContent = String(profile.bio || "").trim();
+            document.getElementById("viewProfileFactsHome").innerHTML = ProfileCard.facts(profile);
         };
-        window.closeViewProfileModalHome = function () {
+        window.closeViewProfileModalHome = function (fromBack) {
             document.getElementById("viewProfileModalOverlayHome").classList.remove("open");
+            if (fromBack !== true) leavePopupStep();
         };
 
         let latestPersonalNotifications = [];
@@ -4865,7 +5567,7 @@ function getNewsTypeInfo(type) {
                 const PCx = window.ProgressCore;
                 const got = [result.claimed > 0 ? `+${result.claimed} 🪙` : "", result.draws ? `🧰 ${result.draws} free chest draw${result.draws === 1 ? "" : "s"}` : "",
                     ...(result.items || []).map(id => PCx && PCx.BY_ID[id] ? `${PCx.BY_ID[id].icon} ${PCx.BY_ID[id].name}` : id),
-                    result.dupTokens ? `+${result.dupTokens} 🪙 for what you already had` : ""].filter(Boolean);
+                    result.dupStardust ? `+${result.dupStardust} ✨ for what you already had` : ""].filter(Boolean);
                 const tokensOnly = got.length === 1 && result.claimed > 0;
                 showQuestToast(result.alreadyClaimed ? "You've already claimed this one."
                     : tokensOnly ? `+${result.claimed} 🪙 added to your wallet!`
@@ -5256,8 +5958,8 @@ window.closeInboxItemModal = closeInboxItemModal;
             shareTierList:  { icon: "🏆", title: "Share a tier list", hint: "Post a new tier list in Social → Tier Lists.", go: () => openSocialTab("tierlist") },
             comment:        { icon: "🗨️", title: "Comment on someone's post", hint: "A real comment on another player's formation or tier list.", go: () => openSocialTab("formation") },
             readNews:       { icon: "📰", title: "Read the latest news", hint: "Open any news post.", go: () => openNewsModal() },
-            viewUnit:       { icon: "⚔️", title: "Look up a troop or hero", hint: "Open any unit in Troops & Heroes.", go: () => goToPage("troops") },
-            compareUnits:   { icon: "⚖️", title: "Compare two units", hint: "Pick two troops (or two heroes) in Troops & Heroes → Compare.", go: () => openTroopsCompare() },
+            viewUnit:       { icon: "⚔️", title: "Look up a troop or hero", hint: "Open any unit in Troops, Heroes & Bosses.", go: () => goToPage("troops") },
+            compareUnits:   { icon: "⚖️", title: "Compare two units", hint: "Pick any two troops or heroes in Troops, Heroes & Bosses → Compare.", go: () => openTroopsCompare() },
             checkPromo:     { icon: "🎁", title: "Check the promo codes", hint: "Open Promo → Latest Codes.", go: () => openPromoTab("codes") },
             viewFormation:  { icon: "🔎", title: "Look at a formation", hint: "Open any post in Social → Formation Help.", go: () => openSocialTab("formation") },
             viewTierList:   { icon: "📊", title: "Look at a tier list", hint: "Open any tier list in Social → Tier Lists.", go: () => openSocialTab("tierlist") },
@@ -5271,7 +5973,13 @@ window.closeInboxItemModal = closeInboxItemModal;
             goToPage("troops");
             const frame = document.querySelector("#page-troops iframe");
             if (!frame) return;
-            const go = () => { try { frame.contentWindow.switchTab("compare"); } catch (e) { /* not ready */ } };
+            const go = () => {
+                try {
+                    const w = frame.contentWindow;
+                    w.switchTab("compare");
+                    if (typeof w.setCompareMode === "function") w.setCompareMode("units"); // the quest is two units
+                } catch (e) { /* not ready */ }
+            };
             let ready = false;
             try { ready = frame.contentDocument.readyState === "complete" && typeof frame.contentWindow.switchTab === "function"; } catch (e) {}
             if (ready) go();
@@ -5352,9 +6060,11 @@ window.closeInboxItemModal = closeInboxItemModal;
             return (questToday && questToday.rewards && questToday.rewards[id]) || 1;
         }
 
-        // Monday..Sunday. Each day's login token is opened by tapping that
-        // day; Sunday is the chest — 3–5 🪙 after logging in every day Monday
-        // to Saturday, 1 otherwise. The server decides the amount.
+        // Monday..Sunday. Each day's login gift is opened by tapping that day:
+        // 🪙 or ✨ (PC.loginGift); Sunday is the chest — 3–5 🪙 after logging in
+        // every day Monday to Saturday (1 otherwise) plus a chest of Uncommon or
+        // better. The server decides the amounts.
+        const giftLabel = (g) => (g.stardust ? `✨<small>${g.stardust}</small>` : `🪙<small>+${g.tokens}</small>`);
         function renderLoginCalendar(disabled) {
             const week = questToday.week || [questToday.dayKey];
             if (week.length !== 7) return "";
@@ -5366,22 +6076,25 @@ window.closeInboxItemModal = closeInboxItemModal;
                 const login = questLogins[k];
                 const sunday = i === 6;
                 let cls = "", body, click = "";
+                const g = PC.loginGift(k);
                 if (login && login.status === "ready") {
                     cls = " ready";
-                    body = sunday && login.chest ? "🎁<small>Open!</small>" : "🪙<small>Open</small>";
+                    body = sunday && login.chest ? "🎁<small>Open!</small>" : `${g.stardust ? "✨" : "🪙"}<small>Open</small>`;
                     click = ` onclick="handleQuestClaim('${k}_login', this)"${disabled}`;
                 } else if (login) {
                     cls = " done";
-                    body = `✅<small>+${login.reward || 1}</small>`;
+                    // what it gave: 🪙, ✨ (both, with the Ration Pack), Sunday's 🧰 too
+                    const got = [login.reward ? `+${login.reward}🪙` : "", login.stardust ? `+${login.stardust}✨` : "", login.itemChest ? "🧰" : ""].filter(Boolean).join(" ");
+                    body = `✅<small>${got || "+1🪙"}</small>`;
                 } else if (k < today) {
                     cls = " missed";
                     body = "✖<small>missed</small>";
                 } else if (k === today) {
                     cls = " today";
-                    body = `${sunday ? "🎁" : "🪙"}<small>…</small>`;
+                    body = sunday ? "🎁<small>…</small>" : giftLabel(g);
                 } else {
                     cls = " future";
-                    body = sunday ? `🎁<small>${missedDay ? "1" : "3–5"}</small>` : "🪙<small>+1</small>";
+                    body = sunday ? `🎁<small>${missedDay ? "1" : "3–5"}+🧰</small>` : giftLabel(g);
                 }
                 const label = `${names[i]}${k === today ? " (today)" : ""}`;
                 return `<button type="button" class="cal-day${cls}${sunday ? " sunday" : ""}${k === today ? " today" : ""}" aria-label="${label}"${click || " disabled"}>
@@ -5390,15 +6103,15 @@ window.closeInboxItemModal = closeInboxItemModal;
             const sundayLogin = questLogins[week[6]];
             let streak;
             if (sundayLogin && sundayLogin.status === "claimed") {
-                streak = `🎁 This week's chest gave <strong>+${sundayLogin.reward} 🪙</strong>. A new week starts Monday.`;
+                streak = `🎁 This week's chest gave <strong>+${sundayLogin.reward} 🪙</strong>${sundayLogin.itemChest ? " and a 🧰 chest" : ""}. A new week starts Monday.`;
             } else if (sundayLogin && sundayLogin.chest && sundayLogin.reward > 1) {
-                streak = "🔥 Full streak! Tap Sunday to open your chest.";
+                streak = "🔥 Full streak! Tap Sunday to open your chest — 🪙 and a 🧰 of Uncommon or better.";
             } else if (missedDay) {
-                streak = "You missed a day this week, so Sunday's chest gives 1 🪙. A new streak starts Monday.";
+                streak = "You missed a day this week, so Sunday's chest gives 1 🪙 — plus its 🧰 of Uncommon or better. A new streak starts Monday.";
             } else {
-                streak = `🔥 <strong>${loggedMonSat}/6</strong> — log in every day till Saturday for Sunday's chest (3–5 🪙).`;
+                streak = `🔥 <strong>${loggedMonSat}/6</strong> — log in every day till Saturday for Sunday's chest: 3–5 🪙 and a 🧰 of Uncommon or better.`;
             }
-            return `<div class="quest-section-label">📅 Your week</div>
+            return `<div class="quest-section-label">📅 Your week <small class="quest-week-key">🪙 Mon/Wed/Fri · ✨ Tue/Thu/Sat · 🎁 Sun</small></div>
                 <div class="quest-calendar">${tiles}</div>
                 <p class="quest-streak">${streak}</p>`;
         }
@@ -5439,8 +6152,9 @@ window.closeInboxItemModal = closeInboxItemModal;
                 return;
             }
             const disabled = questClaiming ? " disabled" : "";
+            // reward: 🪙 (a number, or "?" for a chest) — or a whole label ("+50 ✨")
             const claimBtn = (claimId, reward) =>
-                `<button class="quest-claim-btn" onclick="handleQuestClaim('${claimId}', this)"${disabled}>Claim +${reward} 🪙</button>`;
+                `<button class="quest-claim-btn" onclick="handleQuestClaim('${claimId}', this)"${disabled}>Claim ${typeof reward === "string" && /✨/.test(reward) ? reward : `+${reward} 🪙`}</button>`;
             // reward: the "+1 🪙" chip, shown by the title (not squeezed in by the button).
             const row = (cls, info, hint, action, reward) => `<div class="quest-row${cls}">
                     <span class="quest-icon">${info.icon}</span>
@@ -5458,7 +6172,7 @@ window.closeInboxItemModal = closeInboxItemModal;
             const earlierHtml = earlier.length
                 ? `<div class="quest-section-label">Not claimed yet from earlier</div>` + earlier.map(r => {
                     const info = QUEST_INFO[r.questId] || { icon: "⭐", title: r.questId };
-                    return row(" ready", info, `Done on ${formatQuestDay(r.dayKey)}`, claimBtn(r.id, r.chest ? "?" : r.reward || 1));
+                    return row(" ready", info, `Done on ${formatQuestDay(r.dayKey)}`, claimBtn(r.id, r.chest ? "?" : r.stardust && !r.reward ? `+${r.stardust} ✨` : r.reward || 1));
                 }).join("")
                 : "";
 
@@ -5487,9 +6201,10 @@ window.closeInboxItemModal = closeInboxItemModal;
 
             // A waiting chest stays a surprise: its amount isn't added up here.
             const hasChest = questReady.some(r => r.chest);
-            const readyTotal = questReady.filter(r => !r.chest).reduce((a, r) => a + (r.reward || 1), 0);
+            const readyTotal = questReady.filter(r => !r.chest).reduce((a, r) => a + (typeof r.reward === "number" ? r.reward : 1), 0);
+            const readyStardust = questReady.reduce((a, r) => a + (r.stardust || 0), 0);
             const claimAll = questReady.length >= 2
-                ? `<button class="quest-claim-all-btn" onclick="handleQuestClaim(null, this)"${disabled}>Claim all (${hasChest ? "🎁 + " : ""}+${readyTotal} 🪙)</button>`
+                ? `<button class="quest-claim-all-btn" onclick="handleQuestClaim(null, this)"${disabled}>Claim all (${[hasChest ? "🎁" : "", readyTotal ? `+${readyTotal} 🪙` : "", readyStardust ? `+${readyStardust} ✨` : ""].filter(Boolean).join(" · ")})</button>`
                 : "";
             // Today at a glance: how many of today's quests (and the puzzle) are done.
             const todayIds = questToday.quests.filter(id => id !== "login");
@@ -5619,7 +6334,8 @@ window.closeInboxItemModal = closeInboxItemModal;
                     const rect = await openChest(chestPop, chestAmount);
                     if (typeof result.balance === "number") questBalance = result.balance;
                     flyQuestCoins(rect, result.claimed);
-                    showQuestToast((ids.length === 1 && !result.itemBonus ? `🎁 Chest opened: +${result.claimed} 🪙!` : `🎁 +${chestAmount} from the chest — +${result.claimed} 🪙 in all!`) + itemBonusNote(result));
+                    showQuestToast((ids.length === 1 && !result.itemBonus ? `🎁 Chest opened: +${result.claimed} 🪙!` : `🎁 +${chestAmount} from the chest — +${result.claimed} 🪙 in all!`) + stardustNote(result) + itemBonusNote(result));
+                    await showLoginChestItems(result.chests); // …and Sunday's 🧰: a thing to wear
                     return;
                 }
                 if (chestPop) chestPop.remove();
@@ -5634,7 +6350,10 @@ window.closeInboxItemModal = closeInboxItemModal;
                 if (result.claimed > 0) flyQuestCoins(fromRect, result.claimed);
                 if (result.claimed > 0) showQuestToast((openingChest && ids.length === 1
                     ? `🎁 Chest opened: +${result.claimed} 🪙!`
-                    : `+${result.claimed} 🪙 claimed!`) + itemBonusNote(result));
+                    : `+${result.claimed} 🪙 claimed!`) + stardustNote(result) + itemBonusNote(result));
+                else if (result.stardust > 0) showQuestToast(`✨ +${result.stardust} Stardust — for the chest, Daily Deals and more looks (Store).`);
+                if (typeof result.stardustBalance === "number" && progressStatus) progressStatus.stardust = result.stardustBalance;
+                await showLoginChestItems(result.chests);
             } catch (e) {
                 if (chestPop) chestPop.remove();
                 showQuestToast(e.message || "Couldn't claim — check your connection and try again.");
@@ -5644,6 +6363,32 @@ window.closeInboxItemModal = closeInboxItemModal;
             }
         }
 
+        const stardustNote = (result) => (result && result.stardust > 0 ? ` ✨ +${result.stardust} Stardust too!` : "");
+        // Sunday's 🧰: what came out — a thing to wear (🧍 Wear it), or a duplicate's ✨
+        async function showLoginChestItems(chests) {
+            for (const c of chests || []) {
+                const it = PC.BY_ID[c.id];
+                if (!it) continue;
+                if (progressStatus && !c.duplicate) progressStatus.items = [...new Set([...(progressStatus.items || []), c.id])];
+                await new Promise(resolve => {
+                    const pop = document.createElement("div");
+                    pop.className = "kih-pop lip-pop";
+                    pop.setAttribute("role", "dialog");
+                    pop.setAttribute("aria-label", "Sunday's chest");
+                    const r = PC.RARITIES[it.rarity];
+                    pop.innerHTML = `<div class="lip-box" style="--rc:${r.color}"><div class="lip-title">🧰 Sunday's chest</div>
+                        <div class="lip-pic">${(CC.wearOf(c.id) && CC.itemPic(c.id, 104)) || `<span style="font-size:3rem">${it.icon}</span>`}</div>
+                        <b class="lip-name">${escText(it.name)}</b><small>${escText(r.label)}${c.duplicate ? ` · already yours — +${c.refund} ✨` : " · new! Its bonus is on now."}</small>
+                        <div class="lip-acts">${!c.duplicate && CC.wearOf(c.id) ? `<button type="button" class="lip-wear">🧍 Wear it</button>` : ""}<button type="button" class="lip-ok">Nice!</button></div></div>`;
+                    document.body.appendChild(pop);
+                    const done = () => { pop.remove(); resolve(); };
+                    pop.querySelector(".lip-ok").addEventListener("click", done);
+                    const wear = pop.querySelector(".lip-wear");
+                    if (wear) wear.addEventListener("click", () => { done(); window.openWardrobeAt(c.id, true); });
+                    pop.addEventListener("click", (e) => { if (e.target === pop) done(); });
+                });
+            }
+        }
         // Quest-token items pay their round-up once every quest of a day is claimed.
         const itemBonusNote = (result) => result && result.itemBonus ? ` (incl. 🎒 +${result.itemBonus} item bonus for finishing the day)` : "";
 
@@ -5959,6 +6704,21 @@ window.closeInboxItemModal = closeInboxItemModal;
 // Your border around the top-left picture, live (a new one shows at once).
 let unsubTopbarCard = null;
 // (global: Profile's border picker calls it too)
+// Your character in the top-left corner (a full-body card) instead of a
+// picture — the starter look until you dress up. Signed out: the 👤 again.
+function applyTopbarChar(card) {
+    const wrap = document.getElementById("topbarAvatarWrap");
+    let ch = document.getElementById("topbarChar");
+    if (!AppState.getCurrentUser() || !window.CharacterCore) {
+        if (ch) ch.remove();
+        return;
+    }
+    if (!ch) { ch = document.createElement("span"); ch.id = "topbarChar"; ch.className = "kc-card topbar-char"; wrap.appendChild(ch); }
+    ch.innerHTML = CharacterCore.svg((card && card.outfit) || CharacterCore.cleanOutfit({}, []), { size: 38, title: "Your profile" });
+    document.getElementById("topbarAvatarIcon").style.display = "none";
+    document.getElementById("topbarAvatarFallback").style.display = "none";
+}
+window.applyTopbarChar = applyTopbarChar;
 window.applyTopbarBorder = function (style) {
     const b = style && window.ProgressCore && ProgressCore.STYLE_BY_ID[style.border];
     document.getElementById("topbarAvatarWrap").className = b && b.type === "border" ? `fx-av fx-border-${b.css}${b.anim ? " fx-" + b.anim : ""}` : "";
@@ -5966,12 +6726,12 @@ window.applyTopbarBorder = function (style) {
 function startTopbarProfileListener() {
     if (unsubTopbarProfile) { unsubTopbarProfile(); unsubTopbarProfile = null; }
     if (unsubTopbarCard) { unsubTopbarCard(); unsubTopbarCard = null; }
-    if (!AppState.getCurrentUser()) { applyTopbarBorder(null); refreshTopbar(0); return; } // 0 retries — signed out, nothing to wait on
+    if (!AppState.getCurrentUser()) { applyTopbarBorder(null); applyTopbarChar(null); refreshTopbar(0); return; } // 0 retries — signed out, nothing to wait on
     unsubTopbarProfile = AppState.listenToMyProfile((profile) => {
         if (profile) applyTopbarProfile(profile);
         applySeenMarkers(profile); // read the inbox / news on another device: clear the badges here
     });
-    unsubTopbarCard = AppState.listenToMyCard((card) => applyTopbarBorder(card && card.style));
+    unsubTopbarCard = AppState.listenToMyCard((card) => { applyTopbarBorder(card && card.style); applyTopbarChar(card); });
 }
 
 refreshTopbar();
@@ -6012,16 +6772,31 @@ if (challengeCode) {
             cameFromOtherPage = { page: gotoPage, url: ref.href, label };
         }
     } catch (e) { }
+    // ?goto=bug: the bug report (About & contact's 🐞 button) — once the page is
+    // ready and it's known whether you're signed in (signed out, it asks you to sign in)
+    if (gotoPage === "bug") {
+        let tries = 0;
+        const open = () => {
+            if (window.openBugReport && window.AppState && AppState.waitForAuthReady) AppState.waitForAuthReady().then(() => window.openBugReport());
+            else if (++tries < 40) setTimeout(open, 250);
+        };
+        setTimeout(open, 300);
+    }
+    // ?goto=troops&boss=<id>: straight to that boss (the guide's boss pages link here)
+    const linkBoss = urlParams.get("boss");
+    if (gotoPage === "troops" && linkBoss && /^[A-Za-z0-9_]+$/.test(linkBoss)) {
+        setSectionFrameUrl(document.querySelector("#page-troops iframe"), "troopsandheroes.html?tab=bosses&boss=" + encodeURIComponent(linkBoss));
+    }
     // ?goto=troops&unit=<key>[&compare=1]: straight to that unit (the guide pages link here)
     const linkUnit = urlParams.get("unit");
     if (gotoPage === "troops" && linkUnit && /^[A-Za-z0-9_]+$/.test(linkUnit)) {
         setSectionFrameUrl(document.querySelector("#page-troops iframe"),
             "troopsandheroes.html?unit=" + encodeURIComponent(linkUnit) + (urlParams.get("compare") ? "&compare=1" : ""));
     }
-    // ?goto=store&at=event|chest: straight to that part of the Store
+    // ?goto=store&at=event|chest|hearts|deals: straight to that part of the Store
     const storeAt = urlParams.get("at");
-    if (gotoPage === "store" && /^(event|chest)$/.test(storeAt || "")) setSectionFrameUrl(document.querySelector("#page-store iframe"), "store.html#" + storeAt);
-    goToPage(gotoPage);
+    if (gotoPage === "store" && /^(event|chest|hearts|deals)$/.test(storeAt || "")) setSectionFrameUrl(document.querySelector("#page-store iframe"), "store.html#" + storeAt);
+    if (gotoPage !== "bug") goToPage(gotoPage);
     history.replaceState(history.state, "", window.location.pathname); // consume it — refresh won't re-trigger this
 } else if (pageBeforeRefresh && pageBeforeRefresh !== "home") {
     goToPage(pageBeforeRefresh, false, true);

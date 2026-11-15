@@ -8,7 +8,7 @@
     <link rel="canonical" href="https://keazyea.github.io/about.html">
     <link rel="icon" href="images/KIH.jpg">
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="units/units.css?v=2">
+    <link rel="stylesheet" href="units/units.css?v=3">
     <meta name="google-adsense-account" content="ca-pub-7081980567861066">
     <script>
         // Google's ad code loads once the page has finished showing.
@@ -45,6 +45,10 @@
         .about-tile .ic { font-size: 22px; line-height: 1; }
         .about-tile.t2 { --sec: 240, 101, 149; } .about-tile.t3 { --sec: 252, 196, 25; } .about-tile.t4 { --sec: 132, 94, 247; }
         .about-tile.t5 { --sec: 34, 184, 207; } .about-tile.t6 { --sec: 81, 207, 102; }
+        .about-tile.t7 { --sec: 255, 146, 43; } .about-tile.t8 { --sec: 255, 196, 57; }
+        .bug-btn { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; padding: 12px; border-radius: 10px; background: rgba(255, 107, 107, 0.12); border: 1px solid rgba(255, 107, 107, 0.45); color: #ffb3b3 !important; font: 700 15px Arial, sans-serif; text-decoration: none; }
+        .contact-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .contact-row a { margin-top: 10px; }
 
         .creator { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
         .creator .wave { font-size: 34px; }
@@ -76,18 +80,20 @@
         <div class="about-hero">
             <img src="images/KIH_HP.jpg" alt="Keazyea's Intelligence Hub" width="200">
             <h1>Keazyea's Intelligence Hub</h1>
-            <p>A free, fan-made companion for <strong>Kingdom Clash</strong>: unit stats, promo codes, tips, giveaways, daily games and a player community, all in one place.</p>
+            <p>A free, fan-made companion for <strong>Kingdom Clash</strong>: unit and boss stats, promo codes, tips, giveaways, daily games, your own dress-up character and a player community, all in one place.</p>
         </div>
 
         <section class="about-card">
             <div class="about-card-title">What you'll find</div>
             <div class="about-tiles">
-                <a class="about-tile" href="units/"><span class="ic">⚔️</span><b>Troops &amp; heroes</b><small>Every unit's stats at every level, abilities and talents</small></a>
+                <a class="about-tile" href="units/"><span class="ic">⚔️</span><b>Troops, heroes &amp; bosses</b><small>Every unit's stats at every level, abilities and talents — and every Glorious Hunt boss</small></a>
                 <a class="about-tile t2" href="./?goto=promo"><span class="ic">🎁</span><b>Promo codes</b><small>The latest working codes</small></a>
                 <a class="about-tile t3" href="./?goto=tips"><span class="ic">💡</span><b>Tips</b><small>Team comps, talents and event strategy</small></a>
                 <a class="about-tile t4" href="./?goto=games"><span class="ic">🎮</span><b>Games</b><small>A daily puzzle and quick unit quizzes, with a weekly leaderboard</small></a>
                 <a class="about-tile t5" href="./?goto=promo"><span class="ic">🎡</span><b>Giveaways</b><small>A weekly draw and secret giveaways with real prizes</small></a>
-                <a class="about-tile t6" href="./?goto=social"><span class="ic">👥</span><b>Community</b><small>Clan recruitment, friends, tier lists and formations</small></a>
+                <a class="about-tile t6" href="./?goto=social"><span class="ic">👥</span><b>Community</b><small>World Chat, Lore stories, clan recruitment, friends and tier lists</small></a>
+                <a class="about-tile t7" href="./?goto=character"><span class="ic">🧍</span><b>Your character</b><small>Dress up head to toe, pets and looks; send friends 💗 hearts</small></a>
+                <a class="about-tile t8" href="./?goto=achievements"><span class="ic">🏅</span><b>Achievements</b><small>Badges, rewards, chests and items with real perks</small></a>
             </div>
         </section>
 
@@ -108,8 +114,12 @@
 
         <section class="about-card">
             <div class="about-card-title">Get in touch</div>
-            <p>Got feedback, a bug report, a stat that looks wrong, or a suggestion? Reach out anytime.</p>
-            <a class="mail-btn" href="mailto:keazyea@gmail.com">📧 keazyea@gmail.com</a>
+            <p>Got feedback, a bug report, a stat that looks wrong, or a suggestion? Reach out anytime. A bug report from the app can carry up to 5 screenshots, and the reply comes to your inbox there.</p>
+            <div class="contact-row">
+                <a class="bug-btn" href="./?goto=bug">🐞 Report a bug</a>
+                <a class="mail-btn" href="mailto:keazyea@gmail.com">📧 Email</a>
+            </div>
+            <p class="dim" style="margin-top:8px; text-align:center;">keazyea@gmail.com</p>
         </section>
 
         <p class="about-cta"><a class="ga-btn" href="./">🏠 Open the app</a></p>
@@ -118,7 +128,7 @@
     </main>
 
     <footer class="guide-foot">
-        <p><a href="./">Open the app</a> · <a href="units/">Troops &amp; heroes guide</a> · <a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a></p>
+        <p><a href="./">Open the app</a> · <a href="units/">Troops, heroes &amp; bosses guide</a> · <a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a></p>
     </footer>
 
     <script>
