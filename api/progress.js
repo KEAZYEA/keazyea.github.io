@@ -28,7 +28,7 @@
  *   renameLook { look, name }  -> ✏️ a look's name (C.cleanLookName; "" = "Look N")
  *   sendHeart { toUid }        -> 💗 a heart to a friend: once a day each, up to
  *                                 P.heartsPerDay(vip) a day; it waits for them to collect;
- *                                 the day's last one gives you P.HEARTS.dayBonus 💗
+ *                                 the day's 5th (P.HEARTS.perDay) gives you P.HEARTS.dayBonus 💗
  *   collectHearts { fromUid }  -> collect the hearts friends sent you (one, or all)
  *   heartStatus { uid }        -> your 💗, who you've sent one to today, hearts waiting
  *                                 for you, and (uid) whether that player's your friend
@@ -435,8 +435,9 @@ async function sendHeart(db, uid, body, now) {
     const mine = myInv.exists ? myInv.data() : {};
     const bonus = roll < P.heartChance(mine.perks, "heartSendChance") ? 1 : 0;
     const today = [...sent, to];
-    // the day's last heart sent: a little thank-you
-    const dayBonus = today.length === perDay ? P.HEARTS.dayBonus : 0;
+    // the day's 5th heart sent: a little thank-you (the 5th for everyone — more
+    // hearts to send, from Super Supporter or items, don't make you wait longer)
+    const dayBonus = today.length === P.HEARTS.perDay ? P.HEARTS.dayBonus : 0;
     const hearts = Math.max(0, mine.hearts || 0) + bonus + dayBonus;
     tx.set(dayRef, { uid, day, to: today, updatedAt: now });
     tx.set(invRef(db, uid), { hearts, heartsSent: Math.max(0, mine.heartsSent || 0) + 1, updatedAt: now }, { merge: true });

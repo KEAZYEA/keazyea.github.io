@@ -6962,7 +6962,7 @@ window.removeClanIconPreview = function () {
             const pals = (friends || []).slice().sort((a, b) => (sentTo(a.uid) - sentTo(b.uid)) || (sentMe.has(b.uid) - sentMe.has(a.uid))
                 || (isFriendOnline(b) - isFriendOnline(a)) || ((b.lastActiveAt || 0) - (a.lastActiveAt || 0)));
             const sendStrip = !pals.length ? `<div class="hp-empty">Add friends to send them hearts.</div>`
-                : `<div class="hp-send-title">💗 Send hearts <small>${h.heartsLeft > 0 ? `${h.heartsLeft} of ${h.heartsPerDay} left today · send all ${h.heartsPerDay} for +${window.ProgressCore.HEARTS.dayBonus} 💗` : "all sent today ✓ — more tomorrow"}</small></div>
+                : `<div class="hp-send-title">💗 Send hearts <small>${h.heartsLeft > 0 ? `${h.heartsLeft} of ${h.heartsPerDay} left today · ${(h.heartsToday || []).length >= window.ProgressCore.HEARTS.perDay ? `+${window.ProgressCore.HEARTS.dayBonus} 💗 bonus earned ✓` : `send ${window.ProgressCore.HEARTS.perDay} for +${window.ProgressCore.HEARTS.dayBonus} 💗`}` : "all sent today ✓ — more tomorrow"}</small></div>
                 <div class="hp-send">${pals.map(p => {
                     const sent = sentTo(p.uid);
                     return `<div class="hp-chip${sent ? " sent" : ""}">${charCard(p.uid, "hp-chip-av")}<small><span data-fx-uid="${escapeHtml(p.uid)}" class="${nameFx(p.uid)}">${escapeHtml(p.name || "Friend")}</span></small>
@@ -7023,7 +7023,7 @@ window.removeClanIconPreview = function () {
                 showInfoModal("Couldn't send it", e.message);
             }
         };
-        const sentToast = (r) => `💗 Sent! They'll find it in their Hearts.${r.bonus ? " Lucky — you got 1 💗 too!" : ""}${r.dayBonus ? ` 🎉 All ${r.heartsPerDay} sent today: +${r.dayBonus} 💗 for you!` : ""}`;
+        const sentToast = (r) => `💗 Sent! They'll find it in their Hearts.${r.bonus ? " Lucky — you got 1 💗 too!" : ""}${r.dayBonus ? ` 🎉 ${window.ProgressCore.HEARTS.perDay} sent today: +${r.dayBonus} 💗 for you!` : ""}`;
         AppState.waitForAuthReady().then(loadMyHearts);
         AppState.onAuthChange(loadMyHearts);
         async function sendHeartTo(uid) {

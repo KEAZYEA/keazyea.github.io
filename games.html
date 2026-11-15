@@ -491,6 +491,7 @@
 
     <script src="progress-core.js"></script>
     <script src="character-core.js"></script>
+    <script src="kih-dialog.js"></script>
     <script src="games-core.js"></script>
     <script type="module" src="appState.js"></script>
     <script>
@@ -1416,7 +1417,7 @@
                         btn.textContent = "Retry";
                         const msg = e && e.message && e.message !== "__RESTRICTED__" ? e.message : "Couldn't send.";
                         row.title = msg;
-                        alert(msg);
+                        KihDialog.alert({ icon: "⚠️", title: "Couldn't send it", message: msg });
                     }
                 };
                 list.appendChild(row);

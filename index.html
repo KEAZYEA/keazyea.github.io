@@ -2731,6 +2731,7 @@ body {
     <script src="character-core.js"></script>
     <script src="thing-details.js"></script>
     <script src="profile-card.js"></script>
+    <script src="kih-dialog.js"></script>
     <script src="help-guide.js"></script>
     <!-- 🎵 background music: the panel the 🎵 buttons open (music.js) -->
     <div class="music-pop" id="musicPop" role="dialog" aria-label="Music">
@@ -3049,6 +3050,8 @@ body {
            popupStepClose = null;
            if (history.state && history.state.kihPopup) { popupStepPopping = true; history.back(); }
        }
+       window.kihPopupStep = popupStep;
+       window.kihLeavePopupStep = leavePopupStep;
        window.closePopupFromHistory = function () {
            if (popupStepPopping) { popupStepPopping = false; return true; }
            if (!popupStepClose) return false;
@@ -3166,6 +3169,9 @@ body {
         // Reload whatever it's showing now (setSectionFrameUrl may have moved
         // it on from its src attribute). A reload never adds a Back step.
         if (existingFrame) setSectionFrameUrl(existingFrame, currentSectionFrameUrl(existingFrame, existingFrame.getAttribute("src")));
+    } else if (page === "store") {
+        // back in the Store: your ✨, 💗 and items as they are now (an achievement may have paid ✨)
+        try { target.querySelector("iframe")?.contentWindow?.kihRefresh?.(); } catch (e) { }
     } else if (page === "social") {
         // Back in Social: what's on its open tab counts as seen now (its 🔴 numbers, and Home's)
         let socialFrame = target.querySelector("iframe");
@@ -3631,7 +3637,7 @@ window.closeLegalModal = closeLegalModal;
                     count++; hs.heartsLeft = r.heartsLeft;
                     draw(true);
                     if (progressStatus) { progressStatus.hearts = r.hearts; progressStatus.heartsToday = r.heartsToday; }
-                    showQuestToast(`💗 Sent! They'll find it in Social → Friends → Hearts.${r.bonus ? " Lucky — you got 1 💗 too!" : ""}${r.dayBonus ? ` 🎉 All ${r.heartsPerDay} sent today: +${r.dayBonus} 💗 for you!` : ""}`);
+                    showQuestToast(`💗 Sent! They'll find it in Social → Friends → Hearts.${r.bonus ? " Lucky — you got 1 💗 too!" : ""}${r.dayBonus ? ` 🎉 ${PC.HEARTS.perDay} sent today: +${r.dayBonus} 💗 for you!` : ""}`);
                 } catch (e) {
                     draw(false);
                     showQuestToast("Couldn't send it — " + e.message);
@@ -4189,16 +4195,21 @@ window.closeLegalModal = closeLegalModal;
         /* ✨ About to spend `price` Stardust on `what`: asks first. Short of it?
            Offers to make up the rest from tokens (1 🪙 = STARDUST.perToken ✨,
            one way — it can't be turned back). true: go ahead. */
-        async function haveStardust(price, what) {
+        async function haveStardust(price, what, artHtml) {
             const fmt = (n) => Math.max(0, Math.floor(n)).toLocaleString("en-US");
             const have = Math.max(0, progressStatus.stardust || 0), tokens = Math.max(0, progressStatus.balance || 0);
-            if (have >= price) return confirm(`${what} for ${fmt(price)} ✨? (You have ${fmt(have)} ✨.)`);
+            if (have >= price) return KihDialog.confirm({ icon: "✨", artHtml, title: `Buy ${what}?`, message: `${fmt(price)} ✨ — you have ${fmt(have)} ✨.`, ok: `✨ ${fmt(price)}`, cancel: "Not now", tone: "stardust" });
             const need = price - have, cost = Math.ceil(need / PC.STARDUST.perToken);
             if (tokens < cost) {
-                showGenericErrorModal(`${what} is ${fmt(price)} ✨ — you have ${fmt(have)} ✨. Your daily login gives free ✨ every day (📅 Daily Quests), or top up with tokens (1 🪙 = ${PC.STARDUST.perToken} ✨): you'd need ${fmt(cost)} 🪙 and have ${fmt(tokens)}. Get tokens in the Store's 🪙 Token packs ($10 → 1,000 🪙 = 10,000 ✨).`, "Not enough ✨ Stardust");
+                const go = await KihDialog.choose({ icon: "✨", artHtml, title: "Not enough ✨ Stardust",
+                    message: `${what} is ${fmt(price)} ✨ — you have ${fmt(have)} ✨.`,
+                    note: `Your daily login gives free ✨ every day (📅 Daily Quests), or top up with tokens (1 🪙 = ${PC.STARDUST.perToken} ✨): you'd need ${fmt(cost)} 🪙 and have ${fmt(tokens)}. Get tokens in the Store's 🪙 Token packs ($10 → 1,000 🪙 = 10,000 ✨).`,
+                    buttons: [{ label: "🪙 Get tokens", value: "packs", tone: "gold", key: "packs" }, { label: "OK", value: null, key: "ok" }] });
+                if (go === "packs") window.openStoreAt("packs");
                 return false;
             }
-            if (!confirm(`${what} is ${fmt(price)} ✨ — you have ${fmt(have)} ✨.\n\nConvert ${fmt(cost)} 🪙 → ${fmt(cost * PC.STARDUST.perToken)} ✨ and buy it?\n(Stardust can't be turned back into tokens.)`)) return false;
+            if (!(await KihDialog.confirm({ icon: "✨", artHtml, title: "Not enough ✨ Stardust", message: `${what} is ${fmt(price)} ✨ — you have ${fmt(have)} ✨. Convert tokens and buy it?`,
+                exchange: { from: { icon: "🪙", amount: fmt(cost), label: "Tokens" }, to: { icon: "✨", amount: fmt(cost * PC.STARDUST.perToken), label: "Stardust" } }, note: "Stardust can't be turned back into tokens.", ok: "Convert & buy", cancel: "Not now", tone: "stardust" }))) return false;
             try {
                 const r = await AppState.convertTokens(cost);
                 progressStatus.stardust = r.stardust;
@@ -4210,7 +4221,7 @@ window.closeLegalModal = closeLegalModal;
         async function charBuy(btn, id) {
             const it = CC.thingOf(id), deal = PC.dealPrice(id, sgtDay()), price = deal || PC.buyPrice(id);
             if (!it || !price || progressBusy) return;
-            if (!(await haveStardust(price, `${deal ? "🛍️ Today's deal: " : ""}${it.name}`))) return;
+            if (!(await haveStardust(price, `${deal ? "🛍️ Today's deal: " : ""}${it.name}`, CC.itemPic(id, 72)))) return;
             progressBusy = true;
             btn.disabled = true;
             try {
@@ -4365,7 +4376,7 @@ window.closeLegalModal = closeLegalModal;
         // Straight to a part of the Store ("event": the Trick or Treat card, "chest") — for news posts' buttons.
         window.openStoreAt = function (at) {
             const frame = document.querySelector("#page-store iframe");
-            setSectionFrameUrl(frame, /^(event|chest|hearts|deals|sets)$/.test(at) ? "store.html#" + at : "store.html");
+            setSectionFrameUrl(frame, /^(event|chest|hearts|deals|sets|packs)$/.test(at) ? "store.html#" + at : "store.html");
             goToPage("store");
         };
         window.openChestInStore = function () {
@@ -4514,7 +4525,8 @@ let vipStatusEl = document.getElementById("vipStatusText"); if (vipStatusEl) vip
                 }
                 window.openBugReport = function () {
                     if (!AppState.getCurrentUser()) {
-                        if (confirm("Sign in with Google to send a bug report, so we can reply to you. Sign in now?")) toggleGoogleSignIn();
+                        KihDialog.confirm({ icon: "🐞", title: "Sign in to report a bug", message: "Sign in with Google to send a bug report, so we can reply to you.", ok: "Sign in with Google", cancel: "Not now" })
+                            .then(yes => { if (yes) toggleGoogleSignIn(); });
                         return;
                     }
                     document.getElementById("bugReportForm").hidden = false;
@@ -4552,7 +4564,7 @@ let vipStatusEl = document.getElementById("vipStatusText"); if (vipStatusEl) vip
             let btn = document.getElementById("googleSignInBtn");
             try {
                 if (user) {
-                    if (!confirm("Sign out of your Google account?")) return;
+                    if (!(await KihDialog.confirm({ icon: "👋", title: "Sign out?", message: "Sign out of your Google account on this device?", ok: "Sign out", cancel: "Stay signed in", tone: "danger" }))) return;
                     setButtonLoading(btn, true, "Signing out...");
                     await AppState.signOut();
                 } else {
@@ -4563,7 +4575,7 @@ let vipStatusEl = document.getElementById("vipStatusText"); if (vipStatusEl) vip
                 await refreshTopbar();
             } catch (err) {
                 console.error("Google sign-in error:", err);
-                alert("Sign-in failed or was cancelled.");
+                KihDialog.alert({ icon: "⚠️", title: "Couldn't sign in", message: "Sign-in failed or was cancelled. Please try again." });
             } finally {
                 if (btn) btn.disabled = false; // loadSettingsIntoPage already restored the right label
             }
@@ -4767,7 +4779,7 @@ let currentInboxItems = [];
                 // Didn't go through: put it back so they can try again.
                 answeringRequestsHome.delete(reqId);
                 renderFriendReqsHome(latestFriendReqsHome);
-                alert(e.message);
+                KihDialog.alert({ icon: "⚠️", title: "Couldn't answer that request", message: e.message });
             }
         };
 
@@ -5694,7 +5706,7 @@ window.closeInboxItemModal = closeInboxItemModal;
                 btn.textContent = "Copied!";
                 setTimeout(() => { btn.textContent = original; }, 1500);
             }).catch(() => {
-                alert("Couldn't copy automatically — the code is: " + code);
+                KihDialog.alert({ icon: "📋", title: "Copy your code", message: "It couldn't be copied automatically. Copy it from here:", code });
             });
         }
 

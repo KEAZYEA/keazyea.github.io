@@ -512,7 +512,8 @@
        back. Items with heartGetChance / heartSendChance can add a heart
        (for each one collected / sent). Spend them in the Heart Shop: a 🎡
        spin (spinCost) or a Heart Shop thing (its `heart` price). Send all
-       of the day's hearts and you get dayBonus 💗 (once a day).
+       hearts in a day (the 5th — perDay — for everyone, even with more to
+       send) and you get dayBonus 💗 (once a day).
        api/progress.js does it all; this is the rulebook. */
     const HEARTS = { perDay: 5, vipPerDay: 10, spinCost: 50, dayBonus: 3 };
     // + your items' heartSends (Heart Beanie, Stargazer Coat), never more than +5
