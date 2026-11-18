@@ -1225,7 +1225,8 @@ body {
         .poll-answers { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
         .poll-answer { display: flex; gap: 9px; align-items: flex-start; padding: 8px 10px; border-radius: 10px; background: rgba(255, 255, 255, 0.04); }
         .poll-answer.me { background: rgba(138, 77, 255, 0.16); }
-        .poll-answer img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; flex-shrink: 0; cursor: pointer; background: var(--kih-border); }
+        .poll-av { width: 30px; height: 36px; border-radius: 8px; overflow: hidden; flex-shrink: 0; cursor: pointer; background: #3a2f6e; display: block; }
+        .poll-av img, .poll-av svg { display: block; width: 100%; height: 100%; }
         .poll-answer-name { font-weight: 800; font-size: 0.85rem; cursor: pointer; }
         .poll-answer-name:hover { text-decoration: underline; }
         .poll-answer-text { font-size: 0.92rem; line-height: 1.4; overflow-wrap: anywhere; white-space: pre-wrap; }
@@ -1799,6 +1800,8 @@ body {
             font-family: inherit; cursor: default; min-width: 0;
         }
         .cal-day small { font-size: 0.68rem; color: var(--kih-text-dim); white-space: nowrap; }
+        .cal-day small.cal-got { display: block; line-height: 1.15; }
+        @media (max-width: 360px) { .cal-day { padding-left: 1px; padding-right: 1px; } .cal-day small.cal-got { font-size: 0.58rem; letter-spacing: -0.03em; } }
         .cal-name { font-size: 0.7rem; font-weight: 700; color: var(--kih-text-dim); }
         .cal-day.today { border-color: var(--kih-accent, #4169e1); box-shadow: 0 0 14px rgba(108, 99, 255, 0.45); }
         .cal-day.done { border-color: #2e7d32; background: rgba(46, 125, 50, 0.12); }
@@ -1810,6 +1813,8 @@ body {
         .cal-day.sunday { border-style: dashed; }
         .cal-day.sunday.ready, .cal-day.sunday.done { border-style: solid; }
         .quest-streak { font-size: 0.85rem; color: var(--kih-text-dim); margin: 0 0 14px; line-height: 1.4; }
+        .quest-reward.sd { color: #9fdcff; }
+        .quest-reward.hs { color: #ff9cc7; }
         .quest-reward { display: inline-block; vertical-align: 2px; margin-left: 4px; flex-shrink: 0; padding: 2px 8px; border-radius: 999px; font-size: 0.8rem; font-weight: 800; color: #ffd75e; background: rgba(255, 196, 0, 0.12); white-space: nowrap; }
         .quest-links { position: relative; z-index: 1; display: flex; gap: 8px; margin: 12px 0 0; }
         .quest-links button {
@@ -1853,6 +1858,14 @@ body {
         .kih-guide-fab span { font-size: 0.9rem; }
         .kih-guide-fab:active { transform: scale(0.95); }
         .home-landing.hidden .kih-guide-fab, body.kih-guide-on .kih-guide-fab { display: none; }
+        /* 🧰 chests waiting to be opened, on the Store's buttons */
+        .count-badge { position: absolute; top: -6px; right: -6px; min-width: 20px; height: 20px; padding: 0 6px; box-sizing: border-box; border-radius: 999px;
+            display: inline-flex; align-items: center; justify-content: center; background: #ff3b5c; color: #fff; font: 900 0.72rem/1 inherit;
+            box-shadow: 0 0 0 2px var(--kih-bg, #12112a); pointer-events: none; z-index: 2; }
+        .count-badge[hidden] { display: none; }
+        .hud-plus { position: relative; }
+        .home-menu-btn .count-badge { top: 10px; right: 14px; min-width: 22px; height: 22px; font-size: 0.78rem; }
+        .hud-plus .count-badge { top: -10px; right: -12px; min-width: 17px; height: 17px; padding: 0 4px; font-size: 0.64rem; }
         .kih-guide-overlay { position: fixed; inset: 0; z-index: 2500; display: none; align-items: flex-end; justify-content: center; background: rgba(6, 6, 18, 0.6); }
         .kih-guide-overlay.open { display: flex; animation: popFade 0.2s ease; }
         .kih-guide-sheet { width: 100%; max-width: 520px; height: min(78vh, 640px); height: min(78dvh, 640px); display: flex; flex-direction: column; background: #17172e;
@@ -2055,6 +2068,48 @@ body {
         @keyframes wave { 0%, 60%, 100% { transform: rotate(0); } 10%, 30% { transform: rotate(16deg); } 20%, 40% { transform: rotate(-8deg); } }
         /* Today: three live cards */
         .home-today { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; width: 100%; max-width: 420px; margin: 0 0 clamp(8px, 1.8vh, 14px); }
+        /* 🎄 the Christmas Calendar: one wide card across the top */
+        .today-card.xmas { grid-column: 1 / -1; flex-direction: row; justify-content: center; gap: 8px; background: linear-gradient(135deg, rgba(212, 42, 42, 0.55), rgba(47, 154, 74, 0.5)) !important; border-color: rgba(255, 255, 255, 0.5) !important; }
+        .today-card.xmas small { margin-left: 4px; }
+        /* 👘 the outfit sets icon, just above Ask (it goes where Ask goes) */
+        .hset-fab { position: fixed; right: 18px; bottom: calc(76px + env(safe-area-inset-bottom, 0px)); z-index: 90; width: 54px; height: 54px; border-radius: 50%; cursor: pointer; padding: 0;
+            display: flex; align-items: center; justify-content: center; font-size: 1.7rem; border: 2px solid rgba(255, 255, 255, 0.55);
+            background: radial-gradient(circle at 35% 30%, #7c6bff, #2d2a8a); box-shadow: 0 6px 18px rgba(80, 70, 255, 0.5); animation: hsetBob 2.6s ease-in-out infinite; }
+        .hset-fab.seasonal { background: radial-gradient(circle at 35% 30%, #ff5a5a, #8e1620 70%); border-color: #ffd24a; box-shadow: 0 6px 18px rgba(212, 42, 42, 0.55), 0 0 14px rgba(255, 210, 74, 0.5); }
+        .hset-fab:active { transform: scale(0.93); }
+        .hset-fab[hidden], .home-landing.hidden .hset-fab, body.kih-guide-on .hset-fab { display: none; }
+        .hset-dot { position: absolute; top: 2px; right: 2px; width: 12px; height: 12px; border-radius: 50%; background: #ff3b3b; border: 2px solid #fff; }
+        @keyframes hsetBob { 50% { transform: translateY(-4px); } }
+        /* its popup */
+        .hso-overlay { position: fixed; inset: 0; z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(6, 6, 18, 0.72); animation: hsoIn 0.2s ease both; }
+        .hso-box { position: relative; width: 100%; max-width: 420px; max-height: calc(100dvh - 32px); overflow-y: auto; padding: 18px 14px 14px; border-radius: 20px; border: 1px solid rgba(156, 220, 255, 0.45);
+            background: linear-gradient(170deg, #1d2050, #10122c); box-shadow: 0 18px 40px rgba(0, 0, 0, 0.5); color: #fff; animation: hsoPop 0.28s cubic-bezier(.2, 1.4, .4, 1) both; }
+        .hso-x { position: absolute; top: 8px; right: 10px; width: 34px; height: 34px; border-radius: 50%; border: none; background: rgba(255, 255, 255, 0.1); color: #fff; font-size: 1rem; cursor: pointer; }
+        .hso-title { font-size: 1.15rem; font-weight: 900; text-align: center; margin: 0 0 12px; }
+        .hso-title small { display: block; font-size: 0.75rem; font-weight: 700; color: #b8c0e8; margin-top: 2px; }
+        .hso-card { display: flex; gap: 12px; align-items: center; padding: 10px; margin: 0 0 10px; border-radius: 16px; border: 1px solid rgba(156, 220, 255, 0.4);
+            background: radial-gradient(circle at 15% 40%, rgba(140, 120, 255, 0.4), transparent 55%), linear-gradient(135deg, #22266a, #121638); }
+        .hso-card.seasonal { border-color: rgba(255, 210, 74, 0.7); background: radial-gradient(circle at 15% 40%, rgba(255, 90, 90, 0.35), transparent 55%), linear-gradient(135deg, #7a1620, #1d3a2a 70%, #12261c); }
+        .hso-fig { flex-shrink: 0; width: 92px; height: 110px; border-radius: 14px; overflow: hidden; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4); }
+        .hso-fig svg { display: block; width: 92px; height: 110px; }
+        .hso-info { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+        .hset-tag { align-self: flex-start; padding: 2px 8px; border-radius: 999px; font-size: 0.66rem; font-weight: 900; letter-spacing: 0.03em; background: rgba(255, 255, 255, 0.16); }
+        .hso-card.seasonal .hset-tag { background: #d42a2a; }
+        .hso-info b { font-size: 1rem; line-height: 1.2; }
+        .hso-info small { font-size: 0.72rem; color: #d6dcf5; line-height: 1.35; }
+        .hso-pieces { display: flex; flex-wrap: wrap; gap: 3px; margin: 2px 0; }
+        .hso-pieces span { width: 28px; height: 28px; border-radius: 8px; background: rgba(0, 0, 0, 0.3); display: inline-flex; align-items: center; justify-content: center; font-size: 0.9rem; cursor: pointer; }
+        .hso-pieces svg { width: 26px; height: 26px; }
+        .hso-row { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; margin-top: 3px; }
+        .hso-row s { font-size: 0.72rem; color: #a9b0d6; font-weight: 800; }
+        .hso-off { padding: 2px 7px; border-radius: 999px; font-size: 0.7rem; font-weight: 900; background: #ff4f8b; }
+        .hso-own { font-size: 0.85rem; font-weight: 900; color: #7ddc92; }
+        .hso-btn { padding: 7px 14px; border-radius: 999px; border: none; font-family: inherit; font-size: 0.84rem; font-weight: 900; cursor: pointer; color: #08223d;
+            background: linear-gradient(135deg, #c9eeff, #6cbcff 55%, #4a8dff); box-shadow: 0 3px 0 #2d6fc4; }
+        .hso-btn.wear { background: linear-gradient(135deg, #b8f5c8, #4cc77a); color: #062b14; box-shadow: 0 3px 0 #2a8a4e; }
+        @keyframes hsoIn { from { opacity: 0; } }
+        @keyframes hsoPop { from { transform: scale(0.85); opacity: 0; } }
+        @media (prefers-reduced-motion: reduce) { .hset-fab, .hso-overlay, .hso-box { animation: none; } }
         .home-today:empty { display: none; }
         .today-card {
             position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 0;
@@ -2178,7 +2233,7 @@ body {
                  Rewards and purchases fly into it (kihFlyToHud). -->
             <div class="hud" id="hudPage" style="display:none;">
                 <button type="button" class="hud-bal" onclick="goToPage('quests')" title="Your tokens — Daily Quests"><span class="hud-coin" aria-hidden="true">🪙</span><b class="hud-amt">0</b></button>
-                <button type="button" class="hud-plus" onclick="goToPage('store')" title="Get more tokens" aria-label="Get more tokens">+</button>
+                <button type="button" class="hud-plus" onclick="goToPage('store')" title="Get more tokens" aria-label="Get more tokens">+<span class="count-badge" data-store-badge hidden></span></button>
             </div>
             <div class="menu-wrapper">
                 <button class="icon-btn" title="Menu" onclick="toggleMenu()">☰</button>
@@ -2208,7 +2263,7 @@ body {
             <div class="home-landing-content">
             <div class="home-hud-row"><div class="hud" id="hudHome" style="display:none;">
                 <button type="button" class="hud-bal" onclick="goToPage('quests')" title="Your tokens — Daily Quests"><span class="hud-coin" aria-hidden="true">🪙</span><b class="hud-amt">0</b></button>
-                <button type="button" class="hud-plus" onclick="goToPage('store')" title="Get more tokens" aria-label="Get more tokens">+</button>
+                <button type="button" class="hud-plus" onclick="goToPage('store')" title="Get more tokens" aria-label="Get more tokens">+<span class="count-badge" data-store-badge hidden></span></button>
             </div></div>
             <div class="home-logo">
                 <img src="images/KIH_HP.jpg" alt="Keazyea's Intelligence Hub" class="home-landing-title-img"
@@ -2254,8 +2309,8 @@ body {
                     <span class="badge-dot" id="profileMenuBadgeHome"
                         style="display:none; position:absolute; top:10px; right:14px;"></span>
                 </button>
-                <button class="home-menu-btn" onclick="goToPage('store')">
-                    <span class="home-menu-icon">🛒</span>
+                <button class="home-menu-btn" onclick="goToPage('store')" style="position:relative;">
+                    <span class="home-menu-icon">🛒</span><span class="count-badge" data-store-badge hidden></span>
                     <span class="home-menu-text">Store<small>Tokens & supporter plans</small></span>
                 </button>
             </div>
@@ -2263,6 +2318,8 @@ body {
             <button type="button" class="bug-home-btn" id="bugHomeBtn" onclick="openBugReport()">🐞 Found a bug? Report it</button>
             <!-- Plain links (search engines follow these, not the buttons above) -->
             <button type="button" class="kih-guide-fab" id="guideFab" onclick="openHelpGuide()" aria-label="Ask the KIH Guide where something is">🧭<span>Ask</span></button>
+            <!-- 👘 the outfit sets on sale, above Ask: tap for them (bought, or to buy) — renderSetFab() / openSetOffer() -->
+            <button type="button" class="hset-fab" id="setFab" onclick="openSetOffer()" hidden aria-label="Outfit sets"></button>
             <nav class="home-guide-links"><a href="units/" class="home-guide-btn">📖 Troops, Heroes &amp; Bosses guide <span aria-hidden="true">›</span></a><a href="about.html" class="home-guide-btn" id="aboutHomeBtn">👋 About &amp; contact <span aria-hidden="true">›</span></a></nav>
             </div>
             <!-- Adsterra ad slots — hidden by default, shown via JS if not VIP/No-Ads -->
@@ -3770,7 +3827,19 @@ window.closeLegalModal = closeLegalModal;
         }
         window.loadProgress = loadProgress;
 
+        // 🧰 The Store's red number: chests you have to open (free chest draws).
+        // The Store tells this page too, as you open them (kihChestBadge).
+        function updateStoreBadge(n) {
+            const count = Math.max(0, Math.floor(Number(n) || 0));
+            document.querySelectorAll("[data-store-badge]").forEach(el => {
+                el.textContent = count > 9 ? "9+" : String(count);
+                el.hidden = !count;
+                el.setAttribute("aria-label", `${count} chest${count === 1 ? "" : "s"} to open`);
+            });
+        }
+        window.kihChestBadge = updateStoreBadge;
         function updateAchievementDots() {
+            updateStoreBadge(progressStatus && AppState.getCurrentUser() ? progressStatus.freeDraws : 0);
             const ready = progressStatus ? PC.achievementStates(progressStatus.stats, progressStatus.claimed).some(x => x.ready > 0) : false;
             document.getElementById("pfAchDot").classList.toggle("on", ready);
             ["profileBadgeHome", "profileMenuBadgeHome"].forEach(id => {
@@ -3895,6 +3964,7 @@ window.closeLegalModal = closeLegalModal;
             if (ev) return `${ev.icon} ${ev.name} (${ev.label}) — limited`;
             if (x && x.heart) return `💗 Heart Shop — ${x.heart} 💗`;
             if (x && x.heartSpin) return "🎡 Heart Spin only (Heart Shop)";
+            if (x && x.cal) { const d = (x.prem ? PC.XMAS_PREM : PC.XMAS_FREE).findIndex(p => p && p.item === id); return `🎄 ${PC.XMAS.name} — ${x.prem ? "⭐ Premium" : "🎁 free"} door, ${d} December`; }
             const a = Object.keys(PC.ACHIEVEMENT_REWARDS).find(k => PC.ACHIEVEMENT_REWARDS[k].includes(id));
             return a ? `Mythic ${PC.ACHIEVEMENT_BY_ID[a].name}` : "";
         }
@@ -4005,7 +4075,8 @@ window.closeLegalModal = closeLegalModal;
             const liveEv = PC.activeEvent(sgtDay());
             // not yours yet: the chest's and achievements' (an event's while it's on)
             const locked = CC.WEARABLE.filter(id => CC.wearOf(id).slot === slot && !CC.isStarter(id) && !owned.includes(id)
-                && (!CC.thingOf(id).event || (liveEv && liveEv.id === CC.thingOf(id).event)));
+                && (!CC.thingOf(id).event || (liveEv && liveEv.id === CC.thingOf(id).event))
+                && (!CC.thingOf(id).cal || PC.xmasOn(sgtDay())) && (!PC.setOf(id) || PC.setOnSale(PC.setOf(id), sgtDay())));
             const cur = o.wear[slot];
             const card = (id, has) => {
                 const it = CC.thingOf(id);
@@ -4018,7 +4089,7 @@ window.closeLegalModal = closeLegalModal;
                         ${PC.buyPrice(id) ? `<button type="button" class="ch-buy-btn" data-ch-buy="${id}" aria-label="Buy for ${(PC.dealPrice(id, sgtDay()) || PC.buyPrice(id)).toLocaleString("en-US")} Stardust${PC.dealPrice(id, sgtDay()) ? " (today's deal)" : ""}">${PC.dealPrice(id, sgtDay()) ? `🛍️ ✨ ${PC.dealPrice(id, sgtDay()).toLocaleString("en-US")}` : `✨ ${PC.buyPrice(id).toLocaleString("en-US")}`}</button>`
                             : PC.heartPrice(id) ? `<button type="button" class="ch-buy-btn heart" data-ch-heartshop="${id}" aria-label="${PC.heartPrice(id)} hearts in the Heart Shop">💗 ${PC.heartPrice(id)}</button>`
                             : PC.setOf(id) ? `<button type="button" class="ch-buy-btn" data-ch-set="${id}" aria-label="Part of the ${escText(PC.setOf(id).name)}, ${PC.setOf(id).price.toLocaleString("en-US")} Stardust in the Store">👘 Set</button>`
-                            : `<span class="ch-earn">${it.heartSpin ? "🎡 Heart Spin" : `🔒 ${it.event ? "Event only" : "Achievement"}`}</span>`}<span class="st-info" data-thing="${id}" aria-label="What is this?">i</span></div>`;
+                            : `<span class="ch-earn">${it.heartSpin ? "🎡 Heart Spin" : it.cal ? `🎄 ${it.prem ? "⭐ Calendar" : "Calendar"}` : `🔒 ${it.event ? "Event only" : "Achievement"}`}</span>`}<span class="st-info" data-thing="${id}" aria-label="What is this?">i</span></div>`;
             };
             const none = CC.OPTIONAL.includes(slot) ? `<button type="button" class="ch-item${!cur ? " on" : ""}" data-ch-wear="${slot}" data-ch-id=""><span class="ch-item-ico">🚫</span><small>Nothing</small></button>` : "";
             if (!mine.length && !locked.length) return `<p class="ach-hint">No ${s.name.toLowerCase()} things yet.</p>`;
@@ -4307,7 +4378,7 @@ window.closeLegalModal = closeLegalModal;
             const day = sgtDay();
             // a limited event's styles show as locked only while it's on
             const liveEv = PC.activeEvent(day);
-            const offered = (s) => !s.event || (liveEv && liveEv.id === s.event);
+            const offered = (s) => (!s.event || (liveEv && liveEv.id === s.event)) && (!s.cal || PC.xmasOn(day));
             const sections = STYLE_SLOTS.map(([type, label]) => {
                 const all = PC.STYLES.filter(s => s.type === type && (owned.has(s.id) || (s.vip && st.vip)));
                 const locked = PC.STYLES.filter(s => s.type === type && !owned.has(s.id) && !(s.vip && st.vip) && offered(s));
@@ -4376,7 +4447,7 @@ window.closeLegalModal = closeLegalModal;
         // Straight to a part of the Store ("event": the Trick or Treat card, "chest") — for news posts' buttons.
         window.openStoreAt = function (at) {
             const frame = document.querySelector("#page-store iframe");
-            setSectionFrameUrl(frame, /^(event|chest|hearts|deals|sets|packs)$/.test(at) ? "store.html#" + at : "store.html");
+            setSectionFrameUrl(frame, /^(event|chest|hearts|deals|sets|packs|xmas|set-[a-z0-9_]+)$/.test(at) ? "store.html#" + at : "store.html");
             goToPage("store");
         };
         window.openChestInStore = function () {
@@ -4392,7 +4463,7 @@ window.closeLegalModal = closeLegalModal;
             if (progressDotChecked || !AppState.getCurrentUser()) return;
             progressDotChecked = true;
             setTimeout(() => {
-                AppState.getProgressStatus().then(st => { progressStatus = st; updateAchievementDots(); }).catch(() => { progressDotChecked = false; });
+                AppState.getProgressStatus().then(st => { progressStatus = st; updateAchievementDots(); renderHomeToday(); }).catch(() => { progressDotChecked = false; renderHomeToday(); });
             }, 4000);
         }
 
@@ -5014,7 +5085,7 @@ function getNewsTypeInfo(type) {
         const pollGiftText = (r) => {
             if (!r) return "";
             const PCx = window.ProgressCore;
-            return [r.amount ? `${r.amount} 🪙` : "", r.draws ? `${r.draws} 🧰` : "",
+            return [r.amount ? `${r.amount} 🪙` : "", r.stardust ? `${Number(r.stardust).toLocaleString("en-US")} ✨` : "", r.hearts ? `${r.hearts} 💗` : "", r.draws ? `${r.draws} 🧰` : "",
                 ...(r.itemIds || r.items || []).map(id => PCx && PCx.BY_ID[id] ? `${PCx.BY_ID[id].icon} ${PCx.BY_ID[id].name}` : "")].filter(Boolean).join(" + ");
         };
         function pollTimeLeft(ms) {
@@ -5103,11 +5174,24 @@ function getNewsTypeInfo(type) {
         }
         // Everyone's written answers to one question (an open question's, or what people
         // put under ✏️ Other): name and picture open their profile; the first 5, then Show all.
+        // their 🧍 character (as everywhere else), read once a minute at most; the starter look until it's read
+        const pollCards = {}, pollCardsAt = {};
+        const pollFace = (uid) => CC.pic((pollCards[uid] || {}).outfit || CC.cleanOutfit({}, []), { size: 36 });
+        function loadPollFaces(uids) {
+            const now = Date.now(), need = [...new Set(uids.filter(u => u && now - (pollCardsAt[u] || 0) > 60000))];
+            if (!need.length || !AppState.getPlayerCards) return;
+            need.forEach(u => { pollCardsAt[u] = now; });
+            AppState.getPlayerCards(need).then(found => {
+                Object.assign(pollCards, found);
+                document.querySelectorAll(".poll-av[data-uid]").forEach(el => { if (need.includes(el.dataset.uid)) el.innerHTML = pollFace(el.dataset.uid); });
+            }).catch(() => { });
+        }
         function pollAnswersHtml(p, qi, list) {
             const key = p.id + ":" + qi, id = escapeHomeHtml(key);
             const all = pollShowAll.has(key) ? list : list.slice(0, 5);
+            setTimeout(() => loadPollFaces(all.map(a => a.uid)), 0);
             return `<div class="poll-answers">${all.map(a => `<div class="poll-answer${a.me ? " me" : ""}">
-                <img src="${escapeHomeHtml(a.avatar || "images/KIH.jpg")}" alt="" loading="lazy" onerror="this.onerror=null; this.src='images/KIH.jpg'" data-uid="${escapeHomeHtml(a.uid)}" data-name="${escapeHomeHtml(a.name)}" data-av="${escapeHomeHtml(a.avatar || "")}" title="See ${escapeHomeHtml(a.name)}'s profile">
+                <span class="poll-av" data-uid="${escapeHomeHtml(a.uid)}" data-name="${escapeHomeHtml(a.name)}" data-av="${escapeHomeHtml(a.avatar || "")}" role="button" title="See ${escapeHomeHtml(a.name)}'s profile">${pollFace(a.uid)}</span>
                 <div style="min-width:0;"><div class="poll-answer-name" data-uid="${escapeHomeHtml(a.uid)}" data-name="${escapeHomeHtml(a.name)}" data-av="${escapeHomeHtml(a.avatar || "")}">${escapeHomeHtml(a.name)}${a.me ? " (you)" : ""}</div><div class="poll-answer-text">${escapeHomeHtml(a.text)}</div></div></div>`).join("")}</div>
                 ${list.length > 5 ? `<button type="button" class="poll-more" data-poll-more="${id}">${pollShowAll.has(key) ? "Show fewer" : `Show all ${list.length} answers`}</button>` : ""}`;
         }
@@ -5522,7 +5606,7 @@ function getNewsTypeInfo(type) {
         function giftShortText(n) {
             const PCx = window.ProgressCore;
             const items = Array.isArray(n.itemIds) ? n.itemIds : [];
-            return [Number(n.amount) ? `${Number(n.amount)} 🪙` : "", Number(n.draws) ? `${Number(n.draws)} 🧰` : "",
+            return [Number(n.amount) ? `${Number(n.amount)} 🪙` : "", Number(n.stardust) ? `${Number(n.stardust).toLocaleString("en-US")} ✨` : "", Number(n.hearts) ? `${Number(n.hearts)} 💗` : "", Number(n.draws) ? `${Number(n.draws)} 🧰` : "",
                 ...items.map(id => (PCx && PCx.BY_ID[id] ? PCx.BY_ID[id].icon : "🎒"))].filter(Boolean).join(" + ") || "gift";
         }
         // 🎃 A Spooky Gift from another player: Open it (the server rolls the treat).
@@ -5577,7 +5661,7 @@ function getNewsTypeInfo(type) {
                 const result = await AppState.claimTokenGift(giftId);
                 myGiftClaims = new Set([...myGiftClaims, giftId]);
                 const PCx = window.ProgressCore;
-                const got = [result.claimed > 0 ? `+${result.claimed} 🪙` : "", result.draws ? `🧰 ${result.draws} free chest draw${result.draws === 1 ? "" : "s"}` : "",
+                const got = [result.claimed > 0 ? `+${result.claimed} 🪙` : "", result.stardust > 0 ? `+${result.stardust.toLocaleString("en-US")} ✨` : "", result.hearts > 0 ? `+${result.hearts} 💗` : "", result.draws ? `🧰 ${result.draws} free chest draw${result.draws === 1 ? "" : "s"}` : "",
                     ...(result.items || []).map(id => PCx && PCx.BY_ID[id] ? `${PCx.BY_ID[id].icon} ${PCx.BY_ID[id].name}` : id),
                     result.dupStardust ? `+${result.dupStardust} ✨ for what you already had` : ""].filter(Boolean);
                 const tokensOnly = got.length === 1 && result.claimed > 0;
@@ -6068,6 +6152,12 @@ window.closeInboxItemModal = closeInboxItemModal;
             }, questToday.week);
         }
 
+        // ✨ / 💗 a quest drops on top of its tokens ({ stardust } or { hearts })
+        function questExtraOf(id) {
+            return (questToday && questToday.extras && questToday.extras[id]) || {};
+        }
+        const extraChip = (x) => (x && x.stardust ? ` <span class="quest-reward sd">+${x.stardust} ✨</span>` : "") + (x && x.hearts ? ` <span class="quest-reward hs">+${x.hearts} 💗</span>` : "");
+        const extraText = (x) => (x && x.stardust ? ` +${x.stardust} ✨` : "") + (x && x.hearts ? ` +${x.hearts} 💗` : "");
         function questRewardOf(id) {
             return (questToday && questToday.rewards && questToday.rewards[id]) || 1;
         }
@@ -6095,9 +6185,9 @@ window.closeInboxItemModal = closeInboxItemModal;
                     click = ` onclick="handleQuestClaim('${k}_login', this)"${disabled}`;
                 } else if (login) {
                     cls = " done";
-                    // what it gave: 🪙, ✨ (both, with the Ration Pack), Sunday's 🧰 too
-                    const got = [login.reward ? `+${login.reward}🪙` : "", login.stardust ? `+${login.stardust}✨` : "", login.itemChest ? "🧰" : ""].filter(Boolean).join(" ");
-                    body = `✅<small>${got || "+1🪙"}</small>`;
+                    // what it gave, one under another (they overlapped on one line): 🪙 on top, then ✨, then Sunday's 🧰
+                    const got = [login.reward ? `+${login.reward}🪙` : "", login.stardust ? `+${login.stardust}✨` : "", login.itemChest ? "🧰" : ""].filter(Boolean);
+                    body = `✅${(got.length ? got : ["+1🪙"]).map(x => `<small class="cal-got">${x}</small>`).join("")}`;
                 } else if (k < today) {
                     cls = " missed";
                     body = "✖<small>missed</small>";
@@ -6165,13 +6255,13 @@ window.closeInboxItemModal = closeInboxItemModal;
             }
             const disabled = questClaiming ? " disabled" : "";
             // reward: 🪙 (a number, or "?" for a chest) — or a whole label ("+50 ✨")
-            const claimBtn = (claimId, reward) =>
-                `<button class="quest-claim-btn" onclick="handleQuestClaim('${claimId}', this)"${disabled}>Claim ${typeof reward === "string" && /✨/.test(reward) ? reward : `+${reward} 🪙`}</button>`;
+            const claimBtn = (claimId, reward, extra) =>
+                `<button class="quest-claim-btn" onclick="handleQuestClaim('${claimId}', this)"${disabled}>Claim ${typeof reward === "string" && /✨/.test(reward) ? reward : `+${reward} 🪙`}${extra ? extraText(extra) : ""}</button>`;
             // reward: the "+1 🪙" chip, shown by the title (not squeezed in by the button).
-            const row = (cls, info, hint, action, reward) => `<div class="quest-row${cls}">
+            const row = (cls, info, hint, action, reward, extra) => `<div class="quest-row${cls}">
                     <span class="quest-icon">${info.icon}</span>
                     <div class="quest-text">
-                        <div class="quest-title">${info.title}${reward ? ` <span class="quest-reward">+${reward} 🪙</span>` : ""}</div>
+                        <div class="quest-title">${info.title}${reward ? ` <span class="quest-reward">+${reward} 🪙</span>` : ""}${reward ? extraChip(extra) : ""}</div>
                         <div class="quest-hint">${hint}</div>
                     </div>
                     ${action}
@@ -6184,7 +6274,7 @@ window.closeInboxItemModal = closeInboxItemModal;
             const earlierHtml = earlier.length
                 ? `<div class="quest-section-label">Not claimed yet from earlier</div>` + earlier.map(r => {
                     const info = QUEST_INFO[r.questId] || { icon: "⭐", title: r.questId };
-                    return row(" ready", info, `Done on ${formatQuestDay(r.dayKey)}`, claimBtn(r.id, r.chest ? "?" : r.stardust && !r.reward ? `+${r.stardust} ✨` : r.reward || 1));
+                    return row(" ready", info, `Done on ${formatQuestDay(r.dayKey)}`, claimBtn(r.id, r.chest ? "?" : r.stardust && !r.reward ? `+${r.stardust} ✨` : r.reward || 1, r.questId === "login" ? null : { stardust: r.stardust, hearts: r.hearts }));
                 }).join("")
                 : "";
 
@@ -6194,9 +6284,10 @@ window.closeInboxItemModal = closeInboxItemModal;
                     const info = QUEST_INFO[id] || { icon: "⭐", title: id, hint: "" };
                     const reward = questRewardOf(id);
                     const status = questProgress[id];
-                    if (status === "claimed") return row(" done", info, info.hint, `<span class="quest-done">✅ +${reward} 🪙</span>`);
-                    if (status === "ready") return row(" ready", info, info.hint, claimBtn(`${questToday.dayKey}_${id}`, reward));
-                    return row("", info, info.hint, info.go ? `<button class="quest-go-btn" onclick="runQuestAction('${id}')">Go</button>` : "", reward);
+                    const extra = questExtraOf(id);
+                    if (status === "claimed") return row(" done", info, info.hint, `<span class="quest-done">✅ +${reward} 🪙${extraText(extra)}</span>`);
+                    if (status === "ready") return row(" ready", info, info.hint, claimBtn(`${questToday.dayKey}_${id}`, reward, extra));
+                    return row("", info, info.hint, info.go ? `<button class="quest-go-btn" onclick="runQuestAction('${id}')">Go</button>` : "", reward, extra);
                 }).join("");
 
             // Today's Puzzle in Games pays its own +1 the moment it's finished
@@ -6215,8 +6306,9 @@ window.closeInboxItemModal = closeInboxItemModal;
             const hasChest = questReady.some(r => r.chest);
             const readyTotal = questReady.filter(r => !r.chest).reduce((a, r) => a + (typeof r.reward === "number" ? r.reward : 1), 0);
             const readyStardust = questReady.reduce((a, r) => a + (r.stardust || 0), 0);
+            const readyHearts = questReady.reduce((a, r) => a + (r.hearts || 0), 0);
             const claimAll = questReady.length >= 2
-                ? `<button class="quest-claim-all-btn" onclick="handleQuestClaim(null, this)"${disabled}>Claim all (${[hasChest ? "🎁" : "", readyTotal ? `+${readyTotal} 🪙` : "", readyStardust ? `+${readyStardust} ✨` : ""].filter(Boolean).join(" · ")})</button>`
+                ? `<button class="quest-claim-all-btn" onclick="handleQuestClaim(null, this)"${disabled}>Claim all (${[hasChest ? "🎁" : "", readyTotal ? `+${readyTotal} 🪙` : "", readyStardust ? `+${readyStardust} ✨` : "", readyHearts ? `+${readyHearts} 💗` : ""].filter(Boolean).join(" · ")})</button>`
                 : "";
             // Today at a glance: how many of today's quests (and the puzzle) are done.
             const todayIds = questToday.quests.filter(id => id !== "login");
@@ -6272,7 +6364,86 @@ window.closeInboxItemModal = closeInboxItemModal;
         // Decoration only: whatever goes wrong here must never stop the page.
         function renderHomeToday() {
             try { drawHomeToday(); } catch (e) { console.warn("home cards:", e); }
+            try { renderSetFab(); } catch (e) { console.warn("set icon:", e); }
         }
+        /* 👘 A featured outfit set on Home, like a shop's offer: the set worn by
+           your character, its price (and what the pieces cost one by one), and
+           how long it's on if it's seasonal — tap it to buy it in the Store.
+           The seasonal one first; never one you already have. */
+        // the sets in the Store today: the seasonal one first
+        function setsOnSale() {
+            const PCa = window.ProgressCore, day = new Date(Date.now() + 8 * 3600e3).toISOString().slice(0, 10);
+            if (!PCa || !PCa.SETS || !PCa.setOnSale) return [];
+            return PCa.SETS.filter(s => PCa.setOnSale(s, day)).sort((a, b) => (b.until ? 1 : 0) - (a.until ? 1 : 0));
+        }
+        const ownsSet = (set) => { const owned = new Set((progressStatus && progressStatus.items) || []); return set.pieces.every(p => owned.has(p)); };
+        // 👘 the icon above Ask: the featured set's (🎅 at Christmas), with a dot while there's one you haven't got
+        function renderSetFab() {
+            const b = document.getElementById("setFab");
+            if (!b) return;
+            const sets = setsOnSale();
+            if (!sets.length) { b.hidden = true; return; }
+            const notYet = !!progressStatus && AppState.getCurrentUser() && sets.some(s => !ownsSet(s));
+            const html = `<span class="hset-fab-ico">${sets[0].icon}</span>${notYet ? `<i class="hset-dot"></i>` : ""}`;
+            if (b.innerHTML !== html) b.innerHTML = html;
+            b.classList.toggle("seasonal", !!sets[0].until);
+            b.hidden = false;
+        }
+        /* Its popup: each set on you — what you've bought says ✓ Bought (and
+           🧍 Wear it); one you haven't, its price and ✨ Buy (the Store, at it). */
+        let setOfferEl = null, setOfferBusy = false;
+        window.openSetOffer = async function () {
+            const CCa = window.CharacterCore, PCa = window.ProgressCore;
+            if (!CCa || !PCa || setOfferEl || setOfferBusy) return;
+            // what you own now (you may have just bought a set in the Store)
+            if (AppState.getCurrentUser()) {
+                setOfferBusy = true;
+                try { progressStatus = await AppState.getProgressStatus(); renderSetFab(); } catch (e) { } finally { setOfferBusy = false; }
+            }
+            const sets = setsOnSale();
+            if (!sets.length) return;
+            const o = progressStatus && progressStatus.outfit && progressStatus.outfit.base ? progressStatus.outfit : { base: CCa.DEFAULT_BASE, wear: CCa.DEFAULT_WEAR };
+            const fmt = (n) => n.toLocaleString("en-US");
+            const until = (d) => new Date(d + "T00:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" });
+            const card = (set) => {
+                const wear = { ...(o.wear || {}) };
+                set.pieces.forEach(p => { const w = CCa.wearOf(p); if (w) wear[w.slot] = p; });
+                const own = ownsSet(set);
+                return `<div class="hso-card${set.until ? " seasonal" : ""}${own ? " own" : ""}" data-set="${set.id}">
+                    <span class="hso-fig">${CCa.svg({ base: o.base, wear }, { size: 110, animate: true })}</span>
+                    <div class="hso-info">
+                        <span class="hset-tag">${set.until ? `🎄 Limited · until ${until(set.until)}` : "👘 Outfit Set"}</span>
+                        <b>${set.icon} ${escapeHomeHtml(set.name)}</b>
+                        <small>${escapeHomeHtml(set.desc)}</small>
+                        <div class="hso-pieces">${set.pieces.map(p => `<span data-thing="${p}" title="${escapeHomeHtml(PCa.BY_ID[p].name)}">${CCa.itemPic(p, 26) || PCa.BY_ID[p].icon}</span>`).join("")}</div>
+                        ${own ? `<div class="hso-row"><span class="hso-own">✓ Bought</span><button type="button" class="hso-btn wear" data-set-wear="${set.id}">🧍 Wear it</button></div>`
+                            : `<div class="hso-row"><s>${fmt(set.worth)} ✨</s><span class="hso-off">−${PCa.SET_OFF}%</span><button type="button" class="hso-btn" data-set-buy="${set.id}">✨ ${fmt(set.price)} · Buy</button></div>`}
+                    </div>
+                </div>`;
+            };
+            setOfferEl = document.createElement("div");
+            setOfferEl.className = "hso-overlay";
+            setOfferEl.innerHTML = `<div class="hso-box" role="dialog" aria-modal="true" aria-label="Outfit sets">
+                <button type="button" class="hso-x" aria-label="Close">✕</button>
+                <div class="hso-title">👘 Outfit Sets<small>a whole look, head to toe — 40% off its pieces</small></div>
+                ${sets.map(card).join("")}
+            </div>`;
+            setOfferEl.addEventListener("click", (e) => {
+                const buy = e.target.closest("[data-set-buy]"), wear = e.target.closest("[data-set-wear]");
+                if (buy) { closeSetOffer(); openStoreAt("set-" + buy.dataset.setBuy); return; }
+                if (wear) { const s = PCa.SET_BY_ID[wear.dataset.setWear]; closeSetOffer(); window.openWardrobeAt(s.pieces, true); return; }
+                if (e.target === setOfferEl || e.target.closest(".hso-x")) closeSetOffer();
+            });
+            document.body.appendChild(setOfferEl);
+            popupStep(() => closeSetOffer(true)); // Back closes it
+        };
+        function closeSetOffer(fromBack) {
+            if (!setOfferEl) return;
+            setOfferEl.remove();
+            setOfferEl = null;
+            if (!fromBack) leavePopupStep();
+        }
+        window.closeSetOffer = closeSetOffer;
         function weeklyCard(card) {
             const when = untilWeeklyDraw();
             const open = typeof AppState.isGiveawayOpen !== "function" || AppState.isGiveawayOpen();
@@ -6280,6 +6451,27 @@ window.closeInboxItemModal = closeInboxItemModal;
             if (weeklyJoined === false && open) return card("hot", "🎡", "Weekly draw", "Not in — join!", "openPromoTab('vip')");
             return card("", "🎡", "Weekly draw", when, "openPromoTab('vip')");
         }
+        // 🎄 the Christmas Calendar (Store): a wide card while it's on — hot when
+        // a door's waiting (today's free one, or ⭐ Premium ones to catch up on)
+        function xmasCard(card, signedIn) {
+            const PCa = window.ProgressCore, day = new Date(Date.now() + 8 * 3600e3).toISOString().slice(0, 10);
+            if (!PCa || !PCa.xmasOn || !PCa.xmasOn(day)) return "";
+            const x = progressStatus && progressStatus.xmas;
+            const today = PCa.xmasDay(day);
+            let waiting = null;
+            if (signedIn && x) {
+                waiting = 0;
+                for (let d = 1; d <= PCa.XMAS_DAYS; d++) waiting += (PCa.xmasCanOpen(x, "free", d, day) ? 1 : 0) + (PCa.xmasCanOpen(x, "prem", d, day) ? 1 : 0);
+            }
+            if (!today && !(x && x.premium && waiting)) return "";
+            const status = waiting ? `${waiting} door${waiting === 1 ? "" : "s"} to open!` : waiting === 0 ? "All open ✅ — back tomorrow" : today ? `Day ${today} — open today's door` : "⭐ Premium doors to open";
+            return card(`xmas ${waiting === 0 ? "done" : "hot"}`, "🎄", "Christmas Calendar", status, "openStoreAt('xmas')");
+        }
+        // the Store opened a door, or got ⭐ Premium
+        window.kihXmasChanged = function (x) {
+            if (progressStatus && x) progressStatus.xmas = x;
+            renderHomeToday();
+        };
         function drawHomeToday() {
             const box = document.getElementById("homeToday");
             if (!box) return;
@@ -6297,7 +6489,8 @@ window.closeInboxItemModal = closeInboxItemModal;
             } else {
                 quests = card("", "📅", "Daily Quests", signedIn ? "…" : "Free tokens", "goToPage('quests')");
             }
-            const html = card(puzzleDone ? "done" : "hot", "🎲", "Today's Puzzle", puzzleDone ? "Done ✅" : "Play · +1 🪙", "openTodaysPuzzle()")
+            const html = xmasCard(card, signedIn)
+                + card(puzzleDone ? "done" : "hot", "🎲", "Today's Puzzle", puzzleDone ? "Done ✅" : "Play · +1 🪙", "openTodaysPuzzle()")
                 + quests
                 + weeklyCard(card);
             if (html !== homeTodayHtml) { homeTodayHtml = html; box.innerHTML = html; }
@@ -6363,7 +6556,8 @@ window.closeInboxItemModal = closeInboxItemModal;
                 if (result.claimed > 0) showQuestToast((openingChest && ids.length === 1
                     ? `🎁 Chest opened: +${result.claimed} 🪙!`
                     : `+${result.claimed} 🪙 claimed!`) + stardustNote(result) + itemBonusNote(result));
-                else if (result.stardust > 0) showQuestToast(`✨ +${result.stardust} Stardust — for the chest, Daily Deals and more looks (Store).`);
+                else if (result.stardust > 0 || result.hearts > 0) showQuestToast([result.stardust > 0 ? `✨ +${result.stardust} Stardust` : "", result.hearts > 0 ? `💗 +${result.hearts} hearts` : ""].filter(Boolean).join(" · ") + " — spend them in the Store.");
+                if (typeof result.heartsBalance === "number" && progressStatus) progressStatus.hearts = result.heartsBalance;
                 if (typeof result.stardustBalance === "number" && progressStatus) progressStatus.stardust = result.stardustBalance;
                 await showLoginChestItems(result.chests);
             } catch (e) {
@@ -6375,7 +6569,7 @@ window.closeInboxItemModal = closeInboxItemModal;
             }
         }
 
-        const stardustNote = (result) => (result && result.stardust > 0 ? ` ✨ +${result.stardust} Stardust too!` : "");
+        const stardustNote = (result) => (result && result.stardust > 0 ? ` ✨ +${result.stardust} Stardust too!` : "") + (result && result.hearts > 0 ? ` 💗 +${result.hearts} hearts too!` : "");
         // Sunday's 🧰: what came out — a thing to wear (🧍 Wear it), or a duplicate's ✨
         async function showLoginChestItems(chests) {
             for (const c of chests || []) {
@@ -6807,7 +7001,7 @@ if (challengeCode) {
     }
     // ?goto=store&at=event|chest|hearts|deals: straight to that part of the Store
     const storeAt = urlParams.get("at");
-    if (gotoPage === "store" && /^(event|chest|hearts|deals)$/.test(storeAt || "")) setSectionFrameUrl(document.querySelector("#page-store iframe"), "store.html#" + storeAt);
+    if (gotoPage === "store" && /^(event|chest|hearts|deals|xmas)$/.test(storeAt || "")) setSectionFrameUrl(document.querySelector("#page-store iframe"), "store.html#" + storeAt);
     if (gotoPage !== "bug") goToPage(gotoPage);
     history.replaceState(history.state, "", window.location.pathname); // consume it — refresh won't re-trigger this
 } else if (pageBeforeRefresh && pageBeforeRefresh !== "home") {

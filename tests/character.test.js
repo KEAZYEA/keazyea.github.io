@@ -23,11 +23,11 @@ describe("head to toe", () => {
         assert.deepEqual(C.OPTIONAL, ["hat", "glasses", "neck", "held", "pet"]);
     });
     test("backgrounds: a free one, and the profile backgrounds you own", () => {
-        assert.deepEqual(C.forSlot("bg", ALL), ["st_bg", "g_stars", "g_sakura", "g_capy", "g_galaxy", "hg_haunted"]);
+        assert.deepEqual(C.forSlot("bg", ALL), ["st_bg", "xs_sleigh", "g_stars", "g_sakura", "g_capy", "g_galaxy", "hg_haunted", "xg_village"]);
         for (const s of P.STYLES.filter(s => s.type === "background")) assert.equal(C.wearOf(s.id).slot, "bg", s.id);
     });
     test("animals: the Black Cat and the Baby Dragon are pets, drawn at your feet", () => {
-        assert.deepEqual(C.forSlot("pet", ALL).sort(), ["dragon", "h_cat", "hs_bunny", "pt_fox", "pt_owl", "pt_phoenix"]);
+        assert.deepEqual(C.forSlot("pet", ALL).sort(), ["dragon", "h_cat", "hs_bunny", "pt_fox", "pt_owl", "pt_phoenix", "xp_elf", "xs_reindeer"]);
         assert.equal(P.ITEM_BY_ID.dragon.name, "Baby Dragon");
         assert.equal(P.ITEM_BY_ID.h_cat.name, "Black Cat");
         const s = C.svg({ wear: { pet: "h_cat" } });
@@ -513,7 +513,7 @@ describe("💗 hearts on the server (api/progress.js)", () => {
         state.db = db;
     });
     test("the rules: 5 a day (10 with Super Supporter); a spin is 50; the Heart Shop is dear; hearts are its things' thing", () => {
-        assert.deepEqual(P.HEARTS, { perDay: 5, vipPerDay: 10, spinCost: 50, dayBonus: 3 });
+        assert.deepEqual(P.HEARTS, { perDay: 5, vipPerDay: 10, spinCost: 30, dayBonus: 3 });
         assert.deepEqual([P.heartsPerDay(false), P.heartsPerDay(true)], [5, 10]);
         assert.equal(P.HEART_SPIN.reduce((n, s) => n + s.weight, 0), 100);
         assert.deepEqual(P.HEART_SHOP.map(i => [i.id, i.heart]), [["hs_band", 150], ["hs_shades", 150], ["hs_locket", 300], ["hs_letter", 300], ["hs_sweater", 600]]);
@@ -531,13 +531,17 @@ describe("💗 hearts on the server (api/progress.js)", () => {
         assert.equal(P.ACHIEVEMENT_BY_ID.likesGiven.name, "Heart Giver");
         assert.equal(P.ACHIEVEMENT_BY_ID.likesReceived.name, "Beloved");
     });
-    test("a spin: always something (✨ mostly); an item only if you don't have it; nothing left → 500 ✨", () => {
+    test("a spin (30 💗): always something (✨ mostly, and bigger); an item only if you don't have it; nothing left → 750 ✨; no '20 💗 back'", () => {
         const seq = (...v) => { let i = 0; return () => v[i++ % v.length]; };
-        assert.equal(P.rollHeartSpin([], seq(0)).stardust, 100);
-        assert.equal(P.rollHeartSpin([], seq(0.6)).hearts, 20);
-        assert.equal(P.rollHeartSpin([], seq(0.8)).draws, 1);
+        assert.deepEqual(P.HEART_SPIN.map(s => [s.key, s.value || 0, s.weight]), [["s150", 150, 33], ["s300", 300, 22], ["draw", 1, 15], ["s750", 750, 10], ["item", 0, 10], ["exclusive", 0, 8], ["t50", 50, 2]]);
+        assert.ok(!P.HEART_SPIN.some(s => s.kind === "hearts"), "no hearts back");
+        assert.equal(P.rollHeartSpin([], seq(0)).stardust, 150);
+        assert.equal(P.rollHeartSpin([], seq(0.4)).stardust, 300);
+        assert.equal(P.rollHeartSpin([], seq(0.6)).draws, 1);
+        assert.equal(P.rollHeartSpin([], seq(0.75)).stardust, 750);
+        assert.equal(P.rollHeartSpin([], seq(0.99)).tokens, 50);
         assert.equal(P.rollHeartSpin([], seq(0.95, 0.99)).id, "hs_bunny");
-        assert.deepEqual(P.rollHeartSpin(["hs_rose", "hs_bunny"], seq(0.95)), { key: "exclusive", kind: "stardust", tokens: 0, stardust: 500, hearts: 0, draws: 0, id: null });
+        assert.deepEqual(P.rollHeartSpin(["hs_rose", "hs_bunny"], seq(0.95)), { key: "exclusive", kind: "stardust", tokens: 0, stardust: 750, hearts: 0, draws: 0, id: null });
         const it = P.rollHeartSpin([], seq(0.85, 0));
         assert.ok(P.ITEM_BY_ID[it.id].chest && ["common", "uncommon", "rare"].includes(P.ITEM_BY_ID[it.id].rarity));
     });
@@ -615,15 +619,15 @@ describe("💗 hearts on the server (api/progress.js)", () => {
         r = await act({ action: "heartStatus", uid: "player3" });
         assert.equal(r.body.friend, false);
     });
-    test("heartSpin: costs 50 💗; what it gives lands (tokens logged as gifted, items with their perks)", async () => {
-        assert.match((await act({ action: "heartSpin" })).body.error, /costs 50/);
+    test("heartSpin: costs 30 💗; what it gives lands (tokens logged as gifted, items with their perks)", async () => {
+        assert.match((await act({ action: "heartSpin" })).body.error, /costs 30/);
         db._data.set("inventories/player1", { items: { crown: { at: 1 } }, hearts: 5000 });
         let hearts = 5000, tokens = 100, draws = 0, stardust = 0;
         for (let i = 0; i < 60; i++) {
             const r = await act({ action: "heartSpin" });
             assert.equal(r.status, 200, JSON.stringify(r.body));
             const p = r.body.prize;
-            hearts += p.hearts - 50; tokens += p.tokens; draws += p.draws; stardust += p.stardust;
+            hearts += p.hearts - 30; tokens += p.tokens; draws += p.draws; stardust += p.stardust;
             assert.equal(r.body.hearts, hearts);
             if (p.id) assert.ok(p.id in inv("player1").items, "the item's yours");
         }
@@ -724,7 +728,7 @@ describe("in the app: hearts, named looks, friends' name effects, popups", () =>
     test("Store: the 💗 Heart Shop (a spin, things to buy, spin-only treasures), linked from the Wardrobe and the guide", () => {
         assert.match(store, /<h2 class="store-section" id="hearts"><span>💗<\/span> Heart Shop<\/h2>/);
         for (const s of ["function renderHeartShop()", "window.spinHearts = async function", "window.buyHeartThing = async function", "r = await AppState.heartSpin();", "const r = await AppState.buyHeartItem(id);"]) assert.ok(store.includes(s), s);
-        assert.match(store, /\{ "#chest": "chest", "#event": "event", "#hearts": "hearts", "#deals": "deals", "#sets": "sets", "#packs": "tokenPacksCard" \}\[location\.hash\]/);
+        assert.match(store, /\{ "#chest": "chest", "#event": "event", "#hearts": "hearts", "#deals": "deals", "#sets": "sets", "#packs": "tokenPacksCard", "#xmas": "xmas" \}\[location\.hash\]/);
         assert.match(index, /data-ch-heartshop="\$\{id\}"[^>]*>💗 \$\{PC\.heartPrice\(id\)\}<\/button>/);
         assert.match(index, /if \(t\.dataset\.chHeartshop\) \{ window\.openStoreAt\("hearts"\); return; \}/);
         assert.match(td, /if \(x\.heart\) return `💗 Heart Shop \(in the Store\) — \$\{x\.heart\} 💗`;/);
@@ -902,7 +906,7 @@ describe("the daily login on the page (appState.js, index.html)", () => {
     const app = read("appState.js"), index = read("index.html");
     test("a ✨ day's login (0 🪙) isn't read as 1 🪙; its ✨ and Sunday's 🧰 come along", () => {
         assert.match(app, /logins\[c\.dayKey\] = \{ status, reward: typeof c\.reward === "number" \? c\.reward : 1, chest: !!c\.chest, stardust: c\.stardust \|\| 0, itemChest: c\.itemChest \|\| null \}/);
-        assert.match(app, /reward: typeof d\.data\(\)\.reward === "number" \? d\.data\(\)\.reward : 1, chest: !!d\.data\(\)\.chest, stardust: d\.data\(\)\.stardust \|\| 0, itemChest: d\.data\(\)\.itemChest \|\| null/);
+        assert.match(app, /reward: typeof d\.data\(\)\.reward === "number" \? d\.data\(\)\.reward : 1, chest: !!d\.data\(\)\.chest, stardust: d\.data\(\)\.stardust \|\| 0, hearts: d\.data\(\)\.hearts \|\| 0, itemChest: d\.data\(\)\.itemChest \|\| null/);
         assert.doesNotMatch(app, /reward: c\.reward \|\| 1|reward: d\.data\(\)\.reward \|\| 1/);
     });
     test("the calendar shows each day's gift; Claim says ✨; Sunday's 🧰 is shown after its coins", () => {
@@ -1184,7 +1188,8 @@ describe("🎁 a gift of something you already have pays ✨, like a chest dupli
     });
     test("every place that gives items uses it: inbox gifts, Secret Giveaway prizes, polls, admin", () => {
         const tokens = read("api/tokens.js"), polls = read("api/polls.js");
-        assert.match(tokens, /if \(dupStardust > 0\) update\.stardust = Math\.max\(0, inv\.stardust \|\| 0\) \+ dupStardust;/);
+        assert.match(tokens, /const addSd = dupStardust \+ Math\.max\(0, Math\.floor\(Number\(stardust\) \|\| 0\)\)/);
+        assert.match(tokens, /if \(addSd > 0\) update\.stardust = Math\.max\(0, inv\.stardust \|\| 0\) \+ addSd;/);
         assert.match(tokens, /return \{ added, dups, dupTokens: 0, dupStardust \};/);
         assert.equal((tokens.match(/grantToInventory\(tx, db, /g) || []).length, 4, "the function + inbox gifts, Secret Giveaway prizes, admin");
         assert.match(polls, /grantToInventory\(tx, db, uid, invSnap/);
@@ -1219,5 +1224,559 @@ describe("🪟 the app's own popups (kih-dialog.js), never the browser's boxes",
     test("the Store's ✨ is fresh each time you open it (an achievement's ✨ shows at once)", () => {
         assert.match(read("store.html"), /window\.kihRefresh = \(\) => loadChestState\(\);/);
         assert.match(read("index.html"), /\} else if \(page === "store"\) \{[\s\S]{0,160}target\.querySelector\("iframe"\)\?\.contentWindow\?\.kihRefresh\?\.\(\);/);
+    });
+});
+
+describe("📅 some quests drop ✨ or 💗 too (api/_lib.js QUEST_EXTRAS)", () => {
+    const L = require("../api/_lib.js");
+    let db, realNow;
+    const tok = (body) => call("tokens.js", { token: "player-token", body });
+    const inv = () => db._data.get("inventories/player1") || {};
+    beforeEach(() => {
+        db = memoryFirestore();
+        db._data.set("inventories/player1", { items: {}, stardust: 0, hearts: 0 });
+        db._data.set("tokenWallets/player1", { balance: 0 });
+        state.db = db;
+        realNow = Date.now;
+    });
+    test("looking around: ✨ 25; doing something: ✨ 50; the friendly ones: 💗 (5 / 10); the login: its own week", () => {
+        for (const q of L.VIEW_QUESTS) assert.ok(L.questExtra(q) && (L.questExtra(q).stardust === 25 || L.questExtra(q).hearts === 5), q);
+        for (const q of L.ACTION_QUESTS) assert.ok(L.questExtra(q) && (L.questExtra(q).stardust === 50 || L.questExtra(q).hearts === 10), q);
+        assert.deepEqual([L.questExtra("viewProfile"), L.questExtra("likeOrVote"), L.questExtra("sendMessage"), L.questExtra("worldChat")], [{ hearts: 5 }, { hearts: 5 }, { hearts: 10 }, { hearts: 10 }]);
+        assert.equal(L.questExtra("login"), null);
+        assert.equal(L.questExtra("constructor"), null);
+        assert.deepEqual(L.questExtrasFor(["login", "readNews", "sendMessage"]), { readNews: { stardust: 25 }, sendMessage: { hearts: 10 } });
+        assert.match(read("api/tokens.js"), /rewards: questRewardsFor\(quests\), extras: questExtrasFor\(quests\)/, "the page is told what each drops");
+    });
+    test("done → its drop waits in the claim; claimed → ✨ and 💗 into your inventory, with its tokens", async () => {
+        try {
+            Date.now = () => Date.UTC(2026, 10, 18, 4); // Wed 18 Nov: login, likeOrVote, readNews, sendMessage
+            assert.deepEqual(L.questsForDay("2026-11-18"), ["login", "likeOrVote", "readNews", "sendMessage"]);
+            db._data.set("news/n1", { title: "hi" });
+            db._data.set("dmThreads/t1/messages/m1", { senderUid: "player1", createdAt: Date.now() - 1000, text: "hey" });
+            assert.ok((await tok({ action: "complete", questId: "readNews", proofId: "n1" })).body.completed);
+            assert.ok((await tok({ action: "complete", questId: "sendMessage", proofId: "t1/m1" })).body.completed);
+            assert.deepEqual([db._data.get("tokenWallets/player1/claims/2026-11-18_readNews").stardust, db._data.get("tokenWallets/player1/claims/2026-11-18_sendMessage").hearts], [25, 10]);
+            const r = await tok({ action: "claim", claimIds: ["2026-11-18_readNews", "2026-11-18_sendMessage"] });
+            assert.equal(r.status, 200, JSON.stringify(r.body));
+            assert.deepEqual([r.body.claimed, r.body.stardust, r.body.hearts, r.body.heartsBalance, inv().stardust, inv().hearts], [3, 25, 10, 10, 25, 10]);
+            const again = await tok({ action: "claim", claimIds: ["2026-11-18_readNews"] });
+            assert.deepEqual([again.body.claimed, inv().stardust], [0, 25], "not twice");
+        } finally { Date.now = realNow; }
+    });
+    test("a claim doc can't be talked up: 💗 at most 50", async () => {
+        db._data.set("tokenWallets/player1/claims/2026-11-10_readNews", { questId: "readNews", dayKey: "2026-11-10", status: "ready", reward: 1, hearts: 99999 });
+        const r = await tok({ action: "claim", claimIds: ["2026-11-10_readNews"] });
+        assert.deepEqual([r.body.hearts, inv().hearts], [50, 50]);
+    });
+});
+
+describe("🎁 admin gives ✨ Stardust and 💗 hearts — gifts, direct, polls, giveaway prizes", () => {
+    let db;
+    const admin = (body) => call("tokens.js", { token: "admin-token", body });
+    const inv = () => db._data.get("inventories/player1") || {};
+    beforeEach(() => {
+        db = memoryFirestore();
+        db._data.set("users/player1", { name: "Ezra" });
+        db._data.set("inventories/player1", { items: {}, stardust: 10, hearts: 1 });
+        db._data.set("tokenWallets/player1", { balance: 5 });
+        state.db = db;
+    });
+    test("a gift to claim: ✨ and 💗 (no tokens needed); claiming adds them; the limits hold", async () => {
+        let r = await admin({ action: "adminSendGift", target: "player1", amount: 0, stardust: 500, hearts: 20, expiresInHours: 24 });
+        assert.equal(r.status, 200, JSON.stringify(r.body));
+        const g = db._docs("tokenGifts")[0];
+        assert.deepEqual([g.stardust, g.hearts, /500 ✨ Stardust/.test(g.title), /20 💗 hearts/.test(g.title)], [500, 20, true, true]);
+        const c = await call("tokens.js", { token: "player-token", body: { action: "claimGift", giftId: r.body.giftId } });
+        assert.equal(c.status, 200, JSON.stringify(c.body));
+        assert.deepEqual([c.body.stardust, c.body.hearts, inv().stardust, inv().hearts, db._data.get("tokenWallets/player1").balance], [500, 20, 510, 21, 5]);
+        for (const bad of [{ stardust: 100001 }, { hearts: 1001 }, { stardust: -1 }, { hearts: 1.5 }]) {
+            r = await admin({ action: "adminSendGift", target: "player1", amount: 1, expiresInHours: 24, ...bad });
+            assert.equal(r.status, 400, JSON.stringify(bad));
+        }
+        r = await admin({ action: "adminSendGift", target: "player1", amount: 0, expiresInHours: 24 });
+        assert.equal(r.status, 400, "an empty gift");
+    });
+    test("straight to their account: ✨ and 💗, logged", async () => {
+        const r = await admin({ action: "adminGrantItems", uid: "player1", stardust: 300, hearts: 7, reason: "thanks" });
+        assert.equal(r.status, 200, JSON.stringify(r.body));
+        assert.deepEqual([inv().stardust, inv().hearts], [310, 8]);
+        const log = db._docs("tokenAdjustments").find(x => x.mode === "grant");
+        assert.deepEqual([log.stardust, log.hearts, log.amount], [300, 7, 0]);
+    });
+    test("a Secret Giveaway prize with ✨ and 💗: paid straight in", async () => {
+        db._data.set("secretGiveaways/g1", { title: "Big one", winners: [{ uid: "player1" }] });
+        db._data.set("secretGiveaways/g1/private/config", { prize: { items: [{ kind: "stardust", amount: 1000 }, { kind: "hearts", amount: 50 }] } });
+        const r = await admin({ action: "adminPaySecretPrize", giveawayId: "g1", winnerUid: "player1" });
+        assert.equal(r.status, 200, JSON.stringify(r.body));
+        assert.deepEqual([r.body.stardust, r.body.hearts, inv().stardust, inv().hearts], [1000, 50, 1010, 51]);
+    });
+    test("a poll's gift for answering can be ✨ and 💗 (limits 10,000 / 100); prize cards know them", async () => {
+        const polls = read("api/polls.js");
+        assert.match(polls, /const hasGift = \(r\) => !!\(r && \(r\.amount \|\| r\.draws \|\| r\.stardust \|\| r\.hearts/);
+        assert.match(polls, /const reward = \{ amount, draws, itemIds, stardust, hearts \};/);
+        assert.match(polls, /grantToInventory\(tx, db, uid, invSnap, \{ draws: r\.draws \|\| 0, itemIds: r\.itemIds \|\| \[\], stardust: Math\.min\(10000, r\.stardust \|\| 0\), hearts: Math\.min\(100, r\.hearts \|\| 0\) \}, now\)/);
+        const r = await call("polls.js", { token: "admin-token", body: { action: "adminCreate", questions: [{ kind: "single", question: "Best boss?", options: ["Ashira", "Dagon"] }], expiresInHours: 24, stardust: 40, hearts: 3, notify: false } });
+        assert.equal(r.status, 200, JSON.stringify(r.body));
+        const p = db._docs("polls")[0];
+        assert.deepEqual([p.reward.stardust, p.reward.hearts], [40, 3]);
+        const bad = await call("polls.js", { token: "admin-token", body: { action: "adminCreate", questions: [{ kind: "single", question: "Q?", options: ["a", "b"] }], expiresInHours: 24, hearts: 101 } });
+        assert.equal(bad.status, 400);
+        // giveaway prize cards: ✨ / 💗, sent automatically
+        const prize = read("prize.js");
+        assert.match(prize, /const AUTO = \["tokens", "draws", "item", "stardust", "hearts"\];/);
+        assert.match(prize, /if \(it\.kind === "stardust"\) return hasAmount && amount <= 100000 \? \{ kind: "stardust", amount \} : null;/);
+        assert.match(read("appState.js"), /const PRIZE_KINDS = \["tokens", "gold", "diamonds", "unit", "custom", "draws", "item", "stardust", "hearts"\];/);
+        const adminPage = read("admin.html");
+        for (const id of ["giftAllStardust", "giftAllHearts", "grantStardust", "grantHearts", "pollGiftStardust", "pollGiftHearts"]) assert.match(adminPage, new RegExp(`id="${id}"`), id);
+        assert.match(adminPage, /secretPrize\.add\('stardust'\)/); assert.match(adminPage, /secretPrize\.add\('hearts'\)/);
+    });
+});
+
+describe("💗 more hearts to send, and a cheaper, bigger Heart Spin", () => {
+    test("Cupid's Bow (chest) and the Love Letter (Heart Shop) each send +1 heart a day; capped at +5 from items", () => {
+        const cupid = P.ITEM_BY_ID.hd_cupid, letter = P.ITEM_BY_ID.hs_letter;
+        assert.ok(cupid.chest && C.wearOf("hd_cupid").slot === "held" && C.itemPic("hd_cupid") && C.thumb("hd_cupid"));
+        assert.ok(cupid.perks.some(p => p.kind === "heartSends" && p.value === 1) && letter.perks.some(p => p.kind === "heartSends" && p.value === 1));
+        assert.equal(P.heartsPerDay(false, P.perksOf(["hd_cupid", "hs_letter", "ht_beanie"])), 8);
+        assert.equal(P.heartsPerDay(false, P.perksOf(["hd_cupid", "hs_letter", "ht_beanie", "cs_top", "cs_hair", "cs_eyes", "cs_mouth", "cs_neck", "cs_bottom", "cs_shoes"])), 9);
+        assert.ok(P.chestPool("2026-11-18").some(x => x.id === "hd_cupid"));
+        assert.equal(P.HEARTS.spinCost, 30);
+        assert.match(read("help-guide.js"), /🎡 spin<\/b> \(30 💗\)/);
+    });
+});
+
+describe("🧰 the Store's badge, polls' faces, Social's fixes", () => {
+    const index = read("index.html"), social = read("social.html"), store = read("store.html");
+    test("a red number on the Store's buttons: chests waiting to be opened (free draws), kept up to date by the Store", () => {
+        assert.equal((index.match(/<span class="count-badge" data-store-badge hidden><\/span>/g) || []).length, 3, "the 🛒 Store button and both + buttons");
+        assert.match(index, /function updateAchievementDots\(\) \{\s+updateStoreBadge\(progressStatus && AppState\.getCurrentUser\(\) \? progressStatus\.freeDraws : 0\);/);
+        assert.match(index, /window\.kihChestBadge = updateStoreBadge;/);
+        assert.match(store, /window\.top\.kihChestBadge\(chestState\.freeDraws \|\| 0\)/);
+    });
+    test("polls: written answers show the person's character (not an old picture)", () => {
+        assert.match(index, /<span class="poll-av" data-uid="\$\{escapeHomeHtml\(a\.uid\)\}"[^>]*>\$\{pollFace\(a\.uid\)\}<\/span>/);
+        assert.doesNotMatch(index, /<img src="\$\{escapeHomeHtml\(a\.avatar \|\| "images\/KIH\.jpg"\)\}"/);
+        assert.match(index, /AppState\.getPlayerCards\(need\)\.then\(found => \{/);
+    });
+    test("Social: a friend request's name opens their profile card; sending a heart keeps your place in the row", () => {
+        assert.match(social, /onclick="onPosterClick\('\$\{escapeHtml\(r\.fromUid\)\}', \$\{jsStr\(r\.fromName\)\}\)"/);
+        assert.doesNotMatch(social, /onclick="openViewProfileModal\(/);
+        assert.match(social, /const keepX = \(box\.querySelector\("\.hp-send"\) \|\| \{\}\)\.scrollLeft \|\| 0;[\s\S]{0,4000}if \(strip\) strip\.scrollLeft = keepX;/);
+    });
+});
+
+describe("🎅 the Santa Set and 🎄 the Christmas Calendar (rules)", () => {
+    const S = P.SET_BY_ID.santa;
+    test("the Santa Set: hat, spectacles, beard, suit, trousers, boots, a present, a reindeer and a sleigh ride — drawn, worn where they belong", () => {
+        assert.deepEqual(S.pieces.map(id => C.wearOf(id).slot), ["hat", "glasses", "mouth", "top", "bottom", "shoes", "held", "pet", "bg"]);
+        for (const id of S.pieces) {
+            const it = P.ITEM_BY_ID[id];
+            assert.equal(it.set, "santa", id);
+            assert.ok(!it.chest && !P.buyPrice(id) && !it.heart, `${id}: only in the set`);
+            assert.ok(it.perks.length, `${id} has a perk`);
+            const one = C.svg({ base: C.DEFAULT_BASE, wear: { [C.wearOf(id).slot]: id } }, { only: C.wearOf(id).slot, size: 60 });
+            assert.ok(one.length > 400, `${id} is drawn`);
+        }
+        assert.ok(!/rudolph/i.test(JSON.stringify(P.ITEMS) + read("character-core.js")), "an original reindeer — no trademarked names");
+    });
+    test("its price adds up: every piece at its buy price, 40% off; sold 1 Dec – 6 Jan only", () => {
+        assert.equal(S.worth, 4000 + 1000 + 2000 + 4000 + 2000 + 2000 + 2000 + 4000 + 2000);
+        assert.equal(S.price, 13800);
+        assert.equal(P.setOnSale(S, "2026-11-30"), false);
+        assert.equal(P.setOnSale(S, "2026-12-01"), true);
+        assert.equal(P.setOnSale(S, "2027-01-06"), true);
+        assert.equal(P.setOnSale(S, "2027-01-07"), false);
+        assert.equal(P.setOnSale(P.SET_BY_ID.celestial, "2030-05-05"), true, "a set without dates is always sold");
+    });
+    test("🎅 tokenBack: the set gives 10% of what you add to a Secret Giveaway back; never more than 20% in all", () => {
+        assert.equal(P.perksOf(S.pieces).tokenBack, 10);
+        assert.equal(P.tokenBackOf(100, P.perksOf(S.pieces)), 10);
+        assert.equal(P.tokenBackOf(99, { tokenBack: 10 }), 9, "rounded down");
+        assert.equal(P.tokenBackOf(100, { tokenBack: 55 }), 20, "capped");
+        assert.equal(P.tokenBackOf(100, {}), 0);
+        assert.match(P.perkText({ kind: "tokenBack", value: 10 }), /10% of the 🪙 you add to a Secret Giveaway back/);
+    });
+    test("❄️ a Frost Doubler doubles the tokens' part of an entry's chances — not the free one, not item chances", () => {
+        assert.equal(P.secretWeight(10, {}), 11);
+        assert.equal(P.secretWeight(10, {}, true), 21);
+        assert.equal(P.secretWeight(10, { stakeMult: 10, secretChance: 2 }, true), 1 + 22 + 2);
+        assert.equal(P.secretWeight(0, { secretChance: 3 }, true), 4);
+        assert.equal(P.secretWeight(10, {}, "yes"), 11, "only a real true");
+    });
+    test("the calendar: 31 days, a 🎁 free door and a ⭐ Premium door each; Premium gives back more 🪙 than it costs, and far more", () => {
+        assert.equal(P.XMAS_DAYS, 31);
+        assert.equal(P.XMAS.price, 300);
+        for (let d = 1; d <= 31; d++) { assert.ok(P.xmasPrize("free", d), "free " + d); assert.ok(P.xmasPrize("prem", d), "prem " + d); }
+        assert.equal(P.xmasPrize("free", 0), null); assert.equal(P.xmasPrize("prem", 32), null);
+        const prem = P.xmasTotals("prem"), free = P.xmasTotals("free");
+        assert.ok(prem.tokens > P.XMAS.price, `${prem.tokens} 🪙 back > ${P.XMAS.price}`);
+        assert.equal(prem.tokens, 360);
+        assert.equal(prem.stardust, P.SET_BY_ID.santa.price, "⭐ Premium's ✨ add up to just the 🎅 Santa Set — not more, not given at once");
+        assert.ok(P.XMAS_PREM.slice(1).every(p => !p.stardust || p.stardust <= 5000), "spread over the month");
+        assert.ok(prem.draws >= 5 && prem.hearts >= 90);
+        assert.equal(prem.doubler, 3, "three Frost Doublers — Premium only");
+        assert.equal(free.doubler, 0);
+        assert.deepEqual(prem.items.sort(), ["xb_frost", "xc_elf", "xn_aurora", "xp_elf"]);
+        assert.deepEqual(free.items.sort(), ["xb_antler", "xc_ginger", "xe_snow", "xg_village"]);
+        for (const id of [...prem.items, ...free.items]) {
+            const x = P.BY_ID[id];
+            assert.equal(x.cal, "xmas2026", id);
+            assert.equal(!!x.prem, prem.items.includes(id), id);
+            assert.ok(!x.chest && !P.buyPrice(id), `${id}: only from the calendar`);
+        }
+    });
+    test("🎁 free doors open on their own day only; ⭐ Premium ones up to today, until 6 Jan, once Premium's yours", () => {
+        const none = { free: {}, prem: {} }, prem = { premium: true, free: {}, prem: {} };
+        assert.equal(P.xmasDay("2026-11-30"), 0); assert.equal(P.xmasDay("2026-12-01"), 1); assert.equal(P.xmasDay("2026-12-31"), 31); assert.equal(P.xmasDay("2027-01-01"), 0);
+        assert.equal(P.xmasCanOpen(none, "free", 3, "2026-12-03"), true);
+        assert.equal(P.xmasCanOpen(none, "free", 2, "2026-12-03"), false, "yesterday's is gone");
+        assert.equal(P.xmasCanOpen(none, "free", 4, "2026-12-03"), false, "tomorrow's isn't open yet");
+        assert.equal(P.xmasCanOpen({ free: { 3: 1 } }, "free", 3, "2026-12-03"), false, "once");
+        assert.equal(P.xmasCanOpen(none, "prem", 1, "2026-12-03"), false, "Premium needs Premium");
+        assert.equal(P.xmasCanOpen(prem, "prem", 1, "2026-12-03"), true, "catch up");
+        assert.equal(P.xmasCanOpen(prem, "prem", 3, "2026-12-03"), true);
+        assert.equal(P.xmasCanOpen(prem, "prem", 4, "2026-12-03"), false, "not ahead");
+        assert.equal(P.xmasCanOpen(prem, "prem", 31, "2027-01-06"), true, "every day after December, until 6 Jan");
+        assert.equal(P.xmasCanOpen(prem, "prem", 31, "2027-01-07"), false);
+        assert.equal(P.xmasCanOpen(prem, "prem", 1, "2026-11-30"), false);
+        assert.equal(P.xmasCanOpen({ ...prem, prem: { 1: 1 } }, "prem", 1, "2026-12-03"), false);
+        assert.match(P.xmasPrizeText(P.XMAS_PREM[1]), /❄️ Frost Doubler · \+20 🪙/);
+        assert.match(P.xmasPrizeText(P.XMAS_PREM[31]), /\+60 🪙 · \+4,300 ✨/);
+        assert.match(P.xmasPrizeText(P.XMAS_PREM[25]), /🧝 Little Elf · \+60 🪙/);
+    });
+    test("the new things are drawn: the elf and the reindeer by your feet, two Christmas backgrounds, and the calendar's styles have their looks", () => {
+        assert.equal(C.wearOf("xp_elf").slot, "pet"); assert.equal(C.wearOf("xs_reindeer").slot, "pet"); assert.equal(C.wearOf("xg_village").slot, "bg");
+        const fx = read("fx-styles.css");
+        for (const s of P.STYLES.filter(x => x.cal && x.css)) {
+            const cls = `.fx-${s.type === "background" ? "bg" : s.type}-${s.css}`;
+            assert.ok(fx.includes(cls + " ") || fx.includes(cls + "::") || fx.includes(cls + ","), `${s.id}: ${cls}`);
+        }
+        assert.equal(P.EMOTE_PACKS.snowday.length, 8);
+        const big = C.svg({ base: C.DEFAULT_BASE, wear: { hat: "xs_hat", top: "xs_suit", pet: "xp_elf" } }, { animate: true });
+        assert.match(big, /kc-a-bob/, "the pompom and the elf bounce");
+    });
+});
+
+describe("🎄 the Christmas Calendar and 🎅 Santa Set on the server (api/progress.js)", () => {
+    let db, realNow;
+    const act = (body, token = "player-token") => call("progress.js", { token, body });
+    const at = (y, m, d) => { Date.now = () => Date.UTC(y, m - 1, d, 4); }; // noon in Singapore
+    const inv = () => db._data.get("inventories/player1") || {};
+    const wallet = () => db._data.get("tokenWallets/player1") || {};
+    beforeEach(() => {
+        db = memoryFirestore();
+        db._data.set("users/player1", { name: "Ezra" });
+        db._data.set("tokenWallets/player1", { balance: 1000 });
+        db._data.set("inventories/player1", { items: { crown: { at: 1 } }, stardust: 20000, hearts: 0, freeDraws: 0 });
+        state.db = db;
+        realNow = Date.now;
+    });
+    test("🎅 the Santa Set: not before 1 December, then 13,800 ✨ for all nine pieces; gone after 6 January", async () => {
+        try {
+            at(2026, 11, 20);
+            const early = await act({ action: "buySet", id: "santa" });
+            assert.equal(early.status, 400); assert.match(early.body.error, /from 2026-12-01/);
+            assert.equal(inv().stardust, 20000);
+            at(2026, 12, 5);
+            const r = await act({ action: "buySet", id: "santa" });
+            assert.equal(r.status, 200, JSON.stringify(r.body));
+            assert.equal(inv().stardust, 20000 - 13800);
+            for (const id of P.SET_BY_ID.santa.pieces) assert.ok(id in inv().items, id);
+            assert.equal(inv().perks.tokenBack, 10);
+            at(2027, 1, 7);
+            db._data.set("inventories/player1", { items: {}, stardust: 20000 });
+            assert.match((await act({ action: "buySet", id: "santa" })).body.error, /gone for this year/);
+        } finally { Date.now = realNow; }
+    });
+    test("🎅 the admin can buy it any day, to try it out", async () => {
+        try {
+            at(2026, 11, 20);
+            const uid = "Ts92RY0ipMYDRJa2s5toQfDYxtp1";
+            db._data.set(`users/${uid}`, { name: "Admin" });
+            db._data.set(`inventories/${uid}`, { items: {}, stardust: 20000 });
+            const r = await act({ action: "buySet", id: "santa" }, "admin-token");
+            assert.equal(r.status, 200, JSON.stringify(r.body));
+        } finally { Date.now = realNow; }
+    });
+    test("⭐ Premium: only in December, 300 🪙, once; logged as 🪙 spent for the admin's check", async () => {
+        try {
+            at(2026, 11, 30);
+            assert.match((await act({ action: "xmasBuy" })).body.error, /on sale on 2026-12-01/);
+            at(2026, 12, 3);
+            const r = await act({ action: "xmasBuy" });
+            assert.equal(r.status, 200, JSON.stringify(r.body));
+            assert.equal(wallet().balance, 700);
+            assert.equal(inv().xmas.premium, true);
+            const [log] = db._docs("chestOpens");
+            assert.deepEqual([log.kind, log.price, log.currency], ["xmasPass", 300, "tokens"]);
+            assert.match((await act({ action: "xmasBuy" })).body.error, /already have/);
+            db._data.set("tokenWallets/player2", { balance: 299 });
+            db._data.set("users/player2", { name: "Mia" });
+            assert.match((await act({ action: "xmasBuy" }, "player2-token")).body.error, /costs 300 🪙 — you have 299/);
+            at(2027, 1, 2);
+            assert.match((await act({ action: "xmasBuy" }, "player2-token")).body.error, /only sold in December/);
+        } finally { Date.now = realNow; }
+    });
+    test("🎁 a free door: today's only, once; its prize paid (the Snow Day Pack on the 3rd)", async () => {
+        try {
+            at(2026, 12, 3);
+            const r = await act({ action: "xmasOpen", track: "free", day: 3 });
+            assert.equal(r.status, 200, JSON.stringify(r.body));
+            assert.ok("xe_snow" in inv().items);
+            assert.ok(inv().xmas.free[3]);
+            assert.match((await act({ action: "xmasOpen", track: "free", day: 3 })).body.error, /opened that one/);
+            assert.match((await act({ action: "xmasOpen", track: "free", day: 2 })).body.error, /gone/);
+            assert.match((await act({ action: "xmasOpen", track: "free", day: 4 })).body.error, /isn't open yet/);
+            assert.match((await act({ action: "xmasOpen", track: "prem", day: 1 })).body.error, /Premium door/);
+            for (const bad of [{ track: "free", day: "3" }, { track: "gold", day: 3 }, { track: "free", day: 0 }, { track: "prem", day: 40 }]) {
+                assert.equal((await act({ action: "xmasOpen", ...bad })).status, 400, JSON.stringify(bad));
+            }
+            at(2026, 12, 1);
+            const t = await act({ action: "xmasOpen", track: "free", day: 1 });
+            assert.equal(inv().stardust, 20050, "day 1: +50 ✨");
+            assert.ok(t.body.xmas.free[3] > 0, "keeps the doors already open");
+        } finally { Date.now = realNow; }
+    });
+    test("🎁 Open all: today's free door and every ⭐ Premium door up to today — 🪙 gifted (logged), ✨, ❄️ Frost Doublers", async () => {
+        try {
+            at(2026, 12, 8);
+            await act({ action: "xmasBuy" });
+            const r = await act({ action: "xmasOpen", all: true });
+            assert.equal(r.status, 200, JSON.stringify(r.body));
+            assert.deepEqual(r.body.opened.map(x => x.track + x.day), ["free8", "prem1", "prem2", "prem3", "prem4", "prem5", "prem6", "prem7", "prem8"]);
+            // prem 1–8: 20 + 10 🪙, 1,000 + 1,500 ✨, 20 💗, the Elf Bubble, a draw, 2 doublers; free 8: +1 🪙
+            assert.equal(wallet().balance, 700 + 31);
+            assert.equal(wallet().lifetimeGifted, 31, "the calendar's 🪙 count as gifted");
+            assert.equal(inv().stardust, 20000 + 2500);
+            assert.equal(inv().hearts, 20);
+            assert.equal(inv().freeDraws, 1);
+            assert.equal(inv().frostDoublers, 2);
+            assert.ok("xc_elf" in inv().items);
+            assert.equal(inv().xmas.premium, true, "still Premium");
+            assert.match((await act({ action: "xmasOpen", all: true })).body.error, /Nothing to open/);
+            const log = db._docs("chestOpens").find(o => o.kind === "xmas");
+            assert.deepEqual([log.count, log.tokens, log.price, log.currency], [9, 31, 0, "stardust"]);
+        } finally { Date.now = realNow; }
+    });
+    test("after 6 January the ⭐ Premium doors still shut open by themselves — once", async () => {
+        try {
+            at(2026, 12, 30);
+            await act({ action: "xmasBuy" });
+            at(2027, 1, 7);
+            const r = await act({ action: "status" });
+            assert.equal(r.status, 200, JSON.stringify(r.body));
+            assert.ok(r.body.xmasSwept, "told what was opened");
+            assert.equal(r.body.xmasSwept.tokens, 360);
+            assert.equal(Object.keys(inv().xmas.prem).length, 31);
+            assert.equal(inv().xmas.swept, true);
+            assert.equal(inv().frostDoublers, 3);
+            assert.equal(wallet().balance, 700 + 360);
+            const again = await act({ action: "status" });
+            assert.ok(!again.body.xmasSwept);
+            assert.equal(wallet().balance, 1060, "not twice");
+        } finally { Date.now = realNow; }
+    });
+});
+
+describe("🎅 tokens back and ❄️ Frost Doublers on Secret Giveaways (api/tokens.js)", () => {
+    let db;
+    const act = (body) => call("tokens.js", { token: "player-token", body });
+    const inv = () => db._data.get("inventories/player1") || {};
+    const balance = () => db._data.get("tokenWallets/player1").balance;
+    beforeEach(() => {
+        db = memoryFirestore();
+        db._data.set("users/player1", { name: "Ezra" });
+        db._data.set("tokenWallets/player1", { balance: 1000 });
+        db._data.set("inventories/player1", { items: {}, perks: { tokenBack: 10 } });
+        db._data.set("secretGiveaways/g1", { title: "Big one", expiresAt: Date.now() + 864e5, winners: [] });
+        db._data.set("secretGiveaways/g1/entries/player1", { platform: "ios", tokens: 0 });
+        state.db = db;
+    });
+    test("adding tokens pays 10% back at once; taking them out gives it back; nothing to gain from in-and-out", async () => {
+        let r = await act({ action: "stake", giveawayId: "g1", amount: 100 });
+        assert.equal(r.status, 200, JSON.stringify(r.body));
+        assert.equal(r.body.tokenBack, 10);
+        assert.equal(balance(), 910);
+        assert.equal(db._data.get("tokenWallets/player1").lifetimeGifted, 10, "counted as gifted");
+        assert.equal(inv().tokenBackGot.g1, 10);
+        r = await act({ action: "setStake", giveawayId: "g1", amount: 200 });
+        assert.equal(r.status, 200, JSON.stringify(r.body));
+        assert.equal(balance(), 820, "+100 in, 10 back");
+        r = await act({ action: "setStake", giveawayId: "g1", amount: 50 });
+        assert.equal(r.body.tokenBack, -15);
+        assert.equal(balance(), 820 + 150 - 15);
+        r = await act({ action: "unstake", giveawayId: "g1" });
+        assert.equal(r.status, 200, JSON.stringify(r.body));
+        assert.equal(balance(), 1000, "all in, all out: just where you started");
+        assert.equal(inv().tokenBackGot.g1, 0);
+        assert.equal(db._data.get("tokenWallets/player1").lifetimeGifted, 0);
+    });
+    test("without a tokenBack item, staking is as before", async () => {
+        db._data.set("inventories/player1", { items: {}, perks: {} });
+        const r = await act({ action: "stake", giveawayId: "g1", amount: 100 });
+        assert.equal(r.body.tokenBack, 0);
+        assert.equal(balance(), 900);
+        assert.equal(inv().tokenBackGot, undefined, "nothing written");
+    });
+    test("❄️ useFrost: needs a Frost Doubler and tokens on it; doubles them in the draw (top bid, odds); once a giveaway", async () => {
+        db._data.set("inventories/player1", { items: {}, perks: {} });
+        assert.match((await act({ action: "useFrost", giveawayId: "g1" })).body.error, /don't have a ❄️ Frost Doubler/);
+        db._data.set("inventories/player1", { items: {}, perks: {}, frostDoublers: 2 });
+        assert.match((await act({ action: "useFrost", giveawayId: "g1" })).body.error, /Add some tokens first/);
+        await act({ action: "stake", giveawayId: "g1", amount: 10 });
+        assert.equal(db._data.get("secretGiveaways/g1").maxScoreIos, 10);
+        const r = await act({ action: "useFrost", giveawayId: "g1" });
+        assert.equal(r.status, 200, JSON.stringify(r.body));
+        assert.equal(r.body.frostDoublers, 1);
+        assert.equal(inv().frostDoublers, 1);
+        assert.ok(inv().frostOn.g1);
+        assert.equal(db._data.get("secretGiveaways/g1").frostCount, 1, "the odds are worked out again");
+        assert.equal(db._data.get("secretGiveaways/g1").maxScoreIos, 20, "the top bid counts it");
+        assert.match((await act({ action: "useFrost", giveawayId: "g1" })).body.error, /already on this giveaway/);
+        assert.equal(inv().frostDoublers, 1);
+        const odds = await act({ action: "secretOdds", giveawayId: "g1" });
+        assert.equal(odds.status, 200, JSON.stringify(odds.body));
+        assert.equal(odds.body.mine, 10, "10 more balls from the doubler");
+        assert.equal(odds.body.itemExtra.ios, 10);
+    });
+    test("❄️ not on a closed giveaway or one without tokens", async () => {
+        db._data.set("inventories/player1", { items: {}, perks: {}, frostDoublers: 3 });
+        db._data.set("secretGiveaways/g1/entries/player1", { platform: "ios", tokens: 5 });
+        db._data.set("secretGiveaways/g1", { title: "Big one", expiresAt: Date.now() - 1, winners: [] });
+        assert.match((await act({ action: "useFrost", giveawayId: "g1" })).body.error, /closed/);
+        db._data.set("secretGiveaways/g1", { title: "Big one", expiresAt: Date.now() + 864e5, winners: [], tokensAllowed: false });
+        assert.equal((await act({ action: "useFrost", giveawayId: "g1" })).status, 400);
+        assert.equal(inv().frostDoublers, 3, "none used up");
+    });
+    test("the real draw (admin, appState.js) counts a Frost Doubler the same way", () => {
+        const app = read("appState.js");
+        assert.match(app, /async function secretWeightFn\(giveaway, pool, giveawayId\)/);
+        assert.match(app, /inv\.frostOn && Object\.prototype\.hasOwnProperty\.call\(inv\.frostOn, giveawayId\) && inv\.frostOn\[giveawayId\]/);
+        assert.match(app, /PC\.secretWeight\(e\.tokens, inv\.perks \|\| \{\}, frost\)/);
+        assert.equal((app.match(/await secretWeightFn\(giveawaySnap\.data\(\), pool, giveawayId\)/g) || []).length, 2, "both ways of drawing");
+    });
+});
+
+describe("🎄 the calendar in the app (Store, Home, Secret Giveaways)", () => {
+    test("the Store: the calendar's card at the top (a door grid, ⭐ Premium, Open all), the Santa Set only while it's sold", () => {
+        const store = read("store.html");
+        assert.ok(store.indexOf('id="xmasBox"') < store.indexOf('id="deals"'), "the calendar first");
+        assert.match(store, /function renderXmas\(\)/);
+        assert.match(store, /AppState\.openXmasDoor\(track, day\)/);
+        assert.match(store, /AppState\.buyXmasPremium\(\)/);
+        assert.match(store, /PC\.SETS\.filter\(set => PC\.setOnSale\(set, day\) \|\| admin\)/);
+        assert.match(store, /if \(st\.xmasSwept\) KihDialog\.alert/);
+    });
+    test("Home: a 🎄 card across Today's cards while it's on, to the Store's calendar", () => {
+        const index = read("index.html");
+        assert.match(index, /function xmasCard\(card, signedIn\)/);
+        assert.match(index, /openStoreAt\('xmas'\)/);
+        assert.match(index, /\/\^\(event\|chest\|hearts\|deals\|sets\|packs\|xmas\|set-\[a-z0-9_\]\+\)\$\//);
+        assert.match(index, /window\.kihXmasChanged = function/);
+    });
+    test("Secret Giveaways: ❄️ Use a Frost Doubler, odds that count it, and 🎅 tokens back when you throw some in", () => {
+        const promo = read("promo.html");
+        assert.match(promo, /function frostHtml\(g, entry, closed\)/);
+        assert.match(promo, /AppState\.useFrostDoubler\(giveawayId\)/);
+        assert.match(promo, /const myWeight = \(staked, gid\) => window\.ProgressCore \? ProgressCore\.secretWeight\(staked, mySecretPerks, myFrost\.has\(gid\)\)/);
+        assert.doesNotMatch(promo, /myWeight\(staked\)|myBid\(staked\)|myWeight\(draftTokens\)/, "every odds figure knows its giveaway");
+        assert.match(promo, /🎅 \+\$\{c\.back\} 🪙 back/);
+    });
+});
+
+describe("💬 a chat with a friend: their character up top, and no lag (social.html)", () => {
+    const social = read("social.html");
+    test("the header shows their character at a real size (it was 0 px wide), and tapping it opens their profile", () => {
+        assert.match(social, /#dmHeaderAvatar \.kc-av \{ width: 30px; \}/);
+        assert.match(social, /document\.getElementById\("dmHeaderProfileTrigger"\)\.onclick = \(\) => openDmHeaderProfile\(uid, name\);/);
+    });
+    test("only what changed is redrawn: a new message adds one, a reaction swaps one in place", () => {
+        assert.match(social, /keepPlayingVideos\(box, \(\) => patchBlocks\(box, blocks, sameThread\)\)/);
+        assert.match(social, /keepPlayingVideos\(box, \(\) => patchBlocks\(box, blocks, true\)\)/, "🌍 World Chat too");
+        assert.ok(social.includes('push("w:" + m.id);') && social.includes('title="${escapeHtml(formatFullTime(m.createdAt))}"'), "World Chat: keyed messages, remembered times");
+        assert.doesNotMatch(social, /keepPlayingVideos\(box, \(\) => \{ box\.innerHTML = html; \}\)/);
+        assert.match(social, /if \(was\.html === b\.html\) return \{ \.\.\.b, el: was\.el \};/);
+        assert.match(social, /was\.el\.replaceWith\(el\); \/\/ changed: swapped in place/);
+        for (const k of ['push("d:" + dateKey)', 'push("m:" + m.id)', 'push("p:" + p.tempId)']) assert.ok(social.includes(k), k);
+        assert.equal((social.match(/push\("m:" \+ m\.id\);/g) || []).length, 2, "a message being edited is a block too");
+    });
+    test("times are formatted with formatters made once (and remembered), not one per message per update", () => {
+        assert.match(social, /const DM_FMT = \{ time: new Intl\.DateTimeFormat/);
+        assert.match(social, /let t = dmTimeMemo\.get\(ts\);/);
+        const fmt = social.slice(social.indexOf("function formatDmTime("), social.indexOf("function formatDmDateSeparator("));
+        assert.doesNotMatch(fmt, /toLocale(Time|Date)?String/);
+        assert.doesNotMatch(social, /new Date\(m\.createdAt\)\.toLocaleString\(\)|new Date\(m\.createdAt\)\.toDateString\(\)/);
+        assert.match(social, /const dateKey = dmDayKey\(m\.createdAt\);/);
+    });
+    test("typing: the box resizes only when it needs to; the draft's saved once you pause (and never after it's sent)", () => {
+        assert.match(social, /if \(!el\.dataset\.grown && el\.scrollHeight <= el\.clientHeight \+ 2\) return;/);
+        assert.match(social, /if \(dmInputEl\.value === text && "dm:" \+ currentDmThreadId === key\) keepDraftText\(key, text\); \}, 400\);/);
+    });
+    test("a long chat shows its newest 200 messages (it showed the oldest 200, so new ones never came)", () => {
+        const app = read("appState.js");
+        const fn = app.slice(app.indexOf("function listenToDmMessages("), app.indexOf("function listenToMyDmThreads("));
+        assert.match(fn, /orderBy\("createdAt", "desc"\),\s*limit\(maxCount\)/);
+        assert.match(fn, /callback\(items\.reverse\(\)\);/);
+    });
+});
+
+describe("🎁 wrapped free doors, ⭐ Premium's ✨ just enough, 👘 the featured set on Home", () => {
+    const store = read("store.html"), index = read("index.html");
+    test("a free door is a wrapped present with a ? until it's opened; a shut one keeps its surprise", () => {
+        assert.match(store, /const wrapped = tr === "free" && st !== "done";/);
+        assert.match(store, /\$\{wrapped \? `<span class="xm-q">\?<\/span>` : xmPrizeHtml\(p\)\}/);
+        assert.match(store, /track === "free" && st !== "done" \? "🎁 A surprise — unwrap it to see!"/);
+        assert.match(store, /\.xm-door\.free\.wrap \{ background:/);
+    });
+    test("opening one: it shakes and bursts open while the server opens it, then the prize pops out", () => {
+        assert.match(store, /doors\.forEach\(el => el\.classList\.add\("unwrap"\)\);/);
+        assert.match(store, /await Promise\.all\(\[AppState\.openXmasDoor\(track, day\), new Promise\(res => setTimeout\(res, 850\)\)\]\)/);
+        assert.match(store, /el\.classList\.add\("reveal"\);/);
+        assert.match(store, /@keyframes xmUnwrap/); assert.match(store, /@keyframes xmPop/);
+        assert.match(store, /prefers-reduced-motion: reduce\) \{[^}]*\.xm-door\.unwrap/);
+    });
+    test("Home: an outfit sets icon above Ask (no card that pops in and out); its popup: ✓ Bought, or the price and Buy (the Store, at that set)", () => {
+        assert.doesNotMatch(index, /id="homeSet"|function renderHomeSet/);
+        assert.match(index, /<button type="button" class="hset-fab" id="setFab" onclick="openSetOffer\(\)" hidden aria-label="Outfit sets"><\/button>/);
+        assert.ok(index.indexOf('id="guideFab"') < index.indexOf('id="setFab"'), "next to Ask");
+        assert.match(index, /\.home-landing\.hidden \.hset-fab, body\.kih-guide-on \.hset-fab \{ display: none; \}/, "it goes where Ask goes");
+        assert.match(index, /\$\{own \? `<div class="hso-row"><span class="hso-own">✓ Bought<\/span>/);
+        assert.match(index, /if \(buy\) \{ closeSetOffer\(\); openStoreAt\("set-" \+ buy\.dataset\.setBuy\); return; \}/);
+        assert.match(index, /popupStep\(\(\) => closeSetOffer\(true\)\); \/\/ Back closes it/);
+        assert.match(index, /set-\[a-z0-9_\]\+\)\$\/\.test\(at\)/);
+        assert.match(store, /const one = \/\^#set-\[a-z0-9_\]\+\$\/\.test\(location\.hash\) \? "set_" \+ location\.hash\.slice\(5\) : null;/);
+        assert.match(store, /class="set-card\$\{flashSetId === "set_" \+ set\.id \? " flash" : ""\}"/);
+    });
+});
+
+describe("🔎 Social → Friends: typing a name pops up your friends with it — 💗 a heart, 💬 a message (social.html)", () => {
+    const social = read("social.html");
+    test("as you type: friends whose names have it (accents aside; those starting with it first), with 💗 and 💬", () => {
+        assert.match(social, /<div id="friendTypeahead" class="friend-ta" hidden><\/div>/);
+        assert.match(social, /friendTaInput\(\)\.addEventListener\("input", renderFriendTypeahead\);/);
+        assert.match(social, /return \(friends \|\| \[\]\)\.filter\(f => foldText\(f\.name \|\| ""\)\.includes\(q\)\)/);
+        assert.match(social, /data-ta-heart="\$\{escapeHtml\(f\.uid\)\}"/);
+        assert.match(social, /data-ta-msg="\$\{escapeHtml\(f\.uid\)\}"/);
+    });
+    test("a heart sent from it: the same as anywhere (sendHeartTo), and the friends list shows it too", () => {
+        assert.match(social, /const r = await sendHeartTo\(heart\.dataset\.taHeart\);\s*showToast\(sentToast\(r\)\);\s*renderFriendTypeahead\(\);[^\n]*\n\s*if \(friends && friends\.length\) renderFriends\(friends\);/);
+    });
+    test("its last line searches all players; Search, Clear, a profile and a tap elsewhere close it; all players' results have 💗 for friends", () => {
+        assert.match(social, /if \(all\) \{ runFriendSearch\(\); return; \}/);
+        assert.match(social, /window\.runFriendSearch = async function \(\) \{\s*hideFriendTypeahead\(\);/);
+        assert.match(social, /window\.clearFriendSearch = function \(\) \{\s*hideFriendTypeahead\(\);/);
+        assert.match(social, /if \(window\.hideFriendTypeahead\) hideFriendTypeahead\(\);/);
+        assert.match(social, /closest\("#friendSearchWrap"\)\) hideFriendTypeahead\(\);/);
+        assert.match(social, /quickHeart\('\$\{r\.uid\}', this\)/, "a friend in the search results: 💗");
+    });
+});
+
+describe("📅 the login week: a day's 🪙 and ✨ one under another (index.html)", () => {
+    test("each reward on its own line — 🪙 on top, then ✨, then Sunday's 🧰 (they overlapped on one line)", () => {
+        const index = read("index.html");
+        assert.match(index, /body = `✅\$\{\(got\.length \? got : \["\+1🪙"\]\)\.map\(x => `<small class="cal-got">\$\{x\}<\/small>`\)\.join\(""\)\}`;/);
+        assert.match(index, /const got = \[login\.reward \? `\+\$\{login\.reward\}🪙` : "", login\.stardust \? `\+\$\{login\.stardust\}✨` : "", login\.itemChest \? "🧰" : ""\]\.filter\(Boolean\);/);
+        assert.match(index, /\.cal-day small\.cal-got \{ display: block;/);
     });
 });

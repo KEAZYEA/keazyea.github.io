@@ -2037,6 +2037,27 @@
             border: 2px solid #16162a;
         }
 
+        /* 🔎 the friends pop-up list under the search box */
+        .friend-search-wrap { position: relative; z-index: 30; }
+        .friend-ta { position: absolute; left: 0; right: 0; top: calc(100% - 10px); max-height: 340px; overflow-y: auto; overscroll-behavior: contain; padding: 6px; border-radius: 14px;
+            background: #1d1f3d; border: 1px solid rgba(160, 130, 255, 0.45); box-shadow: 0 14px 30px rgba(0, 0, 0, 0.55); animation: friendTaIn 0.14s ease-out both; }
+        .friend-ta[hidden] { display: none; }
+        @keyframes friendTaIn { from { opacity: 0; transform: translateY(-4px); } }
+        .friend-ta-head { padding: 4px 8px 6px; font-size: 0.75rem; font-weight: 800; color: #ffb3d4; }
+        .friend-ta-row { display: flex; align-items: center; gap: 10px; padding: 6px 8px; border-radius: 10px; cursor: pointer; }
+        .friend-ta-row:hover, .friend-ta-row:active { background: rgba(255, 255, 255, 0.06); }
+        .friend-ta-avatar { width: 34px; height: 34px; flex-shrink: 0; }
+        .friend-ta-avatar.kc-av { width: 30px; height: auto; }
+        .friend-ta-info { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+        .friend-ta-info b { font-size: 0.92rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .friend-ta-info mark { background: rgba(255, 210, 74, 0.35); color: inherit; border-radius: 3px; padding: 0 1px; }
+        .friend-ta-info small { font-size: 0.72rem; color: #a9a6c8; }
+        .friend-ta .friend-heart { margin-left: 0; }
+        .friend-ta-msg { flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%; border: 1px solid rgba(120, 160, 255, 0.5); background: rgba(90, 130, 255, 0.14); font-size: 1rem; cursor: pointer; }
+        .friend-ta-empty { padding: 10px 8px; font-size: 0.85rem; color: #a9a6c8; }
+        .friend-ta-all { display: block; width: 100%; margin-top: 4px; padding: 9px 8px; border: none; border-top: 1px solid rgba(255, 255, 255, 0.08); background: none; color: #b9c6ff;
+            font: inherit; font-size: 0.85rem; font-weight: 800; text-align: left; cursor: pointer; }
+        @media (prefers-reduced-motion: reduce) { .friend-ta { animation: none; } }
         .friend-search-row {
             display: flex;
             gap: 8px;
@@ -2171,6 +2192,10 @@
         /* A player's shown badges and the 👍 like button (profile popup) */
         /* a border wrapper fills the avatar box it's drawn in */
         #dmHeaderAvatar > .fx-av, #friendProfileAvatar > .fx-av { width: 100%; height: 100%; }
+        /* a chat's header: their character, head and shoulders, 30 × 36 */
+        #dmHeaderAvatar { width: auto !important; display: flex; align-items: center; }
+        #dmHeaderAvatar > .fx-av { width: auto; height: auto; }
+        #dmHeaderAvatar .kc-av { width: 30px; }
         .fx-av > .avatar-wrap { width: 100%; height: 100%; }
         .pf-badges { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin: 0 0 12px; }
         /* a player's 🧍 character (head & shoulders) where their picture was */
@@ -2786,12 +2811,16 @@
             <!-- FRIENDS TAB -->
             <div class="social-tab-panel active" id="tabPanelFriends">
                 <div class="social-content-inner">
+                    <div class="friend-search-wrap" id="friendSearchWrap">
                     <div class="friend-search-row">
                         <input type="text" id="friendSearchInput" class="modal-field-input"
-                            placeholder="Search friends by name..."
-                            onkeydown="if(event.key==='Enter') runFriendSearch();">
+                            placeholder="Search friends by name..." autocomplete="off" aria-controls="friendTypeahead"
+                            onkeydown="if(event.key==='Enter') runFriendSearch(); else if(event.key==='Escape') hideFriendTypeahead();">
                         <button class="btn-primary" onclick="runFriendSearch()">🔍 Search</button>
                         <button class="modal-cancel" onclick="clearFriendSearch()" style="padding:10px 16px; flex-shrink:0;">✕ Clear</button>
+                    </div>
+                    <!-- as you type: your friends with that name — 💗 a heart, 💬 a message, or tap for their profile -->
+                    <div id="friendTypeahead" class="friend-ta" hidden></div>
                     </div>
                     <div id="friendSearchResults">
                         <div class="friends-section-title">Search Results</div>
@@ -3933,9 +3962,30 @@ function buildCountrySelectOptions(selectId, includeAny) {
         function timeAgo(ts) {
             return new Date(ts).toLocaleString();
         }
+        // A message's time ("5:06 PM"). The formatters are made once and each
+        // time is remembered: making one per message, every time the chat
+        // changed, was most of a chat's lag on a phone.
+        const DM_FMT = { time: new Intl.DateTimeFormat([], { hour: "numeric", minute: "2-digit" }), weekday: new Intl.DateTimeFormat([], { weekday: "long" }),
+            day: new Intl.DateTimeFormat([], { month: "long", day: "numeric" }), dayYear: new Intl.DateTimeFormat([], { month: "long", day: "numeric", year: "numeric" }) };
+        const dmTimeMemo = new Map();
         function formatDmTime(ts) {
-    return new Date(ts).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+    let t = dmTimeMemo.get(ts);
+    if (t === undefined) {
+        t = DM_FMT.time.format(new Date(ts));
+        if (dmTimeMemo.size > 3000) dmTimeMemo.clear();
+        dmTimeMemo.set(ts, t);
+    }
+    return t;
 }
+// a message's full date and time (World Chat's tooltip), remembered
+const dmFullMemo = new Map(), DM_FULL = new Intl.DateTimeFormat([], { dateStyle: "medium", timeStyle: "short" });
+function formatFullTime(ts) {
+    let t = dmFullMemo.get(ts);
+    if (t === undefined) { t = DM_FULL.format(new Date(ts)); if (dmFullMemo.size > 3000) dmFullMemo.clear(); dmFullMemo.set(ts, t); }
+    return t;
+}
+// a day's key (local), cheap: which date line a message goes under
+const dmDayKey = (ts) => { const d = new Date(ts); return d.getFullYear() * 10000 + d.getMonth() * 100 + d.getDate(); };
 
 function formatDmDateSeparator(ts) {
     const d = new Date(ts);
@@ -3945,11 +3995,8 @@ function formatDmDateSeparator(ts) {
 
     if (diffDays === 0) return "Today";
     if (diffDays === 1) return "Yesterday";
-    if (diffDays > 1 && diffDays < 7) return d.toLocaleDateString([], { weekday: "long" });
-    return d.toLocaleDateString([], {
-        month: "long", day: "numeric",
-        year: d.getFullYear() !== now.getFullYear() ? "numeric" : undefined
-    });
+    if (diffDays > 1 && diffDays < 7) return DM_FMT.weekday.format(d);
+    return (d.getFullYear() !== now.getFullYear() ? DM_FMT.dayYear : DM_FMT.day).format(d);
 }
 
         function showToast(message) {
@@ -6847,7 +6894,7 @@ window.removeClanIconPreview = function () {
             }
             list.innerHTML = requests.map(r => `
                 <div class="friend-req-item">
-                    <div class="friend-req-person" style="display:flex; align-items:center; gap:8px; cursor:pointer;" onclick="openViewProfileModal(${jsStr(r.fromName)}, '${escapeHtml(r.fromAvatar || "")}')">
+                    <div class="friend-req-person" style="display:flex; align-items:center; gap:8px; cursor:pointer;" onclick="onPosterClick('${escapeHtml(r.fromUid)}', ${jsStr(r.fromName)})">
                         ${avatarHtml(r.fromAvatar, r.fromName, "friend-req-avatar", r.fromUid)}
                         <span class="friend-req-name ${nameFx(r.fromUid)}" data-fx-uid="${escapeHtml(r.fromUid || "")}" data-fx-keep="friend-req-name">${escapeHtml(r.fromName)}</span>
                     </div>
@@ -6874,6 +6921,7 @@ window.removeClanIconPreview = function () {
         };
 
         window.showProfileModal = function (profile, isFriend) {
+            if (window.hideFriendTypeahead) hideFriendTypeahead(); // (the friends search's pop-up list)
             if (profile && profile.uid) {
                 AppState.reportQuestProgress("viewProfile", profile.uid);
                 AppState.trackProgress("visit", profile.uid);
@@ -6968,6 +7016,7 @@ window.removeClanIconPreview = function () {
                     return `<div class="hp-chip${sent ? " sent" : ""}">${charCard(p.uid, "hp-chip-av")}<small><span data-fx-uid="${escapeHtml(p.uid)}" class="${nameFx(p.uid)}">${escapeHtml(p.name || "Friend")}</span></small>
                         <button type="button" onclick="sendHeartBack('${escapeHtml(p.uid)}', this)"${sent || h.heartsLeft <= 0 ? " disabled" : ""} aria-label="Send ${escapeHtml(p.name || "them")} a heart">${sent ? "✓ Sent" : sentMe.has(p.uid) ? "💗 Back" : "💗 Send"}</button></div>`;
                 }).join("")}</div>`;
+            const keepX = (box.querySelector(".hp-send") || {}).scrollLeft || 0;
             box.style.display = "";
             box.innerHTML = `
                 <div class="hp-head"><b>💗 Hearts</b><span class="hp-have">${h.hearts} 💗</span><button type="button" class="hp-shop" onclick="goHeartShop()">Heart Shop ›</button></div>
@@ -6983,6 +7032,8 @@ window.removeClanIconPreview = function () {
                     ${waiting.length > 1 ? `<button type="button" class="hp-all" onclick="collectHeart(null, this)">💗 Collect all ${waiting.length}</button>` : ""}`
                 : `<div class="hp-empty">No hearts waiting for you right now.</div>`}
                 ${sendStrip}`;
+            const strip = box.querySelector(".hp-send");
+            if (strip) strip.scrollLeft = keepX; // (sending a heart redraws the row — you stay where you were)
         }
         // "just now", "5m ago", "3h ago", "yesterday", then the date
         function heartAgo(ts) {
@@ -7272,12 +7323,14 @@ window.removeClanIconPreview = function () {
         }
 
         window.clearFriendSearch = function () {
+            hideFriendTypeahead();
             document.getElementById("friendSearchInput").value = "";
             document.getElementById("friendSearchResults").style.display = "none";
             document.getElementById("friendSearchResultsList").innerHTML = "";
         };
 
         window.runFriendSearch = async function () {
+            hideFriendTypeahead();
             const term = document.getElementById("friendSearchInput").value.trim();
             const box = document.getElementById("friendSearchResults");
             const list = document.getElementById("friendSearchResultsList");
@@ -7299,7 +7352,7 @@ window.removeClanIconPreview = function () {
                             <div class="friend-row-status">${formatLastActive(r.lastActiveAt)}</div>
                         </div>
                         ${isFriendUid(r.uid)
-                        ? `<button class="mini-btn accept" onclick="event.stopPropagation(); openDmWith('${r.uid}', ${jsStr(r.name)})">Message</button>`
+                        ? `${myHearts ? `<button type="button" class="friend-heart${(myHearts.heartsToday || []).includes(r.uid) ? " sent" : ""}" onclick="event.stopPropagation(); quickHeart('${r.uid}', this)"${(myHearts.heartsToday || []).includes(r.uid) || myHearts.heartsLeft <= 0 ? " disabled" : ""} aria-label="Send ${escapeHtml(r.name)} a heart">💗</button>` : ""}<button class="mini-btn accept" onclick="event.stopPropagation(); openDmWith('${r.uid}', ${jsStr(r.name)})">Message</button>`
                         : `<button class="mini-btn accept" onclick="event.stopPropagation(); sendFriendReqTo('${r.uid}', ${jsStr(r.name)})">Add</button>`}
                     </div>
                 `).join("");
@@ -7307,6 +7360,65 @@ window.removeClanIconPreview = function () {
                 list.innerHTML = `<div class="clan-empty">${escapeHtml(e.message)}</div>`;
             }
         };
+        /* 🔎 As you type in the friends search: a list pops up of your friends
+           with that name (in your friends list already — no waiting), each with
+           💗 (send a heart), 💬 (a message), or tap for their profile. Its last
+           line searches all players (as 🔍 Search does). */
+        const friendTaInput = () => document.getElementById("friendSearchInput");
+        window.hideFriendTypeahead = function () { const b = document.getElementById("friendTypeahead"); if (b) { b.hidden = true; b.innerHTML = ""; } };
+        function friendMatches(term) {
+            const q = foldText(term);
+            if (!q) return [];
+            return (friends || []).filter(f => foldText(f.name || "").includes(q))
+                .sort((a, b) => (foldText(b.name || "").startsWith(q) ? 1 : 0) - (foldText(a.name || "").startsWith(q) ? 1 : 0) || (b.lastActiveAt || 0) - (a.lastActiveAt || 0))
+                .slice(0, 8);
+        }
+        // their name with what you typed picked out
+        function markName(name, term) {
+            const i = String(name).toLowerCase().indexOf(term.toLowerCase());
+            if (i < 0 || !term) return escapeHtml(name);
+            return escapeHtml(name.slice(0, i)) + `<mark>${escapeHtml(name.slice(i, i + term.length))}</mark>` + escapeHtml(name.slice(i + term.length));
+        }
+        function renderFriendTypeahead() {
+            const box = document.getElementById("friendTypeahead"), term = friendTaInput().value.trim();
+            if (!box) return;
+            if (!term || !AppState.getCurrentUser()) { hideFriendTypeahead(); return; }
+            const list = friendMatches(term);
+            const sentTo = (uid) => !!myHearts && (myHearts.heartsToday || []).includes(uid);
+            const head = myHearts ? `<div class="friend-ta-head">💗 ${myHearts.heartsLeft} of ${myHearts.heartsPerDay} hearts left to send today</div>` : "";
+            box.innerHTML = head + (list.length ? list.map(f => `<div class="friend-ta-row" data-ta-profile="${escapeHtml(f.uid)}">
+                    ${avatarHtml(f.avatar, f.name, "friend-ta-avatar", f.uid)}
+                    <div class="friend-ta-info"><b class="${nameFx(f.uid)}">${markName(f.name || "Commander", term)}</b><small>${formatLastActive(f.lastActiveAt)}</small></div>
+                    ${myHearts ? `<button type="button" class="friend-heart${sentTo(f.uid) ? " sent" : ""}" data-ta-heart="${escapeHtml(f.uid)}"${sentTo(f.uid) || myHearts.heartsLeft <= 0 ? " disabled" : ""} title="${sentTo(f.uid) ? "Heart sent today ✓" : "Send a heart"}" aria-label="Send ${escapeHtml(f.name)} a heart">💗</button>` : ""}
+                    <button type="button" class="friend-ta-msg" data-ta-msg="${escapeHtml(f.uid)}" aria-label="Message ${escapeHtml(f.name)}">💬</button>
+                </div>`).join("") : `<div class="friend-ta-empty">No friends called “${escapeHtml(term)}”</div>`)
+                + `<button type="button" class="friend-ta-all" data-ta-all="1">🔍 Search all players for “${escapeHtml(term)}”</button>`;
+            box.hidden = false;
+            ensureCards(list.map(f => f.uid), () => { if (!box.hidden) renderFriendTypeahead(); }, "typeahead");
+        }
+        friendTaInput().addEventListener("input", renderFriendTypeahead);
+        // back to the box (it may still have focus — after a chat, say): the list again
+        ["focus", "click"].forEach(ev => friendTaInput().addEventListener(ev, () => { if (friendTaInput().value.trim() && document.getElementById("friendTypeahead").hidden) renderFriendTypeahead(); }));
+        document.getElementById("friendTypeahead").addEventListener("click", async (e) => {
+            const heart = e.target.closest("[data-ta-heart]"), msg = e.target.closest("[data-ta-msg]"), all = e.target.closest("[data-ta-all]"), row = e.target.closest("[data-ta-profile]");
+            if (heart) {
+                e.stopPropagation();
+                if (heart.disabled) return;
+                heart.disabled = true;
+                try {
+                    const r = await sendHeartTo(heart.dataset.taHeart);
+                    showToast(sentToast(r));
+                    renderFriendTypeahead(); // ✓ sent, and hearts left
+                    if (friends && friends.length) renderFriends(friends); // its 💗 in your friends list too
+                } catch (err) { heart.disabled = false; showInfoModal("Couldn't send it", err.message); }
+                return;
+            }
+            if (msg) { const f = friends.find(x => x.uid === msg.dataset.taMsg); hideFriendTypeahead(); if (f) openDmWith(f.uid, f.name, f.avatar || ""); return; }
+            if (all) { runFriendSearch(); return; }
+            if (row) { const f = friends.find(x => x.uid === row.dataset.taProfile); hideFriendTypeahead(); if (f) onPosterClick(f.uid, f.name); }
+        });
+        // a tap anywhere else closes it
+        document.addEventListener("click", (e) => { if (!e.target.closest || !e.target.closest("#friendSearchWrap")) hideFriendTypeahead(); });
         async function loadSuggestedFriends() {
             const section = document.getElementById("suggestedFriendsSection");
             const container = document.getElementById("suggestedFriendsList");
@@ -8076,9 +8188,13 @@ window.removeClanIconPreview = function () {
             const admin = AppState.isAdmin && AppState.isAdmin();
             const list = worldAll().filter(m => !worldBlocked.has(m.uid) && (m.tag || "general") === worldFilter);
             ensureCards(list.map(m => m.uid), renderWorldChat, "world");
+            // keyed blocks, one element each: only the ones that changed are redrawn (patchBlocks)
+            const blocks = [];
             let html = "";
+            const push = (key) => { blocks.push({ key, html: html.trim() }); html = ""; };
             if (worldLive && !worldNoOlder && worldAll().length >= WORLD_PAGE) {
                 html += `<button type="button" class="wc-older" data-older="1">${worldLoadingOlder ? "Loading…" : "↑ Load older messages"}</button>`;
+                push("older");
             }
             // messages of yours on their way: gone once the real ones are here
             worldPending = worldPending.filter(p => { const here = pendArrived(p, id => worldById(id)); if (here) dropPending(worldPending, p); return !here; });
@@ -8088,11 +8204,12 @@ window.removeClanIconPreview = function () {
                 html += `<div class="wc-empty">${worldFailed ? "Couldn't load the chat — refresh the page to try again."
                     : !worldLive ? "Loading the chat…"
                     : `👋 No messages in ${tag.icon} ${tag.label} yet.<br>Be the first!`}</div>`;
+                push("empty");
             }
             let lastDay = null, prev = null;
             for (const m of list) {
-                const day = new Date(m.createdAt).toDateString();
-                if (day !== lastDay) { html += `<div class="dm-date-separator">${formatDmDateSeparator(m.createdAt)}</div>`; lastDay = day; prev = null; }
+                const day = dmDayKey(m.createdAt);
+                if (day !== lastDay) { html += `<div class="dm-date-separator">${formatDmDateSeparator(m.createdAt)}</div>`; push("d:" + day); lastDay = day; prev = null; }
                 // the same person again within 5 minutes: no repeated name and picture
                 const cont = prev && prev.uid === m.uid && m.createdAt - prev.createdAt < 5 * 60000 && (prev.tag || "general") === (m.tag || "general") && !m.replyTo;
                 prev = m;
@@ -8112,11 +8229,12 @@ window.removeClanIconPreview = function () {
                     <div class="wc-av">${cont ? "" : `<span class="wc-av-tap" data-profile="1">${bordered(m.uid, worldAvatar(m))}</span>`}</div>
                     <div class="wc-main">
                         ${cont ? "" : `<div class="wc-meta"><span class="poster-name wc-name ${nameFx(m.uid)}" data-profile="1">${escapeHtml(m.name || "Commander")}</span><span class="wc-time">${formatDmTime(m.createdAt)}</span></div>`}
-                        <div class="wc-bubble${bubbleFx ? " " + bubbleFx : ""}" title="${escapeHtml(new Date(m.createdAt).toLocaleString())}">${quote}${chatPhotoHtml(m.image, m.createdAt)}${chatVideoHtml(m.video, m.createdAt)}${m.text ? `<span class="dm-msg-text">${escapeHtml(m.text)}</span>` : ""}${trBlockHtml("world", m.id)}</div>
+                        <div class="wc-bubble${bubbleFx ? " " + bubbleFx : ""}" title="${escapeHtml(formatFullTime(m.createdAt))}">${quote}${chatPhotoHtml(m.image, m.createdAt)}${chatVideoHtml(m.video, m.createdAt)}${m.text ? `<span class="dm-msg-text">${escapeHtml(m.text)}</span>` : ""}${trBlockHtml("world", m.id)}</div>
                         ${reactionsHtml("world", m)}
                         <div class="wc-actions">${actions}</div>
                     </div>
                 </div>`;
+                push("w:" + m.id);
             }
             // your own picture on them (as on your last message, else your profile's)
             const meMsg = pendHere.length ? [...worldAll()].reverse().find(m => m.uid === myUid) : null;
@@ -8132,6 +8250,7 @@ window.removeClanIconPreview = function () {
                         ${pendStatus(p, "world")}
                     </div>
                 </div>`;
+                push("p:" + p.tempId);
                 prev = { uid: myUid, createdAt: Date.now(), tag: worldFilter };
             });
             const last = list[list.length - 1], lastId = last ? last.id : "";
@@ -8140,7 +8259,7 @@ window.removeClanIconPreview = function () {
             const newMine = last && last.uid === myUid && lastId !== box.dataset.lastId;
             const grew = lastId && box.dataset.lastId && lastId !== box.dataset.lastId;
             const prevTop = box.scrollTop, prevHeight = box.scrollHeight;
-            if (box.innerHTML !== html) keepPlayingVideos(box, () => { box.innerHTML = html; });
+            keepPlayingVideos(box, () => patchBlocks(box, blocks, true)); // (unchanged: nothing's touched)
             if (worldKeepAnchor) { box.scrollTop = box.scrollHeight - prevHeight + prevTop; worldKeepAnchor = false; }
             else if (fresh || atBottom || newMine) box.scrollTop = box.scrollHeight;
             else { box.scrollTop = prevTop; if (grew) document.getElementById("wcNewBtn").classList.add("show"); }
@@ -9107,18 +9226,52 @@ document.getElementById("dmActionsMenu").classList.remove("open");
             profile.name = profile.name || fallbackName;
             showProfileModal(profile, true); // true = isFriend, since DMs only exist between friends
         };
+        /* Draw a list of keyed blocks ({ key, html }: one element each) into
+           `box`, touching only what changed: a block whose html is the same as
+           last time keeps its element (a new message adds one, a reaction
+           redraws one) — redrawing a whole long chat made it lag. `keep`
+           false (another chat) draws it all afresh. */
+        function patchBlocks(box, blocks, keep) {
+            const old = keep && box._blocks && box.children.length === box._blocks.length ? box._blocks : null;
+            if (!old) {
+                box.innerHTML = blocks.map(b => b.html).join("");
+                box._blocks = blocks.map((b, i) => ({ ...b, el: box.children[i] }));
+                return;
+            }
+            const byKey = new Map(old.map(b => [b.key, b]));
+            const tpl = document.createElement("template");
+            const make = (html) => { tpl.innerHTML = html; return tpl.content.firstElementChild || document.createElement("div"); };
+            const next = blocks.map(b => {
+                const was = byKey.get(b.key);
+                if (!was || was.el.parentNode !== box) return { ...b, el: make(b.html) };
+                byKey.delete(b.key);
+                if (was.html === b.html) return { ...b, el: was.el };
+                const el = make(b.html);
+                was.el.replaceWith(el); // changed: swapped in place, so nothing after it moves
+                return { ...b, el };
+            });
+            byKey.forEach(b => { if (b.el.parentNode === box) b.el.remove(); }); // gone (deleted, or arrived)
+            next.forEach((b, i) => { if (box.children[i] !== b.el) box.insertBefore(b.el, box.children[i] || null); }); // new ones, in their places
+            while (box.children.length > next.length) box.lastElementChild.remove();
+            box._blocks = next;
+        }
         function renderDmMessages(messages) {
     window._lastDmMessages = messages; // so edit/cancel can re-render without a fresh snapshot
     const user = AppState.getCurrentUser();
     const box = document.getElementById("dmMessages");
 
+    // the chat as blocks (a date line, a message, a message on its way), each
+    // one element with a key — only the ones that changed are redrawn
+    const blocks = [];
     let html = "";
+    const push = (key) => { blocks.push({ key, html: html.trim() }); html = ""; };
     let lastDateKey = null;
 
     messages.forEach(m => {
-        const dateKey = new Date(m.createdAt).toDateString();
+        const dateKey = dmDayKey(m.createdAt);
         if (dateKey !== lastDateKey) {
             html += `<div class="dm-date-separator">${formatDmDateSeparator(m.createdAt)}</div>`;
+            push("d:" + dateKey);
             lastDateKey = dateKey;
         }
 
@@ -9155,6 +9308,7 @@ document.getElementById("dmActionsMenu").classList.remove("open");
         <button class="dm-msg-action-link" onclick='cancelEditMessage()'>✕ Cancel</button>
     </div>
 </div>`;
+            push("m:" + m.id);
             return;
         }
 
@@ -9178,6 +9332,7 @@ document.getElementById("dmActionsMenu").classList.remove("open");
                 ${replyBtn}${reactBtn}${m.text && !parseDmChallenge(m.text) ? `<button class="dm-msg-action-link" onclick="copyDmMessage(${jsStr(m.id)})">📋 Copy</button>` : ""}${translateBtn}${editBtn}${mine ? `<button class="dm-msg-action-link" onclick="deleteMyDmMessage(${jsStr(m.id)})">🗑 Delete</button>` : ""}${reportBtn}
             </div>
         </div>`;
+        push("m:" + m.id);
     });
 
     // messages of yours on their way (this chat's): gone once the real ones are here
@@ -9186,6 +9341,7 @@ document.getElementById("dmActionsMenu").classList.remove("open");
     dmPending.filter(p => p.thread === currentDmThreadId).forEach(p => {
         const quote = p.reply ? `<span class="dm-msg-quote">${escapeHtml((p.reply.text || "").slice(0, 200))}</span>` : "";
         html += `<div class="dm-msg mine pending${p.state === "failed" ? " failed" : ""}${myDmBubble ? " " + myDmBubble : ""}" id="dmPend_${p.tempId}">${quote}${pendThumbs(p.items.slice(p.sentCount))}${p.text && !(p.items.length && p.sentCount) ? `<span class="dm-msg-text">${escapeHtml(p.text)}</span>` : ""}${pendStatus(p, "dm")}</div>`;
+        push("p:" + p.tempId);
     });
 
     // Stay where you are (e.g. reacting to or editing an older message);
@@ -9197,7 +9353,7 @@ document.getElementById("dmActionsMenu").classList.remove("open");
     const wasAtBottom = box.scrollTop + box.clientHeight >= box.scrollHeight - 40;
     const prevTop = box.scrollTop;
     const newMine = lastId !== box.dataset.lastId && last && user && last.senderUid === user.uid;
-    keepPlayingVideos(box, () => { box.innerHTML = html; }); // a playing video keeps playing
+    keepPlayingVideos(box, () => patchBlocks(box, blocks, sameThread)); // a playing video keeps playing
     box.dataset.thread = String(currentDmThreadId);
     box.dataset.lastId = lastId;
     if (!sameThread || wasAtBottom || newMine) box.scrollTop = box.scrollHeight;
@@ -9511,15 +9667,30 @@ function dmPendingAction(kind, id) {
         // Enter starts a new line (the Send button sends); on a computer,
         // Ctrl+Enter / Cmd+Enter sends too. The box grows as you type.
         const dmInputEl = document.getElementById("dmInput");
+        // Grow (or shrink) only when it's needed: setting the height every
+        // key made the whole chat lay itself out again on each one.
         function fitDmInput() {
-            dmInputEl.style.height = "auto";
-            dmInputEl.style.height = Math.min(dmInputEl.scrollHeight + 2, 160) + "px";
+            const el = dmInputEl;
+            if (!el.style.height) delete el.dataset.grown; // (reset when a chat's closed)
+            if (!el._oneLine && !el.style.height) el._oneLine = el.offsetHeight; // its one-line height, as first drawn
+            if (!el.dataset.grown && el.scrollHeight <= el.clientHeight + 2) return; // one line, and it fits
+            el.style.height = "auto";
+            const h = Math.min(el.scrollHeight + 2, 160);
+            if (h > (el._oneLine || 0) + 2) { el.style.height = h + "px"; el.dataset.grown = "1"; }
+            else { el.style.height = ""; delete el.dataset.grown; }
         }
         dmInputEl.addEventListener("keydown", (e) => {
             if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); window.sendDmFromInput(); }
         });
         dmInputEl.addEventListener("input", fitDmInput);
-        dmInputEl.addEventListener("input", () => { if (currentDmThreadId) keepDraftText("dm:" + currentDmThreadId, dmInputEl.value); });
+        let dmDraftTimer = null;
+        dmInputEl.addEventListener("input", () => {
+            const key = currentDmThreadId && "dm:" + currentDmThreadId;
+            const text = dmInputEl.value;
+            clearTimeout(dmDraftTimer);
+            // once you pause — and only if it's still what's in the box (not sent, not another chat)
+            if (key) dmDraftTimer = setTimeout(() => { if (dmInputEl.value === text && "dm:" + currentDmThreadId === key) keepDraftText(key, text); }, 400);
+        });
 
         // Mobile Send handling: don't rely on click at all. preventDefault()
         // on touchstart (the old approach) unreliably suppresses the browser's

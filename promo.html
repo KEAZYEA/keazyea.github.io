@@ -584,6 +584,13 @@
 
         .switch-link.leave, .switch-device-btn.leave { color: #ff9b9b; }
         .enter-free-note { margin: 0 0 10px; text-align: center; color: #c8c8e0; font-size: 0.85rem; }
+        /* ❄️ Frost Doubler (🎄 Christmas Calendar ⭐ Premium) */
+        .frost-note { color: #cfefff; text-shadow: 0 0 8px rgba(120, 210, 255, 0.6); }
+        .frost-box { margin: 0 0 12px; display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; }
+        .frost-box small { color: #b9d9f0; font-size: 0.8rem; line-height: 1.35; }
+        .frost-btn { min-height: 40px; padding: 8px 16px; border-radius: 999px; border: 1px solid rgba(180, 230, 255, 0.8); font-weight: 900; font-size: 0.92rem; color: #062033; cursor: pointer;
+            background: linear-gradient(135deg, #e6f7ff, #8fd8ff 60%, #48c6ef); box-shadow: 0 0 14px rgba(120, 210, 255, 0.55); }
+        .frost-btn:disabled { opacity: 0.55; cursor: default; box-shadow: none; }
         /* not entered yet: a mystery box */
         .mystery { display: flex; align-items: center; gap: 20px; margin: 0 0 12px; padding: 12px; border-radius: 14px; background: rgba(138, 77, 255, 0.12); border: 1px dashed rgba(180, 150, 255, 0.5); }
         .mystery-box { position: relative; font-size: 2.6rem; line-height: 1; flex-shrink: 0; animation: wobble 2.2s ease-in-out infinite; filter: drop-shadow(0 0 10px rgba(180, 120, 255, 0.7)); }
@@ -2618,29 +2625,34 @@ if (user && user.uid === winnerData.winnerUid) {
             let myItemChances = 0;
             let mySecretPerks = { secretChance: 0, stakeMult: 0 };
             let myItemChancesPromise = null;
+            // ❄️ Frost Doublers: how many you have, and the giveaways you've used one on
+            let myFrostCount = 0;
+            const myFrost = new Set();
             function getMyItemChances() {
                 if (!myItemChancesPromise) {
-                    myItemChancesPromise = AppState.getMyPerks().then(p => {
-                        mySecretPerks = { secretChance: Math.max(0, Math.floor(p.secretChance || 0)), stakeMult: Math.max(0, Number(p.stakeMult) || 0) };
+                    myItemChancesPromise = Promise.all([AppState.getMyPerks(), AppState.getMyFrost ? AppState.getMyFrost().catch(() => null) : null]).then(([p, f]) => {
+                        mySecretPerks = { secretChance: Math.max(0, Math.floor(p.secretChance || 0)), stakeMult: Math.max(0, Number(p.stakeMult) || 0), tokenBack: Math.max(0, Math.floor(p.tokenBack || 0)) };
+                        if (f) { myFrostCount = f.count; myFrost.clear(); f.on.forEach(id => myFrost.add(id)); }
                         return mySecretPerks.secretChance;
                     }).catch(() => { myItemChancesPromise = null; return 0; });
                 }
                 return myItemChancesPromise;
             }
             // Your balls in a draw with `staked` tokens: exactly how the draw
-            // counts them — 1 + tokens (×Lucky Beads…) + your items' chances.
-            const myWeight = (staked) => window.ProgressCore ? ProgressCore.secretWeight(staked, mySecretPerks) : staked + 1;
+            // counts them — 1 + tokens (×Lucky Beads…, ×2 with a ❄️ Frost
+            // Doubler on that giveaway `gid`) + your items' chances.
+            const myWeight = (staked, gid) => window.ProgressCore ? ProgressCore.secretWeight(staked, mySecretPerks, myFrost.has(gid)) : staked + 1;
             const balls = (n) => Math.round(n); // Lucky Beads can make a token worth 1.1
             // A bid as shown: one decimal when it has one (Lucky Beads), so
             // 69.1 against 69 doesn't read "69 beats 69".
             const fmtBid = (n) => String(Math.round(n * 10) / 10);
             // Your bid with `staked` tokens, counted the way the top bid is:
             // everything you add on top of your free ball, items included.
-            const myBid = (staked) => Math.round((myWeight(staked) - 1) * 100) / 100;
+            const myBid = (staked, gid) => Math.round((myWeight(staked, gid) - 1) * 100) / 100;
             // The fewest tokens that make your bid beat `top` (your items count).
-            function tokensToBeat(top) {
-                let t = Math.max(0, Math.floor((top - myBid(0)) / Math.max(0.01, myBid(1) - myBid(0))) - 1);
-                while (myBid(t) <= top) t++;
+            function tokensToBeat(top, gid) {
+                let t = Math.max(0, Math.floor((top - myBid(0, gid)) / Math.max(0.01, myBid(1, gid) - myBid(0, gid))) - 1);
+                while (myBid(t, gid) <= top) t++;
                 return t;
             }
 
@@ -2649,7 +2661,7 @@ if (user && user.uid === winnerData.winnerUid) {
                share of that sum (mine), so it can be swapped for the live figure.
                Asked again whenever entries or stakes have changed. */
             const secretOdds = {};
-            const oddsKeyOf = (g) => `${g.entryCount || 0}|${g.iosTokensStaked || 0}|${g.androidTokensStaked || 0}`;
+            const oddsKeyOf = (g) => `${g.entryCount || 0}|${g.iosTokensStaked || 0}|${g.androidTokensStaked || 0}|${g.frostCount || 0}`;
             function othersItemBalls(g, platform) {
                 const group = AppState.isEveryoneSecretGiveaway(g) ? "all" : platform;
                 const o = secretOdds[g.id] || {};
@@ -2718,7 +2730,7 @@ if (user && user.uid === winnerData.winnerUid) {
                     ? [g.maxScoreIos, g.nextScoreIos, g.maxScoreAndroid, g.nextScoreAndroid]
                     : platform === "ios" ? [g.maxScoreIos, g.nextScoreIos] : [g.maxScoreAndroid, g.nextScoreAndroid];
                 const [first, second] = pairs.sort((a, b) => b - a);
-                return myBid(staked) >= first - 0.005 ? second : first;
+                return myBid(staked, g.id) >= first - 0.005 ? second : first;
             }
 
             function refreshSecretTabBadge() {
@@ -3023,15 +3035,16 @@ if (user && user.uid === winnerData.winnerUid) {
             // "🎒 Your items add +22 chances…": everything your items add with
             // `staked` tokens in — the same figure as the meter's "from your
             // items", so the two never disagree — and where it comes from.
-            function myItemsLine(staked) {
-                const add = balls(myWeight(staked) - 1 - staked), flat = mySecretPerks.secretChance, m = mySecretPerks.stakeMult > 0;
+            function myItemsLine(staked, gid) {
+                const add = balls(myWeight(staked, gid) - 1 - staked), flat = mySecretPerks.secretChance, m = mySecretPerks.stakeMult > 0;
+                if (myFrost.has(gid)) return `<p class="enter-free-note frost-note">❄️ <b>Frost Doubler on</b> — your tokens here count ×${window.ProgressCore ? ProgressCore.XMAS.doubler : 2}${add ? ` (your items and the doubler add <b>+${add}</b> chances)` : ""}.</p>`;
                 if (!flat && !m) return "";
                 if (!add) return `<p class="enter-free-note">🎒 Your items make each token you add count ×${tokenWorth()}.</p>`;
                 const from = m ? ` (${flat ? `+${flat} extra, and ` : ""}each token counts ×${tokenWorth()})` : "";
                 return `<p class="enter-free-note">🎒 Your items add <b>+${add}</b> chance${add === 1 ? "" : "s"} to this entry${from}.</p>`;
             }
             function potWithItems(g, platform, staked) {
-                const mineItems = staked == null || g.tokensAllowed === false ? 0 : myWeight(staked) - 1 - staked;
+                const mineItems = staked == null || g.tokensAllowed === false ? 0 : myWeight(staked, g.id) - 1 - staked;
                 return drawGroupStats(g, platform).pot + othersItemBalls(g, platform) + mineItems;
             }
 
@@ -3077,7 +3090,7 @@ if (user && user.uid === winnerData.winnerUid) {
                 const st = drawGroupStats(g, platform);
                 const players = Math.max(st.players, 1);
                 // you: 1 + tokens + items; everyone: 1 each + the tokens in + all items
-                const mine = myWeight(staked);
+                const mine = myWeight(staked, g.id);
                 const total = Math.max(st.players + potWithItems(g, platform, staked), mine, 1);
                 // One ball per chance; a very full globe shows the same mix of
                 // gold and purple in MAX_BALLS balls (the meter has the numbers).
@@ -3134,42 +3147,42 @@ if (user && user.uid === winnerData.winnerUid) {
             // have in if you're above it by more than you need (70 + 10 from
             // items against 75: 66) — or everything you have if you can't
             // afford it. null when there's nothing useful to offer.
-            function beatTopTarget(staked, others, balance) {
+            function beatTopTarget(staked, others, balance, gid) {
                 if (typeof others !== "number") return null;
-                if (others === 0 && myBid(staked) > 0) return null; // nobody else has bid: you're on top
-                const target = Math.min(tokensToBeat(others), staked + balance);
+                if (others === 0 && myBid(staked, gid) > 0) return null; // nobody else has bid: you're on top
+                const target = Math.min(tokensToBeat(others, gid), staked + balance);
                 return target !== staked ? target : null;
             }
-            function beatTopLabel(target, others) {
-                const bid = myBid(target);
+            function beatTopLabel(target, others, gid) {
+                const bid = myBid(target, gid);
                 if (others === 0) return `🔝 Be the top bid · ${target}`;
                 if (bid > others) return `🔝 Beat the top · ${target}`;
                 if (bid === others) return `🔝 Match the top · ${target}`;
                 return `🔝 All you have · ${target}`;
             }
             // Your items' part of a bid, for the hints ("+5 from your items").
-            const itemsNote = (n) => { const x = balls(myBid(n) - n); return x > 0 ? ` · your items add +${x}` : ""; };
+            const itemsNote = (n, gid) => { const x = balls(myBid(n, gid) - n); return x > 0 ? ` · your items add +${x}` : ""; };
             // Where a number of coins would put you against everyone else's
             // best bid (`top`). `now`: it's what you have in (not a preview).
-            function topHint(n, top, now) {
+            function topHint(n, top, now, gid) {
                 if (typeof top !== "number") return "";
-                const bid = myBid(n);
-                if (top === 0) return bid > 0 ? (now ? "🔝 You're the top bid" : `🔝 That's the top bid${itemsNote(n)}`) : "Nobody's thrown coins in yet — 1 🪙 makes you the top bid";
-                if (bid > top) return now ? `🔝 You're the top bid (${fmtBid(bid)} · next best ${fmtBid(top)})` : `🔝 That's the top bid (${fmtBid(bid)} beats ${fmtBid(top)}${itemsNote(n)})`;
-                if (bid === top) return `🔝 Level with the top bid (${fmtBid(top)}${itemsNote(n)})`;
-                return `${tokensToBeat(top) - n} more would make you the top bid (top: ${fmtBid(top)}${itemsNote(n)})`;
+                const bid = myBid(n, gid);
+                if (top === 0) return bid > 0 ? (now ? "🔝 You're the top bid" : `🔝 That's the top bid${itemsNote(n, gid)}`) : "Nobody's thrown coins in yet — 1 🪙 makes you the top bid";
+                if (bid > top) return now ? `🔝 You're the top bid (${fmtBid(bid)} · next best ${fmtBid(top)})` : `🔝 That's the top bid (${fmtBid(bid)} beats ${fmtBid(top)}${itemsNote(n, gid)})`;
+                if (bid === top) return `🔝 Level with the top bid (${fmtBid(top)}${itemsNote(n, gid)})`;
+                return `${tokensToBeat(top, gid) - n} more would make you the top bid (top: ${fmtBid(top)}${itemsNote(n, gid)})`;
             }
 
             // The big button under − / +, for a number `total` (null: not a
             // valid number): Drop in (green), Take back (red), or idle.
-            function dropState(info, total, balance) {
+            function dropState(info, total, balance, gid) {
                 const staked = info.staked;
                 if (total === null) return { cls: "idle", label: "Type a whole number", disabled: true, hint: "" };
                 const change = total - staked;
-                if (change === 0) return { cls: "idle", label: staked ? "Use − / + to change your coins" : "Tap + to pick up coins", disabled: true, hint: topHint(staked, info.top, true) };
+                if (change === 0) return { cls: "idle", label: staked ? "Use − / + to change your coins" : "Tap + to pick up coins", disabled: true, hint: topHint(staked, info.top, true, gid) };
                 if (change > balance) return { cls: "short", label: `Need ${change - balance} more 🪙`, disabled: true, hint: `You have ${balance} 🪙 — <a href="#" onclick="openTokenWays(); return false;">get more</a>` };
-                if (change > 0) return { cls: "go", label: `🎯 Throw ${change} in`, disabled: false, hint: topHint(total, info.top) };
-                return { cls: "back", label: `↩ Take ${-change} back`, disabled: false, hint: total ? topHint(total, info.top) : "You keep your 1 free chance" };
+                if (change > 0) return { cls: "go", label: `🎯 Throw ${change} in`, disabled: false, hint: topHint(total, info.top, false, gid) };
+                return { cls: "back", label: `↩ Take ${-change} back`, disabled: false, hint: total ? topHint(total, info.top, false, gid) : "You keep your 1 free chance" };
             }
             function readDraft(input) {
                 const raw = input ? input.value : "";
@@ -3192,22 +3205,22 @@ if (user && user.uid === winnerData.winnerUid) {
                     : renderMachine(g, entry.platform, staked, isExpired || sideDrawn);
                 askSecretOdds(g);
                 if (isExpired || sideDrawn) {
-                    return `${machine}<p class="stake-summary">${staked ? `🪙 You threw in <strong>${staked}</strong> — ${plural(balls(myWeight(staked)), "chance")}.` : myWeight(0) > 1 ? `🟡 Your free chance${mySecretPerks.secretChance ? ` and ${plural(mySecretPerks.secretChance, "item chance")}` : ""} are in the globe.` : "🟡 Your free chance is in the globe."}${sideDrawn ? "" : " The claw picks the winners soon…"}</p>`;
+                    return `${machine}<p class="stake-summary">${staked ? `🪙 You threw in <strong>${staked}</strong> — ${plural(balls(myWeight(staked, g.id)), "chance")}.` : myWeight(0, g.id) > 1 ? `🟡 Your free chance${mySecretPerks.secretChance ? ` and ${plural(mySecretPerks.secretChance, "item chance")}` : ""} are in the globe.` : "🟡 Your free chance is in the globe."}${sideDrawn ? "" : " The claw picks the winners soon…"}</p>`;
                 }
                 // The hints and "Beat the top" go by the best bid that isn't yours.
                 const top = othersTopBid(g, entry.platform, staked);
                 const info = secretStakeInfo[g.id] = { staked, top, platform: entry.platform };
-                const target = beatTopTarget(staked, top, secretTokenBalance);
+                const target = beatTopTarget(staked, top, secretTokenBalance, g.id);
                 // Mid-save: everything locked, the big button says so.
                 const saving = stakeSaving.get(g.id);
                 const lock = saving ? " disabled" : "";
-                const st = saving ? { cls: "idle", label: saving === "take" ? "⏳ Taking back…" : "⏳ Throwing in…", disabled: true, hint: "" } : dropState(info, staked, secretTokenBalance);
+                const st = saving ? { cls: "idle", label: saving === "take" ? "⏳ Taking back…" : "⏳ Throwing in…", disabled: true, hint: "" } : dropState(info, staked, secretTokenBalance, g.id);
                 const id = g.id;
                 const holdAttrs = (d) => `onpointerdown="holdStake(event, '${id}', ${d})" onclick="if (event.detail === 0) bumpStake('${id}', ${d})"`;
                 const chips = [
                     `<button type="button" class="stake-chip" data-stake="${id}" onclick="bumpStake('${id}', 5)"${lock}>+5</button>`,
                     secretTokenBalance > 0 ? `<button type="button" class="stake-chip max" id="stakeMaxBtn_${id}" data-stake="${id}" onclick="setStakeDraft('${id}', ${staked + secretTokenBalance})"${lock}>MAX · ${staked + secretTokenBalance}</button>` : "",
-                    target !== null ? `<button type="button" class="stake-chip gold" id="stakeTopBtn_${id}" data-stake="${id}" onclick="setStakeDraft('${id}', ${target})"${lock}>${beatTopLabel(target, top)}</button>` : "",
+                    target !== null ? `<button type="button" class="stake-chip gold" id="stakeTopBtn_${id}" data-stake="${id}" onclick="setStakeDraft('${id}', ${target})"${lock}>${beatTopLabel(target, top, g.id)}</button>` : "",
                     staked > 0 ? `<button type="button" class="stake-chip red" id="stakeRemoveBtn_${id}" data-stake="${id}" onclick="setStakeDraft('${id}', 0)"${lock}>↩ All ${staked} back</button>` : ""
                 ].join("");
                 return `${machine}
@@ -3230,7 +3243,7 @@ if (user && user.uid === winnerData.winnerUid) {
                 const btn = document.getElementById("stakeEditBtn_" + giveawayId);
                 const info = secretStakeInfo[giveawayId];
                 if (!hint || !input || !info || stakeSaving.has(giveawayId)) return;
-                const st = dropState(info, readDraft(input), secretTokenBalance);
+                const st = dropState(info, readDraft(input), secretTokenBalance, giveawayId);
                 if (btn) { btn.className = "drop-btn " + st.cls; btn.textContent = st.label; btn.disabled = st.disabled; }
                 hint.innerHTML = st.hint;
                 previewMachine(giveawayId, readDraft(input), animate !== false);
@@ -3264,7 +3277,7 @@ if (user && user.uid === winnerData.winnerUid) {
                 const meter = m.nextElementSibling;
                 if (!meter || !meter.classList.contains("share-meter")) return;
                 const draftTokens = draft === null ? info.staked : draft;
-                const chances = myWeight(draftTokens);
+                const chances = myWeight(draftTokens, giveawayId);
                 const total = Math.max(1, shown.total - shown.chances + chances);
                 const p = winChance(chances, total, shown.players, shown.slots);
                 meter.classList.toggle("preview", delta !== 0);
@@ -3363,6 +3376,32 @@ if (user && user.uid === winnerData.winnerUid) {
                 }
             }
 
+            /* ❄️ A Frost Doubler (🎄 Christmas Calendar ⭐ Premium): use one here
+               and your tokens on this giveaway count ×2 in its draw. Shown
+               while you're in, tokens are allowed and the draw's still to come. */
+            function frostHtml(g, entry, closed) {
+                if (myFrost.has(g.id) || closed || g.tokensAllowed === false || !myFrostCount) return "";
+                const staked = entry.tokens || 0;
+                return `<div class="frost-box"><button type="button" class="frost-btn" id="frostBtn_${g.id}" onclick="handleUseFrost('${g.id}')"${staked ? "" : " disabled"}>❄️ Use a Frost Doubler</button>
+                    <small>${staked ? `Your ${staked} 🪙 here would count ×2 — ${plural(balls(myWeight(staked, g.id) + staked * (1 + mySecretPerks.stakeMult / 100)), "chance")} instead of ${balls(myWeight(staked, g.id))}.` : "Throw some coins in first — it doubles the tokens you have on it."} You have ${myFrostCount}.</small></div>`;
+            }
+            window.handleUseFrost = async function (giveawayId) {
+                const btn = document.getElementById("frostBtn_" + giveawayId);
+                if (!btn || btn.disabled) return;
+                const ok = await KihDialog.confirm({ icon: "❄️", title: "Use a Frost Doubler here?", message: "Your tokens on this giveaway will count ×2 in its draw — tokens you add later too. It's used up on this giveaway (you get it back only if the giveaway's cancelled).", ok: "❄️ Use it", cancel: "Not now", tone: "stardust" });
+                if (!ok) return;
+                btn.disabled = true; btn.textContent = "❄️ Freezing…";
+                try {
+                    const r = await AppState.useFrostDoubler(giveawayId);
+                    myFrost.add(giveawayId); myFrostCount = r.frostDoublers;
+                    applyStakeResult(giveawayId, r);
+                    renderSecretGiveawayList(latestSecretGiveaways);
+                } catch (e) {
+                    btn.disabled = false; btn.textContent = "❄️ Use a Frost Doubler";
+                    await showInfoModal("Couldn't use it", e.message);
+                }
+            };
+
             window.handleSetStake = async function (giveawayId, current, forced) {
                 if (stakeSaving.has(giveawayId)) return;
                 const input = document.getElementById("stakeEditInput_" + giveawayId);
@@ -3385,7 +3424,7 @@ if (user && user.uid === winnerData.winnerUid) {
                     applyStakeResult(giveawayId, result || {});
                     await flyCoins(giveawayId, change);
                     stakeSaving.delete(giveawayId);
-                    celebrate[giveawayId] = { change, chances: amount + 1 };
+                    celebrate[giveawayId] = { change, chances: balls(myWeight(amount, giveawayId)), back: (result && result.tokenBack) || 0 };
                     renderSecretGiveawayList(latestSecretGiveaways);
                 } catch (e) {
                     stakeSaving.delete(giveawayId);
@@ -3523,7 +3562,7 @@ if (user && user.uid === winnerData.winnerUid) {
                     if (!m) continue;
                     const pop = document.createElement("div");
                     pop.className = "claw-pop " + (c.change > 0 ? "up" : "down");
-                    pop.textContent = c.change > 0 ? `+${c.change} 🪙 → ${c.chances} chances!` : `${-c.change} 🪙 back to your wallet`;
+                    pop.textContent = c.change > 0 ? `+${c.change} 🪙 → ${c.chances} chances!${c.back > 0 ? ` 🎅 +${c.back} 🪙 back` : ""}` : `${-c.change + c.back} 🪙 back to your wallet`;
                     m.appendChild(pop);
                     if (c.change > 0) {
                         m.classList.add("mixing");
@@ -3653,7 +3692,8 @@ if (user && user.uid === winnerData.winnerUid) {
                             ${detail.tiers ? window.KIHPrize.renderTiers(detail.tiers) : window.KIHPrize.render(detail.prize || detail.reward || "…")}</div>
                         ${warn}
                         ${statsHtml}
-                        ${!noTokens ? myItemsLine(detail.entry.tokens || 0) : ""}
+                        ${!noTokens ? myItemsLine(detail.entry.tokens || 0, g.id) : ""}
+                        ${!noTokens ? frostHtml(g, detail.entry, isExpired || sideDrawn) : ""}
                         ${myPlatformHasSlots ? renderStakeHtml(g, detail.entry, isExpired, sideDrawn) : ""}
                         ${switchBtn}`;
                 } else if (isExpired) {

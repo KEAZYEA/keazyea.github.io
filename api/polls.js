@@ -104,10 +104,11 @@ function assertAdmin(uid) {
 // "10 tokens + 1 free chest draw + 👑 Royal Crown"
 function giftWhat(reward) {
   const r = reward || {};
-  return [r.amount ? `${r.amount} token${r.amount === 1 ? "" : "s"}` : "", r.draws ? `${r.draws} free chest draw${r.draws === 1 ? "" : "s"}` : "",
+  return [r.amount ? `${r.amount} token${r.amount === 1 ? "" : "s"}` : "", r.stardust ? `${Number(r.stardust).toLocaleString("en-US")} ✨ Stardust` : "", r.hearts ? `${r.hearts} 💗 heart${r.hearts === 1 ? "" : "s"}` : "",
+    r.draws ? `${r.draws} free chest draw${r.draws === 1 ? "" : "s"}` : "",
     ...(r.itemIds || []).map(id => P.BY_ID[id] ? `${P.BY_ID[id].icon} ${P.BY_ID[id].name}` : "")].filter(Boolean).join(" + ");
 }
-const hasGift = (r) => !!(r && (r.amount || r.draws || (r.itemIds && r.itemIds.length)));
+const hasGift = (r) => !!(r && (r.amount || r.draws || r.stardust || r.hearts || (r.itemIds && r.itemIds.length)));
 
 // What people wrote, per question (an open question's answers, or its Others'), newest first.
 async function writtenAnswers(ref, qs, me) {
@@ -141,7 +142,7 @@ function viewOf(id, p, mine, now, written) {
       myPicks: myAns && q.kind !== "open" ? (myAns[i] && myAns[i].picks) || [] : null,
       myText: myAns && myAns[i] && (q.kind === "open" || myAns[i].text) ? myAns[i].text || "" : null
     })),
-    reward: hasGift(p.reward) ? { amount: p.reward.amount || 0, draws: p.reward.draws || 0, itemIds: p.reward.itemIds || [] } : null,
+    reward: hasGift(p.reward) ? { amount: p.reward.amount || 0, draws: p.reward.draws || 0, stardust: p.reward.stardust || 0, hearts: p.reward.hearts || 0, itemIds: p.reward.itemIds || [] } : null,
     rewarded: !!(mine && mine.rewarded)
   };
 }
@@ -237,12 +238,12 @@ async function vote(admin, db, uid, body, now) {
     if (!prev && giftable && !claimSnap.exists) {
       const r = p.reward || {};
       const balance = walletSnap.exists ? (walletSnap.data().balance || 0) : 0;
-      const got = r.draws || (r.itemIds || []).length ? grantToInventory(tx, db, uid, invSnap, { draws: r.draws || 0, itemIds: r.itemIds || [] }, now) : { added: [], dups: [], dupTokens: 0 };
+      const got = r.draws || (r.itemIds || []).length || r.stardust || r.hearts ? grantToInventory(tx, db, uid, invSnap, { draws: r.draws || 0, itemIds: r.itemIds || [], stardust: Math.min(10000, r.stardust || 0), hearts: Math.min(100, r.hearts || 0) }, now) : { added: [], dups: [], dupTokens: 0 };
       const tokens = (r.amount || 0) + got.dupTokens;
       tx.set(claimRef, { kind: "poll", pollId, amount: r.amount || 0, draws: r.draws || 0, items: got.added, dupTokens: got.dupTokens, claimedAt: now });
       if (tokens) tx.set(walletRef, { balance: balance + tokens, lifetimeGifted: FieldValue.increment(tokens), updatedAt: now }, { merge: true });
       pollUpdate.rewardCount = FieldValue.increment(1);
-      gift = { amount: r.amount || 0, draws: r.draws || 0, items: got.added, duplicates: got.dups, dupTokens: got.dupTokens, dupStardust: got.dupStardust, balance: balance + tokens };
+      gift = { amount: r.amount || 0, draws: r.draws || 0, stardust: r.stardust || 0, hearts: r.hearts || 0, items: got.added, duplicates: got.dups, dupTokens: got.dupTokens, dupStardust: got.dupStardust, balance: balance + tokens };
       rewarded = true;
     }
     tx.update(ref, pollUpdate);
@@ -284,14 +285,18 @@ async function adminCreate(db, adminUid, body, now) {
   const amount = body.amount == null || body.amount === "" ? 0 : Number(body.amount);
   const draws = body.draws == null || body.draws === "" ? 0 : Number(body.draws);
   const itemIds = Array.isArray(body.itemIds) ? [...new Set(body.itemIds.filter(Boolean))] : [];
+  const stardust = body.stardust == null || body.stardust === "" ? 0 : Number(body.stardust);
+  const hearts = body.hearts == null || body.hearts === "" ? 0 : Number(body.hearts);
   const hours = Number(body.expiresInHours);
   if (!Number.isInteger(amount) || amount < 0 || amount > MAX_GIFT_TOKENS) throw new HttpError(400, `Tokens: a whole number from 0 to ${MAX_GIFT_TOKENS}.`);
   if (!Number.isInteger(draws) || draws < 0 || draws > 20) throw new HttpError(400, "Chest draws: a whole number from 0 to 20.");
   if (itemIds.length > 2 || !itemIds.every(id => P.BY_ID[id])) throw new HttpError(400, "Pick up to 2 items or styles from the list.");
+  if (!Number.isInteger(stardust) || stardust < 0 || stardust > 10000) throw new HttpError(400, "Stardust: a whole number from 0 to 10,000.");
+  if (!Number.isInteger(hearts) || hearts < 0 || hearts > 100) throw new HttpError(400, "Hearts: a whole number from 0 to 100.");
   if (!(hours > 0) || hours > 24 * 90) throw new HttpError(400, "Set how long it runs (up to 90 days).");
   const id = newId(now);
   const expiresAt = now + Math.round(hours * 3600 * 1000);
-  const reward = { amount, draws, itemIds };
+  const reward = { amount, draws, itemIds, stardust, hearts };
   const notify = body.notify !== false;
   const notificationId = notify ? `poll-${id}` : null;
   await pollRef(db, id).set({ title, questions, total: 0, createdAt: now, expiresAt, reward, rewardCount: 0, notificationId, createdBy: adminUid });

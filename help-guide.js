@@ -65,7 +65,7 @@
             a: "Send each friend a <b>💗 heart</b> once a day (5 a day, 10 for Super Supporters): tap <b>💗</b> next to them in <b>Social → Friends</b>, or <b>💗 Send a heart</b> on their profile. It's theirs — they collect it in <b>Social → Friends → 💗 Hearts</b> and can send one back. Send all of yours in a day for +3 💗. Hearts took over from 👍 likes (your old likes still count).",
             go: { page: "social", tab: "friends" } },
         { id: "heartShop", title: "💗 Heart Shop", k: ["heart shop", "hearts shop", "spend hearts", "spend my hearts", "heart spin", "spin", "wheel", "love bunny", "red rose", "heart headband", "heart shades", "sweater"],
-            a: "The <b>💗 Heart Shop</b> is in the Store: spend hearts on things to wear (each with a bonus) or a <b>🎡 spin</b> (50 💗) for tokens, chest draws, items and Heart Spin-only treasures like the Love Bunny.",
+            a: "The <b>💗 Heart Shop</b> is in the Store: spend hearts on things to wear (each with a bonus) or a <b>🎡 spin</b> (30 💗) for tokens, chest draws, items and Heart Spin-only treasures like the Love Bunny.",
             go: { page: "store", at: "hearts" } },
         { id: "sets", title: "👘 Outfit Sets", k: ["outfit set", "outfit sets", "set", "suit", "full outfit", "buy a full outfit", "whole set", "full set", "costume", "celestial", "celestial set", "whole outfit", "stargazer coat", "nebula hair"],
             a: "<b>👘 Outfit Sets</b> are in the Store: a whole look, head to toe, for ✨ Stardust. Buy it and you get every piece at once (each with a bonus — more ✨ with every login and Heart Spin, an extra heart to send), and <b>🧍 Wear the set</b> puts it all on.",
@@ -73,7 +73,10 @@
         { id: "stardust", title: "✨ Stardust (free every day)", k: ["stardust", "star dust", "free stardust", "daily gift", "free gift", "daily deals", "deals", "discount", "sale", "convert tokens", "convert", "converter", "exchange", "free chest", "sunday chest"],
             a: "<b>✨ Stardust</b> pays for the chest, things to wear and more looks. Your <b>daily login</b> in <b>📅 Daily Quests</b> gives it on Tuesdays, Thursdays and Saturdays (and Sunday brings a free chest), achievements and the Heart Spin give more, and in the <b>🛒 Store</b> you can shop the <b>🛍️ Daily Deals</b> (30% off) or turn tokens into Stardust (1 🪙 = 10 ✨ — it can't be turned back).",
             go: { page: "quests" } },
-        { id: "event", title: "🎉 Events", k: ["event", "events", "limited time", "halloween", "christmas", "festival"],
+        { id: "xmas", title: "🎄 Christmas Calendar, ❄️ Frost Doublers and the 🎅 Santa Set", k: ["christmas", "xmas", "christmas calendar", "advent", "advent calendar", "calendar", "door", "doors", "premium", "premium pass", "christmas pass", "frost", "frost doubler", "doubler", "double tokens", "santa", "santa set", "santa hat", "reindeer", "elf", "little elf", "sleigh", "token back", "tokens back", "december"],
+            a: "In December the <b>🛒 Store</b> has the <b>🎄 Christmas Calendar</b>: a <b>🎁 free door</b> every day (open it on its day — miss it and it's gone), and <b>⭐ Premium</b> (300 🪙) adds a bigger door every day that waits for you until 6 January — over the month its ✨ add up to just the <b>🎅 Santa Set</b>'s price (13,800 ✨), plus 360 🪙 back, chest draws, hearts, the Little Elf and three <b>❄️ Frost Doublers</b>. Use a Frost Doubler on a Secret Giveaway you've put tokens on and they count ×2 in its draw. The <b>🎅 Santa Set</b> (Outfit Sets, 1 Dec – 6 Jan) gives some of the tokens you add to a Secret Giveaway straight back.",
+            go: { page: "store", at: "xmas" } },
+        { id: "event", title: "🎉 Events", k: ["event", "events", "limited time", "halloween", "festival"],
             a: "When there's an event on, it has its own part in the <b>🛒 Store</b>.",
             go: { page: "store", at: "event" } },
 
@@ -296,7 +299,7 @@
         promo: ["codes", "vip", "secret"],
         troops: ["bosses"]
     };
-    const STORE_AT = ["chest", "event", "hearts", "deals", "sets"];
+    const STORE_AT = ["chest", "event", "hearts", "deals", "sets", "xmas"];
     const CALLS = ["openBugReport", "openShareSite"];
 
     return { TOPICS, STARTERS, PAGES, TABS, STORE_AT, CALLS, BOSSES, bossIn, ask, scores, norm, stem, close, byId };

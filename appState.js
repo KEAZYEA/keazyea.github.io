@@ -181,7 +181,7 @@ async function signOutUser() {
        drift. The few localStorage keys below only save network calls, and
        being wrong about them can never earn or lose a token. */
     // v2: quests carry what they pay, plus the week for the login calendar.
-    const QUEST_CACHE_KEY = "kih_quest_today_v2";
+    const QUEST_CACHE_KEY = "kih_quest_today_v3";
     const QUEST_RETRY_KEY = "kih_quest_retry";
     const LOGIN_CLAIM_KEY = "kih_login_claim";
     const QUEST_RETRY_WINDOW_MS = 24 * 60 * 60 * 1000;
@@ -320,6 +320,14 @@ async function signOutUser() {
     async function buySet(id) {
         return callProgressApi("buySet", { id });
     }
+    // 🎄 the Christmas Calendar: ⭐ Premium (P.XMAS.price 🪙), and opening its doors
+    // (one: { track: "free" | "prem", day }, or every one you can: { all: true })
+    async function buyXmasPremium() {
+        return callProgressApi("xmasBuy", {});
+    }
+    async function openXmasDoor(track, day) {
+        return callProgressApi("xmasOpen", track === "all" ? { all: true } : { track, day });
+    }
     async function buyItem(id, deal) {
         return callProgressApi("buyItem", { id, ...(deal ? { deal: true } : {}) });
     }
@@ -444,6 +452,16 @@ async function signOutUser() {
         }
     }
 
+    // ❄️ Your Frost Doublers (🎄 Christmas Calendar): how many, and the
+    // Secret Giveaways you've used one on — from your own inventory.
+    async function getMyFrost() {
+        await waitForAuthReady();
+        if (!currentUser) return { count: 0, on: [] };
+        const snap = await getDoc(doc(db, "inventories", currentUser.uid));
+        const d = snap.exists() ? snap.data() : {};
+        return { count: Math.max(0, Math.floor(d.frostDoublers || 0)), on: Object.keys(d.frostOn || {}).filter(k => d.frostOn[k]) };
+    }
+
     function readCachedTodaysQuests() {
         try {
             const cached = JSON.parse(localStorage.getItem(QUEST_CACHE_KEY) || "null");
@@ -460,7 +478,7 @@ async function signOutUser() {
         if (cached) return cached;
         const data = await callTokensApi("today", {}, { auth: false });
         const today = { dayKey: data.dayKey, resetAt: data.resetAt, quests: data.quests,
-            rewards: data.rewards || {}, week: Array.isArray(data.week) ? data.week : [data.dayKey] };
+            rewards: data.rewards || {}, extras: data.extras || {}, week: Array.isArray(data.week) ? data.week : [data.dayKey] };
         try { localStorage.setItem(QUEST_CACHE_KEY, JSON.stringify(today)); } catch (e) { /* storage blocked */ }
         return today;
     }
@@ -512,7 +530,7 @@ async function signOutUser() {
         }, onFail);
         const unsubReady = onSnapshot(query(claims, where("status", "==", "ready")), (snap) => {
             ready = [];
-            snap.forEach(d => ready.push({ id: d.id, questId: d.data().questId, dayKey: d.data().dayKey, reward: typeof d.data().reward === "number" ? d.data().reward : 1, chest: !!d.data().chest, stardust: d.data().stardust || 0, itemChest: d.data().itemChest || null }));
+            snap.forEach(d => ready.push({ id: d.id, questId: d.data().questId, dayKey: d.data().dayKey, reward: typeof d.data().reward === "number" ? d.data().reward : 1, chest: !!d.data().chest, stardust: d.data().stardust || 0, hearts: d.data().hearts || 0, itemChest: d.data().itemChest || null }));
             ready.sort((a, b) => a.dayKey.localeCompare(b.dayKey));
             emit();
         }, onFail);
@@ -1163,6 +1181,12 @@ async function signOutUser() {
         await waitForAuthReady();
         if (!currentUser) throw new Error("Sign in first.");
         return callTokensApi("stake", { giveawayId, amount });
+    }
+    // ❄️ A Frost Doubler on a Secret Giveaway you're in: your tokens there count ×2 in its draw.
+    async function useFrostDoubler(giveawayId) {
+        await waitForAuthReady();
+        if (!currentUser) throw new Error("Sign in first.");
+        return callTokensApi("useFrost", { giveawayId });
     }
 
     // Changes your stake to exactly `amount` (0 removes it); the difference
@@ -3466,16 +3490,18 @@ async function getClanPostCooldownRemaining() {
         };
     }
 
+    // The newest maxCount messages, oldest first. (It used to be the OLDEST
+    // maxCount — a chat past 200 messages never showed new ones.)
     function listenToDmMessages(threadId, callback, maxCount = 200) {
         const q = query(
             collection(db, "dmThreads", threadId, "messages"),
-            orderBy("createdAt", "asc"),
+            orderBy("createdAt", "desc"),
             limit(maxCount)
         );
         return onSnapshot(q, (snap) => {
             const items = [];
             snap.forEach(d => items.push({ id: d.id, ...d.data() }));
-            callback(items);
+            callback(items.reverse());
         });
     }
 
@@ -4858,7 +4884,7 @@ async function sendAdminMessage(uid, title, body) {
     // A prize built in admin from parts (prize.js: { items, note } — gold,
     // diamonds, tokens, a unit, anything custom). Kept small and plain: only
     // known kinds, at most 8 items, no more than a few KB.
-    const PRIZE_KINDS = ["tokens", "gold", "diamonds", "unit", "custom", "draws", "item"];
+    const PRIZE_KINDS = ["tokens", "gold", "diamonds", "unit", "custom", "draws", "item", "stardust", "hearts"];
     function checkPrizeParts(prize) {
         if (!prize) return null;
         const items = Array.isArray(prize.items) ? prize.items : [];
@@ -4871,14 +4897,16 @@ async function sendAdminMessage(uid, title, body) {
         .filter(i => i && i.kind === "tokens" && Number.isInteger(i.amount) && i.amount > 0).reduce((sum, i) => sum + i.amount, 0);
     // Tokens, chest draws and items are delivered by the server; everything
     // else needs a code from the admin.
-    const AUTO_PRIZE_KINDS = ["tokens", "draws", "item"];
+    const AUTO_PRIZE_KINDS = ["tokens", "draws", "item", "stardust", "hearts"];
     const prizeNeedsCode = (prize) => !prize || !Array.isArray(prize.items) || prize.items.some(i => i && !AUTO_PRIZE_KINDS.includes(i.kind));
     const prizeHasAuto = (prize) => !!prize && Array.isArray(prize.items) && prize.items.some(i => i && AUTO_PRIZE_KINDS.includes(i.kind) && (i.kind === "item" || i.amount > 0));
     // "🧰 2 free chest draws and 👑 Royal Crown" — the draws and items part.
     function prizeExtrasText(prize) {
         const items = prize && Array.isArray(prize.items) ? prize.items : [];
         const draws = items.filter(i => i && i.kind === "draws").reduce((n, i) => n + (i.amount || 0), 0);
-        const parts = [draws ? `🧰 ${draws} free chest draw${draws === 1 ? "" : "s"}` : "", ...items.filter(i => i && i.kind === "item").map(i => `${i.icon || "🎒"} ${i.name}`)].filter(Boolean);
+        const sd = items.filter(i => i && i.kind === "stardust").reduce((n, i) => n + (i.amount || 0), 0);
+        const hs = items.filter(i => i && i.kind === "hearts").reduce((n, i) => n + (i.amount || 0), 0);
+        const parts = [sd ? `✨ ${sd.toLocaleString("en-US")} Stardust` : "", hs ? `💗 ${hs} hearts` : "", draws ? `🧰 ${draws} free chest draw${draws === 1 ? "" : "s"}` : "", ...items.filter(i => i && i.kind === "item").map(i => `${i.icon || "🎒"} ${i.name}`)].filter(Boolean);
         return parts.length > 1 ? parts.slice(0, -1).join(", ") + " and " + parts[parts.length - 1] : (parts[0] || "");
     }
 
@@ -5302,7 +5330,7 @@ async function sendAdminMessage(uid, title, body) {
         // Each entry's chance is 1 + the tokens staked on it + its owner's
         // item chances, so everyone keeps a free base chance and every token
         // adds exactly one more.
-        const weightOf = await secretWeightFn(giveawaySnap.data(), pool);
+        const weightOf = await secretWeightFn(giveawaySnap.data(), pool, giveawayId);
         const totalWeight = pool.reduce((sum, e) => sum + weightOf(e), 0);
         let ticket = secureRandom() * totalWeight;
         let winner = pool[pool.length - 1];
@@ -5329,7 +5357,7 @@ async function sendAdminMessage(uid, title, body) {
         const entries = await getSecretGiveawayEntries(giveawayId, group === "all" ? null : group);
         let pool = entries.filter(e => !alreadyWon.has(e.uid));
         if (!pool.length) throw new Error(`No remaining ${group === "all" ? "" : group + " "}entries to pick from.`);
-        const weightOf = await secretWeightFn(giveawaySnap.data(), pool);
+        const weightOf = await secretWeightFn(giveawaySnap.data(), pool, giveawayId);
         const entryCount = pool.length;
         const picks = [];
         while (picks.length < count && pool.length) {
@@ -5350,12 +5378,28 @@ async function sendAdminMessage(uid, title, body) {
     // Giveaway chances from its owner's items (read now, at the draw, so an
     // item found yesterday counts). A giveaway made without tokens stays one
     // equal chance each, items included.
-    // Staked tokens count ×(1 + stakeMult%) — Lucky Beads, Star of Fortune.
-    async function secretWeightFn(giveaway, pool) {
+    // Staked tokens count ×(1 + stakeMult%) — Lucky Beads, Star of Fortune —
+    // and ×2 more with a ❄️ Frost Doubler on this giveaway (frostOn, on the
+    // inventory): the very same sum as ProgressCore.secretWeight.
+    async function secretWeightFn(giveaway, pool, giveawayId) {
         if (giveaway.tokensAllowed === false) return () => 1;
-        const uids = pool.map(e => e.uid);
-        const [chances, stakeMult] = await Promise.all([perkValues(uids, "secretChance"), perkValues(uids, "stakeMult")]);
-        return (e) => 1 + Math.max(0, Math.floor(Number(e.tokens) || 0)) * (1 + (stakeMult[e.uid] || 0) / 100) + Math.floor(chances[e.uid] || 0);
+        const invs = {};
+        await Promise.all([...new Set(pool.map(e => e.uid).filter(Boolean))].map(async (uid) => {
+            try {
+                const snap = await getDoc(doc(db, "inventories", uid));
+                invs[uid] = snap.exists() ? snap.data() : {};
+            } catch (e) {
+                invs[uid] = {};
+            }
+        }));
+        return (e) => {
+            const inv = invs[e.uid] || {};
+            const frost = !!(giveawayId && inv.frostOn && Object.prototype.hasOwnProperty.call(inv.frostOn, giveawayId) && inv.frostOn[giveawayId]);
+            const PC = typeof window !== "undefined" ? window.ProgressCore : null;
+            if (PC && PC.secretWeight) return PC.secretWeight(e.tokens, inv.perks || {}, frost);
+            const p = inv.perks || {};
+            return 1 + Math.max(0, Math.floor(Number(e.tokens) || 0)) * (1 + Math.max(0, Number(p.stakeMult) || 0) / 100) * (frost ? 2 : 1) + Math.max(0, Math.floor(Number(p.secretChance) || 0));
+        };
     }
 
     // Uniform in [0, 1). Uses the browser's cryptographic source rather than
@@ -5887,7 +5931,7 @@ async function maybeRefreshAd(containerId) {
         reportQuestProgress, startDailyQuestTracking, stakeTokensOnSecretGiveaway, setSecretGiveawayStake, refreshSecretGiveawayMaxStake, getSecretOdds,
         // achievements, badges, profile likes, items
         trackProgress, getProgressStatus, claimAchievement, setShownBadges, setProfileLike, openItemChest, trickOrTreat, claimEventGift, buyEventItem, sendSpookyGift, openSpookyGift,
-        getPlayerCard, getPlayerCards, getPublicAvatars, listenToMyCard, haveILikedProfile, getMyPerks, getMyItemIds, getMyEventState, equipStyle, saveOutfit, equipLook, buyLookSlot, buyItem, buySet, renameLook, convertTokens, sendHeart, collectHearts, getHeartStatus, heartSpin, buyHeartItem,
+        getPlayerCard, getPlayerCards, getPublicAvatars, listenToMyCard, haveILikedProfile, getMyPerks, getMyFrost, getMyItemIds, getMyEventState, equipStyle, saveOutfit, equipLook, buyLookSlot, buyItem, buySet, buyXmasPremium, openXmasDoor, useFrostDoubler, renameLook, convertTokens, sendHeart, collectHearts, getHeartStatus, heartSpin, buyHeartItem,
         // profile
         getProfile, setProfile, isVipActive, isNoAdsActive, isBannedNow, shouldShowAds, listenToMyProfile,
         // unique names
