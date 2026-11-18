@@ -107,7 +107,12 @@
         cs_hair: { slot: "hair", look: "nebula" }, cs_eyes: { slot: "eyes", look: "starlit" }, cs_mouth: { slot: "mouth", look: "moon" },
         cs_neck: { slot: "neck", look: "comet" }, cs_top: { slot: "top", look: "stargazer" }, cs_bottom: { slot: "bottom", look: "nebula" }, cs_shoes: { slot: "shoes", look: "moonboots" },
         // ✨ / 💗 helpers from the chest
-        hd_starpouch: { slot: "held", look: "starpouch" }, ht_beanie: { slot: "hat", look: "beanie" }, hd_cupid: { slot: "held", look: "cupidbow" }
+        hd_starpouch: { slot: "held", look: "starpouch" }, ht_beanie: { slot: "hat", look: "beanie" }, hd_cupid: { slot: "held", look: "cupidbow" },
+        // 🎅 the Santa Set, and 🎄 the Christmas Calendar's
+        xs_hat: { slot: "hat", look: "santa" }, xs_specs: { slot: "glasses", look: "halfmoon" }, xs_beard: { slot: "mouth", look: "beard" },
+        xs_suit: { slot: "top", look: "santa" }, xs_trousers: { slot: "bottom", look: "santa" }, xs_boots: { slot: "shoes", look: "santa" },
+        xs_present: { slot: "held", look: "present" }, xs_reindeer: { slot: "pet", look: "reindeer" }, xs_sleigh: { slot: "bg", look: "sleigh" },
+        xg_village: { slot: "bg", look: "village" }, xp_elf: { slot: "pet", look: "elf" }
     };
     // an object's own value (never one from its prototype)
     const own = (o, k) => (o && Object.prototype.hasOwnProperty.call(o, k) ? o[k] : undefined);
@@ -317,6 +322,9 @@
         if (look === "heartshades") return [82, 118].map(x => `<path d="${heartD(x, 88, 13)}" fill="#ff4f8b" fill-opacity=".85" stroke="#c2185b" stroke-width="2.6" stroke-linejoin="round"/><path d="M${x - 8},84 Q${x - 6},80 ${x - 2},81" stroke="#fff" stroke-width="2" fill="none" opacity=".6" stroke-linecap="round"/>`).join("")
             + `<path d="M95,85 Q100,81 105,85 M68,84 L56,80 M132,84 L144,80" fill="none" stroke="#c2185b" stroke-width="2.6" stroke-linecap="round"/>`;
         if (look === "visor") return `<path d="M58,79 Q100,71 142,79 L140,97 Q100,105 60,97 Z" fill="#35d4ff" fill-opacity=".8" ${ol(2.6)}/><path d="M68,84 Q100,78 132,84" fill="none" stroke="#fff" stroke-width="2" opacity=".7" stroke-linecap="round"/><circle cx="66" cy="88" r="2.5" fill="#ff3df2"/>`;
+        // 🎅 little half-moon spectacles, low on the nose, gold rims
+        if (look === "halfmoon") return [82, 118].map(x => `<path d="M${x - 12},90 L${x + 12},90 A12,9 0 0,1 ${x - 12},90 Z" fill="#e8f4ff" fill-opacity=".3" stroke="#d4a017" stroke-width="2.6" stroke-linejoin="round"/><path d="M${x - 7},94 Q${x - 4},97 ${x},97" stroke="#fff" stroke-width="1.6" fill="none" opacity=".6" stroke-linecap="round"/>`).join("")
+            + `<path d="M94,90 Q100,86 106,90 M70,90 L57,84 M130,90 L143,84" fill="none" stroke="#d4a017" stroke-width="2.4" stroke-linecap="round"/>`;
         return "";
     }
 
@@ -333,6 +341,12 @@
         if (look === "moon") return `<ellipse cx="78" cy="101" rx="7" ry="4" fill="#ff8fb8" opacity=".45"/><ellipse cx="122" cy="101" rx="7" ry="4" fill="#ff8fb8" opacity=".45"/>`
             + `<path d="M92,103 Q100,111 108,103" fill="none" stroke="${lip}" stroke-width="2.8" stroke-linecap="round"/><path d="M106,99 a3,3 0 1,0 3,-3 a2.2,2.2 0 1,1 -3,3" fill="#ffe27a"/>`;
         if (look === "fangs") return `<path d="M91,103 Q100,109 109,103" fill="none" stroke="${lip}" stroke-width="2.6" stroke-linecap="round"/><path d="M94,104.5 L95.5,109 L97,105.5 Z M103,105.5 L104.5,109 L106,104.5 Z" fill="#fff" stroke="${L}" stroke-width="1"/>`;
+        // 🎅 a big, soft snowy beard from ear to ear, a curly moustache, rosy cheeks
+        if (look === "beard") return `<ellipse cx="74" cy="96" rx="8" ry="5" fill="#ff8f8f" opacity=".45"/><ellipse cx="126" cy="96" rx="8" ry="5" fill="#ff8f8f" opacity=".45"/>`
+            + path("M53,84 C50,120 70,152 100,156 C130,152 150,120 147,84 C143,98 132,107 119,109 C111,113 89,113 81,109 C68,107 57,98 53,84 Z", "#f7f6f1", 2.4)
+            + `<path d="M66,112 Q72,130 84,142 M134,112 Q128,130 116,142 M100,126 L100,150 M86,120 Q90,134 94,146 M114,120 Q110,134 106,146" fill="none" stroke="#d6d3c8" stroke-width="1.8" stroke-linecap="round"/>`
+            + `<path d="M95,109 Q100,113 105,109" fill="none" stroke="#7a1f2b" stroke-width="2.4" stroke-linecap="round"/>`
+            + path("M100,101 C94,96 84,95 77,101 C73,105 76,110 81,108 C86,104 93,105 100,105 C107,105 114,104 119,108 C124,110 127,105 123,101 C116,95 106,96 100,101 Z", "#ffffff", 1.8);
         return `<path d="M93,104 Q100,109 107,104" fill="none" stroke="${lip}" stroke-width="2.8" stroke-linecap="round"/>`;
     }
 
@@ -367,6 +381,12 @@
         if (look === "beanie") return path("M58,68 C58,24 142,24 142,68 Z", "#ff7aa8") + `<path d="M56,66 Q100,58 144,66 L144,74 Q100,66 56,74 Z" fill="#e0457f" ${ol(2)}/>`
             + `<path d="M70,62 L70,40 M85,60 L85,32 M100,60 L100,30 M115,60 L115,32 M130,62 L130,40" stroke="#e0457f" stroke-width="1.6" opacity=".6"/>`
             + path(heartD(100, 48, 7), "#fff1f6", 1.6) + `<circle cx="100" cy="24" r="8" fill="#fff1f6" ${ol(2)}/>`;
+        // 🎅 a red Santa hat flopping over to one side, a fur brim and a bobbing pompom
+        if (look === "santa") return path("M58,64 C56,34 80,16 104,15 C128,14 146,24 158,42 C152,46 145,44 139,38 C141,48 142,56 142,64 Z", "#d42a2a")
+            + `<path d="M104,20 C124,20 140,28 150,40" fill="none" stroke="#a51c1c" stroke-width="2.4" stroke-linecap="round" opacity=".7"/><path d="M70,52 Q78,32 98,24" fill="none" stroke="#ff7a7a" stroke-width="3" stroke-linecap="round" opacity=".55"/>`
+            + path("M53,58 Q100,48 147,58 L147,72 Q100,62 53,72 Z", "#f7f4ef", 2.2)
+            + `<g fill="#e6e1d6">${[62, 76, 90, 104, 118, 132].map((x, i) => `<circle cx="${x + 4}" cy="${i % 2 ? 63 : 66}" r="2"/>`).join("")}</g>`
+            + `<g${A("kc-a-bob")}><circle cx="158" cy="45" r="8.5" fill="#f7f4ef" ${ol(2)}/><circle cx="155" cy="42" r="2.6" fill="#fff"/></g>`;
         if (look === "halo") { const y = Math.min(22, top - 10); return `<ellipse cx="100" cy="${y}" rx="30" ry="8" fill="none" stroke="#fff6b0" stroke-width="9" opacity=".35"/><ellipse cx="100" cy="${y}" rx="30" ry="8" fill="none" stroke="#ffd54a" stroke-width="4.5"/><ellipse cx="100" cy="${y - 1}" rx="30" ry="8" fill="none" stroke="#fff6c9" stroke-width="1.4"/>`; }
         return "";
     }
@@ -438,6 +458,15 @@
             + `<path d="M100,124 L100,203" stroke="#ffd54a" stroke-width="3"/>` + belt("#ffd54a")
             + path("M70,118 Q100,132 130,118 L132,128 Q100,144 68,128 Z", "#f7f3ea", 2) + [78, 90, 100, 110, 122].map((x, i) => `<path d="M${x},${125 + (i % 2) * 3} l1.4,3 -1.4,1.6 -1.4,-1.6 z" fill="#2a1d3a"/>`).join("")
             + `<circle cx="100" cy="150" r="4" fill="#3a86ff" ${ol(1.6)}/>`];
+        // 🎅 the Santa Suit: red, white fur down the front, at the cuffs and hem, a black belt with a gold buckle
+        T.santa = () => { const [l, r] = girl ? [77, 123] : [68, 132]; return ["", sleeves("#b81d24") + path(B.torso, "#d42a2a")
+            + path("M55,151 L70,153.5 L69,162 L56,160 Z", "#f7f4ef", 1.8) + path("M145,151 L130,153.5 L131,162 L144,160 Z", "#f7f4ef", 1.8)
+            + path("M95,121 L105,121 L105,166 L95,166 Z", "#f7f4ef", 1.8)
+            + path(`M${girl ? 68 : 66},163 Q100,171 ${girl ? 132 : 134},163 L${girl ? 134 : 135},173 Q100,181 ${girl ? 66 : 65},173 Z`, "#f7f4ef", 2)
+            + path("M84,118 Q100,129 116,118 Q115,127 100,131 Q85,127 84,118 Z", "#f7f4ef", 1.8)
+            + path(`M${l},145 Q100,151 ${r},145 L${r},153 Q100,159 ${l},153 Z`, "#1d1a22", 1.6)
+            + `<rect x="93" y="144.5" width="14" height="11" rx="2" fill="none" stroke="#f2c94c" stroke-width="2.6"/>`
+            + `<g fill="#e6e1d6">${[126, 136, 160].map(y => `<circle cx="100" cy="${y}" r="1.6"/>`).join("")}</g>`]; };
         return (T[look] || T.tee)();
     }
 
@@ -449,6 +478,8 @@
         if (look === "breeches") return legs("#5a3a22") + `<path d="M81,186 L97,186 M103,186 L119,186" stroke="#2e1d10" stroke-width="5"/>`;
         if (look === "chain") return legs("#7d8691") + `<g fill="none" stroke="#5a6370" stroke-width="1.3">${[174, 182, 190].map(y => [82, 90, 104, 112].map(x => `<path d="M${x},${y} q3,4 6,0"/>`).join("")).join("")}</g>`;
         if (look === "nebula") return legs("#3a2a6b") + [[86, 176], [112, 184], [90, 194], [114, 196]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="1.4" fill="#ffe27a"/>`).join("") + `<path d="M81,170 L97,170 M103,170 L119,170" stroke="#8fd8ff" stroke-width="2.4" opacity=".7"/>`;
+        if (look === "santa") return legs("#c8202a") + `<path d="M89,172 L89,192 M111,172 L111,192" stroke="#9e161d" stroke-width="1.6"/>`
+            + path("M80,193 L98,193 L97.6,202 L80.6,202 Z", "#f7f4ef", 1.8) + path("M102,193 L120,193 L119.4,202 L102.4,202 Z", "#f7f4ef", 1.8);
         if (look === "shadow") return legs("#1d1a2b") + path("M81,182 L97,182 L97,201 L81,201 Z", "#6b4bd9", 2) + path("M103,182 L119,182 L119,201 L103,201 Z", "#6b4bd9", 2) + `<path d="M84,188 L94,188 M106,188 L116,188" stroke="#c9b6ff" stroke-width="1.6"/>`;
         return legs("#34495e") + `<path d="M89,172 L89,200 M111,172 L111,200" stroke="#2a3a4c" stroke-width="1.6"/>`;
     }
@@ -464,6 +495,10 @@
         if (look === "wings") return [88, 112].map((x, i) => path(`M${x - 10},184 L${x + 10},184 L${x + 11},201 L${x - 11},201 Z`, "#f2c94c", 2.4)
             + path(`M${x - 13},207 Q${x - 13},197 ${x - 8},197 L${x + 8},197 Q${x + 13},197 ${x + 13},207 L${x + 13},212 Q${x},217 ${x - 13},212 Z`, "#e0b23a", 2.4)
             + `<g${A(i ? "kc-a-flapR" : "kc-a-flapL")}>` + path(i ? `M${x + 10},190 C${x + 20},182 ${x + 28},180 ${x + 30},186 C${x + 26},186 ${x + 24},190 ${x + 26},194 C${x + 20},194 ${x + 14},196 ${x + 10},196 Z` : `M${x - 10},190 C${x - 20},182 ${x - 28},180 ${x - 30},186 C${x - 26},186 ${x - 24},190 ${x - 26},194 C${x - 20},194 ${x - 14},196 ${x - 10},196 Z`, "#fff", 1.6) + "</g>").join("");
+        // 🎅 shiny black boots with a white fur cuff and a gold buckle
+        if (look === "santa") return [88, 112].map(x => shaft(x, "#1d1a22") + foot(x, "#26222e", "#0e0c12")
+            + path(`M${x - 12.5},180 Q${x},177 ${x + 12.5},180 L${x + 12.5},189 Q${x},186 ${x - 12.5},189 Z`, "#f7f4ef", 2)
+            + `<rect x="${x - 4}" y="193" width="8" height="6" rx="1" fill="none" stroke="#f2c94c" stroke-width="1.8"/><path d="M${x - 9},203 Q${x - 4},200 ${x + 1},201" stroke="#fff" stroke-width="1.6" fill="none" opacity=".35" stroke-linecap="round"/>`).join("");
         if (look === "moonboots") return [88, 112].map(x => shaft(x, "#c9d3e6") + foot(x, "#e6edf7", "#3aa8ff") + `<path d="M${x - 9},190 L${x + 9},190" stroke="#3aa8ff" stroke-width="2.4"/><circle cx="${x}" cy="${197}" r="2" fill="#ffe27a"/>`).join("");
         if (look === "swift") return [88, 112].map((x, i) => shaft(x, "#2f5fb3") + foot(x, "#3a74d4", "#1d3f7a") + `<path d="M${x + (i ? 9 : -9)},188 l${i ? 8 : -8},-4 l${i ? -2 : 2},5 l${i ? 6 : -6},-1 l${i ? -6 : 6},5 Z" fill="#fff" ${ol(1.4)}/>`).join("");
         return [88, 112].map(x => foot(x, "#f2f2f2", "#9aa0a8") + `<path d="M${x - 5},200 L${x + 5},200" stroke="#9aa0a8" stroke-width="2"/>`).join("");
@@ -493,6 +528,31 @@
             + `<path d="M18,240 L24,150 L12,120 M24,150 L38,118 M24,172 L8,152" fill="none" stroke="#120e22" stroke-width="6" stroke-linecap="round"/>`
             + [[44, 40], [76, 60]].map(([x, y]) => `<path d="M${x},${y} q6,-6 10,0 q4,-6 10,0 q-10,4 -20,0 z" fill="#120e22"/>`).join("")
             + hill(206, "#1d1832", 0) + `<path d="M160,206 L160,190 Q168,182 176,190 L176,206 Z M60,214 L60,202 Q66,196 72,202 L72,214 Z" fill="#4a4560"/>`;
+        const snow = (pts) => dots(pts, "#fff", 1.6);
+        // 🛷 a sleigh and two reindeer flying across a big moon, snowy hills below
+        if (look === "sleigh") {
+            const deer = (x, y) => `<g transform="translate(${x} ${y})"><ellipse cx="0" cy="0" rx="8" ry="3.6"/><path d="M-6,2 L-9,8 M-3,2 L-4,8 M4,2 L6,8 M6,1 L10,6 M-7,-1 L-11,-6 M-11,-6 L-14,-11 M-11,-6 L-9,-11 M-12.5,-8.5 L-16,-9" fill="none" stroke="#0e1430" stroke-width="1.8" stroke-linecap="round"/><ellipse cx="-12" cy="-5.5" rx="3.2" ry="2.2"/></g>`;
+            // in the top-left corner, clear of your head and hat
+            return box("#16204a") + dots([[180, 22], [160, 80], [24, 120], [184, 110], [92, 14], [176, 140], [12, 90], [190, 50]], "#fff", 1.4)
+                + `<circle cx="42" cy="42" r="28" fill="#f4e7b0"/><circle cx="54" cy="32" r="5" fill="#e3d494"/><circle cx="30" cy="58" r="3.5" fill="#e3d494"/>`
+                + `<g fill="#0e1430"><g transform="translate(25 36) scale(.75)">${deer(0, 0)}</g><g transform="translate(10 29) scale(.75)">${deer(0, 0)}</g>`
+                + `<path d="M34,47 L27,37 M22,35 L13,30" stroke="#0e1430" stroke-width="1" fill="none"/>`
+                + `<path d="M34,44 L50,44 Q54,44 54,38 L57,37 L56,49 Q55,53 49,53 L35,53 Z"/><path d="M31,56 L53,56 Q58,56 58,51" fill="none" stroke="#0e1430" stroke-width="1.8" stroke-linecap="round"/><path d="M38,53 L38,56 M50,53 L50,56" stroke="#0e1430" stroke-width="1.4"/></g>`
+                + pines(198, "#1d4a3a", [14, 38, 168, 192], 44) + hill(200, "#d7e4f3", 10) + hill(222, "#eef4fb", -20)
+                + snow([[30, 40], [60, 140], [170, 140], [110, 120], [40, 170], [186, 168], [86, 30], [150, 110]]);
+        }
+        // 🏘️ a snowy village at dusk: lit windows, snow on the roofs, a tree with a star
+        if (look === "village") {
+            const house = (x, w, h, c) => `<path d="M${x},196 L${x},${196 - h} L${x + w / 2},${196 - h - w * 0.45} L${x + w},${196 - h} L${x + w},196 Z" fill="${c}"/>`
+                + `<path d="M${x - 3},${196 - h + 2} L${x + w / 2},${196 - h - w * 0.45 - 3} L${x + w + 3},${196 - h + 2} L${x + w},${196 - h + 6} L${x + w / 2},${196 - h - w * 0.45 + 3} L${x},${196 - h + 6} Z" fill="#f4f8ff"/>`
+                + `<rect x="${x + w * 0.3}" y="${196 - h * 0.65}" width="${w * 0.4}" height="${h * 0.3}" rx="1.5" fill="#ffd36b"/>`;
+            return box("#2b3a6b") + `<rect x="0" y="120" width="200" height="120" fill="#4a3f7a" opacity=".55"/>` + dots([[30, 24], [90, 14], [150, 30], [180, 60], [60, 52]], "#fff", 1.3)
+                + house(8, 40, 34, "#8a4a3a") + house(56, 34, 46, "#3f6a8a") + house(140, 46, 30, "#6a4a8a")
+                + `<path d="M108,196 L108,186 M100,186 L116,186 L108,150 Z" fill="#1f6a3a" stroke="#1f6a3a" stroke-width="2"/><path d="M108,146 l2,4 4.4,.5 -3.2,3 .8,4.3 -4,-2.2 -4,2.2 .8,-4.3 -3.2,-3 4.4,-.5 z" fill="#ffd54a"/>`
+                + dots([[103, 172], [113, 166], [106, 160], [110, 180]], "#ff5a5a", 1.8)
+                + `<path d="M0,196 Q100,186 200,196 L200,240 L0,240 Z" fill="#eef4fb"/><path d="M0,214 Q100,206 200,216 L200,240 L0,240 Z" fill="#dce7f5"/>`
+                + snow([[20, 80], [70, 100], [130, 70], [176, 100], [44, 130], [160, 140], [120, 110], [96, 40]]);
+        }
         // the free one: a sunny meadow
         return box("#7fd0f5") + cloud(40, 40, 1) + cloud(160, 28, 0.8) + pines(186, "#2f7d4a", [12, 34, 166, 188], 46) + pines(196, "#3a9157", [46, 152], 36)
             + hill(196, "#8fd16a", 20) + hill(218, "#73bd52", -30);
@@ -546,6 +606,26 @@
             + `<path d="M52.5,189.5 l2,-1.2 0,2.4 z" fill="#ff8fb8"/><ellipse cx="45" cy="192" rx="2.6" ry="1.6" fill="#ffc7da"/>`
             + `<path d="M53,191 L59,190 M53,192.5 L59,193" stroke="#b8a9c9" stroke-width=".8"/>`
             + `<g${A("kc-a-rise")}>` + path(heartD(58, 172, 4.5), "#ff3d7f", 1.4) + `</g></g>`;
+        // 🦌 a reindeer sitting by your foot, a bell on its collar, nodding
+        if (look === "reindeer") return `<g transform="matrix(-1 0 0 1 206 0)">`
+            + `<path d="M46,212 C52,212 54,206 50,202" fill="none" stroke="#7a4a26" stroke-width="4" stroke-linecap="round"/>`
+            + `<path d="M20,217 C18,199 24,190 34,190 C44,190 50,199 48,217 Z" fill="#9a6234" ${rim("#4a2e14")}/><path d="M27,217 Q26,203 34,198 Q42,203 41,217 Z" fill="#ead5b0"/>`
+            + `<g${A("kc-a-bob")}>`
+            + `<path d="M28,165 L24,152 L17,148 M24,152 L22,142 M24,152 L30,146 M40,165 L44,152 L51,148 M44,152 L46,142 M44,152 L38,146" fill="none" stroke="#5a3a22" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>`
+            + `<path d="M23,171 L11,166 L21,177 Z M45,171 L57,166 L47,177 Z" fill="#9a6234" ${rim("#4a2e14")}/>`
+            + `<path d="M22,176 C22,166 28,162 34,162 C40,162 46,166 46,176 C46,187 40,193 34,193 C28,193 22,187 22,176 Z" fill="#9a6234" ${rim("#4a2e14")}/>`
+            + `<ellipse cx="34" cy="186" rx="7.5" ry="5.5" fill="#ead5b0"/><ellipse cx="34" cy="183.5" rx="3" ry="2.2" fill="#2a1d1a"/>` + eye(29, 174) + eye(39, 174)
+            + `</g><path d="M23,193 Q34,199 45,193" fill="none" stroke="#c8202a" stroke-width="3.6" stroke-linecap="round"/><circle cx="34" cy="198.5" r="3.4" fill="#f2c94c" ${rim("#a67c00")}/></g>`;
+        // 🧝 a little elf by your other foot: pointed hat with a bell, pointy ears, bouncing
+        if (look === "elf") return `<g${A("kc-a-bob")}>`
+            + `<path d="M29,206 L29,214 M39,206 L39,214" stroke="#c8202a" stroke-width="4.5" stroke-linecap="round"/><path d="M29,209 L29,211 M39,209 L39,211" stroke="#fff" stroke-width="4.6"/>`
+            + `<path d="M22,217 Q24,212 31,213 L32,217 Z M46,217 Q44,212 37,213 L36,217 Z" fill="#2f7a2f" ${rim("#174a1a")}/>`
+            + `<path d="M22,206 L26,186 L42,186 L46,206 L42,210 L38,206 L34,210 L30,206 L26,210 Z" fill="#2f9a4a" ${rim("#174a1a")}/>`
+            + `<path d="M25,196 L43,196" stroke="#1d1a22" stroke-width="3"/><rect x="31.5" y="193.5" width="5" height="5" fill="none" stroke="#f2c94c" stroke-width="1.4"/><path d="M28,187 Q34,191 40,187" fill="none" stroke="#c8202a" stroke-width="2.6"/>`
+            + `<path d="M25,176 L15,169 L25,182 Z M43,176 L53,169 L43,182 Z" fill="#f2c6a5" ${rim("#b97c54")}/><circle cx="34" cy="177" r="10" fill="#f2c6a5" ${rim("#b97c54")}/>`
+            + eye(30.5, 177.5) + eye(37.5, 177.5) + `<circle cx="27.5" cy="181.5" r="2" fill="#ff8f8f" opacity=".6"/><circle cx="40.5" cy="181.5" r="2" fill="#ff8f8f" opacity=".6"/><path d="M31,182.5 Q34,185.5 37,182.5" fill="none" stroke="#7a1f2b" stroke-width="1.4" stroke-linecap="round"/>`
+            + `<path d="M23,171 C25,156 37,147 52,150 C44,154 42,161 45,171 Z" fill="#2f9a4a" ${rim("#174a1a")}/><path d="M23,170 Q34,165 45,170 L45,174 Q34,169 23,174 Z" fill="#c8202a"/>`
+            + `<g${A("kc-a-sway")}><circle cx="53" cy="151" r="3.2" fill="#f2c94c" ${rim("#a67c00")}/></g>` + `</g>` + spark(58, 166, 3, 0.4, "#fff6c9") + spark(12, 190, 2.6, 1.1, "#fff6c9");
         // 🔥🐦 flying beside your head, flames flickering
         if (look === "phoenix") return `<g${A("kc-a-bob")}><g transform="translate(164 58)">`
             + `<g${A("kc-a-flick")}><path d="M6,8 C20,16 34,30 30,44 C26,34 18,30 12,30 C20,38 20,48 14,54 C12,42 6,34 0,30 Z" fill="#ff7a2f" ${rim("#a3300f")}/><path d="M8,14 C18,22 24,32 22,40 C18,32 12,28 6,26 Z" fill="#ffd54a"/></g>`
@@ -639,6 +719,12 @@
             + `<path d="M-9,16 Q0,20 9,16" fill="none" stroke="#ffd54a" stroke-width="2.4"/>`
             + `<path d="M0,22 l1.4,3.2 3.4,.4 -2.6,2.2 .8,3.4 -3,-1.8 -3,1.8 .8,-3.4 -2.6,-2.2 3.4,-.4 z" fill="#ffe27a"/>`
             + `<g${A("kc-a-rise")}><circle cx="-4" cy="8" r="1.6" fill="#ffe27a"/><circle cx="5" cy="6" r="1.2" fill="#8fd8ff"/></g>`,
+        // 🎁 a wrapped present, sitting on your fist: green paper, a red ribbon and bow
+        present: () => path("M-15,-34 L15,-34 L15,-6 L-15,-6 Z", "#2f8f4e", 1.8) + `<path d="M-15,-34 L-15,-6 L-6,-6 L-6,-34 Z" fill="#000" opacity=".08"/>`
+            + path("M-17,-40 L17,-40 L17,-33 L-17,-33 Z", "#36a35a", 1.8)
+            + `<path d="M0,-40 L0,-6 M-15,-21 L15,-21" stroke="#d42a2a" stroke-width="5"/><path d="M-17,-36.5 L17,-36.5" stroke="#d42a2a" stroke-width="3"/>`
+            + path("M0,-40 C-6,-52 -18,-50 -12,-41 Z", "#e03a3a", 1.6) + path("M0,-40 C6,-52 18,-50 12,-41 Z", "#e03a3a", 1.6)
+            + `<circle cx="0" cy="-40" r="3" fill="#b81d24"/><path d="M-11,-29 l1,2 2,.3 -1.5,1.4 .4,2 -1.9,-1 -1.9,1 .4,-2 -1.5,-1.4 2,-.3 z M8,-15 l1,2 2,.3 -1.5,1.4 .4,2 -1.9,-1 -1.9,1 .4,-2 -1.5,-1.4 2,-.3 z" fill="#ffe27a"/>`,
         bread: () => `<g transform="rotate(-24)">` + `<ellipse cx="0" cy="-12" rx="7.5" ry="30" fill="#d9a05b" ${ol(2)}/><path d="M-4,-34 L3,-30 M-4,-22 L3,-18 M-4,-10 L3,-6 M-4,2 L3,6" stroke="#a8692e" stroke-width="2" stroke-linecap="round"/><path d="M-3,-36 Q-5,-14 -3,10" fill="none" stroke="#f0c98a" stroke-width="2" opacity=".7"/></g>`
     };
     // tall things lean out from the fist, away from your face (as you'd hold them)
@@ -655,7 +741,7 @@
        its width in px; opts.title: alt text; opts.bust: just the head and
        shoulders (square — for small places: leaderboards, chat). */
     // where each covering hat's brim sits: hair above it is hidden
-    const HAT_COVER = { cap: 64, tophat: 52, wizard: 50, witch: 50, viking: 62, plume: 52, crown: 44, beanie: 66 };
+    const HAT_COVER = { cap: 64, tophat: 52, wizard: 50, witch: 50, viking: 62, plume: 52, crown: 44, beanie: 66, santa: 62 };
     // how high each hair reaches
     const HAIR_TOP = { starter: 33, crop: 30, waves: 28, spiky: 14, twin: 33, silver: 33, flame: 10, nebula: 28 };
     let drawn = 0;
@@ -714,12 +800,14 @@
         viking: () => spark(54, 22, 3.5, 0) + spark(146, 22, 3.5, 0.7),
         stargazer: () => spark(82, 140, 3.6, 0) + spark(116, 152, 3.6, 0.7) + spark(100, 112, 3, 1.3, "#dff3ff"),
         sweater: () => [[78, 138, 0], [124, 150, 0.7], [110, 128, 1.4]].map(([x, y, d]) => `<path d="${heartD(x, y, 3)}" fill="#ff3d7f"${A("kc-a-rise")}${ANIM ? ` style="animation-delay:${d}s"` : ""}/>`).join(""),
+        santaHat: () => spark(150, 28, 3.6, 0, "#ffffff") + spark(66, 46, 3, 0.8, "#ffffff") + spark(112, 10, 2.6, 1.4, "#fff6c9"),
+        santaSuit: () => spark(80, 132, 3.2, 0, "#ffffff") + spark(122, 160, 3.2, 0.7, "#ffffff") + spark(104, 147, 3.6, 1.2, "#ffe27a"),
         staff: () => `<g transform="${gripAt("staff")}">${glow(0, -76, 16, "#c99bff", 0.3)}${spark(-12, -90, 3, 0, "#f3e8ff")}${spark(13, -70, 3, 0.6, "#f3e8ff")}${spark(2, -98, 2.5, 1.1, "#f3e8ff")}</g>`
     };
     // which look each worn thing's ✨ comes from (by slot, its look)
-    const FX_FOR = { hat: { laurel: "laurel", pumpkin: "pumpkin", halo: "halo", crown: "crown", witch: "witch", viking: "viking" },
+    const FX_FOR = { hat: { laurel: "laurel", pumpkin: "pumpkin", halo: "halo", crown: "crown", witch: "witch", viking: "viking", santa: "santaHat" },
         eyes: { starry: "starry", dragon: "dragonEyes" }, glasses: { visor: "visor" }, neck: { coin: "coin", gem: "gem", nazar: "nazar" },
-        top: { dragon: "dragon", royal: "royal", plate: "plate", warlock: "warlock", knight: "knight", sweater: "sweater", stargazer: "stargazer" }, bottom: { shadow: "shadow" },
+        top: { dragon: "dragon", royal: "royal", plate: "plate", warlock: "warlock", knight: "knight", sweater: "sweater", stargazer: "stargazer", santa: "santaSuit" }, bottom: { shadow: "shadow" },
         held: { sword: "sword", ticket: "ticket", trophy: "trophy", scroll: "scroll", staff: "staff" }, bg: { galaxy: "galaxy" } };
     function svg(outfit, opts) {
         const o = opts || {};
@@ -808,24 +896,24 @@
     // where each pet is: the dragon and phoenix fly by your head on your right
     // (as you look), facing you; the cat and fox sit by your right foot; the
     // owl perches on your other shoulder, clear of what you hold
-    const PET_BOX = { dragon: "116 14 84 84", phoenix: "122 22 90 90", owl: "16 79 58 58", cat: "134 156 64 64", fox: "134 156 64 64", bunny: "3 148 73 73" };
+    const PET_BOX = { dragon: "116 14 84 84", phoenix: "122 22 90 90", owl: "16 79 58 58", cat: "134 156 64 64", fox: "134 156 64 64", bunny: "3 148 73 73", reindeer: "134 139 80 80", elf: "-4 141 80 80" };
     // each held thing's middle and size, around the grip: [x, y, size]
     const HELD_BOX = { sword: [9, -28, 100], torch: [5, -20, 96], broom: [-13, 7, 146], pinwheel: [5, -19, 88], quill: [5, -25, 92], lantern: [0, 12, 54],
         pouch: [0, 20, 44], starpouch: [0, 18, 46], compass: [0, 20, 42], hourglass: [0, 0, 56], trophy: [0, -7, 52], scroll: [0, 0, 64], ticket: [4, -18, 46], juice: [2, -19, 58],
-        bread: [-2, -13, 70], staff: [13, -24, 134], bow: [7, 0, 100], cupidbow: [7, 0, 92], letter: [-3, -15, 44], rose: [5, -20, 85] };
+        bread: [-2, -13, 70], staff: [13, -24, 134], bow: [7, 0, 100], cupidbow: [7, 0, 92], letter: [-3, -15, 44], rose: [5, -20, 85], present: [0, -22, 58] };
     // each thing drawn alone (no body): a square around it, by slot and look
     // (measured from the drawings; a new look needs its box here)
     const ITEM_BOX = {
         hair: { starter: "50.9 8.4 98.2 98.2", crop: "49 6 100 100", waves: "36.2 24 127.6 127.6", spiky: "42 -8 114 114", twin: "30.5 22 138.9 138.9", silver: "50.9 26.4 98.2 98.2", flame: "44 -9 112 112", nebula: "36.2 24 127.6 127.6" },
-        hat: { cap: "52 5.3 96 96", crown: "60 -0.5 80 80", tophat: "50 -15 100 100", hairpin: "108.5 40.8 37 37", laurel: "45.7 0.7 108.6 108.6", plume: "42 -26 124 124", pumpkin: "42 14 116 116", witch: "40 -27 120 120", wizard: "40 -29 120 120", viking: "36.8 -19.2 126.4 126.4", halo: "62 -22.5 76 76", heartband: "53 -10.4 94 94", beanie: "52 -3 96 96" },
+        hat: { cap: "52 5.3 96 96", crown: "60 -0.5 80 80", tophat: "50 -15 100 100", hairpin: "108.5 40.8 37 37", laurel: "45.7 0.7 108.6 108.6", plume: "42 -26 124 124", pumpkin: "42 14 116 116", witch: "40 -27 120 120", wizard: "40 -29 120 120", viking: "36.8 -19.2 126.4 126.4", halo: "62 -22.5 76 76", heartband: "53 -10.4 94 94", beanie: "52 -3 96 96", santa: "49 -21.1 121.5 121.5" },
         eyes: { starter: "66.5 48.1 67 67", hunter: "66.5 44.9 72.5 72.5", starry: "58 44.4 84 84", sleepy: "66 32.1 85.2 85.2", fierce: "66.5 47.3 67 67", ice: "66 46.6 70 70", dragon: "66.5 49.5 67 67", starlit: "62 42.5 78.2 78.2" },
-        glasses: { monocle: "90 71.5 58.5 58.5", reading: "53 41 94 94", shades: "52 40.8 96 96", visor: "54 42 92 92", aviator: "52 41.2 96 96", heartshades: "52 41.8 96 96" },
-        mouth: { starter: "89 94.3 22 22", heart: "88.3 92.2 23.5 23.5", lollipop: "89 86.5 42 42", grin: "84 92 32 32", fangs: "87 93 26 26", stache: "76.8 80 46.5 46.5", moon: "67 68.5 66 66" },
+        glasses: { monocle: "90 71.5 58.5 58.5", reading: "53 41 94 94", shades: "52 40.8 96 96", visor: "54 42 92 92", aviator: "52 41.2 96 96", heartshades: "52 41.8 96 96", halfmoon: "53 44.5 94 94" },
+        mouth: { starter: "89 94.3 22 22", heart: "88.3 92.2 23.5 23.5", lollipop: "89 86.5 42 42", grin: "84 92 32 32", fangs: "87 93 26 26", stache: "76.8 80 46.5 46.5", moon: "67 68.5 66 66", beard: "48.7 68.7 102.6 102.6" },
         neck: { gem: "80 114 40 40", beads: "74.4 103.4 51.2 51.2", nazar: "80 114.5 40 40", pin: "73 126 29 29", medal: "81 116 38 38", key: "80 116.5 40 40", coin: "80 115.5 40 40", scarf: "68 107 64 64", fang: "80 116.5 40 40", locket: "80 114.1 40 40", comet: "74 109.8 46 46" },
-        top: { tee: "52 96.5 96 96", jerkin: "52 96.5 96 96", tabard: "52 107 96 96", robe: "48 107.5 104 104", plate: "52 96.5 96 96", dragon: "52 96.5 96 96", apron: "52 102 96 96", cape: "48 107 104 104", warlock: "46 108 108 108", knight: "52 95.5 96 96", hoodie: "52 93.5 96 96", royal: "48 110 104 104", sweater: "52 96.5 96 96", stargazer: "52 96.5 96 96" },
-        bottom: { starter: "76 161 48 48", linen: "76 160 48 48", breeches: "76 161 48 48", chain: "76 161 48 48", shadow: "76 161 48 48", nebula: "76 161 48 48" },
-        shoes: { sneakers: "71 176.8 58 58", muddy: "71 170.3 58 58", swift: "63 162.3 74 74", sandals: "72 179.1 56 56", wings: "54 152.5 92 92", moonboots: "71 170.3 58 58" },
-        held: { bread: "99.2 118.1 68.9 68.9", lantern: "114 154.5 49 49", compass: "119.3 163.5 38.5 38.5", quill: "96.4 91.4 95.4 95.4", juice: "110 113.5 61 61", ticket: "123.7 120.5 44.8 44.8", torch: "91.9 93.2 101.4 101.4", hourglass: "109.5 134.5 58 58", pouch: "119 163.5 39 39", trophy: "106.7 120 63.5 63.5", scroll: "106 131 65 65", sword: "94.8 82 105.5 105.5", pinwheel: "96.2 99.9 92.1 92.1", broom: "52.5 97.5 146 146", staff: "75.9 59.6 149.6 149.6", bow: "95.5 113.5 100 100", letter: "115.4 128.8 40 40", rose: "100.8 101.5 84.8 84.8", starpouch: "119 160 42 42", cupidbow: "103.5 121.5 84 84" }
+        top: { tee: "52 96.5 96 96", jerkin: "52 96.5 96 96", tabard: "52 107 96 96", robe: "48 107.5 104 104", plate: "52 96.5 96 96", dragon: "52 96.5 96 96", apron: "52 102 96 96", cape: "48 107 104 104", warlock: "46 108 108 108", knight: "52 95.5 96 96", hoodie: "52 93.5 96 96", royal: "48 110 104 104", sweater: "52 96.5 96 96", stargazer: "52 96.5 96 96", santa: "51 97.5 98 98" },
+        bottom: { starter: "76 161 48 48", linen: "76 160 48 48", breeches: "76 161 48 48", chain: "76 161 48 48", shadow: "76 161 48 48", nebula: "76 161 48 48", santa: "76 161 48 48" },
+        shoes: { sneakers: "71 176.8 58 58", muddy: "71 170.3 58 58", swift: "63 162.3 74 74", sandals: "72 179.1 56 56", wings: "54 152.5 92 92", moonboots: "71 170.3 58 58", santa: "71 167.5 58 58" },
+        held: { bread: "99.2 118.1 68.9 68.9", lantern: "114 154.5 49 49", compass: "119.3 163.5 38.5 38.5", quill: "96.4 91.4 95.4 95.4", juice: "110 113.5 61 61", ticket: "123.7 120.5 44.8 44.8", torch: "91.9 93.2 101.4 101.4", hourglass: "109.5 134.5 58 58", pouch: "119 163.5 39 39", trophy: "106.7 120 63.5 63.5", scroll: "106 131 65 65", sword: "94.8 82 105.5 105.5", pinwheel: "96.2 99.9 92.1 92.1", broom: "52.5 97.5 146 146", staff: "75.9 59.6 149.6 149.6", bow: "95.5 113.5 100 100", letter: "115.4 128.8 40 40", rose: "100.8 101.5 84.8 84.8", starpouch: "119 160 42 42", cupidbow: "103.5 121.5 84 84", present: "113.3 111.1 50.4 50.4" }
     };
     // An item on its own, as you'd see it in a shop: just the thing (a hat
     // with no head under it), with its ✨. Square, `size` px.

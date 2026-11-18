@@ -3325,6 +3325,8 @@ async function handleLookupUserByUid() {
                     const ev = o.event && PC.EVENTS && PC.EVENTS[o.event];
                     const cur = o.currency === "stardust" ? "✨" : "🪙";
                     if (o.kind === "convert") return `<div class="token-history-row">${escapeHtml(fmtDate(o.at))} · 🪙 → ✨ ${o.price} 🪙 → ${o.stardustGot} ✨</div>`;
+                    if (o.kind === "xmasPass") return `<div class="token-history-row">${escapeHtml(fmtDate(o.at))} · 🎄 Christmas Calendar ⭐ Premium · ${o.price} 🪙</div>`;
+                    if (o.kind === "xmas") return `<div class="token-history-row">${escapeHtml(fmtDate(o.at))} · 🎄 ${o.count} calendar door${o.count === 1 ? "" : "s"}${o.tokens ? ` · +${o.tokens} 🪙 (gifted)` : ""}${o.results.length ? `<br>${o.results.map(resultText).join(", ")}` : ""}</div>`;
                     const what = ev ? `${ev.icon} ${escapeHtml(ev.name)} ×${o.count} · ${o.free ? "free" : `${o.price} ${cur}`}` : o.free ? "🎁 free draw" : `×${o.count} · ${o.price} ${cur}`;
                     return `<div class="token-history-row">${escapeHtml(fmtDate(o.at))} · ${what}${o.refund ? ` · +${o.refund} ${cur} back` : ""}<br>${o.results.map(resultText).join(", ")}</div>`;
                 }).join("") : "<p class='promo-sub'>No chest draws yet.</p>";

@@ -97,6 +97,7 @@ describe("questions people ask", () => {
         heartShop: ["where is the heart shop", "spend my hearts", "heart spin"],
         sets: ["where can i buy a full outfit", "celestial set", "outfit sets"],
         stardust: ["where do i get stardust", "daily deals", "convert tokens to stardust", "free stardust"],
+        xmas: ["christmas calendar", "how do i use a frost doubler", "is the santa set worth it", "what is premium on the advent calendar"],
         event: ["is there an event", "halloween event"],
         codes: ["promo codes", "where are the codes", "redeem code"],
         weeklyGiveaway: ["spin the wheel", "weekly giveaway"],

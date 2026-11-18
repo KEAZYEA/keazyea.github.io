@@ -38,6 +38,10 @@
  *   buyItem { id, deal }       -> one chest item or style outright, for P.buyPrice ✨
  *                                 (well above a draw; deal: today's Daily Deal price);
  *                                 logged with the chest opens
+ *   xmasBuy                    -> 🎄 ⭐ Premium for the Christmas Calendar (P.XMAS.price 🪙, December)
+ *   xmasOpen { track, day }    -> 🚪 open a calendar door ("free": that day only; "prem":
+ *   xmasOpen { all: true }        any day up to today, until P.XMAS.claimUntil) — or every one you can
+ *                                 (after that, status opens the Premium ones left, once)
  *   trickOrTreat { count }     -> 1 or 10 knocks at an event's door (P.EVENTS),
  *                                 only while it's on; each a treat or a trick
  *
@@ -217,7 +221,7 @@ async function isVip(db, uid, now) {
   return u.exists && (u.data().vipExpiresAt || 0) > now;
 }
 
-async function status(db, uid, now) {
+async function status(db, uid, now, sweptNow) {
   const [{ stats, claimed, card, inv }, wallet, vip, heartDay] = await Promise.all([
     computeStats(db, uid, now),
     db.collection("tokenWallets").doc(uid).get(),
@@ -225,6 +229,15 @@ async function status(db, uid, now) {
     heartDayRef(db, uid, dayKeyFor(now)).get()
   ]);
   const heartsToday = heartDay.exists && Array.isArray(heartDay.data().to) ? heartDay.data().to : [];
+  // 🎄 the calendar's over: Premium doors still shut are opened for you, once
+  const xs = xmasOf(inv);
+  if (!sweptNow && dayKeyFor(now) > P.XMAS.claimUntil && xs.premium && !xs.swept) {
+    try {
+      const r = await xmasSweep(db, uid, now);
+      const again = await status(db, uid, now, true);
+      return r ? { ...again, xmasSwept: r.prize } : again;
+    } catch (e) { console.warn("xmas sweep failed:", e.message); }
+  }
   const items = Object.keys(inv.items || {});
   const perks = P.perksOf(items);
   const style = { border: null, name: null, bubble: null, background: null, ...(card.style || {}) };
@@ -256,6 +269,7 @@ async function status(db, uid, now) {
     freeDraws,
     pity: inv.pity || { epic: 0, legendary: 0 },
     events: inv.events || {}, // your Trick or Treat counts: { [eventId]: { pity, freeUsed, knocks } }
+    xmas: xmasPublic(inv), // 🎄 your calendar: premium, doors opened, ❄️ frostDoublers
     ...looksOf(card, items, inv.lookSlots), // your 🧍 looks: outfit (worn), looks, equipped, lookSlots
     balance: wallet.exists ? (wallet.data().balance || 0) : 0
   };
@@ -857,11 +871,15 @@ async function buyItem(db, uid, body, now) {
   });
 }
 // 👘 A whole outfit set (P.SETS), every piece at once, for its ✨ price.
+// A seasonal one (from / until) only on those days — the admin any day, to try it.
 async function buySet(db, uid, body, now) {
   await assertNotBanned(db, uid);
   const id = typeof body.id === "string" ? body.id : "";
   const set = Object.prototype.hasOwnProperty.call(P.SET_BY_ID, id) ? P.SET_BY_ID[id] : null;
   if (!set) throw new HttpError(400, "That set isn't in the Store.");
+  if (!P.setOnSale(set, dayKeyFor(now)) && uid !== ADMIN_UID) {
+    throw new HttpError(400, dayKeyFor(now) < set.from ? `The ${set.name} is in the Store from ${set.from}.` : `The ${set.name} has gone for this year.`);
+  }
   const lbRef = db.collection("gameLeaderboards").doc(weekOf(now)).collection("players").doc(uid);
   const logRef = db.collection("chestOpens").doc(now.toString(36) + crypto.randomBytes(6).toString("hex"));
   return db.runTransaction(async (tx) => {
@@ -933,6 +951,126 @@ async function buyLookSlot(db, uid, body, now) {
   });
 }
 
+/* ---------------- 🎄 the Christmas Calendar (P.XMAS) ----------------
+   inventories/{uid}.xmas = { premium, boughtAt, free: { day: at }, prem: { day: at }, swept }
+   and frostDoublers (❄️ to use on Secret Giveaways — api/tokens.js useFrost). */
+const xmasOf = (d) => {
+  const x = (d && typeof d.xmas === "object" && d.xmas) || {};
+  return { premium: x.premium === true, boughtAt: x.boughtAt || 0, free: x.free || {}, prem: x.prem || {}, swept: x.swept === true };
+};
+const xmasPublic = (d) => ({ ...xmasOf(d), frostDoublers: Math.max(0, Math.floor((d && d.frostDoublers) || 0)) });
+// Inside a transaction, after its reads: open `doors` ([{ track, day }]) —
+// their prizes paid, the doors marked open. d: the inventory; w: the wallet.
+// 🪙 from a door count as gifted (lifetimeGifted), so the admin's token check adds up.
+function openDoors(tx, db, uid, d, w, walletRef, lbRef, row, doors, now, extraState) {
+  const t = { tokens: 0, stardust: 0, hearts: 0, draws: 0, doubler: 0 };
+  const state = xmasOf(d);
+  const items = { ...(d.items || {}) };
+  const got = [];
+  const marks = { free: {}, prem: {} };
+  doors.forEach(({ track, day }) => {
+    const p = P.xmasPrize(track, day);
+    Object.keys(t).forEach(k => { t[k] += Math.max(0, Math.floor(p[k] || 0)); });
+    if (p.item && !(p.item in items)) { items[p.item] = { at: now, from: P.XMAS.id }; got.push(p.item); }
+    marks[track][day] = now;
+  });
+  const extra = {
+    stardust: Math.max(0, d.stardust || 0) + t.stardust,
+    hearts: Math.max(0, d.hearts || 0) + t.hearts,
+    freeDraws: Math.max(0, d.freeDraws || 0) + t.draws,
+    frostDoublers: Math.max(0, Math.floor(d.frostDoublers || 0)) + t.doubler,
+    // the whole calendar state, written in full (not merged field by field)
+    xmas: { ...state, free: { ...state.free, ...marks.free }, prem: { ...state.prem, ...marks.prem }, ...(extraState || {}) }
+  };
+  let balance = w.exists ? (w.data().balance || 0) : 0;
+  if (t.tokens) {
+    balance += t.tokens;
+    tx.set(walletRef, { balance, lifetimeGifted: FieldValue.increment(t.tokens), updatedAt: now }, { merge: true });
+  }
+  const perks = got.length ? writeInventory(tx, db, uid, items, extra, lbRef, row, now) : P.perksOf(Object.keys(items));
+  if (!got.length) tx.set(invRef(db, uid), { ...extra, updatedAt: now }, { merge: true });
+  tx.set(db.collection("chestOpens").doc(now.toString(36) + crypto.randomBytes(6).toString("hex")), {
+    uid, kind: "xmas", count: doors.length, free: true, price: 0, refund: 0, currency: "stardust", tokens: t.tokens,
+    doors: doors.map(x => `${x.track}${x.day}`), results: got.map(id => ({ id })), at: now
+  });
+  return {
+    ok: true, opened: doors, prize: { ...t, items: got }, balance, items: Object.keys(items), perks,
+    stardust: extra.stardust, hearts: extra.hearts, freeDraws: extra.freeDraws,
+    xmas: { ...extra.xmas, frostDoublers: extra.frostDoublers }
+  };
+}
+// Every Premium door still shut that can be opened today (catch-up), or — once
+// the calendar's over — every Premium door still shut.
+const premLeft = (state, dayKey, all) => Array.from({ length: P.XMAS_DAYS }, (_, i) => i + 1)
+  .filter(day => all ? !state.prem[day] : P.xmasCanOpen(state, "prem", day, dayKey));
+// ⭐ Premium, for P.XMAS.price 🪙 (December only). Logged with the chest opens
+// (🪙, like 🪙 → ✨) for the admin's token check.
+async function xmasBuy(db, uid, body, now) {
+  await assertNotBanned(db, uid);
+  const day = dayKeyFor(now);
+  if (!P.xmasDay(day)) throw new HttpError(400, day < P.XMAS.from ? `⭐ Premium goes on sale on ${P.XMAS.from}.` : "⭐ Premium was only sold in December.");
+  const walletRef = db.collection("tokenWallets").doc(uid);
+  return db.runTransaction(async (tx) => {
+    const [inv, w] = await tx.getAll(invRef(db, uid), walletRef);
+    const state = xmasOf(inv.exists ? inv.data() : {});
+    if (state.premium) throw new HttpError(400, "You already have ⭐ Premium.");
+    const balance = w.exists ? (w.data().balance || 0) : 0;
+    if (balance < P.XMAS.price) throw new HttpError(400, `⭐ Premium costs ${P.XMAS.price} 🪙 — you have ${balance}.`);
+    tx.set(walletRef, { balance: balance - P.XMAS.price, updatedAt: now }, { merge: true });
+    tx.set(invRef(db, uid), { xmas: { ...state, premium: true, boughtAt: now }, updatedAt: now }, { merge: true });
+    tx.set(db.collection("chestOpens").doc(now.toString(36) + crypto.randomBytes(6).toString("hex")),
+      { uid, kind: "xmasPass", count: 0, free: false, price: P.XMAS.price, refund: 0, currency: "tokens", results: [], at: now });
+    const d = inv.exists ? inv.data() : {};
+    return { ok: true, balance: balance - P.XMAS.price, xmas: { ...xmasPublic(d), premium: true, boughtAt: now } };
+  });
+}
+// 🚪 Open a door: { track: "free" | "prem", day } — or { all: true }: every
+// door you can open today (today's free one and every Premium one waiting).
+async function xmasOpen(db, uid, body, now) {
+  await assertNotBanned(db, uid);
+  const dayKey = dayKeyFor(now);
+  const walletRef = db.collection("tokenWallets").doc(uid);
+  const lbRef = db.collection("gameLeaderboards").doc(weekOf(now)).collection("players").doc(uid);
+  return db.runTransaction(async (tx) => {
+    const [inv, w, row] = await tx.getAll(invRef(db, uid), walletRef, lbRef);
+    const d = inv.exists ? inv.data() : {};
+    const state = xmasOf(d);
+    let doors;
+    if (body.all === true) {
+      doors = [];
+      const today = P.xmasDay(dayKey);
+      if (today && P.xmasCanOpen(state, "free", today, dayKey)) doors.push({ track: "free", day: today });
+      premLeft(state, dayKey, false).forEach(day => doors.push({ track: "prem", day }));
+      if (!doors.length) throw new HttpError(400, "Nothing to open right now — come back tomorrow!");
+    } else {
+      const track = body.track === "prem" ? "prem" : body.track === "free" ? "free" : null;
+      const day = body.day;
+      if (!track || !Number.isInteger(day) || day < 1 || day > P.XMAS_DAYS) throw new HttpError(400, "Pick a door.");
+      if (!P.xmasCanOpen(state, track, day, dayKey)) {
+        const opened = (track === "free" ? state.free : state.prem)[day];
+        throw new HttpError(400, opened ? "You've opened that one." : track === "prem" && !state.premium ? "That's a ⭐ Premium door."
+          : track === "free" && P.xmasDay(dayKey) > day ? "That door's gone — free doors open on their day only." : "That door isn't open yet.");
+      }
+      doors = [{ track, day }];
+    }
+    return openDoors(tx, db, uid, d, w, walletRef, lbRef, row, doors, now);
+  });
+}
+// After the catch-up days: Premium doors still shut are opened for you (once).
+async function xmasSweep(db, uid, now) {
+  const walletRef = db.collection("tokenWallets").doc(uid);
+  const lbRef = db.collection("gameLeaderboards").doc(weekOf(now)).collection("players").doc(uid);
+  return db.runTransaction(async (tx) => {
+    const [inv, w, row] = await tx.getAll(invRef(db, uid), walletRef, lbRef);
+    const d = inv.exists ? inv.data() : {};
+    const state = xmasOf(d);
+    if (!state.premium || state.swept) return null;
+    const doors = premLeft(state, dayKeyFor(now), true).map(day => ({ track: "prem", day }));
+    if (!doors.length) { tx.set(invRef(db, uid), { xmas: { ...state, swept: true }, updatedAt: now }, { merge: true }); return null; }
+    return openDoors(tx, db, uid, d, w, walletRef, lbRef, row, doors, now, { swept: true });
+  });
+}
+
 /* ---------------- ✨ Stardust: 🪙 → ✨ ---------------- */
 // 🪙 tokens → ✨ Stardust (never back). Logged for the admin's token check.
 async function convertTokens(db, uid, body, now) {
@@ -989,6 +1127,8 @@ module.exports = async (req, res) => {
       case "buyHeartItem": result = await buyHeartItem(db, uid, body, now); break;
       case "buyItem": result = await buyItem(db, uid, body, now); break;
       case "buySet": result = await buySet(db, uid, body, now); break;
+      case "xmasBuy": result = await xmasBuy(db, uid, body, now); break;
+      case "xmasOpen": result = await xmasOpen(db, uid, body, now); break;
       case "trickOrTreat": result = await trickOrTreat(db, uid, body, now); break;
       case "eventGift": result = await eventGift(db, uid, body, now); break;
       case "buyEventItem": result = await buyEventItem(db, uid, body, now); break;

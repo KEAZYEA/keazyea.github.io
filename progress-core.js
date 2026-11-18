@@ -116,11 +116,15 @@
        heartSendChance N% chance of a 💗 for you when you send one         api/progress.js
        loginStardust   +N ✨ with every daily login                       api/tokens.js
        spinStardust    +N ✨ with every Heart Spin                        api/progress.js
-       heartSends      +N hearts you can send a day                       api/progress.js */
+       heartSends      +N hearts you can send a day                       api/progress.js
+       tokenBack       N% of the 🪙 you add to a Secret Giveaway comes back
+                       at once (never more than TOKEN_BACK_MAX %; taking
+                       tokens back out gives that bonus back)              api/tokens.js */
     const PERK_KINDS = ["gameFlat", "gameBest", "gameMult", "doubleBoost", "gameTime", "lives", "blurHints", "gameTen", "prizeMult",
         "loginBonus", "sundayBonus", "puzzleBonus", "questMult", "secretChance", "stakeMult", "weeklyTickets", "chestDiscount", "dupBonus", "badgeSlots",
-        "questFlat", "tierBonus", "weeklyFreeDraw", "heartGetChance", "heartSendChance", "loginStardust", "spinStardust", "heartSends"];
+        "questFlat", "tierBonus", "weeklyFreeDraw", "heartGetChance", "heartSendChance", "loginStardust", "spinStardust", "heartSends", "tokenBack"];
     const x = (v) => `×${(1 + v / 100).toFixed(2).replace(/0$/, "")}`;
+    const TOKEN_BACK_MAX = 20; // tokenBack never pays more than this % back
     const PERK_TEXT = {
         gameFlat: (v) => `+${v} weekly Games score`,
         gameBest: (v) => `+${v}% on your best game`,
@@ -148,7 +152,8 @@
         heartSendChance: (v) => `${Math.min(100, v)}% chance of a 💗 for you when you send one`,
         loginStardust: (v) => `+${v} ✨ with every daily login`,
         spinStardust: (v) => `+${v} ✨ with every Heart Spin`,
-        heartSends: (v) => `+${v} heart${v === 1 ? "" : "s"} you can send a day`
+        heartSends: (v) => `+${v} heart${v === 1 ? "" : "s"} you can send a day`,
+        tokenBack: (v) => `${Math.min(TOKEN_BACK_MAX, v)}% of the 🪙 you add to a Secret Giveaway back at once`
     };
     const perkText = (perk) => (PERK_TEXT[perk.kind] ? PERK_TEXT[perk.kind](perk.value) : "");
 
@@ -257,6 +262,18 @@
         { id: "cs_top", icon: "🔭", name: "Stargazer Coat", rarity: "epic", set: "celestial", perks: [{ kind: "loginStardust", value: 15 }, { kind: "heartSends", value: 1 }] },
         { id: "cs_bottom", icon: "👖", name: "Nebula Trousers", rarity: "rare", set: "celestial", perks: [{ kind: "spinStardust", value: 20 }] },
         { id: "cs_shoes", icon: "🥾", name: "Moonwalkers", rarity: "rare", set: "celestial", perks: [{ kind: "heartSendChance", value: 5 }] },
+        // 🎅 the Santa Set: only as a set, in the Store, at Christmas (SETS: from / until)
+        { id: "xs_hat", icon: "🎅", name: "Santa Hat", rarity: "epic", set: "santa", perks: [{ kind: "tokenBack", value: 3 }, { kind: "loginStardust", value: 10 }] },
+        { id: "xs_specs", icon: "👓", name: "Santa's Spectacles", rarity: "uncommon", set: "santa", perks: [{ kind: "questFlat", value: 1 }] },
+        { id: "xs_beard", icon: "🧔", name: "Snowy Beard", rarity: "rare", set: "santa", perks: [{ kind: "tokenBack", value: 2 }] },
+        { id: "xs_suit", icon: "🧥", name: "Santa Suit", rarity: "epic", set: "santa", perks: [{ kind: "tokenBack", value: 3 }, { kind: "secretChance", value: 1 }] },
+        { id: "xs_trousers", icon: "👖", name: "Santa Trousers", rarity: "rare", set: "santa", perks: [{ kind: "loginStardust", value: 10 }] },
+        { id: "xs_boots", icon: "👢", name: "Chimney Boots", rarity: "rare", set: "santa", perks: [{ kind: "spinStardust", value: 20 }] },
+        { id: "xs_present", icon: "🎁", name: "Wrapped Present", rarity: "rare", set: "santa", perks: [{ kind: "heartSends", value: 1 }] },
+        { id: "xs_reindeer", icon: "🦌", name: "Reindeer", rarity: "epic", set: "santa", perks: [{ kind: "tokenBack", value: 2 }, { kind: "stakeMult", value: 5 }] },
+        { id: "xs_sleigh", icon: "🛷", name: "Sleigh Ride", rarity: "rare", set: "santa", perks: [{ kind: "loginStardust", value: 10 }] },
+        // 🎄 the Christmas Calendar's own (cal: which calendar; prem: the ⭐ Premium track's)
+        { id: "xp_elf", icon: "🧝", name: "Little Elf", rarity: "legendary", cal: "xmas2026", prem: true, perks: [{ kind: "tokenBack", value: 2 }, { kind: "heartSends", value: 1 }, { kind: "loginStardust", value: 10 }] },
         // achievement rewards (Mythic only)
         { id: "a_joystick", icon: "🥽", name: "Gamer Visor", rarity: "epic", perks: [{ kind: "gameTime", value: 1 }, { kind: "blurHints", value: 1 }] },
         { id: "a_laurel", icon: "🌿", name: "Champion's Laurel", rarity: "legendary", perks: [{ kind: "gameMult", value: 5 }] },
@@ -283,6 +300,7 @@
         spooky: ["🎃", "👻", "💀", "🦇", "🕷️", "🧛", "🕸️", "🧟"],
         winter: ["❄️", "⛄", "🎄", "🦌", "🧣", "☃️", "🌨️", "🎁"],
         hearts: ["💞", "💖", "💘", "💝", "💗", "💓", "💕", "💟"],
+        snowday: ["⛄", "🛷", "🧤", "🌨️", "🍪", "🥛", "🔔", "🕯️"],
         treats: ["🍬", "🍭", "🧙", "🔮", "🍫", "🧹", "🪦", "🌕"]
     };
     const STYLES = [
@@ -343,6 +361,14 @@
         { id: "hc_pumpkin", type: "bubble", css: "pumpkin", icon: "🎃", name: "Pumpkin Bubble", rarity: "uncommon", event: "halloween2026" },
         { id: "hg_haunted", type: "background", css: "haunted", icon: "🌕", name: "Haunted Night", rarity: "rare", event: "halloween2026" },
         { id: "he_treats", type: "emotes", pack: "treats", icon: "🍭", name: "Trick-or-Treat Pack", rarity: "uncommon", event: "halloween2026" },
+        // 🎄 the Christmas Calendar (cal; prem: the ⭐ Premium track's)
+        { id: "xe_snow", type: "emotes", pack: "snowday", icon: "⛄", name: "Snow Day Pack", rarity: "rare", cal: "xmas2026" },
+        { id: "xg_village", type: "background", css: "village", icon: "🏘️", name: "Snowy Village", rarity: "rare", cal: "xmas2026" },
+        { id: "xc_ginger", type: "bubble", css: "ginger", icon: "🍪", name: "Gingerbread Bubble", rarity: "uncommon", cal: "xmas2026" },
+        { id: "xb_antler", type: "border", css: "antler", anim: "pulse", icon: "🦌", name: "Reindeer Glow", rarity: "epic", cal: "xmas2026" },
+        { id: "xc_elf", type: "bubble", css: "elf", icon: "🧝", name: "Elf Bubble", rarity: "rare", cal: "xmas2026", prem: true },
+        { id: "xb_frost", type: "border", css: "frost", anim: "spin", icon: "❄️", name: "Frost Crown", rarity: "legendary", cal: "xmas2026", prem: true },
+        { id: "xn_aurora", type: "name", css: "aurora", icon: "🌌", name: "Aurora Name", rarity: "legendary", cal: "xmas2026", prem: true },
         // Halloween profile pictures: everyone who logs in on the day gets one
         // of the three free (at random); the others cost `price` 🪙 each.
         // Not treats at the door. img: the picture (pick it in Profile → Edit).
@@ -497,7 +523,11 @@
     const SET_OFF = 40;
     const SETS = [
         { id: "celestial", icon: "🌌", name: "Celestial Set", desc: "Nebula hair, starlit eyes and a coat full of stars — a little more ✨ with every login and spin.",
-            pieces: ["cs_hair", "cs_eyes", "cs_mouth", "cs_neck", "cs_top", "cs_bottom", "cs_shoes"] }
+            pieces: ["cs_hair", "cs_eyes", "cs_mouth", "cs_neck", "cs_top", "cs_bottom", "cs_shoes"] },
+        // from / until (Singapore days): only sold between them — the admin can see (and buy) it any day
+        { id: "santa", icon: "🎅", name: "Santa Set", from: "2026-12-01", until: "2027-01-06",
+            desc: "Santa's hat, beard, spectacles and red suit, a present to hand out, a reindeer and a sleigh ride across the moon — and some of your Secret Giveaway 🪙 back every time you add them.",
+            pieces: ["xs_hat", "xs_specs", "xs_beard", "xs_suit", "xs_trousers", "xs_boots", "xs_present", "xs_reindeer", "xs_sleigh"] }
     ];
     SETS.forEach(s => {
         s.worth = s.pieces.reduce((n, p) => n + BUY_PRICES[ITEM_BY_ID[p].rarity], 0);
@@ -505,6 +535,80 @@
     });
     const SET_BY_ID = Object.fromEntries(SETS.map(s => [s.id, s]));
     const setOf = (id) => { const x = Object.prototype.hasOwnProperty.call(ITEM_BY_ID, id) ? ITEM_BY_ID[id] : null; return x && x.set ? SET_BY_ID[x.set] || null : null; };
+    // Is a set in the Store on this day ("YYYY-MM-DD", Singapore)?
+    const setOnSale = (set, dayKey) => !!set && (!set.from || String(dayKey) >= set.from) && (!set.until || String(dayKey) <= set.until);
+
+    /* ---------------- 🎄 the Christmas Calendar ----------------
+       A door a day, 1 to 31 December (Singapore). Two tracks:
+       - 🎁 Free, everyone's: each day's door opens on that day only — miss
+         it and it's gone.
+       - ⭐ Premium, for XMAS.price 🪙 (sold in December): a second, much
+         bigger door every day, and they keep: open any you've missed, up to
+         today, until XMAS.claimUntil. After that whatever's still shut is
+         opened for you (the next time you open the app). Its doors give
+         back more 🪙 than it costs, lots of ✨, chest draws, 💗, three ❄️
+         Frost Doublers and things nobody else can get.
+       A ❄️ Frost Doubler (only from Premium): use one on a Secret Giveaway
+       you're in and your 🪙 there count XMAS.doubler× in its draw. One use,
+       one giveaway; it doesn't run out until you use it.
+       A door's prize: { tokens, stardust, hearts, draws, doubler, item }.
+       api/progress.js opens the doors and keeps them in inventories/{uid}.xmas
+       = { premium, boughtAt, free: { day: at }, prem: { day: at }, swept }. */
+    const XMAS = { id: "xmas2026", icon: "🎄", name: "Christmas Calendar", from: "2026-12-01", to: "2026-12-31", claimUntil: "2027-01-06",
+        price: 300, doubler: 2 };
+    const XMAS_FREE = [
+        null, // day 0: none
+        { stardust: 50 }, { hearts: 5 }, { item: "xe_snow" }, { tokens: 1 }, { stardust: 50 }, { hearts: 5 }, { item: "xg_village" },
+        { tokens: 1 }, { stardust: 50 }, { draws: 1 }, { hearts: 5 }, { tokens: 1 }, { stardust: 50 }, { item: "xc_ginger" },
+        { hearts: 5 }, { tokens: 1 }, { stardust: 50 }, { stardust: 150 }, { tokens: 1 }, { hearts: 5 }, { hearts: 15 },
+        { stardust: 50 }, { tokens: 1 }, { tokens: 3 }, { draws: 2, stardust: 200 }, { hearts: 5 }, { stardust: 50 }, { tokens: 1 },
+        { hearts: 5 }, { stardust: 100 }, { item: "xb_antler" }
+    ];
+    // ⭐ Premium's ✨, all month, adds up to just the 🎅 Santa Set's price: open
+    // every door and you can buy the set (the last door's ✨ makes it exact).
+    const XMAS_PREM = [
+        null,
+        { doubler: 1, tokens: 20 }, { stardust: 1000 }, { tokens: 10 }, { hearts: 20 }, { item: "xc_elf" }, { stardust: 1500 }, { draws: 1 },
+        { doubler: 1 }, { tokens: 10 }, { tokens: 20 }, { hearts: 20 }, { tokens: 40 }, { stardust: 1500 }, { draws: 1 },
+        { item: "xb_frost" }, { tokens: 10 }, { tokens: 10 }, { doubler: 1 }, { hearts: 20 }, { tokens: 40 }, { stardust: 2000 },
+        { item: "xn_aurora" }, { tokens: 20 }, { draws: 3 }, { item: "xp_elf", tokens: 60 }, { stardust: 1500 }, { tokens: 20 },
+        { hearts: 30 }, { stardust: 2000 }, { tokens: 40 }, { tokens: 60, stardust: 0 }
+    ];
+    XMAS_PREM[31].stardust = SET_BY_ID.santa.price - XMAS_PREM.reduce((n, p) => n + ((p && p !== XMAS_PREM[31] && p.stardust) || 0), 0);
+    const XMAS_DAYS = XMAS_FREE.length - 1;
+    // the calendar's day (1–31) on a Singapore day, or 0 outside December
+    const xmasDay = (dayKey) => { const d = String(dayKey || ""); return d >= XMAS.from && d <= XMAS.to ? Number(d.slice(8, 10)) : 0; };
+    // the calendar's page is up (December, and the catch-up days after)
+    const xmasOn = (dayKey) => String(dayKey || "") >= XMAS.from && String(dayKey || "") <= XMAS.claimUntil;
+    const xmasPrize = (track, day) => { const list = track === "prem" ? XMAS_PREM : XMAS_FREE; return Number.isInteger(day) && day >= 1 && day <= XMAS_DAYS ? list[day] : null; };
+    // Can this door be opened today? state: inventories/{uid}.xmas
+    function xmasCanOpen(state, track, day, dayKey) {
+        const s = state || {}, today = xmasDay(dayKey), dk = String(dayKey || "");
+        if (!xmasPrize(track, day)) return false;
+        if (track === "free") return today === day && !(s.free && s.free[day]);
+        if (track !== "prem" || !s.premium || dk < XMAS.from || dk > XMAS.claimUntil) return false;
+        return day <= (today || XMAS_DAYS) && !(s.prem && s.prem[day]);
+    }
+    // a track's whole worth (for the page: "⭐ Premium: 360 🪙 back…")
+    function xmasTotals(track) {
+        const t = { tokens: 0, stardust: 0, hearts: 0, draws: 0, doubler: 0, items: [] };
+        (track === "prem" ? XMAS_PREM : XMAS_FREE).forEach(p => { if (!p) return; ["tokens", "stardust", "hearts", "draws", "doubler"].forEach(k => { t[k] += p[k] || 0; }); if (p.item) t.items.push(p.item); });
+        return t;
+    }
+    // a door's prize, in words ("+20 🪙 · ❄️ Frost Doubler")
+    function xmasPrizeText(p) {
+        if (!p) return "";
+        const out = [];
+        if (p.item) out.push(`${BY_ID[p.item].icon} ${BY_ID[p.item].name}`);
+        if (p.doubler) out.push(`❄️ Frost Doubler${p.doubler > 1 ? " ×" + p.doubler : ""}`);
+        if (p.tokens) out.push(`+${p.tokens} 🪙`);
+        if (p.stardust) out.push(`+${p.stardust.toLocaleString("en-US")} ✨`);
+        if (p.hearts) out.push(`+${p.hearts} 💗`);
+        if (p.draws) out.push(`🧰 ${p.draws} free chest draw${p.draws === 1 ? "" : "s"}`);
+        return out.join(" · ");
+    }
+    // The 🪙 a tokenBack perk owes on `tokens` staked (whole tokens, rounded down).
+    const tokenBackOf = (tokens, perks) => Math.floor(Math.max(0, Math.floor(Number(tokens) || 0)) * Math.min(TOKEN_BACK_MAX, Math.max(0, Math.floor(Number((perks || {}).tokenBack) || 0))) / 100);
 
     /* ---------------- 💗 hearts ----------------
        Send a friend a heart once a Singapore day each — perDay a day
@@ -674,10 +778,11 @@
         return m > 0 && e > 0 ? Math.ceil(e * m / 100) : 0;
     }
     // A Secret Giveaway entry's chances: 1 + staked tokens (×stakeMult) + item chances.
-    function secretWeight(tokens, perks) {
+    // frost: a ❄️ Frost Doubler is on this entry — its tokens count XMAS.doubler×.
+    function secretWeight(tokens, perks, frost) {
         const p = perks || {};
         const t = Math.max(0, Math.floor(Number(tokens) || 0));
-        return 1 + t * (1 + Math.max(0, Number(p.stakeMult) || 0) / 100) + Math.max(0, Math.floor(Number(p.secretChance) || 0));
+        return 1 + t * (1 + Math.max(0, Number(p.stakeMult) || 0) / 100) * (frost === true ? XMAS.doubler : 1) + Math.max(0, Math.floor(Number(p.secretChance) || 0));
     }
     const badgeLimit = (perks) => MAX_BADGES + Math.min(3, Math.max(0, Math.floor(Number((perks || {}).badgeSlots) || 0)));
     // Every perk an owned set adds up to, as lines of text (for the pages).
@@ -710,7 +815,8 @@
         RARITIES, RARITY_ORDER, PERK_KINDS, perkText, perkLines, ITEMS, ITEM_BY_ID, STYLES, STYLE_BY_ID, STYLE_TYPES, BY_ID,
         EMOTE_PACKS, BASE_REACTIONS, ALL_REACTIONS, emotesOf, ACHIEVEMENT_REWARDS,
         CHEST, PITY, inSeason, chestPool, dropRates, rollChest, drawChest, pityLeft, chestPrice, refundFor, BUY_PRICES, buyPrice,
-        STARDUST, LOGIN_WEEK, loginGift, isSunday, dailyDeals, dealPrice, SET_OFF, SETS, SET_BY_ID, setOf,
+        STARDUST, LOGIN_WEEK, loginGift, isSunday, dailyDeals, dealPrice, SET_OFF, SETS, SET_BY_ID, setOf, setOnSale,
+        TOKEN_BACK_MAX, tokenBackOf, XMAS, XMAS_FREE, XMAS_PREM, XMAS_DAYS, xmasDay, xmasOn, xmasPrize, xmasCanOpen, xmasTotals, xmasPrizeText,
         HEARTS, heartsPerDay, perkStardust, heartChance, HEART_SPIN, HEART_SPIN_FALLBACK, heartPrice, HEART_SHOP, HEART_SPIN_ONLY, rollHeartSpin,
         EVENTS, TRICKS, eventThings, eventAvatars, activeEvent, eventPrice, knock, SPOOKY_REWARDS, rollSpooky, pickMissingTreat,
         perksOf, gamePerkBonus, runPerks, questBonus, secretWeight, badgeLimit, badgeHtml, styleClass, withBorder

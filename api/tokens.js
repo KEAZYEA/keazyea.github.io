@@ -18,7 +18,11 @@
  *   stake           { giveawayId, amount } -> wallet -> your entry
  *   setStake        { giveawayId, amount } -> sets your stake to exactly `amount`
  *                                              (lower refunds the difference, 0 removes it)
+ *                                              (🎅 tokenBack items pay some of a stake back
+ *                                              at once; taking tokens out returns it)
  *   unstake         { giveawayId }         -> refunds your whole stake (before leaving)
+ *   useFrost        { giveawayId }         -> ❄️ a Frost Doubler: your tokens there count
+ *                                              P.XMAS.doubler× in the draw (one use)
  *   reconcile       { giveawayId }         -> after a device switch, moves your
  *                                              stake to the new platform's total
  *   refundGiveaway  { giveawayId }         -> admin only, before deleting: refunds
@@ -98,7 +102,11 @@ function poolDrawn(gd, platform) {
 // tell them how few tokens keep them on top. Only the numbers, never whose.
 // Worked out from the entries rather than adjusted step by step, because
 // lowering the top bid means finding the next-highest.
-const bidOf = (tokens, perks) => Math.round((P.secretWeight(tokens, perks) - 1) * 100) / 100;
+const bidOf = (tokens, perks, frost) => Math.round((P.secretWeight(tokens, perks, frost) - 1) * 100) / 100;
+// ❄️ Is a Frost Doubler on this giveaway for this inventory (inventories/{uid}.frostOn)?
+const frostOn = (invData, giveawayId) => !!(invData && invData.frostOn && Object.prototype.hasOwnProperty.call(invData.frostOn, giveawayId) && invData.frostOn[giveawayId]);
+// 🎅 tokenBack: what's been paid back on each giveaway (inventories/{uid}.tokenBackGot — server-only)
+const backGotOf = (invData, giveawayId) => Math.max(0, Math.floor(Number(((invData && invData.tokenBackGot) || {})[giveawayId]) || 0));
 // [{ platform, bid }] -> the highest and second-highest bid per platform.
 function scoreFigures(rows) {
   const top = { ios: [0, 0], android: [0, 0] };
@@ -114,7 +122,7 @@ function scoreFigures(rows) {
 // for `tokens` when given (a stake change that's about to be saved). Items
 // are read outside any transaction: only the shown figure depends on them,
 // and locking everyone's inventory for a stake change isn't worth it.
-async function topBids(db, entryDocs, change) {
+async function topBids(db, entryDocs, change, giveawayId) {
   const invs = entryDocs.length ? await db.getAll(...entryDocs.map(d => db.collection("inventories").doc(d.id))) : [];
   const stake = { ios: 0, android: 0 };
   const rows = [];
@@ -124,9 +132,11 @@ async function topBids(db, entryDocs, change) {
     const platform = mine ? change.platform : e.platform;
     if (platform !== "ios" && platform !== "android") return;
     const t = Math.max(0, Math.floor(Number(mine ? change.tokens : e.tokens) || 0));
-    const perks = invs[i] && invs[i].exists ? invs[i].data().perks || {} : {};
+    const invData = invs[i] && invs[i].exists ? invs[i].data() : {};
+    const perks = invData.perks || {};
+    const frost = mine && change.frost != null ? change.frost === true : frostOn(invData, giveawayId);
     stake[platform] = Math.max(stake[platform], t);
-    rows.push({ platform, bid: bidOf(t, perks) });
+    rows.push({ platform, bid: bidOf(t, perks, frost) });
   });
   return { maxStakeIos: stake.ios, maxStakeAndroid: stake.android, ...scoreFigures(rows) };
 }
@@ -140,7 +150,7 @@ async function refreshMaxStakes(db, gRef) {
       const g = await tx.get(gRef);
       if (!g.exists) return null;
       const entries = await tx.get(gRef.collection("entries"));
-      const max = await topBids(db, entries.docs);
+      const max = await topBids(db, entries.docs, null, gRef.id);
       tx.update(gRef, max);
       return max;
     });
@@ -155,9 +165,9 @@ async function refreshMaxStakes(db, gRef) {
 // before writes) as they'll be once `uid`'s entry holds `tokens` on
 // `platform` — so the stake and the new highest are saved in one write,
 // one round trip, instead of a second transaction afterwards.
-async function maxStakesWith(db, tx, gRef, uid, platform, tokens) {
+async function maxStakesWith(db, tx, gRef, uid, platform, tokens, frost) {
   const entries = await tx.get(gRef.collection("entries"));
-  return topBids(db, entries.docs, { uid, platform, tokens });
+  return topBids(db, entries.docs, { uid, platform, tokens, ...(frost == null ? {} : { frost }) }, gRef.id);
 }
 
 function incrementsFrom(deltas) {
@@ -493,6 +503,22 @@ function logSpend(writer, db, uid, now, { amount, giveawayId, title, kind, balan
   });
 }
 
+/* 🎅 tokenBack (P.tokenBackOf: the Santa Set, the Little Elf…): N% of the
+   tokens on a giveaway, paid back to your wallet as you add them. What's
+   been paid on each giveaway is kept on your inventory (server-only), so
+   with `tokens` now on it you're owed P.tokenBackOf(tokens) in all: adding
+   pays the difference; taking tokens out gives back what was paid on them.
+   Call inside the transaction, after its reads. Returns { change }: + paid
+   to you, − taken back. */
+function tokenBack(tx, iRef, inv, giveawayId, tokens, now) {
+  const d = inv && inv.exists ? inv.data() : {};
+  const got = backGotOf(d, giveawayId);
+  const owed = P.tokenBackOf(tokens, d.perks || {});
+  const change = owed - got;
+  if (change) tx.set(iRef, { tokenBackGot: { ...(d.tokenBackGot || {}), [giveawayId]: owed }, updatedAt: now }, { merge: true });
+  return { change };
+}
+
 async function stake(db, uid, body, now) {
   const { giveawayId } = body;
   const amount = Number(body.amount);
@@ -503,8 +529,9 @@ async function stake(db, uid, body, now) {
   const gRef = db.collection("secretGiveaways").doc(giveawayId);
   const eRef = gRef.collection("entries").doc(uid);
   const wRef = db.collection("tokenWallets").doc(uid);
+  const iRef = db.collection("inventories").doc(uid);
   return db.runTransaction(async (tx) => {
-    const [g, e, w] = await tx.getAll(gRef, eRef, wRef);
+    const [g, e, w, inv] = await tx.getAll(gRef, eRef, wRef, iRef);
     if (!g.exists) throw new HttpError(404, "This giveaway no longer exists.");
     if (!e.exists) throw new HttpError(400, "Enter the giveaway before adding tokens.");
     const gd = g.data();
@@ -525,12 +552,14 @@ async function stake(db, uid, body, now) {
     if (prev > 0 && countedOn !== platform) { add(countedOn, -prev); add(platform, prev); }
     add(platform, amount);
     const max = await maxStakesWith(db, tx, gRef, uid, platform, prev + amount);
+    // 🎅 tokenBack (Santa Set…): some of what you add comes straight back
+    const back = tokenBack(tx, iRef, inv, giveawayId, prev + amount, now);
 
-    tx.set(wRef, { balance: balance - amount, updatedAt: now }, { merge: true });
+    tx.set(wRef, { balance: balance - amount + back.change, ...(back.change ? { lifetimeGifted: FieldValue.increment(back.change) } : {}), updatedAt: now }, { merge: true });
     tx.update(eRef, { tokens: prev + amount, stakePlatform: platform });
     tx.update(gRef, { ...incrementsFrom(deltas), ...max });
-    logSpend(tx, db, uid, now, { amount, giveawayId, title: gd.title, kind: "stake", balanceAfter: balance - amount });
-    return { ok: true, balance: balance - amount, tokens: prev + amount, ...max };
+    logSpend(tx, db, uid, now, { amount, giveawayId, title: gd.title, kind: "stake", balanceAfter: balance - amount + back.change });
+    return { ok: true, balance: balance - amount + back.change, tokens: prev + amount, tokenBack: back.change, ...max };
   });
 }
 
@@ -552,8 +581,9 @@ async function setStake(db, uid, body, now) {
   const gRef = db.collection("secretGiveaways").doc(giveawayId);
   const eRef = gRef.collection("entries").doc(uid);
   const wRef = db.collection("tokenWallets").doc(uid);
+  const iRef = db.collection("inventories").doc(uid);
   return db.runTransaction(async (tx) => {
-    const [g, e, w] = await tx.getAll(gRef, eRef, wRef);
+    const [g, e, w, inv] = await tx.getAll(gRef, eRef, wRef, iRef);
     if (!g.exists) throw new HttpError(404, "This giveaway no longer exists.");
     if (!e.exists) throw new HttpError(400, "Enter the giveaway first.");
     const gd = g.data();
@@ -578,12 +608,47 @@ async function setStake(db, uid, body, now) {
     add(ed.stakePlatform || platform, -prev);
     add(platform, amount);
     const max = await maxStakesWith(db, tx, gRef, uid, platform, amount);
+    // 🎅 tokenBack: adding pays it; taking tokens out gives back what it paid on them
+    const back = tokenBack(tx, iRef, inv, giveawayId, amount, now);
+    const after = balance - change + back.change;
 
-    tx.set(wRef, { balance: balance - change, updatedAt: now }, { merge: true });
+    tx.set(wRef, { balance: after, ...(back.change ? { lifetimeGifted: FieldValue.increment(back.change) } : {}), updatedAt: now }, { merge: true });
     tx.update(eRef, { tokens: amount, stakePlatform: platform });
     tx.update(gRef, { ...incrementsFrom(deltas), ...max });
-    logSpend(tx, db, uid, now, { amount: change, giveawayId, title: gd.title, kind: change > 0 ? "stake" : "back", balanceAfter: balance - change });
-    return { ok: true, balance: balance - change, tokens: amount, refunded: Math.max(0, -change), ...max };
+    logSpend(tx, db, uid, now, { amount: change, giveawayId, title: gd.title, kind: change > 0 ? "stake" : "back", balanceAfter: after });
+    return { ok: true, balance: after, tokens: amount, refunded: Math.max(0, -change + back.change), tokenBack: back.change, ...max };
+  });
+}
+
+/* ❄️ A Frost Doubler (🎄 Christmas Calendar ⭐ Premium) on a Secret Giveaway
+   you've put tokens on: they count P.XMAS.doubler× in its draw. One use, on
+   one giveaway, while entries are open and your side hasn't been drawn. Kept
+   on your inventory (frostOn: { giveawayId: at }, server-only — the draw and
+   the odds read it there); the giveaway counts them (frostCount) so its odds
+   are worked out again. Comes back if the giveaway's cancelled and refunded. */
+async function useFrost(db, uid, body, now) {
+  const { giveawayId } = body;
+  if (!isDocId(giveawayId)) throw new HttpError(400, "Missing giveaway.");
+  await assertNotBanned(db, uid);
+  const gRef = db.collection("secretGiveaways").doc(giveawayId);
+  const eRef = gRef.collection("entries").doc(uid);
+  const iRef = db.collection("inventories").doc(uid);
+  return db.runTransaction(async (tx) => {
+    const [g, e, inv] = await tx.getAll(gRef, eRef, iRef);
+    if (!g.exists) throw new HttpError(404, "This giveaway no longer exists.");
+    if (!e.exists) throw new HttpError(400, "Enter the giveaway first.");
+    const gd = g.data(), ed = e.data(), d = inv.exists ? inv.data() : {};
+    if ((gd.expiresAt || 0) <= now) throw new HttpError(400, "Entries have closed.");
+    if (gd.tokensAllowed === false) throw new HttpError(400, NO_TOKENS_HERE);
+    if (poolDrawn(gd, ed.platform)) throw new HttpError(400, "The draw has already happened.");
+    if (frostOn(d, giveawayId)) throw new HttpError(400, "A ❄️ Frost Doubler is already on this giveaway.");
+    const have = Math.max(0, Math.floor(d.frostDoublers || 0));
+    if (have < 1) throw new HttpError(400, "You don't have a ❄️ Frost Doubler — they come with the 🎄 Christmas Calendar's ⭐ Premium.");
+    if (!((ed.tokens || 0) > 0)) throw new HttpError(400, "Add some tokens first — a Frost Doubler doubles the tokens you have on it.");
+    const max = await maxStakesWith(db, tx, gRef, uid, ed.platform, ed.tokens || 0, true);
+    tx.set(iRef, { frostDoublers: have - 1, frostOn: { ...(d.frostOn || {}), [giveawayId]: now }, updatedAt: now }, { merge: true });
+    tx.update(gRef, { frostCount: FieldValue.increment(1), ...max });
+    return { ok: true, frost: true, frostDoublers: have - 1, ...max };
   });
 }
 
@@ -593,8 +658,9 @@ async function unstake(db, uid, body, now) {
   const gRef = db.collection("secretGiveaways").doc(giveawayId);
   const eRef = gRef.collection("entries").doc(uid);
   const wRef = db.collection("tokenWallets").doc(uid);
+  const iRef = db.collection("inventories").doc(uid);
   return db.runTransaction(async (tx) => {
-    const [g, e] = await tx.getAll(gRef, eRef);
+    const [g, e, inv] = await tx.getAll(gRef, eRef, iRef);
     if (!e.exists) return { ok: true, refunded: 0 };
     const ed = e.data();
     const prev = ed.tokens || 0;
@@ -603,11 +669,13 @@ async function unstake(db, uid, body, now) {
       throw new HttpError(400, "The draw has already happened, so these tokens are spent.");
     }
     const max = g.exists ? await maxStakesWith(db, tx, gRef, uid, ed.platform, 0) : {};
-    tx.set(wRef, { balance: FieldValue.increment(prev), updatedAt: now }, { merge: true });
+    // 🎅 the tokenBack paid on them goes back too
+    const back = tokenBack(tx, iRef, inv, giveawayId, 0, now);
+    tx.set(wRef, { balance: FieldValue.increment(prev + back.change), ...(back.change ? { lifetimeGifted: FieldValue.increment(back.change) } : {}), updatedAt: now }, { merge: true });
     tx.update(eRef, { tokens: 0 });
     if (g.exists) tx.update(gRef, { [counterField(ed.stakePlatform || ed.platform)]: FieldValue.increment(-prev), ...max });
     logSpend(tx, db, uid, now, { amount: -prev, giveawayId, title: g.exists ? g.data().title : "", kind: "back" });
-    return { ok: true, refunded: prev, ...max };
+    return { ok: true, refunded: prev + back.change, tokenBack: back.change, ...max };
   });
 }
 
@@ -668,7 +736,17 @@ async function refundGiveaway(db, uid, body, now) {
     const ed = doc.data();
     if (g.exists && poolDrawn(g.data(), ed.platform)) continue;
     const prev = ed.tokens || 0;
-    batch.set(db.collection("tokenWallets").doc(doc.id), { balance: FieldValue.increment(prev), updatedAt: now }, { merge: true });
+    // 🎅 the tokenBack paid on this stake comes off the refund; a ❄️ Frost Doubler used here comes back
+    const invRef = db.collection("inventories").doc(doc.id);
+    const invSnap = await invRef.get();
+    const invData = invSnap.exists ? invSnap.data() : {};
+    const back = Math.min(prev, backGotOf(invData, giveawayId)), frost = frostOn(invData, giveawayId);
+    if (back || frost) {
+      batch.set(invRef, { tokenBackGot: { ...(invData.tokenBackGot || {}), [giveawayId]: 0 },
+        ...(frost ? { frostDoublers: FieldValue.increment(1), frostOn: { ...(invData.frostOn || {}), [giveawayId]: false } } : {}), updatedAt: now }, { merge: true });
+      ops++;
+    }
+    batch.set(db.collection("tokenWallets").doc(doc.id), { balance: FieldValue.increment(prev - back), ...(back ? { lifetimeGifted: FieldValue.increment(-back) } : {}), updatedAt: now }, { merge: true });
     batch.update(doc.ref, { tokens: 0 });
     logSpend(batch, db, doc.id, now, { amount: -prev, giveawayId, title: g.exists ? g.data().title : "", kind: "refund" });
     const field = counterField(ed.stakePlatform || ed.platform);
@@ -787,7 +865,7 @@ async function adminUserTokens(db, body) {
   const inv = invSnap.exists ? invSnap.data() : {};
   const card = cardSnap.exists ? cardSnap.data() : {};
   const chestOpens = opensSnap.docs.map(d => d.data()).sort((a, b) => b.at - a.at).slice(0, 30)
-    .map(o => ({ at: o.at, count: o.count || 1, free: !!o.free, price: o.price || 0, refund: o.refund || 0, event: o.event || null, currency: o.currency || "tokens", kind: o.kind || null, stardustGot: o.stardustGot || 0,
+    .map(o => ({ at: o.at, count: o.count || 1, free: !!o.free, price: o.price || 0, refund: o.refund || 0, event: o.event || null, currency: o.currency || "tokens", kind: o.kind || null, stardustGot: o.stardustGot || 0, tokens: o.tokens || 0,
       results: o.results || (o.item ? [{ id: o.item, duplicate: !!o.duplicate, refund: o.refund || 0 }] : []) }));
   const purchases = [
     ...packsSnap.docs.map(d => ({ kind: "pack", at: d.data().processedAt || 0, pack: d.data().packId || "", tokens: d.data().tokensGranted || 0, amount: d.data().amount || "", currency: d.data().currency || "" })),
@@ -856,7 +934,7 @@ async function spendingOf(db, uid, w, adjustments, opens) {
   const tokenOpens = opens.filter(o => (o.currency || "tokens") === "tokens");
   const chestPaid = sum(tokenOpens, o => o.price);
   const chestBack = sum(tokenOpens, o => o.refund);
-  const chestDraws = sum(opens.filter(o => o.kind !== "convert"), o => o.count || 1);
+  const chestDraws = sum(opens.filter(o => !["convert", "xmasPass", "xmas"].includes(o.kind)), o => o.count || 1);
   // Manual changes only (prize payments and grants already count as gifts).
   const manual = adjustments.filter(a => ["add", "remove", "set"].includes(a.mode) && !a.giveawayId);
   const adminIn = sum(manual, a => Math.max(0, (a.after || 0) - (a.before || 0)));
@@ -1154,7 +1232,7 @@ async function maxStake(db, body) {
    Worked out again once entries or stakes have changed (itemExtraKey), at
    most every few seconds, and every 10 minutes anyway (items change). Also
    returns your own item part (mine), so the page can swap in its live figure. */
-const oddsKey = (gd) => `${gd.entryCount || 0}|${gd.iosTokensStaked || 0}|${gd.androidTokensStaked || 0}`;
+const oddsKey = (gd) => `${gd.entryCount || 0}|${gd.iosTokensStaked || 0}|${gd.androidTokensStaked || 0}|${gd.frostCount || 0}`;
 const round2 = (n) => Math.round(n * 100) / 100;
 async function secretOdds(db, uid, body, now) {
   if (!isDocId(body.giveawayId)) throw new HttpError(400, "Missing giveaway.");
@@ -1165,15 +1243,16 @@ async function secretOdds(db, uid, body, now) {
   const key = oddsKey(gd);
   const none = { ios: 0, android: 0, all: 0 };
   if (gd.tokensAllowed === false) return { ok: true, itemExtra: none, key, mine: 0 }; // one equal chance each
-  const extraOf = (e, perks) => {
+  // ❄️ a Frost Doubler's extra tokens count here too (they're on top of 1 + tokens)
+  const extraOf = (e, perks, frost) => {
     const t = Math.max(0, Math.floor(Number(e.tokens) || 0));
-    return P.secretWeight(t, perks) - 1 - t;
+    return P.secretWeight(t, perks, frost) - 1 - t;
   };
   const at = gd.itemExtraAt || 0;
   const stale = !gd.itemExtra || (gd.itemExtraKey !== key && now - at > 4000) || now - at > 600000;
   if (!stale) {
     const [e, inv] = await Promise.all([gRef.collection("entries").doc(uid).get(), db.collection("inventories").doc(uid).get()]);
-    const mine = e.exists ? round2(extraOf(e.data(), inv.exists ? inv.data().perks || {} : {})) : 0;
+    const mine = e.exists ? round2(extraOf(e.data(), inv.exists ? inv.data().perks || {} : {}, frostOn(inv.exists ? inv.data() : {}, body.giveawayId))) : 0;
     return { ok: true, itemExtra: gd.itemExtra, key: gd.itemExtraKey, mine };
   }
   const entries = await gRef.collection("entries").get();
@@ -1183,11 +1262,13 @@ async function secretOdds(db, uid, body, now) {
   let mine = 0;
   entries.docs.forEach((d, i) => {
     const e = d.data();
-    const perks = invs[i].exists ? invs[i].data().perks || {} : {};
-    const extra = extraOf(e, perks);
+    const invData = invs[i].exists ? invs[i].data() : {};
+    const perks = invData.perks || {};
+    const frost = frostOn(invData, body.giveawayId);
+    const extra = extraOf(e, perks, frost);
     const group = isEveryone(gd) ? "all" : e.platform === "android" ? "android" : "ios";
     sum[group] += extra;
-    rows.push({ platform: e.platform, bid: bidOf(e.tokens, perks) });
+    rows.push({ platform: e.platform, bid: bidOf(e.tokens, perks, frost) });
     if (d.id === uid) mine = extra;
   });
   const itemExtra = { ios: round2(sum.ios), android: round2(sum.android), all: round2(sum.all) };
@@ -1276,6 +1357,7 @@ module.exports = async (req, res) => {
       case "claim": result = await claimRewards(db, uid, body, now); break;
       case "stake": result = await stake(db, uid, body, now); break;
       case "unstake": result = await unstake(db, uid, body, now); break;
+      case "useFrost": result = await useFrost(db, uid, body, now); break;
       case "setStake": result = await setStake(db, uid, body, now); break;
       case "reconcile": result = await reconcile(db, uid, body); break;
       case "refundGiveaway": result = await refundGiveaway(db, uid, body, now); break;

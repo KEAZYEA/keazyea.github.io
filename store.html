@@ -428,6 +428,74 @@
         .set-was b { color: #ff8fb8; }
         .set-own { font-size: 0.78rem; font-weight: 900; color: #7ddc92; margin-right: 6px; }
         @media (max-width: 340px) { .set-fig svg { width: 108px; height: 130px; } }
+        .set-card.flash { animation: setFlash 0.9s ease-in-out 3; }
+        .set-card.flash .set-btn { animation: setFlash 0.9s ease-in-out 3; }
+        @keyframes setFlash { 50% { box-shadow: 0 0 0 3px #ffd24a, 0 0 26px rgba(255, 210, 74, 0.8); transform: scale(1.02); } }
+        @media (prefers-reduced-motion: reduce) { .set-card.flash, .set-card.flash .set-btn { animation: none; } }
+        .set-when { display: inline-block; margin: 0 0 4px; padding: 2px 9px; border-radius: 999px; font-size: 0.68rem; font-weight: 900; background: #d42a2a; color: #fff; }
+        .set-when.preview { background: #ffd75e; color: #2a1d00; }
+        /* 🎄 the Christmas Calendar */
+        .xm-card { position: relative; margin: 0 0 18px; padding: 16px 12px; border-radius: 20px; text-align: center; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.35);
+            background: radial-gradient(1.5px 1.5px at 12% 20%, #fff 50%, transparent 51%), radial-gradient(1.5px 1.5px at 80% 12%, #fff 50%, transparent 51%), radial-gradient(2px 2px at 60% 40%, #fff 50%, transparent 51%),
+                radial-gradient(circle at 50% 0%, rgba(212, 42, 42, 0.45), transparent 60%), linear-gradient(170deg, #12324a, #0b1a2c 60%, #0a2a1c); }
+        .ev-tag.xm-tag { background: #d42a2a; color: #fff; }
+        .ev-tag.xm-tag.preview { background: #ffd75e; color: #2a1d00; }
+        .xm-title { margin: 8px 0 4px; font-size: 1.15rem; font-weight: 900; }
+        .xm-desc { margin: 0 0 10px; font-size: 0.8rem; line-height: 1.45; color: #d6e6f5; }
+        .xm-have { display: inline-block; margin: 0 0 10px; padding: 6px 12px; border-radius: 12px; font-size: 0.82rem; font-weight: 900; color: #2a1d00; background: linear-gradient(135deg, #fff1b8, #ffd24a); }
+        .xm-pitch { margin: 0 0 12px; padding: 12px; border-radius: 16px; border: 1px solid rgba(255, 210, 74, 0.7); background: linear-gradient(160deg, rgba(255, 210, 74, 0.18), rgba(212, 42, 42, 0.2)); }
+        .xm-pitch-head { font-size: 1rem; font-weight: 900; color: #ffe27a; margin-bottom: 6px; }
+        .xm-pitch-head b { color: #fff; }
+        .xm-worth { margin: 0 0 10px; padding: 0; list-style: none; font-size: 0.8rem; line-height: 1.5; color: #fff6dc; text-align: left; display: inline-block; }
+        .xm-worth li::before { content: "✦ "; color: #ffd24a; }
+        .xm-worth li.xm-santa { font-weight: 800; color: #fff; }
+        .xm-worth [data-thing] { cursor: pointer; text-decoration: underline dotted; }
+        .xm-buy, .xm-all { display: block; margin: 0 auto 6px; }
+        .xm-pitch small { display: block; font-size: 0.72rem; color: #e8dcc0; }
+        .xm-all { margin-bottom: 10px; animation: xmGlow 1.6s ease-in-out infinite; }
+        .xm-legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 12px; margin: 0 0 8px; font-size: 0.7rem; color: #b9cde0; }
+        .xm-k { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
+        .xm-k.free { background: #2f9a4a; } .xm-k.prem { background: #d4a017; }
+        .xm-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 5px; }
+        .xm-day { display: flex; flex-direction: column; gap: 3px; padding: 4px 3px 5px; border-radius: 12px; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.12); min-width: 0; }
+        .xm-day > b { font-size: 0.72rem; color: #e8f2ff; line-height: 1.1; }
+        .xm-day.today { border-color: #ffd24a; box-shadow: 0 0 10px rgba(255, 210, 74, 0.55); background: rgba(255, 210, 74, 0.12); }
+        .xm-door { position: relative; min-height: 40px; padding: 2px; border-radius: 9px; border: 1px solid transparent; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 1px;
+            font: inherit; font-size: 0.62rem; font-weight: 900; color: #fff; cursor: pointer; overflow: hidden; }
+        .xm-door.free { background: linear-gradient(160deg, #2f9a4a, #1d6a31); border-color: rgba(160, 255, 190, 0.35); }
+        .xm-door.prem { background: linear-gradient(160deg, #c8941a, #8a5a0e); border-color: rgba(255, 226, 122, 0.45); }
+        .xm-door .xm-pic { display: inline-flex; width: 26px; height: 26px; align-items: center; justify-content: center; font-size: 1.1rem; }
+        .xm-door .xm-pic svg { width: 26px; height: 26px; }
+        .xm-door .xm-amt { white-space: nowrap; line-height: 1.15; }
+        .xm-door.ready { box-shadow: 0 0 0 2px #fff, 0 0 12px rgba(255, 255, 255, 0.8); animation: xmGlow 1.6s ease-in-out infinite; }
+        .xm-door.done { opacity: 0.45; filter: saturate(0.6); }
+        .xm-door.missed { opacity: 0.28; filter: grayscale(1); }
+        .xm-door.locked::after, .xm-door.need::after { content: "🔒"; position: absolute; right: 1px; top: 0; font-size: 0.55rem; opacity: 0.85; }
+        .xm-door.opening { animation: xmShake 0.4s ease-in-out infinite; }
+        /* 🎁 a free door, wrapped: green paper, a gold ribbon both ways, a bow, and a ? */
+        .xm-door.free.wrap { background: linear-gradient(90deg, transparent 43%, #ffd24a 43% 57%, transparent 57%), linear-gradient(0deg, transparent 41%, #ffd24a 41% 57%, transparent 57%),
+            repeating-linear-gradient(45deg, #2f9a4a 0 6px, #24803c 6px 12px); border-color: rgba(255, 226, 122, 0.6); overflow: visible; margin-top: 7px; }
+        .xm-door.free.wrap::before { content: "🎀"; position: absolute; top: -9px; left: 50%; transform: translateX(-50%); font-size: 0.95rem; line-height: 1; z-index: 2; }
+        .xm-q { position: relative; z-index: 1; font-size: 1.25rem; font-weight: 900; color: #fff; text-shadow: 0 0 3px #1d4a2a, 0 0 10px rgba(255, 210, 74, 0.9); }
+        .xm-door.free.wrap.ready { animation: xmWiggle 1.8s ease-in-out infinite, xmGlow 1.6s ease-in-out infinite; }
+        .xm-door.free.wrap.missed { filter: grayscale(1); opacity: 0.3; }
+        /* opening: it shakes, swells and bursts… */
+        .xm-door.unwrap { animation: xmUnwrap 0.85s ease-in forwards !important; z-index: 3; }
+        .xm-door.unwrap .xm-q { animation: xmQ 0.85s ease-in forwards; }
+        /* …then the prize pops out */
+        .xm-door.reveal { animation: xmReveal 0.6s cubic-bezier(.2, 1.6, .4, 1) both; z-index: 3; }
+        .xm-door.reveal > * { animation: xmPop 0.6s cubic-bezier(.2, 1.6, .4, 1) both; }
+        @keyframes xmWiggle { 0%, 62%, 100% { transform: rotate(0); } 70% { transform: rotate(-7deg); } 78% { transform: rotate(7deg); } 86% { transform: rotate(-4deg); } 94% { transform: rotate(3deg); } }
+        @keyframes xmUnwrap { 0% { transform: rotate(0) scale(1); } 15% { transform: rotate(-10deg) scale(1.05); } 30% { transform: rotate(10deg) scale(1.08); } 45% { transform: rotate(-8deg) scale(1.12); }
+            60% { transform: rotate(6deg) scale(1.16); } 80% { transform: scale(1.3); filter: brightness(1.8); } 100% { transform: scale(0.2); opacity: 0; filter: brightness(2.5); } }
+        @keyframes xmQ { 70% { transform: scale(1.4); } 100% { transform: scale(2.2); opacity: 0; } }
+        @keyframes xmReveal { 0% { transform: scale(0.3); filter: brightness(2); box-shadow: 0 0 24px #fff6c9; } 100% { transform: scale(1); } }
+        @keyframes xmPop { 0% { transform: scale(0) rotate(-20deg); } 70% { transform: scale(1.25) rotate(4deg); } 100% { transform: scale(1); } }
+        .xm-tick { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-style: normal; font-size: 1.1rem; color: #fff; text-shadow: 0 0 4px #000; }
+        @keyframes xmGlow { 50% { filter: brightness(1.25); } }
+        @keyframes xmShake { 25% { transform: rotate(-4deg); } 75% { transform: rotate(4deg); } }
+        @media (max-width: 350px) { .xm-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+        @media (prefers-reduced-motion: reduce) { .xm-door.ready, .xm-all, .xm-door.opening, .xm-door.free.wrap.ready, .xm-door.unwrap, .xm-door.unwrap .xm-q, .xm-door.reveal, .xm-door.reveal > * { animation: none !important; } }
         /* 💗 the Heart Shop */
         .hs-card { margin: 0 0 18px; padding: 16px 14px; border-radius: 20px; text-align: center; border: 1px solid rgba(255, 79, 139, 0.55);
             background: radial-gradient(circle at 50% 0%, rgba(255, 79, 139, 0.26), transparent 65%), linear-gradient(170deg, #3a1630, #17172e); }
@@ -678,6 +746,11 @@
     <div id="storePage" style="display:none;">
         <p class="store-tagline">✨ Stardust is for your character · 🪙 Tokens are for giveaways 🎁</p>
         <div class="sd-wallet" id="sdWallet"></div>
+
+        <!-- 🎄 THE CHRISTMAS CALENDAR: a door a day in December (progress-core.js
+             XMAS; api/progress.js xmasBuy / xmasOpen); the admin sees a preview
+             any day. Filled in by renderXmas(). -->
+        <div id="xmasBox" style="display:none;"></div>
 
         <!-- ✨ STARDUST: the Daily Deals (things to wear, 30% off, new every
              day) and 🪙 → ✨ (one way). Free ✨ comes with the daily login
@@ -1442,16 +1515,19 @@
             set.pieces.forEach(p => { const w = CCh.wearOf(p); if (w) wear[w.slot] = p; });
             return { base: { ...o.base, body }, wear };
         }
+        let flashSetId = null; // the set Home's card sent you to: it glows for a moment
         function renderSets() {
             const box = document.getElementById("sdSets");
             if (!box || !CCh) return;
-            const owned = new Set(chestState.items), signed = !!AppState.getCurrentUser();
-            box.innerHTML = PC.SETS.map(set => {
+            const owned = new Set(chestState.items), signed = !!AppState.getCurrentUser(), day = sgtDay(), admin = !!(AppState.isAdmin && AppState.isAdmin());
+            box.innerHTML = PC.SETS.filter(set => PC.setOnSale(set, day) || admin).map(set => {
                 const yours = set.pieces.every(p => owned.has(p));
+                const season = !set.until ? "" : PC.setOnSale(set, day) ? `<span class="set-when">🎄 In the Store until ${escS(set.until)}</span>`
+                    : `<span class="set-when preview">Admin preview — players see it ${escS(set.from)} to ${escS(set.until)}</span>`;
                 const perks = PC.perkLines ? PC.perkLines(PC.perksOf(set.pieces)).map(l => l.text) : [];
-                return `<div class="set-card" id="set_${set.id}">
+                return `<div class="set-card${flashSetId === "set_" + set.id ? " flash" : ""}" id="set_${set.id}">
                     <div class="set-hero">${[["guy", "Boy"], ["girl", "Girl"]].map(([b, label]) => `<span class="set-fig" data-body="${b}">${CCh.svg(setOutfit(set, b), { size: 120, animate: true })}<small>${label}</small></span>`).join("")}</div>
-                    <div class="set-info"><h3>${set.icon} ${escS(set.name)}</h3><p>${escS(set.desc)} <b>${set.pieces.length} pieces</b> — only in this set.</p>
+                    <div class="set-info">${season}<h3>${set.icon} ${escS(set.name)}</h3><p>${escS(set.desc)} <b>${set.pieces.length} pieces</b> — only in this set.</p>
                         <div class="set-pieces">${set.pieces.map(p => `<span data-thing="${p}" title="${escS(PC.BY_ID[p].name)}" style="--rc:${PC.RARITIES[PC.BY_ID[p].rarity].color}">${CCh.itemPic(p, 32) || PC.BY_ID[p].icon}</span>`).join("")}</div>
                         <ul class="set-perks">${perks.map(t => `<li>${escS(t)}</li>`).join("")}</ul>
                         ${yours ? `<span class="set-own">✓ Yours</span><button type="button" class="set-btn" onclick="wearSet('${set.id}')">🧍 Wear the set</button>`
@@ -1751,6 +1827,7 @@
             }).join("") + `<p style="font-size:0.75rem; color:#9a92c0; margin:8px 0 0;">Faded: already yours. Tap any to see what it does.</p>`;
             updateChestButtons();
             renderEventCard();
+            renderXmas();
             renderHeartShop();
             renderStardust();
         }
@@ -1786,11 +1863,174 @@
             if (!AppState.getCurrentUser()) return;
             try {
                 const st = await AppState.getProgressStatus();
-                chestState = { items: st.items || [], perks: st.perks || {}, pity: st.pity || { epic: 0, legendary: 0 }, freeDraws: st.freeDraws || 0, events: st.events || {}, outfit: st.outfit || null, hearts: Math.max(0, st.hearts || 0), stardust: Math.max(0, st.stardust || 0) };
+                chestState = { items: st.items || [], perks: st.perks || {}, pity: st.pity || { epic: 0, legendary: 0 }, freeDraws: st.freeDraws || 0, events: st.events || {}, outfit: st.outfit || null, hearts: Math.max(0, st.hearts || 0), stardust: Math.max(0, st.stardust || 0), xmas: st.xmas || null };
+                if (typeof st.balance === "number") storeBalance = st.balance;
                 renderChestCard();
+                // 🎄 the calendar's over: the Premium doors still shut were opened for you
+                if (st.xmasSwept) KihDialog.alert({ icon: "🎄", title: "Your Christmas doors are open!", message: `The ${PC.XMAS.name} is over, so the ⭐ Premium doors you hadn't opened were opened for you:\n${xmasGotText(st.xmasSwept)}` });
                 claimLoginGift();
             } catch (e) { console.warn("Couldn't load your items:", e.message); }
         }
+
+        /* ---- 🎄 THE CHRISTMAS CALENDAR: a door a day in December. 🎁 Free:
+           everyone's, on its day only. ⭐ Premium (PC.XMAS.price 🪙): a bigger
+           door every day, and missed ones wait (until PC.XMAS.claimUntil).
+           The admin sees a preview any day (its doors stay shut). ---- */
+        let xmBusy = false;
+        function shownXmas() {
+            if (PC.xmasOn(sgtDay())) return { preview: false };
+            return AppState.isAdmin && AppState.isAdmin() ? { preview: true } : null;
+        }
+        const xmState = () => chestState.xmas || { premium: false, free: {}, prem: {}, frostDoublers: 0 };
+        const kShort = (v) => (v >= 1000 ? (Math.round(v / 100) / 10) + "k" : String(v));
+        // a door's prize, small: the thing's picture, or its amounts
+        function xmPrizeHtml(p) {
+            if (!p) return "";
+            const bits = [];
+            if (p.item) bits.push(`<span class="xm-pic">${thingPic(PC.BY_ID[p.item], 26)}</span>`);
+            if (p.doubler) bits.push(`<span class="xm-amt">❄️</span>`);
+            if (p.tokens) bits.push(`<span class="xm-amt">🪙${p.tokens}</span>`);
+            if (p.stardust) bits.push(`<span class="xm-amt">✨${kShort(p.stardust)}</span>`);
+            if (p.hearts) bits.push(`<span class="xm-amt">💗${p.hearts}</span>`);
+            if (p.draws) bits.push(`<span class="xm-amt">🧰${p.draws}</span>`);
+            return bits.slice(0, 2).join("");
+        }
+        // done (opened) · ready (tap to open) · missed (a free one, gone) · need (needs Premium) · locked (not yet)
+        function xmDoorState(x, track, day, dayKey, preview) {
+            if ((track === "free" ? x.free : x.prem)[day]) return "done";
+            if (!preview && AppState.getCurrentUser() && PC.xmasCanOpen(x, track, day, dayKey)) return "ready";
+            const today = PC.xmasDay(dayKey);
+            if (track === "free" && !preview && (dayKey > PC.XMAS.to || (today && day < today))) return "missed";
+            if (track === "prem" && !x.premium) return "need";
+            return "locked";
+        }
+        // what a set of opened doors gave, in words
+        function xmasGotText(t) {
+            return [...(t.items || []).map(id => PC.BY_ID[id] ? `${PC.BY_ID[id].icon} ${PC.BY_ID[id].name}` : ""),
+                PC.xmasPrizeText({ tokens: t.tokens, stardust: t.stardust, hearts: t.hearts, draws: t.draws, doubler: t.doubler })].filter(Boolean).join(" · ");
+        }
+        function renderXmas() {
+            const box = document.getElementById("xmasBox");
+            if (!box) return;
+            const shown = shownXmas();
+            if (!shown) { box.style.display = "none"; box.innerHTML = ""; return; }
+            const X = PC.XMAS, dayKey = sgtDay(), today = PC.xmasDay(dayKey), preview = shown.preview, x = xmState();
+            const signed = !!AppState.getCurrentUser();
+            const days = Array.from({ length: PC.XMAS_DAYS }, (_, i) => i + 1);
+            const ready = days.reduce((n, d) => n + (xmDoorState(x, "free", d, dayKey, preview) === "ready") + (xmDoorState(x, "prem", d, dayKey, preview) === "ready"), 0);
+            const T = PC.xmasTotals("prem");
+            const forSale = !!today && !preview;
+            const pitch = `<div class="xm-pitch">
+                    <div class="xm-pitch-head">⭐ Premium <b>${X.price} 🪙</b></div>
+                    <ul class="xm-worth">
+                        <li class="xm-santa">✨ <b>${fmtN(T.stardust)}</b> Stardust over the month — just enough for the whole <span data-thing="${PC.SET_BY_ID.santa.pieces[0]}">🎅 Santa Set</span></li>
+                        <li>🪙 <b>${T.tokens}</b> tokens back — more than it costs</li>
+                        <li>🧰 <b>${T.draws}</b> free chest draws · 💗 <b>${T.hearts}</b> hearts</li>
+                        <li>❄️ <b>${T.doubler}</b> Frost Doublers: your 🪙 count ×${X.doubler} in a Secret Giveaway</li>
+                        <li>Only on Premium: ${T.items.map(id => `<span data-thing="${id}">${PC.BY_ID[id].icon} ${escS(PC.BY_ID[id].name)}</span>`).join(" · ")}</li>
+                    </ul>
+                    <button type="button" class="cel-primary xm-buy" id="xmBuyBtn" onclick="buyXmas()"${forSale && signed ? "" : " disabled"}>⭐ Get Premium · ${X.price} 🪙</button>
+                    <small>${forSale ? "Buy it any day in December: every Premium door up to today is ready to open at once." : preview ? "On sale 1–31 December." : "Premium was sold in December."}</small>
+                </div>`;
+            box.style.display = "";
+            box.innerHTML = `
+                <h2 class="store-section" id="xmas"><span>🎄</span> ${escS(X.name)}</h2>
+                <div class="xm-card">
+                    <span class="ev-tag xm-tag${preview ? " preview" : ""}">${preview ? `Admin preview — players see this from ${escS(X.from)} (SGT)` : today ? `Day ${today} of ${PC.XMAS_DAYS}` : `⭐ Premium doors open until ${escS(X.claimUntil)}`}</span>
+                    <div class="xm-title">🎄 A door a day, all December</div>
+                    <p class="xm-desc">🎁 <b>Free</b> doors are everyone's: open each one on its day — miss it and it's gone. ⭐ <b>Premium</b> doors are bigger, and they wait for you: open any you've missed until ${escS(X.claimUntil)}.</p>
+                    ${x.premium ? `<div class="xm-have">⭐ You have Premium${x.frostDoublers ? ` · ❄️ ${x.frostDoublers} Frost Doubler${x.frostDoublers === 1 ? "" : "s"} to use (Secret Giveaways)` : ""}</div>` : pitch}
+                    ${ready ? `<button type="button" class="cel-primary xm-all" id="xmAllBtn" onclick="openXmas('all')">🎁 Open ${ready} door${ready === 1 ? "" : "s"}</button>` : ""}
+                    <div class="xm-legend"><span><i class="xm-k free"></i>🎁 Free — a surprise each day</span><span><i class="xm-k prem"></i>⭐ Premium</span><span>Tap one to open it</span></div>
+                    <div class="xm-grid">${days.map(d => `<div class="xm-day${d === today && !preview ? " today" : ""}"><b>${d}</b>${["free", "prem"].map(tr => {
+                        const st = xmDoorState(x, tr, d, dayKey, preview), p = PC.xmasPrize(tr, d);
+                        const wrapped = tr === "free" && st !== "done"; // 🎁 a free door's a surprise until it's opened
+                        return `<button type="button" class="xm-door ${tr} ${st}${wrapped ? " wrap" : ""}" data-xm="${tr}${d}" onclick="openXmas('${tr}', ${d})" aria-label="Day ${d}, ${tr === "prem" ? "Premium" : "free"} door: ${wrapped ? "a surprise" : escS(PC.xmasPrizeText(p))}${st === "done" ? " (opened)" : st === "ready" ? " — open it" : ""}">${wrapped ? `<span class="xm-q">?</span>` : xmPrizeHtml(p)}${st === "done" ? `<i class="xm-tick">✓</i>` : ""}</button>`;
+                    }).join("")}</div>`).join("")}</div>
+                    <details class="ev-rules">
+                        <summary>📜 How it works</summary>
+                        <ul>
+                            <li>🎁 Free doors: one a day, 1–31 December (Singapore time). Each opens on its own day only.</li>
+                            <li>⭐ Premium: ${X.price} 🪙, sold in December. It adds a second, bigger door to every day — open today's and any you've missed, until ${escS(X.claimUntil)}. Whatever's still shut after that is opened for you the next time you visit.</li>
+                            <li>Premium's doors add up to ${T.tokens} 🪙 (more than it costs), ${fmtN(T.stardust)} ✨, ${T.draws} chest draws, ${T.hearts} 💗, ${T.doubler} ❄️ Frost Doublers and ${T.items.length} things only Premium has.</li>
+                            <li>❄️ A Frost Doubler: on a Secret Giveaway you've put tokens on, tap ❄️ Use a Frost Doubler — your tokens there count ×${X.doubler} in its draw. One use each; keep them as long as you like.</li>
+                            <li>What you get is yours to keep. Nothing here has any cash value or can be traded.</li>
+                        </ul>
+                    </details>
+                </div>`;
+        }
+        // Tap a door: open it if you can, otherwise see what's inside (and why it's shut)
+        window.openXmas = async function (track, day) {
+            if (xmBusy) return;
+            const shown = shownXmas(), x = xmState(), dayKey = sgtDay();
+            if (!shown) return;
+            if (track !== "all") {
+                const st = xmDoorState(x, track, day, dayKey, shown.preview);
+                if (st !== "ready") {
+                    const why = { done: "✓ You've opened this one.", missed: "This free door has gone — free doors open on their own day only.",
+                        need: `A ⭐ Premium door — get Premium (${PC.XMAS.price} 🪙) to open it.`,
+                        locked: shown.preview ? "Players open it in December." : !AppState.getCurrentUser() ? "Sign in to open the doors." : `Opens on ${day} December.` }[st];
+                    const what = track === "free" && st !== "done" ? "🎁 A surprise — unwrap it to see!" : PC.xmasPrizeText(PC.xmasPrize(track, day));
+                    KihDialog.alert({ icon: track === "prem" ? "⭐" : "🎁", title: `Day ${day} · ${track === "prem" ? "⭐ Premium" : "🎁 Free"} door`, message: `${what}\n\n${why}` });
+                    return;
+                }
+            }
+            xmBusy = true;
+            const btn = track === "all" ? document.getElementById("xmAllBtn") : document.querySelector(`[data-xm="${track}${day}"]`);
+            if (btn) { btn.disabled = true; btn.classList.add("opening"); }
+            // 🎁 the doors being opened shake and burst open while the server opens them
+            const doors = track === "all" ? [...document.querySelectorAll(".xm-door.ready")] : btn ? [btn] : [];
+            doors.forEach(el => el.classList.add("unwrap"));
+            try {
+                const [r] = await Promise.all([AppState.openXmasDoor(track, day), new Promise(res => setTimeout(res, 850))]);
+                Object.assign(chestState, { stardust: r.stardust, hearts: r.hearts, freeDraws: r.freeDraws, items: r.items, perks: r.perks, xmas: r.xmas });
+                if (typeof r.balance === "number") storeBalance = r.balance;
+                renderChestCard();
+                try { if (window.top !== window && window.top.kihXmasChanged) window.top.kihXmasChanged(r.xmas); } catch (e) { }
+                const one = r.opened.length === 1 ? r.opened[0] : null;
+                // …and what was inside pops out
+                r.opened.forEach((o, i) => {
+                    const el = document.querySelector(`[data-xm="${o.track}${o.day}"]`);
+                    if (!el) return;
+                    el.classList.add("reveal");
+                    if (i < 6) burstFrom(el, ["✨", "🎁", "❄️", "⭐", "🎄"], 10);
+                });
+                await new Promise(res => setTimeout(res, 650));
+                KihDialog.alert({ icon: "🎁", title: one ? `Day ${one.day} — ${one.track === "prem" ? "⭐ Premium" : "🎁 Free"} door open!` : `${r.opened.length} doors open!`,
+                    message: xmasGotText(r.prize) + (r.prize.doubler ? "\n\n❄️ Use a Frost Doubler on any Secret Giveaway you've put tokens on." : "") + ((r.prize.items || []).length ? "\n\nTap 🧍 Character or 🎨 Style to show it off." : "") });
+            } catch (e) {
+                if (btn) { btn.disabled = false; btn.classList.remove("opening"); }
+                doors.forEach(el => el.classList.remove("unwrap"));
+                KihDialog.alert({ icon: "⚠️", title: "Couldn't open it", message: e.message });
+            } finally { xmBusy = false; }
+        };
+        window.buyXmas = async function () {
+            const b = document.getElementById("xmBuyBtn");
+            if (!b || b.disabled || xmBusy) return;
+            const X = PC.XMAS, T = PC.xmasTotals("prem");
+            if (storeBalance < X.price) {
+                const go = await KihDialog.confirm({ icon: "🪙", title: "Not enough tokens", message: `⭐ Premium costs ${X.price} 🪙 — you have ${fmtN(storeBalance)}.`, ok: "🪙 See token packs", cancel: "Not now", tone: "gold" });
+                if (go) { location.hash = "#packs"; scrollToChestIfAsked(); }
+                return;
+            }
+            const ok = await KihDialog.confirm({ icon: "⭐", title: `⭐ Premium for ${X.price} 🪙?`,
+                message: `A second, bigger door every day of December. In all: ${T.tokens} 🪙 back, ${fmtN(T.stardust)} ✨ (just enough for the 🎅 Santa Set), ${T.draws} chest draws, ${T.hearts} 💗, ${T.doubler} ❄️ Frost Doublers and ${T.items.length} things only Premium has. Doors you've missed wait for you.`,
+                ok: `⭐ Get it · ${X.price} 🪙`, cancel: "Not now", tone: "gold" });
+            if (!ok) return;
+            xmBusy = true;
+            b.disabled = true; b.textContent = "Getting it…";
+            try {
+                const r = await AppState.buyXmasPremium();
+                storeBalance = r.balance; chestState.xmas = r.xmas;
+                renderChestCard();
+                try { if (window.top !== window && window.top.kihXmasChanged) window.top.kihXmasChanged(r.xmas); } catch (e) { }
+                burstFrom(document.getElementById("xmasBox"), ["⭐", "🎄", "🪙", "❄️"], 22);
+                KihDialog.alert({ icon: "⭐", title: "Premium is yours!", message: `Every ⭐ Premium door up to today is ready — tap 🎁 Open to open them all. Open them all by the end of December and their ✨ add up to the 🎅 Santa Set.` });
+            } catch (e) {
+                b.disabled = false; b.textContent = `⭐ Get Premium · ${X.price} 🪙`;
+                KihDialog.alert({ icon: "⚠️", title: "Couldn't get Premium", message: e.message });
+            } finally { xmBusy = false; }
+        };
 
         /* ---- 🎃 An event (Trick or Treat): its own card, only while it's on.
            The admin sees it any day, marked as a preview, to try it out. ---- */
@@ -2234,10 +2474,20 @@
         // store is showing, and again if only the #chest part changes.
         // #chest or #event (the Trick or Treat card, once it's drawn)
         function scrollToChestIfAsked() {
-            const id = { "#chest": "chest", "#event": "event", "#hearts": "hearts", "#deals": "deals", "#sets": "sets", "#packs": "tokenPacksCard" }[location.hash] || null;
+            // "#set-<id>": one outfit set (Home's featured set) — to it, glowing
+            const one = /^#set-[a-z0-9_]+$/.test(location.hash) ? "set_" + location.hash.slice(5) : null;
+            const id = one || { "#chest": "chest", "#event": "event", "#hearts": "hearts", "#deals": "deals", "#sets": "sets", "#packs": "tokenPacksCard", "#xmas": "xmas" }[location.hash] || null;
             if (!id) return;
             let tries = 0;
-            const go = () => { const el = document.getElementById(id); if (el && el.offsetParent) el.scrollIntoView({ block: "start" }); else if (++tries < 10) setTimeout(go, 300); };
+            const go = () => {
+                const el = document.getElementById(id);
+                if (!(el && el.offsetParent)) { if (++tries < 15) setTimeout(go, 300); return; }
+                if (one) { // it glows for a moment (renderSets draws it glowing — again too, if the sets are redrawn meanwhile)
+                    flashSetId = one; setTimeout(() => { if (flashSetId === one) flashSetId = null; }, 3000);
+                    renderSets();
+                }
+                (document.getElementById(id) || el).scrollIntoView({ block: one ? "center" : "start" });
+            };
             setTimeout(go, 300);
         }
         window.addEventListener("hashchange", () => { scrollToChestIfAsked(); loadChestState(); });

@@ -54,8 +54,12 @@
         if (x.vip) return "👑 Comes with Super Supporter";
         if (x.heart) return `💗 Heart Shop (in the Store) — ${x.heart} 💗`;
         if (x.heartSpin) return "🎡 Heart Spin only — a prize in the Heart Shop's spin";
+        if (x.cal && PC.XMAS) {
+            const d = (x.prem ? PC.XMAS_PREM : PC.XMAS_FREE).findIndex(p => p && p.item === x.id);
+            return `🎄 ${esc(PC.XMAS.name)} (Store) — ${x.prem ? "a ⭐ Premium door" : "a 🎁 free door"}, ${d} December · limited`;
+        }
         const set = PC.setOf && PC.setOf(x.id);
-        if (set) return `👘 Only in the ${esc(set.name)} (Store → Outfit Sets) — all ${set.pieces.length} pieces for ${set.price.toLocaleString("en-US")} ✨`;
+        if (set) return `👘 Only in the ${esc(set.name)} (Store → Outfit Sets) — all ${set.pieces.length} pieces for ${set.price.toLocaleString("en-US")} ✨${set.until ? ` · only ${esc(set.from)} to ${esc(set.until)}` : ""}`;
         if (x.chest) {
             if (x.season && !PC.inSeason(x, sgtDay())) return "🧰 Adventurer's Chest — seasonal, not in it right now";
             const rate = PC.dropRates(sgtDay())[x.id];

@@ -71,9 +71,16 @@ function memoryFirestore() {
     let n = 0;
     const copy = (v) => v === undefined ? undefined : JSON.parse(JSON.stringify(v));
     const snap = (p) => ({ exists: data.has(p), id: p.split("/").pop(), ref: docRef(p), data: () => copy(data.get(p)) });
-    const write = (p, v, o) => data.set(p, o && o.merge ? { ...(data.get(p) || {}), ...copy(v) } : copy(v));
+    // FieldValue.increment(n) adds n to what's there (top-level fields), like Firestore
+    const isInc = (x) => x && typeof x === "object" && x.constructor && x.constructor.name === "NumericIncrementTransform";
+    const write = (p, v, o) => {
+        const old = data.get(p) || {};
+        const val = { ...v };
+        for (const k of Object.keys(val)) if (isInc(val[k])) val[k] = (Number(old[k]) || 0) + val[k].operand;
+        data.set(p, o && o.merge ? { ...old, ...copy(val) } : copy(val));
+    };
     function docRef(p) {
-        return { path: p, id: p.split("/").pop(), get: async () => snap(p), set: async (v, o) => write(p, v, o), collection: (c) => colRef(p + "/" + c) };
+        return { path: p, id: p.split("/").pop(), get: async () => snap(p), set: async (v, o) => write(p, v, o), update: async (v) => write(p, v, { merge: true }), collection: (c) => colRef(p + "/" + c) };
     }
     function colRef(c, filters = [], order = null, max = Infinity) {
         return {
@@ -83,6 +90,7 @@ function memoryFirestore() {
             where: (f, op, v) => { if (op !== "==") throw new Error("TEST: only == is faked"); return colRef(c, [...filters, [f, v]], order, max); },
             orderBy: (f, dir = "asc") => colRef(c, filters, [f, dir], max),
             limit: (k) => colRef(c, filters, order, k),
+            count: () => ({ get: async () => { const r = await colRef(c, filters, order, max).get(); return { data: () => ({ count: r.size }) }; } }),
             get: async () => {
                 let docs = [...data.keys()].filter(k => k.startsWith(c + "/") && !k.slice(c.length + 1).includes("/")).map(snap);
                 docs = docs.filter(d => filters.every(([f, v]) => d.data()[f] === v));
@@ -93,7 +101,11 @@ function memoryFirestore() {
     }
     return {
         collection: (c) => colRef(c),
-        runTransaction: async (fn) => fn({ getAll: async (...refs) => refs.map(r => snap(r.path)), get: async (r) => snap(r.path), set: (r, v, o) => write(r.path, v, o), update: (r, v) => write(r.path, v, { merge: true }) }),
+        getAll: async (...refs) => refs.map(r => snap(r.path)),
+        // a batch: its writes all land on commit()
+        batch: () => { const ops = []; return { set: (r, v, o) => ops.push(() => write(r.path, v, o)), update: (r, v) => ops.push(() => write(r.path, v, { merge: true })), delete: (r) => ops.push(() => data.delete(r.path)), commit: async () => ops.forEach(f => f()) }; },
+        // a transaction reads a document, or a collection (a query: its docs)
+        runTransaction: async (fn) => fn({ getAll: async (...refs) => refs.map(r => snap(r.path)), get: async (r) => (r.where ? r.get() : snap(r.path)), set: (r, v, o) => write(r.path, v, o), update: (r, v) => write(r.path, v, { merge: true }) }),
         _data: data,
         _docs: (c) => [...data.entries()].filter(([k]) => k.startsWith(c + "/") && !k.slice(c.length + 1).includes("/")).map(([k, v]) => ({ id: k.split("/").pop(), ...v }))
     };
