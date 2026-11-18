@@ -1800,6 +1800,8 @@ body {
             font-family: inherit; cursor: default; min-width: 0;
         }
         .cal-day small { font-size: 0.68rem; color: var(--kih-text-dim); white-space: nowrap; }
+        .cal-day small.cal-got { display: block; line-height: 1.15; }
+        @media (max-width: 360px) { .cal-day { padding-left: 1px; padding-right: 1px; } .cal-day small.cal-got { font-size: 0.58rem; letter-spacing: -0.03em; } }
         .cal-name { font-size: 0.7rem; font-weight: 700; color: var(--kih-text-dim); }
         .cal-day.today { border-color: var(--kih-accent, #4169e1); box-shadow: 0 0 14px rgba(108, 99, 255, 0.45); }
         .cal-day.done { border-color: #2e7d32; background: rgba(46, 125, 50, 0.12); }
@@ -6183,9 +6185,9 @@ window.closeInboxItemModal = closeInboxItemModal;
                     click = ` onclick="handleQuestClaim('${k}_login', this)"${disabled}`;
                 } else if (login) {
                     cls = " done";
-                    // what it gave: 🪙, ✨ (both, with the Ration Pack), Sunday's 🧰 too
-                    const got = [login.reward ? `+${login.reward}🪙` : "", login.stardust ? `+${login.stardust}✨` : "", login.itemChest ? "🧰" : ""].filter(Boolean).join(" ");
-                    body = `✅<small>${got || "+1🪙"}</small>`;
+                    // what it gave, one under another (they overlapped on one line): 🪙 on top, then ✨, then Sunday's 🧰
+                    const got = [login.reward ? `+${login.reward}🪙` : "", login.stardust ? `+${login.stardust}✨` : "", login.itemChest ? "🧰" : ""].filter(Boolean);
+                    body = `✅${(got.length ? got : ["+1🪙"]).map(x => `<small class="cal-got">${x}</small>`).join("")}`;
                 } else if (k < today) {
                     cls = " missed";
                     body = "✖<small>missed</small>";

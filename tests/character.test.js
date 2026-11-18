@@ -1771,3 +1771,12 @@ describe("🔎 Social → Friends: typing a name pops up your friends with it �
         assert.match(social, /quickHeart\('\$\{r\.uid\}', this\)/, "a friend in the search results: 💗");
     });
 });
+
+describe("📅 the login week: a day's 🪙 and ✨ one under another (index.html)", () => {
+    test("each reward on its own line — 🪙 on top, then ✨, then Sunday's 🧰 (they overlapped on one line)", () => {
+        const index = read("index.html");
+        assert.match(index, /body = `✅\$\{\(got\.length \? got : \["\+1🪙"\]\)\.map\(x => `<small class="cal-got">\$\{x\}<\/small>`\)\.join\(""\)\}`;/);
+        assert.match(index, /const got = \[login\.reward \? `\+\$\{login\.reward\}🪙` : "", login\.stardust \? `\+\$\{login\.stardust\}✨` : "", login\.itemChest \? "🧰" : ""\]\.filter\(Boolean\);/);
+        assert.match(index, /\.cal-day small\.cal-got \{ display: block;/);
+    });
+});
