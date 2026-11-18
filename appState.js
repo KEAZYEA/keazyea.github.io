@@ -181,7 +181,7 @@ async function signOutUser() {
        drift. The few localStorage keys below only save network calls, and
        being wrong about them can never earn or lose a token. */
     // v2: quests carry what they pay, plus the week for the login calendar.
-    const QUEST_CACHE_KEY = "kih_quest_today_v2";
+    const QUEST_CACHE_KEY = "kih_quest_today_v3";
     const QUEST_RETRY_KEY = "kih_quest_retry";
     const LOGIN_CLAIM_KEY = "kih_login_claim";
     const QUEST_RETRY_WINDOW_MS = 24 * 60 * 60 * 1000;
@@ -460,7 +460,7 @@ async function signOutUser() {
         if (cached) return cached;
         const data = await callTokensApi("today", {}, { auth: false });
         const today = { dayKey: data.dayKey, resetAt: data.resetAt, quests: data.quests,
-            rewards: data.rewards || {}, week: Array.isArray(data.week) ? data.week : [data.dayKey] };
+            rewards: data.rewards || {}, extras: data.extras || {}, week: Array.isArray(data.week) ? data.week : [data.dayKey] };
         try { localStorage.setItem(QUEST_CACHE_KEY, JSON.stringify(today)); } catch (e) { /* storage blocked */ }
         return today;
     }
@@ -512,7 +512,7 @@ async function signOutUser() {
         }, onFail);
         const unsubReady = onSnapshot(query(claims, where("status", "==", "ready")), (snap) => {
             ready = [];
-            snap.forEach(d => ready.push({ id: d.id, questId: d.data().questId, dayKey: d.data().dayKey, reward: typeof d.data().reward === "number" ? d.data().reward : 1, chest: !!d.data().chest, stardust: d.data().stardust || 0, itemChest: d.data().itemChest || null }));
+            snap.forEach(d => ready.push({ id: d.id, questId: d.data().questId, dayKey: d.data().dayKey, reward: typeof d.data().reward === "number" ? d.data().reward : 1, chest: !!d.data().chest, stardust: d.data().stardust || 0, hearts: d.data().hearts || 0, itemChest: d.data().itemChest || null }));
             ready.sort((a, b) => a.dayKey.localeCompare(b.dayKey));
             emit();
         }, onFail);
@@ -4858,7 +4858,7 @@ async function sendAdminMessage(uid, title, body) {
     // A prize built in admin from parts (prize.js: { items, note } — gold,
     // diamonds, tokens, a unit, anything custom). Kept small and plain: only
     // known kinds, at most 8 items, no more than a few KB.
-    const PRIZE_KINDS = ["tokens", "gold", "diamonds", "unit", "custom", "draws", "item"];
+    const PRIZE_KINDS = ["tokens", "gold", "diamonds", "unit", "custom", "draws", "item", "stardust", "hearts"];
     function checkPrizeParts(prize) {
         if (!prize) return null;
         const items = Array.isArray(prize.items) ? prize.items : [];
@@ -4871,14 +4871,16 @@ async function sendAdminMessage(uid, title, body) {
         .filter(i => i && i.kind === "tokens" && Number.isInteger(i.amount) && i.amount > 0).reduce((sum, i) => sum + i.amount, 0);
     // Tokens, chest draws and items are delivered by the server; everything
     // else needs a code from the admin.
-    const AUTO_PRIZE_KINDS = ["tokens", "draws", "item"];
+    const AUTO_PRIZE_KINDS = ["tokens", "draws", "item", "stardust", "hearts"];
     const prizeNeedsCode = (prize) => !prize || !Array.isArray(prize.items) || prize.items.some(i => i && !AUTO_PRIZE_KINDS.includes(i.kind));
     const prizeHasAuto = (prize) => !!prize && Array.isArray(prize.items) && prize.items.some(i => i && AUTO_PRIZE_KINDS.includes(i.kind) && (i.kind === "item" || i.amount > 0));
     // "🧰 2 free chest draws and 👑 Royal Crown" — the draws and items part.
     function prizeExtrasText(prize) {
         const items = prize && Array.isArray(prize.items) ? prize.items : [];
         const draws = items.filter(i => i && i.kind === "draws").reduce((n, i) => n + (i.amount || 0), 0);
-        const parts = [draws ? `🧰 ${draws} free chest draw${draws === 1 ? "" : "s"}` : "", ...items.filter(i => i && i.kind === "item").map(i => `${i.icon || "🎒"} ${i.name}`)].filter(Boolean);
+        const sd = items.filter(i => i && i.kind === "stardust").reduce((n, i) => n + (i.amount || 0), 0);
+        const hs = items.filter(i => i && i.kind === "hearts").reduce((n, i) => n + (i.amount || 0), 0);
+        const parts = [sd ? `✨ ${sd.toLocaleString("en-US")} Stardust` : "", hs ? `💗 ${hs} hearts` : "", draws ? `🧰 ${draws} free chest draw${draws === 1 ? "" : "s"}` : "", ...items.filter(i => i && i.kind === "item").map(i => `${i.icon || "🎒"} ${i.name}`)].filter(Boolean);
         return parts.length > 1 ? parts.slice(0, -1).join(", ") + " and " + parts[parts.length - 1] : (parts[0] || "");
     }
 

@@ -6847,7 +6847,7 @@ window.removeClanIconPreview = function () {
             }
             list.innerHTML = requests.map(r => `
                 <div class="friend-req-item">
-                    <div class="friend-req-person" style="display:flex; align-items:center; gap:8px; cursor:pointer;" onclick="openViewProfileModal(${jsStr(r.fromName)}, '${escapeHtml(r.fromAvatar || "")}')">
+                    <div class="friend-req-person" style="display:flex; align-items:center; gap:8px; cursor:pointer;" onclick="onPosterClick('${escapeHtml(r.fromUid)}', ${jsStr(r.fromName)})">
                         ${avatarHtml(r.fromAvatar, r.fromName, "friend-req-avatar", r.fromUid)}
                         <span class="friend-req-name ${nameFx(r.fromUid)}" data-fx-uid="${escapeHtml(r.fromUid || "")}" data-fx-keep="friend-req-name">${escapeHtml(r.fromName)}</span>
                     </div>
@@ -6968,6 +6968,7 @@ window.removeClanIconPreview = function () {
                     return `<div class="hp-chip${sent ? " sent" : ""}">${charCard(p.uid, "hp-chip-av")}<small><span data-fx-uid="${escapeHtml(p.uid)}" class="${nameFx(p.uid)}">${escapeHtml(p.name || "Friend")}</span></small>
                         <button type="button" onclick="sendHeartBack('${escapeHtml(p.uid)}', this)"${sent || h.heartsLeft <= 0 ? " disabled" : ""} aria-label="Send ${escapeHtml(p.name || "them")} a heart">${sent ? "✓ Sent" : sentMe.has(p.uid) ? "💗 Back" : "💗 Send"}</button></div>`;
                 }).join("")}</div>`;
+            const keepX = (box.querySelector(".hp-send") || {}).scrollLeft || 0;
             box.style.display = "";
             box.innerHTML = `
                 <div class="hp-head"><b>💗 Hearts</b><span class="hp-have">${h.hearts} 💗</span><button type="button" class="hp-shop" onclick="goHeartShop()">Heart Shop ›</button></div>
@@ -6983,6 +6984,8 @@ window.removeClanIconPreview = function () {
                     ${waiting.length > 1 ? `<button type="button" class="hp-all" onclick="collectHeart(null, this)">💗 Collect all ${waiting.length}</button>` : ""}`
                 : `<div class="hp-empty">No hearts waiting for you right now.</div>`}
                 ${sendStrip}`;
+            const strip = box.querySelector(".hp-send");
+            if (strip) strip.scrollLeft = keepX; // (sending a heart redraws the row — you stay where you were)
         }
         // "just now", "5m ago", "3h ago", "yesterday", then the date
         function heartAgo(ts) {

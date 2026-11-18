@@ -281,6 +281,22 @@ function questsForDay(dayKey) {
   return ["login", ...picked];
 }
 
+// ✨ / 💗 some quests drop on top of their tokens (login has its own week: P.LOGIN_WEEK).
+// Looking around pays ✨ 25, doing something ✨ 50; the friendly ones pay 💗.
+const QUEST_EXTRAS = {
+  readNews: { stardust: 25 }, viewUnit: { stardust: 25 }, compareUnits: { stardust: 25 }, readTip: { stardust: 25 },
+  checkPromo: { stardust: 25 }, viewFormation: { stardust: 25 }, viewTierList: { stardust: 25 }, enterWeekly: { stardust: 25 },
+  viewProfile: { hearts: 5 }, likeOrVote: { hearts: 5 },
+  postClan: { stardust: 50 }, shareFormation: { stardust: 50 }, shareTierList: { stardust: 50 }, comment: { stardust: 50 },
+  sendMessage: { hearts: 10 }, worldChat: { hearts: 10 }
+};
+const questExtra = (questId) => (Object.prototype.hasOwnProperty.call(QUEST_EXTRAS, questId) ? QUEST_EXTRAS[questId] : null);
+function questExtrasFor(quests) {
+  const out = {};
+  quests.forEach(q => { const x = questExtra(q); if (x) out[q] = { ...x }; });
+  return out;
+}
+
 // { questId: tokens } for a day's quests, for the page to show.
 function questRewardsFor(quests) {
   const out = {};
@@ -310,5 +326,6 @@ module.exports = {
   TOKEN_PACKS, PACK_CURRENCY, getPack, packPrice, packCustomId, parsePackCustomId, amountMatchesPack,
   creditTokenPack, notifyPackCredited,
   DAY_MS, dayKeyFor, dayStartMs, questsForDay, isBannedNow, toMillis,
-  VIEW_QUESTS, ACTION_QUESTS, QUEST_POINTS_PER_DAY, questReward, questRewardsFor, weekDayKeys, isSundayKey, sundayLoginReward
+  VIEW_QUESTS, ACTION_QUESTS, QUEST_POINTS_PER_DAY, questReward, questRewardsFor, QUEST_EXTRAS, questExtra, questExtrasFor,
+  weekDayKeys, isSundayKey, sundayLoginReward
 };

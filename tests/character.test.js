@@ -513,7 +513,7 @@ describe("💗 hearts on the server (api/progress.js)", () => {
         state.db = db;
     });
     test("the rules: 5 a day (10 with Super Supporter); a spin is 50; the Heart Shop is dear; hearts are its things' thing", () => {
-        assert.deepEqual(P.HEARTS, { perDay: 5, vipPerDay: 10, spinCost: 50, dayBonus: 3 });
+        assert.deepEqual(P.HEARTS, { perDay: 5, vipPerDay: 10, spinCost: 30, dayBonus: 3 });
         assert.deepEqual([P.heartsPerDay(false), P.heartsPerDay(true)], [5, 10]);
         assert.equal(P.HEART_SPIN.reduce((n, s) => n + s.weight, 0), 100);
         assert.deepEqual(P.HEART_SHOP.map(i => [i.id, i.heart]), [["hs_band", 150], ["hs_shades", 150], ["hs_locket", 300], ["hs_letter", 300], ["hs_sweater", 600]]);
@@ -531,13 +531,17 @@ describe("💗 hearts on the server (api/progress.js)", () => {
         assert.equal(P.ACHIEVEMENT_BY_ID.likesGiven.name, "Heart Giver");
         assert.equal(P.ACHIEVEMENT_BY_ID.likesReceived.name, "Beloved");
     });
-    test("a spin: always something (✨ mostly); an item only if you don't have it; nothing left → 500 ✨", () => {
+    test("a spin (30 💗): always something (✨ mostly, and bigger); an item only if you don't have it; nothing left → 750 ✨; no '20 💗 back'", () => {
         const seq = (...v) => { let i = 0; return () => v[i++ % v.length]; };
-        assert.equal(P.rollHeartSpin([], seq(0)).stardust, 100);
-        assert.equal(P.rollHeartSpin([], seq(0.6)).hearts, 20);
-        assert.equal(P.rollHeartSpin([], seq(0.8)).draws, 1);
+        assert.deepEqual(P.HEART_SPIN.map(s => [s.key, s.value || 0, s.weight]), [["s150", 150, 33], ["s300", 300, 22], ["draw", 1, 15], ["s750", 750, 10], ["item", 0, 10], ["exclusive", 0, 8], ["t50", 50, 2]]);
+        assert.ok(!P.HEART_SPIN.some(s => s.kind === "hearts"), "no hearts back");
+        assert.equal(P.rollHeartSpin([], seq(0)).stardust, 150);
+        assert.equal(P.rollHeartSpin([], seq(0.4)).stardust, 300);
+        assert.equal(P.rollHeartSpin([], seq(0.6)).draws, 1);
+        assert.equal(P.rollHeartSpin([], seq(0.75)).stardust, 750);
+        assert.equal(P.rollHeartSpin([], seq(0.99)).tokens, 50);
         assert.equal(P.rollHeartSpin([], seq(0.95, 0.99)).id, "hs_bunny");
-        assert.deepEqual(P.rollHeartSpin(["hs_rose", "hs_bunny"], seq(0.95)), { key: "exclusive", kind: "stardust", tokens: 0, stardust: 500, hearts: 0, draws: 0, id: null });
+        assert.deepEqual(P.rollHeartSpin(["hs_rose", "hs_bunny"], seq(0.95)), { key: "exclusive", kind: "stardust", tokens: 0, stardust: 750, hearts: 0, draws: 0, id: null });
         const it = P.rollHeartSpin([], seq(0.85, 0));
         assert.ok(P.ITEM_BY_ID[it.id].chest && ["common", "uncommon", "rare"].includes(P.ITEM_BY_ID[it.id].rarity));
     });
@@ -615,15 +619,15 @@ describe("💗 hearts on the server (api/progress.js)", () => {
         r = await act({ action: "heartStatus", uid: "player3" });
         assert.equal(r.body.friend, false);
     });
-    test("heartSpin: costs 50 💗; what it gives lands (tokens logged as gifted, items with their perks)", async () => {
-        assert.match((await act({ action: "heartSpin" })).body.error, /costs 50/);
+    test("heartSpin: costs 30 💗; what it gives lands (tokens logged as gifted, items with their perks)", async () => {
+        assert.match((await act({ action: "heartSpin" })).body.error, /costs 30/);
         db._data.set("inventories/player1", { items: { crown: { at: 1 } }, hearts: 5000 });
         let hearts = 5000, tokens = 100, draws = 0, stardust = 0;
         for (let i = 0; i < 60; i++) {
             const r = await act({ action: "heartSpin" });
             assert.equal(r.status, 200, JSON.stringify(r.body));
             const p = r.body.prize;
-            hearts += p.hearts - 50; tokens += p.tokens; draws += p.draws; stardust += p.stardust;
+            hearts += p.hearts - 30; tokens += p.tokens; draws += p.draws; stardust += p.stardust;
             assert.equal(r.body.hearts, hearts);
             if (p.id) assert.ok(p.id in inv("player1").items, "the item's yours");
         }
@@ -902,7 +906,7 @@ describe("the daily login on the page (appState.js, index.html)", () => {
     const app = read("appState.js"), index = read("index.html");
     test("a ✨ day's login (0 🪙) isn't read as 1 🪙; its ✨ and Sunday's 🧰 come along", () => {
         assert.match(app, /logins\[c\.dayKey\] = \{ status, reward: typeof c\.reward === "number" \? c\.reward : 1, chest: !!c\.chest, stardust: c\.stardust \|\| 0, itemChest: c\.itemChest \|\| null \}/);
-        assert.match(app, /reward: typeof d\.data\(\)\.reward === "number" \? d\.data\(\)\.reward : 1, chest: !!d\.data\(\)\.chest, stardust: d\.data\(\)\.stardust \|\| 0, itemChest: d\.data\(\)\.itemChest \|\| null/);
+        assert.match(app, /reward: typeof d\.data\(\)\.reward === "number" \? d\.data\(\)\.reward : 1, chest: !!d\.data\(\)\.chest, stardust: d\.data\(\)\.stardust \|\| 0, hearts: d\.data\(\)\.hearts \|\| 0, itemChest: d\.data\(\)\.itemChest \|\| null/);
         assert.doesNotMatch(app, /reward: c\.reward \|\| 1|reward: d\.data\(\)\.reward \|\| 1/);
     });
     test("the calendar shows each day's gift; Claim says ✨; Sunday's 🧰 is shown after its coins", () => {
@@ -1184,7 +1188,8 @@ describe("🎁 a gift of something you already have pays ✨, like a chest dupli
     });
     test("every place that gives items uses it: inbox gifts, Secret Giveaway prizes, polls, admin", () => {
         const tokens = read("api/tokens.js"), polls = read("api/polls.js");
-        assert.match(tokens, /if \(dupStardust > 0\) update\.stardust = Math\.max\(0, inv\.stardust \|\| 0\) \+ dupStardust;/);
+        assert.match(tokens, /const addSd = dupStardust \+ Math\.max\(0, Math\.floor\(Number\(stardust\) \|\| 0\)\)/);
+        assert.match(tokens, /if \(addSd > 0\) update\.stardust = Math\.max\(0, inv\.stardust \|\| 0\) \+ addSd;/);
         assert.match(tokens, /return \{ added, dups, dupTokens: 0, dupStardust \};/);
         assert.equal((tokens.match(/grantToInventory\(tx, db, /g) || []).length, 4, "the function + inbox gifts, Secret Giveaway prizes, admin");
         assert.match(polls, /grantToInventory\(tx, db, uid, invSnap/);
@@ -1219,5 +1224,144 @@ describe("🪟 the app's own popups (kih-dialog.js), never the browser's boxes",
     test("the Store's ✨ is fresh each time you open it (an achievement's ✨ shows at once)", () => {
         assert.match(read("store.html"), /window\.kihRefresh = \(\) => loadChestState\(\);/);
         assert.match(read("index.html"), /\} else if \(page === "store"\) \{[\s\S]{0,160}target\.querySelector\("iframe"\)\?\.contentWindow\?\.kihRefresh\?\.\(\);/);
+    });
+});
+
+describe("📅 some quests drop ✨ or 💗 too (api/_lib.js QUEST_EXTRAS)", () => {
+    const L = require("../api/_lib.js");
+    let db, realNow;
+    const tok = (body) => call("tokens.js", { token: "player-token", body });
+    const inv = () => db._data.get("inventories/player1") || {};
+    beforeEach(() => {
+        db = memoryFirestore();
+        db._data.set("inventories/player1", { items: {}, stardust: 0, hearts: 0 });
+        db._data.set("tokenWallets/player1", { balance: 0 });
+        state.db = db;
+        realNow = Date.now;
+    });
+    test("looking around: ✨ 25; doing something: ✨ 50; the friendly ones: 💗 (5 / 10); the login: its own week", () => {
+        for (const q of L.VIEW_QUESTS) assert.ok(L.questExtra(q) && (L.questExtra(q).stardust === 25 || L.questExtra(q).hearts === 5), q);
+        for (const q of L.ACTION_QUESTS) assert.ok(L.questExtra(q) && (L.questExtra(q).stardust === 50 || L.questExtra(q).hearts === 10), q);
+        assert.deepEqual([L.questExtra("viewProfile"), L.questExtra("likeOrVote"), L.questExtra("sendMessage"), L.questExtra("worldChat")], [{ hearts: 5 }, { hearts: 5 }, { hearts: 10 }, { hearts: 10 }]);
+        assert.equal(L.questExtra("login"), null);
+        assert.equal(L.questExtra("constructor"), null);
+        assert.deepEqual(L.questExtrasFor(["login", "readNews", "sendMessage"]), { readNews: { stardust: 25 }, sendMessage: { hearts: 10 } });
+        assert.match(read("api/tokens.js"), /rewards: questRewardsFor\(quests\), extras: questExtrasFor\(quests\)/, "the page is told what each drops");
+    });
+    test("done → its drop waits in the claim; claimed → ✨ and 💗 into your inventory, with its tokens", async () => {
+        try {
+            Date.now = () => Date.UTC(2026, 10, 18, 4); // Wed 18 Nov: login, likeOrVote, readNews, sendMessage
+            assert.deepEqual(L.questsForDay("2026-11-18"), ["login", "likeOrVote", "readNews", "sendMessage"]);
+            db._data.set("news/n1", { title: "hi" });
+            db._data.set("dmThreads/t1/messages/m1", { senderUid: "player1", createdAt: Date.now() - 1000, text: "hey" });
+            assert.ok((await tok({ action: "complete", questId: "readNews", proofId: "n1" })).body.completed);
+            assert.ok((await tok({ action: "complete", questId: "sendMessage", proofId: "t1/m1" })).body.completed);
+            assert.deepEqual([db._data.get("tokenWallets/player1/claims/2026-11-18_readNews").stardust, db._data.get("tokenWallets/player1/claims/2026-11-18_sendMessage").hearts], [25, 10]);
+            const r = await tok({ action: "claim", claimIds: ["2026-11-18_readNews", "2026-11-18_sendMessage"] });
+            assert.equal(r.status, 200, JSON.stringify(r.body));
+            assert.deepEqual([r.body.claimed, r.body.stardust, r.body.hearts, r.body.heartsBalance, inv().stardust, inv().hearts], [3, 25, 10, 10, 25, 10]);
+            const again = await tok({ action: "claim", claimIds: ["2026-11-18_readNews"] });
+            assert.deepEqual([again.body.claimed, inv().stardust], [0, 25], "not twice");
+        } finally { Date.now = realNow; }
+    });
+    test("a claim doc can't be talked up: 💗 at most 50", async () => {
+        db._data.set("tokenWallets/player1/claims/2026-11-10_readNews", { questId: "readNews", dayKey: "2026-11-10", status: "ready", reward: 1, hearts: 99999 });
+        const r = await tok({ action: "claim", claimIds: ["2026-11-10_readNews"] });
+        assert.deepEqual([r.body.hearts, inv().hearts], [50, 50]);
+    });
+});
+
+describe("🎁 admin gives ✨ Stardust and 💗 hearts — gifts, direct, polls, giveaway prizes", () => {
+    let db;
+    const admin = (body) => call("tokens.js", { token: "admin-token", body });
+    const inv = () => db._data.get("inventories/player1") || {};
+    beforeEach(() => {
+        db = memoryFirestore();
+        db._data.set("users/player1", { name: "Ezra" });
+        db._data.set("inventories/player1", { items: {}, stardust: 10, hearts: 1 });
+        db._data.set("tokenWallets/player1", { balance: 5 });
+        state.db = db;
+    });
+    test("a gift to claim: ✨ and 💗 (no tokens needed); claiming adds them; the limits hold", async () => {
+        let r = await admin({ action: "adminSendGift", target: "player1", amount: 0, stardust: 500, hearts: 20, expiresInHours: 24 });
+        assert.equal(r.status, 200, JSON.stringify(r.body));
+        const g = db._docs("tokenGifts")[0];
+        assert.deepEqual([g.stardust, g.hearts, /500 ✨ Stardust/.test(g.title), /20 💗 hearts/.test(g.title)], [500, 20, true, true]);
+        const c = await call("tokens.js", { token: "player-token", body: { action: "claimGift", giftId: r.body.giftId } });
+        assert.equal(c.status, 200, JSON.stringify(c.body));
+        assert.deepEqual([c.body.stardust, c.body.hearts, inv().stardust, inv().hearts, db._data.get("tokenWallets/player1").balance], [500, 20, 510, 21, 5]);
+        for (const bad of [{ stardust: 100001 }, { hearts: 1001 }, { stardust: -1 }, { hearts: 1.5 }]) {
+            r = await admin({ action: "adminSendGift", target: "player1", amount: 1, expiresInHours: 24, ...bad });
+            assert.equal(r.status, 400, JSON.stringify(bad));
+        }
+        r = await admin({ action: "adminSendGift", target: "player1", amount: 0, expiresInHours: 24 });
+        assert.equal(r.status, 400, "an empty gift");
+    });
+    test("straight to their account: ✨ and 💗, logged", async () => {
+        const r = await admin({ action: "adminGrantItems", uid: "player1", stardust: 300, hearts: 7, reason: "thanks" });
+        assert.equal(r.status, 200, JSON.stringify(r.body));
+        assert.deepEqual([inv().stardust, inv().hearts], [310, 8]);
+        const log = db._docs("tokenAdjustments").find(x => x.mode === "grant");
+        assert.deepEqual([log.stardust, log.hearts, log.amount], [300, 7, 0]);
+    });
+    test("a Secret Giveaway prize with ✨ and 💗: paid straight in", async () => {
+        db._data.set("secretGiveaways/g1", { title: "Big one", winners: [{ uid: "player1" }] });
+        db._data.set("secretGiveaways/g1/private/config", { prize: { items: [{ kind: "stardust", amount: 1000 }, { kind: "hearts", amount: 50 }] } });
+        const r = await admin({ action: "adminPaySecretPrize", giveawayId: "g1", winnerUid: "player1" });
+        assert.equal(r.status, 200, JSON.stringify(r.body));
+        assert.deepEqual([r.body.stardust, r.body.hearts, inv().stardust, inv().hearts], [1000, 50, 1010, 51]);
+    });
+    test("a poll's gift for answering can be ✨ and 💗 (limits 10,000 / 100); prize cards know them", async () => {
+        const polls = read("api/polls.js");
+        assert.match(polls, /const hasGift = \(r\) => !!\(r && \(r\.amount \|\| r\.draws \|\| r\.stardust \|\| r\.hearts/);
+        assert.match(polls, /const reward = \{ amount, draws, itemIds, stardust, hearts \};/);
+        assert.match(polls, /grantToInventory\(tx, db, uid, invSnap, \{ draws: r\.draws \|\| 0, itemIds: r\.itemIds \|\| \[\], stardust: Math\.min\(10000, r\.stardust \|\| 0\), hearts: Math\.min\(100, r\.hearts \|\| 0\) \}, now\)/);
+        const r = await call("polls.js", { token: "admin-token", body: { action: "adminCreate", questions: [{ kind: "single", question: "Best boss?", options: ["Ashira", "Dagon"] }], expiresInHours: 24, stardust: 40, hearts: 3, notify: false } });
+        assert.equal(r.status, 200, JSON.stringify(r.body));
+        const p = db._docs("polls")[0];
+        assert.deepEqual([p.reward.stardust, p.reward.hearts], [40, 3]);
+        const bad = await call("polls.js", { token: "admin-token", body: { action: "adminCreate", questions: [{ kind: "single", question: "Q?", options: ["a", "b"] }], expiresInHours: 24, hearts: 101 } });
+        assert.equal(bad.status, 400);
+        // giveaway prize cards: ✨ / 💗, sent automatically
+        const prize = read("prize.js");
+        assert.match(prize, /const AUTO = \["tokens", "draws", "item", "stardust", "hearts"\];/);
+        assert.match(prize, /if \(it\.kind === "stardust"\) return hasAmount && amount <= 100000 \? \{ kind: "stardust", amount \} : null;/);
+        assert.match(read("appState.js"), /const PRIZE_KINDS = \["tokens", "gold", "diamonds", "unit", "custom", "draws", "item", "stardust", "hearts"\];/);
+        const adminPage = read("admin.html");
+        for (const id of ["giftAllStardust", "giftAllHearts", "grantStardust", "grantHearts", "pollGiftStardust", "pollGiftHearts"]) assert.match(adminPage, new RegExp(`id="${id}"`), id);
+        assert.match(adminPage, /secretPrize\.add\('stardust'\)/); assert.match(adminPage, /secretPrize\.add\('hearts'\)/);
+    });
+});
+
+describe("💗 more hearts to send, and a cheaper, bigger Heart Spin", () => {
+    test("Cupid's Bow (chest) and the Love Letter (Heart Shop) each send +1 heart a day; capped at +5 from items", () => {
+        const cupid = P.ITEM_BY_ID.hd_cupid, letter = P.ITEM_BY_ID.hs_letter;
+        assert.ok(cupid.chest && C.wearOf("hd_cupid").slot === "held" && C.itemPic("hd_cupid") && C.thumb("hd_cupid"));
+        assert.ok(cupid.perks.some(p => p.kind === "heartSends" && p.value === 1) && letter.perks.some(p => p.kind === "heartSends" && p.value === 1));
+        assert.equal(P.heartsPerDay(false, P.perksOf(["hd_cupid", "hs_letter", "ht_beanie"])), 8);
+        assert.equal(P.heartsPerDay(false, P.perksOf(["hd_cupid", "hs_letter", "ht_beanie", "cs_top", "cs_hair", "cs_eyes", "cs_mouth", "cs_neck", "cs_bottom", "cs_shoes"])), 9);
+        assert.ok(P.chestPool("2026-11-18").some(x => x.id === "hd_cupid"));
+        assert.equal(P.HEARTS.spinCost, 30);
+        assert.match(read("help-guide.js"), /🎡 spin<\/b> \(30 💗\)/);
+    });
+});
+
+describe("🧰 the Store's badge, polls' faces, Social's fixes", () => {
+    const index = read("index.html"), social = read("social.html"), store = read("store.html");
+    test("a red number on the Store's buttons: chests waiting to be opened (free draws), kept up to date by the Store", () => {
+        assert.equal((index.match(/<span class="count-badge" data-store-badge hidden><\/span>/g) || []).length, 3, "the 🛒 Store button and both + buttons");
+        assert.match(index, /function updateAchievementDots\(\) \{\s+updateStoreBadge\(progressStatus && AppState\.getCurrentUser\(\) \? progressStatus\.freeDraws : 0\);/);
+        assert.match(index, /window\.kihChestBadge = updateStoreBadge;/);
+        assert.match(store, /window\.top\.kihChestBadge\(chestState\.freeDraws \|\| 0\)/);
+    });
+    test("polls: written answers show the person's character (not an old picture)", () => {
+        assert.match(index, /<span class="poll-av" data-uid="\$\{escapeHomeHtml\(a\.uid\)\}"[^>]*>\$\{pollFace\(a\.uid\)\}<\/span>/);
+        assert.doesNotMatch(index, /<img src="\$\{escapeHomeHtml\(a\.avatar \|\| "images\/KIH\.jpg"\)\}"/);
+        assert.match(index, /AppState\.getPlayerCards\(need\)\.then\(found => \{/);
+    });
+    test("Social: a friend request's name opens their profile card; sending a heart keeps your place in the row", () => {
+        assert.match(social, /onclick="onPosterClick\('\$\{escapeHtml\(r\.fromUid\)\}', \$\{jsStr\(r\.fromName\)\}\)"/);
+        assert.doesNotMatch(social, /onclick="openViewProfileModal\(/);
+        assert.match(social, /const keepX = \(box\.querySelector\("\.hp-send"\) \|\| \{\}\)\.scrollLeft \|\| 0;[\s\S]{0,4000}if \(strip\) strip\.scrollLeft = keepX;/);
     });
 });

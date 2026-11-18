@@ -65,7 +65,7 @@
             a: "Send each friend a <b>💗 heart</b> once a day (5 a day, 10 for Super Supporters): tap <b>💗</b> next to them in <b>Social → Friends</b>, or <b>💗 Send a heart</b> on their profile. It's theirs — they collect it in <b>Social → Friends → 💗 Hearts</b> and can send one back. Send all of yours in a day for +3 💗. Hearts took over from 👍 likes (your old likes still count).",
             go: { page: "social", tab: "friends" } },
         { id: "heartShop", title: "💗 Heart Shop", k: ["heart shop", "hearts shop", "spend hearts", "spend my hearts", "heart spin", "spin", "wheel", "love bunny", "red rose", "heart headband", "heart shades", "sweater"],
-            a: "The <b>💗 Heart Shop</b> is in the Store: spend hearts on things to wear (each with a bonus) or a <b>🎡 spin</b> (50 💗) for tokens, chest draws, items and Heart Spin-only treasures like the Love Bunny.",
+            a: "The <b>💗 Heart Shop</b> is in the Store: spend hearts on things to wear (each with a bonus) or a <b>🎡 spin</b> (30 💗) for tokens, chest draws, items and Heart Spin-only treasures like the Love Bunny.",
             go: { page: "store", at: "hearts" } },
         { id: "sets", title: "👘 Outfit Sets", k: ["outfit set", "outfit sets", "set", "suit", "full outfit", "buy a full outfit", "whole set", "full set", "costume", "celestial", "celestial set", "whole outfit", "stargazer coat", "nebula hair"],
             a: "<b>👘 Outfit Sets</b> are in the Store: a whole look, head to toe, for ✨ Stardust. Buy it and you get every piece at once (each with a bonus — more ✨ with every login and Heart Spin, an extra heart to send), and <b>🧍 Wear the set</b> puts it all on.",

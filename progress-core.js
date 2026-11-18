@@ -240,13 +240,14 @@
         { id: "hs_band", icon: "💕", name: "Heart Headband", rarity: "uncommon", heart: 150, perks: [{ kind: "heartGetChance", value: 10 }] },
         { id: "hs_shades", icon: "😍", name: "Heart Shades", rarity: "uncommon", heart: 150, perks: [{ kind: "heartSendChance", value: 10 }] },
         { id: "hs_locket", icon: "💝", name: "Heart Locket", rarity: "rare", heart: 300, perks: [{ kind: "heartGetChance", value: 20 }, { kind: "loginBonus", value: 1 }] },
-        { id: "hs_letter", icon: "💌", name: "Love Letter", rarity: "rare", heart: 300, perks: [{ kind: "heartSendChance", value: 20 }, { kind: "questFlat", value: 1 }] },
+        { id: "hs_letter", icon: "💌", name: "Love Letter", rarity: "rare", heart: 300, perks: [{ kind: "heartSends", value: 1 }, { kind: "heartSendChance", value: 20 }, { kind: "questFlat", value: 1 }] },
         { id: "hs_sweater", icon: "🧶", name: "Sweetheart Sweater", rarity: "epic", heart: 600, perks: [{ kind: "heartGetChance", value: 15 }, { kind: "heartSendChance", value: 15 }, { kind: "questMult", value: 10 }] },
         // … and only ever from its 🎡 Heart Spin (heartSpin: true)
         { id: "hs_rose", icon: "🌹", name: "Red Rose", rarity: "rare", heartSpin: true, perks: [{ kind: "heartSendChance", value: 15 }, { kind: "secretChance", value: 1 }] },
         { id: "hs_bunny", icon: "🐰", name: "Love Bunny", rarity: "epic", heartSpin: true, perks: [{ kind: "heartGetChance", value: 25 }, { kind: "weeklyTickets", value: 1 }] },
         // ✨ / 💗 helpers in the chest
         { id: "hd_starpouch", icon: "👛", name: "Stardust Pouch", rarity: "uncommon", chest: true, perks: [{ kind: "loginStardust", value: 10 }] },
+        { id: "hd_cupid", icon: "💘", name: "Cupid's Bow", rarity: "rare", chest: true, perks: [{ kind: "heartSends", value: 1 }, { kind: "heartSendChance", value: 5 }] },
         { id: "ht_beanie", icon: "🧶", name: "Heart Beanie", rarity: "rare", chest: true, perks: [{ kind: "heartSends", value: 1 }, { kind: "heartGetChance", value: 5 }] },
         // 🌌 the Celestial Set: only as a set, in the Store (SETS) — set: its id
         { id: "cs_hair", icon: "🌌", name: "Nebula Hair", rarity: "rare", set: "celestial", perks: [{ kind: "loginStardust", value: 5 }] },
@@ -515,7 +516,7 @@
        hearts in a day (the 5th — perDay — for everyone, even with more to
        send) and you get dayBonus 💗 (once a day).
        api/progress.js does it all; this is the rulebook. */
-    const HEARTS = { perDay: 5, vipPerDay: 10, spinCost: 50, dayBonus: 3 };
+    const HEARTS = { perDay: 5, vipPerDay: 10, spinCost: 30, dayBonus: 3 };
     // + your items' heartSends (Heart Beanie, Stargazer Coat), never more than +5
     const heartsPerDay = (vip, perks) => (vip ? HEARTS.vipPerDay : HEARTS.perDay) + Math.min(5, Math.max(0, Math.floor((perks && perks.heartSends) || 0)));
     // ✨ your items add to every login / Heart Spin (never more than 200)
@@ -526,16 +527,15 @@
     // you don't have, Rare or below; "exclusive": a Heart Spin-only thing you
     // don't have. Nothing left of either? Then the fallback's tokens.
     const HEART_SPIN = [
-        { key: "s100", kind: "stardust", value: 100, weight: 30, icon: "✨", label: "100 ✨" },
-        { key: "s200", kind: "stardust", value: 200, weight: 22, icon: "✨", label: "200 ✨" },
-        { key: "h20", kind: "hearts", value: 20, weight: 15, icon: "💗", label: "20 💗 back" },
-        { key: "s500", kind: "stardust", value: 500, weight: 8, icon: "🌟", label: "500 ✨" },
-        { key: "draw", kind: "draw", value: 1, weight: 10, icon: "🧰", label: "A free chest draw" },
-        { key: "item", kind: "item", weight: 8, icon: "🎁", label: "A chest item you don't have (up to Rare)" },
-        { key: "exclusive", kind: "exclusive", weight: 5, icon: "🌹", label: "A Heart Spin-only treasure" },
+        { key: "s150", kind: "stardust", value: 150, weight: 33, icon: "✨", label: "150 ✨" },
+        { key: "s300", kind: "stardust", value: 300, weight: 22, icon: "✨", label: "300 ✨" },
+        { key: "draw", kind: "draw", value: 1, weight: 15, icon: "🧰", label: "A free chest draw" },
+        { key: "s750", kind: "stardust", value: 750, weight: 10, icon: "🌟", label: "750 ✨" },
+        { key: "item", kind: "item", weight: 10, icon: "🎁", label: "A chest item you don't have (up to Rare)" },
+        { key: "exclusive", kind: "exclusive", weight: 8, icon: "🌹", label: "A Heart Spin-only treasure" },
         { key: "t50", kind: "tokens", value: 50, weight: 2, icon: "💎", label: "Jackpot: 50 🪙" }
     ];
-    const HEART_SPIN_FALLBACK = 500; // ✨ Stardust, when there's no item left for you
+    const HEART_SPIN_FALLBACK = 750; // ✨ Stardust, when there's no item left for you
     const heartPrice = (id) => { const x = Object.prototype.hasOwnProperty.call(ITEM_BY_ID, id) ? ITEM_BY_ID[id] : null; return x && x.heart > 0 ? x.heart : null; };
     const HEART_SHOP = ITEMS.filter(i => i.heart > 0);
     const HEART_SPIN_ONLY = ITEMS.filter(i => i.heartSpin);

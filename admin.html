@@ -455,6 +455,8 @@
                         <button type="button" class="prize-add-btn" onclick="secretPrize.add('unit')">+ 🦸 Hero / troop</button>
                         <button type="button" class="prize-add-btn" onclick="secretPrize.add('custom')">+ ✨ Something else</button>
                         <button type="button" class="prize-add-btn" onclick="secretPrize.add('draws')">+ 🧰 Chest draws</button>
+                        <button type="button" class="prize-add-btn" onclick="secretPrize.add('stardust')">+ ✨ Stardust</button>
+                        <button type="button" class="prize-add-btn" onclick="secretPrize.add('hearts')">+ 💗 Hearts</button>
                         <button type="button" class="prize-add-btn" onclick="secretPrize.add('item')">+ 🎒 Item / style</button>
                     </div>
                     <input type="text" id="secretGiveawayPrizeNote" maxlength="200" placeholder="Note (optional) — e.g. I'll send you 2 promo codes" oninput="secretPrize.preview()"
@@ -563,12 +565,14 @@
                 </div>
                 <div id="tokenAccountResult" style="margin-top:12px;"></div>
 
-                <h3 style="margin:28px 0 4px;">🎁 A gift for everyone <span class="promo-sub">(tokens, chest draws, an item)</span></h3>
+                <h3 style="margin:28px 0 4px;">🎁 A gift for everyone <span class="promo-sub">(tokens, ✨ Stardust, 💗 hearts, chest draws, an item)</span></h3>
                 <p class="promo-sub" style="margin-top:0;">Lands in everyone's inbox with a Claim button, once per
                     person, until it expires. Only accounts that already exist when you send it can claim, so nobody
                     can farm it with new accounts. Put any mix in it; an item someone already owns turns into its duplicate tokens.</p>
                 <div class="token-form">
                     <label>Tokens each <input type="number" id="giftAllAmount" min="0" step="1" value="5" class="token-input"></label>
+                    <label>✨ Stardust each <input type="number" id="giftAllStardust" min="0" step="1" value="0" class="token-input"></label>
+                    <label>💗 Hearts each <input type="number" id="giftAllHearts" min="0" step="1" value="0" class="token-input"></label>
                     <label>🧰 Chest draws each <input type="number" id="giftAllDraws" min="0" max="100" step="1" value="0" class="token-input"></label>
                     <label class="token-form-wide">🎒 Item / style (optional) <select id="giftAllItem" class="token-input"><option value="">— no item —</option></select></label>
                     <label>Lasts for
@@ -615,6 +619,8 @@
                         </span>
                     </label>
                     <label>🎁 Tokens for answering <input type="number" id="pollGiftAmount" min="0" max="1000" step="1" value="0" class="token-input"></label>
+                    <label>✨ Stardust for answering <input type="number" id="pollGiftStardust" min="0" max="10000" step="1" value="0" class="token-input"></label>
+                    <label>💗 Hearts for answering <input type="number" id="pollGiftHearts" min="0" max="100" step="1" value="0" class="token-input"></label>
                     <label>🧰 Chest draws for answering <input type="number" id="pollGiftDraws" min="0" max="20" step="1" value="0" class="token-input"></label>
                     <label class="token-form-wide">🎒 Item / style for answering (optional) <select id="pollGiftItem" class="token-input"><option value="">— no item —</option></select></label>
                     <label class="token-form-wide" style="flex-direction:row; align-items:center; gap:8px;"><input type="checkbox" id="pollNotify" checked> 📬 Notify everyone (inbox)</label>
@@ -1464,7 +1470,7 @@
                 unitChoices = [...list(heroes, "hero"), ...list(troops, "troop")].sort((a, b) => a.type.localeCompare(b.type) || a.name.localeCompare(b.name));
                 return unitChoices;
             }
-            const PRIZE_ROW_TITLES = { tokens: "🪙 Tokens", gold: "💰 Gold", diamonds: "💎 Diamonds", unit: "🦸 Hero / troop", custom: "✨ Something else", draws: "🧰 Free chest draws (sent automatically)", item: "🎒 Item / style (sent automatically)" };
+            const PRIZE_ROW_TITLES = { tokens: "🪙 Tokens", gold: "💰 Gold", diamonds: "💎 Diamonds", unit: "🦸 Hero / troop", custom: "✨ Something else", draws: "🧰 Free chest draws (sent automatically)", stardust: "✨ Stardust (sent automatically)", hearts: "💗 Hearts (sent automatically)", item: "🎒 Item / style (sent automatically)" };
             // Every item and style, grouped, for a <select>.
             function itemOptionsHtml(selected) {
                 const PC = window.ProgressCore;
@@ -1549,7 +1555,7 @@
                             } else if (r.kind === "item") {
                                 inputs = `<select onchange="${name}.set(${i}, 'itemId', this.value)" style="width:100%; padding:10px; font-size:1rem; border-radius:6px; border:1px solid gray; background:#2a2a4a; color:white; box-sizing:border-box;">${itemOptionsHtml(r.itemId)}</select>`;
                             } else {
-                                inputs = field(i, "amount", r.amount, r.kind === "tokens" ? "How many tokens" : r.kind === "draws" ? "How many free draws (1–100)" : "How much — e.g. 1000000", "number");
+                                inputs = field(i, "amount", r.amount, r.kind === "tokens" ? "How many tokens" : r.kind === "draws" ? "How many free draws (1–100)" : r.kind === "stardust" ? "How much ✨ Stardust (up to 100,000)" : r.kind === "hearts" ? "How many 💗 hearts (up to 1,000)" : "How much — e.g. 1000000", "number");
                             }
                             // the reward's name and ✕ on top, its boxes full width below (room on a phone)
                             return `<div style="display:flex; flex-direction:column; gap:8px; padding:8px 10px 10px; border:1px solid #34345e; border-radius:10px; background:#20203a;">
@@ -3224,8 +3230,10 @@ async function handleLookupUserByUid() {
                             <button class="gift" onclick="handleGiftToAccount()">🎁 Send a gift to claim</button>
                         </div>
                         <div class="acct-give">
-                            <b>🎒 Give chest draws or an item / style</b>
+                            <b>🎒 Give ✨ Stardust, 💗 hearts, chest draws or an item / style</b>
                             <div class="acct-give-row">
+                                <label>✨ Stardust <input type="number" id="grantStardust" min="0" step="1" value="0"></label>
+                                <label>💗 Hearts <input type="number" id="grantHearts" min="0" step="1" value="0"></label>
                                 <label>Free draws <input type="number" id="grantDraws" min="0" max="100" step="1" value="0"></label>
                                 <select id="grantItem"><option value="">— no item —</option>${itemOptionsHtml("")}</select>
                             </div>
@@ -3247,14 +3255,15 @@ async function handleLookupUserByUid() {
                 if (!tokenAccountUid) return;
                 const draws = parseInt(document.getElementById("grantDraws").value, 10) || 0;
                 const itemId = document.getElementById("grantItem").value;
-                if (!draws && !itemId) { showInfoModal("Nothing picked", "Choose some free draws or an item."); return; }
+                const stardust = parseInt(document.getElementById("grantStardust").value, 10) || 0, hearts = parseInt(document.getElementById("grantHearts").value, 10) || 0;
+                if (!draws && !itemId && !stardust && !hearts) { showInfoModal("Nothing picked", "Choose some ✨ Stardust, 💗 hearts, free draws or an item."); return; }
                 const x = itemId && window.ProgressCore.BY_ID[itemId];
-                const what = [draws ? `${draws} free chest draw${draws === 1 ? "" : "s"}` : "", x ? `${x.icon} ${x.name}` : ""].filter(Boolean).join(" + ");
+                const what = [stardust ? `${stardust.toLocaleString("en-US")} ✨ Stardust` : "", hearts ? `${hearts} 💗 hearts` : "", draws ? `${draws} free chest draw${draws === 1 ? "" : "s"}` : "", x ? `${x.icon} ${x.name}` : ""].filter(Boolean).join(" + ");
                 if (!await showConfirmModal("Give", `Give ${tokenAccountName} ${what}?`)) return;
                 const reason = await showPromptModal("Reason (kept in the history; shown to them if you message them)", "Giveaway prize");
                 if (reason === null) return;
                 try {
-                    const r = await AppState.adminTokens("adminGrantItems", { uid: tokenAccountUid, draws, itemIds: itemId ? [itemId] : [], reason, notify: !!(document.getElementById("tokenNotifyBox") || {}).checked });
+                    const r = await AppState.adminTokens("adminGrantItems", { uid: tokenAccountUid, draws, stardust, hearts, itemIds: itemId ? [itemId] : [], reason, notify: !!(document.getElementById("tokenNotifyBox") || {}).checked });
                     showInfoModal("Done", `Gave ${tokenAccountName} ${what}.${r.dups && r.dups.length ? ` They already had ${r.dups.map(id => window.ProgressCore.BY_ID[id].name).join(", ")}, so they got ${r.dupStardust || 0} ✨ Stardust instead.` : ""}`);
                     await openTokenAccount(tokenAccountUid);
                 } catch (e) {
@@ -3357,17 +3366,26 @@ async function handleLookupUserByUid() {
             // A claimable gift for one person — also how tokens are given as a
             // giveaway prize (the winner rows call this with prize wording).
             async function sendGiftToPlayer(uid, name, asPrize) {
-                const amount = await askWholeNumber(asPrize ? `How many tokens is ${name}'s prize?` : `How many tokens to gift ${name}?`, asPrize ? 50 : 10, 1);
+                const amount = await askWholeNumber(asPrize ? `How many tokens is ${name}'s prize?` : `How many tokens to gift ${name}? (0 for none)`, asPrize ? 50 : 10, asPrize ? 1 : 0);
                 if (amount === null) return;
+                let stardust = 0, hearts = 0;
+                if (!asPrize) {
+                    stardust = await askWholeNumber(`✨ Stardust to gift ${name}? (0 for none)`, 0, 0);
+                    if (stardust === null) return;
+                    hearts = await askWholeNumber(`💗 Hearts to gift ${name}? (0 for none)`, 0, 0);
+                    if (hearts === null) return;
+                    if (!amount && !stardust && !hearts) { showInfoModal("Empty gift", "Put some tokens, ✨ Stardust or 💗 hearts in it."); return; }
+                }
                 const days = await askWholeNumber("How many days do they have to claim it?", asPrize ? 30 : 7, 1);
                 if (days === null) return;
-                const title = asPrize ? `🎉 Your prize: ${amount} tokens!` : `🎁 ${amount} free tokens for you!`;
+                const what = [amount ? `${amount} tokens` : "", stardust ? `${stardust.toLocaleString("en-US")} ✨ Stardust` : "", hearts ? `${hearts} 💗 hearts` : ""].filter(Boolean).join(" + ");
+                const title = asPrize ? `🎉 Your prize: ${amount} tokens!` : `🎁 ${what} for you!`;
                 const message = asPrize
                     ? `Congrats on winning! Tap Claim to add ${amount} tokens to your wallet. This expires in ${days} day${days === 1 ? "" : "s"}.`
-                    : `Tap Claim to add ${amount} tokens to your wallet. This expires in ${days} day${days === 1 ? "" : "s"}.`;
-                if (!await showConfirmModal("Send gift", `Send ${name} ${amount} tokens to claim within ${days} day${days === 1 ? "" : "s"}?\n\n"${title}"`)) return;
+                    : `Tap Claim to get ${what}. This expires in ${days} day${days === 1 ? "" : "s"}.`;
+                if (!await showConfirmModal("Send gift", `Send ${name} ${what} to claim within ${days} day${days === 1 ? "" : "s"}?\n\n"${title}"`)) return;
                 try {
-                    await AppState.adminTokens("adminSendGift", { target: uid, amount, expiresInHours: days * 24, title, message });
+                    await AppState.adminTokens("adminSendGift", { target: uid, amount, stardust, hearts, expiresInHours: days * 24, title, message });
                     showInfoModal("Sent", `It's in ${name}'s inbox. Their tokens arrive when they tap Claim.`);
                     await loadTokenGifts();
                 } catch (e) {
@@ -3395,22 +3413,25 @@ async function handleLookupUserByUid() {
                 const amount = Number(document.getElementById("giftAllAmount").value) || 0;
                 const draws = Number(document.getElementById("giftAllDraws").value) || 0;
                 const itemId = document.getElementById("giftAllItem").value;
+                const stardust = Number(document.getElementById("giftAllStardust").value) || 0, hearts = Number(document.getElementById("giftAllHearts").value) || 0;
                 const duration = Number(document.getElementById("giftAllDuration").value);
                 const unitHours = Number(document.getElementById("giftAllUnit").value);
                 const title = document.getElementById("giftAllTitle").value.trim();
                 const message = document.getElementById("giftAllMessage").value.trim();
                 if (!Number.isInteger(amount) || amount < 0) { showInfoModal("Tokens each", "Enter a whole number, 0 or more."); return; }
                 if (!Number.isInteger(draws) || draws < 0 || draws > 100) { showInfoModal("Chest draws each", "Enter a whole number from 0 to 100."); return; }
-                if (!amount && !draws && !itemId) { showInfoModal("Empty gift", "Put tokens, chest draws or an item in it."); return; }
+                if (!Number.isInteger(stardust) || stardust < 0 || stardust > 100000) { showInfoModal("✨ Stardust each", "Enter a whole number from 0 to 100,000."); return; }
+                if (!Number.isInteger(hearts) || hearts < 0 || hearts > 1000) { showInfoModal("💗 Hearts each", "Enter a whole number from 0 to 1,000."); return; }
+                if (!amount && !draws && !itemId && !stardust && !hearts) { showInfoModal("Empty gift", "Put tokens, ✨ Stardust, 💗 hearts, chest draws or an item in it."); return; }
                 const x = itemId && window.ProgressCore.BY_ID[itemId];
-                const what = [amount ? `${amount} tokens` : "", draws ? `${draws} free chest draw${draws === 1 ? "" : "s"}` : "", x ? `${x.icon} ${x.name}` : ""].filter(Boolean).join(" + ");
+                const what = [amount ? `${amount} tokens` : "", stardust ? `${stardust.toLocaleString("en-US")} ✨ Stardust` : "", hearts ? `${hearts} 💗 hearts` : "", draws ? `${draws} free chest draw${draws === 1 ? "" : "s"}` : "", x ? `${x.icon} ${x.name}` : ""].filter(Boolean).join(" + ");
                 if (!(duration > 0)) { showInfoModal("Lasts for", "Enter how long it lasts."); return; }
                 const unitWord = unitHours === 24 ? "day" : "hour";
                 const lasts = `${duration} ${unitWord}${duration === 1 ? "" : "s"}`;
                 if (!await showConfirmModal("Send to everyone",
                     `Give EVERY existing account ${what} to claim within ${lasts}?\n\n"${title || `🎁 A gift: ${what}!`}"`)) return;
                 try {
-                    await AppState.adminTokens("adminSendGift", { target: "all", amount, draws, itemIds: itemId ? [itemId] : [], expiresInHours: duration * unitHours, title, message });
+                    await AppState.adminTokens("adminSendGift", { target: "all", amount, draws, stardust, hearts, itemIds: itemId ? [itemId] : [], expiresInHours: duration * unitHours, title, message });
                     showInfoModal("Sent", "It's in everyone's inbox now.");
                     document.getElementById("giftAllTitle").value = "";
                     document.getElementById("giftAllMessage").value = "";
@@ -3469,7 +3490,7 @@ async function handleLookupUserByUid() {
             function resetPollForm() { pollQs = [newPollQ()]; document.getElementById("pollTitle").value = ""; renderPollQuestions(); }
             resetPollForm();
             setTimeout(() => { const sel = document.getElementById("pollGiftItem"); if (sel && sel.options.length <= 1) sel.insertAdjacentHTML("beforeend", itemOptionsHtml("")); }, 0);
-            const pollGift = (r) => r ? giftContents({ amount: r.amount, draws: r.draws, itemIds: r.itemIds }) : "—";
+            const pollGift = (r) => r ? giftContents({ amount: r.amount, draws: r.draws, stardust: r.stardust, hearts: r.hearts, itemIds: r.itemIds }) : "—";
 
             async function handlePostPoll() {
                 const questions = pollQs.map(q => ({ kind: q.kind, question: q.question.trim(), options: q.kind === "open" ? [] : q.options.map(o => o.trim()).filter(Boolean), allowOther: q.kind !== "open" && q.allowOther }));
@@ -3480,6 +3501,7 @@ async function handleLookupUserByUid() {
                 const amount = Number(document.getElementById("pollGiftAmount").value) || 0;
                 const draws = Number(document.getElementById("pollGiftDraws").value) || 0;
                 const itemId = document.getElementById("pollGiftItem").value;
+                const stardust = Number(document.getElementById("pollGiftStardust").value) || 0, hearts = Number(document.getElementById("pollGiftHearts").value) || 0;
                 const notify = document.getElementById("pollNotify").checked;
                 if (many && !title) { showInfoModal("Title", "Give a poll with several questions a title."); return; }
                 for (const [i, q] of questions.entries()) {
@@ -3488,7 +3510,7 @@ async function handleLookupUserByUid() {
                     if (q.kind !== "open" && q.options.length < (q.allowOther ? 1 : 2)) { showInfoModal("Options", where + (q.allowOther ? "give it at least 1 option (plus ✏️ Other)." : "give it at least 2 options.")); return; }
                 }
                 if (!(duration > 0)) { showInfoModal("Runs for", "Enter how long it runs."); return; }
-                const gift = pollGift({ amount, draws, itemIds: itemId ? [itemId] : [] });
+                const gift = pollGift({ amount, draws, stardust, hearts, itemIds: itemId ? [itemId] : [] });
                 const lasts = `${duration} ${unitHours === 24 ? "day" : "hour"}${duration === 1 ? "" : "s"}`;
                 const qText = (q, n) => `${many ? `Q${n + 1}. ` : ""}${POLL_KIND_NAME[q.kind]}\n"${q.question}"\n${q.kind === "open" ? "Players write their own answers." : q.options.map((o, i) => `${i + 1}. ${o}`).join("\n") + (q.allowOther ? `\n${q.options.length + 1}. ✏️ Other (write your own)` : "")}`;
                 if (!await showConfirmModal("Post this poll?",
@@ -3496,7 +3518,7 @@ async function handleLookupUserByUid() {
                 const btn = document.getElementById("pollPostBtn");
                 btn.disabled = true;
                 try {
-                    await AppState.adminPolls("adminCreate", { title, questions, expiresInHours: duration * unitHours, amount, draws, itemIds: itemId ? [itemId] : [], notify });
+                    await AppState.adminPolls("adminCreate", { title, questions, expiresInHours: duration * unitHours, amount, draws, stardust, hearts, itemIds: itemId ? [itemId] : [], notify });
                     showInfoModal("Posted", notify ? "It's in 📰 News → 📊 Polls and everyone's inbox." : "It's in 📰 News → 📊 Polls.");
                     resetPollForm();
                     await loadAdminPolls();
@@ -3583,6 +3605,8 @@ async function handleLookupUserByUid() {
                     <div class="bug-gift">
                         <div class="bug-tools">
                             <label class="promo-sub">🪙 <input type="number" id="bugGiftTokens_${escapeHtml(r.id)}" min="0" step="1" value="0" class="token-input" style="width:80px;"></label>
+                            <label class="promo-sub">✨ <input type="number" id="bugGiftStardust_${escapeHtml(r.id)}" min="0" step="1" value="0" class="token-input" style="width:80px;"></label>
+                            <label class="promo-sub">💗 <input type="number" id="bugGiftHearts_${escapeHtml(r.id)}" min="0" step="1" value="0" class="token-input" style="width:70px;"></label>
                             <label class="promo-sub">🧰 <input type="number" id="bugGiftDraws_${escapeHtml(r.id)}" min="0" max="100" step="1" value="0" class="token-input" style="width:70px;"></label>
                             <select id="bugGiftItem_${escapeHtml(r.id)}" class="token-input" style="max-width:220px;"><option value="">— no item —</option>${itemOptionsHtml("")}</select>
                             <button class="token-small-btn" style="margin:0;" onclick="sendBugGift('${escapeHtml(r.id)}')">🎁 Send thank-you gift</button>
@@ -3616,14 +3640,15 @@ async function handleLookupUserByUid() {
                 const amount = Number(document.getElementById("bugGiftTokens_" + id).value || 0);
                 const draws = Number(document.getElementById("bugGiftDraws_" + id).value || 0);
                 const itemId = document.getElementById("bugGiftItem_" + id).value;
+                const stardust = Number(document.getElementById("bugGiftStardust_" + id).value || 0), hearts = Number(document.getElementById("bugGiftHearts_" + id).value || 0);
                 const PC = window.ProgressCore;
-                const what = [amount ? `${amount} token${amount === 1 ? "" : "s"}` : "", draws ? `${draws} free chest draw${draws === 1 ? "" : "s"}` : "",
+                const what = [amount ? `${amount} token${amount === 1 ? "" : "s"}` : "", stardust ? `${stardust.toLocaleString("en-US")} ✨ Stardust` : "", hearts ? `${hearts} 💗 hearts` : "", draws ? `${draws} free chest draw${draws === 1 ? "" : "s"}` : "",
                     itemId && PC && PC.BY_ID[itemId] ? `${PC.BY_ID[itemId].icon} ${PC.BY_ID[itemId].name}` : ""].filter(Boolean).join(" + ");
-                if (!what) { showInfoModal("Nothing to send", "Put some tokens, chest draws or an item in the gift."); return; }
+                if (!what) { showInfoModal("Nothing to send", "Put some tokens, ✨ Stardust, 💗 hearts, chest draws or an item in the gift."); return; }
                 if (!await showConfirmModal("Send this gift?", `${what} to ${r.name || r.uid}, to claim from their inbox within 30 days.`)) return;
                 try {
                     const g = await AppState.adminTokens("adminSendGift", {
-                        target: r.uid, amount, draws, itemIds: itemId ? [itemId] : [], expiresInHours: 24 * 30,
+                        target: r.uid, amount, draws, stardust, hearts, itemIds: itemId ? [itemId] : [], expiresInHours: 24 * 30,
                         title: "🐞 Thanks for reporting a bug!", message: `Here's ${what} for helping us find a problem — tap Claim to get it.`
                     });
                     await AppState.adminBugReports("adminUpdate", { id, status: r.status, reply: document.getElementById("bugReply_" + id).value.trim(), notify: false, gift: { giftId: g.giftId, what } });
@@ -3673,7 +3698,7 @@ async function handleLookupUserByUid() {
             // "5 🪙 + 2 🧰 + 👑 Royal Crown"
             function giftContents(g) {
                 const PC = window.ProgressCore;
-                return [g.amount ? `${g.amount} 🪙` : "", g.draws ? `${g.draws} 🧰 draws` : "",
+                return [g.amount ? `${g.amount} 🪙` : "", g.stardust ? `${Number(g.stardust).toLocaleString("en-US")} ✨` : "", g.hearts ? `${g.hearts} 💗` : "", g.draws ? `${g.draws} 🧰 draws` : "",
                     ...(g.itemIds || []).map(id => PC && PC.BY_ID[id] ? `${PC.BY_ID[id].icon} ${PC.BY_ID[id].name}` : id)].filter(Boolean).join(" + ") || "—";
             }
             // fill the gift form's item list once the item list is known

@@ -1779,6 +1779,8 @@
             }
             updateEventButtons();
             updateHeartButtons();
+            // the app's 🧰 badge: chests waiting to be opened
+            try { if (window.top !== window && window.top.kihChestBadge && AppState.getCurrentUser()) window.top.kihChestBadge(chestState.freeDraws || 0); } catch (e) { }
         }
         async function loadChestState() {
             if (!AppState.getCurrentUser()) return;

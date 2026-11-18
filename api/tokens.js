@@ -40,7 +40,7 @@
  */
 
 const { getFirebaseAdmin, DAY_MS, dayKeyFor, dayStartMs, questsForDay, isBannedNow, toMillis,
-  questReward, questRewardsFor, weekDayKeys, isSundayKey, sundayLoginReward } = require("./_lib");
+  questReward, questRewardsFor, questExtra, questExtrasFor, weekDayKeys, isSundayKey, sundayLoginReward } = require("./_lib");
 const { FieldValue } = require("firebase-admin/firestore");
 const GamesCore = require("../games-core.js");
 const crypto = require("crypto");
@@ -327,6 +327,7 @@ async function completeQuest(db, uid, body, now, dayKey, resetAt) {
   const sundayChest = questId === "login" && isSundayKey(dayKey);
   // the login's gift for the day: 🪙 (Mon/Wed/Fri), ✨ (Tue/Thu/Sat), or Sunday's chest on top of its coins
   const gift = questId === "login" ? P.loginGift(dayKey) : null;
+  const drop = questId === "login" ? null : questExtra(questId);
   const weekLoginRefs = sundayChest ? weekDayKeys(dayKey).slice(0, 6).map(k => claims.doc(`${k}_login`)) : [];
   return db.runTransaction(async (tx) => {
     const [claimSnap, ...weekSnaps] = await tx.getAll(claimRef, ...weekLoginRefs);
@@ -352,6 +353,9 @@ async function completeQuest(db, uid, body, now, dayKey, resetAt) {
       ...(questId === "login" && (((gift && gift.stardust) || 0) + P.perkStardust(perks, "loginStardust")) > 0
         ? { stardust: ((gift && gift.stardust) || 0) + P.perkStardust(perks, "loginStardust") } : {}),
       ...(gift && gift.chest ? { itemChest: gift.chest } : {}),
+      // ✨ / 💗 this quest drops (QUEST_EXTRAS in _lib.js) — paid with its tokens
+      ...(drop && drop.stardust ? { stardust: drop.stardust } : {}),
+      ...(drop && drop.hearts ? { hearts: drop.hearts } : {}),
       completedAt: now
     });
     return { ...base, completed: true, reward };
@@ -369,6 +373,7 @@ function rewardOf(claim) {
 }
 // …and in ✨ (never more than 1,000) / its chest's rarity (Uncommon or better only)
 const stardustOf = (claim) => Math.min(1000, Math.max(0, Math.floor(Number(claim.stardust) || 0)));
+const heartsOf = (claim) => Math.min(50, Math.max(0, Math.floor(Number(claim.hearts) || 0)));
 const itemChestOf = (claim) => (["uncommon", "rare", "epic", "legendary"].includes(claim.itemChest) ? claim.itemChest : null);
 
 // Pays each listed reward that's still "ready" — its `reward` (1 or 2, 3–5
@@ -397,9 +402,10 @@ async function claimRewards(db, uid, body, now) {
   // Each document read once, even when it's both being claimed and checked.
   const extraIds = [...new Set(dayInfo.flatMap(x => [...x.ids, `${x.d}_itemBonus`]))].filter(id => !unique.includes(id));
   const extraRefs = extraIds.map(id => claimsColl.doc(id));
-  // a login's ✨ and Sunday's chest go to your inventory
+  // ✨ / 💗 (a login's, a quest's drop) and Sunday's chest go to your inventory —
+  // any claim can carry some, so it's always read
   const invRef = db.collection("inventories").doc(uid);
-  const withInv = unique.some(id => id.endsWith("_login"));
+  const withInv = true;
   const rolls = unique.map(() => crypto.randomInt(1000000000) / 1000000000);
   return db.runTransaction(async (tx) => {
     const [walletSnap, ...rest] = await tx.getAll(walletRef, ...(withInv ? [invRef] : []), ...claimRefs, ...extraRefs);
@@ -410,7 +416,7 @@ async function claimRewards(db, uid, body, now) {
     const balance = walletSnap.exists ? (walletSnap.data().balance || 0) : 0;
     let paid = 0;
     let count = 0;
-    let stardust = 0;
+    let stardust = 0, hearts = 0;
     const chestsToOpen = [];
     const claimedNow = new Set();
     claimSnaps.forEach((snap, i) => {
@@ -418,6 +424,7 @@ async function claimRewards(db, uid, body, now) {
       tx.update(claimRefs[i], { status: "claimed", claimedAt: now });
       paid += rewardOf(snap.data());
       stardust += stardustOf(snap.data());
+      hearts += heartsOf(snap.data());
       const rarity = itemChestOf(snap.data());
       if (rarity) chestsToOpen.push({ day: snap.data().dayKey || unique[i].slice(0, 10), rarity, roll: rolls[i] });
       count++;
@@ -425,8 +432,8 @@ async function claimRewards(db, uid, body, now) {
     });
     // Sunday's chest (a duplicate pays its ✨ back) and the day's ✨, into your inventory
     const chests = [];
-    let stardustBalance = null;
-    if (invSnap && (stardust || chestsToOpen.length)) {
+    let stardustBalance = null, heartsBalance = null;
+    if (invSnap && (stardust || hearts || chestsToOpen.length)) {
       const inv = invSnap.exists ? invSnap.data() : {};
       const items = { ...(inv.items || {}) };
       let added = false;
@@ -436,8 +443,9 @@ async function claimRewards(db, uid, body, now) {
         else { items[id] = { at: now, from: "loginChest" }; added = true; chests.push({ id, duplicate: false, refund: 0 }); }
       }
       stardustBalance = Math.max(0, inv.stardust || 0) + stardust;
+      heartsBalance = Math.max(0, inv.hearts || 0) + hearts;
       const ids = Object.keys(items);
-      tx.set(invRef, { stardust: stardustBalance, ...(added ? { items, perks: P.perksOf(ids), count: ids.length } : {}), updatedAt: now }, { merge: true });
+      tx.set(invRef, { stardust: stardustBalance, ...(hearts ? { hearts: heartsBalance } : {}), ...(added ? { items, perks: P.perksOf(ids), count: ids.length } : {}), updatedAt: now }, { merge: true });
       // (a Games perk from it counts on the weekly board from your next run)
       if (added) tx.set(db.collection("playerCards").doc(uid), { itemCount: ids.length, updatedAt: now }, { merge: true });
     }
@@ -462,7 +470,7 @@ async function claimRewards(db, uid, body, now) {
         updatedAt: now
       }, { merge: true });
     }
-    return { ok: true, claimed: paid, count, itemBonus, balance: balance + paid, stardust, stardustBalance, chests };
+    return { ok: true, claimed: paid, count, itemBonus, balance: balance + paid, stardust, stardustBalance, hearts, heartsBalance, chests };
   });
 }
 
@@ -729,8 +737,9 @@ async function claimGift(admin, db, uid, body, now) {
     const amount = gd.amount || 0;
     const draws = gd.draws || 0;
     const itemIds = Array.isArray(gd.itemIds) ? gd.itemIds : [];
-    // chest draws and items go to the inventory (something already owned → its duplicate ✨)
-    const got = draws || itemIds.length ? grantToInventory(tx, db, uid, invSnap, { draws, itemIds }, now) : { added: [], dups: [], dupTokens: 0 };
+    const stardust = Math.min(MAX_GIFT_STARDUST, Math.max(0, Math.floor(Number(gd.stardust) || 0))), hearts = Math.min(MAX_GIFT_HEARTS, Math.max(0, Math.floor(Number(gd.hearts) || 0)));
+    // ✨, 💗, chest draws and items go to the inventory (something already owned → its duplicate ✨)
+    const got = draws || itemIds.length || stardust || hearts ? grantToInventory(tx, db, uid, invSnap, { draws, itemIds, stardust, hearts }, now) : { added: [], dups: [], dupTokens: 0 };
     const total = amount + got.dupTokens;
     tx.set(claimRef, { kind: "gift", giftId, amount, draws, items: got.added, claimedAt: now });
     if (total) {
@@ -741,7 +750,7 @@ async function claimGift(admin, db, uid, body, now) {
       }, { merge: true });
     }
     tx.update(giftRef, { claimCount: FieldValue.increment(1), claimedTokens: FieldValue.increment(amount) });
-    return { ok: true, claimed: amount, draws, items: got.added, duplicates: got.dups, dupTokens: got.dupTokens, dupStardust: got.dupStardust, balance: balance + total };
+    return { ok: true, claimed: amount, draws, stardust, hearts, items: got.added, duplicates: got.dups, dupTokens: got.dupTokens, dupStardust: got.dupStardust, balance: balance + total };
   });
 }
 
@@ -909,8 +918,16 @@ async function adminAdjust(db, adminUid, body, now) {
 }
 
 // "50 tokens + 2 chest draws + 👑 Royal Crown"
-function giftWhat(amount, draws, itemIds) {
-  return [amount ? `${amount} token${amount === 1 ? "" : "s"}` : "", draws ? `${draws} free chest draw${draws === 1 ? "" : "s"}` : "",
+// The most ✨ / 💗 one gift, prize or grant holds.
+const MAX_GIFT_STARDUST = 100000, MAX_GIFT_HEARTS = 1000;
+const wholeOf = (v) => (v == null || v === "" ? 0 : Number(v));
+function checkSdHearts(stardust, hearts) {
+  if (!Number.isInteger(stardust) || stardust < 0 || stardust > MAX_GIFT_STARDUST) throw new HttpError(400, `Stardust: a whole number from 0 to ${MAX_GIFT_STARDUST.toLocaleString("en-US")}.`);
+  if (!Number.isInteger(hearts) || hearts < 0 || hearts > MAX_GIFT_HEARTS) throw new HttpError(400, `Hearts: a whole number from 0 to ${MAX_GIFT_HEARTS.toLocaleString("en-US")}.`);
+}
+function giftWhat(amount, draws, itemIds, stardust, hearts) {
+  return [amount ? `${amount} token${amount === 1 ? "" : "s"}` : "", stardust ? `${stardust.toLocaleString("en-US")} ✨ Stardust` : "", hearts ? `${hearts} 💗 heart${hearts === 1 ? "" : "s"}` : "",
+    draws ? `${draws} free chest draw${draws === 1 ? "" : "s"}` : "",
     ...(itemIds || []).map(id => P.BY_ID[id] ? `${P.BY_ID[id].icon} ${P.BY_ID[id].name}` : "")].filter(Boolean).join(" + ");
 }
 
@@ -918,11 +935,13 @@ async function adminSendGift(db, adminUid, body, now) {
   const amount = body.amount == null || body.amount === "" ? 0 : Number(body.amount);
   const draws = body.draws == null || body.draws === "" ? 0 : Number(body.draws);
   const itemIds = Array.isArray(body.itemIds) ? [...new Set(body.itemIds)] : [];
+  const stardust = wholeOf(body.stardust), hearts = wholeOf(body.hearts);
   const hours = Number(body.expiresInHours);
   if (!Number.isInteger(amount) || amount < 0 || amount > MAX_GIFT_TOKENS) throw new HttpError(400, "Tokens: a whole number, 0 or more.");
+  checkSdHearts(stardust, hearts);
   if (!Number.isInteger(draws) || draws < 0 || draws > 100) throw new HttpError(400, "Chest draws: a whole number from 0 to 100.");
   if (itemIds.length > 4 || !itemIds.every(id => P.BY_ID[id])) throw new HttpError(400, "Pick up to 4 items or styles from the list.");
-  if (!amount && !draws && !itemIds.length) throw new HttpError(400, "Put something in the gift: tokens, chest draws or an item.");
+  if (!amount && !draws && !itemIds.length && !stardust && !hearts) throw new HttpError(400, "Put something in the gift: tokens, ✨ Stardust, 💗 hearts, chest draws or an item.");
   if (!(hours > 0) || hours > 24 * 366) throw new HttpError(400, "Set how long it lasts (up to a year).");
   const target = body.target === "all" ? "all" : body.target;
   let targetName = "";
@@ -930,7 +949,7 @@ async function adminSendGift(db, adminUid, body, now) {
 
   const giftId = newId(now);
   const expiresAt = now + Math.round(hours * 3600 * 1000);
-  const what = giftWhat(amount, draws, itemIds);
+  const what = giftWhat(amount, draws, itemIds, stardust, hearts);
   const title = cleanText(body.title, 100) || `🎁 A gift: ${what}!`;
   const message = cleanText(body.message, 500) ||
     `Here's ${what} — tap Claim to get it before this expires.`;
@@ -940,11 +959,11 @@ async function adminSendGift(db, adminUid, body, now) {
     : db.collection("users").doc(target).collection("personalNotifications").doc(notifId);
 
   await db.collection("tokenGifts").doc(giftId).set({
-    target, targetName, amount, draws, itemIds, title, message, createdAt: now, expiresAt,
+    target, targetName, amount, draws, itemIds, stardust, hearts, title, message, createdAt: now, expiresAt,
     createdBy: adminUid, claimCount: 0, claimedTokens: 0, notificationPath: notifRef.path
   });
   await notifRef.set({
-    type: "tokenGift", giftId, amount, draws, itemIds, expiresAt, title, body: message, createdAt: now,
+    type: "tokenGift", giftId, amount, draws, itemIds, stardust, hearts, expiresAt, title, body: message, createdAt: now,
     ...(target === "all" ? {} : { read: false })
   });
   return { ok: true, giftId, expiresAt };
@@ -973,7 +992,9 @@ async function adminPaySecretPrize(db, adminUid, body, now) {
   // Chest draws and items/styles are delivered the same way.
   const draws = Math.min(100, items.filter(i => i && i.kind === "draws" && Number.isInteger(i.amount) && i.amount > 0).reduce((s, i) => s + i.amount, 0));
   const itemIds = items.filter(i => i && i.kind === "item" && P.BY_ID[i.itemId]).map(i => i.itemId);
-  if (!(amount > 0) && !draws && !itemIds.length) throw new HttpError(400, "This giveaway's prize has nothing that's sent automatically (tokens, chest draws or items).");
+  const sumOf = (kind, max) => Math.min(max, items.filter(i => i && i.kind === kind && Number.isInteger(i.amount) && i.amount > 0).reduce((s, i) => s + i.amount, 0));
+  const stardust = sumOf("stardust", MAX_GIFT_STARDUST), hearts = sumOf("hearts", MAX_GIFT_HEARTS);
+  if (!(amount > 0) && !draws && !itemIds.length && !stardust && !hearts) throw new HttpError(400, "This giveaway's prize has nothing that's sent automatically (tokens, ✨ Stardust, 💗 hearts, chest draws or items).");
   if (amount > MAX_GIFT_TOKENS) throw new HttpError(400, "That prize is more tokens than one payment allows.");
 
   const walletRef = db.collection("tokenWallets").doc(winnerUid);
@@ -983,14 +1004,14 @@ async function adminPaySecretPrize(db, adminUid, body, now) {
     const [logSnap, walletSnap, invSnap] = await tx.getAll(logRef, walletRef, invRef);
     const before = walletSnap.exists ? (walletSnap.data().balance || 0) : 0;
     if (logSnap.exists) return { ok: true, paid: 0, alreadyPaid: true, amount, balance: before };
-    const got = draws || itemIds.length ? grantToInventory(tx, db, winnerUid, invSnap, { draws, itemIds }, now) : { added: [], dups: [], dupTokens: 0 };
+    const got = draws || itemIds.length || stardust || hearts ? grantToInventory(tx, db, winnerUid, invSnap, { draws, itemIds, stardust, hearts }, now) : { added: [], dups: [], dupTokens: 0 };
     const total = amount + got.dupTokens;
     if (total) tx.set(walletRef, { balance: before + total, lifetimeGifted: FieldValue.increment(total), updatedAt: now }, { merge: true });
     tx.set(logRef, {
       uid: winnerUid, mode: "add", amount: total, before, after: before + total, draws, items: got.added, duplicates: got.dups,
       reason: cleanText(`Secret giveaway prize: ${g.title || giveawayId}`, 200), by: adminUid, at: now, giveawayId
     });
-    return { ok: true, paid: amount, amount, draws, items: got.added, duplicates: got.dups, dupTokens: got.dupTokens, dupStardust: got.dupStardust, balance: before + total };
+    return { ok: true, paid: amount, amount, draws, stardust, hearts, items: got.added, duplicates: got.dups, dupTokens: got.dupTokens, dupStardust: got.dupStardust, balance: before + total };
   });
 }
 
@@ -1000,7 +1021,8 @@ async function adminPaySecretPrize(db, adminUid, body, now) {
 // Something they already have pays back like a chest duplicate: in ✨
 // Stardust (P.refundFor), never 🪙 — tokens are for giveaways. (dupTokens
 // stays 0, for the callers that add it to a token total.)
-function grantToInventory(tx, db, uid, invSnap, { draws = 0, itemIds = [] }, now) {
+// stardust / hearts: ✨ / 💗 into the inventory too (gifts, prizes, polls, admin).
+function grantToInventory(tx, db, uid, invSnap, { draws = 0, itemIds = [], stardust = 0, hearts = 0 }, now) {
   const inv = invSnap.exists ? invSnap.data() : {};
   const items = { ...(inv.items || {}) };
   const added = [], dups = [];
@@ -1013,7 +1035,9 @@ function grantToInventory(tx, db, uid, invSnap, { draws = 0, itemIds = [] }, now
   const ids = Object.keys(items);
   const update = { items, perks: P.perksOf(ids), count: ids.length, updatedAt: now };
   if (draws > 0) update.freeDraws = Math.max(0, inv.freeDraws || 0) + draws;
-  if (dupStardust > 0) update.stardust = Math.max(0, inv.stardust || 0) + dupStardust;
+  const addSd = dupStardust + Math.max(0, Math.floor(Number(stardust) || 0)), addH = Math.max(0, Math.floor(Number(hearts) || 0));
+  if (addSd > 0) update.stardust = Math.max(0, inv.stardust || 0) + addSd;
+  if (addH > 0) update.hearts = Math.max(0, inv.hearts || 0) + addH;
   tx.set(db.collection("inventories").doc(uid), update, { merge: true });
   tx.set(db.collection("playerCards").doc(uid), { itemCount: ids.length, updatedAt: now }, { merge: true });
   return { added, dups, dupTokens: 0, dupStardust };
@@ -1025,7 +1049,9 @@ async function adminGrantItems(db, adminUid, body, now) {
   const itemIds = Array.isArray(body.itemIds) ? [...new Set(body.itemIds)] : [];
   if (!Number.isInteger(draws) || draws < 0 || draws > 100) throw new HttpError(400, "Free draws: a whole number from 0 to 100.");
   if (itemIds.length > 8 || !itemIds.every(id => P.BY_ID[id])) throw new HttpError(400, "Pick up to 8 items or styles from the list.");
-  if (!draws && !itemIds.length) throw new HttpError(400, "Pick some free draws or an item to give.");
+  const stardust = wholeOf(body.stardust), hearts = wholeOf(body.hearts);
+  checkSdHearts(stardust, hearts);
+  if (!draws && !itemIds.length && !stardust && !hearts) throw new HttpError(400, "Pick some ✨ Stardust, 💗 hearts, free draws or an item to give.");
   const profile = await requireUser(db, body.uid);
   const reason = cleanText(body.reason, 200);
   const walletRef = db.collection("tokenWallets").doc(body.uid);
@@ -1034,13 +1060,13 @@ async function adminGrantItems(db, adminUid, body, now) {
   const r = await db.runTransaction(async (tx) => {
     const [walletSnap, invSnap] = await tx.getAll(walletRef, invRef);
     const before = walletSnap.exists ? (walletSnap.data().balance || 0) : 0;
-    const got = grantToInventory(tx, db, body.uid, invSnap, { draws, itemIds }, now);
+    const got = grantToInventory(tx, db, body.uid, invSnap, { draws, itemIds, stardust, hearts }, now);
     if (got.dupTokens) tx.set(walletRef, { balance: before + got.dupTokens, lifetimeGifted: FieldValue.increment(got.dupTokens), updatedAt: now }, { merge: true });
-    tx.set(logRef, { uid: body.uid, mode: "grant", amount: got.dupTokens, before, after: before + got.dupTokens, draws, items: got.added, duplicates: got.dups, dupStardust: got.dupStardust, reason, by: adminUid, at: now });
+    tx.set(logRef, { uid: body.uid, mode: "grant", amount: got.dupTokens, before, after: before + got.dupTokens, draws, items: got.added, duplicates: got.dups, dupStardust: got.dupStardust, stardust, hearts, reason, by: adminUid, at: now });
     return { ...got, balance: before + got.dupTokens };
   });
   const names = r.added.map(id => `${P.BY_ID[id].icon} ${P.BY_ID[id].name}`);
-  const what = [draws ? `🧰 ${draws} free chest draw${draws === 1 ? "" : "s"}` : "", ...names, r.dupStardust ? `✨ ${r.dupStardust} Stardust (for what you already had)` : ""].filter(Boolean).join(", ");
+  const what = [stardust ? `✨ ${stardust.toLocaleString("en-US")} Stardust` : "", hearts ? `💗 ${hearts} heart${hearts === 1 ? "" : "s"}` : "", draws ? `🧰 ${draws} free chest draw${draws === 1 ? "" : "s"}` : "", ...names, r.dupStardust ? `✨ ${r.dupStardust} Stardust (for what you already had)` : ""].filter(Boolean).join(", ");
   if (body.notify === true && what) {
     try {
       await db.collection("users").doc(body.uid).collection("personalNotifications").add({
@@ -1049,7 +1075,7 @@ async function adminGrantItems(db, adminUid, body, now) {
       });
     } catch (e) { console.warn(`Couldn't notify ${body.uid} about a grant:`, e.message); }
   }
-  return { ok: true, name: profile.name || "", draws, ...r };
+  return { ok: true, name: profile.name || "", draws, stardust, hearts, ...r };
 }
 
 async function adminListGifts(db, now) {
@@ -1236,7 +1262,7 @@ module.exports = async (req, res) => {
   try {
     if (body.action === "today") {
       const quests = questsForDay(dayKey);
-      res.status(200).json({ ok: true, dayKey, resetAt, quests, rewards: questRewardsFor(quests), week: weekDayKeys(dayKey) });
+      res.status(200).json({ ok: true, dayKey, resetAt, quests, rewards: questRewardsFor(quests), extras: questExtrasFor(quests), week: weekDayKeys(dayKey) });
       return;
     }
 

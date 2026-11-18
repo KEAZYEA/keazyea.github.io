@@ -107,7 +107,7 @@
         cs_hair: { slot: "hair", look: "nebula" }, cs_eyes: { slot: "eyes", look: "starlit" }, cs_mouth: { slot: "mouth", look: "moon" },
         cs_neck: { slot: "neck", look: "comet" }, cs_top: { slot: "top", look: "stargazer" }, cs_bottom: { slot: "bottom", look: "nebula" }, cs_shoes: { slot: "shoes", look: "moonboots" },
         // ✨ / 💗 helpers from the chest
-        hd_starpouch: { slot: "held", look: "starpouch" }, ht_beanie: { slot: "hat", look: "beanie" }
+        hd_starpouch: { slot: "held", look: "starpouch" }, ht_beanie: { slot: "hat", look: "beanie" }, hd_cupid: { slot: "held", look: "cupidbow" }
     };
     // an object's own value (never one from its prototype)
     const own = (o, k) => (o && Object.prototype.hasOwnProperty.call(o, k) ? o[k] : undefined);
@@ -621,6 +621,10 @@
             + `<circle cx="0" cy="-76" r="12" fill="#b46bff" opacity=".3"/><circle cx="0" cy="-76" r="7.5" fill="#c99bff" ${ol(1.8)}/><circle cx="-2.5" cy="-79" r="2.4" fill="#fff" opacity=".85"/>`,
         bow: () => `<path d="M-14,-46 C10,-32 10,32 -14,46" fill="none" stroke="#7a4a26" stroke-width="5" stroke-linecap="round"/><path d="M-14,-46 C10,-32 10,32 -14,46" fill="none" stroke="#c49a6c" stroke-width="1.6" stroke-linecap="round"/>`
             + `<path d="M-14,-46 L-14,46" stroke="#f4efe6" stroke-width="1.3"/><path d="M-16,0 L26,0" stroke="#8a5a2b" stroke-width="2.4"/><path d="M33,0 l-8,-4.5 0,9 z" fill="#9aa3ad" ${ol(1.2)}/><path d="M-15,0 l-4,-5 M-15,0 l-4,5 M-10,0 l-4,-5 M-10,0 l-4,5" stroke="#e0245e" stroke-width="2" stroke-linecap="round"/>`,
+        // 💘 Cupid's Bow: a pink bow, a gold arrow with a heart for its tip
+        cupidbow: () => `<path d="M-12,-38 C9,-25 9,25 -12,38" fill="none" stroke="#c2185b" stroke-width="5" stroke-linecap="round"/><path d="M-12,-38 C9,-25 9,25 -12,38" fill="none" stroke="#ff8fbf" stroke-width="1.8" stroke-linecap="round"/>`
+            + `<path d="M-12,-38 L-12,38" stroke="#fff3f8" stroke-width="1.2"/><path d="M-15,0 L21,0" stroke="#e8b923" stroke-width="2.4"/>` + path(heartD(27, -4, 6), "#ff4f8b", 1.4)
+            + `<path d="M-14,0 l-4,-5 M-14,0 l-4,5 M-9,0 l-4,-5 M-9,0 l-4,5" stroke="#ffb3d4" stroke-width="2" stroke-linecap="round"/>`,
         // 💌 a love letter, held by its corner, sealed with a heart
         letter: () => `<g transform="rotate(-12)">` + path("M-14,-26 L14,-26 L14,-4 L-14,-4 Z", "#fff6ea", 1.8) + `<path d="M-14,-26 L0,-14 L14,-26" fill="none" stroke="#d8c59a" stroke-width="1.6"/>`
             + `<path d="M-14,-4 L-3,-15 M14,-4 L3,-15" stroke="#e6d8b8" stroke-width="1.2"/>` + path(heartD(0, -14, 5), "#e0245e", 1.6) + `</g>`,
@@ -808,7 +812,7 @@
     // each held thing's middle and size, around the grip: [x, y, size]
     const HELD_BOX = { sword: [9, -28, 100], torch: [5, -20, 96], broom: [-13, 7, 146], pinwheel: [5, -19, 88], quill: [5, -25, 92], lantern: [0, 12, 54],
         pouch: [0, 20, 44], starpouch: [0, 18, 46], compass: [0, 20, 42], hourglass: [0, 0, 56], trophy: [0, -7, 52], scroll: [0, 0, 64], ticket: [4, -18, 46], juice: [2, -19, 58],
-        bread: [-2, -13, 70], staff: [13, -24, 134], bow: [7, 0, 100], letter: [-3, -15, 44], rose: [5, -20, 85] };
+        bread: [-2, -13, 70], staff: [13, -24, 134], bow: [7, 0, 100], cupidbow: [7, 0, 92], letter: [-3, -15, 44], rose: [5, -20, 85] };
     // each thing drawn alone (no body): a square around it, by slot and look
     // (measured from the drawings; a new look needs its box here)
     const ITEM_BOX = {
@@ -821,7 +825,7 @@
         top: { tee: "52 96.5 96 96", jerkin: "52 96.5 96 96", tabard: "52 107 96 96", robe: "48 107.5 104 104", plate: "52 96.5 96 96", dragon: "52 96.5 96 96", apron: "52 102 96 96", cape: "48 107 104 104", warlock: "46 108 108 108", knight: "52 95.5 96 96", hoodie: "52 93.5 96 96", royal: "48 110 104 104", sweater: "52 96.5 96 96", stargazer: "52 96.5 96 96" },
         bottom: { starter: "76 161 48 48", linen: "76 160 48 48", breeches: "76 161 48 48", chain: "76 161 48 48", shadow: "76 161 48 48", nebula: "76 161 48 48" },
         shoes: { sneakers: "71 176.8 58 58", muddy: "71 170.3 58 58", swift: "63 162.3 74 74", sandals: "72 179.1 56 56", wings: "54 152.5 92 92", moonboots: "71 170.3 58 58" },
-        held: { bread: "99.2 118.1 68.9 68.9", lantern: "114 154.5 49 49", compass: "119.3 163.5 38.5 38.5", quill: "96.4 91.4 95.4 95.4", juice: "110 113.5 61 61", ticket: "123.7 120.5 44.8 44.8", torch: "91.9 93.2 101.4 101.4", hourglass: "109.5 134.5 58 58", pouch: "119 163.5 39 39", trophy: "106.7 120 63.5 63.5", scroll: "106 131 65 65", sword: "94.8 82 105.5 105.5", pinwheel: "96.2 99.9 92.1 92.1", broom: "52.5 97.5 146 146", staff: "75.9 59.6 149.6 149.6", bow: "95.5 113.5 100 100", letter: "115.4 128.8 40 40", rose: "100.8 101.5 84.8 84.8", starpouch: "119 160 42 42" }
+        held: { bread: "99.2 118.1 68.9 68.9", lantern: "114 154.5 49 49", compass: "119.3 163.5 38.5 38.5", quill: "96.4 91.4 95.4 95.4", juice: "110 113.5 61 61", ticket: "123.7 120.5 44.8 44.8", torch: "91.9 93.2 101.4 101.4", hourglass: "109.5 134.5 58 58", pouch: "119 163.5 39 39", trophy: "106.7 120 63.5 63.5", scroll: "106 131 65 65", sword: "94.8 82 105.5 105.5", pinwheel: "96.2 99.9 92.1 92.1", broom: "52.5 97.5 146 146", staff: "75.9 59.6 149.6 149.6", bow: "95.5 113.5 100 100", letter: "115.4 128.8 40 40", rose: "100.8 101.5 84.8 84.8", starpouch: "119 160 42 42", cupidbow: "103.5 121.5 84 84" }
     };
     // An item on its own, as you'd see it in a shop: just the thing (a hat
     // with no head under it), with its ✨. Square, `size` px.

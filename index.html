@@ -1225,7 +1225,8 @@ body {
         .poll-answers { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
         .poll-answer { display: flex; gap: 9px; align-items: flex-start; padding: 8px 10px; border-radius: 10px; background: rgba(255, 255, 255, 0.04); }
         .poll-answer.me { background: rgba(138, 77, 255, 0.16); }
-        .poll-answer img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; flex-shrink: 0; cursor: pointer; background: var(--kih-border); }
+        .poll-av { width: 30px; height: 36px; border-radius: 8px; overflow: hidden; flex-shrink: 0; cursor: pointer; background: #3a2f6e; display: block; }
+        .poll-av img, .poll-av svg { display: block; width: 100%; height: 100%; }
         .poll-answer-name { font-weight: 800; font-size: 0.85rem; cursor: pointer; }
         .poll-answer-name:hover { text-decoration: underline; }
         .poll-answer-text { font-size: 0.92rem; line-height: 1.4; overflow-wrap: anywhere; white-space: pre-wrap; }
@@ -1810,6 +1811,8 @@ body {
         .cal-day.sunday { border-style: dashed; }
         .cal-day.sunday.ready, .cal-day.sunday.done { border-style: solid; }
         .quest-streak { font-size: 0.85rem; color: var(--kih-text-dim); margin: 0 0 14px; line-height: 1.4; }
+        .quest-reward.sd { color: #9fdcff; }
+        .quest-reward.hs { color: #ff9cc7; }
         .quest-reward { display: inline-block; vertical-align: 2px; margin-left: 4px; flex-shrink: 0; padding: 2px 8px; border-radius: 999px; font-size: 0.8rem; font-weight: 800; color: #ffd75e; background: rgba(255, 196, 0, 0.12); white-space: nowrap; }
         .quest-links { position: relative; z-index: 1; display: flex; gap: 8px; margin: 12px 0 0; }
         .quest-links button {
@@ -1853,6 +1856,14 @@ body {
         .kih-guide-fab span { font-size: 0.9rem; }
         .kih-guide-fab:active { transform: scale(0.95); }
         .home-landing.hidden .kih-guide-fab, body.kih-guide-on .kih-guide-fab { display: none; }
+        /* 🧰 chests waiting to be opened, on the Store's buttons */
+        .count-badge { position: absolute; top: -6px; right: -6px; min-width: 20px; height: 20px; padding: 0 6px; box-sizing: border-box; border-radius: 999px;
+            display: inline-flex; align-items: center; justify-content: center; background: #ff3b5c; color: #fff; font: 900 0.72rem/1 inherit;
+            box-shadow: 0 0 0 2px var(--kih-bg, #12112a); pointer-events: none; z-index: 2; }
+        .count-badge[hidden] { display: none; }
+        .hud-plus { position: relative; }
+        .home-menu-btn .count-badge { top: 10px; right: 14px; min-width: 22px; height: 22px; font-size: 0.78rem; }
+        .hud-plus .count-badge { top: -10px; right: -12px; min-width: 17px; height: 17px; padding: 0 4px; font-size: 0.64rem; }
         .kih-guide-overlay { position: fixed; inset: 0; z-index: 2500; display: none; align-items: flex-end; justify-content: center; background: rgba(6, 6, 18, 0.6); }
         .kih-guide-overlay.open { display: flex; animation: popFade 0.2s ease; }
         .kih-guide-sheet { width: 100%; max-width: 520px; height: min(78vh, 640px); height: min(78dvh, 640px); display: flex; flex-direction: column; background: #17172e;
@@ -2178,7 +2189,7 @@ body {
                  Rewards and purchases fly into it (kihFlyToHud). -->
             <div class="hud" id="hudPage" style="display:none;">
                 <button type="button" class="hud-bal" onclick="goToPage('quests')" title="Your tokens — Daily Quests"><span class="hud-coin" aria-hidden="true">🪙</span><b class="hud-amt">0</b></button>
-                <button type="button" class="hud-plus" onclick="goToPage('store')" title="Get more tokens" aria-label="Get more tokens">+</button>
+                <button type="button" class="hud-plus" onclick="goToPage('store')" title="Get more tokens" aria-label="Get more tokens">+<span class="count-badge" data-store-badge hidden></span></button>
             </div>
             <div class="menu-wrapper">
                 <button class="icon-btn" title="Menu" onclick="toggleMenu()">☰</button>
@@ -2208,7 +2219,7 @@ body {
             <div class="home-landing-content">
             <div class="home-hud-row"><div class="hud" id="hudHome" style="display:none;">
                 <button type="button" class="hud-bal" onclick="goToPage('quests')" title="Your tokens — Daily Quests"><span class="hud-coin" aria-hidden="true">🪙</span><b class="hud-amt">0</b></button>
-                <button type="button" class="hud-plus" onclick="goToPage('store')" title="Get more tokens" aria-label="Get more tokens">+</button>
+                <button type="button" class="hud-plus" onclick="goToPage('store')" title="Get more tokens" aria-label="Get more tokens">+<span class="count-badge" data-store-badge hidden></span></button>
             </div></div>
             <div class="home-logo">
                 <img src="images/KIH_HP.jpg" alt="Keazyea's Intelligence Hub" class="home-landing-title-img"
@@ -2254,8 +2265,8 @@ body {
                     <span class="badge-dot" id="profileMenuBadgeHome"
                         style="display:none; position:absolute; top:10px; right:14px;"></span>
                 </button>
-                <button class="home-menu-btn" onclick="goToPage('store')">
-                    <span class="home-menu-icon">🛒</span>
+                <button class="home-menu-btn" onclick="goToPage('store')" style="position:relative;">
+                    <span class="home-menu-icon">🛒</span><span class="count-badge" data-store-badge hidden></span>
                     <span class="home-menu-text">Store<small>Tokens & supporter plans</small></span>
                 </button>
             </div>
@@ -3770,7 +3781,19 @@ window.closeLegalModal = closeLegalModal;
         }
         window.loadProgress = loadProgress;
 
+        // 🧰 The Store's red number: chests you have to open (free chest draws).
+        // The Store tells this page too, as you open them (kihChestBadge).
+        function updateStoreBadge(n) {
+            const count = Math.max(0, Math.floor(Number(n) || 0));
+            document.querySelectorAll("[data-store-badge]").forEach(el => {
+                el.textContent = count > 9 ? "9+" : String(count);
+                el.hidden = !count;
+                el.setAttribute("aria-label", `${count} chest${count === 1 ? "" : "s"} to open`);
+            });
+        }
+        window.kihChestBadge = updateStoreBadge;
         function updateAchievementDots() {
+            updateStoreBadge(progressStatus && AppState.getCurrentUser() ? progressStatus.freeDraws : 0);
             const ready = progressStatus ? PC.achievementStates(progressStatus.stats, progressStatus.claimed).some(x => x.ready > 0) : false;
             document.getElementById("pfAchDot").classList.toggle("on", ready);
             ["profileBadgeHome", "profileMenuBadgeHome"].forEach(id => {
@@ -5014,7 +5037,7 @@ function getNewsTypeInfo(type) {
         const pollGiftText = (r) => {
             if (!r) return "";
             const PCx = window.ProgressCore;
-            return [r.amount ? `${r.amount} 🪙` : "", r.draws ? `${r.draws} 🧰` : "",
+            return [r.amount ? `${r.amount} 🪙` : "", r.stardust ? `${Number(r.stardust).toLocaleString("en-US")} ✨` : "", r.hearts ? `${r.hearts} 💗` : "", r.draws ? `${r.draws} 🧰` : "",
                 ...(r.itemIds || r.items || []).map(id => PCx && PCx.BY_ID[id] ? `${PCx.BY_ID[id].icon} ${PCx.BY_ID[id].name}` : "")].filter(Boolean).join(" + ");
         };
         function pollTimeLeft(ms) {
@@ -5103,11 +5126,24 @@ function getNewsTypeInfo(type) {
         }
         // Everyone's written answers to one question (an open question's, or what people
         // put under ✏️ Other): name and picture open their profile; the first 5, then Show all.
+        // their 🧍 character (as everywhere else), read once a minute at most; the starter look until it's read
+        const pollCards = {}, pollCardsAt = {};
+        const pollFace = (uid) => CC.pic((pollCards[uid] || {}).outfit || CC.cleanOutfit({}, []), { size: 36 });
+        function loadPollFaces(uids) {
+            const now = Date.now(), need = [...new Set(uids.filter(u => u && now - (pollCardsAt[u] || 0) > 60000))];
+            if (!need.length || !AppState.getPlayerCards) return;
+            need.forEach(u => { pollCardsAt[u] = now; });
+            AppState.getPlayerCards(need).then(found => {
+                Object.assign(pollCards, found);
+                document.querySelectorAll(".poll-av[data-uid]").forEach(el => { if (need.includes(el.dataset.uid)) el.innerHTML = pollFace(el.dataset.uid); });
+            }).catch(() => { });
+        }
         function pollAnswersHtml(p, qi, list) {
             const key = p.id + ":" + qi, id = escapeHomeHtml(key);
             const all = pollShowAll.has(key) ? list : list.slice(0, 5);
+            setTimeout(() => loadPollFaces(all.map(a => a.uid)), 0);
             return `<div class="poll-answers">${all.map(a => `<div class="poll-answer${a.me ? " me" : ""}">
-                <img src="${escapeHomeHtml(a.avatar || "images/KIH.jpg")}" alt="" loading="lazy" onerror="this.onerror=null; this.src='images/KIH.jpg'" data-uid="${escapeHomeHtml(a.uid)}" data-name="${escapeHomeHtml(a.name)}" data-av="${escapeHomeHtml(a.avatar || "")}" title="See ${escapeHomeHtml(a.name)}'s profile">
+                <span class="poll-av" data-uid="${escapeHomeHtml(a.uid)}" data-name="${escapeHomeHtml(a.name)}" data-av="${escapeHomeHtml(a.avatar || "")}" role="button" title="See ${escapeHomeHtml(a.name)}'s profile">${pollFace(a.uid)}</span>
                 <div style="min-width:0;"><div class="poll-answer-name" data-uid="${escapeHomeHtml(a.uid)}" data-name="${escapeHomeHtml(a.name)}" data-av="${escapeHomeHtml(a.avatar || "")}">${escapeHomeHtml(a.name)}${a.me ? " (you)" : ""}</div><div class="poll-answer-text">${escapeHomeHtml(a.text)}</div></div></div>`).join("")}</div>
                 ${list.length > 5 ? `<button type="button" class="poll-more" data-poll-more="${id}">${pollShowAll.has(key) ? "Show fewer" : `Show all ${list.length} answers`}</button>` : ""}`;
         }
@@ -5522,7 +5558,7 @@ function getNewsTypeInfo(type) {
         function giftShortText(n) {
             const PCx = window.ProgressCore;
             const items = Array.isArray(n.itemIds) ? n.itemIds : [];
-            return [Number(n.amount) ? `${Number(n.amount)} 🪙` : "", Number(n.draws) ? `${Number(n.draws)} 🧰` : "",
+            return [Number(n.amount) ? `${Number(n.amount)} 🪙` : "", Number(n.stardust) ? `${Number(n.stardust).toLocaleString("en-US")} ✨` : "", Number(n.hearts) ? `${Number(n.hearts)} 💗` : "", Number(n.draws) ? `${Number(n.draws)} 🧰` : "",
                 ...items.map(id => (PCx && PCx.BY_ID[id] ? PCx.BY_ID[id].icon : "🎒"))].filter(Boolean).join(" + ") || "gift";
         }
         // 🎃 A Spooky Gift from another player: Open it (the server rolls the treat).
@@ -5577,7 +5613,7 @@ function getNewsTypeInfo(type) {
                 const result = await AppState.claimTokenGift(giftId);
                 myGiftClaims = new Set([...myGiftClaims, giftId]);
                 const PCx = window.ProgressCore;
-                const got = [result.claimed > 0 ? `+${result.claimed} 🪙` : "", result.draws ? `🧰 ${result.draws} free chest draw${result.draws === 1 ? "" : "s"}` : "",
+                const got = [result.claimed > 0 ? `+${result.claimed} 🪙` : "", result.stardust > 0 ? `+${result.stardust.toLocaleString("en-US")} ✨` : "", result.hearts > 0 ? `+${result.hearts} 💗` : "", result.draws ? `🧰 ${result.draws} free chest draw${result.draws === 1 ? "" : "s"}` : "",
                     ...(result.items || []).map(id => PCx && PCx.BY_ID[id] ? `${PCx.BY_ID[id].icon} ${PCx.BY_ID[id].name}` : id),
                     result.dupStardust ? `+${result.dupStardust} ✨ for what you already had` : ""].filter(Boolean);
                 const tokensOnly = got.length === 1 && result.claimed > 0;
@@ -6068,6 +6104,12 @@ window.closeInboxItemModal = closeInboxItemModal;
             }, questToday.week);
         }
 
+        // ✨ / 💗 a quest drops on top of its tokens ({ stardust } or { hearts })
+        function questExtraOf(id) {
+            return (questToday && questToday.extras && questToday.extras[id]) || {};
+        }
+        const extraChip = (x) => (x && x.stardust ? ` <span class="quest-reward sd">+${x.stardust} ✨</span>` : "") + (x && x.hearts ? ` <span class="quest-reward hs">+${x.hearts} 💗</span>` : "");
+        const extraText = (x) => (x && x.stardust ? ` +${x.stardust} ✨` : "") + (x && x.hearts ? ` +${x.hearts} 💗` : "");
         function questRewardOf(id) {
             return (questToday && questToday.rewards && questToday.rewards[id]) || 1;
         }
@@ -6165,13 +6207,13 @@ window.closeInboxItemModal = closeInboxItemModal;
             }
             const disabled = questClaiming ? " disabled" : "";
             // reward: 🪙 (a number, or "?" for a chest) — or a whole label ("+50 ✨")
-            const claimBtn = (claimId, reward) =>
-                `<button class="quest-claim-btn" onclick="handleQuestClaim('${claimId}', this)"${disabled}>Claim ${typeof reward === "string" && /✨/.test(reward) ? reward : `+${reward} 🪙`}</button>`;
+            const claimBtn = (claimId, reward, extra) =>
+                `<button class="quest-claim-btn" onclick="handleQuestClaim('${claimId}', this)"${disabled}>Claim ${typeof reward === "string" && /✨/.test(reward) ? reward : `+${reward} 🪙`}${extra ? extraText(extra) : ""}</button>`;
             // reward: the "+1 🪙" chip, shown by the title (not squeezed in by the button).
-            const row = (cls, info, hint, action, reward) => `<div class="quest-row${cls}">
+            const row = (cls, info, hint, action, reward, extra) => `<div class="quest-row${cls}">
                     <span class="quest-icon">${info.icon}</span>
                     <div class="quest-text">
-                        <div class="quest-title">${info.title}${reward ? ` <span class="quest-reward">+${reward} 🪙</span>` : ""}</div>
+                        <div class="quest-title">${info.title}${reward ? ` <span class="quest-reward">+${reward} 🪙</span>` : ""}${reward ? extraChip(extra) : ""}</div>
                         <div class="quest-hint">${hint}</div>
                     </div>
                     ${action}
@@ -6184,7 +6226,7 @@ window.closeInboxItemModal = closeInboxItemModal;
             const earlierHtml = earlier.length
                 ? `<div class="quest-section-label">Not claimed yet from earlier</div>` + earlier.map(r => {
                     const info = QUEST_INFO[r.questId] || { icon: "⭐", title: r.questId };
-                    return row(" ready", info, `Done on ${formatQuestDay(r.dayKey)}`, claimBtn(r.id, r.chest ? "?" : r.stardust && !r.reward ? `+${r.stardust} ✨` : r.reward || 1));
+                    return row(" ready", info, `Done on ${formatQuestDay(r.dayKey)}`, claimBtn(r.id, r.chest ? "?" : r.stardust && !r.reward ? `+${r.stardust} ✨` : r.reward || 1, r.questId === "login" ? null : { stardust: r.stardust, hearts: r.hearts }));
                 }).join("")
                 : "";
 
@@ -6194,9 +6236,10 @@ window.closeInboxItemModal = closeInboxItemModal;
                     const info = QUEST_INFO[id] || { icon: "⭐", title: id, hint: "" };
                     const reward = questRewardOf(id);
                     const status = questProgress[id];
-                    if (status === "claimed") return row(" done", info, info.hint, `<span class="quest-done">✅ +${reward} 🪙</span>`);
-                    if (status === "ready") return row(" ready", info, info.hint, claimBtn(`${questToday.dayKey}_${id}`, reward));
-                    return row("", info, info.hint, info.go ? `<button class="quest-go-btn" onclick="runQuestAction('${id}')">Go</button>` : "", reward);
+                    const extra = questExtraOf(id);
+                    if (status === "claimed") return row(" done", info, info.hint, `<span class="quest-done">✅ +${reward} 🪙${extraText(extra)}</span>`);
+                    if (status === "ready") return row(" ready", info, info.hint, claimBtn(`${questToday.dayKey}_${id}`, reward, extra));
+                    return row("", info, info.hint, info.go ? `<button class="quest-go-btn" onclick="runQuestAction('${id}')">Go</button>` : "", reward, extra);
                 }).join("");
 
             // Today's Puzzle in Games pays its own +1 the moment it's finished
@@ -6215,8 +6258,9 @@ window.closeInboxItemModal = closeInboxItemModal;
             const hasChest = questReady.some(r => r.chest);
             const readyTotal = questReady.filter(r => !r.chest).reduce((a, r) => a + (typeof r.reward === "number" ? r.reward : 1), 0);
             const readyStardust = questReady.reduce((a, r) => a + (r.stardust || 0), 0);
+            const readyHearts = questReady.reduce((a, r) => a + (r.hearts || 0), 0);
             const claimAll = questReady.length >= 2
-                ? `<button class="quest-claim-all-btn" onclick="handleQuestClaim(null, this)"${disabled}>Claim all (${[hasChest ? "🎁" : "", readyTotal ? `+${readyTotal} 🪙` : "", readyStardust ? `+${readyStardust} ✨` : ""].filter(Boolean).join(" · ")})</button>`
+                ? `<button class="quest-claim-all-btn" onclick="handleQuestClaim(null, this)"${disabled}>Claim all (${[hasChest ? "🎁" : "", readyTotal ? `+${readyTotal} 🪙` : "", readyStardust ? `+${readyStardust} ✨` : "", readyHearts ? `+${readyHearts} 💗` : ""].filter(Boolean).join(" · ")})</button>`
                 : "";
             // Today at a glance: how many of today's quests (and the puzzle) are done.
             const todayIds = questToday.quests.filter(id => id !== "login");
@@ -6363,7 +6407,8 @@ window.closeInboxItemModal = closeInboxItemModal;
                 if (result.claimed > 0) showQuestToast((openingChest && ids.length === 1
                     ? `🎁 Chest opened: +${result.claimed} 🪙!`
                     : `+${result.claimed} 🪙 claimed!`) + stardustNote(result) + itemBonusNote(result));
-                else if (result.stardust > 0) showQuestToast(`✨ +${result.stardust} Stardust — for the chest, Daily Deals and more looks (Store).`);
+                else if (result.stardust > 0 || result.hearts > 0) showQuestToast([result.stardust > 0 ? `✨ +${result.stardust} Stardust` : "", result.hearts > 0 ? `💗 +${result.hearts} hearts` : ""].filter(Boolean).join(" · ") + " — spend them in the Store.");
+                if (typeof result.heartsBalance === "number" && progressStatus) progressStatus.hearts = result.heartsBalance;
                 if (typeof result.stardustBalance === "number" && progressStatus) progressStatus.stardust = result.stardustBalance;
                 await showLoginChestItems(result.chests);
             } catch (e) {
@@ -6375,7 +6420,7 @@ window.closeInboxItemModal = closeInboxItemModal;
             }
         }
 
-        const stardustNote = (result) => (result && result.stardust > 0 ? ` ✨ +${result.stardust} Stardust too!` : "");
+        const stardustNote = (result) => (result && result.stardust > 0 ? ` ✨ +${result.stardust} Stardust too!` : "") + (result && result.hearts > 0 ? ` 💗 +${result.hearts} hearts too!` : "");
         // Sunday's 🧰: what came out — a thing to wear (🧍 Wear it), or a duplicate's ✨
         async function showLoginChestItems(chests) {
             for (const c of chests || []) {
