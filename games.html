@@ -701,8 +701,8 @@
             const k = keepProgress();
             setIntro("");
             $("gameArea").innerHTML = `<button type="button" class="keep-card" id="keepCard">
-                    ${k.started ? "" : `<span class="keep-new">NEW</span>`}
-                    <div class="keep-top"><div class="keep-art">🏰</div><div><div class="keep-name">The Keep</div><div class="keep-sub">An open-world adventure, as your own character — 📜 Story 1: The Missing Warden</div></div></div>
+                    <span class="keep-new">🧪 DEMO</span>
+                    <div class="keep-top"><div class="keep-art">🏰</div><div><div class="keep-name">The Keep</div><div class="keep-sub">An open-world adventure, as your own character — 📜 Story 1: The Missing Warden · a demo, still being built</div></div></div>
                     <div class="keep-stats"><span>⭐ Lv ${k.lv}</span><span>🗺️ ${k.cleared === 4 ? "Story 1 done ✅" : `Roads cleared · ${k.cleared}/4`}</span><span>🔶 ${k.shards.toLocaleString("en-US")} shards</span><span>📖 ${k.found} found</span></div>
                     <div class="keep-bar"><i style="width:${Math.round(k.cleared / 4 * 100)}%"></i></div>
                     <span class="keep-go">⚔️ ${k.started ? "Keep going" : "Play"}</span></button>

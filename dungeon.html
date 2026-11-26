@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
-    <title>The Keep</title>
+    <title>The Keep (Demo)</title>
     <meta name="description" content="The Keep: an open-world adventure you play as your own character — a city to call home, roads full of monsters, and a story to follow. The gear you wear is your loadout.">
     <link rel="icon" href="images/KIH.jpg">
     <style>
@@ -40,6 +40,8 @@
         .tags { position: absolute; top: calc(72px + env(safe-area-inset-top, 0px)); left: 8px; right: 100px; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; pointer-events: none; }
         .tag { padding: 3px 9px; border-radius: 999px; background: var(--panel); border: 1px solid var(--line); font-size: .72rem; font-weight: 800; color: var(--dim); max-width: 100%; }
         .tag.quest { color: #ffe27a; border-color: rgba(255, 210, 74, 0.45); }
+        .tag.demo { color: #ffb8f0; border-color: rgba(255, 140, 220, 0.45); } /* 🧪 always on screen: it's a demo */
+        .demo-note { margin: 6px 0 2px; padding: 7px 10px; border-radius: 10px; background: rgba(255, 140, 220, 0.1); border: 1px solid rgba(255, 140, 220, 0.35); color: #ffd6f4; font-size: .78rem; text-align: left; }
         .tag.quest.done { color: #7ddc92; border-color: rgba(125, 220, 146, 0.5); }
         #mini { position: absolute; top: calc(62px + env(safe-area-inset-top, 0px)); right: 8px; width: 84px; height: 84px; border-radius: 10px; background: rgba(10, 9, 20, 0.7); border: 1px solid var(--line); pointer-events: none; }
         .boss-bar { position: absolute; left: 50%; transform: translateX(-50%); bottom: calc(184px + env(safe-area-inset-bottom, 0px)); width: min(70vw, 320px); text-align: center; pointer-events: none; }
@@ -245,7 +247,7 @@
         <div class="loot" aria-label="What you've picked up"><span title="Shards (this run)">🔶<b id="goldTxt">0</b></span><span title="Stardust">✨<b id="sdTxt">0</b></span><span title="Hearts" id="hrBox" hidden>💗<b id="hrTxt">0</b></span><span title="Tokens" id="tkBox" hidden>🪙<b id="tkTxt">0</b></span></div>
         <button type="button" class="hud-btn" id="pauseBtn" aria-label="Pause">⏸</button>
     </div>
-    <div class="tags"><div class="tag" id="floorTag"></div><div class="tag quest" id="questTag"></div><div class="tag" id="bagTag" hidden></div></div>
+    <div class="tags"><div class="tag demo" id="demoTag">🧪 Demo — still being built</div><div class="tag" id="floorTag"></div><div class="tag quest" id="questTag"></div><div class="tag" id="bagTag" hidden></div></div>
     <canvas id="mini" width="168" height="168"></canvas>
     <button type="button" class="hud-btn" id="bagBtn" aria-label="Your bag (B)" title="Your bag (B)">🎒</button>
     <div class="boss-bar" id="bossBar" hidden><b id="bossName"></b><div><i id="bossFill"></i></div></div>
@@ -2328,6 +2330,7 @@
         $("pauseCard").innerHTML = `<h1>${lobby ? `☰ ${esc(STORY1.city)}` : "⏸ Paused"}</h1>
             ${lobby ? `<p class="sub">📜 ${esc(storyGoal())}</p>` : `<div class="pause-quest">${esc($("floorTag").textContent)}<br>${esc($("questTag").textContent)}</div>
             <p class="sub">${w.icon} ${esc(w.name)}${w.mana ? ` · 🔷 ${w.mana} mana a hit` : " · no mana needed"}</p>`}
+            <p class="demo-note">🧪 <b>This is a demo</b> — The Keep is still being built, so things in it may change.</p>
             <h2 style="margin:4px 0 0;font-size:1rem;text-align:left">🎮 Controls</h2>${CONTROLS}`
             + btns.map((b, i) => `<button type="button" class="${b[0] === "big" ? "big-btn" : "ghost-btn"}" data-pb="${i}">${b[1]}</button>`).join("");
         $("pauseCard").querySelectorAll("[data-pb]").forEach(el => el.addEventListener("click", () => btns[+el.dataset.pb][2]()));
@@ -2362,7 +2365,7 @@
             btns.push(["ghost", "🎒 Open your bag", () => { startLobby(road); openPanel("bag"); }]);
             btns.push(["ghost", `🏘️ Back to ${esc(STORY1.city)}`, () => startLobby(plan.road)]);
             $("endCard").innerHTML = html + tally + btns.map((b, i) => `<button type="button" class="${b[0] === "big" ? "big-btn" : "ghost-btn"}" data-b="${i}">${b[1]}</button>`).join("")
-                + `<p class="note">🧪 Early version: what you pick up stays in the Keep for now — ✨ 💗 🪙 aren't added to your account yet (but each new thing for your 📖 collection is +${D.FIND_TOKENS} 🪙 in your account${me.signedIn ? "" : " once you sign in"}). Tell us what you think!</p>`;
+                + `<p class="note">🧪 This is a demo — The Keep is still being built. What you pick up stays in the Keep for now — ✨ 💗 🪙 aren't added to your account yet (but each new thing for your 📖 collection is +${D.FIND_TOKENS} 🪙 in your account${me.signedIn ? "" : " once you sign in"}). Tell us what you think!</p>`;
             $("endCard").querySelectorAll("[data-b]").forEach(el => el.addEventListener("click", () => btns[+el.dataset.b][2]()));
             $("endScreen").hidden = false;
         }, won ? 600 : 900);

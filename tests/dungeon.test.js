@@ -440,7 +440,9 @@ describe("🏰 the page", () => {
     test("progress is per player; names in a conversation are escaped; it says plainly it's an early version", () => {
         assert.match(page, /const SAVE_KEY = \(\) => "kih_keep_v1:" \+ uid;/);
         assert.match(page, /box\.innerHTML = `<b>\$\{esc\(who\)\}<\/b><p>\$\{esc\(text\)\}<\/p>/);
-        assert.match(page, /Early version: what you pick up stays in the Keep for now — ✨ 💗 🪙 aren't added to your account yet \(but each new thing for your 📖 collection is \+\$\{D\.FIND_TOKENS\} 🪙 in your account/);
+        assert.match(page, /<div class="tag demo" id="demoTag">🧪 Demo — still being built<\/div>/, "🧪 always on screen: it's a demo");
+        assert.match(page, /<p class="demo-note">🧪 <b>This is a demo<\/b> — The Keep is still being built/, "…and the ☰ menu says so");
+        assert.match(page, /This is a demo — The Keep is still being built\. What you pick up stays in the Keep for now — ✨ 💗 🪙 aren't added to your account yet \(but each new thing for your 📖 collection is \+\$\{D\.FIND_TOKENS\} 🪙 in your account/);
     });
     test("🏘️ it opens in Hearthmoor: four gates, the shop, the wardrobe, your house, the Elder — each asks ✅ Yes / No", () => {
         assert.match(page, /makeHeroImg\(\); startLobby\(\); loadMe\(\);/);
