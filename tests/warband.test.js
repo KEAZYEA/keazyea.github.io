@@ -29,17 +29,45 @@ describe("⚔️ the units", () => {
             assert.equal(u.cost, W.COST[u.rarity]);
             assert.ok(u.hp > 0 && u.atk > 0 && u.def >= 15 && u.def <= 45, u.key);
             assert.equal(u.range, u.attack === "Ranged" ? 3 : 1);
-            assert.ok(W.SKILLS[u.skill], u.key);
+            assert.ok(W.ABILITIES[u.ability.kind] && u.ability.name && u.ability.cd >= 3 && u.ability.cd <= 7, u.key);
             assert.ok(u.name && u.img, u.key);
         });
     });
-    test("dearer units are stronger (on average); tanks have the HP, hitters the attack", () => {
+    test("dearer units are stronger (on average)", () => {
         const avg = (cost, f) => { const l = Object.values(cat).filter(u => u.cost === cost); return l.reduce((t, u) => t + f(u), 0) / l.length; };
         for (let c = 1; c < 5; c++) assert.ok(avg(c + 1, u => u.hp * u.atk) > avg(c, u => u.hp * u.atk), "cost " + c);
-        const guards = Object.values(cat).filter(u => u.skill === "guard"), strikers = Object.values(cat).filter(u => u.skill === "strike");
-        assert.ok(guards.length >= 10 && strikers.length >= 5);
-        const ratio = (l) => l.reduce((t, u) => t + u.hp / u.atk, 0) / l.length;
-        assert.ok(ratio(guards) > ratio(strikers) * 1.5);
+    });
+    test("each uses its own ability, by name, doing what it says — on a countdown from its real cooldown", () => {
+        const ab = (k) => cat[k].ability;
+        assert.deepEqual([ab("dragonRider").name, ab("dragonRider").kind], ["Meteor Strike", "blast"]);
+        assert.deepEqual([ab("iceMage").name, ab("iceMage").kind], ["Snowball", "stun"]);
+        assert.deepEqual([ab("elevateSupport").name, ab("elevateSupport").kind], ["Healing Veil", "heal"]);
+        assert.deepEqual([ab("undeadWarrior").name, ab("undeadWarrior").kind], ["Cursed Army", "summon"]);
+        assert.deepEqual([ab("assasin").name, ab("assasin").kind], ["Teleport", "leap"]);
+        assert.deepEqual([ab("paladin").name, ab("paladin").kind], ["Divine Guards", "shield"]);
+        assert.deepEqual([ab("bardHero").name, ab("bardHero").kind], ["Song of Courage", "rally"]);
+        assert.deepEqual([ab("flyingMonster").name, ab("flyingMonster").kind], ["Nightmare", "fear"]);
+        // its countdown comes from the game's own cooldown: 40% of it, 3–7 s (Meteor Strike: 17 s → 7)
+        assert.equal(ab("dragonRider").cd, 7);
+        loadUnits().forEach(u => {
+            const a = (u.abilityList || []).find(x => W.abilityKind(x));
+            if (!a || !a.nums.cd) return;
+            assert.equal(cat[u.key].ability.cd, Math.max(3, Math.min(7, Math.round(a.nums.cd[0][1] * 0.4))), u.key);
+        });
+        assert.equal(ab("baronBenua").own, false, "Gold Mark isn't a fighting ability: one that fits him instead");
+        const own = Object.values(cat).filter(u => u.ability.own);
+        assert.ok(own.length >= 50, "most use their own: " + own.length);
+        // the rest get one that fits them
+        Object.values(cat).filter(u => !u.ability.own).forEach(u => assert.ok(["guard", "volley", "strike", "blast"].includes(u.ability.kind), u.key));
+    });
+    test("a hero's talent is a bonus it always has", () => {
+        assert.deepEqual(cat.dragonRider.talent, { name: "Aerial Support", kind: "atk", val: 15 });
+        assert.deepEqual([cat.iceMage.talent.kind, cat.forestQueen.talent.kind, cat.airMage.talent.kind], ["hp", "thorns", "dodge"]);
+        assert.equal(Object.values(cat).filter(u => u.talent).length, 20);
+        assert.equal(cat.archer.talent, null, "troops have none");
+        const f = W.fightStart(cat, [{ k: "dragonRider", s: 1, x: 0, y: 0 }, { k: "iceMage", s: 1, x: 1, y: 0 }], []);
+        assert.equal(f[0].atk, Math.round(cat.dragonRider.atk * 1.15)); assert.equal(f[1].max, Math.round(cat.iceMage.hp * 1.15));
+        assert.equal(f[0].talent, "Aerial Support");
     });
     test("team bonuses count different units: two Archers are one Human", () => {
         const humans = Object.values(cat).filter(u => u.faction === "Human").slice(0, 4);
@@ -53,19 +81,23 @@ describe("⚔️ the units", () => {
 });
 
 describe("⚔️ a match: gold, the shop, buying, merging", () => {
-    test("you and 7 bots, 100 ❤️ each, 5 gold and a shop of 5 to start — the same seed, the same match", () => {
+    test("you and 7 bots, 100 ❤️ each; you start at level 3 with 💰 10 and a shop of 5 — the same seed, the same match", () => {
         const st = match("a");
         assert.equal(st.players.length, 8);
-        st.players.forEach((p, i) => { assert.equal(p.hp, 100); assert.equal(p.gold, 5); assert.equal(p.shop.length, 5); assert.equal(!!p.bot, i > 0); });
+        st.players.forEach((p, i) => { assert.equal(p.hp, 100); assert.equal(p.level, 3); assert.equal(p.shop.length, 5); assert.equal(!!p.bot, i > 0); });
+        assert.equal(me(st).gold, 10);
+        st.players.filter(p => p.bot).forEach(p => assert.ok(p.board.length >= 1, "the bots have planned already"));
         assert.equal(st.round, 1);
         assert.deepEqual(match("a").players.map(p => p.shop), st.players.map(p => p.shop));
         assert.notDeepEqual(match("b").players.map(p => p.shop), st.players.map(p => p.shop));
-        Object.values(cat).forEach(u => assert.equal(st.pool[u.key], W.POOL[u.cost]));
+        const bought = {}; st.players.forEach(p => W.units(p).forEach(u => { bought[u.k] = (bought[u.k] || 0) + W.copiesOf(u.s); }));
+        Object.values(cat).forEach(u => assert.equal(st.pool[u.key] + (bought[u.key] || 0), W.POOL[u.cost], u.key));
     });
     test("the shop shows what your level allows (level 1: only 1-gold units), and only what's left in the pool", () => {
-        const st = match("s");
-        st.players.forEach(p => p.shop.forEach(k => assert.equal(cat[k].cost, 1)));
-        const p = me(st); p.level = 9;
+        const st = match("s"), p = me(st);
+        p.level = 1;
+        for (let i = 0; i < 50; i++) W.rollShop(cat, st, 0, i).forEach(k => assert.equal(cat[k].cost, 1));
+        p.level = 9;
         const costs = {};
         for (let i = 0; i < 300; i++) W.rollShop(cat, st, 0, i).forEach(k => { costs[cat[k].cost] = (costs[cat[k].cost] || 0) + 1; });
         assert.ok(costs[5] > 60 && costs[4] > costs[1], JSON.stringify(costs));
@@ -95,10 +127,10 @@ describe("⚔️ a match: gold, the shop, buying, merging", () => {
     });
     test("buy: costs its gold, leaves the pool, goes on the bench; not enough gold — refused", () => {
         const st = match("b"), p = me(st);
-        const k = p.shop[0];
+        const k = p.shop[0], left = st.pool[k];
         W.planAction(cat, st, 0, { t: "buy", i: 0 });
-        assert.equal(p.gold, 5 - cat[k].cost);
-        assert.equal(st.pool[k], W.POOL[cat[k].cost] - 1);
+        assert.equal(p.gold, 10 - cat[k].cost);
+        assert.equal(st.pool[k], left - 1);
         assert.deepEqual(p.bench[0], { k, s: 1 });
         assert.equal(p.shop[0], null);
         assert.throws(() => W.planAction(cat, st, 0, { t: "buy", i: 0 }), /Nothing to buy/);
@@ -137,9 +169,9 @@ describe("⚔️ a match: gold, the shop, buying, merging", () => {
         p.bench[0] = { k, s: 1 }; p.bench[1] = { k, s: 2 };
         st.pool[k] = 10;
         W.planAction(cat, st, 0, { t: "sell", from: "bench", i: 0 });
-        assert.equal(p.gold, 5 + 3);
+        assert.equal(p.gold, 10 + 3);
         W.planAction(cat, st, 0, { t: "sell", from: "bench", i: 1 });
-        assert.equal(p.gold, 8 + 3 * 3 - 1);
+        assert.equal(p.gold, 13 + 3 * 3 - 1);
         assert.equal(st.pool[k], 10 + 1 + 3);
         assert.throws(() => W.planAction(cat, st, 0, { t: "sell", from: "bench", i: 0 }), /Nothing to sell/);
     });
@@ -151,13 +183,39 @@ describe("⚔️ a match: gold, the shop, buying, merging", () => {
         assert.equal(p.gold, 18);
         assert.notDeepEqual(p.shop, before);
         W.planAction(cat, st, 0, { t: "xp" });
-        assert.deepEqual([p.gold, p.level, p.xp], [14, 3, 0], "2 to level 2, 2 to level 3");
+        assert.deepEqual([p.gold, p.level, p.xp], [14, 4, 0], "4 XP: level 3 → 4");
         p.gold = 1;
         assert.throws(() => W.planAction(cat, st, 0, { t: "reroll" }), /Not enough gold/);
         assert.throws(() => W.planAction(cat, st, 0, { t: "xp" }), /Not enough gold/);
     });
+    test("🔒 lock: the shop stays for the next round (what's bought stays empty), refresh still works, till it's unlocked", () => {
+        const st = match("lock"), p = me(st);
+        W.planAction(cat, st, 0, { t: "lock" });
+        assert.equal(p.locked, true);
+        W.planAction(cat, st, 0, { t: "buy", i: 0 });
+        const kept = p.shop.slice();
+        assert.equal(kept[0], null);
+        W.endRound(cat, st);
+        assert.deepEqual(p.shop, kept, "round 2: the same shop");
+        W.endRound(cat, st);
+        assert.deepEqual(p.shop, kept, "round 3: still");
+        assert.equal(p.locked, true);
+        p.gold = 20;
+        W.planAction(cat, st, 0, { t: "reroll" });
+        assert.notDeepEqual(p.shop, kept, "🔄 refresh still works");
+        const rolled = p.shop.slice();
+        W.endRound(cat, st);
+        assert.deepEqual(p.shop, rolled, "…and the refreshed one's kept");
+        W.planAction(cat, st, 0, { t: "lock" });
+        assert.equal(p.locked, false);
+        W.endRound(cat, st);
+        assert.notDeepEqual(p.shop, rolled, "🔓 unlocked: a new shop");
+        // the bots never lock
+        assert.ok(st.players.every(x => x.id === 0 || !x.locked));
+    });
     test("placing: only on your half, only as many as your level, swapping places and with the bench", () => {
         const st = match("p"), p = me(st), a = keyOf(1, 0), b = keyOf(1, 1);
+        p.level = 1;
         p.bench[0] = { k: a, s: 1 }; p.bench[1] = { k: b, s: 1 };
         W.planAction(cat, st, 0, { t: "move", from: "bench", i: 0, to: "board", x: 3, y: 0 });
         assert.deepEqual(p.board, [{ k: a, s: 1, x: 3, y: 0 }]);
@@ -215,9 +273,78 @@ describe("⚔️ the fight", () => {
         const f = W.fightStart(cat, humans, []);
         assert.ok(f.every(x => x.def === cat[x.k].def + 80));
     });
-    test("losing costs ❤️: 1, +1 every 4 rounds, + every enemy ★ left standing", () => {
-        assert.equal(W.lossDamage(1, 0), 1);
-        assert.equal(W.lossDamage(8, 5), 1 + 2 + 5);
+    test("losing costs ❤️: 2 + the round, + 2 for every enemy ★ left standing", () => {
+        assert.equal(W.lossDamage(1, 0), 3);
+        assert.equal(W.lossDamage(8, 5), 2 + 8 + 2 * 5);
+    });
+});
+
+describe("⚔️ who you'll fight, before you plan", () => {
+    test("the pairs are made when the round starts — you can see your opponent's board, and it's the board you fight", () => {
+        const st = match("pair");
+        assert.equal(st.pairs.length, 4);
+        assert.equal(new Set(st.pairs.flatMap(p => [p[0], p[1]])).size, 8);
+        const opp = W.opponentOf(st, 0);
+        assert.ok(opp && opp.vs > 0);
+        const seen = JSON.stringify(st.players[opp.vs].board);
+        assert.ok(st.players[opp.vs].board.length >= 1, "their formation's there to see");
+        const res = W.endRound(cat, st);
+        const mine = res.results.find(r => r.a === 0 || r.b === 0);
+        assert.equal(mine.a === 0 ? mine.b : mine.a, opp.vs, "you fight who it said");
+        assert.equal(JSON.stringify(mine.a === 0 ? mine.boards[1] : mine.boards[0]), seen, "…with the board you saw");
+        assert.ok(W.opponentOf(st, 0), "the next round's is known straight away");
+    });
+});
+
+describe("⚔️ abilities, in a fight", () => {
+    const evs = (r, kind) => r.events.filter(e => e[1] === kind);
+    const one = (k, x = 3, y = 0) => ({ k, s: 2, x, y });
+    test("a countdown: the first comes early — at a quarter of it (Mages with their bonus: a tenth), then every full countdown", () => {
+        const r = W.fight(cat, [{ k: "dragonRider", s: 3, x: 3, y: 0 }], [{ k: "stoneGolem", s: 2, x: 3, y: 0 }, { k: "stoneGolem", s: 2, x: 2, y: 0 }], "cd", true);
+        const casts = evs(r, "skill").filter(e => e[2] === 0).map(e => e[0]);
+        assert.ok(casts.length >= 2, JSON.stringify(casts));
+        assert.equal(casts[0], Math.round(cat.dragonRider.ability.cd * 10 * 0.25) - 1);
+        assert.equal(casts[1] - casts[0], cat.dragonRider.ability.cd * 10);
+        const start = r.start.find(s => s.id === 0);
+        assert.deepEqual([start.abName, start.ab, start.cdMax], ["Meteor Strike", "blast", 70]);
+        const mages = Object.values(cat).filter(u => u.faction === "Mage").slice(0, 2).map((u, i) => ({ k: u.key, s: 1, x: i, y: 0 }));
+        assert.ok(W.fightStart(cat, mages, []).every(f => f.cdLeft === Math.round(f.cdMax * 0.1)));
+    });
+    test("each does what it says: heal, stun, summon, leap, shield, fear, rally", () => {
+        const pal = one("paladin"), r1 = W.fight(cat, [one("elevateSupport", 3, 1), { k: "archer", s: 1, x: 3, y: 0 }], [one("dragonRider"), one("stoneGolem", 1, 0)], "h", true);
+        assert.ok(evs(r1, "heal").length >= 1, "💚 Healing Veil heals");
+        // …and their HP really goes up: what it was (after the last hit) + the heal
+        const healed = evs(r1, "heal").find(e => e[3] > 0);
+        assert.ok(healed, "someone was hurt and healed");
+        const lastHit = r1.events.slice(0, r1.events.indexOf(healed)).filter(e => e[1] === "hit" && e[3] === healed[2]).pop(); // (the last before it, in order)
+        const before = lastHit ? lastHit[5] : r1.start.find(x => x.id === healed[2]).hp;
+        assert.equal(healed[4], before + healed[3]);
+        const r2 = W.fight(cat, [one("iceMage")], [one("stoneGolem"), one("paladin", 2, 0)], "s", true);
+        const stun = evs(r2, "stun")[0];
+        assert.ok(stun, "💫 Snowball stuns");
+        assert.ok(!r2.events.some(e => (e[1] === "hit" || e[1] === "skill" || e[1] === "move") && e[2] === stun[2] && e[0] > stun[0] && e[0] < stun[3]), "…and a stunned unit does nothing till it wears off");
+        const r3 = W.fight(cat, [one("undeadWarrior")], [one("stoneGolem"), one("paladin", 2, 0)], "u", true);
+        const sm = evs(r3, "summon")[0];
+        assert.ok(sm && r3.events.some(e => e[1] === "hit" && e[2] === sm[2]), "👻 Cursed Army calls up a helper, and it fights");
+        const r4 = W.fight(cat, [one("assasin")], [one("stoneGolem", 3, 0), one("archer", 0, 3)], "l", true);
+        assert.ok(r4.events.some(e => e[1] === "move" && e[2] === 0 && e[5] === 1), "🌀 Teleport leaps");
+        const r5 = W.fight(cat, [pal], [one("stoneGolem")], "sh", true);
+        assert.ok(evs(r5, "shield").length >= 1, "🛡️ Divine Guards shields");
+        const r6 = W.fight(cat, [one("flyingMonster")], [one("stoneGolem"), one("paladin", 2, 0)], "f", true);
+        assert.ok(evs(r6, "fear").length >= 1, "😱 Nightmare scares");
+        // …and a scared unit doesn't attack till it wears off
+        evs(r6, "fear").forEach(f => {
+            assert.ok(f[3] > f[0], "it lasts");
+            assert.ok(!r6.events.some(e => e[1] === "hit" && e[2] === f[2] && e[6] === "a" && e[0] > f[0] && e[0] < f[3]), "no attacks while scared");
+        });
+        const r7 = W.fight(cat, [one("bardHero"), one("archer", 2, 1)], [one("stoneGolem")], "r", true);
+        assert.ok(evs(r7, "rally").length >= 1, "📯 Song of Courage rallies");
+    });
+    test("talents in a fight: thorns hit back, evasion dodges", () => {
+        const r = W.fight(cat, [one("forestQueen")], [{ k: "infantry", s: 3, x: 3, y: 0 }, { k: "lancer", s: 2, x: 2, y: 0 }], "t", true);
+        assert.ok(r.events.some(e => e[1] === "hit" && e[2] === 0 && e[6] === "r"), "Thorns: damage sent back");
+        const d = W.fight(cat, [one("airMage")], [{ k: "infantry", s: 3, x: 3, y: 0 }, { k: "archer", s: 3, x: 1, y: 1 }], "d", true);
+        assert.ok(evs(d, "miss").some(e => e[3] === 0), "Wind Tamer: some attacks miss it");
     });
 });
 
@@ -229,7 +356,7 @@ describe("⚔️ rounds, the bots, the end", () => {
         assert.equal(new Set(res.results.flatMap(r => [r.a, r.b])).size, 8);
         st.players.filter(p => p.bot).forEach(p => assert.ok(p.board.length >= 1, "every bot fields someone"));
         assert.equal(st.round, 2);
-        assert.ok(st.players.every(p => p.shop.length === 5 && p.level >= 2));
+        assert.ok(st.players.filter(p => p.alive).every(p => p.shop.length === 5 && p.level >= 3));
         // you fielded nobody: you lost
         const mine = res.results.find(r => r.a === 0 || r.b === 0);
         assert.equal(mine.winner, mine.a === 0 ? 1 : 0);
@@ -252,6 +379,7 @@ describe("⚔️ rounds, the bots, the end", () => {
         for (const seed of ["o1", "o2", "o3", "o4", "o5", "o6"]) {
             const st = match(seed);
             st.players[7].alive = false; st.players[7].place = 8;
+            st.pairs = W.makePairs(st);
             const hp = st.players.map(p => p.hp);
             const res = W.endRound(cat, st);
             const ghost = res.results.filter(r => r.ghost);
@@ -265,16 +393,17 @@ describe("⚔️ rounds, the bots, the end", () => {
     test("a better bot does better (over many matches)", () => {
         const avg = (skill) => {
             let total = 0;
-            for (let g = 0; g < 12; g++) {
+            for (let g = 0; g < 20; g++) {
                 const st = match("skill" + g, { skill: 0.5 });
                 me(st).bot = { skill, style: "Undead" };
+                W.botPlan(cat, st, 0); // (round 1 too)
                 while (!st.over) W.endRound(cat, st);
                 total += me(st).place;
             }
-            return total / 12;
+            return total / 20;
         };
         const good = avg(0.95), poor = avg(0.05);
-        assert.ok(good + 1.5 < poor, `skill 0.95: ${good} · skill 0.05: ${poor}`);
+        assert.ok(good <= 4.3 && good + 2 < poor, `skill 0.95: ${good} · skill 0.05: ${poor} (a good bot fields its strongest — ranks will need this)`);
     });
 });
 
@@ -325,10 +454,18 @@ describe("⚔️ on the server (api/games.js): it plays every round itself", () 
         const twice = await act({ action: "wbRound", runId: start.body.runId, round: 1, actions: [] });
         assert.equal(twice.status, 409);
     });
+    test("🔒 lock is a move the server takes: the next round has the same shop", async () => {
+        const start = await act({ action: "wbStart" });
+        const shop = start.body.match.players[0].shop;
+        const r = await act({ action: "wbRound", runId: start.body.runId, round: 1, actions: [{ t: "lock" }] });
+        assert.equal(r.status, 200, JSON.stringify(r.body));
+        assert.equal(r.body.match.players[0].locked, true);
+        assert.deepEqual(r.body.match.players[0].shop, shop);
+    });
     test("a move that isn't allowed refuses the whole round (nothing changes)", async () => {
         const start = await act({ action: "wbStart" });
         const before = db._data.get("warbandRuns/" + start.body.runId).state;
-        for (const actions of [[{ t: "buy", i: 0 }, { t: "buy", i: 1 }, { t: "buy", i: 2 }, { t: "buy", i: 3 }, { t: "buy", i: 4 }, { t: "buy", i: 0 }], [{ t: "xp" }, { t: "xp" }], [{ t: "sell", from: "bench", i: 0 }], [{ t: "move", from: "bench", i: 0, to: "board", x: 3, y: 0 }]]) {
+        for (const actions of [[{ t: "buy", i: 0 }, { t: "buy", i: 1 }, { t: "buy", i: 2 }, { t: "buy", i: 3 }, { t: "buy", i: 4 }, { t: "buy", i: 0 }], [{ t: "xp" }, { t: "xp" }, { t: "xp" }], [{ t: "sell", from: "bench", i: 0 }], [{ t: "move", from: "bench", i: 0, to: "board", x: 3, y: 0 }]]) {
             const r = await act({ action: "wbRound", runId: start.body.runId, round: 1, actions });
             assert.equal(r.status, 400, JSON.stringify(actions));
             assert.match(r.body.error, /^Move \d+:/);
@@ -339,6 +476,18 @@ describe("⚔️ on the server (api/games.js): it plays every round itself", () 
             if (Array.isArray(actions) && actions.length > 400) assert.match(r.body.error, /Too many moves/);
         }
         assert.equal(db._data.get("warbandRuns/" + start.body.runId).state, before);
+    });
+    test("a match from before an update isn't carried on: a new one starts", async () => {
+        const start = await act({ action: "wbStart" });
+        const doc = db._data.get("warbandRuns/" + start.body.runId), old = JSON.parse(doc.state);
+        old.v = 1; db._data.set("warbandRuns/" + start.body.runId, { ...doc, state: JSON.stringify(old) });
+        assert.equal((await act({ action: "wbGet" })).body.match, null);
+        assert.equal((await act({ action: "wbRound", runId: start.body.runId, round: 1, actions: [] })).status, 409);
+        const fresh = await act({ action: "wbStart" });
+        assert.notEqual(fresh.body.runId, start.body.runId);
+        assert.equal(fresh.body.match.v, W.VERSION);
+        const gone = db._data.get("warbandRuns/" + start.body.runId);
+        assert.deepEqual([gone.over, gone.outdated, gone.place], [true, true, null], "ended, unplaced (not 8th)");
     });
     test("someone else's match, a made-up one, no sign-in — refused", async () => {
         const start = await act({ action: "wbStart" });
