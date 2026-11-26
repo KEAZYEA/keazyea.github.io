@@ -63,6 +63,9 @@
  *   warbandRuns/{runId}                       a Warband match: { uid, state (JSON: the whole
  *                                             match — its seed never leaves here), round, over, place }
  *   warbandPlayers/{uid}                      { active: runId, last: { runId, place, at } }
+ *   warbandDays/{uid}_{day}                   { count } — matches finished (or given up) that day: the first
+ *                                             W.DAILY_REWARDS pay W.rewardFor(place) (🪙 to the wallet, as earned;
+ *                                             ✨, 💗 and 🧰 chest draws to the inventory)
  *   gameRecords/{game}                        the all-time high score: { game, score, uid, name, runId, at }
  *                                             (the first to reach a score keeps it)
  */
@@ -581,6 +584,9 @@ function wbCleanActions(list) {
   });
 }
 const wbView = (runId, st, extra) => ({ ok: true, runId, match: W.forPlayer(st), ...(extra || {}) });
+const wbDayRef = (db, uid, now) => db.collection("warbandDays").doc(`${uid}_${dayKeyFor(now)}`);
+// 🎁 how many of today's rewarded matches are left
+const wbRewardsLeft = async (db, uid, now) => { const d = await wbDayRef(db, uid, now).get(); return Math.max(0, W.DAILY_REWARDS - (d.exists ? d.data().count || 0 : 0)); };
 
 async function wbStart(db, uid, body, now) {
   const pRef = db.collection("warbandPlayers").doc(uid);
@@ -594,10 +600,12 @@ async function wbStart(db, uid, body, now) {
         // one from an older version of the rules isn't carried on: it ends, unplaced, and a new one starts
         await old.ref.set({ over: true, place: null, outdated: true, updatedAt: now }, { merge: true });
       } else if (body.fresh !== true) {
-        return wbView(active, was, { resumed: true, cat: wbCatalog() });
+        return wbView(active, was, { resumed: true, cat: wbCatalog(), rewardsLeft: await wbRewardsLeft(db, uid, now) });
       } else {
-        // starting again gives the one you're in up: 8th
+        // starting again gives the one you're in up: 8th — and it uses one of today's rewarded matches, paying nothing
+        // (so starting again can't be used to hunt for an easy match)
         await old.ref.set({ over: true, place: W.PLAYERS, abandoned: true, updatedAt: now }, { merge: true });
+        await wbDayRef(db, uid, now).set({ uid, count: FieldValue.increment(1), updatedAt: now }, { merge: true });
       }
     }
   }
@@ -607,7 +615,7 @@ async function wbStart(db, uid, body, now) {
   batch.set(db.collection("warbandRuns").doc(runId), { uid, state: JSON.stringify(st), round: st.round, over: false, createdAt: now, updatedAt: now });
   batch.set(pRef, { active: runId, updatedAt: now }, { merge: true });
   await batch.commit();
-  return wbView(runId, st, { resumed: false, cat: wbCatalog() }); // (the units, so the page's rules are exactly these)
+  return wbView(runId, st, { resumed: false, cat: wbCatalog(), rewardsLeft: await wbRewardsLeft(db, uid, now) }); // (the units, so the page's rules are exactly these)
 }
 
 async function wbRound(db, uid, body, now) {
@@ -628,21 +636,40 @@ async function wbRound(db, uid, body, now) {
     });
     const res = W.endRound(cat, st, wbRoundKey(runId));
     const me = st.players[0];
-    tx.update(runRef, { state: JSON.stringify(st), round: st.round, over: st.over, ...(st.over ? { place: me.place } : {}), updatedAt: now });
-    if (st.over) tx.set(pRef, { active: null, last: { runId, place: me.place, at: now }, updatedAt: now }, { merge: true });
-    return wbView(runId, st, { results: res.results, over: st.over, place: st.over ? me.place : null });
+    // 🎁 the match is over: its reward, if it's one of today's first W.DAILY_REWARDS (read first: a transaction reads before it writes)
+    let reward = null, rewardsLeft = null;
+    if (st.over) {
+      const dayRef = wbDayRef(db, uid, now), walletRef = db.collection("tokenWallets").doc(uid), invRef = db.collection("inventories").doc(uid);
+      const [daySnap, walletSnap, invSnap] = await tx.getAll(dayRef, walletRef, invRef);
+      const used = daySnap.exists ? daySnap.data().count || 0 : 0;
+      if (used < W.DAILY_REWARDS) {
+        reward = W.rewardFor(me.place);
+        if (reward.tokens) tx.set(walletRef, { balance: (walletSnap.exists ? walletSnap.data().balance || 0 : 0) + reward.tokens, lifetimeEarned: FieldValue.increment(reward.tokens), updatedAt: now }, { merge: true });
+        const inv = invSnap.exists ? invSnap.data() : {};
+        const add = {};
+        if (reward.stardust) add.stardust = Math.max(0, inv.stardust || 0) + reward.stardust;
+        if (reward.hearts) add.hearts = Math.max(0, inv.hearts || 0) + reward.hearts;
+        if (reward.draws) add.freeDraws = Math.max(0, inv.freeDraws || 0) + reward.draws;
+        if (Object.keys(add).length) tx.set(invRef, { ...add, updatedAt: now }, { merge: true });
+      }
+      tx.set(dayRef, { uid, count: used + 1, updatedAt: now }, { merge: true });
+      rewardsLeft = Math.max(0, W.DAILY_REWARDS - used - 1);
+    }
+    tx.update(runRef, { state: JSON.stringify(st), round: st.round, over: st.over, ...(st.over ? { place: me.place, reward } : {}), updatedAt: now });
+    if (st.over) tx.set(pRef, { active: null, last: { runId, place: me.place, at: now, reward }, updatedAt: now }, { merge: true });
+    return wbView(runId, st, { results: res.results, over: st.over, place: st.over ? me.place : null, ...(st.over ? { reward, rewardsLeft } : {}) });
   });
 }
 
-async function wbGet(db, uid) {
-  const pSnap = await db.collection("warbandPlayers").doc(uid).get();
+async function wbGet(db, uid, now) {
+  const [pSnap, rewardsLeft] = await Promise.all([db.collection("warbandPlayers").doc(uid).get(), wbRewardsLeft(db, uid, now)]);
   const active = pSnap.exists ? pSnap.data().active : null;
-  if (!isRunId(active)) return { ok: true, runId: null, match: null, last: pSnap.exists ? pSnap.data().last || null : null };
+  if (!isRunId(active)) return { ok: true, runId: null, match: null, rewardsLeft, last: pSnap.exists ? pSnap.data().last || null : null };
   const r = await db.collection("warbandRuns").doc(active).get();
-  if (!r.exists || r.data().uid !== uid || r.data().over) return { ok: true, runId: null, match: null };
+  if (!r.exists || r.data().uid !== uid || r.data().over) return { ok: true, runId: null, match: null, rewardsLeft };
   const st = JSON.parse(r.data().state);
-  if (st.v !== W.VERSION) return { ok: true, runId: null, match: null, outdated: true }; // (from before an update: a new one starts)
-  return wbView(active, st, { cat: wbCatalog() });
+  if (st.v !== W.VERSION) return { ok: true, runId: null, match: null, rewardsLeft, outdated: true }; // (from before an update: a new one starts)
+  return wbView(active, st, { cat: wbCatalog(), rewardsLeft });
 }
 
 module.exports = async (req, res) => {
@@ -670,7 +697,7 @@ module.exports = async (req, res) => {
       case "leaderboard": result = await leaderboard(db, await verifyCaller(admin, req, false, body), now); break;
       case "wbStart": result = await wbStart(db, await verifyCaller(admin, req, true, body), body, now); break;
       case "wbRound": result = await wbRound(db, await verifyCaller(admin, req, true, body), body, now); break;
-      case "wbGet": result = await wbGet(db, await verifyCaller(admin, req, true, body)); break;
+      case "wbGet": result = await wbGet(db, await verifyCaller(admin, req, true, body), now); break;
       default: throw new HttpError(400, "Unknown action.");
     }
     res.status(200).json(result);

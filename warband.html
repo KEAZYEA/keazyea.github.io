@@ -45,7 +45,9 @@
         .cell { position: relative; transform-style: preserve-3d; border: 1px solid rgba(255, 255, 255, 0.05); }
         .cell.mine { background: rgba(120, 140, 255, 0.05); cursor: pointer; }
         .cell.enemy { background: rgba(255, 80, 100, 0.06); }
-        .cell.target { background: rgba(111, 227, 154, 0.16); }
+        .board.picking .cell.mine { background: rgba(111, 227, 154, 0.13); } /* (a unit picked: where it can go) */
+        .board.picking .cell.room::before { display: none; }
+        .sec { display: contents; } /* (the screen's parts: each redrawn only when it changes) */
         .cell.drop { background: rgba(111, 227, 154, 0.3); }
         /* a figure: a shadow on the board, and the unit standing on it */
         .shadow { position: absolute; left: 14%; right: 14%; bottom: 10%; height: 26%; border-radius: 50%; background: radial-gradient(ellipse, rgba(0, 0, 0, 0.55), transparent 70%); }
@@ -140,6 +142,10 @@
         .screen p { margin: 0; color: var(--dim); font-size: .88rem; line-height: 1.45; }
         .screen ul { text-align: left; margin: 0; padding-left: 20px; color: var(--dim); font-size: .84rem; line-height: 1.5; }
         .place { font-size: 3.2rem; font-weight: 900; color: var(--gold); line-height: 1; }
+        .won { padding: 12px 14px; border-radius: 16px; background: linear-gradient(180deg, rgba(255, 226, 122, 0.22), rgba(255, 176, 46, 0.12)); border: 2px solid #ffd24a; font-weight: 900; font-size: 1.05rem; color: #ffe27a; animation: bump .6s ease-out; }
+        .won small { display: block; margin-top: 3px; font-size: .74rem; color: var(--dim); font-weight: 700; }
+        .won.none { border-color: var(--line); background: var(--panel); color: var(--dim); font-size: .9rem; animation: none; }
+        .rw { padding: 8px 10px; border-radius: 12px; background: rgba(255, 210, 74, 0.1); border: 1px solid rgba(255, 210, 74, 0.4); }
         .sheet-bg { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); z-index: 60; display: flex; align-items: flex-end; justify-content: center; }
         .sheet-bg[hidden] { display: none; }
         .sheet { width: 100%; max-width: 480px; max-height: 82vh; overflow-y: auto; padding: 16px 14px calc(16px + env(safe-area-inset-bottom, 0px)); border-radius: 20px 20px 0 0; background: #1c1836; border-top: 1px solid var(--line); }
@@ -186,6 +192,7 @@
 
     // the match: the server's copy is the real one; this one plans the round with the same rules
     let A = null, cat = null, runId = null, match = null, moves = [], sel = null, mode = "loading", busy = false, fightTimer = null, skipFight = null, shownGold = null;
+    let rewardsLeft = null, lastReward = undefined; // 🎁 today's rewarded matches left; what the last match paid (null: none — the day's were used)
     const me = () => match.players[0];
     const opp = () => (match && W.opponentOf(match, 0)) || null;
 
@@ -224,13 +231,14 @@
         if (A && A.waitForAuthReady) await A.waitForAuthReady();
         return A && A.getCurrentUser && A.getCurrentUser();
     }
-    function take(r) { if (r.cat) cat = r.cat; runId = r.runId; match = r.match; moves = []; sel = null; }
+    function take(r) { if (r.cat) cat = r.cat; runId = r.runId; match = r.match; moves = []; sel = null; if (typeof r.rewardsLeft === "number") rewardsLeft = r.rewardsLeft; if (r.over) lastReward = r.reward || null; }
     async function boot() {
         let who = null;
         try { who = await loadAppState(); } catch (e) { }
         if (!who) { mode = "signin"; return render(); }
         try {
             const r = await A.warbandGet();
+            if (typeof r.rewardsLeft === "number") rewardsLeft = r.rewardsLeft;
             if (r.match) { take(r); mode = "plan"; } else { mode = "start"; }
         } catch (e) { mode = "error"; render(e.message); return; }
         render();
@@ -277,6 +285,7 @@
             if (e) {
                 if (e.status === 400 || e.status === 409) { // (out of step: start the round again from the server's copy)
                     toast(/updated/.test(e.message || "") ? e.message : "That round didn't go through — here it is again.");
+                    mode = "plan"; // (back to planning — the fight shown didn't count)
                     try { const g = await A.warbandGet(); if (g.match) take(g); else mode = "start"; } catch (e2) { }
                 } else { toast(e.message || "Couldn't reach the server — try again."); mode = "plan"; }
                 return render();
@@ -346,8 +355,8 @@
         for (let y = 0; y < W.ROWS; y++) for (let x = 0; x < W.COLS; x++) {
             const i = p.board.findIndex(u => u.x === x && u.y === y);
             const isSel = sel && sel.from === "board" && sel.i === i;
-            const room = !sel && i < 0 && p.board.length < p.level && W.units(p).length > p.board.length && y === 0; // (room for more: a hint on the front row)
-            cells += `<div class="cell mine${sel && sel.from !== "enemy" && i < 0 ? " target" : ""}${room ? " room" : ""}" data-x="${x}" data-y="${y}">${i >= 0 ? figHtml(p.board[i], isSel ? " sel" : "", cat[p.board[i].k].ability.cd, isSel) : ""}</div>`;
+            const room = i < 0 && p.board.length < p.level && W.units(p).length > p.board.length && y === 0; // (room for more: a hint on the front row)
+            cells += `<div class="cell mine${room ? " room" : ""}" data-x="${x}" data-y="${y}">${i >= 0 ? figHtml(p.board[i], isSel ? " sel" : "", cat[p.board[i].k].ability.cd, isSel) : ""}</div>`;
         }
         return `<div class="stage"><div class="board plan" id="board">${cells}</div></div>`;
     }
@@ -378,8 +387,11 @@
         }).join("")}</div>
         <div class="acts"><button class="lock${p.locked ? " on" : ""}" data-do="lock" aria-pressed="${p.locked}" aria-label="${p.locked ? "Unlock the shop" : "Lock the shop: keep it for the next round"}" title="${p.locked ? "Locked: this shop stays for the next round" : "Lock: keep this shop for the next round"}">${p.locked ? "🔒" : "🔓"}</button><button data-do="reroll"${p.gold < W.ECON.reroll ? " disabled" : ""}>🔄 Refresh<small>2 💰</small></button><button data-do="xp"${p.gold < W.ECON.xpCost || p.level >= W.MAX_LEVEL ? " disabled" : ""}>⬆️ XP<small>4 💰</small></button><button class="go" data-do="fight"${busy ? " disabled" : ""}>${busy ? "…" : "⚔️ Fight!"}</button></div>`;
     }
+    const PLAN_PARTS = ["top", "players", "vs", "board", "traits", "bench", "info", "shop"];
+    let partWas = {};
     function render(err) {
         const app = $("app");
+        if (mode !== "plan") app.dataset.layout = mode;
         if (mode === "loading") { app.innerHTML = `<div class="screen"><p>Loading Warband…</p></div>`; return; }
         if (mode === "error") { app.innerHTML = `<div class="screen"><h1>⚔️ Warband</h1><p>Couldn't load your match: ${esc(err || "")}</p><button class="big main" data-do="retry">Try again</button><button class="big" data-do="back">← Back</button></div>`; return; }
         if (mode === "signin") { app.innerHTML = `<div class="screen"><h1>⚔️ Warband</h1><p>Sign in to play — every match is played on our server, so nobody can fake a win.</p><button class="big" data-do="back">← Back</button></div>`; return; }
@@ -390,7 +402,8 @@
                 <li>☄️5 over a unit: its own ability (Meteor Strike, Snowball, Healing Veil…) goes off in 5 s; heroes have their ⭐ talents too.</li>
                 <li>🛡️ Same faction (Human, Undead, Mage…) or attack type: team bonuses.</li>
                 <li>⚔️ Then your team fights theirs — lose and you lose ❤️.</li></ul>
-                <p>🏆 Ranks and rewards are coming soon — for now, play for fun.</p>
+                ${LOCAL ? `<p>🧪 Practice pays no rewards.</p>` : `<p class="rw">🎁 <b>Rewards</b> for where you finish — 🥇 🪙 2 · ✨ 250 · 🧰 a chest draw … — ${rewardsLeft == null ? `for your first ${W.DAILY_REWARDS} matches a day` : rewardsLeft > 0 ? `<b>${rewardsLeft} of ${W.DAILY_REWARDS} left today</b>` : `today's ${W.DAILY_REWARDS} are used — more tomorrow (you can still play)`}.</p>`}
+                <p>🏆 Ranks are coming soon.</p>
                 <button class="big main" data-do="start"${busy ? " disabled" : ""}>${busy ? "Starting…" : "⚔️ Play"}</button><button class="big" data-do="back">← Back</button></div>`;
             return;
         }
@@ -398,12 +411,18 @@
             const p = me();
             app.innerHTML = `<div class="screen"><div class="place">${ORD(p.place)}</div><h1>${p.place === 1 ? "🏆 Victory!" : p.place <= 4 ? "Well fought!" : "Knocked out"}</h1>
                 <p>${p.place === 1 ? "Every rival beaten." : `You finished ${ORD(p.place)} of 8, after ${match.round} round${match.round === 1 ? "" : "s"}.`}</p>
+                ${LOCAL ? "" : lastReward ? `<div class="won" id="won">🎁 You won ${esc(W.rewardText(lastReward))}<small>${rewardsLeft > 0 ? `${rewardsLeft} more rewarded match${rewardsLeft === 1 ? "" : "es"} today` : "That was today's last rewarded match — more tomorrow"}</small></div>` : lastReward === null ? `<div class="won none" id="won">No reward this time — today's ${W.DAILY_REWARDS} rewarded matches were used<small>More tomorrow · you can still play for fun</small></div>` : ""}
                 ${playersHtml()}
                 <button class="big main" data-do="start">⚔️ Play again</button><button class="big" data-do="back">← Back</button></div>`;
             return;
         }
         if (mode === "plan") {
-            app.innerHTML = topHtml() + playersHtml() + vsHtml() + boardHtml() + traitsHtml(me().board) + benchHtml() + infoHtml() + shopHtml();
+            // each part of the screen redrawn only if it's changed — buying something doesn't redraw the board
+            // (redrawing the whole screen on every tap made taps slow on a phone)
+            if (app.dataset.layout !== "plan") { app.innerHTML = PLAN_PARTS.map(id => `<div class="sec" id="sec-${id}"></div>`).join(""); app.dataset.layout = "plan"; partWas = {}; }
+            const parts = { top: topHtml(), players: playersHtml(), vs: vsHtml(), board: boardHtml(), traits: traitsHtml(me().board), bench: benchHtml(), info: infoHtml(), shop: shopHtml() };
+            PLAN_PARTS.forEach(id => { if (partWas[id] !== parts[id]) { $("sec-" + id).innerHTML = parts[id]; partWas[id] = parts[id]; } });
+            $("board").classList.toggle("picking", !!sel && sel.from !== "enemy");
             fitBoard();
             // 💰 changed: it pulses, and how much floats up
             const g = me().gold;
@@ -420,10 +439,16 @@
        then smaller until everything down to ⚔️ Fight! fits the screen's height, so nothing's cut off on a short
        phone or a wide laptop. Worked out again when the window changes size or the phone turns. */
     const STAGE_ROWS = 8 - 1.05; // (the tilted board takes about this many squares of height: its 8, less what it's pulled up)
+    let fitKey = "";
     function fitBoard() {
         if (mode !== "plan" && mode !== "fight") return;
-        const root = document.documentElement, last = document.querySelector("#app > :last-child");
+        const acts = document.querySelectorAll("#app .acts"), root = document.documentElement, last = acts[acts.length - 1];
         if (!last) return;
+        // (the same screen as last time: one look — worked out again only if something no longer fits; a full
+        // fit measures the page several times, and doing that on every tap made taps slow on a phone)
+        const key = window.innerWidth + "x" + window.innerHeight + ":" + mode;
+        if (key === fitKey && last.getBoundingClientRect().bottom + window.scrollY + 10 <= window.innerHeight) return;
+        fitKey = key;
         document.body.classList.toggle("compact", window.innerHeight < 720);
         const widest = Math.max(28, Math.min(70, Math.floor((Math.min(window.innerWidth, 640) - 24) / 7)));
         let c = widest;
@@ -449,6 +474,7 @@
         const app = $("app");
         let cells = "";
         for (let y = 0; y < 8; y++) for (let x = 0; x < W.COLS; x++) cells += `<div class="cell${y < 4 ? " enemy" : ""}"></div>`;
+        app.dataset.layout = "fight";
         app.innerHTML = topHtml() + playersHtml() + `<div class="vs">⚔️ You vs ${esc(foe.name)}${res.ghost ? " (a copy)" : ""}<small>${esc(traitsLine(youA ? res.boards[0] : res.boards[1]))}</small></div>`
             + `<div class="stage"><div class="board" id="fboard">${cells}<div class="fx" id="fx" style="position:absolute;inset:0;transform-style:preserve-3d"></div></div></div>`
             + `<div class="acts" style="grid-template-columns:1fr"><button data-do="skip">⏩ Skip</button></div>`;
@@ -563,6 +589,8 @@
             <li><b>Tap a unit</b> to see it, then tap a square or bench slot to move it — or drag it. <b>✕ Delete</b> (or drag it onto the shop) gets rid of it, with its 💰 back. <b>👥 2/3</b> says how many you've put on the board, of how many you can (your level).</li>
             <li><b>Team bonuses</b>: units of the same faction or attack type on the board (each different unit counts once).</li>
             <li><b>⚔️ Fight!</b> Lose and you lose ❤️: 2 + the round, and 2 more for each ★ of theirs still standing. At 0 you're out.</li></ul>
+            <h2>🎁 Rewards</h2><p>Your first ${W.DAILY_REWARDS} matches each day pay by where you finish (starting again mid-match uses one and pays nothing):</p>
+            <p>${Object.entries(W.REWARDS).map(([pl, r]) => `<b>${ORD(+pl)}</b>: ${esc(W.rewardText(W.rewardFor(+pl)))}`).join("<br>")}</p>
             <h2>🛡️ Team bonuses</h2>${Object.entries(W.TRAITS).map(([k, T]) => `<p><b>${T.icon} ${T.name}</b> (${T.steps.join(" / ")}): ${esc(T.desc(T.vals.join(" / ")))}</p>`).join("")}
             <h2>⏱ What abilities do</h2>${Object.values(W.ABILITIES).map(a => `<p>${a.icon} ${esc(a.desc)}</p>`).join("")}`);
     }
