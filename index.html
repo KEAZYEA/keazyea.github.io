@@ -5477,6 +5477,11 @@ function getNewsTypeInfo(type) {
             const box = document.getElementById("keepOverlay");
             if (!box.hidden) return;
             box.innerHTML = page === "warband" ? `<iframe src="warband.html" title="Warband"></iframe>` : `<iframe src="dungeon.html" title="The Keep" allow="autoplay"></iframe>`;
+            // its keys work straight away — without a tap on it first
+            const frame = box.querySelector("iframe");
+            const give = () => { try { frame.focus(); frame.contentWindow.focus(); } catch (e) { } };
+            frame.addEventListener("load", give);
+            give();
             box.hidden = false;
             document.body.classList.add("keep-open");
             popupStep(() => closeKeepHome(true));

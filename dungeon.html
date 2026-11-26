@@ -31,6 +31,10 @@
         /* 🎒 under the map (top-right) — the top bar's full on a phone */
         #bagBtn { position: absolute; right: 8px; top: calc(154px + env(safe-area-inset-top, 0px)); width: 46px; height: 46px; font-size: 1.35rem; border-radius: 14px; }
         body.in-lobby #bagBtn { top: calc(62px + env(safe-area-inset-top, 0px)); }
+        /* ⬅ back to Games (or Home): big, always there, under the 🎒 */
+        #backBtn { position: absolute; right: 8px; top: calc(208px + env(safe-area-inset-top, 0px)); height: 46px; padding: 0 14px; border-radius: 14px; border: 2px solid #ffd24a; background: linear-gradient(180deg, #ff7a5a, #c8304a); color: #fff; font-weight: 900; font-size: .95rem; cursor: pointer; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45); touch-action: manipulation; z-index: 6; }
+        body.in-lobby #backBtn { top: calc(116px + env(safe-area-inset-top, 0px)); }
+        #backBtn:hover, #backBtn:focus-visible { filter: brightness(1.12); }
         .loot { display: flex; gap: 6px; padding: 5px 8px; border-radius: 12px; background: var(--panel); border: 1px solid var(--line); font-size: .76rem; font-weight: 800; }
         .loot span { white-space: nowrap; } .loot span[hidden] { display: none; }
         /* a narrow phone: the loot as a little 2×2 grid, so ☰ stays on screen */
@@ -250,6 +254,7 @@
     <div class="tags"><div class="tag demo" id="demoTag">🧪 Demo — still being built</div><div class="tag" id="floorTag"></div><div class="tag quest" id="questTag"></div><div class="tag" id="bagTag" hidden></div></div>
     <canvas id="mini" width="168" height="168"></canvas>
     <button type="button" class="hud-btn" id="bagBtn" aria-label="Your bag (B)" title="Your bag (B)">🎒</button>
+    <button type="button" id="backBtn" aria-label="Back">⬅ Games</button>
     <div class="boss-bar" id="bossBar" hidden><b id="bossName"></b><div><i id="bossFill"></i></div></div>
     <div class="toast" id="toast"></div>
     <div class="pad" id="pad"></div>
@@ -2342,6 +2347,14 @@
     function resume() { $("pauseScreen").hidden = true; paused = frozenBy > 0; if (!paused) last = performance.now(); }
     $("pauseBtn").addEventListener("click", () => { if (!$("pauseScreen").hidden) resume(); else pause(); });
     $("bagBtn").addEventListener("click", () => { if (running && !G.over && $("pauseScreen").hidden) openPanel("bag"); });
+    // ⬅ back to Games (in the app) or Home: at once in the city; on a road it asks first — leaving gives up the trip (its materials are lost), as ☰ → Give up does
+    const goBack = () => { if (inApp) { try { window.parent.postMessage({ kih: "keepClose" }, location.origin); return; } catch (e) { } } location.href = "index.html"; };
+    $("backBtn").textContent = inApp ? "⬅ Games" : "⬅ Home";
+    $("backBtn").addEventListener("click", () => {
+        if (!G || !plan || plan.mode !== "wilds" || G.over) return goBack();
+        openSheet(`<h2>🚪 Leave the road?</h2><p class="sub">This trip's materials are lost — walk back through the gate to keep them.</p>`,
+            [{ label: "🚪 Leave", main: true, id: "leaveGo", go: () => { closeSheet(); endRun(false, true); setTimeout(goBack, 1000); } }, { label: "Stay", go: () => closeSheet() }]);
+    });
 
     /* ---------------- the end of a run ---------------- */
     function endRun(won, quit) {

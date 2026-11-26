@@ -715,6 +715,16 @@
                 <div class="arcade">${C.GAMES.map(g => { const c = GAME_CARDS[g] || { icon: "🎮", name: g }, b = localBest(g);
                     return `<button type="button" class="arcade-card" data-game="${g}"><span class="ac-icon">${c.icon}</span><span class="ac-name">${esc(c.name)}</span><span class="ac-best">${b ? `Best: ${b}` : "Tap to play"}</span></button>`; }).join("")}</div>`;
             markBonusTab(); markRunTabs();
+            prefetchGames();
+        }
+        // the big games' files, fetched while you look at the cards — so tapping one opens it sooner
+        let prefetched = false;
+        function prefetchGames() {
+            if (prefetched) return;
+            prefetched = true;
+            ["dungeon.html", "dungeon-core.js", "character-core.js", "progress-core.js", "warband.html", "warband-core.js"].forEach(href => {
+                const l = document.createElement("link"); l.rel = "prefetch"; l.href = href; document.head.appendChild(l);
+            });
         }
         function openKeep() {
             try { if (window.top !== window && typeof window.top.openKeepHome === "function") { window.top.openKeepHome(); return; } } catch (e) { }
