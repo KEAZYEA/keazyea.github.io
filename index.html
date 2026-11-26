@@ -850,6 +850,12 @@ body {
         /* 💬 Message / ➕ Add friend on someone's profile (leaderboards, polls, requests) */
         .vp-actions { display: flex; gap: 6px; margin: -4px 0 10px; }
         .vp-actions:empty { display: none; }
+        /* 🏰 The Keep: full screen, over everything (it has its own ← Games) */
+        #keepOverlay { position: fixed; inset: 0; z-index: 3000; background: #0b0a14;
+            padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px); }
+        #keepOverlay[hidden] { display: none; }
+        #keepOverlay iframe { display: block; width: 100%; height: 100%; border: 0; }
+        body.keep-open { overflow: hidden; }
         .vp-actions button { flex: 1 1 auto; min-width: 0; padding: 12px 6px; border-radius: 14px; font-size: 0.92rem; font-weight: 800; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .vp-actions .vp-main { border: none; color: #fff; background: #4169e1; box-shadow: 0 3px 0 rgba(0, 0, 0, 0.25); }
         .vp-actions .vp-alt { border: 1px solid var(--kih-border); background: transparent; color: inherit; }
@@ -2706,6 +2712,8 @@ body {
         </div>
     </div>
 </div>
+        <!-- 🏰 The Keep (dungeon.html), full screen over the app — from Games → 🕹️ Play -->
+        <div id="keepOverlay" hidden></div>
         <!-- Mini profile view (from friend requests) -->
         <div class="mini-modal-overlay" id="viewProfileModalOverlayHome">
             <div class="mini-modal-box" style="max-width:360px;">
@@ -5310,7 +5318,7 @@ function getNewsTypeInfo(type) {
                 if (i >= 0 && r.poll) pollsData.polls[i] = r.poll;
                 p.questions.forEach((_, qi) => { delete pollPicks[p.id + ":" + qi]; delete pollDrafts[p.id + ":" + qi]; });
                 if (r.gift) {
-                    showQuestToast(`🎁 Thanks for ${writes ? "answering" : "voting"}! You got ${pollGiftText({ amount: r.gift.amount, draws: r.gift.draws, items: r.gift.items }) || "your gift"}${r.gift.dupTokens ? ` (+${r.gift.dupTokens} 🪙 for an item you already had)` : ""}.`);
+                    showQuestToast(`🎁 Thanks for ${writes ? "answering" : "voting"}! You got ${pollGiftText({ amount: r.gift.amount, stardust: r.gift.stardust, hearts: r.gift.hearts, draws: r.gift.draws, items: r.gift.items }) || "your gift"}${r.gift.dupStardust ? ` (+${Number(r.gift.dupStardust).toLocaleString("en-US")} ✨ for what you already had)` : ""}.`);
                     const tokens = (r.gift.amount || 0) + (r.gift.dupTokens || 0);
                     if (tokens && fromEl && window.kihFlyToHud) window.kihFlyToHud(fromEl.getBoundingClientRect(), tokens);
                 } else if (r.giftTooNew) showQuestToast("✅ Thanks! (This poll's gift is for accounts made before it was posted.)");
@@ -5460,6 +5468,32 @@ function getNewsTypeInfo(type) {
                 return;
             }
             renderProfileActionsHome(who.uid, who.name, who.avatar);
+        });
+        // 🏰 The Keep, full screen (Games → 🕹️ Play opens it). A fresh page each
+        // time — so it picks up the outfit you're wearing now. Back (or its own
+        // ← Games) closes it, and Games' card shows your new stars.
+        window.openKeepHome = function () {
+            const box = document.getElementById("keepOverlay");
+            if (!box.hidden) return;
+            box.innerHTML = `<iframe src="dungeon.html" title="The Keep" allow="autoplay"></iframe>`;
+            box.hidden = false;
+            document.body.classList.add("keep-open");
+            popupStep(() => closeKeepHome(true));
+        };
+        window.closeKeepHome = function (fromBack) {
+            const box = document.getElementById("keepOverlay");
+            if (box.hidden) return;
+            box.hidden = true;
+            box.innerHTML = ""; // stops the game
+            document.body.classList.remove("keep-open");
+            if (fromBack !== true) leavePopupStep();
+            const g = document.querySelector("#page-games iframe");
+            try { if (g && g.contentWindow) g.contentWindow.postMessage({ kih: "keepClosed" }, window.location.origin); } catch (e) { }
+        };
+        window.addEventListener("message", (e) => {
+            const box = document.getElementById("keepOverlay"), f = box.querySelector("iframe");
+            if (e.origin !== window.location.origin || !f || e.source !== f.contentWindow || !e.data) return;
+            if (e.data.kih === "keepClose") closeKeepHome();
         });
         window.closeViewProfileModalHome = function (fromBack) {
             document.getElementById("viewProfileModalOverlayHome").classList.remove("open");

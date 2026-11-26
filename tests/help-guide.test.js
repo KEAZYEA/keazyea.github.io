@@ -51,7 +51,9 @@ describe("the topics", () => {
         const social = read("social.html");
         H.TABS.social.forEach(t => assert.ok(social.includes(`switchSocialTab('${t}')`), "social tab " + t));
         assert.match(social, /const SOCIAL_TAB_KEY = "kih_social_tab"/, "the key help-guide.js sets so Social opens on the tab");
-        assert.deepEqual([...H.TABS.games].sort(), [...G.GAMES, "today", "ranks"].sort());
+        assert.deepEqual([...H.TABS.games].sort(), [...G.GAMES, "today", "play", "ranks"].sort());
+        H.TABS.games.forEach(t => assert.ok(t === "play" || G.GAMES.includes(t) || read("games.html").includes(`switchTab('${t}')`), "games tab " + t));
+        assert.match(read("games.html"), /data-tab="play" onclick="switchTab\('play'\)"/, "🕹️ Play is a tab");
         const games = read("games.html");
         assert.match(games, /params\.get\("game"\)/, "games.html?game= opens a tab");
         const promo = read("promo.html");
@@ -105,6 +107,7 @@ describe("questions people ask", () => {
         games: ["games", "i want to play a game"],
         puzzle: ["today's puzzle", "daily puzzle"],
         leaderboard: ["leaderboard", "weekly prizes", "rankings"],
+        keep: ["the keep", "dungeon game", "where is the adventure game", "how do i fuse items", "the missing warden", "where is the furnace", "how do i level up my weapon", "where do i find recipes", "my fusion failed", "how do i level up", "character level", "tokens from the keep", "keep coins"],
         memory: ["memory game", "card matching game"],
         unitle: ["unitle"], hilo: ["higher or lower"], trivia: ["trivia quiz"], hangman: ["hangman"], blur: ["blur game"],
         social: ["social", "where is the community"],

@@ -2409,7 +2409,7 @@
                     document.getElementById("crResult").innerHTML = itemCardHtml(x);
                     document.getElementById("crTitle").textContent = x.duplicate ? "🧰 Duplicate" : "🎉 You got…";
                     const big = PC.RARITY_ORDER.indexOf(PC.BY_ID[x.id].rarity) >= 3;
-                    burstFrom(document.querySelector("#crResult .cr-item-icon"), x.duplicate ? ["🪙", "✨"] : big ? ["✨", "⭐", "🎉", PC.BY_ID[x.id].icon, "💫"] : ["✨", "⭐", PC.BY_ID[x.id].icon], big ? 34 : x.duplicate ? 10 : 20);
+                    burstFrom(document.querySelector("#crResult .cr-item-icon"), x.duplicate ? ["✨", "💫"] : big ? ["✨", "⭐", "🎉", PC.BY_ID[x.id].icon, "💫"] : ["✨", "⭐", PC.BY_ID[x.id].icon], big ? 34 : x.duplicate ? 10 : 20);
                     setTimeout(resolve, 350);
                 };
                 revealDone = finish;
@@ -2428,7 +2428,7 @@
                     const big = PC.RARITY_ORDER.indexOf(e.rarity) >= 2;
                     return `<div class="cr-card${big ? " big" : ""}" id="crCard${i}" data-thing="${x.id}" style="--rc:${rr.color}"><div class="cr-card-in">
                         <div class="cr-face cr-back">🧰</div>
-                        <div class="cr-face cr-front"><span class="tg${x.duplicate ? " dup" : ""}">${x.duplicate ? "+" + x.refund + "🪙" : "NEW"}</span><div class="ic">${thingPic(e, 40)}</div><div class="nm">${escS(e.name)}</div></div>
+                        <div class="cr-face cr-front"><span class="tg${x.duplicate ? " dup" : ""}">${x.duplicate ? "+" + fmtN(x.refund) + " ✨" : "NEW"}</span><div class="ic">${thingPic(e, 40)}</div><div class="nm">${escS(e.name)}</div></div>
                     </div></div>`;
                 }).join("")}</div><div class="cr-hint">Tap a card to see what it is</div><div class="cr-result" id="crResult" style="min-height:0;"></div>`;
                 let i = 0, timer = null, finished = false;

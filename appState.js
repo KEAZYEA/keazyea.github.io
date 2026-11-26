@@ -312,6 +312,10 @@ async function signOutUser() {
     async function heartSpin() {
         return callProgressApi("heartSpin", {});
     }
+    // 🏰 The Keep: 🪙 for things found there for the first time (each pays once) → { paid, fresh, balance, found }
+    async function keepFinds(ids) {
+        return callProgressApi("keepFinds", { ids });
+    }
     async function buyHeartItem(id) {
         return callProgressApi("buyHeartItem", { id });
     }
@@ -5945,7 +5949,7 @@ async function maybeRefreshAd(containerId) {
         reportQuestProgress, startDailyQuestTracking, stakeTokensOnSecretGiveaway, setSecretGiveawayStake, refreshSecretGiveawayMaxStake, getSecretOdds,
         // achievements, badges, profile likes, items
         trackProgress, getProgressStatus, claimAchievement, setShownBadges, setProfileLike, openItemChest, trickOrTreat, claimEventGift, buyEventItem, sendSpookyGift, openSpookyGift,
-        getPlayerCard, getPlayerCards, getPublicAvatars, listenToMyCard, haveILikedProfile, getMyPerks, getMyFrost, getMyItemIds, getMyEventState, equipStyle, saveOutfit, equipLook, buyLookSlot, buyItem, buySet, buyXmasPremium, openXmasDoor, useFrostDoubler, renameLook, convertTokens, sendHeart, collectHearts, getHeartStatus, heartSpin, buyHeartItem,
+        getPlayerCard, getPlayerCards, getPublicAvatars, listenToMyCard, haveILikedProfile, getMyPerks, getMyFrost, getMyItemIds, getMyEventState, equipStyle, saveOutfit, equipLook, buyLookSlot, buyItem, buySet, buyXmasPremium, openXmasDoor, useFrostDoubler, renameLook, convertTokens, sendHeart, collectHearts, getHeartStatus, heartSpin, keepFinds, buyHeartItem,
         // profile
         getProfile, setProfile, isVipActive, isNoAdsActive, isBannedNow, shouldShowAds, listenToMyProfile,
         // unique names

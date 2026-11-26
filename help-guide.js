@@ -93,7 +93,7 @@
 
         // ----- games -----
         { id: "games", broad: true, title: "🎮 Games", k: ["game", "games", "play", "minigame", "mini game", "fun", "bored"],
-            a: "<b>🎮 Games</b> on Home: Today's Puzzle, Unitle, Higher or Lower, Trivia, Hangman, Blur and Memory — with a weekly leaderboard.",
+            a: "<b>🎮 Games</b> on Home: 🎲 Today's Puzzle, 🕹️ Play (🏰 The Keep — an open-world adventure — plus Unitle, Higher or Lower, Trivia, Hangman, Blur and Memory) and a weekly 🏆 leaderboard.",
             go: { page: "games", tab: "today" }, show: ".home-menu-btn[onclick=\"goToPage('games')\"]" },
         { id: "puzzle", title: "🎲 Today's Puzzle", k: ["today puzzle", "todays puzzle", "daily puzzle", "puzzle", "roulette", "daily game"],
             a: "<b>Games → 🎲 Today's Puzzle</b>: one game a day, the same for everyone. Finish it for <b>+1 🪙</b>, however you score — and that game counts double on the leaderboard that day.",
@@ -101,12 +101,15 @@
         { id: "leaderboard", title: "🏆 Games leaderboard", k: ["leaderboard", "ranks", "rank", "ranking", "top players", "weekly prize", "prizes", "high score", "record", "points"],
             a: "<b>Games → 🏆 Ranks</b>. Your best run this week in each game counts (up to 20 points, double on its puzzle day). The week ends Sunday midnight (Singapore time); the top 5 win <b>30 / 20 / 15 / 10 / 10 🪙</b>.",
             go: { page: "games", tab: "ranks" } },
-        { id: "memory", title: "🃏 Memory", k: ["memory", "memory game", "card", "cards", "matching", "match cards", "flip", "pairs"], a: "<b>Games → 🃏 Memory</b>: flip two cards at a time and find every pair before the clock runs out. Each level adds 4 more cards and more time.", go: { page: "games", tab: "memory" } },
-        { id: "unitle", title: "🎯 Unitle", k: ["unitle", "wordle", "mystery unit", "guess the unit"], a: "<b>Games → 🎯 Unitle</b>: find the mystery troop or hero — each guess shows what matches.", go: { page: "games", tab: "unitle" } },
-        { id: "hilo", title: "⬆️ Higher or Lower", k: ["higher or lower", "hilo", "hi lo", "higher lower", "which has more"], a: "<b>Games → ⬆️ Hi-Lo</b>: pick which unit has more of a stat — keep going until you miss.", go: { page: "games", tab: "hilo" } },
-        { id: "trivia", title: "🧠 Trivia", k: ["trivia", "quiz", "questions", "test my knowledge"], a: "<b>Games → 🧠 Trivia</b>: questions about troops and heroes — how many can you get in a row?", go: { page: "games", tab: "trivia" } },
-        { id: "hangman", title: "🪢 Hangman", k: ["hangman", "letters", "guess letters", "spell"], a: "<b>Games → 🪢 Hangman</b>: guess a unit's name a letter at a time — 6 misses and you're out.", go: { page: "games", tab: "guess" } },
-        { id: "blur", title: "🔍 Blur", k: ["blur", "blurry", "blur game", "zoom", "close up", "guess the picture"], a: "<b>Games → 🔍 Blur</b>: name the troop or hero from a blurry close-up.", go: { page: "games", tab: "blur" } },
+        { id: "keep", title: "🏰 The Keep", k: ["the keep", "keep", "dungeon", "dungeon game", "adventure", "rpg", "soul knight", "quest game", "story mode", "the missing warden", "warden", "elda", "hearthmoor", "the roads", "fusion", "fuse", "fuse items", "fusing", "furnace", "alchemist", "the wilds", "wilds", "open world", "inventory", "my bag", "materials", "sell items", "gear level", "weapon level", "level up my weapon", "weapon xp", "recipe", "recipes", "fusion failed", "fuse failed", "character level", "my level", "level up my character", "how do i level up", "keep xp", "keep tokens", "tokens from the keep", "keep coins", "keep collection"],
+            a: "<b>Games → 🕹️ Play → 🏰 The Keep</b>: an open-world adventure as your own character — your outfit is your gear. 📜 Story 1, <i>The Missing Warden</i>: from 🏘️ Hearthmoor, take the four roads out one by one (south, west, east, north), beat each road's boss and follow the clues to Elda. What you find goes in your 🎒 bag (B); 🔥 fuse it in the furnace at your house, keep the rest in its chest, or 💰 sell it at the shop. ⭐ You level up as you beat monsters (up to Lv 30) — each level adds HP, mana and damage, with defense and crit as you go; gear you find levels up with you — rarer gear goes higher. 📜 Recipes drop on the roads and show what a mix makes; a fusion can fail (the furnace warns you first), and failed gear drops a level. Buy and sort the Store's things in the 🪞 wardrobe. 📖 Every new thing you find for your collection is <b>+1 🪙</b> for your account (once each, when you're signed in).",
+            go: { page: "games", tab: "play" } },
+        { id: "memory", title: "🃏 Memory", k: ["memory", "memory game", "card", "cards", "matching", "match cards", "flip", "pairs"], a: "<b>Games → 🕹️ Play → 🃏 Memory</b>: flip two cards at a time and find every pair before the clock runs out. Each level adds 4 more cards and more time.", go: { page: "games", tab: "memory" } },
+        { id: "unitle", title: "🎯 Unitle", k: ["unitle", "wordle", "mystery unit", "guess the unit"], a: "<b>Games → 🕹️ Play → 🎯 Unitle</b>: find the mystery troop or hero — each guess shows what matches.", go: { page: "games", tab: "unitle" } },
+        { id: "hilo", title: "⬆️ Higher or Lower", k: ["higher or lower", "hilo", "hi lo", "higher lower", "which has more"], a: "<b>Games → 🕹️ Play → ⬆️ Hi-Lo</b>: pick which unit has more of a stat — keep going until you miss.", go: { page: "games", tab: "hilo" } },
+        { id: "trivia", title: "🧠 Trivia", k: ["trivia", "quiz", "questions", "test my knowledge"], a: "<b>Games → 🕹️ Play → 🧠 Trivia</b>: questions about troops and heroes — how many can you get in a row?", go: { page: "games", tab: "trivia" } },
+        { id: "hangman", title: "🪢 Hangman", k: ["hangman", "letters", "guess letters", "spell"], a: "<b>Games → 🕹️ Play → 🪢 Hangman</b>: guess a unit's name a letter at a time — 6 misses and you're out.", go: { page: "games", tab: "guess" } },
+        { id: "blur", title: "🔍 Blur", k: ["blur", "blurry", "blur game", "zoom", "close up", "guess the picture"], a: "<b>Games → 🕹️ Play → 🔍 Blur</b>: name the troop or hero from a blurry close-up.", go: { page: "games", tab: "blur" } },
 
         // ----- social -----
         { id: "social", broad: true, title: "👥 Social", k: ["social", "community", "people", "players", "chat"],
@@ -295,7 +298,7 @@
     const TABS = {
         character: ["wardrobe", "style", "bonuses"],
         social: ["world", "friends", "clan", "formation", "tierlist"],
-        games: ["today", "ranks", "trivia", "guess", "unitle", "hilo", "blur", "memory"],
+        games: ["today", "play", "ranks", "trivia", "guess", "unitle", "hilo", "blur", "memory"],
         promo: ["codes", "vip", "secret"],
         troops: ["bosses"]
     };

@@ -1239,13 +1239,13 @@ describe("📅 some quests drop ✨ or 💗 too (api/_lib.js QUEST_EXTRAS)", () 
         state.db = db;
         realNow = Date.now;
     });
-    test("looking around: ✨ 25; doing something: ✨ 50; the friendly ones: 💗 (5 / 10); the login: its own week", () => {
-        for (const q of L.VIEW_QUESTS) assert.ok(L.questExtra(q) && (L.questExtra(q).stardust === 25 || L.questExtra(q).hearts === 5), q);
-        for (const q of L.ACTION_QUESTS) assert.ok(L.questExtra(q) && (L.questExtra(q).stardust === 50 || L.questExtra(q).hearts === 10), q);
-        assert.deepEqual([L.questExtra("viewProfile"), L.questExtra("likeOrVote"), L.questExtra("sendMessage"), L.questExtra("worldChat")], [{ hearts: 5 }, { hearts: 5 }, { hearts: 10 }, { hearts: 10 }]);
+    test("looking around: ✨ 25; doing something: ✨ 50; the friendly ones: a little 💗 (2 / 3 — a spin is 30); the login: its own week", () => {
+        for (const q of L.VIEW_QUESTS) assert.ok(L.questExtra(q) && (L.questExtra(q).stardust === 25 || L.questExtra(q).hearts === 2), q);
+        for (const q of L.ACTION_QUESTS) assert.ok(L.questExtra(q) && (L.questExtra(q).stardust === 50 || L.questExtra(q).hearts === 3), q);
+        assert.deepEqual([L.questExtra("viewProfile"), L.questExtra("likeOrVote"), L.questExtra("sendMessage"), L.questExtra("worldChat")], [{ hearts: 2 }, { hearts: 2 }, { hearts: 3 }, { hearts: 3 }]);
         assert.equal(L.questExtra("login"), null);
         assert.equal(L.questExtra("constructor"), null);
-        assert.deepEqual(L.questExtrasFor(["login", "readNews", "sendMessage"]), { readNews: { stardust: 25 }, sendMessage: { hearts: 10 } });
+        assert.deepEqual(L.questExtrasFor(["login", "readNews", "sendMessage"]), { readNews: { stardust: 25 }, sendMessage: { hearts: 3 } });
         assert.match(read("api/tokens.js"), /rewards: questRewardsFor\(quests\), extras: questExtrasFor\(quests\)/, "the page is told what each drops");
     });
     test("done → its drop waits in the claim; claimed → ✨ and 💗 into your inventory, with its tokens", async () => {
@@ -1256,10 +1256,10 @@ describe("📅 some quests drop ✨ or 💗 too (api/_lib.js QUEST_EXTRAS)", () 
             db._data.set("dmThreads/t1/messages/m1", { senderUid: "player1", createdAt: Date.now() - 1000, text: "hey" });
             assert.ok((await tok({ action: "complete", questId: "readNews", proofId: "n1" })).body.completed);
             assert.ok((await tok({ action: "complete", questId: "sendMessage", proofId: "t1/m1" })).body.completed);
-            assert.deepEqual([db._data.get("tokenWallets/player1/claims/2026-11-18_readNews").stardust, db._data.get("tokenWallets/player1/claims/2026-11-18_sendMessage").hearts], [25, 10]);
+            assert.deepEqual([db._data.get("tokenWallets/player1/claims/2026-11-18_readNews").stardust, db._data.get("tokenWallets/player1/claims/2026-11-18_sendMessage").hearts], [25, 3]);
             const r = await tok({ action: "claim", claimIds: ["2026-11-18_readNews", "2026-11-18_sendMessage"] });
             assert.equal(r.status, 200, JSON.stringify(r.body));
-            assert.deepEqual([r.body.claimed, r.body.stardust, r.body.hearts, r.body.heartsBalance, inv().stardust, inv().hearts], [3, 25, 10, 10, 25, 10]);
+            assert.deepEqual([r.body.claimed, r.body.stardust, r.body.hearts, r.body.heartsBalance, inv().stardust, inv().hearts], [3, 25, 3, 3, 25, 3]);
             const again = await tok({ action: "claim", claimIds: ["2026-11-18_readNews"] });
             assert.deepEqual([again.body.claimed, inv().stardust], [0, 25], "not twice");
         } finally { Date.now = realNow; }

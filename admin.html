@@ -1410,7 +1410,7 @@
             window.addPrizeTier = function () {
                 if (prizeTiers.length >= 5) { showInfoModal("That's plenty", "A ranked giveaway can have up to 5 places."); return; }
                 const id = ++prizeTierSeq, name = "tierPrize_" + id;
-                const kinds = [["tokens", "🪙 Tokens"], ["gold", "💰 Gold"], ["diamonds", "💎 Diamonds"], ["unit", "🦸 Hero / troop"], ["custom", "✨ Something else"], ["draws", "🧰 Chest draws"], ["item", "🎒 Item / style"]];
+                const kinds = [["tokens", "🪙 Tokens"], ["gold", "💰 Gold"], ["diamonds", "💎 Diamonds"], ["unit", "🦸 Hero / troop"], ["custom", "✨ Something else"], ["draws", "🧰 Chest draws"], ["stardust", "✨ Stardust"], ["hearts", "💗 Hearts"], ["item", "🎒 Item / style"]]; // every reward the 🎁 Same prize has
                 const card = document.createElement("div");
                 card.className = "tier-card";
                 card.id = "tierCard_" + id;

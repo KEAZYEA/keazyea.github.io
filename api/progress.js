@@ -44,6 +44,8 @@
  *                                 (after that, status opens the Premium ones left, once)
  *   trickOrTreat { count }     -> 1 or 10 knocks at an event's door (P.EVENTS),
  *                                 only while it's on; each a treat or a trick
+ *   keepFinds { ids }          -> 🏰 The Keep: D.FIND_TOKENS 🪙 for each of its things (D.ITEMS)
+ *                                 you've found — once per thing per account, ever
  *
  * Claiming an achievement's Gold tier also adds a free chest draw, and
  * its Mythic tier the exclusive items in P.ACHIEVEMENT_REWARDS.
@@ -80,6 +82,7 @@
  *   heartGifts/{to}_{day}_{from}  { to, from, fromName, day, at, collected } — a heart
  *                              waiting to be collected (then collected: true)
  *   chestOpens/{id}          a log of every chest opened
+ *   keepFinds/{uid}          { ids: {itemId: at}, count, tokens } — The Keep's things already paid for
  */
 
 const crypto = require("crypto");
@@ -88,6 +91,7 @@ const { FieldValue } = require("firebase-admin/firestore");
 const P = require("../progress-core.js");
 const C = require("../character-core.js");
 const G = require("../games-core.js");
+const D = require("../dungeon-core.js");
 
 const MIN_COMMENT_CHARS = 8; // same as the comment quest
 
@@ -1092,6 +1096,35 @@ async function convertTokens(db, uid, body, now) {
   });
 }
 
+/* 🏰 The Keep: D.FIND_TOKENS 🪙 for each of its things the first time you
+   have it. The Keep saves in the browser, so this takes your word for what
+   you've found — but each thing pays once per account, ever (keepFinds/{uid}),
+   and only The Keep's own things (D.ITEMS) count: Object.keys(D.ITEMS).length
+   🪙 at the very most. Counted as earned (lifetimeEarned, like Games). */
+async function keepFinds(db, uid, body, now) {
+  const asked = Array.isArray(body.ids) ? body.ids : [];
+  if (asked.length > 200) throw new HttpError(400, "Too many at once.");
+  const ids = [...new Set(asked.filter(id => typeof id === "string" && Object.prototype.hasOwnProperty.call(D.ITEMS, id)))];
+  if (!ids.length) throw new HttpError(400, "Which of The Keep's things?");
+  await assertNotBanned(db, uid);
+  const walletRef = db.collection("tokenWallets").doc(uid);
+  const findsRef = db.collection("keepFinds").doc(uid);
+  return db.runTransaction(async (tx) => {
+    const [f, w] = await tx.getAll(findsRef, walletRef);
+    const old = f.exists ? f.data() : {};
+    const had = old.ids && typeof old.ids === "object" ? old.ids : {};
+    const fresh = ids.filter(id => !had[id]);
+    const paid = fresh.length * D.FIND_TOKENS;
+    let balance = w.exists ? (w.data().balance || 0) : 0;
+    if (paid) {
+      balance += paid;
+      const all = { ...had, ...Object.fromEntries(fresh.map(id => [id, now])) };
+      tx.set(walletRef, { balance, lifetimeEarned: FieldValue.increment(paid), updatedAt: now }, { merge: true });
+      tx.set(findsRef, { ids: all, count: Object.keys(all).length, tokens: Math.max(0, old.tokens || 0) + paid, updatedAt: now }, { merge: true });
+    }
+    return { ok: true, paid, fresh, balance, found: [...new Set([...Object.keys(had), ...fresh])] };
+  });
+}
 module.exports = async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
@@ -1134,6 +1167,7 @@ module.exports = async (req, res) => {
       case "buyEventItem": result = await buyEventItem(db, uid, body, now); break;
       case "sendSpookyGift": result = await sendSpookyGift(db, uid, body, now); break;
       case "openSpookyGift": result = await openSpookyGift(db, uid, body, now); break;
+      case "keepFinds": result = await keepFinds(db, uid, body, now); break;
       default: throw new HttpError(400, "Unknown action.");
     }
     res.status(200).json(result);
