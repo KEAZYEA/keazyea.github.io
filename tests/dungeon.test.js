@@ -442,7 +442,7 @@ describe("🏰 the page", () => {
         assert.match(page, /box\.innerHTML = `<b>\$\{esc\(who\)\}<\/b><p>\$\{esc\(text\)\}<\/p>/);
         assert.match(page, /<div class="tag demo" id="demoTag">🧪 Demo — still being built<\/div>/, "🧪 always on screen: it's a demo");
         assert.match(page, /<p class="demo-note">🧪 <b>This is a demo<\/b> — The Keep is still being built/, "…and the ☰ menu says so");
-        assert.match(page, /This is a demo — The Keep is still being built\. What you pick up stays in the Keep for now — ✨ 💗 🪙 aren't added to your account yet \(but each new thing for your 📖 collection is \+\$\{D\.FIND_TOKENS\} 🪙 in your account/);
+        assert.match(page, /This is a demo — The Keep is still being built\. What you pick up stays in the Keep for now — ✨ 💗 🪙 aren't added to your account yet \(but each new rare or better thing for your 📖 collection is \+\$\{D\.FIND_TOKENS\} 🪙 in your account/);
     });
     test("🏘️ it opens in Hearthmoor: four gates, the shop, the wardrobe, your house, the Elder — each asks ✅ Yes / No", () => {
         assert.match(page, /makeHeroImg\(\); startLobby\(\); loadMe\(\);/);
@@ -538,7 +538,10 @@ describe("🏰 the page", () => {
         assert.match(page, /stats = withBuffs\(baseStats\(outfit, gear\(\)\), \(G && G\.buffs\) \|\| \[\]\);\s*if \(!G \|\| !plan\) return;\s*const p = G\.player, home = plan\.mode === "lobby" \|\| plan\.mode === "house";/, "a level-up mid-run keeps your elixirs (and your HP as it is)");
         assert.match(page, /const intro = \(\) => \{ if \(!me\.loaded\) return setTimeout\(intro, 200\); if \(!story\(\)\.seen\.intro && /, "the intro waits for your account (or it's remembered in the guest's save)");
         // 🪙 for a new find: asked of the server (once per thing), on a find and on signing in
-        assert.match(page, /const isNew = !seen\(\)\[id\];\s*seen\(\)\[id\] = true;\s*if \(isNew\) setTimeout\(payFinds, 0\);/);
+        assert.match(page, /const isNew = !seen\(\)\[id\];\s*seen\(\)\[id\] = true;\s*if \(isNew && D\.findPays\(id\)\) setTimeout\(payFinds, 0\);/);
+        assert.match(page, /ids = Object\.keys\(seen\(\)\)\.filter\(id => D\.findPays\(id\) && !coined\(\)\[id\]\)/, "only rare-or-better finds are asked for");
+        assert.match(page, /emoji\(t\.open \? "📭" : "🧰"/, "an opened crate is an empty box, not a 🪙");
+        assert.ok(!/emoji\(t\.open \? "🪙"/.test(page));
         assert.match(page, /me\.signedIn = true;\s*setTimeout\(payFinds, 0\);/);
         assert.match(page, /if \(!me\.signedIn \|\| paying \|\| !window\.AppState \|\| !window\.AppState\.keepFinds\) return;/, "a guest's never asked; one at a time");
         assert.match(page, /\(r\.found \|\| \[\]\)\.forEach\(id => \{ coined\(\)\[id\] = true; \}\);/, "what the server's paid is remembered (not asked again)");

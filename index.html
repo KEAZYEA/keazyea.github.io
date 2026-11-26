@@ -5472,10 +5472,11 @@ function getNewsTypeInfo(type) {
         // 🏰 The Keep, full screen (Games → 🕹️ Play opens it). A fresh page each
         // time — so it picks up the outfit you're wearing now. Back (or its own
         // ← Games) closes it, and Games' card shows your new stars.
-        window.openKeepHome = function () {
+        // (page "warband": ⚔️ Warband, full screen the same way)
+        window.openKeepHome = function (page) {
             const box = document.getElementById("keepOverlay");
             if (!box.hidden) return;
-            box.innerHTML = `<iframe src="dungeon.html" title="The Keep" allow="autoplay"></iframe>`;
+            box.innerHTML = page === "warband" ? `<iframe src="warband.html" title="Warband"></iframe>` : `<iframe src="dungeon.html" title="The Keep" allow="autoplay"></iframe>`;
             box.hidden = false;
             document.body.classList.add("keep-open");
             popupStep(() => closeKeepHome(true));

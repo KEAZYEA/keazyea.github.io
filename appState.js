@@ -1055,6 +1055,11 @@ async function signOutUser() {
     // 🃏 Memory: what one card of a ranked level is (peek: what the level came with).
     const gamesRunPeek = (runId, peek, card) => callGamesApi("runPeek", { runId, deal: peek.deal, pairs: peek.pairs, deadline: peek.deadline, sig: peek.sig, card });
     const gamesLeaderboard = () => callGamesApi("leaderboard");
+    // ⚔️ Warband (played on the server): the match you're in or a new one (fresh: start again),
+    // a round's moves (then the round's played), the match you're in (or none)
+    const warbandStart = (fresh) => callGamesApi("wbStart", fresh ? { fresh: true } : {});
+    const warbandRound = (runId, round, actions) => callGamesApi("wbRound", { runId, round, actions });
+    const warbandGet = () => callGamesApi("wbGet");
     // Wakes the games server up while the page loads (errors don't matter).
     const gamesPing = () => callGamesApi("ping").catch(() => null);
 
@@ -5944,7 +5949,7 @@ async function maybeRefreshAd(containerId) {
         uploadChatPhoto, deleteChatPhoto, prepareChatVideo, uploadChatVideo, deleteChatVideo, unlockChatVideoAudio, myVideoLimit, VIDEO_LIMITS, shrinkChatPhoto, canPostWorldPhotos, CHAT_PHOTO_DAYS, CHAT_PHOTO_MIN_AGE_DAYS,
         translateChat, adminChatStatus, chatLimits, deleteDmMessage,
         sendWorldChat, deleteWorldChat, adminWorldChatSettings, listenToWorldChat, loadOlderWorldChat, listenToWorldChatConfig, getMyBlockedUids,
-        getTodaysQuests, listenToMyWallet, listenToMyQuestProgress, claimQuestRewards, submitDailyPuzzle, gamesRunStart, gamesRunAnswer, gamesRunPeek, gamesLeaderboard, gamesPing, getMyTokenBalance,
+        getTodaysQuests, listenToMyWallet, listenToMyQuestProgress, claimQuestRewards, submitDailyPuzzle, gamesRunStart, gamesRunAnswer, gamesRunPeek, gamesLeaderboard, warbandStart, warbandRound, warbandGet, gamesPing, getMyTokenBalance,
         listenToMyGiftClaims, claimTokenGift, adminTokens,
         reportQuestProgress, startDailyQuestTracking, stakeTokensOnSecretGiveaway, setSecretGiveawayStake, refreshSecretGiveawayMaxStake, getSecretOdds,
         // achievements, badges, profile likes, items

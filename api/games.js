@@ -30,6 +30,15 @@
  *                                    secret only this server has (memDeckFor).
  *                                    A level scores once its whole deck is handed
  *                                    in by runAnswer, before the clock runs out.
+ *   wbStart     { fresh }         -> ⚔️ Warband: your match (the one you're in, or —
+ *                                    fresh, or none — a new one against 7 bots;
+ *                                    one left unfinished is given up, 8th)
+ *   wbRound     { runId, round, actions }
+ *                                 -> your planning moves for this round, replayed
+ *                                    here with warband-core.js (one that isn't
+ *                                    allowed refuses them all), then the round
+ *                                    played: the bots, every fight, the ❤️ lost
+ *   wbGet                         -> the match you're in (or none)
  *   leaderboard                   -> this week's top players, your place, the
  *                                    prizes, last week's winners and each game's
  *                                    all-time high score — names (and uids, to
@@ -51,6 +60,9 @@
  *   gameLeaderboards/{week}                   { finalizedAt, winners } once paid
  *   gameLeaderboards/{week}/players/{uid}     { name, best: {game: score}, pts: {game: board points},
  *                                             dbl: {game: true if those points were a doubled run}, total, updatedAt }
+ *   warbandRuns/{runId}                       a Warband match: { uid, state (JSON: the whole
+ *                                             match — its seed never leaves here), round, over, place }
+ *   warbandPlayers/{uid}                      { active: runId, last: { runId, place, at } }
  *   gameRecords/{game}                        the all-time high score: { game, score, uid, name, runId, at }
  *                                             (the first to reach a score keeps it)
  */
@@ -59,6 +71,7 @@ const crypto = require("crypto");
 const { getFirebaseAdmin, DAY_MS, dayKeyFor, dayStartMs, weekDayKeys, isBannedNow } = require("./_lib");
 const { FieldValue } = require("firebase-admin/firestore");
 const G = require("../games-core.js");
+const W = require("../warband-core.js");
 const P = require("../progress-core.js");
 const { loadUnits } = require("./_units");
 const jpeg = require("../vendor/jpeg-js");
@@ -538,6 +551,90 @@ async function leaderboard(db, uid, now) {
   return { ...base, top: rows, me, lastWeek, records };
 }
 
+/* ---------------- ⚔️ Warband (warband-core.js) ----------------
+   The whole match lives here (warbandRuns): the page plans a round with
+   the same rules, sends its moves, and this replays them and plays the
+   round — the bots, the pairs and every fight — so a result can't be made
+   up. Each round's shop comes from a key made from a secret (wbRoundKey):
+   the page gets this round's (for its refreshes), never the next one's. */
+let wbCat = null;
+const wbCatalog = () => (wbCat || (wbCat = W.catalog(loadUnits())));
+const wbRoundKey = (runId) => (round) => memHmac(`wb:${runId}:${round}`).toString("base64url").slice(0, 22);
+const WB_MAX_ACTIONS = 400;
+const WB_SKILL = 0.3; // the bots' skill (ranks will set it)
+const isRunId = (id) => typeof id === "string" && /^[0-9a-f]{24}$/.test(id);
+// only the fields a move can have, with the right types
+function wbCleanActions(list) {
+  if (!Array.isArray(list)) throw new HttpError(400, "Missing moves.");
+  if (list.length > WB_MAX_ACTIONS) throw new HttpError(400, "Too many moves in one round.");
+  const int = (v) => (Number.isInteger(v) && v >= 0 && v < 100 ? v : undefined);
+  return list.map(a => {
+    if (!a || typeof a !== "object" || !["buy", "sell", "reroll", "xp", "move"].includes(a.t)) throw new HttpError(400, "Unknown move.");
+    const out = { t: a.t };
+    if (a.i !== undefined) out.i = int(a.i);
+    if (a.slot !== undefined) out.slot = int(a.slot);
+    if (a.x !== undefined) out.x = int(a.x);
+    if (a.y !== undefined) out.y = int(a.y);
+    if (a.from === "board" || a.from === "bench") out.from = a.from;
+    if (a.to === "board" || a.to === "bench") out.to = a.to;
+    return out;
+  });
+}
+const wbView = (runId, st, extra) => ({ ok: true, runId, match: W.forPlayer(st), ...(extra || {}) });
+
+async function wbStart(db, uid, body, now) {
+  const pRef = db.collection("warbandPlayers").doc(uid);
+  const [, pSnap, name] = await Promise.all([assertNotBanned(db, uid), pRef.get(), playerName(db, uid)]);
+  const active = pSnap.exists ? pSnap.data().active : null;
+  if (isRunId(active)) {
+    const old = await db.collection("warbandRuns").doc(active).get();
+    if (old.exists && old.data().uid === uid && !old.data().over) {
+      if (body.fresh !== true) return wbView(active, JSON.parse(old.data().state), { resumed: true, cat: wbCatalog() });
+      // starting again gives the one you're in up: 8th
+      await old.ref.set({ over: true, place: W.PLAYERS, abandoned: true, updatedAt: now }, { merge: true });
+    }
+  }
+  const runId = crypto.randomBytes(12).toString("hex");
+  const st = W.newMatch(wbCatalog(), crypto.randomBytes(8).toString("hex"), { name, skill: WB_SKILL, roundKey: wbRoundKey(runId) });
+  const batch = db.batch();
+  batch.set(db.collection("warbandRuns").doc(runId), { uid, state: JSON.stringify(st), round: st.round, over: false, createdAt: now, updatedAt: now });
+  batch.set(pRef, { active: runId, updatedAt: now }, { merge: true });
+  await batch.commit();
+  return wbView(runId, st, { resumed: false, cat: wbCatalog() }); // (the units, so the page's rules are exactly these)
+}
+
+async function wbRound(db, uid, body, now) {
+  const { runId } = body;
+  if (!isRunId(runId)) throw new HttpError(400, "Missing match.");
+  if (!Number.isInteger(body.round)) throw new HttpError(400, "Which round?");
+  const actions = wbCleanActions(body.actions);
+  const runRef = db.collection("warbandRuns").doc(runId), pRef = db.collection("warbandPlayers").doc(uid);
+  return db.runTransaction(async (tx) => {
+    const snap = await tx.get(runRef);
+    if (!snap.exists || snap.data().uid !== uid) throw new HttpError(404, "That match doesn't exist.");
+    if (snap.data().over) throw new HttpError(409, "This match is over.");
+    const st = JSON.parse(snap.data().state), cat = wbCatalog();
+    if (st.round !== body.round) throw new HttpError(409, "That round's been played already.");
+    actions.forEach((a, i) => {
+      try { W.planAction(cat, st, 0, a); } catch (e) { throw new HttpError(400, `Move ${i + 1}: ${e.message}`); }
+    });
+    const res = W.endRound(cat, st, wbRoundKey(runId));
+    const me = st.players[0];
+    tx.update(runRef, { state: JSON.stringify(st), round: st.round, over: st.over, ...(st.over ? { place: me.place } : {}), updatedAt: now });
+    if (st.over) tx.set(pRef, { active: null, last: { runId, place: me.place, at: now }, updatedAt: now }, { merge: true });
+    return wbView(runId, st, { results: res.results, over: st.over, place: st.over ? me.place : null });
+  });
+}
+
+async function wbGet(db, uid) {
+  const pSnap = await db.collection("warbandPlayers").doc(uid).get();
+  const active = pSnap.exists ? pSnap.data().active : null;
+  if (!isRunId(active)) return { ok: true, runId: null, match: null, last: pSnap.exists ? pSnap.data().last || null : null };
+  const r = await db.collection("warbandRuns").doc(active).get();
+  if (!r.exists || r.data().uid !== uid || r.data().over) return { ok: true, runId: null, match: null };
+  return wbView(active, JSON.parse(r.data().state), { cat: wbCatalog() });
+}
+
 module.exports = async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
@@ -561,6 +658,9 @@ module.exports = async (req, res) => {
       case "runAnswer": result = await runAnswer(db, await verifyCaller(admin, req, true, body), body, now); break;
       case "runPeek": result = runPeek(await verifyCaller(admin, req, true, body), body, now); break;
       case "leaderboard": result = await leaderboard(db, await verifyCaller(admin, req, false, body), now); break;
+      case "wbStart": result = await wbStart(db, await verifyCaller(admin, req, true, body), body, now); break;
+      case "wbRound": result = await wbRound(db, await verifyCaller(admin, req, true, body), body, now); break;
+      case "wbGet": result = await wbGet(db, await verifyCaller(admin, req, true, body)); break;
       default: throw new HttpError(400, "Unknown action.");
     }
     res.status(200).json(result);

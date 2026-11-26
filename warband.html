@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <title>Warband</title>
+    <meta name="description" content="Warband: buy troops and heroes each round, merge three of a kind into a stronger one, build team bonuses and outlast 7 rivals.">
+    <link rel="icon" href="images/KIH.jpg">
+    <style>
+        :root { --ink: #f3efff; --dim: #b9b2dc; --panel: rgba(24, 21, 44, 0.92); --line: rgba(255, 255, 255, 0.14); --gold: #ffd24a; --red: #ff5a6a; --green: #6fe39a; --cell: 46px;
+            --common: #b8c0d0; --rare: #5aa8ff; --epic: #b46bff; --legendary: #ffb02e; --mythic: #ff4f8b; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html, body { margin: 0; height: 100%; background: #0d0b1a; color: var(--ink); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; user-select: none; overscroll-behavior: none; }
+        body { background: radial-gradient(ellipse at 50% 0%, #2a1f52 0%, #0d0b1a 60%); }
+        button { font-family: inherit; color: inherit; touch-action: manipulation; }
+        #app { max-width: 480px; margin: 0 auto; min-height: 100%; padding: calc(6px + env(safe-area-inset-top, 0px)) 8px calc(10px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 7px; }
+        .top { display: flex; align-items: center; gap: 6px; }
+        .icon-btn { width: 38px; height: 38px; flex-shrink: 0; border-radius: 12px; border: 1px solid var(--line); background: var(--panel); font-size: 1rem; cursor: pointer; }
+        .stats { flex: 1; display: flex; flex-wrap: wrap; gap: 4px 10px; justify-content: center; align-items: center; padding: 5px 8px; border-radius: 12px; background: var(--panel); border: 1px solid var(--line); font-weight: 800; font-size: .82rem; }
+        .stats .xp { display: inline-flex; align-items: center; gap: 4px; } .stats .xp i { display: inline-block; width: 38px; height: 5px; border-radius: 3px; background: #2e2840; overflow: hidden; } .stats .xp i b { display: block; height: 100%; background: linear-gradient(90deg, #ffd24a, #fff1a8); }
+        /* the 8 players */
+        .players { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; padding-bottom: 1px; }
+        .players::-webkit-scrollbar { display: none; }
+        .pl { flex: 0 0 auto; min-width: 54px; max-width: 70px; padding: 3px 5px; border-radius: 9px; background: var(--panel); border: 1px solid var(--line); font-size: .62rem; font-weight: 800; cursor: pointer; text-align: center; }
+        .pl.me { border-color: var(--gold); }
+        .pl.out { opacity: .38; }
+        .pl .nm { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .pl .hp { display: block; height: 4px; margin-top: 2px; border-radius: 3px; background: #3a1620; overflow: hidden; } .pl .hp b { display: block; height: 100%; background: linear-gradient(90deg, #ff4f6a, #ff8a5a); }
+        /* team bonuses */
+        .traits { display: flex; flex-wrap: wrap; gap: 4px; min-height: 22px; }
+        .tr { padding: 2px 7px; border-radius: 999px; font-size: .66rem; font-weight: 800; background: rgba(255, 255, 255, 0.06); border: 1px solid var(--line); color: var(--dim); cursor: pointer; }
+        .tr.on { color: #1a1430; background: linear-gradient(90deg, #ffd24a, #ffb02e); border-color: transparent; }
+        .tr.on.t2 { background: linear-gradient(90deg, #d7e3ff, #9fb8ff); } .tr.on.t3 { background: linear-gradient(90deg, #ffb8f0, #b46bff); color: #fff; }
+        /* the board */
+        .board-wrap { display: flex; justify-content: center; }
+        .board { position: relative; display: grid; grid-template-columns: repeat(7, var(--cell)); gap: 0; border-radius: 12px; overflow: hidden; border: 1px solid var(--line); background: #1b1733; }
+        .cell { width: var(--cell); height: var(--cell); border: 1px solid rgba(255, 255, 255, 0.045); position: relative; }
+        .board.plan .cell { background: rgba(120, 100, 220, 0.06); }
+        .board .cell.enemy { background: rgba(255, 80, 100, 0.05); }
+        .cell.target { background: rgba(111, 227, 154, 0.18) !important; }
+        .cell.drop { outline: 2px solid var(--green); outline-offset: -2px; }
+        .fx { position: absolute; inset: 0; pointer-events: none; }
+        /* a unit */
+        .u { position: relative; width: calc(var(--cell) - 6px); height: calc(var(--cell) - 6px); margin: 2px; border-radius: 9px; border: 2px solid var(--c, var(--common)); background: #241f40; overflow: hidden; cursor: pointer; touch-action: none; }
+        .u img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
+        .u .st { position: absolute; left: 0; right: 0; bottom: 0; text-align: center; font-size: .55rem; line-height: 1; padding: 1px 0; color: #ffe27a; background: rgba(0, 0, 0, 0.55); letter-spacing: -1px; }
+        .u.sel { box-shadow: 0 0 0 2px #fff, 0 0 12px var(--c); }
+        .u.s2 { box-shadow: 0 0 8px rgba(215, 227, 255, 0.6); } .u.s3 { box-shadow: 0 0 10px rgba(255, 184, 240, 0.85); }
+        .u.ghost { position: fixed; z-index: 50; pointer-events: none; opacity: .9; transform: scale(1.12); }
+        .u.dragging { opacity: .3; }
+        /* in a fight */
+        .fu { position: absolute; width: var(--cell); height: var(--cell); transition: left .18s linear, top .18s linear, opacity .4s; z-index: 2; }
+        .fu .u { cursor: default; }
+        .fu.foe .u { border-style: dashed; }
+        .fu .bar { position: absolute; left: 5px; right: 5px; top: 0; height: 4px; border-radius: 3px; background: rgba(0, 0, 0, 0.6); overflow: hidden; z-index: 3; }
+        .fu .bar b { display: block; height: 100%; background: #6fe39a; transition: width .12s; } .fu.foe .bar b { background: #ff5a6a; }
+        .fu .bar i { position: absolute; left: 0; top: 0; height: 100%; background: rgba(160, 200, 255, 0.75); }
+        .fu.dead { opacity: 0; }
+        .fu.cast .u { box-shadow: 0 0 14px 4px #fff1a8; }
+        .num { position: absolute; font-size: .72rem; font-weight: 900; color: #fff; text-shadow: 0 1px 2px #000, 0 0 4px #000; pointer-events: none; z-index: 5; animation: rise .7s ease-out forwards; }
+        .num.big { color: #ffe27a; font-size: .86rem; }
+        @keyframes rise { to { transform: translateY(-22px); opacity: 0; } }
+        /* bench, shop */
+        .bench { display: grid; grid-template-columns: repeat(9, minmax(0, 1fr)); gap: 3px; padding: 4px; border-radius: 12px; background: var(--panel); border: 1px solid var(--line); }
+        .slot { aspect-ratio: 1; border-radius: 8px; background: rgba(255, 255, 255, 0.04); border: 1px dashed rgba(255, 255, 255, 0.1); display: flex; align-items: center; justify-content: center; }
+        .slot .u { width: 100%; height: 100%; margin: 0; }
+        .slot.drop { border: 2px solid var(--green); }
+        .info { min-height: 44px; padding: 6px 9px; border-radius: 12px; background: var(--panel); border: 1px solid var(--line); font-size: .74rem; color: var(--dim); display: flex; align-items: center; gap: 8px; }
+        .info b { color: var(--ink); }
+        .info .grow { flex: 1; min-width: 0; }
+        .sell-btn { padding: 7px 10px; border-radius: 10px; border: 1px solid rgba(255, 90, 106, 0.5); background: rgba(255, 90, 106, 0.15); font-weight: 900; font-size: .78rem; cursor: pointer; white-space: nowrap; }
+        .shop { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 5px; } /* (minmax: a long name never widens a card) */
+        .card { min-width: 0; position: relative; padding: 4px 3px 5px; border-radius: 11px; border: 2px solid var(--c, var(--common)); background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(0, 0, 0, 0.2)); cursor: pointer; text-align: center; min-height: 92px; }
+        .card img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 7px; display: block; }
+        .card .nm { display: block; font-size: .58rem; font-weight: 800; line-height: 1.1; margin-top: 2px; height: 1.3em; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+        .card .co { position: absolute; top: 2px; right: 2px; padding: 0 4px; border-radius: 7px; background: rgba(0, 0, 0, 0.7); font-size: .62rem; font-weight: 900; color: var(--gold); }
+        .card .fa { position: absolute; top: 2px; left: 2px; font-size: .7rem; text-shadow: 0 1px 2px #000; }
+        .card.have { box-shadow: 0 0 0 2px #fff1a8, 0 0 10px #ffd24a; }
+        .card.poor { opacity: .45; }
+        .card.empty { border-style: dashed; border-color: var(--line); cursor: default; background: none; }
+        .acts { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.4fr); gap: 6px; }
+        .acts button, .big { padding: 11px 8px; border-radius: 13px; border: 1px solid var(--line); background: var(--panel); font-weight: 900; font-size: .86rem; cursor: pointer; }
+        .acts button:disabled { opacity: .45; cursor: default; }
+        .acts .go, .big.main { background: linear-gradient(180deg, #ff7a5a, #c8304a); border-color: transparent; color: #fff; }
+        .sell-zone { outline: 2px dashed var(--red); outline-offset: 2px; border-radius: 12px; }
+        .vs { text-align: center; font-weight: 900; font-size: .9rem; }
+        .vs small { display: block; color: var(--dim); font-size: .7rem; font-weight: 700; }
+        /* screens and sheets */
+        .screen { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 10px; text-align: center; padding: 10px 4px; }
+        .screen h1 { margin: 0; font-size: 1.6rem; }
+        .screen p { margin: 0; color: var(--dim); font-size: .88rem; line-height: 1.45; }
+        .screen ul { text-align: left; margin: 0; padding-left: 20px; color: var(--dim); font-size: .84rem; line-height: 1.5; }
+        .place { font-size: 3.2rem; font-weight: 900; color: var(--gold); line-height: 1; }
+        .sheet-bg { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); z-index: 60; display: flex; align-items: flex-end; justify-content: center; }
+        .sheet-bg[hidden] { display: none; }
+        .sheet { width: 100%; max-width: 480px; max-height: 82vh; overflow-y: auto; padding: 16px 14px calc(16px + env(safe-area-inset-bottom, 0px)); border-radius: 20px 20px 0 0; background: #1c1836; border-top: 1px solid var(--line); }
+        .sheet h2 { margin: 0 0 8px; font-size: 1.1rem; }
+        .sheet p, .sheet li { color: var(--dim); font-size: .84rem; line-height: 1.45; }
+        .sheet .mini { display: flex; flex-wrap: wrap; gap: 4px; margin: 6px 0; }
+        .sheet .mini .u { margin: 0; width: 40px; height: 40px; }
+        .toast { position: fixed; left: 50%; top: 22%; transform: translate(-50%, -50%); padding: 9px 16px; border-radius: 14px; background: #2a2450; border: 1px solid var(--line); font-weight: 900; text-align: center; z-index: 80; opacity: 0; transition: opacity .2s; pointer-events: none; max-width: 86vw; font-size: .88rem; }
+        .toast.on { opacity: 1; }
+        .banner { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); padding: 12px 20px; border-radius: 16px; background: rgba(20, 16, 40, 0.92); border: 1px solid var(--line); font-weight: 900; font-size: 1.15rem; text-align: center; z-index: 10; white-space: nowrap; }
+        .banner small { display: block; font-size: .76rem; color: var(--dim); margin-top: 3px; }
+        .win { color: var(--green); } .lose { color: var(--red); }
+        @media (max-width: 370px) { :root { --cell: 42px; } }
+        @media (max-width: 330px) { :root { --cell: 40px; } }
+    </style>
+</head>
+<body>
+<div id="app"><div class="screen"><p>Loading Warband…</p></div></div>
+<div class="sheet-bg" id="sheetBg" hidden><div class="sheet" id="sheet"></div></div>
+<div class="toast" id="toast"></div>
+<script src="warband-core.js"></script>
+<script type="module" src="appState.js"></script>
+<script>
+(function () {
+    "use strict";
+    const W = window.WarbandCore;
+    const $ = (id) => document.getElementById(id);
+    const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    const inApp = (() => { try { return window.parent !== window && typeof window.parent.closeKeepHome === "function"; } catch (e) { return false; } })();
+    const ORD = (n) => n + (n % 10 === 1 && n % 100 !== 11 ? "st" : n % 10 === 2 && n % 100 !== 12 ? "nd" : n % 10 === 3 && n % 100 !== 13 ? "rd" : "th");
+    const FACTION_ICON = { Human: "🛡️", Undead: "💀", Mage: "🔮", Demon: "😈", Elevate: "🌟" };
+
+    // the match: the server's copy is the real one; this one plans the round with the same rules
+    let A = null, cat = null, runId = null, match = null, moves = [], sel = null, mode = "loading", busy = false, fightTimer = null, skipFight = null;
+    const me = () => match.players[0];
+
+    /* ---------------- talking to the server ---------------- */
+    async function loadAppState() {
+        for (let i = 0; i < 60 && !window.AppState; i++) await new Promise(r => setTimeout(r, 100));
+        A = window.AppState || null;
+        if (A && A.waitForAuthReady) await A.waitForAuthReady();
+        return A && A.getCurrentUser && A.getCurrentUser();
+    }
+    function take(r) { if (r.cat) cat = r.cat; runId = r.runId; match = r.match; moves = []; sel = null; }
+    async function boot() {
+        let who = null;
+        try { who = await loadAppState(); } catch (e) { }
+        if (!who) { mode = "signin"; return render(); }
+        try {
+            const r = await A.warbandGet();
+            if (r.match) { take(r); mode = "plan"; } else { mode = "start"; }
+        } catch (e) { mode = "error"; render(e.message); return; }
+        render();
+    }
+    async function startMatch(fresh) {
+        if (busy) return; busy = true; render();
+        try { take(await A.warbandStart(!!fresh)); mode = "plan"; }
+        catch (e) { toast(e.message); }
+        busy = false; render();
+    }
+
+    /* ---------------- planning ---------------- */
+    function act(a) {
+        if (mode !== "plan" || busy) return false;
+        const before = W.units(me()).filter(u => u.s >= 2).length;
+        try { W.planAction(cat, match, 0, a); }
+        catch (e) { toast(e.message); return false; }
+        moves.push(a);
+        sel = null;
+        const after = W.units(me()).filter(u => u.s >= 2).length;
+        if (a.t === "buy" && after > before) toast("✨ Three of a kind — merged!");
+        render();
+        return true;
+    }
+    async function fightNow() {
+        if (mode !== "plan" || busy) return;
+        busy = true; render();
+        const round = match.round, mine = moves.slice(), before = match;
+        let r;
+        try { r = await A.warbandRound(runId, round, mine); }
+        catch (e) {
+            busy = false;
+            if (e.status === 400 || e.status === 409) { // (out of step: start the round again from the server's copy)
+                toast("That round didn't go through — here it is again.");
+                try { const g = await A.warbandGet(); if (g.match) take(g); else mode = "start"; } catch (e2) { }
+            } else toast(e.message || "Couldn't reach the server — try again.");
+            return render();
+        }
+        busy = false;
+        const res = r.results.find(x => x.a === 0 || x.b === 0);
+        playFight(before, res, () => { take(r); mode = r.over ? "over" : "plan"; render(); });
+    }
+
+    /* ---------------- drawing ---------------- */
+    const unitHtml = (u, extra) => { const c = cat[u.k]; return `<div class="u s${u.s}${extra || ""}" style="--c:var(--${c.rarity})" data-k="${esc(u.k)}"><img src="images/thumbs/${esc(u.k.toUpperCase())}.jpg" alt="${esc(c.name)}" loading="lazy"><span class="st">${"★".repeat(u.s)}</span></div>`; };
+    function topHtml() {
+        const p = me(), need = W.XP_TO_NEXT[p.level];
+        return `<div class="top"><button class="icon-btn" data-do="back" aria-label="Back">←</button>
+            <div class="stats"><span>Round ${match.round}</span><span>❤️ ${Math.max(0, p.hp)}</span><span>💰 ${p.gold}</span>
+            <span class="xp">Lv ${p.level}${need ? `<i><b style="width:${Math.round(100 * p.xp / need)}%"></b></i>` : " (top)"}</span></div>
+            <button class="icon-btn" data-do="help" aria-label="How to play">?</button></div>`;
+    }
+    function playersHtml() {
+        const list = match.players.slice().sort((a, b) => (b.alive - a.alive) || (a.alive ? b.hp - a.hp : a.place - b.place) || a.id - b.id);
+        return `<div class="players">${list.map(p => `<button class="pl${p.id === 0 ? " me" : ""}${p.alive ? "" : " out"}" data-pl="${p.id}"><span class="nm">${p.id === 0 ? "You" : esc(p.name)}</span><span class="hp"><b style="width:${Math.max(0, p.hp)}%"></b></span>${p.alive ? Math.max(0, p.hp) : ORD(p.place)}</button>`).join("")}</div>`;
+    }
+    function traitsHtml(board) {
+        const t = W.traitsOf(board.map(u => cat[u.k]));
+        const keys = Object.keys(t).sort((a, b) => t[b].tier - t[a].tier || t[b].n - t[a].n);
+        if (!keys.length) return `<div class="traits"><span class="tr">Team bonuses show here — 2 Humans, 2 Undead, 2 Mages…</span></div>`;
+        return `<div class="traits">${keys.map(k => { const x = t[k], T = W.TRAITS[k]; return `<button class="tr${x.tier ? " on t" + x.tier : ""}" data-trait="${k}">${T.icon} ${T.name} ${x.n}${x.next ? "/" + x.next : ""}</button>`; }).join("")}</div>`;
+    }
+    function boardHtml() {
+        const p = me();
+        let cells = "";
+        for (let y = 0; y < W.ROWS; y++) for (let x = 0; x < W.COLS; x++) {
+            const i = p.board.findIndex(u => u.x === x && u.y === y);
+            const isSel = sel && sel.from === "board" && sel.i === i;
+            cells += `<div class="cell${sel && i < 0 ? " target" : ""}" data-x="${x}" data-y="${y}">${i >= 0 ? unitHtml(p.board[i], isSel ? " sel" : "") : ""}</div>`;
+        }
+        return `<div class="board-wrap"><div class="board plan" id="board">${cells}</div></div>`;
+    }
+    function benchHtml() {
+        return `<div class="bench" id="bench">${me().bench.map((u, i) => `<div class="slot" data-slot="${i}">${u ? unitHtml(u, sel && sel.from === "bench" && sel.i === i ? " sel" : "") : ""}</div>`).join("")}</div>`;
+    }
+    function infoHtml() {
+        const p = me();
+        if (sel) {
+            const u = (sel.from === "board" ? p.board : p.bench)[sel.i];
+            if (u) {
+                const c = cat[u.k], m = W.STAR_MULT[u.s], sk = W.SKILLS[c.skill];
+                return `<div class="info"><div class="grow"><b>${esc(c.name)} ${"★".repeat(u.s)}</b> · ${FACTION_ICON[c.faction] || ""} ${esc(c.faction)} · ${c.attack === "Ranged" ? "🏹 Ranged" : "⚔️ Melee"}<br>❤️ ${Math.round(c.hp * m)} · ⚔️ ${Math.round(c.atk * m)} · ${sk.icon} ${esc(c.skillName || "Skill")}: ${esc(sk.desc)}<br><small>Tap a square or bench slot to move it there.</small></div><button class="sell-btn" data-do="sell">Sell +${W.sellValue(cat, u)} 💰</button></div>`;
+            }
+        }
+        const room = p.level - p.board.length;
+        return `<div class="info"><div class="grow">${room > 0 && W.units(p).length > p.board.length ? `<b>You can field ${room} more</b> — tap one on your bench, then a square.` : p.board.length ? "Tap a unit to see it, move it or sell it. Three of a kind merge into a ★2." : "<b>Buy units below</b>, then put them on the board."}</div></div>`;
+    }
+    function shopHtml() {
+        const p = me(), have = new Set(W.units(p).map(u => u.k));
+        return `<div class="shop" id="shop">${p.shop.map((k, i) => {
+            if (!k) return `<div class="card empty"></div>`;
+            const c = cat[k];
+            return `<button class="card${have.has(k) ? " have" : ""}${p.gold < c.cost ? " poor" : ""}" style="--c:var(--${c.rarity})" data-shop="${i}"><img src="images/thumbs/${esc(k.toUpperCase())}.jpg" alt="" loading="lazy"><span class="co">${c.cost}💰</span><span class="fa">${FACTION_ICON[c.faction] || ""}${c.attack === "Ranged" ? "🏹" : ""}</span><span class="nm">${esc(c.name)}</span></button>`;
+        }).join("")}</div>
+        <div class="acts"><button data-do="reroll"${p.gold < W.ECON.reroll ? " disabled" : ""}>🔄 Refresh · 2💰</button><button data-do="xp"${p.gold < W.ECON.xpCost || p.level >= W.MAX_LEVEL ? " disabled" : ""}>⬆️ XP · 4💰</button><button class="go" data-do="fight"${busy ? " disabled" : ""}>${busy ? "…" : "⚔️ Fight!"}</button></div>`;
+    }
+    function render(err) {
+        const app = $("app");
+        if (mode === "loading") { app.innerHTML = `<div class="screen"><p>Loading Warband…</p></div>`; return; }
+        if (mode === "error") { app.innerHTML = `<div class="screen"><h1>⚔️ Warband</h1><p>Couldn't load your match: ${esc(err || "")}</p><button class="big main" data-do="retry">Try again</button><button class="big" data-do="back">← Back</button></div>`; return; }
+        if (mode === "signin") { app.innerHTML = `<div class="screen"><h1>⚔️ Warband</h1><p>Sign in to play — every match is played on our server, so nobody can fake a win.</p><button class="big" data-do="back">← Back</button></div>`; return; }
+        if (mode === "start") {
+            app.innerHTML = `<div class="screen"><h1>⚔️ Warband</h1><p>You and 7 rivals, 100 ❤️ each. Last one standing wins.</p>
+                <ul><li>💰 Each round you get gold: buy troops and heroes from the shop.</li><li>✨ Three of the same merge into a ★2 — three ★2s into a ★3.</li>
+                <li>🛡️ Same faction (Human, Undead, Mage…) or attack type: team bonuses.</li><li>⬆️ Level up to field more units and see rarer ones.</li>
+                <li>⚔️ Then your team fights another player's — lose and you lose ❤️.</li></ul>
+                <p>🏆 Ranks and rewards are coming soon — for now, play for fun.</p>
+                <button class="big main" data-do="start"${busy ? " disabled" : ""}>${busy ? "Starting…" : "⚔️ Play"}</button><button class="big" data-do="back">← Back</button></div>`;
+            return;
+        }
+        if (mode === "over") {
+            const p = me();
+            app.innerHTML = `<div class="screen"><div class="place">${ORD(p.place)}</div><h1>${p.place === 1 ? "🏆 Victory!" : p.place <= 4 ? "Well fought!" : "Knocked out"}</h1>
+                <p>${p.place === 1 ? "Every rival beaten." : `You finished ${ORD(p.place)} of 8, after ${match.round} round${match.round === 1 ? "" : "s"}.`}</p>
+                ${playersHtml()}
+                <button class="big main" data-do="start">⚔️ Play again</button><button class="big" data-do="back">← Back</button></div>`;
+            return;
+        }
+        if (mode === "plan") {
+            app.innerHTML = topHtml() + playersHtml() + traitsHtml(me().board) + boardHtml() + benchHtml() + infoHtml() + shopHtml();
+        }
+    }
+
+    /* ---------------- the fight, played back ---------------- */
+    function playFight(before, res, done) {
+        mode = "fight";
+        const youA = res.a === 0, foeId = youA ? res.b : res.a, foe = before.players[foeId];
+        const f = W.fight(cat, res.boards[0], res.boards[1], res.seed, true);
+        const flip = !youA; // you always at the bottom
+        const pos = (x, y) => (flip ? { x: W.COLS - 1 - x, y: 7 - y } : { x, y });
+        const app = $("app");
+        let cells = "";
+        for (let y = 0; y < 8; y++) for (let x = 0; x < W.COLS; x++) cells += `<div class="cell${y < 4 ? " enemy" : ""}"></div>`;
+        app.innerHTML = topHtml() + playersHtml() + `<div class="vs">⚔️ You vs ${esc(foe.name)}${res.ghost ? " (a copy)" : ""}<small>${traitsLine(youA ? res.boards[0] : res.boards[1])}</small></div>`
+            + `<div class="board-wrap"><div class="board" id="fboard" style="grid-template-rows:repeat(8,var(--cell))">${cells}<div class="fx" id="fx"></div></div></div>`
+            + `<div class="acts" style="grid-template-columns:1fr"><button data-do="skip">⏩ Skip</button></div>`;
+        const fx = $("fx"), C = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--cell")) || 46;
+        const els = {};
+        f.start.forEach(s => {
+            const d = document.createElement("div");
+            const mine = (s.side === 0) === youA;
+            d.className = "fu" + (mine ? "" : " foe");
+            const p = pos(s.x, s.y);
+            d.style.left = p.x * C + "px"; d.style.top = p.y * C + "px";
+            d.innerHTML = `<div class="bar"><b style="width:100%"></b></div>` + unitHtml({ k: s.k, s: s.s });
+            fx.appendChild(d);
+            els[s.id] = { d, max: s.hp };
+        });
+        const num = (id, n, big) => { const e = els[id]; if (!e) return; const s = document.createElement("div"); s.className = "num" + (big ? " big" : ""); s.textContent = n; s.style.left = (parseFloat(e.d.style.left) + C * 0.3) + "px"; s.style.top = (parseFloat(e.d.style.top) + 4) + "px"; fx.appendChild(s); setTimeout(() => s.remove(), 750); };
+        let t = 0, k = 0, finished = false;
+        const apply = (e, quiet) => {
+                if (e[1] === "move") { const p = pos(e[3], e[4]); els[e[2]].d.style.left = p.x * C + "px"; els[e[2]].d.style.top = p.y * C + "px"; }
+                else if (e[1] === "hit") { const h = els[e[3]]; h.d.querySelector(".bar b").style.width = Math.max(0, 100 * e[5] / h.max) + "%"; if (!quiet) num(e[3], e[4], false); }
+                else if (e[1] === "die") els[e[2]].d.classList.add("dead");
+                else if (e[1] === "skill" && !quiet) { const s = els[e[2]].d; s.classList.add("cast"); setTimeout(() => s.classList.remove("cast"), 300); }
+        };
+        const step = () => {
+            while (k < f.events.length && f.events[k][0] <= t) apply(f.events[k++]);
+            t++;
+            if (t > f.ticks + 2) return finish();
+            fightTimer = setTimeout(step, 50); // twice as fast as it's played
+        };
+        const finish = () => {
+            if (finished) return;
+            finished = true;
+            clearTimeout(fightTimer); fightTimer = null; skipFight = null;
+            const won = res.winner === (youA ? 0 : 1), lost = (youA ? res.dmg[0] : res.dmg[1]);
+            const b = document.createElement("div");
+            b.className = "banner";
+            b.innerHTML = won ? `<span class="win">Victory!</span><small>${esc(foe.name)} loses ❤️ ${youA ? res.dmg[1] : res.dmg[0]}</small>` : `<span class="lose">${res.winner == null ? "Time's up" : "Defeat"}</span><small>You lose ❤️ ${lost}</small>`;
+            fx.appendChild(b);
+            setTimeout(done, 1300);
+        };
+        // ⏩ straight to the end: everything that happened, at once
+        skipFight = () => { clearTimeout(fightTimer); while (k < f.events.length) apply(f.events[k++], true); finish(); };
+        fightTimer = setTimeout(step, 400);
+    }
+    const traitsLine = (board) => { const t = W.traitsOf(board.map(u => cat[u.k])); return Object.keys(t).filter(k => t[k].tier).map(k => `${W.TRAITS[k].icon} ${W.TRAITS[k].name}`).join(" · ") || "No team bonuses yet"; };
+
+    /* ---------------- sheets, toasts ---------------- */
+    let toastT = null;
+    function toast(msg) { const t = $("toast"); t.textContent = msg; t.classList.add("on"); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("on"), 1800); }
+    function sheet(html) { $("sheet").innerHTML = html + `<button class="big" style="width:100%;margin-top:10px" data-do="close">Close</button>`; $("sheetBg").hidden = false; }
+    const closeSheet = () => { $("sheetBg").hidden = true; };
+    function helpSheet() {
+        sheet(`<h2>⚔️ How Warband works</h2><ul>
+            <li><b>Each round</b> you get 💰 5, +1 for every 10 you've saved (up to 5), and more on a winning or losing streak.</li>
+            <li><b>Buy</b> from the shop (a unit costs its rarity: 1–5 💰). <b>🔄 Refresh</b> for a new shop (2 💰). <b>⬆️ XP</b> (4 💰) levels you up: more units on the board, rarer ones in the shop.</li>
+            <li><b>Three of the same</b> (same ★) merge into one a ★ higher: stronger in every way.</li>
+            <li><b>Tap a unit</b> to see it, then tap a square or bench slot to move it — or drag it. Drag it onto the shop to sell it.</li>
+            <li><b>Team bonuses</b>: units of the same faction or attack type on the board (each different unit counts once).</li>
+            <li><b>⚔️ Fight!</b> Your board fights another player's. Lose and you lose ❤️: more later on, and more for each enemy still standing. At 0 you're out.</li></ul>
+            <h2>🛡️ Team bonuses</h2>${Object.entries(W.TRAITS).map(([k, T]) => `<p><b>${T.icon} ${T.name}</b> (${T.steps.join(" / ")}): ${esc(T.desc(T.vals.join(" / ")))}</p>`).join("")}`);
+    }
+    function traitSheet(k) {
+        const T = W.TRAITS[k], t = W.traitsOf(me().board.map(u => cat[u.k]))[k] || { n: 0, tier: 0 };
+        const all = Object.values(cat).filter(c => c.faction === k || c.attack === k).sort((a, b) => a.cost - b.cost);
+        sheet(`<h2>${T.icon} ${T.name} — ${t.n} on your board</h2><p>${T.steps.map((s, i) => `${t.tier > i ? "✅" : "⬜"} ${s}: ${esc(T.desc(T.vals[i]))}`).join("<br>")}</p>
+            <p>${T.of === "faction" ? "Units of this faction" : "Units that fight this way"} (${all.length}):</p><div class="mini">${all.slice(0, 40).map(c => unitHtml({ k: c.key, s: 1 })).join("")}</div>`);
+    }
+    function playerSheet(id) {
+        const p = match.players[id];
+        sheet(`<h2>${id === 0 ? "You" : esc(p.name)} · ❤️ ${Math.max(0, p.hp)} · Lv ${p.level}</h2>${p.alive ? `<p>On the board${p.board.length ? "" : ": nobody yet"}</p><div class="mini">${p.board.map(u => unitHtml(u)).join("")}</div><p>${traitsLine(p.board)}</p>` : `<p>Out — finished ${ORD(p.place)}.</p>`}${p.last ? `<p>Last round: ${p.last.won ? "won" : `lost (−${p.last.dmg} ❤️)`}</p>` : ""}`);
+    }
+    function back() {
+        if (mode === "fight" && skipFight) skipFight();
+        if (inApp) { try { window.parent.postMessage({ kih: "keepClose" }, location.origin); return; } catch (e) { } }
+        location.href = "index.html";
+    }
+
+    /* ---------------- taps and drags ---------------- */
+    // where a unit is: { from: "board" | "bench", i }
+    const whereOf = (el) => {
+        const cell = el.closest("[data-x]"), slot = el.closest("[data-slot]");
+        if (cell) { const i = me().board.findIndex(u => u.x === +cell.dataset.x && u.y === +cell.dataset.y); return i >= 0 ? { from: "board", i } : null; }
+        if (slot) { const i = +slot.dataset.slot; return me().bench[i] ? { from: "bench", i } : null; }
+        return null;
+    };
+    function dropOn(src, el) {
+        if (!el) return false;
+        const cell = el.closest("#board [data-x]"), slot = el.closest("#bench [data-slot]"), shop = el.closest("#shop, .acts");
+        if (cell) return act({ t: "move", from: src.from, i: src.i, to: "board", x: +cell.dataset.x, y: +cell.dataset.y });
+        if (slot) return act({ t: "move", from: src.from, i: src.i, to: "bench", slot: +slot.dataset.slot });
+        if (shop) return act({ t: "sell", from: src.from, i: src.i });
+        return false;
+    }
+    function tap(el) {
+        const b = el.closest("[data-do]");
+        if (b) {
+            const d = b.dataset.do;
+            if (d === "back") return back();
+            if (d === "help") return helpSheet();
+            if (d === "close") return closeSheet();
+            if (d === "retry") { mode = "loading"; render(); return boot(); }
+            if (d === "start") return startMatch(false);
+            if (d === "skip") return skipFight && skipFight();
+            if (d === "reroll") return act({ t: "reroll" });
+            if (d === "xp") return act({ t: "xp" });
+            if (d === "fight") return fightNow();
+            if (d === "sell" && sel) return act({ t: "sell", from: sel.from, i: sel.i });
+            return;
+        }
+        const tr = el.closest("[data-trait]"); if (tr) return traitSheet(tr.dataset.trait);
+        const pl = el.closest("[data-pl]"); if (pl && match) return playerSheet(+pl.dataset.pl);
+        if (el.closest("#sheetBg") && !el.closest("#sheet")) return closeSheet();
+        if (mode !== "plan") return;
+        const card = el.closest("[data-shop]"); if (card) return act({ t: "buy", i: +card.dataset.shop });
+        const here = whereOf(el);
+        const spot = el.closest("#board [data-x], #bench [data-slot]");
+        if (sel && spot) {
+            if (here && here.from === sel.from && here.i === sel.i) { sel = null; return render(); }
+            return dropOn(sel, el);
+        }
+        if (here) { sel = here; return render(); }
+        if (sel) { sel = null; render(); }
+    }
+    let drag = null;
+    document.addEventListener("pointerdown", (e) => {
+        if (mode !== "plan" || busy || e.button > 0) return;
+        const u = e.target.closest("#board .u, #bench .u");
+        if (!u) return;
+        drag = { src: whereOf(u), x: e.clientX, y: e.clientY, el: u, ghost: null, id: e.pointerId };
+    });
+    document.addEventListener("pointermove", (e) => {
+        if (!drag || e.pointerId !== drag.id) return;
+        if (!drag.ghost) {
+            if (Math.abs(e.clientX - drag.x) + Math.abs(e.clientY - drag.y) < 8) return;
+            const r = drag.el.getBoundingClientRect();
+            drag.ghost = drag.el.cloneNode(true); drag.ghost.classList.add("ghost"); drag.ghost.style.width = r.width + "px"; drag.ghost.style.height = r.height + "px";
+            document.body.appendChild(drag.ghost); drag.el.classList.add("dragging");
+            const shop = $("shop"); if (shop) shop.classList.add("sell-zone");
+        }
+        drag.ghost.style.left = (e.clientX - drag.ghost.offsetWidth / 2) + "px"; drag.ghost.style.top = (e.clientY - drag.ghost.offsetHeight / 2) + "px";
+        document.querySelectorAll(".drop").forEach(x => x.classList.remove("drop"));
+        const over = document.elementFromPoint(e.clientX, e.clientY), spot = over && over.closest("#board [data-x], #bench [data-slot]");
+        if (spot) spot.classList.add("drop");
+    });
+    const endDrag = (e) => {
+        if (!drag || (e && e.pointerId !== drag.id)) return;
+        const d = drag; drag = null;
+        if (!d.ghost) return; // just a tap (the click handles it)
+        d.ghost.remove();
+        const over = e ? document.elementFromPoint(e.clientX, e.clientY) : null;
+        d.moved = true; justDragged = true; setTimeout(() => { justDragged = false; }, 50);
+        if (!(d.src && dropOn(d.src, over))) render();
+    };
+    let justDragged = false;
+    document.addEventListener("pointerup", endDrag);
+    document.addEventListener("pointercancel", (e) => { if (drag && drag.ghost) drag.ghost.remove(); drag = null; render(); });
+    document.addEventListener("click", (e) => { if (justDragged) return; tap(e.target); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") { if (!$("sheetBg").hidden) closeSheet(); else if (sel) { sel = null; render(); } } });
+
+    // for the tests
+    window.WarbandDebug = { get match() { return match; }, get moves() { return moves; }, get mode() { return mode; }, get cat() { return cat; }, get runId() { return runId; }, act, fightNow, render: () => render(), skip: () => skipFight && skipFight() };
+    boot();
+})();
+</script>
+</body>
+</html>
