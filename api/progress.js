@@ -44,8 +44,8 @@
  *                                 (after that, status opens the Premium ones left, once)
  *   trickOrTreat { count }     -> 1 or 10 knocks at an event's door (P.EVENTS),
  *                                 only while it's on; each a treat or a trick
- *   keepFinds { ids }          -> 🏰 The Keep: D.FIND_TOKENS 🪙 for each of its things (D.ITEMS)
- *                                 you've found — once per thing per account, ever
+ *   keepFinds { ids }          -> 🏰 The Keep: D.FIND_TOKENS 🪙 for each of its rare-or-better
+ *                                 things (D.findPays) you've found — once per thing per account, ever
  *
  * Claiming an achievement's Gold tier also adds a free chest draw, and
  * its Mythic tier the exclusive items in P.ACHIEVEMENT_REWARDS.
@@ -1096,16 +1096,17 @@ async function convertTokens(db, uid, body, now) {
   });
 }
 
-/* 🏰 The Keep: D.FIND_TOKENS 🪙 for each of its things the first time you
-   have it. The Keep saves in the browser, so this takes your word for what
-   you've found — but each thing pays once per account, ever (keepFinds/{uid}),
-   and only The Keep's own things (D.ITEMS) count: Object.keys(D.ITEMS).length
-   🪙 at the very most. Counted as earned (lifetimeEarned, like Games). */
+/* 🏰 The Keep: D.FIND_TOKENS 🪙 for each of its rare-or-better things
+   (D.findPays) the first time you have it. The Keep saves in the browser, so
+   this takes your word for what you've found — but each thing pays once per
+   account, ever (keepFinds/{uid}), and only The Keep's own rare, epic and
+   legendary things count (common and uncommon ones never pay): one 🪙 each
+   at the very most. Counted as earned (lifetimeEarned, like Games). */
 async function keepFinds(db, uid, body, now) {
   const asked = Array.isArray(body.ids) ? body.ids : [];
   if (asked.length > 200) throw new HttpError(400, "Too many at once.");
-  const ids = [...new Set(asked.filter(id => typeof id === "string" && Object.prototype.hasOwnProperty.call(D.ITEMS, id)))];
-  if (!ids.length) throw new HttpError(400, "Which of The Keep's things?");
+  const ids = [...new Set(asked.filter(id => typeof id === "string" && D.findPays(id)))];
+  if (!ids.length) throw new HttpError(400, "Which of The Keep's rare finds?");
   await assertNotBanned(db, uid);
   const walletRef = db.collection("tokenWallets").doc(uid);
   const findsRef = db.collection("keepFinds").doc(uid);

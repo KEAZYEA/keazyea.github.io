@@ -194,8 +194,9 @@
 
     /* ================= 🎒 the Keep's things · ⚗️ fusion · 🌲 the Wilds ================= */
     // kind: mat (fuse it) · potion (carried — drinks itself when you need it) · gear (worn in a gear slot) · bag (makes the bag bigger)
-    // 🪙 the first time you have each of these: paid by the server (api/progress.js keepFinds), once per thing per account
-    const FIND_TOKENS = 1;
+    // 🪙 the first time you have one of these that's rare or better (findPays): paid by the
+    // server (api/progress.js keepFinds), once per thing per account — common and uncommon things pay nothing
+    const FIND_TOKENS = 1, FIND_RARITIES = ["rare", "epic", "legendary"];
     const ITEMS = {
         // materials: each monster has its own; the Wilds grow the rest
         bone: { kind: "mat", icon: "🦴", name: "Bone", rarity: "common", from: "Bone warriors and spearthrowers" },
@@ -533,8 +534,9 @@
     // is (x, y) inside something solid? (for the tests: every spot can be reached)
     const blockedAt = (map, x, y, pad) => x < 4 || y < 4 || x > WILDS.pw - 4 || y > WILDS.ph - 4 || map.obstacles.some(o => o.r ? Math.hypot(x - o.x, y - o.y) < o.r + (pad || 0) : Math.abs(x - o.x) < o.w / 2 + (pad || 0) && Math.abs(y - o.y) < o.h / 2 + (pad || 0));
 
+    const findPays = (id) => Object.prototype.hasOwnProperty.call(ITEMS, id) && FIND_RARITIES.includes(ITEMS[id].rarity);
     return {
-        ITEMS, FIND_TOKENS, GEAR_SLOTS, RECIPES, recipeFor, fuse, MAT_DROPS, rollMats, BAG, stackOf, cleanBag, bagCount, bagAdd, bagTake, bagFull, bagMoveAll, gearStats,
+        ITEMS, FIND_TOKENS, FIND_RARITIES, findPays, GEAR_SLOTS, RECIPES, recipeFor, fuse, MAT_DROPS, rollMats, BAG, stackOf, cleanBag, bagCount, bagAdd, bagTake, bagFull, bagMoveAll, gearStats,
         LEVELS, isGear, levelCap, xpToNext, gearEntry, gearAdd, addXp, HERO, heroNext, heroEntry, heroAdd, heroStats, heroXp, levelBonus, fuseChance, afterFail, startLevel, recipeToLearn,
         WILDS, ROADS, BANDS, REGIONS, zoneAt, regionMap, blockedAt, STORY, roadOpen, nextRoad, SELL, sellPrice,
         hashString, rng, TIER, BASE, STATS_BY_SLOT, CAPS, STAT_INFO, tierOf, WEAPONS, FIND_WEAPONS, HELD_WEAPON, weaponFor, statsOf,

@@ -38,6 +38,7 @@
         .keep-card { position: relative; display: block; width: 100%; margin: 0 0 12px; padding: 0; border: 1px solid rgba(255, 210, 74, 0.55); border-radius: 18px; overflow: hidden; cursor: pointer; text-align: left; color: #fff; font: inherit;
             background: radial-gradient(circle at 85% 20%, rgba(255, 170, 60, 0.35), transparent 45%), linear-gradient(160deg, #3a2a6a, #1d1838 70%); box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35); }
         .keep-card:active { transform: scale(0.985); }
+        .keep-card.wb-card { border-color: rgba(255, 90, 106, 0.55); background: radial-gradient(circle at 85% 20%, rgba(255, 90, 106, 0.32), transparent 45%), linear-gradient(160deg, #4a2040, #1d1838 70%); }
         .keep-top { display: flex; align-items: center; gap: 12px; padding: 14px 14px 8px; }
         .keep-art { flex-shrink: 0; width: 58px; height: 58px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.14); }
         .keep-name { font-size: 1.25rem; font-weight: 900; letter-spacing: 0.02em; }
@@ -706,6 +707,10 @@
                     <div class="keep-stats"><span>⭐ Lv ${k.lv}</span><span>🗺️ ${k.cleared === 4 ? "Story 1 done ✅" : `Roads cleared · ${k.cleared}/4`}</span><span>🔶 ${k.shards.toLocaleString("en-US")} shards</span><span>📖 ${k.found} found</span></div>
                     <div class="keep-bar"><i style="width:${Math.round(k.cleared / 4 * 100)}%"></i></div>
                     <span class="keep-go">⚔️ ${k.started ? "Keep going" : "Play"}</span></button>
+                <button type="button" class="keep-card wb-card" id="wbCard"><span class="keep-new">NEW</span>
+                    <div class="keep-top"><div class="keep-art">⚔️</div><div><div class="keep-name">Warband</div><div class="keep-sub">Buy troops and heroes, merge three into a stronger one, build team bonuses — outlast 7 rivals</div></div></div>
+                    <div class="keep-stats"><span>👥 You vs 7</span><span>✨ 3 of a kind → ★2</span><span>🛡️ Team bonuses</span></div>
+                    <span class="keep-go">⚔️ Play</span></button>
                 <div class="arcade-title">Quick games</div>
                 <div class="arcade">${C.GAMES.map(g => { const c = GAME_CARDS[g] || { icon: "🎮", name: g }, b = localBest(g);
                     return `<button type="button" class="arcade-card" data-game="${g}"><span class="ac-icon">${c.icon}</span><span class="ac-name">${esc(c.name)}</span><span class="ac-best">${b ? `Best: ${b}` : "Tap to play"}</span></button>`; }).join("")}</div>`;
@@ -715,9 +720,14 @@
             try { if (window.top !== window && typeof window.top.openKeepHome === "function") { window.top.openKeepHome(); return; } } catch (e) { }
             location.href = "dungeon.html"; // (Games on its own: just go there)
         }
+        function openWarband() {
+            try { if (window.top !== window && typeof window.top.openKeepHome === "function") { window.top.openKeepHome("warband"); return; } } catch (e) { }
+            location.href = "warband.html";
+        }
         $("gameArea").addEventListener("click", (e) => {
             if (tab !== "play") return;
             if (e.target.closest("#keepCard")) { openKeep(); return; }
+            if (e.target.closest("#wbCard")) { openWarband(); return; }
             const c = e.target.closest(".arcade-card[data-game]");
             if (c) switchTab(c.dataset.game);
         });

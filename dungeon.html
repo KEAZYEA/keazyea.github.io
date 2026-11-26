@@ -382,7 +382,7 @@
         if (!it) return 0;
         const isNew = !seen()[id];
         seen()[id] = true;
-        if (isNew) setTimeout(payFinds, 0); // 🪙 for a new find
+        if (isNew && D.findPays(id)) setTimeout(payFinds, 0); // 🪙 for a new rare-or-better find
         if (it.kind === "bag") { b.slots = Math.min(D.BAG.max, b.slots + it.slots); writeSave(save); return 1; }
         const got = D.bagAdd(b, id, n == null ? 1 : n, lv);
         if (got && G && G.trip && it.kind === "mat") G.trip[id] = (G.trip[id] || 0) + got;
@@ -390,13 +390,14 @@
         if (got && panel && !$("panelScreen").hidden) renderPanel(); // (the bag or the furnace open: show it)
         return got;
     }
-    /* 🪙 D.FIND_TOKENS for each thing you find for the first time — paid by
-       the server, once per thing per account (save.coined: the ones it's paid). */
+    /* 🪙 D.FIND_TOKENS for each rare-or-better thing you find for the first time
+       (D.findPays) — paid by the server, once per thing per account (save.coined:
+       the ones it's paid). Common and uncommon things pay nothing. */
     const coined = () => { if (!save.coined || typeof save.coined !== "object") save.coined = {}; return save.coined; };
     let paying = false;
     async function payFinds() {
         if (!me.signedIn || paying || !window.AppState || !window.AppState.keepFinds) return;
-        const mine = save, ids = Object.keys(seen()).filter(id => D.ITEMS[id] && !coined()[id]);
+        const mine = save, ids = Object.keys(seen()).filter(id => D.findPays(id) && !coined()[id]);
         if (!ids.length) return;
         paying = true;
         try {
@@ -407,11 +408,11 @@
             if (r.paid > 0) {
                 const one = r.fresh && r.fresh.length === 1 && D.ITEMS[r.fresh[0]];
                 if (G && G.player) fxText(G.player.x, G.player.y - 30, `+${r.paid}🪙`, "#ffd24a", true);
-                toast(one ? `🪙 +${r.paid} — a new find: ${iconOf(r.fresh[0], 16)} <b>${esc(one.name)}</b>` : `🪙 +${r.paid} — for ${r.fresh.length} things you've found in the Keep`, 1800);
+                toast(one ? `🪙 +${r.paid} — a new find: ${iconOf(r.fresh[0], 16)} <b>${esc(one.name)}</b>` : `🪙 +${r.paid} — for ${r.fresh.length} rare finds in the Keep`, 1800);
             }
         } catch (e) { console.warn("Couldn't add your 🪙 for a new find:", e.message); } // (tried again with the next find, or next time)
         finally { paying = false; }
-        if (Object.keys(seen()).some(id => D.ITEMS[id] && !coined()[id]) && mine === save) setTimeout(payFinds, 1500); // found more meanwhile
+        if (Object.keys(seen()).some(id => D.findPays(id) && !coined()[id]) && mine === save) setTimeout(payFinds, 1500); // found more meanwhile
     }
     const RAR = (r) => `<span class="rar-${r || "common"}">${esc(r || "common")}</span>`;
     // a potion, drawn — a bottle, not a heart
@@ -1204,7 +1205,7 @@
             return `<button type="button" class="recipe" data-iinfo="${id}"><span class="pic2" style="font-size:1.4rem">${iconOf(id, 26)}</span><span class="eq"><b>${esc(it.name)}</b> ${RAR(it.rarity)}<br>📍 ${esc(it.from || it.desc || "")} <span class="have">✓ found</span></span></button>`; }).join("");
         $("panelCard").innerHTML = panelTop(`📖 The collection · ${had}/${all.length}`)
             + `<div class="chips">${tabs.map(([k, l]) => `<button type="button" class="chip${codexTab === k ? " on" : ""}" data-ctab="${k}">${l}</button>`).join("")}</div>`
-            + `<p class="sub" style="text-align:left">What you haven't found yet stays a ❔ — find 📜 recipes on the roads, or fuse things and see. ${me.signedIn ? `Each new thing you find: +${D.FIND_TOKENS} 🪙 for your account.` : `Sign in: +${D.FIND_TOKENS} 🪙 for each new thing you find.`}</p><div class="recipe-list">${rows}</div><button type="button" class="ghost-btn" data-p="fusion">🔥 Back to the furnace</button>`;
+            + `<p class="sub" style="text-align:left">What you haven't found yet stays a ❔ — find 📜 recipes on the roads, or fuse things and see. ${me.signedIn ? `Each new rare (or better) thing you find: +${D.FIND_TOKENS} 🪙 for your account.` : `Sign in: +${D.FIND_TOKENS} 🪙 for each new rare (or better) thing you find.`}</p><div class="recipe-list">${rows}</div><button type="button" class="ghost-btn" data-p="fusion">🔥 Back to the furnace</button>`;
     }
     async function signIn() {
         try { await window.AppState.signIn(); } catch (e) { return; }
@@ -2237,7 +2238,7 @@
             for (let i = 0; i < 3; i++) { ctx.strokeStyle = `rgba(${open ? col : "140,140,160"},${0.7 - i * 0.2})`; ctx.lineWidth = 2; ctx.beginPath(); ctx.ellipse(t.x, t.y, 12 - i * 3 + (open ? Math.sin(G.time * 4 + i) * 1.2 : 0), 7 - i * 1.5, 0, 0, Math.PI * 2); ctx.stroke(); }
             emoji(open ? (t.gold ? "✨" : "🌀") : "🔒", t.x, t.y - 2, 9); return;
         }
-        if (t.kind === "chest") { emoji(t.open ? "🪙" : "🧰", t.x, t.y, 14); return; }
+        if (t.kind === "chest") { emoji(t.open ? "📭" : "🧰", t.x, t.y, 14); return; } // (opened: an empty box — never a 🪙 you'd think you could pick up)
         if (t.kind === "merchant") { shadow(t.x, t.y + 9, 8); emoji("🧙", t.x, t.y, 18); emoji("💰", t.x + 14, t.y + 6, 10); return; }
         if (t.kind === "npc") { shadow(t.x, t.y + 9, 8); emoji(t.errand.icon, t.x, t.y, 16); if (!t.done) emoji(G.carrying ? "❗" : "❓", t.x, t.y - 17 + Math.sin(G.time * 4) * 1.5, 9); return; }
         if (t.kind === "lost" && !t.taken) { ctx.fillStyle = `rgba(255,210,74,${0.2 + 0.15 * Math.sin(G.time * 5)})`; circle(t.x, t.y, 9, true); emoji(t.icon, t.x, t.y - Math.abs(Math.sin(G.time * 3)) * 2, 10); return; }
@@ -2365,7 +2366,7 @@
             btns.push(["ghost", "🎒 Open your bag", () => { startLobby(road); openPanel("bag"); }]);
             btns.push(["ghost", `🏘️ Back to ${esc(STORY1.city)}`, () => startLobby(plan.road)]);
             $("endCard").innerHTML = html + tally + btns.map((b, i) => `<button type="button" class="${b[0] === "big" ? "big-btn" : "ghost-btn"}" data-b="${i}">${b[1]}</button>`).join("")
-                + `<p class="note">🧪 This is a demo — The Keep is still being built. What you pick up stays in the Keep for now — ✨ 💗 🪙 aren't added to your account yet (but each new thing for your 📖 collection is +${D.FIND_TOKENS} 🪙 in your account${me.signedIn ? "" : " once you sign in"}). Tell us what you think!</p>`;
+                + `<p class="note">🧪 This is a demo — The Keep is still being built. What you pick up stays in the Keep for now — ✨ 💗 🪙 aren't added to your account yet (but each new rare or better thing for your 📖 collection is +${D.FIND_TOKENS} 🪙 in your account${me.signedIn ? "" : " once you sign in"}). Tell us what you think!</p>`;
             $("endCard").querySelectorAll("[data-b]").forEach(el => el.addEventListener("click", () => btns[+el.dataset.b][2]()));
             $("endScreen").hidden = false;
         }, won ? 600 : 900);

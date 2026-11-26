@@ -107,6 +107,7 @@ describe("questions people ask", () => {
         games: ["games", "i want to play a game"],
         puzzle: ["today's puzzle", "daily puzzle"],
         leaderboard: ["leaderboard", "weekly prizes", "rankings"],
+        warband: ["warband", "how do i play warband", "auto battler", "auto chess", "how do i merge units", "team bonuses"],
         keep: ["the keep", "dungeon game", "where is the adventure game", "how do i fuse items", "the missing warden", "where is the furnace", "how do i level up my weapon", "where do i find recipes", "my fusion failed", "how do i level up", "character level", "tokens from the keep", "keep coins"],
         memory: ["memory game", "card matching game"],
         unitle: ["unitle"], hilo: ["higher or lower"], trivia: ["trivia quiz"], hangman: ["hangman"], blur: ["blur game"],
