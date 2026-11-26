@@ -10,13 +10,22 @@
    - Units (catalog) are the site's own 75 troops and heroes (games-core.js
      buildUnits): their rarity is their cost (1–5 🪙 gold, the match's own
      money), their faction and attack type their team bonuses (TRAITS), and
-     their shape — tanky or hard-hitting — comes from their real stats.
+     their shape — tanky or hard-hitting — comes from their real stats. Each
+     uses its own ability (by name: Meteor Strike, Snowball, Healing Veil…)
+     on a countdown (ABILITIES — what it does comes from what the ability is),
+     and a hero with a talent has it too (TALENTS: a lasting bonus).
+   - Who you'll fight is known at the start of the round (st.pairs — the bots
+     have planned already), so you can see their formation and set yours.
    - Gold: ECON (a round's pay, interest on what you save, streaks); XP buys
      levels, your level is how many units you can field and which costs the
      shop shows (ODDS). The shop draws from one shared pool (POOL).
    - Three of the same unit at the same ★ merge into one ★ higher (★3 at most).
    - fight(): a deterministic fight on an 8 × 7 board, in ticks of 0.1 s, with
      only + − × ÷ and rounding, so the browser and the server always agree.
+     It can record what happens (moves, hits, abilities, heals, stuns…) for
+     the page to play back.
+   - A match is about 10 rounds: you start at level 3 with 💰 10, and a loss
+     costs more each round (lossDamage).
    - The bots (botPlan) play by the same rules; their skill (0–1) comes from
      your rank: low ones buy at random, high ones save, chase pairs and a
      faction, level on time and place tanks in front.
@@ -49,7 +58,8 @@
     function shuffle(r, list) { const a = list.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
     /* ---------------- the rules' numbers ---------------- */
-    const PLAYERS = 8, START_HP = 100, BENCH = 9, SHOP = 5, MAX_LEVEL = 9, MAX_ROUNDS = 60;
+    const VERSION = 2; // a saved match from before this is ended, not carried on
+    const PLAYERS = 8, START_HP = 100, BENCH = 9, SHOP = 5, MAX_LEVEL = 9, MAX_ROUNDS = 30, START_LEVEL = 3, START_GOLD = 10;
     const COLS = 7, ROWS = 4; // your half of the board (the fight's board is 8 × 7)
     const COST = { common: 1, rare: 2, epic: 3, legendary: 4, mythic: 5 };
     const POOL = { 1: 29, 2: 22, 3: 18, 4: 12, 5: 10 }; // copies of each unit, shared by all 8
@@ -58,18 +68,18 @@
         1: [100, 0, 0, 0, 0], 2: [100, 0, 0, 0, 0], 3: [75, 25, 0, 0, 0], 4: [55, 30, 15, 0, 0], 5: [45, 33, 20, 2, 0],
         6: [30, 40, 25, 5, 0], 7: [19, 30, 35, 15, 1], 8: [18, 25, 32, 22, 3], 9: [10, 20, 25, 35, 10]
     };
-    const XP_TO_NEXT = { 1: 2, 2: 2, 3: 6, 4: 10, 5: 20, 6: 36, 7: 56, 8: 80 };
-    const ECON = { base: 5, interestPer: 10, interestMax: 5, reroll: 2, xpCost: 4, xpBuy: 4, xpPerRound: 2, streak: [[5, 3], [4, 2], [2, 1]] };
+    const XP_TO_NEXT = { 1: 2, 2: 2, 3: 4, 4: 8, 5: 14, 6: 22, 7: 32, 8: 44 };
+    const ECON = { base: 6, interestPer: 10, interestMax: 5, reroll: 2, xpCost: 4, xpBuy: 4, xpPerRound: 4, streak: [[5, 3], [4, 2], [2, 1]] };
     const STAR_MULT = { 1: 1, 2: 1.8, 3: 3.24 };
-    // ❤️ a loss costs: 1 + 1 every 4 rounds, plus each enemy unit still standing (its ★)
-    const lossDamage = (round, survivorStars) => 1 + Math.floor(round / 4) + survivorStars;
+    // ❤️ a loss costs: 2 + the round, plus 2 for each ★ of the enemy units still standing (about 10 rounds a match)
+    const lossDamage = (round, survivorStars) => 2 + round + 2 * survivorStars;
 
     /* ---------------- team bonuses ---------------- */
     // counted by different units on the board (two Archers count once)
     const TRAITS = {
         Human: { icon: "🛡️", name: "Human", of: "faction", steps: [2, 4, 6], desc: (v) => `Humans: +${v} defense`, vals: [20, 45, 80] },
         Undead: { icon: "💀", name: "Undead", of: "faction", steps: [2, 4, 6], desc: (v) => `Undead heal ${v}% of the damage they deal`, vals: [15, 30, 50] },
-        Mage: { icon: "🔮", name: "Mage", of: "faction", steps: [2, 4, 6], desc: (v) => `Mages' skills hit ${v}% harder, and start with more mana`, vals: [30, 60, 100] },
+        Mage: { icon: "🔮", name: "Mage", of: "faction", steps: [2, 4, 6], desc: (v) => `Mages' abilities hit ${v}% harder, and their first comes sooner`, vals: [30, 60, 100] },
         Demon: { icon: "😈", name: "Demon", of: "faction", steps: [1, 2, 3], desc: (v) => `Demons: +${v}% attack`, vals: [20, 45, 90] },
         Elevate: { icon: "🌟", name: "Elevate", of: "faction", steps: [1, 2, 3], desc: (v) => `Elevate: +${v}% HP`, vals: [20, 45, 90] },
         Melee: { icon: "⚔️", name: "Vanguard", of: "attack", steps: [2, 4, 6], desc: (v) => `Melee units: +${v}% HP`, vals: [15, 30, 55] },
@@ -91,10 +101,50 @@
     }
 
     /* ---------------- the units ---------------- */
-    // From games-core.js buildUnits: { key, name, rarity, faction, attack, levels, splash, abilities, img }.
+    // From games-core.js buildUnits: { key, name, rarity, faction, attack, levels, splash, abilityList, talent, talentStats, img }.
     // Each gets its cost from its rarity and its stats from its cost, shaped
     // by how tanky it really is (its own HP against its attack, among all 75).
     const BASE_HP = { 1: 560, 2: 700, 3: 860, 4: 1020, 5: 1220 }, BASE_ATK = { 1: 52, 2: 62, 3: 76, 4: 92, 5: 112 };
+    // what an ability does, in a fight (x = the unit's attack)
+    const ABILITIES = {
+        blast: { icon: "☄️", desc: "hits every enemy around its target for 2× attack" },
+        strike: { icon: "💥", desc: "hits its target for 3.5× attack" },
+        stun: { icon: "💫", desc: "hits enemies around its target for 1.5× attack and stuns them for 2 s" },
+        fear: { icon: "😱", desc: "scares the enemies near it: they can't attack for 2.5 s" },
+        heal: { icon: "💚", desc: "heals itself and the allies near it by 25% of their HP" },
+        shield: { icon: "🛡️", desc: "shields itself and the allies near it (20% of their HP) for 4 s" },
+        rally: { icon: "📯", desc: "it and the allies near it attack 50% faster for 4 s" },
+        summon: { icon: "👻", desc: "calls up a helper to fight beside it" },
+        leap: { icon: "🌀", desc: "leaps onto the enemy farthest back and hits it for 2.5× attack" },
+        volley: { icon: "🏹", desc: "hits its target for 2× attack and two other enemies for 1×" },
+        guard: { icon: "🛡️", desc: "shields itself (35% of its HP) for 4 s" }
+    };
+    // what its first ability is, from its name and numbers (Meteor Strike: a blast; Snowball: a stun…)
+    function abilityKind(a) {
+        const t = ((a.title || "") + " " + (a.key || "")).toLowerCase(), n = a.nums || {};
+        if (/summon|army|plague rat|tombstone|skeleton shot/.test(t)) return "summon";
+        if (n.stun || /mind control|dream|snowball/.test(t)) return "stun";
+        if (n.fear || /fear|nightmare/.test(t)) return "fear";
+        if (n.heal || /heal|meds|veil|blessing/.test(t)) return "heal";
+        if (/shield|guard|spirit form|immutab/.test(t)) return "shield";
+        if (/song|courage|rage|fierce|furious|ale|vengeance/.test(t)) return "rally";
+        if (/teleport|passage|charge|flight|jump|hop|cavalry/.test(t)) return "leap";
+        if (n.dmg && n.radius) return "blast";
+        if (n.dmg) return "strike";
+        return null;
+    }
+    // a hero's talent: a bonus it always has
+    const TALENTS = {
+        atk: (v) => `+${v}% attack`, hp: (v) => `+${v}% HP`, thorns: (v) => `sends back ${v}% of the damage it takes`, dodge: (v) => `dodges ${v}% of attacks`, def: (v) => `+${v} defense`
+    };
+    function talentOf(u) {
+        if (!u.talent) return null;
+        const label = ((u.talentStats || [])[0] || {}).label || "";
+        const kind = /return/i.test(label) ? "thorns" : /evasion|missing/i.test(label) ? "dodge" : /hp|health/i.test(label) ? "hp" : /decreased|delayed/i.test(label) ? "def" : "atk";
+        const val = { atk: 15, hp: 15, thorns: 20, dodge: 15, def: 15 }[kind];
+        return { name: u.talent, kind, val };
+    }
+    const cdOf = (a) => { const c = a && a.nums && a.nums.cd; const first = Array.isArray(c) && c.length ? Number(c[0][1]) : 0; return first > 0 ? Math.max(3, Math.min(7, Math.round(first * 0.4))) : 5; };
     function catalog(units) {
         const list = (units || []).filter(u => u && COST[u.rarity] && u.levels && u.levels.length && (u.faction in TRAITS));
         const ratio = (u) => { const l = u.levels[u.levels.length - 1]; return (l.hp * (l.count || 1)) / Math.max(1, l.atk * (l.count || 1)); };
@@ -106,6 +156,10 @@
             const cost = COST[u.rarity], s = shapeOf[u.key], ranged = u.attack === "Ranged";
             const last = u.levels[u.levels.length - 1];
             const tank = s >= 0.66, hitter = s < 0.33;
+            // its own ability if it has one (named, on its own countdown); if not, one that fits it
+            const own = (u.abilityList || []).map(a => ({ a, kind: abilityKind(a) })).find(x => x.kind);
+            const kind = own ? own.kind : tank ? "guard" : ranged ? "volley" : hitter ? "strike" : "blast";
+            const name = own ? own.a.title : { guard: "Shield Up", volley: "Volley", strike: "Power Strike", blast: "Cleave" }[kind];
             out[u.key] = {
                 key: u.key, name: u.name, type: u.type, img: u.img || null, rarity: u.rarity, cost,
                 faction: u.faction, attack: ranged ? "Ranged" : "Melee",
@@ -115,20 +169,12 @@
                 range: ranged ? 3 : 1,
                 aspd: ranged ? 0.75 : 0.8, // attacks a second
                 splash: !!(last && last.splash),
-                // its skill, when its mana's full: a tank shields itself, a hitter strikes hard, a ranged unit volleys
-                skill: tank ? "guard" : ranged ? "volley" : hitter ? "strike" : "cleave",
-                skillName: (u.abilities && u.abilities[0]) || null,
-                mana: tank ? 80 : 100
+                ability: { name, kind, cd: own ? cdOf(own.a) : 5, own: !!own },
+                talent: talentOf(u)
             };
         });
         return out;
     }
-    const SKILLS = {
-        guard: { icon: "🛡️", desc: "shields itself (30% of its HP) for a while" },
-        strike: { icon: "💥", desc: "strikes for 3× its attack" },
-        cleave: { icon: "🌀", desc: "hits everything next to it for 2× its attack" },
-        volley: { icon: "🏹", desc: "hits its target for 2× and two others for 1×" }
-    };
     const sellValue = (cat, unit) => { const c = cat[unit.k].cost; return unit.s === 1 ? c : c * Math.pow(3, unit.s - 1) - 1; };
     const copiesOf = (s) => Math.pow(3, s - 1);
 
@@ -148,11 +194,11 @@
             players.push({
                 id: i, name: i === 0 ? String(opts.name || "You").slice(0, 40) : names[i - 1],
                 bot: i === 0 ? null : { skill: Math.max(0, Math.min(1, skill + (r() - 0.5) * 0.3)), style: pick(r, styles) },
-                hp: START_HP, gold: 0, level: 1, xp: 0, streak: 0, board: [], bench: Array(BENCH).fill(null), shop: [], rolls: 0,
+                hp: START_HP, gold: 0, level: START_LEVEL, xp: 0, streak: 0, board: [], bench: Array(BENCH).fill(null), shop: [], rolls: 0, locked: false,
                 alive: true, place: null, last: null
             });
         }
-        const st = { v: 1, seed: String(seed), round: 0, rk: "", pool, players, over: false, log: [] };
+        const st = { v: VERSION, seed: String(seed), round: 0, rk: "", pool, players, pairs: [], over: false, log: [] };
         startRound(cat, st, opts.roundKey);
         return st;
     }
@@ -193,12 +239,37 @@
         st.rk = roundKey ? String(roundKey(st.round)) : `${st.seed}:${st.round}`;
         st.players.forEach(p => {
             if (!p.alive) return;
-            const pay = st.round === 1 ? ECON.base : ECON.base + interest(p.gold) + streakGold(p.streak);
+            const pay = st.round === 1 ? START_GOLD : ECON.base + interest(p.gold) + streakGold(p.streak);
             p.gold += pay;
             if (st.round > 1) addXp(p, ECON.xpPerRound);
             p.rolls = 0;
-            p.shop = rollShop(cat, st, p.id, 0);
+            // 🔒 a locked shop stays as it is (what's been bought from it stays empty) until it's unlocked
+            if (!(p.locked && st.round > 1 && p.shop.length)) p.shop = rollShop(cat, st, p.id, 0);
         });
+        // the bots plan now, and the pairs are made — so you can see who you'll fight, and their board
+        st.players.forEach(p => { if (p.alive && p.bot) botPlan(cat, st, p.id); });
+        st.pairs = makePairs(st);
+    }
+    // this round's fights: [a, b, ghost] — not the same as last round when it can be helped; one left over fights a copy of someone
+    function makePairs(st) {
+        const live = st.players.filter(p => p.alive);
+        const r = rng(`pair:${st.seed}:${st.round}`);
+        const order = shuffle(r, live.map(p => p.id));
+        const pairs = [];
+        while (order.length >= 2) {
+            const a = order.shift();
+            let j = order.findIndex(b => st.players[a].last == null || st.players[a].last.vs !== b);
+            if (j < 0) j = 0;
+            pairs.push([a, order.splice(j, 1)[0], false]);
+        }
+        if (order.length) { const a = order[0], ghost = pick(r, live.filter(p => p.id !== a)).id; pairs.push([a, ghost, true]); }
+        return pairs;
+    }
+    // who a player fights this round: { vs, ghost, side } (side 0: they're "a")
+    function opponentOf(st, pid) {
+        const p = (st.pairs || []).find(x => x[0] === pid || x[1] === pid);
+        if (!p) return null;
+        return p[0] === pid ? { vs: p[1], ghost: p[2], side: 0 } : { vs: p[0], ghost: false, side: 1, copied: p[2] };
     }
 
     /* ---------------- planning: every move you can make ---------------- */
@@ -226,7 +297,7 @@
     }
     const units = (p) => [...p.board, ...p.bench.filter(Boolean)];
     // one planning move; throws if it isn't allowed. a: { t: "buy", i } | { t: "sell", from, i } |
-    // { t: "reroll" } | { t: "xp" } | { t: "move", from, i, to, x, y, slot }
+    // { t: "reroll" } | { t: "xp" } | { t: "lock" } (🔒 / 🔓 the shop) | { t: "move", from, i, to, x, y, slot }
     function planAction(cat, st, pid, a) {
         if (st.over) throw new Error("The match is over.");
         const p = st.players[pid];
@@ -264,6 +335,7 @@
             if (a.from === "board") p.board.splice(a.i, 1); else p.bench[a.i] = null;
             return {};
         }
+        if (a.t === "lock") { p.locked = !p.locked; return { locked: p.locked }; } // 🔒 keep this shop for the next round (or 🔓 not)
         if (a.t === "reroll") {
             if (p.gold < ECON.reroll) throw new Error("Not enough gold.");
             p.gold -= ECON.reroll; p.rolls++;
@@ -310,82 +382,121 @@
     /* ---------------- the fight ---------------- */
     // the fight's board: 8 rows × 7. Side 0 (a) on rows 4–7 (your row 0 = row 4,
     // the front), side 1 (b) on rows 3–0, mirrored, facing you.
-    const FIGHT_ROWS = 8, TICKS = 10, MAX_TICKS = 450, MOVE_TICKS = 4;
+    const FIGHT_ROWS = 8, TICKS = 10, MAX_TICKS = 400, MOVE_TICKS = 4;
     const cheb = (a, b) => Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
     function fighters(cat, board, side, traits) {
         return board.map(u => {
-            const c = cat[u.k], m = STAR_MULT[u.s] || 1;
-            let hp = c.hp * m, atk = c.atk * m, def = c.def, aspd = c.aspd, mana0 = 0, spell = 1, steal = 0;
+            const c = cat[u.k], m = STAR_MULT[u.s] || 1, ab = c.ability, tal = c.talent;
+            let hp = c.hp * m, atk = c.atk * m, def = c.def, aspd = c.aspd, spell = 1, steal = 0, first = 0.25; // (its first comes early: a quarter of its countdown)
             const t = (name) => (traits[name] && traits[name].tier ? traits[name].val : 0);
             if (c.faction === "Human") def += t("Human");
             if (c.faction === "Undead") steal = t("Undead");
-            if (c.faction === "Mage" && t("Mage")) { spell += t("Mage") / 100; mana0 = 30; }
+            if (c.faction === "Mage" && t("Mage")) { spell += t("Mage") / 100; first = 0.1; }
             if (c.faction === "Demon") atk *= 1 + t("Demon") / 100;
             if (c.faction === "Elevate") hp *= 1 + t("Elevate") / 100;
             if (c.attack === "Melee") hp *= 1 + t("Melee") / 100;
             if (c.attack === "Ranged") aspd *= 1 + t("Ranged") / 100;
+            if (tal && tal.kind === "atk") atk *= 1 + tal.val / 100;
+            if (tal && tal.kind === "hp") hp *= 1 + tal.val / 100;
+            if (tal && tal.kind === "def") def += tal.val;
             hp = Math.round(hp); atk = Math.round(atk);
             const x = side === 0 ? u.x : COLS - 1 - u.x, y = side === 0 ? 4 + u.y : 3 - u.y;
+            const cdMax = ab.cd * TICKS;
             return { k: u.k, s: u.s, side, x, y, hp, max: hp, atk, def, range: c.range, cd: Math.max(3, Math.round(TICKS / aspd)), next: Math.round(TICKS / aspd / 2),
-                mana: mana0, manaMax: c.mana, skill: c.skill, spell, steal, splash: c.splash, shield: 0, shieldT: 0, moveT: 0 };
+                ab: ab.kind, abName: ab.name, cdMax, cdLeft: Math.round(cdMax * first), spell, steal, splash: c.splash,
+                thorns: tal && tal.kind === "thorns" ? tal.val : 0, dodge: tal && tal.kind === "dodge" ? tal.val : 0, talent: tal ? tal.name : null,
+                shield: 0, shieldT: 0, moveT: 0, stunT: 0, fearT: 0, rallyT: 0, summon: false };
         });
     }
     // a vs b (boards of { k, s, x, y }): { winner: 0 | 1 | null (time ran out), survivors: [stars of a's, b's], ticks, events? }
+    // events (recorded): [t, "move", id, x, y, leap?] · [t, "hit", from, to, dmg, hpLeft, "a" attack | "s" ability | "r" thorns] ·
+    // [t, "miss", from, to] · [t, "die", id] · [t, "skill", id, kind, targetId] · [t, "heal", id, amount, hp] ·
+    // [t, "shield", id, amount] · [t, "stun", id, untilTick] · [t, "fear", id, untilTick] · [t, "rally", id, untilTick] ·
+    // [t, "summon", id, k, x, y, hp, side, fromId]
     function fight(cat, boardA, boardB, seed, record) {
         const ta = traitsOf(boardA.map(u => cat[u.k])), tb = traitsOf(boardB.map(u => cat[u.k]));
         const all = [...fighters(cat, boardA, 0, ta), ...fighters(cat, boardB, 1, tb)];
         all.forEach((f, i) => { f.id = i; });
+        const start = record ? all.map(f => ({ id: f.id, k: f.k, s: f.s, side: f.side, x: f.x, y: f.y, hp: f.max, ab: f.ab, abName: f.abName, cdMax: f.cdMax, cdLeft: f.cdLeft, talent: f.talent })) : null;
         const r = rng("fight:" + seed);
         const ev = record ? [] : null;
         const alive = (side) => all.filter(f => f.hp > 0 && f.side === side);
-        const hit = (from, to, raw, magic, t) => {
-            let dmg = Math.max(1, Math.round(magic ? raw : raw * 100 / (100 + to.def)));
-            if (to.shield > 0) { const s = Math.min(to.shield, dmg); to.shield -= s; dmg -= s; }
-            to.hp -= dmg;
-            to.mana = Math.min(to.manaMax, to.mana + 4);
-            if (from.steal) from.hp = Math.min(from.max, from.hp + Math.round(dmg * from.steal / 100));
-            if (ev) ev.push([t, "hit", from.id, to.id, dmg, to.hp > 0 ? to.hp : 0]);
-            if (to.hp <= 0 && ev) ev.push([t, "die", to.id]);
-        };
+        const free = (x, y) => x >= 0 && x < COLS && y >= 0 && y < FIGHT_ROWS && !all.some(g => g.hp > 0 && g.x === x && g.y === y);
+        const DIRS = [[0, -1], [0, 1], [-1, 0], [1, 0], [-1, -1], [1, -1], [-1, 1], [1, 1]];
         let t = 0;
+        const hit = (from, to, raw, how) => {
+            if (to.hp <= 0) return;
+            if (how === "a" && to.dodge && r() * 100 < to.dodge) { if (ev) ev.push([t, "miss", from.id, to.id]); return; }
+            let dmg = Math.max(1, Math.round(how === "s" ? raw : raw * 100 / (100 + to.def)));
+            if (to.shield > 0) { const sh = Math.min(to.shield, dmg); to.shield -= sh; dmg -= sh; }
+            to.hp -= dmg;
+            if (from.steal && how !== "r") from.hp = Math.min(from.max, from.hp + Math.round(dmg * from.steal / 100));
+            if (ev) ev.push([t, "hit", from.id, to.id, dmg, to.hp > 0 ? to.hp : 0, how]);
+            if (to.hp <= 0) { if (ev) ev.push([t, "die", to.id]); return; }
+            if (to.thorns && how === "a" && from.hp > 0) hit(to, from, Math.round(dmg * to.thorns / 100), "r");
+        };
+        const near = (f, list, d) => list.filter(g => g.hp > 0 && cheb(f, g) <= d);
+        // its ability: what it does
+        const cast = (f, target, foes, friends) => {
+            const p = f.atk * f.spell;
+            if (ev) ev.push([t, "skill", f.id, f.ab, target ? target.id : null]);
+            if (f.ab === "blast") near(target, foes, 1).forEach(g => hit(f, g, p * 2, "s"));
+            else if (f.ab === "strike") hit(f, target, p * 3.5, "s");
+            else if (f.ab === "stun") near(target, foes, 1).forEach(g => { hit(f, g, p * 1.5, "s"); if (g.hp > 0) { g.stunT = t + 20; if (ev) ev.push([t, "stun", g.id, g.stunT]); } });
+            else if (f.ab === "fear") near(f, foes, 2).forEach(g => { g.fearT = t + 25; if (ev) ev.push([t, "fear", g.id, g.fearT]); });
+            else if (f.ab === "heal") near(f, friends, 2).forEach(g => { const h = Math.min(g.max - g.hp, Math.round(g.max * 0.25 * f.spell)); g.hp += h; if (ev) ev.push([t, "heal", g.id, h, g.hp]); });
+            else if (f.ab === "shield" || f.ab === "guard") (f.ab === "guard" ? [f] : near(f, friends, 2)).forEach(g => { g.shield = Math.round(g.max * (f.ab === "guard" ? 0.35 : 0.2) * f.spell); g.shieldT = 40; if (ev) ev.push([t, "shield", g.id, g.shield]); });
+            else if (f.ab === "rally") near(f, friends, 2).forEach(g => { g.rallyT = t + 40; if (ev) ev.push([t, "rally", g.id, g.rallyT]); });
+            else if (f.ab === "summon") {
+                const spot = DIRS.map(([dx, dy]) => [f.x + dx, f.y + dy]).find(([x, y]) => free(x, y));
+                if (spot) {
+                    const h = Math.round(f.max * 0.35 * f.spell);
+                    const m = { k: f.k, s: 0, side: f.side, x: spot[0], y: spot[1], hp: h, max: h, atk: Math.round(f.atk * 0.45), def: 10, range: 1, cd: 12, next: 6,
+                        ab: "strike", abName: "", cdMax: 99999, cdLeft: 99999, spell: 1, steal: 0, splash: false, thorns: 0, dodge: 0, talent: null,
+                        shield: 0, shieldT: 0, moveT: 0, stunT: 0, fearT: 0, rallyT: 0, summon: true, id: all.length };
+                    all.push(m);
+                    if (ev) ev.push([t, "summon", m.id, m.k, m.x, m.y, m.hp, m.side, f.id]);
+                }
+            }
+            else if (f.ab === "leap") {
+                const back = foes.slice().sort((a, b) => cheb(f, b) - cheb(f, a) || a.id - b.id)[0];
+                const spot = back && DIRS.map(([dx, dy]) => [back.x + dx, back.y + dy]).find(([x, y]) => free(x, y));
+                if (spot) { f.x = spot[0]; f.y = spot[1]; if (ev) ev.push([t, "move", f.id, f.x, f.y, 1]); }
+                if (back) hit(f, back, p * 2.5, "s");
+            }
+            else { // volley
+                hit(f, target, p * 2, "s");
+                shuffle(r, foes.filter(g => g !== target && g.hp > 0)).slice(0, 2).forEach(g => hit(f, g, p, "s"));
+            }
+        };
         for (; t < MAX_TICKS; t++) {
             if (!alive(0).length || !alive(1).length) break;
             const order = all.filter(f => f.hp > 0);
             for (const f of order) {
                 if (f.hp <= 0) continue;
                 if (f.shieldT > 0 && --f.shieldT === 0) f.shield = 0;
+                if (f.stunT > t) continue; // stunned: nothing (its countdown waits too)
                 const foes = alive(1 - f.side);
                 if (!foes.length) break;
                 // its target: the nearest (then the lowest id)
                 let target = foes[0], best = cheb(f, foes[0]);
                 for (const g of foes) { const d = cheb(f, g); if (d < best) { best = d; target = g; } }
+                // ⏱ its ability's countdown
+                if (--f.cdLeft <= 0) { f.cdLeft = f.cdMax; cast(f, target, foes, alive(f.side)); continue; }
+                if (f.fearT > t) continue; // scared: it won't attack
                 if (best <= f.range) {
                     if (--f.next > 0) continue;
-                    f.next = f.cd;
-                    if (f.mana >= f.manaMax) { // its skill
-                        f.mana = 0;
-                        if (ev) ev.push([t, "skill", f.id, f.skill]);
-                        if (f.skill === "guard") { f.shield = Math.round(f.max * 0.3 * f.spell); f.shieldT = 40; }
-                        else if (f.skill === "strike") hit(f, target, f.atk * 3 * f.spell, true, t);
-                        else if (f.skill === "cleave") foes.filter(g => cheb(f, g) <= 1).forEach(g => hit(f, g, f.atk * 2 * f.spell, true, t));
-                        else { // volley
-                            hit(f, target, f.atk * 2 * f.spell, true, t);
-                            shuffle(r, foes.filter(g => g !== target && g.hp > 0)).slice(0, 2).forEach(g => hit(f, g, f.atk * f.spell, true, t));
-                        }
-                        continue;
-                    }
-                    f.mana = Math.min(f.manaMax, f.mana + 10);
-                    hit(f, target, f.atk, false, t);
-                    if (f.splash) foes.filter(g => g !== target && g.hp > 0 && cheb(target, g) <= 1).forEach(g => hit(f, g, f.atk * 0.5, false, t));
+                    f.next = f.rallyT > t ? Math.max(2, Math.round(f.cd / 1.5)) : f.cd;
+                    hit(f, target, f.atk, "a");
+                    if (f.splash) foes.filter(g => g !== target && g.hp > 0 && cheb(target, g) <= 1).forEach(g => hit(f, g, f.atk * 0.5, "a"));
                     continue;
                 }
                 // out of reach: a step towards it (to a free square that's closer)
                 if (f.moveT > 0) { f.moveT--; continue; }
                 let step = null, sd = best;
-                for (const [dx, dy] of [[0, -1], [0, 1], [-1, 0], [1, 0], [-1, -1], [1, -1], [-1, 1], [1, 1]]) {
+                for (const [dx, dy] of DIRS) {
                     const nx = f.x + dx, ny = f.y + dy;
-                    if (nx < 0 || nx >= COLS || ny < 0 || ny >= FIGHT_ROWS) continue;
-                    if (all.some(g => g.hp > 0 && g.x === nx && g.y === ny)) continue;
+                    if (!free(nx, ny)) continue;
                     const d = Math.max(Math.abs(nx - target.x), Math.abs(ny - target.y));
                     if (d < sd) { sd = d; step = [nx, ny]; }
                 }
@@ -395,10 +506,10 @@
         const a = alive(0), b = alive(1);
         const winner = a.length && !b.length ? 0 : b.length && !a.length ? 1 : null;
         const out = { winner, ticks: t, survivors: [a.reduce((s, f) => s + f.s, 0), b.reduce((s, f) => s + f.s, 0)] };
-        if (ev) { out.events = ev; out.start = all.map(f => ({ id: f.id, k: f.k, s: f.s, side: f.side, x: f.x, y: f.y, hp: f.max })); }
+        if (ev) { out.events = ev; out.start = start; }
         return out;
     }
-    // where your units stand in a fight you're in, as the page draws it (you at the bottom)
+    // where the units stand when a fight starts, with their stats (you at the bottom)
     const fightStart = (cat, boardA, boardB) => [...fighters(cat, boardA, 0, traitsOf(boardA.map(u => cat[u.k]))), ...fighters(cat, boardB, 1, traitsOf(boardB.map(u => cat[u.k])))];
 
     /* ---------------- the bots ---------------- */
@@ -408,9 +519,9 @@
         const skill = b.skill, noise = () => (r() - 0.5) * 6 * (1 - skill);
         const tryDo = (a) => { try { planAction(cat, st, pid, a); return true; } catch (e) { return false; } };
         // how much it keeps for interest (a good bot saves up to 50 from round 5)
-        const reserve = () => (skill >= 0.4 && st.round >= 5 ? Math.min(50, 10 * Math.floor(skill * 5)) : 0);
+        const reserve = () => (skill >= 0.5 && st.round >= 3 && st.round <= 6 ? Math.min(20, 10 * Math.floor(skill * 2.5)) : 0); // (a short match: a little interest, early)
         // level on time (a good bot), or now and then (a poor one)
-        const wantLevel = Math.min(MAX_LEVEL, 2 + Math.floor(st.round / (skill >= 0.5 ? 3 : 4)));
+        const wantLevel = Math.min(MAX_LEVEL, START_LEVEL + Math.floor(st.round / (skill >= 0.5 ? 2 : 3)));
         for (let guard = 0; guard < 8 && p.level < wantLevel && p.gold >= ECON.xpCost + (p.hp > 40 ? reserve() / 2 : 0); guard++) if (!tryDo({ t: "xp" })) break;
         for (let roll = 0; roll < 4; roll++) {
             const have = {};
@@ -438,7 +549,8 @@
         // field the best it has: the strongest units, tanks in front, ranged at the back
         const pool = units(p).map(u => ({ k: u.k, s: u.s }));
         const style = (u) => (cat[u.k].faction === b.style || cat[u.k].attack === b.style ? 1 : 0);
-        pool.sort((x, y) => (unitValue(cat, y) + style(y) * skill * 3 + (r() - 0.5) * 4 * (1 - skill)) - (unitValue(cat, x) + style(x) * skill * 3));
+        // (its strongest — its own faction a little ahead; a poor bot muddles the order)
+        pool.sort((x, y) => (unitValue(cat, y) * (1 + 0.15 * style(y)) + (r() - 0.5) * 4 * (1 - skill)) - (unitValue(cat, x) * (1 + 0.15 * style(x))));
         const field = pool.slice(0, p.level), rest = pool.slice(p.level);
         const used = new Set();
         const spot = (u, i) => {
@@ -456,22 +568,11 @@
     }
 
     /* ---------------- the end of a round ---------------- */
-    // the bots plan, everyone still in fights someone, ❤️ is lost, the out are placed, the next round starts
+    // everyone still in fights who they were paired with, ❤️ is lost, the out are placed, the next round starts (the bots plan for it)
     function endRound(cat, st, roundKey) {
         if (st.over) throw new Error("The match is over.");
-        st.players.forEach(p => { if (p.alive && p.bot) botPlan(cat, st, p.id); });
         const live = st.players.filter(p => p.alive);
-        const r = rng(`pair:${st.seed}:${st.round}`);
-        // pairs — not the same as last round when it can be helped; one left over fights a copy of someone
-        let order = shuffle(r, live.map(p => p.id));
-        const pairs = [];
-        while (order.length >= 2) {
-            const a = order.shift();
-            let j = order.findIndex(b => st.players[a].last == null || st.players[a].last.vs !== b);
-            if (j < 0) j = 0;
-            pairs.push([a, order.splice(j, 1)[0], false]);
-        }
-        if (order.length) { const a = order[0], ghost = pick(r, live.filter(p => p.id !== a)).id; pairs.push([a, ghost, true]); }
+        const pairs = st.pairs && st.pairs.length ? st.pairs : makePairs(st); // (made when the round started)
         const results = [];
         const before = {};
         live.forEach(p => { before[p.id] = p.hp; });
@@ -519,8 +620,8 @@
     }
 
     return {
-        hashString, rng, PLAYERS, START_HP, BENCH, SHOP, MAX_LEVEL, MAX_ROUNDS, COLS, ROWS, COST, POOL, ODDS, XP_TO_NEXT, ECON, STAR_MULT,
-        TRAITS, SKILLS, traitsOf, catalog, sellValue, copiesOf, lossDamage, interest, streakGold,
+        hashString, rng, VERSION, PLAYERS, START_HP, START_LEVEL, START_GOLD, BENCH, SHOP, MAX_LEVEL, MAX_ROUNDS, COLS, ROWS, COST, POOL, ODDS, XP_TO_NEXT, ECON, STAR_MULT,
+        TRAITS, ABILITIES, TALENTS, abilityKind, talentOf, traitsOf, catalog, sellValue, copiesOf, lossDamage, interest, streakGold, makePairs, opponentOf,
         newMatch, rollShop, startRound, planAction, mergeAll, units, fight, fightStart, botPlan, endRound, summary, forPlayer, MAX_TICKS, TICKS
     };
 });

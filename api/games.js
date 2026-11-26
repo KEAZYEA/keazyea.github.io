@@ -569,7 +569,7 @@ function wbCleanActions(list) {
   if (list.length > WB_MAX_ACTIONS) throw new HttpError(400, "Too many moves in one round.");
   const int = (v) => (Number.isInteger(v) && v >= 0 && v < 100 ? v : undefined);
   return list.map(a => {
-    if (!a || typeof a !== "object" || !["buy", "sell", "reroll", "xp", "move"].includes(a.t)) throw new HttpError(400, "Unknown move.");
+    if (!a || typeof a !== "object" || !["buy", "sell", "reroll", "xp", "lock", "move"].includes(a.t)) throw new HttpError(400, "Unknown move.");
     const out = { t: a.t };
     if (a.i !== undefined) out.i = int(a.i);
     if (a.slot !== undefined) out.slot = int(a.slot);
@@ -589,9 +589,16 @@ async function wbStart(db, uid, body, now) {
   if (isRunId(active)) {
     const old = await db.collection("warbandRuns").doc(active).get();
     if (old.exists && old.data().uid === uid && !old.data().over) {
-      if (body.fresh !== true) return wbView(active, JSON.parse(old.data().state), { resumed: true, cat: wbCatalog() });
-      // starting again gives the one you're in up: 8th
-      await old.ref.set({ over: true, place: W.PLAYERS, abandoned: true, updatedAt: now }, { merge: true });
+      const was = JSON.parse(old.data().state);
+      if (was.v !== W.VERSION) {
+        // one from an older version of the rules isn't carried on: it ends, unplaced, and a new one starts
+        await old.ref.set({ over: true, place: null, outdated: true, updatedAt: now }, { merge: true });
+      } else if (body.fresh !== true) {
+        return wbView(active, was, { resumed: true, cat: wbCatalog() });
+      } else {
+        // starting again gives the one you're in up: 8th
+        await old.ref.set({ over: true, place: W.PLAYERS, abandoned: true, updatedAt: now }, { merge: true });
+      }
     }
   }
   const runId = crypto.randomBytes(12).toString("hex");
@@ -614,6 +621,7 @@ async function wbRound(db, uid, body, now) {
     if (!snap.exists || snap.data().uid !== uid) throw new HttpError(404, "That match doesn't exist.");
     if (snap.data().over) throw new HttpError(409, "This match is over.");
     const st = JSON.parse(snap.data().state), cat = wbCatalog();
+    if (st.v !== W.VERSION) throw new HttpError(409, "Warband's been updated — start a new match.");
     if (st.round !== body.round) throw new HttpError(409, "That round's been played already.");
     actions.forEach((a, i) => {
       try { W.planAction(cat, st, 0, a); } catch (e) { throw new HttpError(400, `Move ${i + 1}: ${e.message}`); }
@@ -632,7 +640,9 @@ async function wbGet(db, uid) {
   if (!isRunId(active)) return { ok: true, runId: null, match: null, last: pSnap.exists ? pSnap.data().last || null : null };
   const r = await db.collection("warbandRuns").doc(active).get();
   if (!r.exists || r.data().uid !== uid || r.data().over) return { ok: true, runId: null, match: null };
-  return wbView(active, JSON.parse(r.data().state), { cat: wbCatalog() });
+  const st = JSON.parse(r.data().state);
+  if (st.v !== W.VERSION) return { ok: true, runId: null, match: null, outdated: true }; // (from before an update: a new one starts)
+  return wbView(active, st, { cat: wbCatalog() });
 }
 
 module.exports = async (req, res) => {
