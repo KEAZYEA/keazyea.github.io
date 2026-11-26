@@ -13,7 +13,7 @@
         html, body { margin: 0; height: 100%; background: #0d0b1a; color: var(--ink); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; user-select: none; overscroll-behavior: none; }
         body { background: radial-gradient(ellipse at 50% 0%, #2a1f52 0%, #0d0b1a 60%); }
         button { font-family: inherit; color: inherit; touch-action: manipulation; }
-        #app { max-width: 480px; margin: 0 auto; min-height: 100%; padding: calc(6px + env(safe-area-inset-top, 0px)) 8px calc(10px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 6px; }
+        #app { max-width: max(480px, calc(var(--cell) * 7 + 32px)); margin: 0 auto; min-height: 100%; padding: calc(6px + env(safe-area-inset-top, 0px)) 8px calc(10px + env(safe-area-inset-bottom, 0px)); display: flex; flex-direction: column; gap: 6px; }
         .top { display: flex; align-items: center; gap: 6px; }
         .icon-btn { width: 38px; height: 38px; flex-shrink: 0; border-radius: 12px; border: 1px solid var(--line); background: var(--panel); font-size: 1rem; cursor: pointer; }
         .stats { flex: 1; display: flex; flex-wrap: wrap; gap: 4px 10px; justify-content: center; align-items: center; padding: 5px 8px; border-radius: 12px; background: var(--panel); border: 1px solid var(--line); font-weight: 800; font-size: .82rem; }
@@ -72,7 +72,11 @@
         .slots { padding: 2px 8px; border-radius: 999px; font-size: .7rem; font-weight: 900; background: rgba(111, 227, 154, 0.16); border: 1px solid rgba(111, 227, 154, 0.55); color: #8cff9c; }
         .slots.full { background: rgba(255, 210, 74, 0.16); border-color: rgba(255, 210, 74, 0.55); color: #ffe27a; }
         .cell.room::before { content: "+"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: rgba(140, 255, 156, 0.35); font-weight: 900; font-size: 1rem; }
-        .del { position: absolute; left: -7px; top: -8px; width: 22px; height: 22px; padding: 0; border-radius: 50%; border: 2px solid #fff; background: #e0304a; color: #fff; font-size: .7rem; font-weight: 900; line-height: 1; cursor: pointer; z-index: 8; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5); }
+        .del { position: absolute; left: 50%; bottom: calc(100% + 3px); transform: translateX(-50%); height: 22px; padding: 0 6px; border-radius: 999px; border: 2px solid #fff; background: #e0304a; color: #fff; font-size: .64rem; font-weight: 900; line-height: 1; white-space: nowrap; cursor: pointer; z-index: 8; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5); }
+        .del:hover, .del:focus-visible { background: #ff4058; transform: translateX(-50%) scale(1.1); } /* (above the unit, never over it: a tap on the unit is never a delete) */
+        .del:hover::after, .del:focus-visible::after { content: attr(data-tip); position: absolute; left: 50%; bottom: calc(100% + 6px); transform: translateX(-50%); padding: 4px 8px; border-radius: 8px; background: #1a1430; border: 1px solid #ff8a8a; color: #ffd6d6; font-size: .7rem; white-space: nowrap; }
+        .sell-zone { position: relative; }
+        .sell-zone::after { content: "🗑️ Drop to delete · " attr(data-sell) " back"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; border-radius: 12px; background: rgba(224, 48, 74, 0.82); color: #fff; font-weight: 900; font-size: .95rem; z-index: 5; pointer-events: none; }
         /* in a fight */
         .fu { position: absolute; width: var(--cell); height: var(--cell); transition: left .16s linear, top .16s linear; transform-style: preserve-3d; z-index: 2; }
         .fu.leaping { transition: left .3s ease-out, top .3s ease-out; } .fu.leaping .fig { animation: arc .3s ease-out; }
@@ -148,6 +152,16 @@
         .banner { position: fixed; left: 50%; top: 40%; transform: translate(-50%, -50%); padding: 12px 20px; border-radius: 16px; background: rgba(20, 16, 40, 0.94); border: 1px solid var(--line); font-weight: 900; font-size: 1.15rem; text-align: center; z-index: 30; white-space: nowrap; }
         .banner small { display: block; font-size: .76rem; color: var(--dim); margin-top: 3px; }
         .win { color: var(--green); } .lose { color: var(--red); }
+        /* a short screen (under 720 px tall): everything but the board slimmer, so the board can stay a good size */
+        body.compact #app { gap: 4px; padding-top: calc(4px + env(safe-area-inset-top, 0px)); padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px)); }
+        body.compact .icon-btn { width: 32px; height: 32px; } body.compact .stats { padding: 3px 6px; font-size: .76rem; } body.compact .gold-pill { font-size: .88rem; padding: 1px 8px; }
+        body.compact .pl { padding: 2px 4px; font-size: .56rem; } body.compact .pl .hp { height: 3px; }
+        body.compact .vs { font-size: .72rem; } body.compact .vs small { display: none; }
+        body.compact .traits { min-height: 22px; padding: 1px 2px; } body.compact .money { font-size: .76rem; padding: 2px 8px; } body.compact .slots, body.compact .tr { font-size: .6rem; }
+        body.compact .bench { padding: 3px; gap: 2px; }
+        body.compact .info { min-height: 0; padding: 4px 8px; font-size: .66rem; } body.compact .info .grow { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        body.compact .card { min-height: 0; padding: 3px 2px 3px; } body.compact .card img { aspect-ratio: 4 / 3; } body.compact .card .nm { font-size: .54rem; }
+        body.compact .acts button { padding: 5px 4px; font-size: .76rem; } body.compact .acts .lock { padding: 5px 8px; }
         @media (max-width: 370px) { :root { --cell: 42px; } }
         @media (max-width: 330px) { :root { --cell: 39px; } }
         @media (prefers-reduced-motion: reduce) { .label, .num, .ring, .puff, .fu .fig.lunge, .fu .mark { animation-duration: .01s !important; } }
@@ -241,33 +255,54 @@
         render();
         return true;
     }
+    // Your fight, worked out here straight away — the same rules, boards and seed the server uses — so it
+    // starts the moment you tap ⚔️ Fight!, while the server plays the round (its answer is the one that counts).
+    function myFightNow() {
+        const n = (match.pairs || []).findIndex(p => p[0] === 0 || p[1] === 0);
+        if (n < 0) return null;
+        const [a, b, ghost] = match.pairs[n], A2 = match.players[a].board.map(u => ({ ...u })), B2 = match.players[b].board.map(u => ({ ...u }));
+        const seed = `${match.rk}:f${n}`, f = W.fight(cat, A2, B2, seed);
+        const dmgA = f.winner !== 0 ? W.lossDamage(match.round, f.survivors[1]) : 0, dmgB = f.winner !== 1 && !ghost ? W.lossDamage(match.round, f.survivors[0]) : 0;
+        return { a, b, ghost, seed, winner: f.winner, dmg: [dmgA, ghost ? 0 : dmgB], boards: [A2, B2] };
+    }
     async function fightNow() {
         if (mode !== "plan" || busy) return;
-        busy = true; render();
+        busy = true;
         const round = match.round, mine = moves.slice(), before = match;
-        let r;
-        try { r = await A.warbandRound(runId, round, mine); }
-        catch (e) {
+        const sent = A.warbandRound(runId, round, mine).then(r => ({ r }), e => ({ e }));
+        const guess = myFightNow();
+        const finish = async (shown) => {
+            const { r, e } = await sent;
             busy = false;
-            if (e.status === 400 || e.status === 409) { // (out of step: start the round again from the server's copy)
-                toast(/updated/.test(e.message || "") ? e.message : "That round didn't go through — here it is again.");
-                try { const g = await A.warbandGet(); if (g.match) take(g); else mode = "start"; } catch (e2) { }
-            } else toast(e.message || "Couldn't reach the server — try again.");
-            return render();
-        }
+            if (e) {
+                if (e.status === 400 || e.status === 409) { // (out of step: start the round again from the server's copy)
+                    toast(/updated/.test(e.message || "") ? e.message : "That round didn't go through — here it is again.");
+                    try { const g = await A.warbandGet(); if (g.match) take(g); else mode = "start"; } catch (e2) { }
+                } else { toast(e.message || "Couldn't reach the server — try again."); mode = "plan"; }
+                return render();
+            }
+            const res = r.results.find(x => x.a === 0 || x.b === 0);
+            // (what was shown differs from the server's? its fight is played instead — it never should)
+            if (shown && res && (res.seed !== shown.seed || res.winner !== shown.winner)) return playFight(before, res, () => { take(r); mode = r.over ? "over" : "plan"; render(); });
+            take(r); mode = r.over ? "over" : "plan"; render();
+        };
+        if (guess) return playFight(before, guess, () => finish(guess));
+        render();
+        const { r } = await sent;
+        if (!r) return finish(null);
         busy = false;
-        const res = r.results.find(x => x.a === 0 || x.b === 0);
-        playFight(before, res, () => { take(r); mode = r.over ? "over" : "plan"; render(); });
+        playFight(before, r.results.find(x => x.a === 0 || x.b === 0), () => finish(null));
     }
 
     /* ---------------- drawing ---------------- */
     const img = (k) => `images/thumbs/${esc(k.toUpperCase())}.jpg`;
     const unitHtml = (u, extra) => { const c = cat[u.k]; return `<div class="u s${u.s}${extra || ""}" style="--c:var(--${c.rarity})" data-k="${esc(u.k)}"><img src="${img(u.k)}" alt="${esc(c.name)}" loading="lazy"><span class="st">${"★".repeat(Math.max(1, u.s))}</span></div>`; };
     // a unit standing on the board: its shadow, its base, and it (with its ⏱ ability countdown and ⭐ talent)
-    const DEL = `<button type="button" class="del" data-do="sell" aria-label="Delete this unit (get its gold back)">✕</button>`;
+    // ✕ delete, with what you get back on it (and on hover: "Delete — +3 💰 back")
+    const delHtml = (u) => { const v = W.sellValue(cat, u); return `<button type="button" class="del" data-do="sell" data-tip="Delete — +${v} 💰 back" title="Delete — +${v} 💰 back" aria-label="Delete this unit: +${v} gold back">✕ +${v}💰</button>`; };
     // its badge: its ability's icon and the seconds till it goes off (☄️5 — Meteor Strike in 5 s)
     const abIcon = (k) => (W.ABILITIES[cat[k].ability.kind] || {}).icon || "⏱";
-    const figHtml = (u, extra, cd, del) => { const c = cat[u.k]; return `<span class="shadow"></span><span class="base" style="--c:var(--${c.rarity})"></span><div class="fig">${unitHtml(u, extra)}${cd == null ? "" : `<span class="cdb" title="${esc(c.ability.name)} in ${cd} s">${abIcon(u.k)}${cd}</span>`}${c.talent && !del ? `<span class="tal" title="${esc(c.talent.name)}">⭐</span>` : ""}${del ? DEL : ""}</div>`; };
+    const figHtml = (u, extra, cd, del) => { const c = cat[u.k]; return `<span class="shadow"></span><span class="base" style="--c:var(--${c.rarity})"></span><div class="fig">${unitHtml(u, extra)}${cd == null ? "" : `<span class="cdb" title="${esc(c.ability.name)} in ${cd} s">${abIcon(u.k)}${cd}</span>`}${c.talent && !del ? `<span class="tal" title="${esc(c.talent.name)}">⭐</span>` : ""}${del ? delHtml(u) : ""}</div>`; };
     function topHtml() {
         const p = me(), need = W.XP_TO_NEXT[p.level];
         return `<div class="top"><button class="icon-btn" data-do="back" aria-label="Back">←</button>
@@ -317,7 +352,7 @@
         return `<div class="stage"><div class="board plan" id="board">${cells}</div></div>`;
     }
     function benchHtml() {
-        return `<div class="bench" id="bench">${me().bench.map((u, i) => { const on = sel && sel.from === "bench" && sel.i === i; return `<div class="slot" data-slot="${i}">${u ? unitHtml(u, on ? " sel" : "") + (on ? DEL : "") : ""}</div>`; }).join("")}</div>`;
+        return `<div class="bench" id="bench">${me().bench.map((u, i) => { const on = sel && sel.from === "bench" && sel.i === i; return `<div class="slot" data-slot="${i}">${u ? unitHtml(u, on ? " sel" : "") + (on ? delHtml(u) : "") : ""}</div>`; }).join("")}</div>`;
     }
     function unitInfo(u, mine) {
         const c = cat[u.k], m = W.STAR_MULT[u.s], ab = c.ability, A2 = W.ABILITIES[ab.kind];
@@ -369,6 +404,7 @@
         }
         if (mode === "plan") {
             app.innerHTML = topHtml() + playersHtml() + vsHtml() + boardHtml() + traitsHtml(me().board) + benchHtml() + infoHtml() + shopHtml();
+            fitBoard();
             // 💰 changed: it pulses, and how much floats up
             const g = me().gold;
             if (shownGold != null && g !== shownGold) ["goldTop", "money"].forEach(id => {
@@ -379,6 +415,28 @@
             shownGold = g;
         } else if (mode !== "fight") shownGold = null;
     }
+
+    /* 📐 The board's size: as big as the screen's width allows (up to 70 px a square — bigger on a computer),
+       then smaller until everything down to ⚔️ Fight! fits the screen's height, so nothing's cut off on a short
+       phone or a wide laptop. Worked out again when the window changes size or the phone turns. */
+    const STAGE_ROWS = 8 - 1.05; // (the tilted board takes about this many squares of height: its 8, less what it's pulled up)
+    function fitBoard() {
+        if (mode !== "plan" && mode !== "fight") return;
+        const root = document.documentElement, last = document.querySelector("#app > :last-child");
+        if (!last) return;
+        document.body.classList.toggle("compact", window.innerHeight < 720);
+        const widest = Math.max(28, Math.min(70, Math.floor((Math.min(window.innerWidth, 640) - 24) / 7)));
+        let c = widest;
+        for (let i = 0; i < 5; i++) {
+            root.style.setProperty("--cell", c + "px");
+            const over = last.getBoundingClientRect().bottom + window.scrollY + 10 - window.innerHeight;
+            const next = Math.max(28, Math.min(widest, Math.floor(c - over / STAGE_ROWS)));
+            if (next === c || (over <= 0 && over > -STAGE_ROWS)) break;
+            c = next;
+        }
+    }
+    let fitT = null;
+    window.addEventListener("resize", () => { clearTimeout(fitT); fitT = setTimeout(() => { if (mode === "plan") render(); }, 120); });
 
     /* ---------------- the fight, played back ---------------- */
     const ABILITY_RING = { blast: "", stun: "cold", fear: "dark", heal: "heal", summon: "dark" };
@@ -394,6 +452,7 @@
         app.innerHTML = topHtml() + playersHtml() + `<div class="vs">⚔️ You vs ${esc(foe.name)}${res.ghost ? " (a copy)" : ""}<small>${esc(traitsLine(youA ? res.boards[0] : res.boards[1]))}</small></div>`
             + `<div class="stage"><div class="board" id="fboard">${cells}<div class="fx" id="fx" style="position:absolute;inset:0;transform-style:preserve-3d"></div></div></div>`
             + `<div class="acts" style="grid-template-columns:1fr"><button data-do="skip">⏩ Skip</button></div>`;
+        fitBoard();
         const fx = $("fx"), C = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--cell")) || 46;
         const els = {};
         const centre = (id) => { const e = els[id]; return { x: parseFloat(e.d.style.left) + C / 2, y: parseFloat(e.d.style.top) + C / 2 }; };
@@ -586,7 +645,8 @@
             if (Math.abs(e.clientX - drag.x) + Math.abs(e.clientY - drag.y) < 8) return;
             drag.ghost = drag.el.cloneNode(true); drag.ghost.classList.add("ghost");
             document.body.appendChild(drag.ghost); drag.el.classList.add("dragging");
-            const shop = $("shop"); if (shop) shop.classList.add("sell-zone");
+            const shop = $("shop"), u = drag.src && (drag.src.from === "board" ? me().board : me().bench)[drag.src.i];
+            if (shop) { shop.classList.add("sell-zone"); if (u) shop.dataset.sell = "+" + W.sellValue(cat, u) + " 💰"; }
         }
         drag.ghost.style.left = (e.clientX - 20) + "px"; drag.ghost.style.top = (e.clientY - 20) + "px";
         document.querySelectorAll(".drop").forEach(x => x.classList.remove("drop"));
