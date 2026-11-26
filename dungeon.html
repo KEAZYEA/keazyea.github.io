@@ -41,7 +41,7 @@
         @media (max-width: 420px) { .loot { display: grid; grid-template-columns: auto auto; gap: 1px 8px; padding: 4px 8px; font-size: .7rem; } .hud-top { gap: 6px; } }
         .loot b { margin-left: 2px; }
         .hud-btn { pointer-events: auto; margin-left: auto; width: 38px; height: 38px; border-radius: 12px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); font-size: 1rem; cursor: pointer; flex-shrink: 0; }
-        .tags { position: absolute; top: calc(72px + env(safe-area-inset-top, 0px)); left: 8px; right: 100px; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; pointer-events: none; }
+        .tags { position: absolute; top: calc(72px + env(safe-area-inset-top, 0px)); left: 8px; right: 122px; /* (clear of 🎒 and ⬅ Games) */ display: flex; flex-direction: column; align-items: flex-start; gap: 4px; pointer-events: none; }
         .tag { padding: 3px 9px; border-radius: 999px; background: var(--panel); border: 1px solid var(--line); font-size: .72rem; font-weight: 800; color: var(--dim); max-width: 100%; }
         .tag.quest { color: #ffe27a; border-color: rgba(255, 210, 74, 0.45); }
         .tag.demo { color: #ffb8f0; border-color: rgba(255, 140, 220, 0.45); } /* 🧪 always on screen: it's a demo */
@@ -472,7 +472,7 @@
         stats = withBuffs(baseStats(outfit, gear()), (G && G.buffs) || []);
         makeHeroImg();
         $("walletSd").textContent = me.signedIn ? me.stardust.toLocaleString("en-US") : "–";
-        $("walletGold").textContent = gold().toLocaleString("en-US");
+        hudSet("walletGold", "t", gold().toLocaleString("en-US")); // (through the HUD's own setter, so it knows)
         if (G && plan && plan.mode === "lobby") {
             const p = G.player;
             G.weapon = stats.weapon;
@@ -1921,6 +1921,48 @@
         scale = clamp(Math.min(innerWidth / 205, innerHeight / 230), 1.6, 3.6) * (plan && (plan.mode === "lobby" || plan.mode === "wilds") ? 0.85 : 1);
     }
     addEventListener("resize", resize);
+    /* 🧱 The floor and walls, in chunks of CHUNK × CHUNK squares, each drawn once (at the screen's
+       resolution) into a picture that's stamped every frame after — drawing every square every frame was
+       hundreds of rectangles a frame, the biggest cost after the emoji. Made again when the map changes, a
+       door's unlocked or the zoom changes. */
+    const CHUNK = 8;
+    let chunks = new Map(), chunksFor = null, chunksK = 0, chunksDoors = -1, chunksMode = "";
+    function drawTile(g, x, y) {
+            const t = tiles[y * MW + x];
+            if (t === VOID) return;
+            const X = x * TILE, Y = y * TILE;
+            if (G.wild && t === FLOOR) { // a road: its three zones' colours
+                const zy = (Y - G.wild.oy) / D.WILDS.ph, z = zy < 0.3 ? 2 : zy < 0.62 ? 1 : 0, h = (x * 73856093 ^ y * 19349663) >>> 0, road = G.wild.road;
+                g.fillStyle = D.REGIONS[road].zones[z].colors[(x + y) % 2]; g.fillRect(X, Y, TILE, TILE);
+                if (road === "north") { g.fillStyle = "rgba(255,255,255,.55)"; if (h % 3 === 0) g.fillRect(X + h % 13, Y + (h >> 4) % 12, 1.5, 1.5); }
+                else if (road === "east") { g.fillStyle = "rgba(90,60,20,.22)"; if (h % 2 === 0) g.fillRect(X + h % 12, Y + (h >> 5) % 12, 3, 1); }
+                else { g.fillStyle = "rgba(10,40,10,.4)"; g.fillRect(X + h % 13, Y + (h >> 4) % 12, 1, 3); g.fillRect(X + (h >> 8) % 13, Y + (h >> 12) % 12, 1, 3); if (road === "south" && z === 0 && h % 11 === 0) { g.fillStyle = "#e8d070"; g.fillRect(X + 5, Y + 4, 1, 5); g.fillRect(X + 9, Y + 6, 1, 5); } }
+            } else if (plan.mode === "house" && t === FLOOR) { // your house: floorboards
+                g.fillStyle = y % 2 ? theme.floor : theme.floor2; g.fillRect(X, Y, TILE, TILE); g.fillStyle = "rgba(0,0,0,.18)"; g.fillRect(X, Y + TILE - 1, TILE, 1); g.fillRect(X + ((x + y * 3) % 4) * 4, Y, 1, TILE);
+            } else if (G.pathTiles && t === FLOOR) { // the lobby: grass, stone paths
+                const stone = G.pathTiles.has(y * MW + x), h = (x * 73856093 ^ y * 19349663) >>> 0;
+                g.fillStyle = stone ? ((x + y) % 2 ? theme.path : theme.path2) : (x + y) % 2 ? theme.floor : theme.floor2; g.fillRect(X, Y, TILE, TILE);
+                if (stone) { g.fillStyle = "rgba(0,0,0,.12)"; g.fillRect(X, Y + 7, TILE, 1); g.fillRect(X + (y % 2 ? 4 : 11), Y, 1, 7); g.fillRect(X + (y % 2 ? 11 : 4), Y + 8, 1, 8); }
+                else { g.fillStyle = "rgba(20,60,20,.45)"; g.fillRect(X + h % 13, Y + (h >> 4) % 12, 1, 3); g.fillRect(X + (h >> 8) % 13, Y + (h >> 12) % 12, 1, 3); if (h % 17 === 0) { g.fillStyle = "#f4e27a"; g.fillRect(X + 6, Y + 6, 2, 2); } }
+            } else if (t === FLOOR || (t === DOOR && !G.lockedDoors.has(y * MW + x))) { g.fillStyle = (x + y) % 2 ? theme.floor : theme.floor2; g.fillRect(X, Y, TILE, TILE); }
+            else if (t === DOOR) { g.fillStyle = theme.floor2; g.fillRect(X, Y, TILE, TILE); g.fillStyle = "#ffb04a"; for (let i = 2; i < TILE; i += 5) g.fillRect(X + i, Y + 1, 2, TILE - 2); }
+            else { g.fillStyle = theme.wall; g.fillRect(X, Y, TILE, TILE); const below = tiles[(y + 1) * MW + x]; if (below === FLOOR || below === DOOR) { g.fillStyle = theme.wallTop; g.fillRect(X, Y + TILE - 5, TILE, 5); } }
+            }
+    function tileChunk(cx, cy, k) {
+        const doors = G.lockedDoors ? G.lockedDoors.size : 0;
+        if (chunksFor !== tiles || chunksK !== k || chunksDoors !== doors || chunksMode !== plan.mode) { chunks = new Map(); chunksFor = tiles; chunksK = k; chunksDoors = doors; chunksMode = plan.mode; }
+        const key = cx + "," + cy;
+        let c = chunks.get(key);
+        if (c) { chunks.delete(key); chunks.set(key, c); return c; } // (most recently used last)
+        c = document.createElement("canvas");
+        c.width = c.height = Math.ceil(CHUNK * TILE * k);
+        const g = c.getContext("2d");
+        g.setTransform(k, 0, 0, k, -cx * CHUNK * TILE * k, -cy * CHUNK * TILE * k);
+        for (let y = cy * CHUNK; y < Math.min(MH, (cy + 1) * CHUNK); y++) for (let x = cx * CHUNK; x < Math.min(MW, (cx + 1) * CHUNK); x++) if (x >= 0 && y >= 0) drawTile(g, x, y);
+        chunks.set(key, c);
+        if (chunks.size > 48) chunks.delete(chunks.keys().next().value); // (the least recently used go)
+        return c;
+    }
     function draw() {
         const vw = innerWidth / scale, vh = innerHeight / scale, p = G.player;
         camX += (p.x - vw / 2 - camX) * 0.18; camY += (p.y - vh / 2 - camY) * 0.18;
@@ -1929,27 +1971,13 @@
         ctx.fillStyle = "#07060d"; ctx.fillRect(camX - 10, camY - 10, vw + 20, vh + 20);
         const x0 = Math.max(0, Math.floor(camX / TILE) - 1), y0 = Math.max(0, Math.floor(camY / TILE) - 1);
         const x1 = Math.min(MW, Math.ceil((camX + vw) / TILE) + 1), y1 = Math.min(MH, Math.ceil((camY + vh) / TILE) + 1);
-        for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
-            const t = tiles[y * MW + x];
-            if (t === VOID) continue;
-            const X = x * TILE, Y = y * TILE;
-            if (G.wild && t === FLOOR) { // a road: its three zones' colours
-                const zy = (Y - G.wild.oy) / D.WILDS.ph, z = zy < 0.3 ? 2 : zy < 0.62 ? 1 : 0, h = (x * 73856093 ^ y * 19349663) >>> 0, road = G.wild.road;
-                ctx.fillStyle = D.REGIONS[road].zones[z].colors[(x + y) % 2]; ctx.fillRect(X, Y, TILE, TILE);
-                if (road === "north") { ctx.fillStyle = "rgba(255,255,255,.55)"; if (h % 3 === 0) ctx.fillRect(X + h % 13, Y + (h >> 4) % 12, 1.5, 1.5); }
-                else if (road === "east") { ctx.fillStyle = "rgba(90,60,20,.22)"; if (h % 2 === 0) ctx.fillRect(X + h % 12, Y + (h >> 5) % 12, 3, 1); }
-                else { ctx.fillStyle = "rgba(10,40,10,.4)"; ctx.fillRect(X + h % 13, Y + (h >> 4) % 12, 1, 3); ctx.fillRect(X + (h >> 8) % 13, Y + (h >> 12) % 12, 1, 3); if (road === "south" && z === 0 && h % 11 === 0) { ctx.fillStyle = "#e8d070"; ctx.fillRect(X + 5, Y + 4, 1, 5); ctx.fillRect(X + 9, Y + 6, 1, 5); } }
-            } else if (plan.mode === "house" && t === FLOOR) { // your house: floorboards
-                ctx.fillStyle = y % 2 ? theme.floor : theme.floor2; ctx.fillRect(X, Y, TILE, TILE); ctx.fillStyle = "rgba(0,0,0,.18)"; ctx.fillRect(X, Y + TILE - 1, TILE, 1); ctx.fillRect(X + ((x + y * 3) % 4) * 4, Y, 1, TILE);
-            } else if (G.pathTiles && t === FLOOR) { // the lobby: grass, stone paths
-                const stone = G.pathTiles.has(y * MW + x), h = (x * 73856093 ^ y * 19349663) >>> 0;
-                ctx.fillStyle = stone ? ((x + y) % 2 ? theme.path : theme.path2) : (x + y) % 2 ? theme.floor : theme.floor2; ctx.fillRect(X, Y, TILE, TILE);
-                if (stone) { ctx.fillStyle = "rgba(0,0,0,.12)"; ctx.fillRect(X, Y + 7, TILE, 1); ctx.fillRect(X + (y % 2 ? 4 : 11), Y, 1, 7); ctx.fillRect(X + (y % 2 ? 11 : 4), Y + 8, 1, 8); }
-                else { ctx.fillStyle = "rgba(20,60,20,.45)"; ctx.fillRect(X + h % 13, Y + (h >> 4) % 12, 1, 3); ctx.fillRect(X + (h >> 8) % 13, Y + (h >> 12) % 12, 1, 3); if (h % 17 === 0) { ctx.fillStyle = "#f4e27a"; ctx.fillRect(X + 6, Y + 6, 2, 2); } }
-            } else if (t === FLOOR || (t === DOOR && !G.lockedDoors.has(y * MW + x))) { ctx.fillStyle = (x + y) % 2 ? theme.floor : theme.floor2; ctx.fillRect(X, Y, TILE, TILE); }
-            else if (t === DOOR) { ctx.fillStyle = theme.floor2; ctx.fillRect(X, Y, TILE, TILE); ctx.fillStyle = "#ffb04a"; for (let i = 2; i < TILE; i += 5) ctx.fillRect(X + i, Y + 1, 2, TILE - 2); }
-            else { ctx.fillStyle = theme.wall; ctx.fillRect(X, Y, TILE, TILE); const below = tiles[(y + 1) * MW + x]; if (below === FLOOR || below === DOOR) { ctx.fillStyle = theme.wallTop; ctx.fillRect(X, Y + TILE - 5, TILE, 5); } }
+        // the floor and walls: stamped from pictures of 8 × 8 squares (made once, not drawn square by square each frame)
+        const k = dpr * scale;
+        ctx.imageSmoothingEnabled = false; // (the chunks meet exactly — no seams)
+        for (let cy = Math.floor(y0 / CHUNK); cy * CHUNK < y1; cy++) for (let cx = Math.floor(x0 / CHUNK); cx * CHUNK < x1; cx++) {
+            ctx.drawImage(tileChunk(cx, cy, k), cx * CHUNK * TILE, cy * CHUNK * TILE, CHUNK * TILE, CHUNK * TILE);
         }
+        ctx.imageSmoothingEnabled = true;
         for (const h of G.hazards) {
             if (h.kind === "warn") { ctx.strokeStyle = `rgba(255,80,80,${0.4 + 0.5 * Math.sin(h.t * 20) ** 2})`; ctx.lineWidth = 2; circle(h.x, h.y, h.r * Math.min(1, h.t / h.life), false); }
             else if (h.kind === "poison" || h.kind === "sand") { ctx.fillStyle = h.color; circle(h.x, h.y, h.r, true); }
@@ -1972,9 +2000,26 @@
         drawHud();
     }
     function circle(x, y, r, fill) { ctx.beginPath(); ctx.arc(x, y, Math.max(0.1, r), 0, Math.PI * 2); fill ? ctx.fill() : ctx.stroke(); }
+    /* An emoji, drawn once at the size it shows on screen and kept: drawing colour emoji as text every
+       frame was the slowest thing in the game on a phone (it's a picture after that — stamped, not drawn). */
+    const emojiCache = new Map();
+    function emojiSprite(ch, px) {
+        const key = ch + "|" + px;
+        let c = emojiCache.get(key);
+        if (!c) {
+            c = document.createElement("canvas");
+            const pad = Math.ceil(px * 0.3); c.width = c.height = px + pad * 2;
+            const g = c.getContext("2d");
+            g.font = `${px}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText(ch, c.width / 2, c.height / 2);
+            emojiCache.set(key, c);
+            if (emojiCache.size > 700) emojiCache.delete(emojiCache.keys().next().value); // (the oldest go — sizes change as you zoom)
+        }
+        return c;
+    }
     function emoji(ch, x, y, size, rot) {
-        ctx.save(); ctx.translate(x, y); if (rot) ctx.rotate(rot);
-        ctx.font = `${size}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(ch, 0, 0); ctx.restore();
+        const k = dpr * scale, px = Math.max(4, Math.round(size * k)), c = emojiSprite(ch, px), half = c.width / 2 / k;
+        if (rot) { ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.drawImage(c, -half, -half, half * 2, half * 2); ctx.restore(); }
+        else ctx.drawImage(c, x - half, y - half, half * 2, half * 2);
     }
     function shadow(x, y, r) { ctx.fillStyle = "rgba(0,0,0,.3)"; ctx.beginPath(); ctx.ellipse(x, y, r, r * 0.4, 0, 0, Math.PI * 2); ctx.fill(); }
     // 🔶 a shard: an amber crystal (the Keep's money)
@@ -2278,19 +2323,27 @@
             ctx.beginPath(); ctx.moveTo(f.x, f.y); ctx.arc(f.x, f.y, f.reach, f.a - (f.arc * Math.PI / 360), f.a + (f.arc * Math.PI / 360)); ctx.closePath(); ctx.fill(); ctx.globalAlpha = 1;
         }
     }
+    /* The HUD changes the page only when what it shows has changed: setting it every frame (60 times a
+       second) made the browser redo its layout every frame — lag spikes on a phone. */
+    const hudWas = {}, hudEl = {};
+    const hudSet = (id, prop, v) => { const k = id + "." + prop; if (hudWas[k] === v) return; hudWas[k] = v; const el = hudEl[id] || (hudEl[id] = $(id)); if (prop === "w") el.style.width = v; else if (prop === "h") el.hidden = v; else el.textContent = v; };
+    const pct = (a, b) => (Math.round(1000 * a / b) / 10) + "%";
+    let hudFrame = 0;
     function drawHud() {
         const p = G.player;
-        $("hpFill").style.width = (100 * p.hp / p.maxHp) + "%"; $("hpText").textContent = `${Math.ceil(p.hp)}/${p.maxHp}`;
-        $("mpFill").style.width = (100 * p.mana / p.maxMana) + "%"; $("mpText").textContent = `${Math.floor(p.mana)}/${p.maxMana}`;
-        const h = hero(); $("xpFill").style.width = (h.lv >= D.HERO.cap ? 100 : 100 * h.xp / D.heroNext(h.lv)) + "%"; $("lvText").textContent = `⭐ Lv ${h.lv}`;
-        $("goldTxt").textContent = G.loot.gold; $("sdTxt").textContent = G.loot.stardust; $("hrTxt").textContent = G.loot.hearts; $("tkTxt").textContent = G.loot.tokens;
-        $("hrBox").hidden = !G.loot.hearts; $("tkBox").hidden = !G.loot.tokens; // (rare: shown once you find one — room for the 🎒 and ☰)
+        hudSet("hpFill", "w", pct(p.hp, p.maxHp)); hudSet("hpText", "t", `${Math.ceil(p.hp)}/${p.maxHp}`);
+        hudSet("mpFill", "w", pct(p.mana, p.maxMana)); hudSet("mpText", "t", `${Math.floor(p.mana)}/${p.maxMana}`);
+        const h = hero(); hudSet("xpFill", "w", h.lv >= D.HERO.cap ? "100%" : pct(h.xp, D.heroNext(h.lv))); hudSet("lvText", "t", `⭐ Lv ${h.lv}`);
+        hudSet("goldTxt", "t", String(G.loot.gold)); hudSet("sdTxt", "t", String(G.loot.stardust)); hudSet("hrTxt", "t", String(G.loot.hearts)); hudSet("tkTxt", "t", String(G.loot.tokens));
+        hudSet("hrBox", "h", !G.loot.hearts); hudSet("tkBox", "h", !G.loot.tokens); // (rare: shown once you find one — room for the 🎒 and ☰)
         const b = inv(), hpN = D.bagCount(b, "hpPot") + D.bagCount(b, "bigHp"), mpN = D.bagCount(b, "mpPot"), bt = [hpN ? `❤️×${hpN}` : "", mpN ? `🔷×${mpN}` : "", ...(plan.mode === "lobby" ? buffsReady() : G.buffs || []).map(k => BUFFS[k].icon)].filter(Boolean).join(" ");
-        if ($("bagTag").textContent !== "🎒 " + bt) $("bagTag").textContent = "🎒 " + bt;
-        $("bagTag").hidden = !bt;
-        if (plan.mode === "lobby") $("walletGold").textContent = gold().toLocaleString("en-US");
-        const w = W(); $("weaponTag").textContent = `${w.icon} ${w.name}${w.mana ? ` · 🔷${w.mana}` : ""}`;
-        if (G.boss) $("bossFill").style.width = (100 * Math.max(0, G.boss.hp) / G.boss.maxHp) + "%";
+        hudSet("bagTag", "t", "🎒 " + bt);
+        hudSet("bagTag", "h", !bt);
+        if (plan.mode === "lobby") hudSet("walletGold", "t", gold().toLocaleString("en-US"));
+        const w = W(); hudSet("weaponTag", "t", `${w.icon} ${w.name}${w.mana ? ` · 🔷${w.mana}` : ""}`);
+        if (G.boss) hudSet("bossFill", "w", pct(Math.max(0, G.boss.hp), G.boss.maxHp));
+        // the minimap: 15 times a second is plenty
+        if ((hudFrame++ & 3) !== 0) return;
         const m = mctx;
         m.clearRect(0, 0, 168, 168);
         if (G.wild) { // the whole road: its zones, you, the gate, the lair, what's grown

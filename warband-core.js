@@ -175,6 +175,16 @@
         });
         return out;
     }
+    /* 🎁 what a finished match pays, by your place — for your first DAILY_REWARDS matches a day (the
+       server pays it, api/games.js; starting again mid-match uses one of them and pays nothing) */
+    const REWARDS = {
+        1: { tokens: 2, stardust: 250, draws: 1 }, 2: { tokens: 1, stardust: 180 }, 3: { stardust: 120, hearts: 3 }, 4: { stardust: 80 },
+        5: { stardust: 50 }, 6: { stardust: 25 }, 7: { stardust: 25 }, 8: { stardust: 25 }
+    };
+    const DAILY_REWARDS = 3;
+    const rewardFor = (place) => ({ tokens: 0, stardust: 0, hearts: 0, draws: 0, ...(REWARDS[place] || {}) });
+    // "🪙 2 · ✨ 250 · 🧰 1 chest draw"
+    const rewardText = (r) => [r.tokens ? `🪙 ${r.tokens}` : "", r.stardust ? `✨ ${r.stardust}` : "", r.hearts ? `💗 ${r.hearts}` : "", r.draws ? `🧰 ${r.draws} chest draw${r.draws === 1 ? "" : "s"}` : ""].filter(Boolean).join(" · ");
     const sellValue = (cat, unit) => { const c = cat[unit.k].cost; return unit.s === 1 ? c : c * Math.pow(3, unit.s - 1) - 1; };
     const copiesOf = (s) => Math.pow(3, s - 1);
 
@@ -621,7 +631,7 @@
 
     return {
         hashString, rng, VERSION, PLAYERS, START_HP, START_LEVEL, START_GOLD, BENCH, SHOP, MAX_LEVEL, MAX_ROUNDS, COLS, ROWS, COST, POOL, ODDS, XP_TO_NEXT, ECON, STAR_MULT,
-        TRAITS, ABILITIES, TALENTS, abilityKind, talentOf, traitsOf, catalog, sellValue, copiesOf, lossDamage, interest, streakGold, makePairs, opponentOf,
+        REWARDS, DAILY_REWARDS, rewardFor, rewardText, TRAITS, ABILITIES, TALENTS, abilityKind, talentOf, traitsOf, catalog, sellValue, copiesOf, lossDamage, interest, streakGold, makePairs, opponentOf,
         newMatch, rollShop, startRound, planAction, mergeAll, units, fight, fightStart, botPlan, endRound, summary, forPlayer, MAX_TICKS, TICKS
     };
 });

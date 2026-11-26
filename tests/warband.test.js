@@ -489,6 +489,71 @@ describe("⚔️ on the server (api/games.js): it plays every round itself", () 
         const gone = db._data.get("warbandRuns/" + start.body.runId);
         assert.deepEqual([gone.over, gone.outdated, gone.place], [true, true, null], "ended, unplaced (not 8th)");
     });
+    // 🎁 rewards
+    const inv = () => db._data.get("inventories/player1") || {}, wallet = () => db._data.get("tokenWallets/player1") || {};
+    async function playOut(start) { let r, round = start.body.match.round; do { r = await act({ action: "wbRound", runId: start.body.runId, round, actions: [] }); round = r.body.match && r.body.match.round; } while (r.status === 200 && !r.body.over); return r; }
+    // a match you're about to win: one rival left, with nobody on its board, and you've a strong one
+    function winNext(runId) {
+        const doc = db._data.get("warbandRuns/" + runId), st = JSON.parse(doc.state);
+        st.players.forEach((p, i) => { if (i > 1) { p.alive = false; p.place = 10 - i; p.board = []; } });
+        st.players[1].hp = 1; st.players[1].board = []; st.players[1].bench = Array(W.BENCH).fill(null);
+        st.players[0].board = [{ k: "dragonRider", s: 3, x: 3, y: 0 }];
+        st.pairs = [[0, 1, false]];
+        db._data.set("warbandRuns/" + runId, { ...doc, state: JSON.stringify(st) });
+    }
+    test("🎁 what each place pays", () => {
+        assert.deepEqual(W.rewardFor(1), { tokens: 2, stardust: 250, hearts: 0, draws: 1 });
+        assert.deepEqual(W.rewardFor(3), { tokens: 0, stardust: 120, hearts: 3, draws: 0 });
+        assert.deepEqual(W.rewardFor(8), { tokens: 0, stardust: 25, hearts: 0, draws: 0 });
+        assert.equal(W.rewardText(W.rewardFor(1)), "🪙 2 · ✨ 250 · 🧰 1 chest draw");
+        for (let p = 1; p < 8; p++) assert.ok(W.rewardFor(p).stardust >= W.rewardFor(p + 1).stardust, "a better place never pays less");
+        assert.equal(W.DAILY_REWARDS, 3);
+    });
+    test("🎁 a match ends: its place's reward is paid, there and then — 1st: 🪙 (earned), ✨ and a 🧰 chest draw", async () => {
+        db._data.set("tokenWallets/player1", { balance: 5, lifetimeEarned: 1 });
+        db._data.set("inventories/player1", { stardust: 100, freeDraws: 0, hearts: 2 });
+        const start = await act({ action: "wbStart" });
+        assert.equal(start.body.rewardsLeft, 3, "3 rewarded matches today");
+        winNext(start.body.runId);
+        const r = await act({ action: "wbRound", runId: start.body.runId, round: start.body.match.round, actions: [] });
+        assert.equal(r.status, 200, JSON.stringify(r.body));
+        assert.deepEqual([r.body.over, r.body.place], [true, 1]);
+        assert.deepEqual(r.body.reward, W.rewardFor(1));
+        assert.equal(r.body.rewardsLeft, 2);
+        assert.deepEqual([wallet().balance, wallet().lifetimeEarned], [7, 3], "🪙 2 into the wallet, counted as earned");
+        assert.deepEqual([inv().stardust, inv().freeDraws, inv().hearts], [350, 1, 2]);
+        assert.deepEqual(db._data.get("warbandRuns/" + start.body.runId).reward, W.rewardFor(1));
+        // the same match can't be paid again
+        assert.equal((await act({ action: "wbRound", runId: start.body.runId, round: r.body.match.round, actions: [] })).status, 409);
+        assert.equal(inv().stardust, 350);
+    });
+    test("🎁 only the first 3 matches a day pay; starting again mid-match uses one (and pays nothing); a new day, 3 more", async () => {
+        const realNow = Date.now;
+        try {
+            Date.now = () => Date.UTC(2026, 11, 2, 4); // a Wednesday, noon in Singapore
+            const m1 = await playOut(await act({ action: "wbStart" }));
+            assert.deepEqual([m1.body.place, m1.body.reward, m1.body.rewardsLeft], [8, W.rewardFor(8), 2], "fielding nobody: 8th — ✨ 25");
+            assert.equal(inv().stardust, 25);
+            // starting again mid-match: given up, 8th, nothing paid, one used
+            await act({ action: "wbStart" });
+            const again = await act({ action: "wbStart", fresh: true });
+            assert.equal(again.body.rewardsLeft, 1, "the one given up used one");
+            assert.equal(inv().stardust, 25, "…and paid nothing");
+            const m3 = await playOut(again);
+            assert.deepEqual([m3.body.reward, m3.body.rewardsLeft], [W.rewardFor(8), 0]);
+            assert.equal(inv().stardust, 50);
+            const m4 = await playOut(await act({ action: "wbStart" }));
+            assert.deepEqual([m4.body.over, m4.body.reward, m4.body.rewardsLeft], [true, null, 0], "the 4th: played, not paid");
+            assert.equal(inv().stardust, 50);
+            assert.equal((await act({ action: "wbGet" })).body.rewardsLeft, 0);
+            // the next day
+            Date.now = () => Date.UTC(2026, 11, 3, 4);
+            assert.equal((await act({ action: "wbGet" })).body.rewardsLeft, 3, "a new day: 3 more");
+            const m5 = await playOut(await act({ action: "wbStart" }));
+            assert.deepEqual(m5.body.reward, W.rewardFor(8));
+            assert.equal(inv().stardust, 75);
+        } finally { Date.now = realNow; }
+    });
     test("someone else's match, a made-up one, no sign-in — refused", async () => {
         const start = await act({ action: "wbStart" });
         db._data.set("users/player2", { name: "Bo" });
