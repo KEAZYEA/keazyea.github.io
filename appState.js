@@ -2777,6 +2777,20 @@ async function getClanPostCooldownRemaining() {
         });
         return id;
     }
+    // Where you stand with someone (for the ➕ / 💬 buttons on their profile):
+    // "signedout" · "self" · "friends" · "sent" (your request's waiting) ·
+    // "received" (theirs is — reqId answers it) · "none".
+    async function getFriendStatus(otherUid) {
+        await waitForAuthReady();
+        if (!currentUser) return { status: "signedout" };
+        if (!otherUid || otherUid === currentUser.uid) return { status: "self" };
+        const reqId = friendshipId(currentUser.uid, otherUid);
+        const snap = await getDoc(doc(db, "friendRequests", reqId));
+        const d = snap.exists() ? snap.data() : null;
+        if (d && d.status === "accepted") return { status: "friends", reqId };
+        if (d && d.status === "pending") return { status: d.fromUid === currentUser.uid ? "sent" : "received", reqId };
+        return { status: "none", reqId };
+    }
     async function unfriend(otherUid) {
         await waitForAuthReady();
         if (!currentUser) throw new Error("Not signed in.");
@@ -5981,7 +5995,7 @@ async function maybeRefreshAd(containerId) {
         addTierListComment, updateTierListComment, listenToTierListComments, deleteTierListComment,
         uploadFormationImage, deleteFormationImageSafe, FORMATION_CATEGORIES, FORMATION_POST_LIFETIME_MS,
         // friends
-        sendFriendRequest, respondToFriendRequest, listenToIncomingFriendRequests, listenToFriends,
+        sendFriendRequest, respondToFriendRequest, getFriendStatus, listenToIncomingFriendRequests, listenToFriends,
         listenToFriendsWithDmMeta, listenToPublicProfilesPresence,
         unfriend, friendshipId, getPublicProfile,
         searchUsersByName, getSuggestedFriends, touchLastActive,
