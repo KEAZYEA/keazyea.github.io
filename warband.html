@@ -74,9 +74,15 @@
         .slots { padding: 2px 8px; border-radius: 999px; font-size: .7rem; font-weight: 900; background: rgba(111, 227, 154, 0.16); border: 1px solid rgba(111, 227, 154, 0.55); color: #8cff9c; }
         .slots.full { background: rgba(255, 210, 74, 0.16); border-color: rgba(255, 210, 74, 0.55); color: #ffe27a; }
         .cell.room::before { content: "+"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: rgba(140, 255, 156, 0.35); font-weight: 900; font-size: 1rem; }
-        .del { position: absolute; left: 50%; bottom: calc(100% + 3px); transform: translateX(-50%); height: 22px; padding: 0 6px; border-radius: 999px; border: 2px solid #fff; background: #e0304a; color: #fff; font-size: .64rem; font-weight: 900; line-height: 1; white-space: nowrap; cursor: pointer; z-index: 8; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5); }
-        .del:hover, .del:focus-visible { background: #ff4058; transform: translateX(-50%) scale(1.1); } /* (above the unit, never over it: a tap on the unit is never a delete) */
-        .del:hover::after, .del:focus-visible::after { content: attr(data-tip); position: absolute; left: 50%; bottom: calc(100% + 6px); transform: translateX(-50%); padding: 4px 8px; border-radius: 8px; background: #1a1430; border: 1px solid #ff8a8a; color: #ffd6d6; font-size: .7rem; white-space: nowrap; }
+        /* ✕ delete: only while the mouse is over one of your units (a computer) — in its own top corner, so it never
+           covers another; on a phone (no hovering) it's 🗑️ Delete in a tapped unit's card, or drag it onto the shop */
+        .del { display: none; position: absolute; left: -6px; top: -7px; width: 20px; height: 20px; padding: 0; border-radius: 50%; border: 2px solid #fff; background: #e0304a; color: #fff; font-size: .62rem; font-weight: 900; line-height: 1; cursor: pointer; z-index: 8; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5); }
+        @media (hover: hover) and (pointer: fine) {
+            .cell.mine:hover .del, .slot:hover .del { display: block; }
+            .cell.mine:hover .tal { display: none; }
+        }
+        .del:hover, .del:focus-visible { background: #ff4058; transform: scale(1.12); }
+        .del:hover::after, .del:focus-visible::after { content: attr(data-tip); position: absolute; left: 50%; bottom: calc(100% + 6px); transform: translateX(-50%); padding: 4px 8px; border-radius: 8px; background: #1a1430; border: 1px solid #ff8a8a; color: #ffd6d6; font-size: .7rem; white-space: nowrap; pointer-events: none; }
         .sell-zone { position: relative; }
         .sell-zone::after { content: "🗑️ Drop to delete · " attr(data-sell) " back"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; border-radius: 12px; background: rgba(224, 48, 74, 0.82); color: #fff; font-weight: 900; font-size: .95rem; z-index: 5; pointer-events: none; }
         /* in a fight */
@@ -308,10 +314,10 @@
     const unitHtml = (u, extra) => { const c = cat[u.k]; return `<div class="u s${u.s}${extra || ""}" style="--c:var(--${c.rarity})" data-k="${esc(u.k)}"><img src="${img(u.k)}" alt="${esc(c.name)}" loading="lazy"><span class="st">${"★".repeat(Math.max(1, u.s))}</span></div>`; };
     // a unit standing on the board: its shadow, its base, and it (with its ⏱ ability countdown and ⭐ talent)
     // ✕ delete, with what you get back on it (and on hover: "Delete — +3 💰 back")
-    const delHtml = (u) => { const v = W.sellValue(cat, u); return `<button type="button" class="del" data-do="sell" data-tip="Delete — +${v} 💰 back" title="Delete — +${v} 💰 back" aria-label="Delete this unit: +${v} gold back">✕ +${v}💰</button>`; };
+    const delHtml = (u, from, i) => { const v = W.sellValue(cat, u); return `<button type="button" class="del" data-del="${from}:${i}" data-tip="Delete — +${v} 💰 back" aria-label="Delete this unit: +${v} gold back">✕</button>`; };
     // its badge: its ability's icon and the seconds till it goes off (☄️5 — Meteor Strike in 5 s)
     const abIcon = (k) => (W.ABILITIES[cat[k].ability.kind] || {}).icon || "⏱";
-    const figHtml = (u, extra, cd, del) => { const c = cat[u.k]; return `<span class="shadow"></span><span class="base" style="--c:var(--${c.rarity})"></span><div class="fig">${unitHtml(u, extra)}${cd == null ? "" : `<span class="cdb" title="${esc(c.ability.name)} in ${cd} s">${abIcon(u.k)}${cd}</span>`}${c.talent && !del ? `<span class="tal" title="${esc(c.talent.name)}">⭐</span>` : ""}${del ? delHtml(u) : ""}</div>`; };
+    const figHtml = (u, extra, cd, del) => { const c = cat[u.k]; return `<span class="shadow"></span><span class="base" style="--c:var(--${c.rarity})"></span><div class="fig">${unitHtml(u, extra)}${cd == null ? "" : `<span class="cdb" title="${esc(c.ability.name)} in ${cd} s">${abIcon(u.k)}${cd}</span>`}${c.talent ? `<span class="tal" title="${esc(c.talent.name)}">⭐</span>` : ""}${del ? delHtml(u, del[0], del[1]) : ""}</div>`; };
     function topHtml() {
         const p = me(), need = W.XP_TO_NEXT[p.level];
         return `<div class="top"><button class="icon-btn" data-do="back" aria-label="Back">←</button>
@@ -356,12 +362,12 @@
             const i = p.board.findIndex(u => u.x === x && u.y === y);
             const isSel = sel && sel.from === "board" && sel.i === i;
             const room = i < 0 && p.board.length < p.level && W.units(p).length > p.board.length && y === 0; // (room for more: a hint on the front row)
-            cells += `<div class="cell mine${room ? " room" : ""}" data-x="${x}" data-y="${y}">${i >= 0 ? figHtml(p.board[i], isSel ? " sel" : "", cat[p.board[i].k].ability.cd, isSel) : ""}</div>`;
+            cells += `<div class="cell mine${room ? " room" : ""}" data-x="${x}" data-y="${y}">${i >= 0 ? figHtml(p.board[i], isSel ? " sel" : "", cat[p.board[i].k].ability.cd, ["board", i]) : ""}</div>`;
         }
         return `<div class="stage"><div class="board plan" id="board">${cells}</div></div>`;
     }
     function benchHtml() {
-        return `<div class="bench" id="bench">${me().bench.map((u, i) => { const on = sel && sel.from === "bench" && sel.i === i; return `<div class="slot" data-slot="${i}">${u ? unitHtml(u, on ? " sel" : "") + (on ? delHtml(u) : "") : ""}</div>`; }).join("")}</div>`;
+        return `<div class="bench" id="bench">${me().bench.map((u, i) => { const on = sel && sel.from === "bench" && sel.i === i; return `<div class="slot" data-slot="${i}">${u ? unitHtml(u, on ? " sel" : "") + delHtml(u, "bench", i) : ""}</div>`; }).join("")}</div>`;
     }
     function unitInfo(u, mine) {
         const c = cat[u.k], m = W.STAR_MULT[u.s], ab = c.ability, A2 = W.ABILITIES[ab.kind];
@@ -629,6 +635,8 @@
         return false;
     }
     function tap(el) {
+        const dl = el.closest("[data-del]"); // ✕ on a unit (hovering, on a computer): that unit, gone — its 💰 back
+        if (dl) { const [from, i] = dl.dataset.del.split(":"); sel = null; return act({ t: "sell", from, i: +i }); }
         const b = el.closest("[data-do]");
         if (b) {
             const d = b.dataset.do;

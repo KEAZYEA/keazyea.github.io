@@ -1960,7 +1960,7 @@
         g.setTransform(k, 0, 0, k, -cx * CHUNK * TILE * k, -cy * CHUNK * TILE * k);
         for (let y = cy * CHUNK; y < Math.min(MH, (cy + 1) * CHUNK); y++) for (let x = cx * CHUNK; x < Math.min(MW, (cx + 1) * CHUNK); x++) if (x >= 0 && y >= 0) drawTile(g, x, y);
         chunks.set(key, c);
-        if (chunks.size > 48) chunks.delete(chunks.keys().next().value); // (the least recently used go)
+        if (chunks.size > 20) chunks.delete(chunks.keys().next().value); // (the least recently used go — about a screen and a half's worth, to keep memory down on a phone)
         return c;
     }
     function draw() {
@@ -2012,7 +2012,7 @@
             const g = c.getContext("2d");
             g.font = `${px}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText(ch, c.width / 2, c.height / 2);
             emojiCache.set(key, c);
-            if (emojiCache.size > 700) emojiCache.delete(emojiCache.keys().next().value); // (the oldest go — sizes change as you zoom)
+            if (emojiCache.size > 240) emojiCache.delete(emojiCache.keys().next().value); // (the oldest go — sizes change as you zoom; kept small for a phone's memory)
         }
         return c;
     }

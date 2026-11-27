@@ -548,7 +548,7 @@ describe("🏰 the page", () => {
         assert.match(page, /const hero = \(\) => \(save\.hero = D\.heroEntry\(save\.hero\)\);/, "⭐ your level, kept in your save");
         assert.match(page, /const h = hero\(\), was = h\.lv, ups = D\.heroXp\(h, n\);\s*writeSave\(save\);\s*if \(!ups\) return;\s*refreshStats\(\);\s*if \(G && G\.player\) \{ const p = G\.player; p\.hp = p\.maxHp; p\.mana = p\.maxMana;/, "a level up: your stats again, fully healed");
         assert.match(page, /<i id="xpFill"><\/i><\/div><span id="lvText"><\/span>/);
-        assert.match(page, /\$\("lvText"\)\.textContent = `⭐ Lv \$\{h\.lv\}`;/);
+        assert.match(page, /hudSet\("lvText", "t", `⭐ Lv \$\{h\.lv\}`\);/);
         assert.match(page, /<div class="hero-lv" id="heroLv">⭐ Lv \$\{hero\(\)\.lv\}/);
         assert.match(page, /if \(weaponToo \|\| home\) G\.weapon = stats\.weapon;/, "gear put on (or taken off) in the city or house is in your hand at once");
     });
