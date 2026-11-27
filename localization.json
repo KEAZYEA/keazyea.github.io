@@ -10462,5 +10462,249 @@
     "description_arena_battlepass_get_rewards_levels_format": {
         "key": "description_arena_battlepass_get_rewards_levels_format",
         "value": "2615"
+    },
+    "avatar_frame_boss_kraken_top_10_title": {
+        "key": "avatar_frame_boss_kraken_top_10_title",
+        "value": "2616"
+    },
+    "condition_boss_kraken_top_10_description": {
+        "key": "condition_boss_kraken_top_10_description",
+        "value": "2617"
+    },
+    "avatar_frame_boss_kraken_top_100_title": {
+        "key": "avatar_frame_boss_kraken_top_100_title",
+        "value": "2618"
+    },
+    "condition_boss_kraken_top_100_description": {
+        "key": "condition_boss_kraken_top_100_description",
+        "value": "2619"
+    },
+    "avatar_frame_boss_kraken_top_1000_title": {
+        "key": "avatar_frame_boss_kraken_top_1000_title",
+        "value": "2620"
+    },
+    "condition_boss_kraken_top_1000_description": {
+        "key": "condition_boss_kraken_top_1000_description",
+        "value": "2621"
+    },
+    "avatar_frame_boss_dragon_top_10_title": {
+        "key": "avatar_frame_boss_dragon_top_10_title",
+        "value": "2622"
+    },
+    "condition_boss_dragon_top_10_description": {
+        "key": "condition_boss_dragon_top_10_description",
+        "value": "2623"
+    },
+    "avatar_frame_boss_dragon_top_100_title": {
+        "key": "avatar_frame_boss_dragon_top_100_title",
+        "value": "2624"
+    },
+    "condition_boss_dragon_top_100_description": {
+        "key": "condition_boss_dragon_top_100_description",
+        "value": "2625"
+    },
+    "avatar_frame_boss_dragon_top_1000_title": {
+        "key": "avatar_frame_boss_dragon_top_1000_title",
+        "value": "2626"
+    },
+    "condition_boss_dragon_top_1000_description": {
+        "key": "condition_boss_dragon_top_1000_description",
+        "value": "2627"
+    },
+    "avatar_frame_boss_spider_queen_top_10_title": {
+        "key": "avatar_frame_boss_spider_queen_top_10_title",
+        "value": "2628"
+    },
+    "condition_boss_spider_queen_top_10_description": {
+        "key": "condition_boss_spider_queen_top_10_description",
+        "value": "2629"
+    },
+    "avatar_frame_boss_spider_queen_top_100_title": {
+        "key": "avatar_frame_boss_spider_queen_top_100_title",
+        "value": "2630"
+    },
+    "condition_boss_spider_queen_top_100_description": {
+        "key": "condition_boss_spider_queen_top_100_description",
+        "value": "2631"
+    },
+    "avatar_frame_boss_spider_queen_top_1000_title": {
+        "key": "avatar_frame_boss_spider_queen_top_1000_title",
+        "value": "2632"
+    },
+    "condition_boss_spider_queen_top_1000_description": {
+        "key": "condition_boss_spider_queen_top_1000_description",
+        "value": "2633"
+    },
+    "avatar_frame_boss_sand_top_10_title": {
+        "key": "avatar_frame_boss_sand_top_10_title",
+        "value": "2634"
+    },
+    "condition_boss_sand_top_10_description": {
+        "key": "condition_boss_sand_top_10_description",
+        "value": "2635"
+    },
+    "avatar_frame_boss_sand_top_100_title": {
+        "key": "avatar_frame_boss_sand_top_100_title",
+        "value": "2636"
+    },
+    "condition_boss_sand_top_100_description": {
+        "key": "condition_boss_sand_top_100_description",
+        "value": "2637"
+    },
+    "avatar_frame_boss_sand_top_1000_title": {
+        "key": "avatar_frame_boss_sand_top_1000_title",
+        "value": "2638"
+    },
+    "condition_boss_sand_top_1000_description": {
+        "key": "condition_boss_sand_top_1000_description",
+        "value": "2639"
+    },
+    "avatar_frame_boss_ice_snake_top_10_title": {
+        "key": "avatar_frame_boss_ice_snake_top_10_title",
+        "value": "2640"
+    },
+    "condition_boss_ice_snake_top_10_description": {
+        "key": "condition_boss_ice_snake_top_10_description",
+        "value": "2641"
+    },
+    "avatar_frame_boss_ice_snake_top_100_title": {
+        "key": "avatar_frame_boss_ice_snake_top_100_title",
+        "value": "2642"
+    },
+    "condition_boss_ice_snake_top_100_description": {
+        "key": "condition_boss_ice_snake_top_100_description",
+        "value": "2643"
+    },
+    "avatar_frame_boss_ice_snake_top_1000_title": {
+        "key": "avatar_frame_boss_ice_snake_top_1000_title",
+        "value": "2644"
+    },
+    "condition_boss_ice_snake_top_1000_description": {
+        "key": "condition_boss_ice_snake_top_1000_description",
+        "value": "2645"
+    },
+    "avatar_frame_arena_top_10_title": {
+        "key": "avatar_frame_arena_top_10_title",
+        "value": "2646"
+    },
+    "condition_arena_top_10_description": {
+        "key": "condition_arena_top_10_description",
+        "value": "2647"
+    },
+    "avatar_frame_arena_top_100_title": {
+        "key": "avatar_frame_arena_top_100_title",
+        "value": "2648"
+    },
+    "condition_arena_top_100_description": {
+        "key": "condition_arena_top_100_description",
+        "value": "2649"
+    },
+    "avatar_frame_arena_top_1000_title": {
+        "key": "avatar_frame_arena_top_1000_title",
+        "value": "2650"
+    },
+    "condition_arena_top_1000_description": {
+        "key": "condition_arena_top_1000_description",
+        "value": "2651"
+    },
+    "avatar_frame_league_master_title": {
+        "key": "avatar_frame_league_master_title",
+        "value": "2652"
+    },
+    "condition_league_master_description": {
+        "key": "condition_league_master_description",
+        "value": "2653"
+    },
+    "avatar_frame_library_title": {
+        "key": "avatar_frame_library_title",
+        "value": "2654"
+    },
+    "condition_library_description": {
+        "key": "condition_library_description",
+        "value": "2655"
+    },
+    "avatar_frame_limited_reward_timer": {
+        "key": "avatar_frame_limited_reward_timer",
+        "value": "2656"
+    },
+    "avatar_frame_limited_reward": {
+        "key": "avatar_frame_limited_reward",
+        "value": "2657"
+    },
+    "caption_archive": {
+        "key": "caption_archive",
+        "value": "2658"
+    },
+    "description_archive": {
+        "key": "description_archive",
+        "value": "2659"
+    },
+    "caption_restore_format": {
+        "key": "caption_restore_format",
+        "value": "2660"
+    },
+    "avatar_frame_none": {
+        "key": "avatar_frame_none",
+        "value": "2661"
+    },
+    "avatar_frame_unsaved_changes": {
+        "key": "avatar_frame_unsaved_changes",
+        "value": "2662"
+    },
+    "hint_avatar_frame_locked": {
+        "key": "hint_avatar_frame_locked",
+        "value": "2663"
+    },
+    "hint_avatar_locked": {
+        "key": "hint_avatar_locked",
+        "value": "2664"
+    },
+    "caption_edit_portrait": {
+        "key": "caption_edit_portrait",
+        "value": "2665"
+    },
+    "caption_tab_icon": {
+        "key": "caption_tab_icon",
+        "value": "2666"
+    },
+    "caption_tab_frame": {
+        "key": "caption_tab_frame",
+        "value": "2667"
+    },
+    "caption_unique_arena_frame_rewards": {
+        "key": "caption_unique_arena_frame_rewards",
+        "value": "2668"
+    },
+    "caption_top_place_format": {
+        "key": "caption_top_place_format",
+        "value": "2669"
+    },
+    "hint_avatar_and_frame_locked": {
+        "key": "hint_avatar_and_frame_locked",
+        "value": "2670"
+    },
+    "avatar_frame_new_year_2027_title": {
+        "key": "avatar_frame_new_year_2027_title",
+        "value": "2671"
+    },
+    "condition_new_year_2027_description": {
+        "key": "condition_new_year_2027_description",
+        "value": "2672"
+    },
+    "caption_barracks_no_troops_left_check_archive": {
+        "key": "caption_barracks_no_troops_left_check_archive",
+        "value": "2673"
+    },
+    "description_archive_tutorial": {
+        "key": "description_archive_tutorial",
+        "value": "2674"
+    },
+    "description_archive_restore_confirmation": {
+        "key": "description_archive_restore_confirmation",
+        "value": "2675"
+    },
+    "caption_restore": {
+        "key": "caption_restore",
+        "value": "2676"
     }
 }
